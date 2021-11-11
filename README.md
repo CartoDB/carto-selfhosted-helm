@@ -1,12 +1,23 @@
-# The Carto 3 Helm Charts
+# The Carto 3 Helm Charts & Docker images
 
-Helm Charts for Carto 3, ready to launch on Kubernetes using [Kubernetes Helm](https://github.com/helm/helm)
+Helm Charts and Docker images for Carto 3, ready to launch on Kubernetes using [Kubernetes Helm](https://github.com/helm/helm)
 
-## Before you being
+## Before you begin
 
 ### Prerequisites
 - Kubernetes 1.21.2
+- Docker 20.10.8
 - Helm 3.6.3
+
+### Setup a Kubernetes Cluster
+
+For setting up Kubernetes on other cloud platforms or bare-metal servers refer to the Kubernetes [getting started guide](http://kubernetes.io/docs/getting-started-guides/).
+
+### Install Docker
+
+Docker is an open source containerization technology for building and containerizing your applications.
+
+To install Docker, refer to the [Docker install guide](https://docs.docker.com/engine/install/).
 
 ### Install Helm
 
