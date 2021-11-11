@@ -1,6 +1,6 @@
-# The Carto 3 Helm Charts & Docker images
+# Helm chart and Docker image for Carto 3
 
-Helm Charts and Docker images for Carto 3, ready to launch on Kubernetes using [Kubernetes Helm](https://github.com/helm/helm)
+This repo contains the Helm chart and Docker image files for Carto 3, ready to launch on Kubernetes using [Kubernetes Helm](https://github.com/helm/helm).
 
 ## Before you begin
 
