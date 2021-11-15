@@ -1,0 +1,42 @@
+version: '2'
+
+services:
+  router:
+    image: docker.io/bitnami/nginx:1.21
+    ports:
+      - '80:8080'
+    volumes:
+      - ./router/nginx.conf:/opt/bitnami/nginx/conf/server_blocks/reverse_proxy.conf
+    environment:
+      - BITNAMI_DEBUG=true
+  workspace-api:
+    tty: true # Enables debugging capabilities when attached to this container.
+    image: docker.io/bitnami/node:16
+    command: sh -c 'npm install && npm start'
+    ports:
+      - 3000:3000
+    volumes:
+      - ./workspace-api/:/app
+  workspace-postgresql:
+    image: docker.io/bitnami/postgresql:13
+    volumes:
+      - 'postgresql_data:/bitnami/postgresql'
+    environment:
+      - POSTGRESQL_DATABASE=carto3_workspace
+      - POSTGRESQL_USERNAME=carto3
+      - POSTGRESQL_PASSWORD=
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+  redis:
+    image: docker.io/bitnami/redis:5.0
+    volumes:
+      - 'redis_data:/bitnami'
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+
+volumes:
+  postgresql_data:
+    driver: local
+  redis_data:
+    driver: local
