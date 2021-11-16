@@ -1,8 +1,8 @@
-name: Basic actions
-on: [push,pull_request]
+name: List repository files
+on: [pull_request]
 jobs:
-  Basic-GitHub-Actions:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-20.04
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
