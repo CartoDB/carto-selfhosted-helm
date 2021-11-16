@@ -9,14 +9,71 @@ services:
       - ./router/nginx.conf:/opt/bitnami/nginx/conf/server_blocks/reverse_proxy.conf
     environment:
       - BITNAMI_DEBUG=true
-  workspace-api:
+
+  workspace-www-fake:
+    image: docker.io/bitnami/nginx:1.21
+    volumes:
+      - ./workspace-www/:/app/
+    environment:
+      - BITNAMI_DEBUG=true
+
+  workspace-api-fake:
     tty: true # Enables debugging capabilities when attached to this container.
     image: docker.io/bitnami/node:16
+    depends_on:
+    - workspace-postgresql
+    - redis
     command: sh -c 'npm install && npm start'
-    ports:
-      - 3000:3000
     volumes:
-      - ./workspace-api/:/app
+      - ./nodejs-fake-app/:/app
+
+  workspace-subscriber-fake:
+    tty: true # Enables debugging capabilities when attached to this container.
+    image: docker.io/bitnami/node:16
+    depends_on:
+    - workspace-postgresql
+    command: sh -c 'npm install && npm start'
+    volumes:
+      - ./nodejs-fake-app/:/app
+
+  maps-api-fake:
+    tty: true # Enables debugging capabilities when attached to this container.
+    image: docker.io/bitnami/node:16
+    depends_on:
+    - workspace-postgresql
+    - redis
+    command: sh -c 'npm install && npm start'
+    volumes:
+      - ./nodejs-fake-app/:/app
+
+  sql-api-fake:
+    tty: true # Enables debugging capabilities when attached to this container.
+    image: docker.io/bitnami/node:16
+    depends_on:
+    - workspace-postgresql
+    - redis
+    command: sh -c 'npm install && npm start'
+    volumes:
+      - ./nodejs-fake-app/:/app
+
+  import-api-fake:
+    tty: true # Enables debugging capabilities when attached to this container.
+    image: docker.io/bitnami/node:16
+    depends_on:
+    - workspace-postgresql
+    command: sh -c 'npm install && npm start'
+    volumes:
+      - ./nodejs-fake-app/:/app
+
+  import-worker-fake:
+    tty: true # Enables debugging capabilities when attached to this container.
+    image: docker.io/bitnami/node:16
+    depends_on:
+    - workspace-postgresql
+    command: sh -c 'npm install && npm start'
+    volumes:
+      - ./nodejs-fake-app/:/app
+
   workspace-postgresql:
     image: docker.io/bitnami/postgresql:13
     volumes:
@@ -27,6 +84,7 @@ services:
       - POSTGRESQL_PASSWORD=
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
       - ALLOW_EMPTY_PASSWORD=yes
+
   redis:
     image: docker.io/bitnami/redis:5.0
     volumes:
