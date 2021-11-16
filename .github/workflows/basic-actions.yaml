@@ -1,5 +1,5 @@
 name: Basic actions
-on: [push]
+on: [push,pull_request]
 jobs:
   Basic-GitHub-Actions:
     runs-on: ubuntu-latest
