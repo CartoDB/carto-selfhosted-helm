@@ -35,3 +35,15 @@ jobs:
 
       - name: Run chart-testing (lint)
         run: ct lint --config .github/ct-lint.yaml
+
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.2.0
+
+      - name: Run chart-testing (install)
+        run: ct install --config .github/ct-install.yaml
