@@ -1,4 +1,0 @@
-chart-dirs:
-  - chart
-remote: origin
-target-branch: stable
