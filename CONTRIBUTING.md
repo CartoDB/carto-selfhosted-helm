@@ -29,7 +29,9 @@ First things first, Git is the base from which everything is built upon, so we w
 
 - Start off by configuring your `user.name` and `user.email` as seen in [Customizing Git](https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration). The `user.email` parameter should always be the VMware corporate one. For your convenience, here is a good resource on [Maintaining Different Git Identities](https://xam.io/2017/gitconfig/).
 - Next, we want to be able to verify that commits are actually from a trusted source, so we are going to sign and verify our work with GPG.
-  - GitHub has a neat set of guides that will help you [check for existing GPG keys](https://docs.github.com/en/articles/checking-for-existing-gpg-keys), [generate a new GPG key](https://docs.github.com/en/articles/generating-a-new-gpg-key) in case you don't already have one, [tell Git about your signing key](https://docs.github.com/en/articles/telling-git-about-your-signing-key) and of course show you how to [sign commits](https://docs.github.com/en/articles/signing-commits).
+  - GitHub has a neat set of guides that will help you [check for existing GPG keys](https://docs.github.com/en/articles/checking-for-existing-gpg-keys),
+  [generate a new GPG key](https://docs.github.com/en/articles/generating-a-new-gpg-key) in case you don't already have one,
+  [tell Git about your signing key](https://docs.github.com/en/articles/telling-git-about-your-signing-key) and of course show you how to [sign commits](https://docs.github.com/en/articles/signing-commits).
 - Finally, we want to publish our work and *only* our work. There is one thing that might bother us and the people we work with: line endings.
   - Fortunately, GitHub has us covered again, check [Configuring Git to handle line endings](https://docs.github.com/en/github/using-git/configuring-git-to-handle-line-endings) for Mac, Windows and Linux.
 
