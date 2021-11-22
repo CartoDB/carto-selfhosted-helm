@@ -7,7 +7,7 @@ We encourage everyone to follow them with their best judgement.
 
 * [How to Prepare a PR](#how-to-prepare-a-pr)
     * [The Essentials of a Code Contribution](#the-essentials-of-a-code-contribution)
-    * [Creating a Pull Request](#creating-the-pull-request)
+    * [Creating a Pull Request](#creating-a-pull-request)
 * [Branching Strategy](#branching-strategy)
 * [Merging a Pull Request](#merging-a-pull-request)
 
