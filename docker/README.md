@@ -7,4 +7,4 @@ curl -sSL https://raw.githubusercontent.com/CartoDB/carto3-helm/initial-skeleton
 docker-compose up -d
 ```
 
-Once it is running check http://localhost/circle.png and http://localhost/workspace-api/ out, a static file will be server by Nginx and also basic Nodejs application will print out a 'Hello World' message.
+Once it is running check [the circle](http://localhost/circle.png) and [the hello world](http://localhost/workspace-api/) out, a static file will be served by Nginx and also basic Node.js application will print out a 'Hello World' message.
