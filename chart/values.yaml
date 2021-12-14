@@ -1,0 +1,83 @@
+## @section Carto database parameters
+
+## PostgreSQL chart configuration
+## ref: https://github.com/bitnami/charts/blob/master/bitnami/postgresql/values.yaml
+## @param postgresql.enabled Switch to enable or disable the PostgreSQL helm chart
+## @param postgresql.existingSecret Name of an existing secret containing the PostgreSQL password ('postgresql-password' key)
+##
+postgresql:
+  enabled: true
+  ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
+  ##
+  existingSecret: ""
+  fullnameOverride: workspace-postgres
+  primary:
+    sidecars:
+    - name: workspace-migrations
+      image: gcr.io/carto-onprem-artifacts/workspace-db:2021.12.14.02
+      imagePullPolicy: Always
+      command: [ "/usr/src/app/onprem-init-db.sh" ]
+#      command: [ "/bin/sh" ]
+#      args: ["-c", "while true; do echo echo $(date -u) 'Hi I am from Sidecar container' >> /var/log/index.html; sleep 5;done"]
+      env:
+      - name: POSTGRES_PASSWORD
+        value:
+      - name: WORKSPACE_POSTGRES_USER
+        value: workspace_admin
+      - name: WORKSPACE_POSTGRES_PASSWORD
+        value:
+      - name: WORKSPACE_POSTGRES_HOST
+        value: localhost
+      - name: WORKSPACE_POSTGRES_DB
+        value: workspace
+      - name: WORKSPACE_POSTGRES_PORT
+        value: "5432"
+
+## Redis chart configuration
+## ref: https://github.com/bitnami/charts/blob/master/bitnami/redis/values.yaml
+## @param redis.enabled Switch to enable or disable the Redis&trade; helm
+## @param redis.auth.enabled Switch to enable or disable authentication
+## @param redis.auth.password Redis&trade; password
+## @param redis.auth.existingSecret Name of existing secret object containing the password
+## @param redis.architecture Cluster settings
+##
+redis:
+  enabled: true
+  ## Bitnami Redis image version
+  ## ref: https://hub.docker.com/r/bitnami/redis/tags/
+  ## @param web.image.registry Airflow image registry
+  ## @param web.image.repository Airflow image repository
+  ## @param web.image.tag Airflow image tag (immutable tags are recommended)
+  ## @param web.image.pullPolicy Airflow image pull policy
+  ## @param web.image.pullSecrets Airflow image pull secrets
+  ## @param web.image.debug Enable image debug mode
+  image:
+    registry: docker.io
+    repository: bitnami/redis
+    tag: 5.0.14-debian-10-r69
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    ## Set to true if you would like to see extra information on logs
+    ## It turns BASH and/or NAMI debugging in the image
+    ##
+    debug: false
+  auth:
+    enabled: false
+    ## Redis password (both master and slave). Defaults to a random 10-character alphanumeric string if not set and auth.enabled is true.
+    ## It should always be set using the password value or in the existingSecret to avoid issues
+    ## with Airflow.
+    ## The password value is ignored if existingSecret is set
+    password: ""
+    existingSecret: ""
+  architecture: standalone
