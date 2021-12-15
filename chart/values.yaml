@@ -48,7 +48,7 @@ postgresql:
     - name: workspace-migrations
       image: gcr.io/carto-onprem-artifacts/workspace-db:2021.12.14.02
       imagePullPolicy: Always
-      command: [ "/bin/sh", "-c", "/usr/src/app/onprem-init-db.sh && while true; do echo $(date -u);sleep 1;done" ]
+      command: [ "/bin/sh", "-c", "/usr/src/app/onprem-init-db.sh && while true; do echo $(date -u);sleep 3600;done" ]
       env:
       - name: POSTGRES_ADMIN_USER
         value: postgres
