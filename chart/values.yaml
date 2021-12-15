@@ -79,11 +79,11 @@ redis:
   enabled: true
   ## Bitnami Redis image version
   ## ref: https://hub.docker.com/r/bitnami/redis/tags/
-  ## @param web.image.registry Airflow image registry
-  ## @param web.image.repository Airflow image repository
-  ## @param web.image.tag Airflow image tag (immutable tags are recommended)
-  ## @param web.image.pullPolicy Airflow image pull policy
-  ## @param web.image.pullSecrets Airflow image pull secrets
+  ## @param web.image.registry Redis image registry
+  ## @param web.image.repository Redis image repository
+  ## @param web.image.tag Redis image tag (immutable tags are recommended)
+  ## @param web.image.pullPolicy Redis image pull policy
+  ## @param web.image.pullSecrets Redis image pull secrets
   ## @param web.image.debug Enable image debug mode
   image:
     registry: docker.io
@@ -109,8 +109,6 @@ redis:
   auth:
     enabled: false
     ## Redis password (both master and slave). Defaults to a random 10-character alphanumeric string if not set and auth.enabled is true.
-    ## It should always be set using the password value or in the existingSecret to avoid issues
-    ## with Airflow.
     ## The password value is ignored if existingSecret is set
     password: ""
     existingSecret: ""
