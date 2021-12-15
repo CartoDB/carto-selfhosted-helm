@@ -48,9 +48,7 @@ postgresql:
     - name: workspace-migrations
       image: gcr.io/carto-onprem-artifacts/workspace-db:2021.12.14.02
       imagePullPolicy: Always
-      command: [ "/usr/src/app/onprem-init-db.sh" ]
-#      command: [ "/bin/sh" ]
-#      args: ["-c", "while true; do echo echo $(date -u) 'Hi I am from Sidecar container' >> /var/log/index.html; sleep 5;done"]
+      command: [ "/bin/sh", "-c", "/usr/src/app/onprem-init-db.sh && while true; do echo $(date -u);sleep 1;done" ]
       env:
       - name: POSTGRES_ADMIN_USER
         value: postgres
@@ -77,35 +75,6 @@ postgresql:
 ##
 redis:
   enabled: true
-  ## Bitnami Redis image version
-  ## ref: https://hub.docker.com/r/bitnami/redis/tags/
-  ## @param web.image.registry Redis image registry
-  ## @param web.image.repository Redis image repository
-  ## @param web.image.tag Redis image tag (immutable tags are recommended)
-  ## @param web.image.pullPolicy Redis image pull policy
-  ## @param web.image.pullSecrets Redis image pull secrets
-  ## @param web.image.debug Enable image debug mode
-  image:
-    registry: docker.io
-    repository: bitnami/redis
-    tag: 5.0.14-debian-10-r69
-    ## Specify a imagePullPolicy
-    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
-    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
-    ##
-    pullPolicy: IfNotPresent
-    ## Optionally specify an array of imagePullSecrets.
-    ## Secrets must be manually created in the namespace.
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-    ## e.g:
-    ## pullSecrets:
-    ##   - myRegistryKeySecretName
-    ##
-    pullSecrets: []
-    ## Set to true if you would like to see extra information on logs
-    ## It turns BASH and/or NAMI debugging in the image
-    ##
-    debug: false
   auth:
     enabled: false
     ## Redis password (both master and slave). Defaults to a random 10-character alphanumeric string if not set and auth.enabled is true.
