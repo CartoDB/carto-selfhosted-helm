@@ -7,8 +7,40 @@
 ##
 postgresql:
   enabled: true
+  ## Bitnami Postgresql image version
+  ## ref: https://hub.docker.com/r/bitnami/postgresql/tags
+  ## @param scheduler.image.registry Postgrrsql image registry
+  ## @param scheduler.image.repository Postgresql image repository
+  ## @param scheduler.image.tag Postgresql image tag (immutable tags are recommended)
+  ## @param scheduler.image.pullPolicy Postgresql image pull policy
+  ## @param scheduler.image.pullSecrets Postgresql image pull secrets
+  ## @param scheduler.image.debug Enable image debug mode
+  ##
+  image:
+    registry: docker.io
+    repository: bitnami/postgresql
+    tag: 13.2.0-debian-10-r88
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    ## Set to true if you would like to see extra information on logs
+    ## It turns BASH and/or NAMI debugging in the image
+    ##
+    debug: false
   ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
   ##
+  postgresqlUsername: postgres
+  postgresqlPassword:
   existingSecret: ""
   fullnameOverride: workspace-postgres
   primary:
@@ -20,6 +52,8 @@ postgresql:
 #      command: [ "/bin/sh" ]
 #      args: ["-c", "while true; do echo echo $(date -u) 'Hi I am from Sidecar container' >> /var/log/index.html; sleep 5;done"]
       env:
+      - name: POSTGRES_ADMIN_USER
+        value: postgres
       - name: POSTGRES_PASSWORD
         value:
       - name: WORKSPACE_POSTGRES_USER
