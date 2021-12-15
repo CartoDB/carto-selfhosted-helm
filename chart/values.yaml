@@ -1,3 +1,253 @@
+## @section Common parameters
+
+## Pods Service Account
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+## @param serviceAccount.annotations Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
+## @param serviceAccount.create Specifies whether a ServiceAccount should be created
+## @param serviceAccount.name Name of the service account to use. If not set and create is true, a name is generated using the fullname template.
+##
+serviceAccount:
+  annotations: {}
+  create: false
+  name: ""
+## Configure Container Security Context (only main container)
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+## @param containerSecurityContext.enabled Enable container security context
+## @param containerSecurityContext.runAsUser User ID for the container
+##
+containerSecurityContext:
+  enabled: true
+  runAsUser: 1001
+## @param initContainers List of init containers to be added to the web, worker and scheduler pods
+## Example:
+## initContainers:
+##   - name: your-image-name
+##     image: your-image
+##     imagePullPolicy: Always
+##     ports:
+##       - name: portname
+##         containerPort: 1234
+##
+initContainers: []
+## @section Carto common parameters
+## @param affinity Affinity for pod assignment (evaluated as a template)
+## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+## Note: podAffinityPreset, podAntiAffinityPreset, and  nodeAffinityPreset will be ignored when it's set
+##
+affinity: {}
+## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`.
+## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+##
+podAffinityPreset: ""
+## @param podAntiAffinityPreset Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`.
+## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+##
+podAntiAffinityPreset: soft
+## Configure Pods Security Context
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+## @param podSecurityContext.enabled Enable pod security context
+## @param podSecurityContext.fsGroup fsGroup ID for the pod
+##
+podSecurityContext:
+  enabled: true
+  fsGroup: 1001
+## @param nodeSelector Node labels for pod assignment
+## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+##
+nodeSelector: {}
+## @param tolerations Tolerations for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: []
+## @param sidecars List of sidecar containers to be added to web, worker and scheduler pods
+## Example:
+## sidecars:
+##   - name: your-image-name
+##     image: your-image
+##     imagePullPolicy: Always
+##     ports:
+##       - name: portname
+##         containerPort: 1234
+##
+sidecars: []
+
+## @section Carto lds-api parameters
+
+lds-api:
+  ## Carto lds-api image version
+  ## @param web.image.registry Carto image registry
+  ## @param web.image.repository Carto image repository
+  ## @param web.image.tag Carto image tag (immutable tags are recommended)
+  ## @param web.image.pullPolicy Carto image pull policy
+  ## @param web.image.pullSecrets Carto image pull secrets
+  image:
+    registry: gcr.io/carto-artifacts
+    repository: lds-api
+    tag: latest
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param web.replicaCount Number of web replicas
+  ##
+  replicaCount: 1
+  ## @param web.hostAliases Deployment pod host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param web.baseUrl URL used to access to airflow web ui
+  ##
+  baseUrl: ""
+  ## @param web.configMap Name of an existing config map containing the Airflow webserver config file
+  ##
+  configMap: ""
+  ## @param web.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param web.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param web.podLabels Add extra labels to the web's pods
+  ##
+  podLabels: {}
+  ## @param web.podAnnotations Add extra annotations to the web's pods
+  ##
+  podAnnotations: {}
+  ## @param web.containerPort Container port to be used for exposing http server
+  ##
+  containerPort: 3000
+  ## @param web.extraVolumeMounts Add extra volume mounts
+  ##
+  extraVolumeMounts: []
+  ## @param web.extraVolumes Add extra volumes
+  ##
+  extraVolumes: []
+  ## @param web.extraEnvVars Array containing extra environment variables
+  ##
+  extraEnvVars: []
+  ## @param web.extraEnvVarsCM ConfigMap containing extra environment variables
+  ##
+  extraEnvVarsCM: ""
+  ## @param web.extraEnvVarsSecret Secret containing extra environment variables (in case of sensitive data)
+  ##
+  extraEnvVarsSecret: ""
+  ## Web container' resource requests and limits
+  ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
+  ## We usually recommend not to specify default resources and to leave this as a conscious
+  ## choice for the user. This also increases chances charts run on environments with little
+  ## resources, such as Minikube. If you do want to specify resources, uncomment the following
+  ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  ## @param web.resources.limits The resources limits for the Web container
+  ## @param web.resources.requests The requested resources for the Web container
+  ##
+  resources:
+    ## Example:
+    ## limits:
+    ##    cpu: 200m
+    ##    memory: 1Gi
+    limits: {}
+    ## Examples:
+    ## requests:
+    ##    memory: 256Mi
+    ##    cpu: 250m
+    requests: {}
+  ## Configure extra options for Web containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes)
+  ## @param web.livenessProbe.enabled Enable livenessProbe
+  ## @param web.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param web.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param web.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param web.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param web.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 180
+    periodSeconds: 20
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+  ## @param web.readinessProbe.enabled Enable readinessProbe
+  ## @param web.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param web.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param web.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param web.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param web.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+  ## @param web.customLivenessProbe Custom liveness probe for the Web component
+  customLivenessProbe: {}
+  ## @param web.customReadinessProbe Custom rediness probe for the Web component
+  ##
+  customReadinessProbe: {}
+  ## Enable PodDisruptionBudget for Web pods
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ## @param web.podDisruptionBudget.enabled Enable PodDisruptionBudget for web pods
+  ## @param web.podDisruptionBudget.minAvailable Minimum available instances; ignored if there is no PodDisruptionBudget
+  ## @param web.podDisruptionBudget.maxUnavailable Maximum available instances; ignored if there is no PodDisruptionBudget
+  ##
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
+    maxUnavailable: ""
+  ## @param lds-api.sidecars Add sidecars to the Web pods
+  ## Example:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: []
+  ## @param lds-api.initContainers Add initContainers to the Web pods
+  ## Example:
+  ## initContainers:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  initContainers: []
+  ## @param web.priorityClassName Priority Class Name
+  ## ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
+  ##
+  priorityClassName: ""
+  ## @param lds-api.nodeSelector Node labels for pod assignment
+  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## @section Carto database parameters
 
 ## PostgreSQL chart configuration
