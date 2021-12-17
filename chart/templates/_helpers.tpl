@@ -92,60 +92,180 @@ Return the proper Docker Image Registry Secret Names
 
 ========================
 {{/*
+Return Carto Auth0 client ID
+*/}}
+{{- define "configuration.auth0.cartoAuth0ClientID" -}}
+{{- .Values.configuration.auth0.cartoAuth0ClientID }}
+{{- end -}}
+
+{{/*
+Return Carto Docker Registry Base Path
+*/}}
+{{- define "configuration.dockerRegistryBasePath" -}}
+gcr.io/carto-onprem-artifacts
+{{- end -}}
+
+{{/*
+Return Carto on premise version
+*/}}
+{{- define "configuration.cartoOnpremiseVersion" -}}
+{{ .Values.configuration.cartoOnpremiseVersion }}
+{{- end -}}
+
+{{/*
+Return Carto Auth0 custom domain
+*/}}
+{{- define "configuration.auth0.cartoAuth0CustomDomain" -}}
+{{ .Values.configuration.auth0.cartoAuth0CustomDomain }}
+{{- end -}}
+
+{{/*
+Return Carto ACC domain
+*/}}
+{{- define "configuration.acc.accDomain" -}}
+{{ .Values.configuration.acc.accDomain }}
+{{- end -}}
+
+{{/*
+Return Carto on premise domain
+*/}}
+{{- define "configuration.onpremDomain" -}}
+{{ .Values.configuration.onpremDomain }}
+{{- end -}}
+
+
+{{/*
 Return the common environment variablesproper Docker Image Registry Secret Names
 */}}
 {{- define "carto.configure.common" -}}
 - name: ONPREM_DOMAIN
-  value:
+  value: {{ include "configuration.onpremDomain" }}
+{{- if .Values.configuration.reactAppGoogleMapsAPIKey }}
+- name: REACT_APP_GOOGLE_MAPS_API_KEY
+  value: {{ .Values.configuration.reactAppGoogleMapsAPIKey }}
+{{- end }}
+{{- if .Values.configuration.externalDatabase.enabled }}
 - name: WORKSPACE_POSTGRES_HOST
-  value:
+  value: {{ .Values.configuration.externalDatabase.workspacePostgresHost }}
 - name: WORKSPACE_POSTGRES_PORT
-  value:
+  value: {{ .Values.configuration.externalDatabase.workspacePostgresPort }}
 - name: POSTGRES_PASSWORD
+  {{- if .Values.configuration.externalDatabase.existingSecret }}
   valueFrom:
     secretKeyRef:
-      name: {{ include "carto.postgresql.secretName" . }}
-      key: {{ include "carto.database.existingsecret.key" . }}
+      name: {{ include "carto.externalDatabase.secretName" . }}
+      key: {{ include "carto.externalDatabase.existingsecret.key" . }}
+  {{- else }}
+  value: {{ .Values.configuration.externalDatabase.postgresPassword }}
+  {{- end }}
+{{- else }}
+- name: WORKSPACE_POSTGRES_HOST
+  value: {{ include "carto.postgresql.host" }}
+- name: WORKSPACE_POSTGRES_PORT
+  value: {{ include "carto.postgresql.port" }}
+- name: POSTGRES_PASSWORD
+  value:
+{{- end }}
 - name: ONPREM_TENANT_ID
-  value:
+  value: {{ .Values.configuration.onpremTenantId }}
 - name: ONPREM_GCP_PROJECT_ID
-  value:
+  value: {{ .Values.configuration.onpremGCPProjectID }}
 - name: WORKSPACE_GCS_THUMBNAILS_BUCKET
-  value:
+  value: {{ .Values.configuration.workspaceGCSThumbnailsBucket }}
 - name: WORKSPACE_GCS_DATASETS_BUCKET
-  value:
+  value: {{ .Values.configuration.workspaceGCSDatasetsBucket }}
 - name: IMPORT_GCS_DATA_IMPORTS_BUCKET
-  value:
+  value: {{ .Values.configuration.importGCSDataImportsBucket }}
+{{- if .Values.configuration.ssl.enabled }}
+- name: ROUTER_SSL_AUTOGENERATE
+  value: 1
+- name: ROUTER_SSL_CERTIFICATE_PATH
+  value: {{ .Values.configuration.ssl.routerSSLCertificatePath }}
+- name: ROUTER_SSL_CERTIFICATE_KEY_PATH
+  value: {{ .Values.configuration.ssl.routerSSLCertificateKeyPath }}
+{{- end }}
 - name: CARTO_AUTH0_CLIENT_ID
-  value:
+  value: {{ include "configuration.auth0.cartoAuth0ClientID" }}
 - name: CARTO_AUTH0_CUSTOM_DOMAIN
-  value:
+  value: {{ include "configuration.auth0.cartoAuth0CustomDomain" }}
 - name: ACC_DOMAIN
-  value:
+  value: {{ include "configuration.acc.accDomain" }}
 - name: ACC_GCP_PROJECT_ID
-  value:
+  value: {{ .Values.configuration.acc.accGCPProjectID }}
 - name: ACC_GCP_PROJECT_REGION
-  value:
+  value: {{ .Values.configuration.acc.accGCPProjectRegion }}
 - name: ENCRYPTION_SECRET_KEY
-  valueFrom:
-    secretKeyRef:
-      name: {{ include "carto.postgresql.secretName" . }}
-      key: {{ include "carto.database.existingsecret.key" . }}
+  value:
 - name: WORKSPACE_POSTGRES_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: {{ include "carto.postgresql.secretName" . }}
-      key: {{ include "carto.database.existingsecret.key" . }}
+  value:
 - name: CARTO_ONPREMISE_CARTO_DW_LOCATION
-  value:
+  value: {{ .Values.configuration.cartoOnpremiseCartoDWLocation }}
 - name: CARTO_ONPREMISE_CUSTOMER_PACKAGE_VERSION
-  value:
+  value: {{ .Values.configuration.cartoOnpremiseCustomerPackageVersion }}
 - name: CARTO_ONPREMISE_VERSION
-  value:
+  value: {{ include "configuration.cartoOnpremiseVersion" }}
 - name: GOOGLE_APPLICATION_CREDENTIALS
-  value:
+  value: ../certs/key.json
 - name: CARTO3_ONPREM_VOLUMES_BASE_PATH
-  value:
+  value: ./
+- name: DOCKER_REGISTRY_BASE_PATH
+  value: {{ include "configuration.dockerRegistryBasePath" }}
+- name: CARTO_ONPREMISE_AUTH0_CLIENT_ID
+  value: {{ include "configuration.auth0.cartoAuth0ClientID" }}
+- name: ROUTER_DOCKER_IMAGE
+  value: {{ include "configuration.dockerRegistryBasePath" }}/router:{{ include "configuration.cartoOnpremiseVersion" }}
+- name: ACCOUNTS_API_DOCKER_IMAGE
+  value: {{ include "configuration.dockerRegistryBasePath" }}/accounts-api:{{ include "configuration.cartoOnpremiseVersion" }}
+- name: ACCOUNTS_WWW_DOCKER_IMAGE
+  value: {{ include "configuration.dockerRegistryBasePath" }}/accounts-www:{{ include "configuration.cartoOnpremiseVersion" }}
+- name: WORKSPACE_API_DOCKER_IMAGE
+  value: {{ include "configuration.dockerRegistryBasePath" }}/workspace-api:{{ include "configuration.cartoOnpremiseVersion" }}
+- name: WORKSPACE_WWW_DOCKER_IMAGE
+  value: {{ include "configuration.dockerRegistryBasePath" }}/workspace-www:{{ include "configuration.cartoOnpremiseVersion" }}
+- name: MAPS_API_DOCKER_IMAGE
+  value: {{ include "configuration.dockerRegistryBasePath" }}/maps-api:{{ include "configuration.cartoOnpremiseVersion" }}
+- name: INTEGRATION_TESTS_DOCKER_IMAGE
+  value: {{ include "configuration.dockerRegistryBasePath" }}/integration-tests:{{ include "configuration.cartoOnpremiseVersion" }}
+- name: ACCOUNTS_MIGRATIONS_DOCKER_IMAGE
+  value: {{ include "configuration.dockerRegistryBasePath" }}/accounts-db:{{ include "configuration.cartoOnpremiseVersion" }}
+- name: WORKSPACE_MIGRATIONS_DOCKER_IMAGE
+  value: {{ include "configuration.dockerRegistryBasePath" }}/workspace-db{{ include "configuration.cartoOnpremiseVersion" }}
+- name: IMPORT_API_DOCKER_IMAGE
+  value: {{ include "configuration.dockerRegistryBasePath" }}/import-api:{{ include "configuration.cartoOnpremiseVersion" }}
+- name: LDS_API_DOCKER_IMAGE
+  value: {{ include "configuration.dockerRegistryBasePath" }}/lds-api:{{ include "configuration.cartoOnpremiseVersion" }}
+- name: REACT_APP_CLIENT_ID
+  value: {{ include "configuration.auth0.cartoAuth0ClientID" }}
+- name: REACT_APP_AUTH0_DOMAIN
+  value: {{ include "configuration.auth0.cartoAuth0CustomDomain" }}
+- name: REACT_APP_ACCOUNTS_API_URL
+  value: https://{{ include "configuration.acc.accDomain" }}
+- name: REACT_APP_ACCOUNTS_URL
+  value: https://{{ include "configuration.onpremDomain" }}/acc/
+- name: REACT_APP_WORKSPACE_API_URL
+  value: https://{{ include "configuration.onpremDomain" }}/workspace-api
+- name: REACT_APP_API_BASE_URL
+  value: https://${ONPREM_DOMAIN}/api
+- name: REACT_APP_PUBLIC_MAP_URL
+  value: https://${ONPREM_DOMAIN}/workspace-api/maps/public
+- name: REACT_APP_AUTH0_AUDIENCE
+  value: carto-cloud-native-api
+- name: REACT_APP_WORKSPACE_URL_TEMPLATE
+  value: https://{tenantDomain}
+- name: REACT_APP_CUSTOM_TENANT
+  value: =${ONPREM_TENANT_ID}
+- name: REACT_APP_IMPORT_DATASET
+  value: =carto_dw.carto-dw-{account-id}.shared
+- name: REACT_APP_HUBSPOT_ID
+  value: =474999
+- name: REACT_APP_HUBSPOT_LIMIT_FORM_ID
+  value: =cd9486fa-5766-4bac-81b9-d8c6cd029b3b
+
+
+
+
+
+
 {{- end -}}
 
 

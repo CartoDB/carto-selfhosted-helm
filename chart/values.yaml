@@ -81,7 +81,7 @@ lds-api:
   ## @param web.image.pullPolicy Carto image pull policy
   ## @param web.image.pullSecrets Carto image pull secrets
   image:
-    registry: gcr.io/carto-artifacts
+    registry: gcr.io/carto-onprem-artifacts
     repository: lds-api
     tag: latest
     ## Specify a imagePullPolicy
@@ -287,10 +287,10 @@ postgresql:
     ## It turns BASH and/or NAMI debugging in the image
     ##
     debug: false
+  postgresqlUsername: postgres
+  postgresqlPassword: IhE3Jgaht
   ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
   ##
-  postgresqlUsername: postgres
-  postgresqlPassword:
   existingSecret: ""
   fullnameOverride: workspace-postgres
   primary:
@@ -303,11 +303,11 @@ postgresql:
       - name: POSTGRES_ADMIN_USER
         value: postgres
       - name: POSTGRES_PASSWORD
-        value:
+        value: IhE3Jgaht
       - name: WORKSPACE_POSTGRES_USER
         value: workspace_admin
       - name: WORKSPACE_POSTGRES_PASSWORD
-        value:
+        value: TgTA8957OcJBr9GF
       - name: WORKSPACE_POSTGRES_HOST
         value: localhost
       - name: WORKSPACE_POSTGRES_DB
@@ -332,3 +332,100 @@ redis:
     password: ""
     existingSecret: ""
   architecture: standalone
+
+## @section Carto self hosted configuration
+
+configuration:
+  onprem_domain: ec2-54-165-90-152.compute-1.amazonaws.com
+  react_app_google_maps_api_key: ""
+  externalDatabase:
+    enabled: false
+    workspace_postgres_host: ""
+    workspace_postgres_port: ""
+    postgres_password: ""
+    existingSecret: ""
+  onprem_tenant_id: onp-bitnami-stag-1
+  onprem_gcp_project_id: carto-tnt-onp-bitnami-stag-1
+  buckets:
+    workspace_gcs_thumbnails_bucket: carto-tnt-onp-bitnami-stag-1-thumbnails-storage
+    workspace_gcs_datasets_bucket: carto-tnt-onp-bitnami-stag-1-client-storage
+    import_gcs_data_imports_bucket: carto-tnt-onp-bitnami-stag-1-import-storage
+  ssl:
+    enable: false
+    router_ssl_certificate_path: /etc/nginx/ssl/<cert>.crt
+    router_ssl_certificate_key_path: /etc/nginx/ssl/<cert>.key
+  auth0:
+    carto_auth0_client_id: ASCv194MEEl68A3scIp39N2QXShGpOxW
+    carto_auth0_custom_domain: auth.stag.carto.com
+  acc:
+    acc_domain: accounts.stag.app.carto.com
+    acc_gcp_project_id: carto-acc-us-east1-1-stag
+    acc_gcp_project_region: us-east1-1-stag
+  encryption_secret_key: WnduIWnPpaiF6WEJ3jItbaVxkdVisjpm
+  carto_onpremise_carto_dw_location: us
+  carto_onpremise_customer_package_version: "2021.12.13"
+
+
+
+
+
+  carto_auth0_client_id: ASCv194MEEl68A3scIp39N2QXShGpOxW
+  carto_auth0_custom_domain: auth.stag.carto.com
+  acc_domain: accounts.stag.app.carto.com
+  acc_gcp_project_id: carto-acc-us-east1-1-stag
+  acc_gcp_project_region: us-east1-1-stag
+  encryption_secret_key: WnduIWnPpaiF6WEJ3jItbaVxkdVisjpm
+  carto_onpremise_carto_dw_location: US
+  carto_onpremise_customer_package_version: "2021.12.13"
+  carto_onpremise_version: "2021.12.13"
+  google_application_credentials: ../certs/key.json
+  carto3_onprem_volumes_base_path: ./
+  react_app_auth0_audience: carto-cloud-native-api
+  react_app_workspace_url_template: https://{tenantDomain}
+  react_app_import_dataset: carto_dw.carto-dw-{account-id}.shared
+  react_app_hubspot_id: 474999
+  react_app_hubspot_limit_form_id: cd9486fa-5766-4bac-81b9-d8c6cd029b3b
+  common_config:
+    auth0_audience: carto-cloud-native-api
+    auth0_namespace: http://app.carto.com
+    log_level: debug
+    redis_cache_prefix: onprem
+    redis_host: redis <--------------- probably it need to be set on _helper and not here.
+    redis_port: 6379
+  pub_sub:
+    pubsub_mode: pull
+
+
+
+
+## Conflictive with onprem tenant && regular tenants
+PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE=projects/{project_id}/topics/data-updates
+
+EVENT_BUS_TOPIC=projects/${ACC_GCP_PROJECT_ID}/topics/${ACC_GCP_PROJECT_REGION}-event-bus
+EVENT_BUS_PROJECT_ID=${ACC_GCP_PROJECT_ID}
+
+DO_ENABLED=false
+
+
+
+
+
+
+REACT_APP_CLIENT_ID=${CARTO_AUTH0_CLIENT_ID}
+REACT_APP_AUTH0_DOMAIN=${CARTO_AUTH0_CUSTOM_DOMAIN}
+REACT_APP_ACCOUNTS_API_URL=https://${ACC_DOMAIN}
+REACT_APP_ACCOUNTS_URL=https://${ONPREM_DOMAIN}/acc/
+REACT_APP_WORKSPACE_API_URL=https://${ONPREM_DOMAIN}/workspace-api
+REACT_APP_API_BASE_URL=https://${ONPREM_DOMAIN}/api
+REACT_APP_PUBLIC_MAP_URL=https://${ONPREM_DOMAIN}/workspace-api/maps/public
+REACT_APP_CUSTOM_TENANT=${ONPREM_TENANT_ID}
+
+AUTH0_DOMAIN=${CARTO_AUTH0_CUSTOM_DOMAIN}
+PUBSUB_PROJECT_ID=${ONPREM_GCP_PROJECT_ID}
+
+  CARTO_ONPREMISE_AUTH0_CLIENT_ID=${CARTO_AUTH0_CLIENT_ID}
+  THE FOLLOWING ONES CAN BE AUTO-GENERATED IN HELPERS
+  ONPREM_GCP_PROJECT_ID:carto-tnt-${ONPREM_TENANT_ID}
+  WORKSPACE_GCS_THUMBNAILS_BUCKET=${ONPREM_GCP_PROJECT_ID}-thumbnails-storage
+  WORKSPACE_GCS_DATASETS_BUCKET=${ONPREM_GCP_PROJECT_ID}-client-storage
+  IMPORT_GCS_DATA_IMPORTS_BUCKET=${ONPREM_GCP_PROJECT_ID}-import-storage
