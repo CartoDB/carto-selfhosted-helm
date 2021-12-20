@@ -1,15 +1,43 @@
+## @section Global parameters
+## Global Docker image parameters
+## Please, note that this will override the image parameters, including dependencies, configured to use the global value
+## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
+
+## @param global.imageRegistry Global Docker image registry
+## @param global.imagePullSecrets Global Docker registry secret names as an array
+## @param global.storageClass Global StorageClass for Persistent Volume(s)
+##
+global:
+  imageRegistry: ""
+  ## e.g.
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  imagePullSecrets: []
+  storageClass: ""
+
 ## @section Common parameters
 
-## Pods Service Account
-## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-## @param serviceAccount.annotations Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
-## @param serviceAccount.create Specifies whether a ServiceAccount should be created
-## @param serviceAccount.name Name of the service account to use. If not set and create is true, a name is generated using the fullname template.
+## @param kubeVersion Force target Kubernetes version (using Helm capabilities if not set)
 ##
-serviceAccount:
-  annotations: {}
-  create: false
-  name: ""
+kubeVersion: ""
+## @param nameOverride String to partially override airflow.fullname template with a string (will prepend the release name)
+##
+nameOverride: ""
+## @param fullnameOverride String to fully override airflow.fullname template with a string
+##
+fullnameOverride: ""
+## @param affinity Affinity for pod assignment (evaluated as a template)
+## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+## Note: podAffinityPreset, podAntiAffinityPreset, and  nodeAffinityPreset will be ignored when it's set
+##
+affinity: {}
+## @param commonAnnotations Annotations to add to all deployed objects
+##
+commonAnnotations: {}
+## @param commonLabels Labels to add to all deployed objects
+##
+commonLabels: {}
 ## Configure Container Security Context (only main container)
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
 ## @param containerSecurityContext.enabled Enable container security context
@@ -18,7 +46,27 @@ serviceAccount:
 containerSecurityContext:
   enabled: true
   runAsUser: 1001
-## @param initContainers List of init containers to be added to the web, worker and scheduler pods
+## @param extraDeploy A list of extra kubernetes resources to be deployed
+##
+extraDeploy: []
+## @param extraEnvVars Extra environment variables to add to all pods
+## The parameters from the configuration file can be overwritten by using environment variables with this format:
+##
+## - name: ENV_VAR_NAME_1
+##   value: "env_var_value_2"
+## - name: ENV_VAR_NAME_2
+##   value: "env_var_value_2
+## - name: ENV_VAR_NAME_3
+##   value: "env_var_value_3
+##
+extraEnvVars: []
+## @param extraEnvVarsCM ConfigMap containing extra env vars to add to web, worker and scheduler pods
+##
+extraEnvVarsCM: ""
+## @param extraEnvVarsSecret Secret containing extra env vars to add to web, worker and scheduler pods
+##
+extraEnvVarsSecret: ""
+## @param initContainers List of init containers to be added to all pods
 ## Example:
 ## initContainers:
 ##   - name: your-image-name
@@ -29,12 +77,34 @@ containerSecurityContext:
 ##         containerPort: 1234
 ##
 initContainers: []
-## @section Carto common parameters
-## @param affinity Affinity for pod assignment (evaluated as a template)
-## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
-## Note: podAffinityPreset, podAntiAffinityPreset, and  nodeAffinityPreset will be ignored when it's set
+## Network policies
+## Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+## @param networkPolicies.enabled Switch to enable network policies
 ##
-affinity: {}
+networkPolicies:
+  enabled: false
+## Node affinity preset
+## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+## @param nodeAffinityPreset.key Node label key to match. Ignored if `affinity` is set.
+## @param nodeAffinityPreset.type Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+## @param nodeAffinityPreset.values Node label values to match. Ignored if `affinity` is set.
+##
+nodeAffinityPreset:
+  ## Example:
+  ## key: "kubernetes.io/e2e-az-name"
+  ##
+  key: ""
+  type: ""
+  ## Example:
+  ## values:
+  ##   - e2e-az1
+  ##   - e2e-az2
+  ##
+  values: []
+## @param nodeSelector Node labels for pod assignment
+## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+##
+nodeSelector: {}
 ## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`.
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 ##
@@ -51,14 +121,22 @@ podAntiAffinityPreset: soft
 podSecurityContext:
   enabled: true
   fsGroup: 1001
-## @param nodeSelector Node labels for pod assignment
-## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+## Role Based Access
+## Ref: https://kubernetes.io/docs/admin/authorization/rbac/
+## @param rbac.create If true, create & use RBAC resources
 ##
-nodeSelector: {}
-## @param tolerations Tolerations for pod assignment
-## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+rbac:
+  create: false
+## Pods Service Account
+## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+## @param serviceAccount.annotations Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
+## @param serviceAccount.create Specifies whether a ServiceAccount should be created
+## @param serviceAccount.name Name of the service account to use. If not set and create is true, a name is generated using the fullname template.
 ##
-tolerations: []
+serviceAccount:
+  annotations: {}
+  create: false
+  name: ""
 ## @param sidecars List of sidecar containers to be added to web, worker and scheduler pods
 ## Example:
 ## sidecars:
@@ -70,11 +148,15 @@ tolerations: []
 ##         containerPort: 1234
 ##
 sidecars: []
+## @param tolerations Tolerations for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: []
 
-## @section Carto lds-api parameters
+## @section Carto ldsApi parameters
 
-lds-api:
-  ## Carto lds-api image version
+ldsApi:
+  ## Carto ldsApi image version
   ## @param web.image.registry Carto image registry
   ## @param web.image.repository Carto image repository
   ## @param web.image.tag Carto image tag (immutable tags are recommended)
@@ -82,7 +164,7 @@ lds-api:
   ## @param web.image.pullSecrets Carto image pull secrets
   image:
     registry: gcr.io/carto-onprem-artifacts
-    repository: lds-api
+    repository: ldsApi
     tag: latest
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -205,7 +287,7 @@ lds-api:
     enabled: false
     minAvailable: 1
     maxUnavailable: ""
-  ## @param lds-api.sidecars Add sidecars to the Web pods
+  ## @param ldsApi.sidecars Add sidecars to the Web pods
   ## Example:
   ## sidecars:
   ##   - name: your-image-name
@@ -216,7 +298,7 @@ lds-api:
   ##         containerPort: 1234
   ##
   sidecars: []
-  ## @param lds-api.initContainers Add initContainers to the Web pods
+  ## @param ldsApi.initContainers Add initContainers to the Web pods
   ## Example:
   ## initContainers:
   ##   - name: your-image-name
@@ -231,22 +313,10 @@ lds-api:
   ## ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
   ##
   priorityClassName: ""
-  ## @param lds-api.nodeSelector Node labels for pod assignment
+  ## @param ldsApi.nodeSelector Node labels for pod assignment
   ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## @section Carto database parameters
 
@@ -288,7 +358,7 @@ postgresql:
     ##
     debug: false
   postgresqlUsername: postgres
-  postgresqlPassword: IhE3Jgaht
+  postgresqlPassword: ""
   ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
   ##
   existingSecret: ""
@@ -303,11 +373,11 @@ postgresql:
       - name: POSTGRES_ADMIN_USER
         value: postgres
       - name: POSTGRES_PASSWORD
-        value: IhE3Jgaht
+        value: ""
       - name: WORKSPACE_POSTGRES_USER
         value: workspace_admin
       - name: WORKSPACE_POSTGRES_PASSWORD
-        value: TgTA8957OcJBr9GF
+        value: ""
       - name: WORKSPACE_POSTGRES_HOST
         value: localhost
       - name: WORKSPACE_POSTGRES_DB
@@ -336,96 +406,37 @@ redis:
 ## @section Carto self hosted configuration
 
 configuration:
-  onprem_domain: ec2-54-165-90-152.compute-1.amazonaws.com
-  react_app_google_maps_api_key: ""
+  onpremDomain: ec2-54-165-90-152.compute-1.amazonaws.com
+  reactAppGoogleMapsAPIKey: ""
   externalDatabase:
     enabled: false
-    workspace_postgres_host: ""
-    workspace_postgres_port: ""
-    postgres_password: ""
+    workspacePostgresHost: ""
+    workspacePostgresPort: ""
+    postgresPassword: ""
     existingSecret: ""
-  onprem_tenant_id: onp-bitnami-stag-1
-  onprem_gcp_project_id: carto-tnt-onp-bitnami-stag-1
+  postgresql:
+    workspacePostgresHost: ""
+    workspacePostgresPort: ""
+    workspacePostgresPassword: ""
+    postgresPassword: ""
+  onpremTenantId: onp-bitnami-stag-1
+  onpremGCPProjectID: carto-tnt-onp-bitnami-stag-1
   buckets:
-    workspace_gcs_thumbnails_bucket: carto-tnt-onp-bitnami-stag-1-thumbnails-storage
-    workspace_gcs_datasets_bucket: carto-tnt-onp-bitnami-stag-1-client-storage
-    import_gcs_data_imports_bucket: carto-tnt-onp-bitnami-stag-1-import-storage
+    workspaceGCSThumbnailsBucket: carto-tnt-onp-bitnami-stag-1-thumbnails-storage
+    workspaceGCSDatasetsBucket: carto-tnt-onp-bitnami-stag-1-client-storage
+    importGCSDataImportsBucket: carto-tnt-onp-bitnami-stag-1-import-storage
   ssl:
     enable: false
-    router_ssl_certificate_path: /etc/nginx/ssl/<cert>.crt
-    router_ssl_certificate_key_path: /etc/nginx/ssl/<cert>.key
+    routerSSLCertificatePath: /etc/nginx/ssl/<cert>.crt
+    routerSSLCertificateKeyPath: /etc/nginx/ssl/<cert>.key
   auth0:
-    carto_auth0_client_id: ASCv194MEEl68A3scIp39N2QXShGpOxW
-    carto_auth0_custom_domain: auth.stag.carto.com
+    cartoAuth0ClientID: ASCv194MEEl68A3scIp39N2QXShGpOxW
+    cartoAuth0CustomDomain: auth.stag.carto.com
   acc:
-    acc_domain: accounts.stag.app.carto.com
-    acc_gcp_project_id: carto-acc-us-east1-1-stag
-    acc_gcp_project_region: us-east1-1-stag
-  encryption_secret_key: WnduIWnPpaiF6WEJ3jItbaVxkdVisjpm
-  carto_onpremise_carto_dw_location: us
-  carto_onpremise_customer_package_version: "2021.12.13"
-
-
-
-
-
-  carto_auth0_client_id: ASCv194MEEl68A3scIp39N2QXShGpOxW
-  carto_auth0_custom_domain: auth.stag.carto.com
-  acc_domain: accounts.stag.app.carto.com
-  acc_gcp_project_id: carto-acc-us-east1-1-stag
-  acc_gcp_project_region: us-east1-1-stag
-  encryption_secret_key: WnduIWnPpaiF6WEJ3jItbaVxkdVisjpm
-  carto_onpremise_carto_dw_location: US
-  carto_onpremise_customer_package_version: "2021.12.13"
-  carto_onpremise_version: "2021.12.13"
-  google_application_credentials: ../certs/key.json
-  carto3_onprem_volumes_base_path: ./
-  react_app_auth0_audience: carto-cloud-native-api
-  react_app_workspace_url_template: https://{tenantDomain}
-  react_app_import_dataset: carto_dw.carto-dw-{account-id}.shared
-  react_app_hubspot_id: 474999
-  react_app_hubspot_limit_form_id: cd9486fa-5766-4bac-81b9-d8c6cd029b3b
-  common_config:
-    auth0_audience: carto-cloud-native-api
-    auth0_namespace: http://app.carto.com
-    log_level: debug
-    redis_cache_prefix: onprem
-    redis_host: redis <--------------- probably it need to be set on _helper and not here.
-    redis_port: 6379
-  pub_sub:
-    pubsub_mode: pull
-
-
-
-
-## Conflictive with onprem tenant && regular tenants
-PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE=projects/{project_id}/topics/data-updates
-
-EVENT_BUS_TOPIC=projects/${ACC_GCP_PROJECT_ID}/topics/${ACC_GCP_PROJECT_REGION}-event-bus
-EVENT_BUS_PROJECT_ID=${ACC_GCP_PROJECT_ID}
-
-DO_ENABLED=false
-
-
-
-
-
-
-REACT_APP_CLIENT_ID=${CARTO_AUTH0_CLIENT_ID}
-REACT_APP_AUTH0_DOMAIN=${CARTO_AUTH0_CUSTOM_DOMAIN}
-REACT_APP_ACCOUNTS_API_URL=https://${ACC_DOMAIN}
-REACT_APP_ACCOUNTS_URL=https://${ONPREM_DOMAIN}/acc/
-REACT_APP_WORKSPACE_API_URL=https://${ONPREM_DOMAIN}/workspace-api
-REACT_APP_API_BASE_URL=https://${ONPREM_DOMAIN}/api
-REACT_APP_PUBLIC_MAP_URL=https://${ONPREM_DOMAIN}/workspace-api/maps/public
-REACT_APP_CUSTOM_TENANT=${ONPREM_TENANT_ID}
-
-AUTH0_DOMAIN=${CARTO_AUTH0_CUSTOM_DOMAIN}
-PUBSUB_PROJECT_ID=${ONPREM_GCP_PROJECT_ID}
-
-  CARTO_ONPREMISE_AUTH0_CLIENT_ID=${CARTO_AUTH0_CLIENT_ID}
-  THE FOLLOWING ONES CAN BE AUTO-GENERATED IN HELPERS
-  ONPREM_GCP_PROJECT_ID:carto-tnt-${ONPREM_TENANT_ID}
-  WORKSPACE_GCS_THUMBNAILS_BUCKET=${ONPREM_GCP_PROJECT_ID}-thumbnails-storage
-  WORKSPACE_GCS_DATASETS_BUCKET=${ONPREM_GCP_PROJECT_ID}-client-storage
-  IMPORT_GCS_DATA_IMPORTS_BUCKET=${ONPREM_GCP_PROJECT_ID}-import-storage
+    accDomain: accounts.stag.app.carto.com
+    accGCPProjectID: carto-acc-us-east1-1-stag
+    accGCPProjectRegion: us-east1-1-stag
+  encryptionSecretKey: WnduIWnPpaiF6WEJ3jItbaVxkdVisjpm
+  cartoOnpremiseCartoDWLocation: us
+  cartoOnpremiseCustomerPackageVersion: "2021.12.13"
+  cartoOnpremiseVersion: "2021.12.13"

@@ -1,9 +1,9 @@
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
-  name: {{ include "common.names.fullname" . }}-lds-api
+  name: {{ include "common.names.fullname" . }}-ldsApi
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: lds-api
+    app.kubernetes.io/component: ldsApi
     {{- if .Values.commonLabels }}
       {{- include "common.tplvalues.render" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
     {{- end }}
@@ -13,26 +13,25 @@ metadata:
 spec:
   selector:
     matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
-      app.kubernetes.io/component: lds-api
-  replicas: {{ default 1 .Values.lds-api.replicaCount }}
+      app.kubernetes.io/component: ldsApi
+  replicas: {{ default 1 .Values.ldsApi.replicaCount }}
   template:
     metadata:
       labels: {{- include "common.labels.standard" . | nindent 8 }}
-        app.kubernetes.io/component: lds-api
-      {{- if .Values.lds-api.podLabels }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.lds-api.podLabels "context" $) | nindent 8 }}
+        app.kubernetes.io/component: ldsApi
+      {{- if .Values.ldsApi.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.podLabels "context" $) | nindent 8 }}
       {{- end }}
       annotations:
-        checksum/configmap: {{ include (print $.Template.BasePath "/config/configmap.yaml") . | sha256sum }}
-      {{- if .Values.lds-api.podAnnotations }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.lds-api.podAnnotations "context" $) | nindent 8 }}
+      {{- if .Values.ldsApi.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.podAnnotations "context" $) | nindent 8 }}
       {{- end }}
     spec:
       {{- include "carto.imagePullSecrets" . | nindent 6 }}
-      {{- if .Values.lds-api.hostAliases }}
-      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.lds-api.hostAliases "context" $) | nindent 8 }}
+      {{- if .Values.ldsApi.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.hostAliases "context" $) | nindent 8 }}
       {{- end }}
-      priorityClassName: {{ .Values.lds-api.priorityClassName | quote }}
+      priorityClassName: {{ .Values.ldsApi.priorityClassName | quote }}
       {{- if .Values.podSecurityContext.enabled }}
       securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
       {{- end }}
@@ -41,93 +40,42 @@ spec:
       affinity: {{- include "common.tplvalues.render" (dict "value" .Values.affinity "context" $) | nindent 8 }}
       {{- else }}
       affinity:
-        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset "component" "lds-api" "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset "component" "lds-api" "context" $) | nindent 10 }}
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset "component" "ldsApi" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset "component" "ldsApi" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.nodeAffinityPreset.type "key" .Values.nodeAffinityPreset.key "values" .Values.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
-      {{- if or .Values.nodeSelector .Values.lds-api.nodeSelector }}
+      {{- if or .Values.nodeSelector .Values.ldsApi.nodeSelector }}
       {{- if .Values.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.nodeSelector "context" $) | nindent 8 }}
       {{- else }}
-      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.lds-api.nodeSelector "context" $) | nindent 8 }}
+      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.nodeSelector "context" $) | nindent 8 }}
       {{- end }}
       {{- end }}
       {{- if .Values.tolerations }}
       tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
       {{- end }}
       initContainers:
-      {{- if .Values.lds-api.initContainers }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.lds-api.initContainers "context" $) | trim | nindent 8 }}
+      {{- if .Values.ldsApi.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.initContainers "context" $) | trim | nindent 8 }}
       {{- end }}
       {{- if .Values.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | trim | nindent 8 }}
       {{- end }}
       containers:
-        - name: carto-lds-api
-          image: {{ include "carto.lds-apiImage" . }}
-          imagePullPolicy: {{ .Values.lds-api.image.pullPolicy | quote }}
+        - name: carto-ldsApi
+          image: {{ include "carto.ldsApiImage" . }}
+          imagePullPolicy: {{ .Values.ldsApi.image.pullPolicy | quote }}
           {{- if .Values.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
-          {{- if .Values.lds-api.command }}
-          command: {{- include "common.tplvalues.render" (dict "value" .Values.lds-api.command "context" $) | nindent 12 }}
+          {{- if .Values.ldsApi.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.command "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.lds-api.args }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.lds-api.args "context" $) | nindent 12 }}
+          {{- if .Values.ldsApi.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.args "context" $) | nindent 12 }}
           {{- end }}
           env:
             {{- include "carto.configure.common"  . | nindent 12 }}
           ports:
             - name: http
-              containerPort: {{ .Values.lds-api.containerPort }}
-      #     {{- if .Values.web.livenessProbe.enabled }}
-      #     livenessProbe:
-      #     {{- if $baseUrl }}
-      #       tcpSocket:
-      #         port: http
-      #     {{- else }}
-      #       httpGet:
-      #         path: /health
-      #         port: http
-      #     {{- end }}
-      #       {{ omit .Values.web.livenessProbe "enabled" | toYaml | nindent 12 }}
-      #     {{- else if .Values.web.customLivenessProbe }}
-      #     livenessProbe:
-      #       {{- include "common.tplvalues.render" (dict "value" .Values.web.customLivenessProbe "context" $) | trim | nindent 12 }}
-      #     {{- end }}
-
-
-
-
-
-
-
-
-
-      #     {{- if .Values.web.readinessProbe.enabled }}
-      #     readinessProbe:
-      #     {{- if $baseUrl }}
-      #       tcpSocket:
-      #         port: http
-      #     {{- else }}
-      #       httpGet:
-      #         path: /health
-      #         port: http
-      #     {{- end }}
-      #       {{ omit .Values.web.readinessProbe "enabled" | toYaml | nindent 12 }}
-      #     {{- else if .Values.web.customReadinessProbe }}
-      #     readinessProbe:
-      #     {{- include "common.tplvalues.render" (dict "value" .Values.web.customReadinessProbe "context" $) | trim | nindent 12 }}
-      #     {{- end }}
-
-
-
-      #     {{- if .Values.lds-api.resources }}
-      #     resources: {{- toYaml .Values.web.resources | nindent 12 }}
-      #     {{- end }}
-      # {{- if .Values.web.sidecars }}
-      #   {{- include "common.tplvalues.render" (dict "value" .Values.web.sidecars "context" $) | trim | nindent 8 }}
-      # {{- end }}
-      # {{- if .Values.sidecars }}
-      #   {{- include "common.tplvalues.render" (dict "value" .Values.sidecars "context" $) | trim | nindent 8 }}
-      # {{- end }}
+              containerPort: {{ .Values.ldsApi.containerPort }}
