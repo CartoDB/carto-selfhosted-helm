@@ -90,7 +90,6 @@ Return the proper Docker Image Registry Secret Names
 {{- include "common.images.pullSecrets" (dict "images" (list .Values.lds-api.image .Values.import-worker.image .Values.import-api.image .Values.maps-api.image .Values.workspace-migrations.image .Values.workspace-subscriber.image .Values.workspace-api.image .Values.workspace-www.image .Values.accounts-www.image Values.router.image .Values.metrics.image) "global" .Values.global) -}}
 {{- end -}}
 
-========================
 {{/*
 Return Carto Auth0 client ID
 */}}
@@ -127,12 +126,39 @@ Return Carto ACC domain
 {{- end -}}
 
 {{/*
+Return Carto acc GCP project ID
+*/}}
+{{- define "configuration.acc.accGCPProjectID" -}}
+{{ .Values.configuration.acc.accGCPProjectID }}
+{{- end -}}
+
+{{/*
+Return Carto acc GCP project region
+*/}}
+{{- define "configuration.acc.accGCPProjectRegion" -}}
+{{ .Values.configuration.acc.accGCPProjectRegion }}
+{{- end -}}
+
+{{/*
 Return Carto on premise domain
 */}}
 {{- define "configuration.onpremDomain" -}}
 {{ .Values.configuration.onpremDomain }}
 {{- end -}}
 
+{{/*
+Return Carto on premise tenant id
+*/}}
+{{- define "configuration.onpremTenantId" -}}
+{{ .Values.configuration.onpremTenantId }}
+{{- end -}}
+
+{{/*
+Return Carto on premise GCP project ID
+*/}}
+{{- define "configuration.onpremGCPProjectID" -}}
+{{ .Values.configuration.onpremGCPProjectID }}
+{{- end -}}
 
 {{/*
 Return the common environment variablesproper Docker Image Registry Secret Names
@@ -167,9 +193,9 @@ Return the common environment variablesproper Docker Image Registry Secret Names
   value:
 {{- end }}
 - name: ONPREM_TENANT_ID
-  value: {{ .Values.configuration.onpremTenantId }}
+  value: {{ include "configuration.onpremTenantId" }}
 - name: ONPREM_GCP_PROJECT_ID
-  value: {{ .Values.configuration.onpremGCPProjectID }}
+  value: {{ include "configuration.onpremGCPProjectID" }}
 - name: WORKSPACE_GCS_THUMBNAILS_BUCKET
   value: {{ .Values.configuration.workspaceGCSThumbnailsBucket }}
 - name: WORKSPACE_GCS_DATASETS_BUCKET
@@ -191,13 +217,19 @@ Return the common environment variablesproper Docker Image Registry Secret Names
 - name: ACC_DOMAIN
   value: {{ include "configuration.acc.accDomain" }}
 - name: ACC_GCP_PROJECT_ID
-  value: {{ .Values.configuration.acc.accGCPProjectID }}
+  value: {{ include "configuration.acc.accGCPProjectID" }}
 - name: ACC_GCP_PROJECT_REGION
-  value: {{ .Values.configuration.acc.accGCPProjectRegion }}
+  value: {{ include "configuration.acc.accGCPProjectRegion" }}
+
+
+
 - name: ENCRYPTION_SECRET_KEY
   value:
 - name: WORKSPACE_POSTGRES_PASSWORD
   value:
+
+
+
 - name: CARTO_ONPREMISE_CARTO_DW_LOCATION
   value: {{ .Values.configuration.cartoOnpremiseCartoDWLocation }}
 - name: CARTO_ONPREMISE_CUSTOMER_PACKAGE_VERSION
@@ -245,27 +277,75 @@ Return the common environment variablesproper Docker Image Registry Secret Names
 - name: REACT_APP_WORKSPACE_API_URL
   value: https://{{ include "configuration.onpremDomain" }}/workspace-api
 - name: REACT_APP_API_BASE_URL
-  value: https://${ONPREM_DOMAIN}/api
+  value: https://{{ include "configuration.onpremDomain" }}/api
 - name: REACT_APP_PUBLIC_MAP_URL
-  value: https://${ONPREM_DOMAIN}/workspace-api/maps/public
+  value: https://{{ include "configuration.onpremDomain" }}/workspace-api/maps/public
 - name: REACT_APP_AUTH0_AUDIENCE
   value: carto-cloud-native-api
 - name: REACT_APP_WORKSPACE_URL_TEMPLATE
   value: https://{tenantDomain}
 - name: REACT_APP_CUSTOM_TENANT
-  value: =${ONPREM_TENANT_ID}
+  value: {{ include "configuration.onpremTenantId" }}
 - name: REACT_APP_IMPORT_DATASET
-  value: =carto_dw.carto-dw-{account-id}.shared
+  value: carto_dw.carto-dw-{account-id}.shared
 - name: REACT_APP_HUBSPOT_ID
-  value: =474999
+  value: 474999
 - name: REACT_APP_HUBSPOT_LIMIT_FORM_ID
-  value: =cd9486fa-5766-4bac-81b9-d8c6cd029b3b
-
-
-
-
-
-
+  value: cd9486fa-5766-4bac-81b9-d8c6cd029b3b
+- name: AUTH0_AUDIENCE
+  value: carto-cloud-native-api
+- name: AUTH0_DOMAIN
+  value: {{ include "configuration.auth0.cartoAuth0CustomDomain" }}
+- name: AUTH0_NAMESPACE
+  value: http://app.carto.com
+- name: LOG_LEVEL
+  value: debug
+- name: REDIS_CACHE_PREFIX
+  value: onprem
+- name: REDIS_HOST
+  value: redis
+- name: REDIS_PORT
+  value: 6379
+- name: PUBSUB_MODE
+  value: pull
+- name: PUBSUB_PROJECT_ID
+  value: {{ include "configuration.onpremGCPProjectID" }}
+- name: PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE
+  value: projects/{project_id}/topics/data-updates
+- name: EVENT_BUS_TOPIC
+  value: projects/{{ include "configuration.acc.accGCPProjectID" }}/topics/{{ include "configuration.acc.accGCPProjectRegion" }}-event-bus
+- name: EVENT_BUS_PROJECT_ID
+  value: {{ include "configuration.acc.accGCPProjectID" }}
+- name: DO_ENABLED
+  value: false
+- name: CARTO_ONPREMISE_NAME
+  value: {{ include "configuration.onpremTenantId" }}
+- name: CARTO_ONPREMISE_DOMAIN
+  value: {{ include "configuration.onpremDomain" }}
+- name: CARTO_ONPREMISE_GCP_PROJECT_ID
+  value: {{ include "configuration.onpremGCPProjectID" }}
+- name: WORKSPACE_POSTGRES_USER
+  value: workspace_admin
+- name: WORKSPACE_POSTGRES_DB
+  value: workspace
+- name: WORKSPACE_TENANT_ID
+  value: {{ include "configuration.onpremTenantId" }}
+- name: WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC
+  value: projects/{{ include "configuration.onpremGCPProjectID" }}/topics/data-updates
+- name: WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION
+  value: projects/{{ include "configuration.onpremGCPProjectID" }}/subscriptions/data-updates-workspace-sub
+- name: MAPS_API_V3_RESOURCE_URL_HOST
+  value: {{ include "configuration.onpremDomain" }}
+- name: MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS
+  value: {{ include "configuration.onpremDomain" }}
+- name: IMPORT_TENANT_ID
+  value: {{ include "configuration.onpremTenantId" }}
+- name: IMPORT_WORKER_PROCESSING_DIR
+  value: /tmp/import-worker
+- name: IMPORT_PUBSUB_TENANT_BUS_TOPIC
+  value: projects/{{ include "configuration.onpremGCPProjectID" }}/topics/tenant-bus
+- name: IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION
+  value: projects/{{ include "configuration.onpremGCPProjectID" }}/subscriptions/tenant-bus-import-sub
 {{- end -}}
 
 
@@ -275,7 +355,7 @@ Return the common environment variablesproper Docker Image Registry Secret Names
 
 
 
-===============================
+===LINES=BELOW=NEED=TO=BE=REVIEWED===================
 
 {{/*
 Create a default fully qualified postgresql name.
