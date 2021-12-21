@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "carto.mapsApi.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: maps-api
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.mapsApi.service.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.service.annotations "context" $) | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.mapsApi.service.type }}
+  {{- if and .Values.mapsApi.service.clusterIP (eq .Values.mapsApi.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.mapsApi.service.clusterIP }}
+  {{- end }}
+  {{- if ne .Values.mapsApi.service.type "ClusterIP" }}
+  externalTrafficPolicy: {{ .Values.mapsApi.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- if and .Values.mapsApi.service.loadBalancerIP (eq .Values.mapsApi.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.mapsApi.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq .Values.mapsApi.service.type "LoadBalancer") .Values.mapsApi.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml .Values.mapsApi.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.mapsApi.service.ports.http }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if and (or (eq .Values.mapsApi.service.type "NodePort") (eq .Values.mapsApi.service.type "LoadBalancer")) .Values.mapsApi.service.nodePorts.http }}
+      nodePort: {{ .Values.mapsApi.service.nodePorts.http }}
+      {{- else if eq .Values.mapsApi.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- if .Values.mapsApi.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  selector:
+    {{- if .Values.mapsApi.service.labelSelectorsOverride }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- else }}
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: maps-api
+    {{- end }}

@@ -1,0 +1,154 @@
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.importApi.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: import-api
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.importApi.replicaCount }}
+  {{- if .Values.importApi.updateStrategy }}
+  strategy: {{- toYaml .Values.importApi.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: import-api
+  template:
+    metadata:
+      {{- if .Values.importApi.podAnnotations }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: import-api
+        {{- if .Values.importApi.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.importApi.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.importApi.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.importApi.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.importApi.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.importApi.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.importApi.podAffinityPreset "component" "import-api" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.importApi.podAntiAffinityPreset "component" "import-api" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.importApi.nodeAffinityPreset.type "key" .Values.importApi.nodeAffinityPreset.key "values" .Values.importApi.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.importApi.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.importApi.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.importApi.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.importApi.priorityClassName }}
+      priorityClassName: {{ .Values.importApi.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.importApi.schedulerName }}
+      schedulerName: {{ .Values.importApi.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.importApi.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.importApi.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      initContainers:
+        {{- if .Values.postgresql.enabled }}
+        {{ include "carto.postgresql-init-container" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.importApi.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.importApi.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: import-api
+          image: {{ template "carto.importApi.image" . }}
+          imagePullPolicy: {{ .Values.importApi.image.pullPolicy }}
+          {{- if .Values.importApi.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.importApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.importApi.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.importApi.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.args "context" $) | nindent 12 }}
+          {{- end }}
+          env:
+            - name: BITNAMI_DEBUG
+              value: {{ ternary "true" "false" (or .Values.importApi.image.debug .Values.diagnosticMode.enabled) | quote }}
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ ternary "postgresql-password" "db-password" .Values.postgresql.enabled | quote }}
+            {{- if .Values.importApi.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "carto.importApi.configmapName" . }}
+            - secretRef:
+                name: {{ include "carto.importApi.secretName" . }}
+            {{- if .Values.importApi.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.importApi.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.importApi.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.importApi.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.importApi.resources }}
+          resources: {{- toYaml .Values.importApi.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.importApi.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.importApi.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.livenessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.importApi.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.importApi.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.readinessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.importApi.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.importApi.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.startupProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.importApi.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.importApi.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+          {{- if .Values.importApi.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.importApi.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.importApi.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        {{- if .Values.importApi.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}

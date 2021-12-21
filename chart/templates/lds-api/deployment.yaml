@@ -1,81 +1,154 @@
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
-  name: {{ include "common.names.fullname" . }}-ldsApi
+  name: {{ template "carto.ldsApi.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: ldsApi
+    app.kubernetes.io/component: lds-api
     {{- if .Values.commonLabels }}
-      {{- include "common.tplvalues.render" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
   {{- if .Values.commonAnnotations }}
-  annotations: {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" $) | nindent 4 }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
+  replicas: {{ .Values.ldsApi.replicaCount }}
+  {{- if .Values.ldsApi.updateStrategy }}
+  strategy: {{- toYaml .Values.ldsApi.updateStrategy | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
-      app.kubernetes.io/component: ldsApi
-  replicas: {{ default 1 .Values.ldsApi.replicaCount }}
+      app.kubernetes.io/component: lds-api
   template:
     metadata:
-      labels: {{- include "common.labels.standard" . | nindent 8 }}
-        app.kubernetes.io/component: ldsApi
-      {{- if .Values.ldsApi.podLabels }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.podLabels "context" $) | nindent 8 }}
-      {{- end }}
-      annotations:
       {{- if .Values.ldsApi.podAnnotations }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.podAnnotations "context" $) | nindent 8 }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.podAnnotations "context" $) | nindent 8 }}
       {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: lds-api
+        {{- if .Values.ldsApi.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.podLabels "context" $) | nindent 8 }}
+        {{- end }}
     spec:
+      serviceAccountName: {{ template "carto.ldsApi.serviceAccountName" . }}
       {{- include "carto.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.ldsApi.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.hostAliases "context" $) | nindent 8 }}
       {{- end }}
-      priorityClassName: {{ .Values.ldsApi.priorityClassName | quote }}
-      {{- if .Values.podSecurityContext.enabled }}
-      securityContext: {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
-      {{- end }}
-      serviceAccountName: {{ include "carto.serviceAccountName" . }}
-      {{- if .Values.affinity }}
-      affinity: {{- include "common.tplvalues.render" (dict "value" .Values.affinity "context" $) | nindent 8 }}
+      {{- if .Values.ldsApi.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.ldsApi.affinity "context" $) | nindent 8 }}
       {{- else }}
       affinity:
-        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset "component" "ldsApi" "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset "component" "ldsApi" "context" $) | nindent 10 }}
-        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.nodeAffinityPreset.type "key" .Values.nodeAffinityPreset.key "values" .Values.nodeAffinityPreset.values) | nindent 10 }}
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.ldsApi.podAffinityPreset "component" "lds-api" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.ldsApi.podAntiAffinityPreset "component" "lds-api" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.ldsApi.nodeAffinityPreset.type "key" .Values.ldsApi.nodeAffinityPreset.key "values" .Values.ldsApi.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
-      {{- if or .Values.nodeSelector .Values.ldsApi.nodeSelector }}
-      {{- if .Values.nodeSelector }}
-      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.nodeSelector "context" $) | nindent 8 }}
-      {{- else }}
-      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.nodeSelector "context" $) | nindent 8 }}
+      {{- if .Values.ldsApi.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.ldsApi.nodeSelector "context" $) | nindent 8 }}
       {{- end }}
+      {{- if .Values.ldsApi.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.tolerations "context" .) | nindent 8 }}
       {{- end }}
-      {{- if .Values.tolerations }}
-      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
+      {{- if .Values.ldsApi.priorityClassName }}
+      priorityClassName: {{ .Values.ldsApi.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.ldsApi.schedulerName }}
+      schedulerName: {{ .Values.ldsApi.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.ldsApi.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.ldsApi.podSecurityContext "enabled" | toYaml | nindent 8 }}
       {{- end }}
       initContainers:
-      {{- if .Values.ldsApi.initContainers }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.initContainers "context" $) | trim | nindent 8 }}
-      {{- end }}
-      {{- if .Values.initContainers }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | trim | nindent 8 }}
-      {{- end }}
+        {{- if .Values.postgresql.enabled }}
+        {{ include "carto.postgresql-init-container" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.ldsApi.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.initContainers "context" $) | nindent 8 }}
+        {{- end }}
       containers:
-        - name: carto-ldsApi
-          image: {{ include "carto.ldsApiImage" . }}
-          imagePullPolicy: {{ .Values.ldsApi.image.pullPolicy | quote }}
-          {{- if .Values.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+        - name: lds-api
+          image: {{ template "carto.ldsApi.image" . }}
+          imagePullPolicy: {{ .Values.ldsApi.image.pullPolicy }}
+          {{- if .Values.ldsApi.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.ldsApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
-          {{- if .Values.ldsApi.command }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.ldsApi.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.command "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.ldsApi.args }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.ldsApi.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.args "context" $) | nindent 12 }}
           {{- end }}
           env:
-            {{- include "carto.configure.common"  . | nindent 12 }}
+            - name: BITNAMI_DEBUG
+              value: {{ ternary "true" "false" (or .Values.ldsApi.image.debug .Values.diagnosticMode.enabled) | quote }}
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ ternary "postgresql-password" "db-password" .Values.postgresql.enabled | quote }}
+            {{- if .Values.ldsApi.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "carto.ldsApi.configmapName" . }}
+            - secretRef:
+                name: {{ include "carto.ldsApi.secretName" . }}
+            {{- if .Values.ldsApi.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.ldsApi.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.ldsApi.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.ldsApi.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.ldsApi.resources }}
+          resources: {{- toYaml .Values.ldsApi.resources | nindent 12 }}
+          {{- end }}
           ports:
             - name: http
-              containerPort: {{ .Values.ldsApi.containerPort }}
+              containerPort: {{ .Values.ldsApi.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.ldsApi.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.ldsApi.livenessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /v3/lds/health
+              port: http
+          {{- else if .Values.ldsApi.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.ldsApi.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.ldsApi.readinessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /v3/lds/health
+              port: http
+          {{- else if .Values.ldsApi.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.ldsApi.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.ldsApi.startupProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /v3/lds/health
+              port: http
+          {{- else if .Values.ldsApi.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.ldsApi.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+          {{- if .Values.ldsApi.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.ldsApi.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.ldsApi.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        {{- if .Values.ldsApi.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}

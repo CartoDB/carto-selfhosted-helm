@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "carto.workspaceSubscriber.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: workspace-subscriber
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.workspaceSubscriber.service.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.service.annotations "context" $) | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.workspaceSubscriber.service.type }}
+  {{- if and .Values.workspaceSubscriber.service.clusterIP (eq .Values.workspaceSubscriber.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.workspaceSubscriber.service.clusterIP }}
+  {{- end }}
+  {{- if ne .Values.workspaceSubscriber.service.type "ClusterIP" }}
+  externalTrafficPolicy: {{ .Values.workspaceSubscriber.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- if and .Values.workspaceSubscriber.service.loadBalancerIP (eq .Values.workspaceSubscriber.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.workspaceSubscriber.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq .Values.workspaceSubscriber.service.type "LoadBalancer") .Values.workspaceSubscriber.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml .Values.workspaceSubscriber.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.workspaceSubscriber.service.ports.http }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if and (or (eq .Values.workspaceSubscriber.service.type "NodePort") (eq .Values.workspaceSubscriber.service.type "LoadBalancer")) .Values.workspaceSubscriber.service.nodePorts.http }}
+      nodePort: {{ .Values.workspaceSubscriber.service.nodePorts.http }}
+      {{- else if eq .Values.workspaceSubscriber.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- if .Values.workspaceSubscriber.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  selector:
+    {{- if .Values.workspaceSubscriber.service.labelSelectorsOverride }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- else }}
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: workspace-subscriber
+    {{- end }}

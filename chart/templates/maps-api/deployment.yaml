@@ -1,0 +1,154 @@
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.mapsApi.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: maps-api
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.mapsApi.replicaCount }}
+  {{- if .Values.mapsApi.updateStrategy }}
+  strategy: {{- toYaml .Values.mapsApi.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: maps-api
+  template:
+    metadata:
+      {{- if .Values.mapsApi.podAnnotations }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: maps-api
+        {{- if .Values.mapsApi.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.mapsApi.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.mapsApi.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.mapsApi.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.mapsApi.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.mapsApi.podAffinityPreset "component" "maps-api" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.mapsApi.podAntiAffinityPreset "component" "maps-api" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.mapsApi.nodeAffinityPreset.type "key" .Values.mapsApi.nodeAffinityPreset.key "values" .Values.mapsApi.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.mapsApi.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.mapsApi.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.mapsApi.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.mapsApi.priorityClassName }}
+      priorityClassName: {{ .Values.mapsApi.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.mapsApi.schedulerName }}
+      schedulerName: {{ .Values.mapsApi.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.mapsApi.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.mapsApi.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      initContainers:
+        {{- if .Values.postgresql.enabled }}
+        {{ include "carto.postgresql-init-container" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.mapsApi.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: maps-api
+          image: {{ template "carto.mapsApi.image" . }}
+          imagePullPolicy: {{ .Values.mapsApi.image.pullPolicy }}
+          {{- if .Values.mapsApi.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.mapsApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.mapsApi.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.mapsApi.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.args "context" $) | nindent 12 }}
+          {{- end }}
+          env:
+            - name: BITNAMI_DEBUG
+              value: {{ ternary "true" "false" (or .Values.mapsApi.image.debug .Values.diagnosticMode.enabled) | quote }}
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ ternary "postgresql-password" "db-password" .Values.postgresql.enabled | quote }}
+            {{- if .Values.mapsApi.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "carto.mapsApi.configmapName" . }}
+            - secretRef:
+                name: {{ include "carto.mapsApi.secretName" . }}
+            {{- if .Values.mapsApi.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.mapsApi.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.mapsApi.resources }}
+          resources: {{- toYaml .Values.mapsApi.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.mapsApi.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.mapsApi.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.mapsApi.livenessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.mapsApi.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.mapsApi.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.mapsApi.readinessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.mapsApi.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.mapsApi.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.mapsApi.startupProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.mapsApi.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.mapsApi.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+          {{- if .Values.mapsApi.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.mapsApi.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.mapsApi.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        {{- if .Values.mapsApi.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}

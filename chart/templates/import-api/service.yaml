@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "carto.importApi.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: import-api
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.importApi.service.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.importApi.service.annotations "context" $) | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.importApi.service.type }}
+  {{- if and .Values.importApi.service.clusterIP (eq .Values.importApi.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.importApi.service.clusterIP }}
+  {{- end }}
+  {{- if ne .Values.importApi.service.type "ClusterIP" }}
+  externalTrafficPolicy: {{ .Values.importApi.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- if and .Values.importApi.service.loadBalancerIP (eq .Values.importApi.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.importApi.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq .Values.importApi.service.type "LoadBalancer") .Values.importApi.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml .Values.importApi.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.importApi.service.ports.http }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if and (or (eq .Values.importApi.service.type "NodePort") (eq .Values.importApi.service.type "LoadBalancer")) .Values.importApi.service.nodePorts.http }}
+      nodePort: {{ .Values.importApi.service.nodePorts.http }}
+      {{- else if eq .Values.importApi.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- if .Values.importApi.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.importApi.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  selector:
+    {{- if .Values.importApi.service.labelSelectorsOverride }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.importApi.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- else }}
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: import-api
+    {{- end }}

@@ -2,6 +2,7 @@
 ## Global Docker image parameters
 ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
 ## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
+##
 
 ## @param global.imageRegistry Global Docker image registry
 ## @param global.imagePullSecrets Global Docker registry secret names as an array
@@ -9,7 +10,7 @@
 ##
 global:
   imageRegistry: ""
-  ## e.g.
+  ## E.g.
   ## imagePullSecrets:
   ##   - myRegistryKeySecretName
   ##
@@ -17,158 +18,71 @@ global:
   storageClass: ""
 
 ## @section Common parameters
+##
 
-## @param kubeVersion Force target Kubernetes version (using Helm capabilities if not set)
+## @param kubeVersion Override Kubernetes version
 ##
 kubeVersion: ""
-## @param nameOverride String to partially override airflow.fullname template with a string (will prepend the release name)
+## @param nameOverride String to partially override common.names.fullname
 ##
 nameOverride: ""
-## @param fullnameOverride String to fully override airflow.fullname template with a string
+## @param fullnameOverride String to fully override common.names.fullname
 ##
 fullnameOverride: ""
-## @param affinity Affinity for pod assignment (evaluated as a template)
-## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
-## Note: podAffinityPreset, podAntiAffinityPreset, and  nodeAffinityPreset will be ignored when it's set
-##
-affinity: {}
-## @param commonAnnotations Annotations to add to all deployed objects
-##
-commonAnnotations: {}
 ## @param commonLabels Labels to add to all deployed objects
 ##
 commonLabels: {}
-## Configure Container Security Context (only main container)
-## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
-## @param containerSecurityContext.enabled Enable container security context
-## @param containerSecurityContext.runAsUser User ID for the container
+## @param commonAnnotations Annotations to add to all deployed objects
 ##
-containerSecurityContext:
-  enabled: true
-  runAsUser: 1001
-## @param extraDeploy A list of extra kubernetes resources to be deployed
+commonAnnotations: {}
+## @param clusterDomain Kubernetes cluster domain name
+##
+clusterDomain: cluster.local
+## @param extraDeploy Array of extra objects to deploy with the release
 ##
 extraDeploy: []
-## @param extraEnvVars Extra environment variables to add to all pods
-## The parameters from the configuration file can be overwritten by using environment variables with this format:
+
+## Enable diagnostic mode in the deployment
 ##
-## - name: ENV_VAR_NAME_1
-##   value: "env_var_value_2"
-## - name: ENV_VAR_NAME_2
-##   value: "env_var_value_2
-## - name: ENV_VAR_NAME_3
-##   value: "env_var_value_3
-##
-extraEnvVars: []
-## @param extraEnvVarsCM ConfigMap containing extra env vars to add to web, worker and scheduler pods
-##
-extraEnvVarsCM: ""
-## @param extraEnvVarsSecret Secret containing extra env vars to add to web, worker and scheduler pods
-##
-extraEnvVarsSecret: ""
-## @param initContainers List of init containers to be added to all pods
-## Example:
-## initContainers:
-##   - name: your-image-name
-##     image: your-image
-##     imagePullPolicy: Always
-##     ports:
-##       - name: portname
-##         containerPort: 1234
-##
-initContainers: []
-## Network policies
-## Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
-## @param networkPolicies.enabled Switch to enable network policies
-##
-networkPolicies:
+diagnosticMode:
+  ## @param diagnosticMode.enabled Enable diagnostic mode (all probes will be disabled and the command will be overridden)
+  ##
   enabled: false
-## Node affinity preset
-## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
-## @param nodeAffinityPreset.key Node label key to match. Ignored if `affinity` is set.
-## @param nodeAffinityPreset.type Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
-## @param nodeAffinityPreset.values Node label values to match. Ignored if `affinity` is set.
-##
-nodeAffinityPreset:
-  ## Example:
-  ## key: "kubernetes.io/e2e-az-name"
+  ## @param diagnosticMode.command Command to override all containers in the deployment
   ##
-  key: ""
-  type: ""
-  ## Example:
-  ## values:
-  ##   - e2e-az1
-  ##   - e2e-az2
+  command:
+    - sleep
+  ## @param diagnosticMode.args Args to override all containers in the deployment
   ##
-  values: []
-## @param nodeSelector Node labels for pod assignment
-## Ref: https://kubernetes.io/docs/user-guide/node-selection/
-##
-nodeSelector: {}
-## @param podAffinityPreset Pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`.
-## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
-##
-podAffinityPreset: ""
-## @param podAntiAffinityPreset Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`.
-## Ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
-##
-podAntiAffinityPreset: soft
-## Configure Pods Security Context
-## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-## @param podSecurityContext.enabled Enable pod security context
-## @param podSecurityContext.fsGroup fsGroup ID for the pod
-##
-podSecurityContext:
-  enabled: true
-  fsGroup: 1001
-## Role Based Access
-## Ref: https://kubernetes.io/docs/admin/authorization/rbac/
-## @param rbac.create If true, create & use RBAC resources
-##
-rbac:
-  create: false
-## Pods Service Account
-## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-## @param serviceAccount.annotations Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
-## @param serviceAccount.create Specifies whether a ServiceAccount should be created
-## @param serviceAccount.name Name of the service account to use. If not set and create is true, a name is generated using the fullname template.
-##
-serviceAccount:
-  annotations: {}
-  create: false
-  name: ""
-## @param sidecars List of sidecar containers to be added to web, worker and scheduler pods
-## Example:
-## sidecars:
-##   - name: your-image-name
-##     image: your-image
-##     imagePullPolicy: Always
-##     ports:
-##       - name: portname
-##         containerPort: 1234
-##
-sidecars: []
-## @param tolerations Tolerations for pod assignment
-## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
-##
-tolerations: []
+  args:
+    - infinity
 
-## @section Carto ldsApi parameters
+## @param commonConfiguration Configuration in the form of env vars to all Carto deployments
+##
+commonConfiguration: ""
 
-ldsApi:
-  ## Carto ldsApi image version
-  ## @param web.image.registry Carto image registry
-  ## @param web.image.repository Carto image repository
-  ## @param web.image.tag Carto image tag (immutable tags are recommended)
-  ## @param web.image.pullPolicy Carto image pull policy
-  ## @param web.image.pullSecrets Carto image pull secrets
+## @param commonSecretConfiguration Sensitive configuration in the form of env vars to all Carto deployments
+##
+commonSecretConfiguration: ""
+
+## @section accounts-www Deployment Parameters
+##
+accountsWww:
+  ## accounts-www image
+  ## @param accountsWww.image.registry accounts-www image registry
+  ## @param accountsWww.image.repository accounts-www image repository
+  ## @param accountsWww.image.tag accounts-www image tag (immutable tags are recommended)
+  ## @param accountsWww.image.pullPolicy accounts-www image pull policy
+  ## @param accountsWww.image.pullSecrets accounts-www image pull secrets
+  ## @param accountsWww.image.debug Enable accounts-www image debug mode
+  ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
-    repository: ldsApi
-    tag: latest
+    registry: gcr.io
+    repository: carto-onprem-artifacts/accounts-www
+    tag: "2021.12.20"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
-    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
     ##
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
@@ -179,116 +93,203 @@ ldsApi:
     ##   - myRegistryKeySecretName
     ##
     pullSecrets: []
-  ## @param web.replicaCount Number of web replicas
+    ## Enable debug mode
+    ##
+    debug: false
+  ## @param accountsWww.replicaCount Number of accounts-www replicas to deploy
   ##
   replicaCount: 1
-  ## @param web.hostAliases Deployment pod host aliases
-  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ## @param accountsWww.containerPorts.http accounts-www HTTP container port
   ##
-  hostAliases: []
-  ## @param web.baseUrl URL used to access to airflow web ui
-  ##
-  baseUrl: ""
-  ## @param web.configMap Name of an existing config map containing the Airflow webserver config file
-  ##
-  configMap: ""
-  ## @param web.command Override default container command (useful when using custom images)
-  ##
-  command: []
-  ## @param web.args Override default container args (useful when using custom images)
-  ##
-  args: []
-  ## @param web.podLabels Add extra labels to the web's pods
-  ##
-  podLabels: {}
-  ## @param web.podAnnotations Add extra annotations to the web's pods
-  ##
-  podAnnotations: {}
-  ## @param web.containerPort Container port to be used for exposing http server
-  ##
-  containerPort: 3000
-  ## @param web.extraVolumeMounts Add extra volume mounts
-  ##
-  extraVolumeMounts: []
-  ## @param web.extraVolumes Add extra volumes
-  ##
-  extraVolumes: []
-  ## @param web.extraEnvVars Array containing extra environment variables
-  ##
-  extraEnvVars: []
-  ## @param web.extraEnvVarsCM ConfigMap containing extra environment variables
-  ##
-  extraEnvVarsCM: ""
-  ## @param web.extraEnvVarsSecret Secret containing extra environment variables (in case of sensitive data)
-  ##
-  extraEnvVarsSecret: ""
-  ## Web container' resource requests and limits
-  ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
-  ## We usually recommend not to specify default resources and to leave this as a conscious
-  ## choice for the user. This also increases chances charts run on environments with little
-  ## resources, such as Minikube. If you do want to specify resources, uncomment the following
-  ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  ## @param web.resources.limits The resources limits for the Web container
-  ## @param web.resources.requests The requested resources for the Web container
-  ##
-  resources:
-    ## Example:
-    ## limits:
-    ##    cpu: 200m
-    ##    memory: 1Gi
-    limits: {}
-    ## Examples:
-    ## requests:
-    ##    memory: 256Mi
-    ##    cpu: 250m
-    requests: {}
-  ## Configure extra options for Web containers' liveness and readiness probes
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes)
-  ## @param web.livenessProbe.enabled Enable livenessProbe
-  ## @param web.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
-  ## @param web.livenessProbe.periodSeconds Period seconds for livenessProbe
-  ## @param web.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
-  ## @param web.livenessProbe.failureThreshold Failure threshold for livenessProbe
-  ## @param web.livenessProbe.successThreshold Success threshold for livenessProbe
+  containerPorts:
+    http: 3000
+  ## Configure extra options for accounts-www containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param accountsWww.livenessProbe.enabled Enable livenessProbe on accounts-www containers
+  ## @param accountsWww.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param accountsWww.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param accountsWww.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param accountsWww.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param accountsWww.livenessProbe.successThreshold Success threshold for livenessProbe
   ##
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 180
-    periodSeconds: 20
+    initialDelaySeconds: 10
+    periodSeconds: 30
     timeoutSeconds: 5
-    failureThreshold: 6
     successThreshold: 1
-  ## @param web.readinessProbe.enabled Enable readinessProbe
-  ## @param web.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
-  ## @param web.readinessProbe.periodSeconds Period seconds for readinessProbe
-  ## @param web.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
-  ## @param web.readinessProbe.failureThreshold Failure threshold for readinessProbe
-  ## @param web.readinessProbe.successThreshold Success threshold for readinessProbe
+    failureThreshold: 5
+  ## @param accountsWww.readinessProbe.enabled Enable readinessProbe on accounts-www containers
+  ## @param accountsWww.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param accountsWww.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param accountsWww.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param accountsWww.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param accountsWww.readinessProbe.successThreshold Success threshold for readinessProbe
   ##
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 10
+    initialDelaySeconds: 10
+    periodSeconds: 30
     timeoutSeconds: 5
-    failureThreshold: 6
     successThreshold: 1
-  ## @param web.customLivenessProbe Custom liveness probe for the Web component
+    failureThreshold: 5
+  ## @param accountsWww.startupProbe.enabled Enable startupProbe on accounts-www containers
+  ## @param accountsWww.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param accountsWww.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param accountsWww.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param accountsWww.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param accountsWww.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param accountsWww.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
   customLivenessProbe: {}
-  ## @param web.customReadinessProbe Custom rediness probe for the Web component
+  ## @param accountsWww.customReadinessProbe Custom readinessProbe that overrides the default one
   ##
   customReadinessProbe: {}
-  ## Enable PodDisruptionBudget for Web pods
-  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
-  ## @param web.podDisruptionBudget.enabled Enable PodDisruptionBudget for web pods
-  ## @param web.podDisruptionBudget.minAvailable Minimum available instances; ignored if there is no PodDisruptionBudget
-  ## @param web.podDisruptionBudget.maxUnavailable Maximum available instances; ignored if there is no PodDisruptionBudget
+  ## @param accountsWww.customStartupProbe Custom startupProbe that overrides the default one
   ##
-  podDisruptionBudget:
-    enabled: false
-    minAvailable: 1
-    maxUnavailable: ""
-  ## @param ldsApi.sidecars Add sidecars to the Web pods
-  ## Example:
+  customStartupProbe: {}
+  ## accounts-www resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param accountsWww.resources.limits The resources limits for the accounts-www containers
+  ## @param accountsWww.resources.requests The requested resources for the accounts-www containers
+  ##
+  resources:
+    limits: {}
+    requests: {}
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param accountsWww.podSecurityContext.enabled Enabled accounts-www pods' Security Context
+  ## @param accountsWww.podSecurityContext.fsGroup Set accounts-www pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param accountsWww.containerSecurityContext.enabled Enabled accounts-www containers' Security Context
+  ## @param accountsWww.containerSecurityContext.runAsUser Set accounts-www containers' Security Context runAsUser
+  ## @param accountsWww.containerSecurityContext.runAsNonRoot Set accounts-www containers' Security Context runAsNonRoot
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsNonRoot: true
+
+  ## @param accountsWww.configuration Configuration settings (env vars) for accounts-www
+  ##
+  configuration: ""
+  ## @param accountsWww.secretConfiguration Configuration settings (env vars) for accounts-www
+  ##
+  secretConfiguration: ""
+  ## @param accountsWww.existingConfigMap The name of an existing ConfigMap with your custom configuration for accounts-www
+  ##
+  existingConfigMap: ""
+  ## @param accountsWww.existingSecret The name of an existing ConfigMap with your custom configuration for accounts-www
+  ##
+  existingSecret: ""
+  ## @param accountsWww.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param accountsWww.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param accountsWww.hostAliases accounts-www pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param accountsWww.podLabels Extra labels for accounts-www pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param accountsWww.podAnnotations Annotations for accounts-www pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param accountsWww.podAffinityPreset Pod affinity preset. Ignored if `accountsWww.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param accountsWww.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `accountsWww.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node accountsWww.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param accountsWww.nodeAffinityPreset.type Node affinity preset type. Ignored if `accountsWww.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param accountsWww.nodeAffinityPreset.key Node label key to match. Ignored if `accountsWww.affinity` is set
+    ##
+    key: ""
+    ## @param accountsWww.nodeAffinityPreset.values Node label values to match. Ignored if `accountsWww.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param accountsWww.affinity Affinity for accounts-www pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `accountsWww.podAffinityPreset`, `accountsWww.podAntiAffinityPreset`, and `accountsWww.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param accountsWww.nodeSelector Node labels for accounts-www pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param accountsWww.tolerations Tolerations for accounts-www pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param accountsWww.updateStrategy.type accounts-www statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param accountsWww.priorityClassName accounts-www pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param accountsWww.schedulerName Name of the k8s scheduler (other than default) for accounts-www pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param accountsWww.lifecycleHooks for the accounts-www container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param accountsWww.extraEnvVars Array with extra environment variables to add to accounts-www nodes
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param accountsWww.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for accounts-www nodes
+  ##
+  extraEnvVarsCM: ""
+  ## @param accountsWww.extraEnvVarsSecret Name of existing Secret containing extra env vars for accounts-www nodes
+  ##
+  extraEnvVarsSecret: ""
+  ## @param accountsWww.extraVolumes Optionally specify extra list of additional volumes for the accounts-www pod(s)
+  ##
+  extraVolumes: []
+  ## @param accountsWww.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the accounts-www container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param accountsWww.sidecars Add additional sidecar containers to the accounts-www pod(s)
+  ## e.g:
   ## sidecars:
   ##   - name: your-image-name
   ##     image: your-image
@@ -297,52 +298,95 @@ ldsApi:
   ##       - name: portname
   ##         containerPort: 1234
   ##
-  sidecars: []
-  ## @param ldsApi.initContainers Add initContainers to the Web pods
-  ## Example:
+  sidecars: {}
+  ## @param accountsWww.initContainers Add additional init containers to the accounts-www pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
   ## initContainers:
-  ##   - name: your-image-name
-  ##     image: your-image
-  ##     imagePullPolicy: Always
-  ##     ports:
-  ##       - name: portname
-  ##         containerPort: 1234
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
   ##
-  initContainers: []
-  ## @param web.priorityClassName Priority Class Name
-  ## ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
+  initContainers: {}
+  ## @section accounts-www Service Parameters
   ##
-  priorityClassName: ""
-  ## @param ldsApi.nodeSelector Node labels for pod assignment
-  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
-  nodeSelector: {}
+  service:
+    ## @param accountsWww.service.type accounts-www service type
+    ##
+    type: ClusterIP
+    ## @param accountsWww.service.ports.http accounts-www service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node ports to expose
+    ## @param accountsWww.service.nodePorts.http Node port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param accountsWww.service.clusterIP accounts-www service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param accountsWww.service.loadBalancerIP accounts-www service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param accountsWww.service.labelSelectorsOverride Selector for accounts-www service
+    ##
+    labelSelectorsOverride: {}
+    ## @param accountsWww.service.loadBalancerSourceRanges accounts-www service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param accountsWww.service.externalTrafficPolicy accounts-www service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param accountsWww.service.annotations Additional custom annotations for accounts-www service
+    ##
+    annotations: {}
+    ## @param accountsWww.service.extraPorts Extra ports to expose in accounts-www service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+  ## @section accounts-www ServiceAccount configuration
+  ##
+  serviceAccount:
+    ## @param accountsWww.serviceAccount.create Specifies whether a ServiceAccount should be created
+    ##
+    create: true
+    ## @param accountsWww.serviceAccount.name The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the common.names.fullname template
+    ##
+    name: ""
+    ## @param accountsWww.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
+    ##
+    automountServiceAccountToken: false
 
-## @section Carto database parameters
-
-## PostgreSQL chart configuration
-## ref: https://github.com/bitnami/charts/blob/master/bitnami/postgresql/values.yaml
-## @param postgresql.enabled Switch to enable or disable the PostgreSQL helm chart
-## @param postgresql.existingSecret Name of an existing secret containing the PostgreSQL password ('postgresql-password' key)
+## @section import-api Deployment Parameters
 ##
-postgresql:
-  enabled: true
-  ## Bitnami Postgresql image version
-  ## ref: https://hub.docker.com/r/bitnami/postgresql/tags
-  ## @param scheduler.image.registry Postgrrsql image registry
-  ## @param scheduler.image.repository Postgresql image repository
-  ## @param scheduler.image.tag Postgresql image tag (immutable tags are recommended)
-  ## @param scheduler.image.pullPolicy Postgresql image pull policy
-  ## @param scheduler.image.pullSecrets Postgresql image pull secrets
-  ## @param scheduler.image.debug Enable image debug mode
+importApi:
+  ## import-api image
+  ## @param importApi.image.registry import-api image registry
+  ## @param importApi.image.repository import-api image repository
+  ## @param importApi.image.tag import-api image tag (immutable tags are recommended)
+  ## @param importApi.image.pullPolicy import-api image pull policy
+  ## @param importApi.image.pullSecrets import-api image pull secrets
+  ## @param importApi.image.debug Enable import-api image debug mode
   ##
   image:
-    registry: docker.io
-    repository: bitnami/postgresql
-    tag: 13.2.0-debian-10-r88
+    registry: gcr.io
+    repository: carto-onprem-artifacts/import-api
+    tag: "2021.12.20"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
-    ## ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
     ##
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
@@ -353,39 +397,2460 @@ postgresql:
     ##   - myRegistryKeySecretName
     ##
     pullSecrets: []
-    ## Set to true if you would like to see extra information on logs
-    ## It turns BASH and/or NAMI debugging in the image
+    ## Enable debug mode
     ##
     debug: false
-  postgresqlUsername: postgres
-  postgresqlPassword: ""
-  ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
+  ## @param importApi.replicaCount Number of import-api replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param importApi.containerPorts.http import-api HTTP container port
+  ##
+  containerPorts:
+    http: 3000
+  ## Configure extra options for import-api containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param importApi.livenessProbe.enabled Enable livenessProbe on import-api containers
+  ## @param importApi.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param importApi.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param importApi.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param importApi.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param importApi.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param importApi.readinessProbe.enabled Enable readinessProbe on import-api containers
+  ## @param importApi.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param importApi.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param importApi.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param importApi.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param importApi.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param importApi.startupProbe.enabled Enable startupProbe on import-api containers
+  ## @param importApi.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param importApi.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param importApi.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param importApi.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param importApi.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param importApi.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param importApi.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param importApi.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## import-api resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param importApi.resources.limits The resources limits for the import-api containers
+  ## @param importApi.resources.requests The requested resources for the import-api containers
+  ##
+  resources:
+    limits: {}
+    requests: {}
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param importApi.podSecurityContext.enabled Enabled import-api pods' Security Context
+  ## @param importApi.podSecurityContext.fsGroup Set import-api pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param importApi.containerSecurityContext.enabled Enabled import-api containers' Security Context
+  ## @param importApi.containerSecurityContext.runAsUser Set import-api containers' Security Context runAsUser
+  ## @param importApi.containerSecurityContext.runAsNonRoot Set import-api containers' Security Context runAsNonRoot
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsNonRoot: true
+
+  ## @param importApi.configuration Configuration settings (env vars) for import-api
+  ##
+  configuration: ""
+  ## @param importApi.secretConfiguration Configuration settings (env vars) for import-api
+  ##
+  secretConfiguration: ""
+  ## @param importApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for import-api
+  ##
+  existingConfigMap: ""
+  ## @param importApi.existingSecret The name of an existing ConfigMap with your custom configuration for import-api
   ##
   existingSecret: ""
-  fullnameOverride: workspace-postgres
-  primary:
-    sidecars:
-    - name: workspace-migrations
-      image: gcr.io/carto-onprem-artifacts/workspace-db:2021.12.14.02
-      imagePullPolicy: Always
-      command: [ "/bin/sh", "-c", "/usr/src/app/onprem-init-db.sh && while true; do echo $(date -u);sleep 3600;done" ]
-      env:
-      - name: POSTGRES_ADMIN_USER
-        value: postgres
-      - name: POSTGRES_PASSWORD
-        value: ""
-      - name: WORKSPACE_POSTGRES_USER
-        value: workspace_admin
-      - name: WORKSPACE_POSTGRES_PASSWORD
-        value: ""
-      - name: WORKSPACE_POSTGRES_HOST
-        value: localhost
-      - name: WORKSPACE_POSTGRES_DB
-        value: workspace
-      - name: WORKSPACE_POSTGRES_PORT
-        value: "5432"
+  ## @param importApi.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param importApi.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param importApi.hostAliases import-api pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param importApi.podLabels Extra labels for import-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param importApi.podAnnotations Annotations for import-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param importApi.podAffinityPreset Pod affinity preset. Ignored if `importApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param importApi.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `importApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node importApi.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param importApi.nodeAffinityPreset.type Node affinity preset type. Ignored if `importApi.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param importApi.nodeAffinityPreset.key Node label key to match. Ignored if `importApi.affinity` is set
+    ##
+    key: ""
+    ## @param importApi.nodeAffinityPreset.values Node label values to match. Ignored if `importApi.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param importApi.affinity Affinity for import-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `importApi.podAffinityPreset`, `importApi.podAntiAffinityPreset`, and `importApi.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param importApi.nodeSelector Node labels for import-api pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param importApi.tolerations Tolerations for import-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param importApi.updateStrategy.type import-api statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param importApi.priorityClassName import-api pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param importApi.schedulerName Name of the k8s scheduler (other than default) for import-api pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param importApi.lifecycleHooks for the import-api container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param importApi.extraEnvVars Array with extra environment variables to add to import-api nodes
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param importApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for import-api nodes
+  ##
+  extraEnvVarsCM: ""
+  ## @param importApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for import-api nodes
+  ##
+  extraEnvVarsSecret: ""
+  ## @param importApi.extraVolumes Optionally specify extra list of additional volumes for the import-api pod(s)
+  ##
+  extraVolumes: []
+  ## @param importApi.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the import-api container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param importApi.sidecars Add additional sidecar containers to the import-api pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param importApi.initContainers Add additional init containers to the import-api pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section import-api Service Parameters
+  ##
+  ##
+  service:
+    ## @param importApi.service.type import-api service type
+    ##
+    type: ClusterIP
+    ## @param importApi.service.ports.http import-api service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node ports to expose
+    ## @param importApi.service.nodePorts.http Node port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param importApi.service.clusterIP import-api service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param importApi.service.loadBalancerIP import-api service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param importApi.service.labelSelectorsOverride Selector for import-api service
+    ##
+    labelSelectorsOverride: {}
+    ## @param importApi.service.loadBalancerSourceRanges import-api service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param importApi.service.externalTrafficPolicy import-api service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param importApi.service.annotations Additional custom annotations for import-api service
+    ##
+    annotations: {}
+    ## @param importApi.service.extraPorts Extra ports to expose in import-api service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+  ## @section import-api ServiceAccount configuration
+  ##
+  serviceAccount:
+    ## @param importApi.serviceAccount.create Specifies whether a ServiceAccount should be created
+    ##
+    create: true
+    ## @param importApi.serviceAccount.name The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the common.names.fullname template
+    ##
+    name: ""
+    ## @param importApi.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
+    ##
+    automountServiceAccountToken: false
 
-## Redis chart configuration
+## @section import-worker Deployment Parameters
+##
+importWorker:
+  ## import-worker image
+  ## @param importWorker.image.registry import-worker image registry
+  ## @param importWorker.image.repository import-worker image repository
+  ## @param importWorker.image.tag import-worker image tag (immutable tags are recommended)
+  ## @param importWorker.image.pullPolicy import-worker image pull policy
+  ## @param importWorker.image.pullSecrets import-worker image pull secrets
+  ## @param importWorker.image.debug Enable import-worker image debug mode
+  ##
+  image:
+    registry: gcr.io
+    repository: carto-onprem-artifacts/import-worker
+    tag: "2021.12.20"
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    ## Enable debug mode
+    ##
+    debug: false
+  ## @param importWorker.replicaCount Number of import-worker replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param importWorker.containerPorts.http import-worker HTTP container port
+  ##
+  containerPorts:
+    http: 3000
+  ## Configure extra options for import-worker containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param importWorker.livenessProbe.enabled Enable livenessProbe on import-worker containers
+  ## @param importWorker.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param importWorker.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param importWorker.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param importWorker.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param importWorker.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param importWorker.readinessProbe.enabled Enable readinessProbe on import-worker containers
+  ## @param importWorker.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param importWorker.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param importWorker.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param importWorker.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param importWorker.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param importWorker.startupProbe.enabled Enable startupProbe on import-worker containers
+  ## @param importWorker.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param importWorker.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param importWorker.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param importWorker.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param importWorker.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param importWorker.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param importWorker.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param importWorker.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## import-worker resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param importWorker.resources.limits The resources limits for the import-worker containers
+  ## @param importWorker.resources.requests The requested resources for the import-worker containers
+  ##
+  resources:
+    limits: {}
+    requests: {}
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param importWorker.podSecurityContext.enabled Enabled import-worker pods' Security Context
+  ## @param importWorker.podSecurityContext.fsGroup Set import-worker pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param importWorker.containerSecurityContext.enabled Enabled import-worker containers' Security Context
+  ## @param importWorker.containerSecurityContext.runAsUser Set import-worker containers' Security Context runAsUser
+  ## @param importWorker.containerSecurityContext.runAsNonRoot Set import-worker containers' Security Context runAsNonRoot
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsNonRoot: true
+
+  ## @param importWorker.configuration Configuration settings (env vars) for import-worker
+  ##
+  configuration: ""
+  ## @param importWorker.secretConfiguration Configuration settings (env vars) for import-worker
+  ##
+  secretConfiguration: ""
+  ## @param importWorker.existingConfigMap The name of an existing ConfigMap with your custom configuration for import-worker
+  ##
+  existingConfigMap: ""
+  ## @param importWorker.existingSecret The name of an existing ConfigMap with your custom configuration for import-worker
+  ##
+  existingSecret: ""
+  ## @param importWorker.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param importWorker.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param importWorker.hostAliases import-worker pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param importWorker.podLabels Extra labels for import-worker pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param importWorker.podAnnotations Annotations for import-worker pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param importWorker.podAffinityPreset Pod affinity preset. Ignored if `importWorker.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param importWorker.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `importWorker.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node importWorker.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param importWorker.nodeAffinityPreset.type Node affinity preset type. Ignored if `importWorker.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param importWorker.nodeAffinityPreset.key Node label key to match. Ignored if `importWorker.affinity` is set
+    ##
+    key: ""
+    ## @param importWorker.nodeAffinityPreset.values Node label values to match. Ignored if `importWorker.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param importWorker.affinity Affinity for import-worker pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `importWorker.podAffinityPreset`, `importWorker.podAntiAffinityPreset`, and `importWorker.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param importWorker.nodeSelector Node labels for import-worker pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param importWorker.tolerations Tolerations for import-worker pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param importWorker.updateStrategy.type import-worker statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param importWorker.priorityClassName import-worker pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param importWorker.schedulerName Name of the k8s scheduler (other than default) for import-worker pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param importWorker.lifecycleHooks for the import-worker container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param importWorker.extraEnvVars Array with extra environment variables to add to import-worker nodes
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param importWorker.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for import-worker nodes
+  ##
+  extraEnvVarsCM: ""
+  ## @param importWorker.extraEnvVarsSecret Name of existing Secret containing extra env vars for import-worker nodes
+  ##
+  extraEnvVarsSecret: ""
+  ## @param importWorker.extraVolumes Optionally specify extra list of additional volumes for the import-worker pod(s)
+  ##
+  extraVolumes: []
+  ## @param importWorker.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the import-worker container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param importWorker.sidecars Add additional sidecar containers to the import-worker pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param importWorker.initContainers Add additional init containers to the import-worker pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section import-worker Service Parameters
+  ##
+  ##
+  service:
+    ## @param importWorker.service.type import-worker service type
+    ##
+    type: ClusterIP
+    ## @param importWorker.service.ports.http import-worker service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node ports to expose
+    ## @param importWorker.service.nodePorts.http Node port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param importWorker.service.clusterIP import-worker service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param importWorker.service.loadBalancerIP import-worker service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param importWorker.service.labelSelectorsOverride Selector for import-worker service
+    ##
+    labelSelectorsOverride: {}
+    ## @param importWorker.service.loadBalancerSourceRanges import-worker service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param importWorker.service.externalTrafficPolicy import-worker service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param importWorker.service.annotations Additional custom annotations for import-worker service
+    ##
+    annotations: {}
+    ## @param importWorker.service.extraPorts Extra ports to expose in import-worker service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+  ## @section import-worker ServiceAccount configuration
+  ##
+  serviceAccount:
+    ## @param importWorker.serviceAccount.create Specifies whether a ServiceAccount should be created
+    ##
+    create: true
+    ## @param importWorker.serviceAccount.name The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the common.names.fullname template
+    ##
+    name: ""
+    ## @param importWorker.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
+    ##
+    automountServiceAccountToken: false
+
+## @section lds-api Deployment Parameters
+##
+ldsApi:
+  ## lds-api image
+  ## @param ldsApi.image.registry lds-api image registry
+  ## @param ldsApi.image.repository lds-api image repository
+  ## @param ldsApi.image.tag lds-api image tag (immutable tags are recommended)
+  ## @param ldsApi.image.pullPolicy lds-api image pull policy
+  ## @param ldsApi.image.pullSecrets lds-api image pull secrets
+  ## @param ldsApi.image.debug Enable lds-api image debug mode
+  ##
+  image:
+    registry: gcr.io
+    repository: carto-onprem-artifacts/lds-api
+    tag: "2021.12.20"
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    ## Enable debug mode
+    ##
+    debug: false
+  ## @param ldsApi.replicaCount Number of lds-api replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param ldsApi.containerPorts.http lds-api HTTP container port
+  ##
+  containerPorts:
+    http: 3000
+  ## Configure extra options for lds-api containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param ldsApi.livenessProbe.enabled Enable livenessProbe on lds-api containers
+  ## @param ldsApi.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param ldsApi.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param ldsApi.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param ldsApi.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param ldsApi.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param ldsApi.readinessProbe.enabled Enable readinessProbe on lds-api containers
+  ## @param ldsApi.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param ldsApi.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param ldsApi.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param ldsApi.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param ldsApi.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param ldsApi.startupProbe.enabled Enable startupProbe on lds-api containers
+  ## @param ldsApi.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param ldsApi.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param ldsApi.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param ldsApi.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param ldsApi.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param ldsApi.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param ldsApi.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param ldsApi.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## lds-api resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param ldsApi.resources.limits The resources limits for the lds-api containers
+  ## @param ldsApi.resources.requests The requested resources for the lds-api containers
+  ##
+  resources:
+    limits: {}
+    requests: {}
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param ldsApi.podSecurityContext.enabled Enabled lds-api pods' Security Context
+  ## @param ldsApi.podSecurityContext.fsGroup Set lds-api pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param ldsApi.containerSecurityContext.enabled Enabled lds-api containers' Security Context
+  ## @param ldsApi.containerSecurityContext.runAsUser Set lds-api containers' Security Context runAsUser
+  ## @param ldsApi.containerSecurityContext.runAsNonRoot Set lds-api containers' Security Context runAsNonRoot
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsNonRoot: true
+
+  ## @param ldsApi.configuration Configuration settings (env vars) for lds-api
+  ##
+  configuration: ""
+  ## @param ldsApi.secretConfiguration Configuration settings (env vars) for lds-api
+  ##
+  secretConfiguration: ""
+  ## @param ldsApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for lds-api
+  ##
+  existingConfigMap: ""
+  ## @param ldsApi.existingSecret The name of an existing ConfigMap with your custom configuration for lds-api
+  ##
+  existingSecret: ""
+  ## @param ldsApi.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param ldsApi.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param ldsApi.hostAliases lds-api pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param ldsApi.podLabels Extra labels for lds-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param ldsApi.podAnnotations Annotations for lds-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param ldsApi.podAffinityPreset Pod affinity preset. Ignored if `ldsApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param ldsApi.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `ldsApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node ldsApi.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param ldsApi.nodeAffinityPreset.type Node affinity preset type. Ignored if `ldsApi.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param ldsApi.nodeAffinityPreset.key Node label key to match. Ignored if `ldsApi.affinity` is set
+    ##
+    key: ""
+    ## @param ldsApi.nodeAffinityPreset.values Node label values to match. Ignored if `ldsApi.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param ldsApi.affinity Affinity for lds-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `ldsApi.podAffinityPreset`, `ldsApi.podAntiAffinityPreset`, and `ldsApi.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param ldsApi.nodeSelector Node labels for lds-api pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param ldsApi.tolerations Tolerations for lds-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param ldsApi.updateStrategy.type lds-api statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param ldsApi.priorityClassName lds-api pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param ldsApi.schedulerName Name of the k8s scheduler (other than default) for lds-api pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param ldsApi.lifecycleHooks for the lds-api container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param ldsApi.extraEnvVars Array with extra environment variables to add to lds-api nodes
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param ldsApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for lds-api nodes
+  ##
+  extraEnvVarsCM: ""
+  ## @param ldsApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for lds-api nodes
+  ##
+  extraEnvVarsSecret: ""
+  ## @param ldsApi.extraVolumes Optionally specify extra list of additional volumes for the lds-api pod(s)
+  ##
+  extraVolumes: []
+  ## @param ldsApi.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the lds-api container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param ldsApi.sidecars Add additional sidecar containers to the lds-api pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param ldsApi.initContainers Add additional init containers to the lds-api pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section lds-api Service Parameters
+  ##
+  ##
+  service:
+    ## @param ldsApi.service.type lds-api service type
+    ##
+    type: ClusterIP
+    ## @param ldsApi.service.ports.http lds-api service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node ports to expose
+    ## @param ldsApi.service.nodePorts.http Node port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param ldsApi.service.clusterIP lds-api service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param ldsApi.service.loadBalancerIP lds-api service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param ldsApi.service.labelSelectorsOverride Selector for lds-api service
+    ##
+    labelSelectorsOverride: {}
+    ## @param ldsApi.service.loadBalancerSourceRanges lds-api service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param ldsApi.service.externalTrafficPolicy lds-api service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param ldsApi.service.annotations Additional custom annotations for lds-api service
+    ##
+    annotations: {}
+    ## @param ldsApi.service.extraPorts Extra ports to expose in lds-api service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+  ## @section lds-api ServiceAccount configuration
+  ##
+  serviceAccount:
+    ## @param ldsApi.serviceAccount.create Specifies whether a ServiceAccount should be created
+    ##
+    create: true
+    ## @param ldsApi.serviceAccount.name The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the common.names.fullname template
+    ##
+    name: ""
+    ## @param ldsApi.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
+    ##
+    automountServiceAccountToken: false
+
+## @section maps-api Deployment Parameters
+##
+mapsApi:
+  ## maps-api image
+  ## @param mapsApi.image.registry maps-api image registry
+  ## @param mapsApi.image.repository maps-api image repository
+  ## @param mapsApi.image.tag maps-api image tag (immutable tags are recommended)
+  ## @param mapsApi.image.pullPolicy maps-api image pull policy
+  ## @param mapsApi.image.pullSecrets maps-api image pull secrets
+  ## @param mapsApi.image.debug Enable maps-api image debug mode
+  ##
+  image:
+    registry: gcr.io
+    repository: carto-onprem-artifacts/maps-api
+    tag: "2021.12.20"
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    ## Enable debug mode
+    ##
+    debug: false
+  ## @param mapsApi.replicaCount Number of maps-api replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param mapsApi.containerPorts.http maps-api HTTP container port
+  ##
+  containerPorts:
+    http: 3000
+  ## Configure extra options for maps-api containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param mapsApi.livenessProbe.enabled Enable livenessProbe on maps-api containers
+  ## @param mapsApi.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param mapsApi.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param mapsApi.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param mapsApi.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param mapsApi.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param mapsApi.readinessProbe.enabled Enable readinessProbe on maps-api containers
+  ## @param mapsApi.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param mapsApi.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param mapsApi.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param mapsApi.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param mapsApi.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param mapsApi.startupProbe.enabled Enable startupProbe on maps-api containers
+  ## @param mapsApi.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param mapsApi.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param mapsApi.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param mapsApi.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param mapsApi.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param mapsApi.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param mapsApi.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param mapsApi.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## maps-api resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param mapsApi.resources.limits The resources limits for the maps-api containers
+  ## @param mapsApi.resources.requests The requested resources for the maps-api containers
+  ##
+  resources:
+    limits: {}
+    requests: {}
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param mapsApi.podSecurityContext.enabled Enabled maps-api pods' Security Context
+  ## @param mapsApi.podSecurityContext.fsGroup Set maps-api pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param mapsApi.containerSecurityContext.enabled Enabled maps-api containers' Security Context
+  ## @param mapsApi.containerSecurityContext.runAsUser Set maps-api containers' Security Context runAsUser
+  ## @param mapsApi.containerSecurityContext.runAsNonRoot Set maps-api containers' Security Context runAsNonRoot
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsNonRoot: true
+
+  ## @param mapsApi.configuration Configuration settings (env vars) for maps-api
+  ##
+  configuration: ""
+  ## @param mapsApi.secretConfiguration Configuration settings (env vars) for maps-api
+  ##
+  secretConfiguration: ""
+  ## @param mapsApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for maps-api
+  ##
+  existingConfigMap: ""
+  ## @param mapsApi.existingSecret The name of an existing ConfigMap with your custom configuration for maps-api
+  ##
+  existingSecret: ""
+  ## @param mapsApi.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param mapsApi.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param mapsApi.hostAliases maps-api pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param mapsApi.podLabels Extra labels for maps-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param mapsApi.podAnnotations Annotations for maps-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param mapsApi.podAffinityPreset Pod affinity preset. Ignored if `mapsApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param mapsApi.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `mapsApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node mapsApi.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param mapsApi.nodeAffinityPreset.type Node affinity preset type. Ignored if `mapsApi.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param mapsApi.nodeAffinityPreset.key Node label key to match. Ignored if `mapsApi.affinity` is set
+    ##
+    key: ""
+    ## @param mapsApi.nodeAffinityPreset.values Node label values to match. Ignored if `mapsApi.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param mapsApi.affinity Affinity for maps-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `mapsApi.podAffinityPreset`, `mapsApi.podAntiAffinityPreset`, and `mapsApi.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param mapsApi.nodeSelector Node labels for maps-api pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param mapsApi.tolerations Tolerations for maps-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param mapsApi.updateStrategy.type maps-api statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param mapsApi.priorityClassName maps-api pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param mapsApi.schedulerName Name of the k8s scheduler (other than default) for maps-api pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param mapsApi.lifecycleHooks for the maps-api container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param mapsApi.extraEnvVars Array with extra environment variables to add to maps-api nodes
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param mapsApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for maps-api nodes
+  ##
+  extraEnvVarsCM: ""
+  ## @param mapsApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for maps-api nodes
+  ##
+  extraEnvVarsSecret: ""
+  ## @param mapsApi.extraVolumes Optionally specify extra list of additional volumes for the maps-api pod(s)
+  ##
+  extraVolumes: []
+  ## @param mapsApi.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the maps-api container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param mapsApi.sidecars Add additional sidecar containers to the maps-api pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param mapsApi.initContainers Add additional init containers to the maps-api pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section maps-api Service Parameters
+  ##
+  ##
+  service:
+    ## @param mapsApi.service.type maps-api service type
+    ##
+    type: ClusterIP
+    ## @param mapsApi.service.ports.http maps-api service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node ports to expose
+    ## @param mapsApi.service.nodePorts.http Node port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param mapsApi.service.clusterIP maps-api service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param mapsApi.service.loadBalancerIP maps-api service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param mapsApi.service.labelSelectorsOverride Selector for maps-api service
+    ##
+    labelSelectorsOverride: {}
+    ## @param mapsApi.service.loadBalancerSourceRanges maps-api service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param mapsApi.service.externalTrafficPolicy maps-api service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param mapsApi.service.annotations Additional custom annotations for maps-api service
+    ##
+    annotations: {}
+    ## @param mapsApi.service.extraPorts Extra ports to expose in maps-api service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+  ## @section maps-api ServiceAccount configuration
+  ##
+  serviceAccount:
+    ## @param mapsApi.serviceAccount.create Specifies whether a ServiceAccount should be created
+    ##
+    create: true
+    ## @param mapsApi.serviceAccount.name The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the common.names.fullname template
+    ##
+    name: ""
+    ## @param mapsApi.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
+    ##
+    automountServiceAccountToken: false
+
+## @section router Deployment Parameters
+##
+router:
+  ## router image
+  ## @param router.image.registry router image registry
+  ## @param router.image.repository router image repository
+  ## @param router.image.tag router image tag (immutable tags are recommended)
+  ## @param router.image.pullPolicy router image pull policy
+  ## @param router.image.pullSecrets router image pull secrets
+  ## @param router.image.debug Enable router image debug mode
+  ##
+  image:
+    registry: gcr.io
+    repository: carto-onprem-artifacts/router
+    tag: "2021.12.20"
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    ## Enable debug mode
+    ##
+    debug: false
+  ## @param router.replicaCount Number of router replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param router.containerPorts.http router HTTP container port
+  ##
+  containerPorts:
+    http: 3000
+  ## Configure extra options for router containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param router.livenessProbe.enabled Enable livenessProbe on router containers
+  ## @param router.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param router.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param router.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param router.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param router.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param router.readinessProbe.enabled Enable readinessProbe on router containers
+  ## @param router.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param router.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param router.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param router.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param router.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param router.startupProbe.enabled Enable startupProbe on router containers
+  ## @param router.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param router.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param router.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param router.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param router.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param router.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param router.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param router.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## router resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param router.resources.limits The resources limits for the router containers
+  ## @param router.resources.requests The requested resources for the router containers
+  ##
+  resources:
+    limits: {}
+    requests: {}
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param router.podSecurityContext.enabled Enabled router pods' Security Context
+  ## @param router.podSecurityContext.fsGroup Set router pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param router.containerSecurityContext.enabled Enabled router containers' Security Context
+  ## @param router.containerSecurityContext.runAsUser Set router containers' Security Context runAsUser
+  ## @param router.containerSecurityContext.runAsNonRoot Set router containers' Security Context runAsNonRoot
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsNonRoot: true
+
+  ## @param router.configuration Configuration settings (env vars) for router
+  ##
+  configuration: ""
+  ## @param router.secretConfiguration Configuration settings (env vars) for router
+  ##
+  secretConfiguration: ""
+  ## @param router.existingConfigMap The name of an existing ConfigMap with your custom configuration for router
+  ##
+  existingConfigMap: ""
+  ## @param router.existingSecret The name of an existing ConfigMap with your custom configuration for router
+  ##
+  existingSecret: ""
+  ## @param router.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param router.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param router.hostAliases router pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param router.podLabels Extra labels for router pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param router.podAnnotations Annotations for router pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param router.podAffinityPreset Pod affinity preset. Ignored if `router.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param router.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `router.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node router.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param router.nodeAffinityPreset.type Node affinity preset type. Ignored if `router.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param router.nodeAffinityPreset.key Node label key to match. Ignored if `router.affinity` is set
+    ##
+    key: ""
+    ## @param router.nodeAffinityPreset.values Node label values to match. Ignored if `router.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param router.affinity Affinity for router pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `router.podAffinityPreset`, `router.podAntiAffinityPreset`, and `router.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param router.nodeSelector Node labels for router pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param router.tolerations Tolerations for router pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param router.updateStrategy.type router statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param router.priorityClassName router pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param router.schedulerName Name of the k8s scheduler (other than default) for router pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param router.lifecycleHooks for the router container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param router.extraEnvVars Array with extra environment variables to add to router nodes
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param router.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for router nodes
+  ##
+  extraEnvVarsCM: ""
+  ## @param router.extraEnvVarsSecret Name of existing Secret containing extra env vars for router nodes
+  ##
+  extraEnvVarsSecret: ""
+  ## @param router.extraVolumes Optionally specify extra list of additional volumes for the router pod(s)
+  ##
+  extraVolumes: []
+  ## @param router.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the router container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param router.sidecars Add additional sidecar containers to the router pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param router.initContainers Add additional init containers to the router pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section router Service Parameters
+  ##
+  ##
+  service:
+    ## @param router.service.type router service type
+    ##
+    type: ClusterIP
+    ## @param router.service.ports.http router service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node ports to expose
+    ## @param router.service.nodePorts.http Node port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param router.service.clusterIP router service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param router.service.loadBalancerIP router service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param router.service.labelSelectorsOverride Selector for router service
+    ##
+    labelSelectorsOverride: {}
+    ## @param router.service.loadBalancerSourceRanges router service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param router.service.externalTrafficPolicy router service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param router.service.annotations Additional custom annotations for router service
+    ##
+    annotations: {}
+    ## @param router.service.extraPorts Extra ports to expose in router service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+  ## @section router ServiceAccount configuration
+  ##
+  serviceAccount:
+    ## @param router.serviceAccount.create Specifies whether a ServiceAccount should be created
+    ##
+    create: true
+    ## @param router.serviceAccount.name The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the common.names.fullname template
+    ##
+    name: ""
+    ## @param router.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
+    ##
+    automountServiceAccountToken: false
+
+## @section workspace-api Deployment Parameters
+##
+workspaceApi:
+  ## workspace-api image
+  ## @param workspaceApi.image.registry workspace-api image registry
+  ## @param workspaceApi.image.repository workspace-api image repository
+  ## @param workspaceApi.image.tag workspace-api image tag (immutable tags are recommended)
+  ## @param workspaceApi.image.pullPolicy workspace-api image pull policy
+  ## @param workspaceApi.image.pullSecrets workspace-api image pull secrets
+  ## @param workspaceApi.image.debug Enable workspace-api image debug mode
+  ##
+  image:
+    registry: gcr.io
+    repository: carto-onprem-artifacts/workspace-api
+    tag: "2021.12.20"
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    ## Enable debug mode
+    ##
+    debug: false
+  ## @param workspaceApi.replicaCount Number of workspace-api replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param workspaceApi.containerPorts.http workspace-api HTTP container port
+  ##
+  containerPorts:
+    http: 3000
+  ## Configure extra options for workspace-api containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param workspaceApi.livenessProbe.enabled Enable livenessProbe on workspace-api containers
+  ## @param workspaceApi.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param workspaceApi.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param workspaceApi.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param workspaceApi.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param workspaceApi.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param workspaceApi.readinessProbe.enabled Enable readinessProbe on workspace-api containers
+  ## @param workspaceApi.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param workspaceApi.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param workspaceApi.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param workspaceApi.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param workspaceApi.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param workspaceApi.startupProbe.enabled Enable startupProbe on workspace-api containers
+  ## @param workspaceApi.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param workspaceApi.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param workspaceApi.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param workspaceApi.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param workspaceApi.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param workspaceApi.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param workspaceApi.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param workspaceApi.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## workspace-api resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param workspaceApi.resources.limits The resources limits for the workspace-api containers
+  ## @param workspaceApi.resources.requests The requested resources for the workspace-api containers
+  ##
+  resources:
+    limits: {}
+    requests: {}
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param workspaceApi.podSecurityContext.enabled Enabled workspace-api pods' Security Context
+  ## @param workspaceApi.podSecurityContext.fsGroup Set workspace-api pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param workspaceApi.containerSecurityContext.enabled Enabled workspace-api containers' Security Context
+  ## @param workspaceApi.containerSecurityContext.runAsUser Set workspace-api containers' Security Context runAsUser
+  ## @param workspaceApi.containerSecurityContext.runAsNonRoot Set workspace-api containers' Security Context runAsNonRoot
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsNonRoot: true
+
+  ## @param workspaceApi.configuration Configuration settings (env vars) for workspace-api
+  ##
+  configuration: ""
+  ## @param workspaceApi.secretConfiguration Configuration settings (env vars) for workspace-api
+  ##
+  secretConfiguration: ""
+  ## @param workspaceApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-api
+  ##
+  existingConfigMap: ""
+  ## @param workspaceApi.existingSecret The name of an existing ConfigMap with your custom configuration for workspace-api
+  ##
+  existingSecret: ""
+  ## @param workspaceApi.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param workspaceApi.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param workspaceApi.hostAliases workspace-api pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param workspaceApi.podLabels Extra labels for workspace-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param workspaceApi.podAnnotations Annotations for workspace-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param workspaceApi.podAffinityPreset Pod affinity preset. Ignored if `workspaceApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param workspaceApi.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `workspaceApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node workspaceApi.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param workspaceApi.nodeAffinityPreset.type Node affinity preset type. Ignored if `workspaceApi.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param workspaceApi.nodeAffinityPreset.key Node label key to match. Ignored if `workspaceApi.affinity` is set
+    ##
+    key: ""
+    ## @param workspaceApi.nodeAffinityPreset.values Node label values to match. Ignored if `workspaceApi.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param workspaceApi.affinity Affinity for workspace-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `workspaceApi.podAffinityPreset`, `workspaceApi.podAntiAffinityPreset`, and `workspaceApi.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param workspaceApi.nodeSelector Node labels for workspace-api pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param workspaceApi.tolerations Tolerations for workspace-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param workspaceApi.updateStrategy.type workspace-api statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param workspaceApi.priorityClassName workspace-api pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param workspaceApi.schedulerName Name of the k8s scheduler (other than default) for workspace-api pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param workspaceApi.lifecycleHooks for the workspace-api container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param workspaceApi.extraEnvVars Array with extra environment variables to add to workspace-api nodes
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param workspaceApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for workspace-api nodes
+  ##
+  extraEnvVarsCM: ""
+  ## @param workspaceApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for workspace-api nodes
+  ##
+  extraEnvVarsSecret: ""
+  ## @param workspaceApi.extraVolumes Optionally specify extra list of additional volumes for the workspace-api pod(s)
+  ##
+  extraVolumes: []
+  ## @param workspaceApi.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the workspace-api container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param workspaceApi.sidecars Add additional sidecar containers to the workspace-api pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param workspaceApi.initContainers Add additional init containers to the workspace-api pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section workspace-api Service Parameters
+  ##
+  ##
+  service:
+    ## @param workspaceApi.service.type workspace-api service type
+    ##
+    type: ClusterIP
+    ## @param workspaceApi.service.ports.http workspace-api service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node ports to expose
+    ## @param workspaceApi.service.nodePorts.http Node port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param workspaceApi.service.clusterIP workspace-api service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param workspaceApi.service.loadBalancerIP workspace-api service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param workspaceApi.service.labelSelectorsOverride Selector for workspace-api service
+    ##
+    labelSelectorsOverride: {}
+    ## @param workspaceApi.service.loadBalancerSourceRanges workspace-api service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param workspaceApi.service.externalTrafficPolicy workspace-api service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param workspaceApi.service.annotations Additional custom annotations for workspace-api service
+    ##
+    annotations: {}
+    ## @param workspaceApi.service.extraPorts Extra ports to expose in workspace-api service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+  ## @section workspace-api ServiceAccount configuration
+  ##
+  serviceAccount:
+    ## @param workspaceApi.serviceAccount.create Specifies whether a ServiceAccount should be created
+    ##
+    create: true
+    ## @param workspaceApi.serviceAccount.name The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the common.names.fullname template
+    ##
+    name: ""
+    ## @param workspaceApi.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
+    ##
+    automountServiceAccountToken: false
+
+## @section workspace-subscriber Deployment Parameters
+##
+workspaceSubscriber:
+  ## workspace-subscriber image
+  ## @param workspaceSubscriber.image.registry workspace-subscriber image registry
+  ## @param workspaceSubscriber.image.repository workspace-subscriber image repository
+  ## @param workspaceSubscriber.image.tag workspace-subscriber image tag (immutable tags are recommended)
+  ## @param workspaceSubscriber.image.pullPolicy workspace-subscriber image pull policy
+  ## @param workspaceSubscriber.image.pullSecrets workspace-subscriber image pull secrets
+  ## @param workspaceSubscriber.image.debug Enable workspace-subscriber image debug mode
+  ##
+  image:
+    registry: gcr.io
+    repository: carto-onprem-artifacts/workspace-subscriber
+    tag: "2021.12.20"
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    ## Enable debug mode
+    ##
+    debug: false
+  ## @param workspaceSubscriber.replicaCount Number of workspace-subscriber replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param workspaceSubscriber.containerPorts.http workspace-subscriber HTTP container port
+  ##
+  containerPorts:
+    http: 3000
+  ## Configure extra options for workspace-subscriber containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param workspaceSubscriber.livenessProbe.enabled Enable livenessProbe on workspace-subscriber containers
+  ## @param workspaceSubscriber.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param workspaceSubscriber.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param workspaceSubscriber.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param workspaceSubscriber.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param workspaceSubscriber.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param workspaceSubscriber.readinessProbe.enabled Enable readinessProbe on workspace-subscriber containers
+  ## @param workspaceSubscriber.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param workspaceSubscriber.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param workspaceSubscriber.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param workspaceSubscriber.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param workspaceSubscriber.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param workspaceSubscriber.startupProbe.enabled Enable startupProbe on workspace-subscriber containers
+  ## @param workspaceSubscriber.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param workspaceSubscriber.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param workspaceSubscriber.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param workspaceSubscriber.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param workspaceSubscriber.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param workspaceSubscriber.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param workspaceSubscriber.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param workspaceSubscriber.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## workspace-subscriber resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param workspaceSubscriber.resources.limits The resources limits for the workspace-subscriber containers
+  ## @param workspaceSubscriber.resources.requests The requested resources for the workspace-subscriber containers
+  ##
+  resources:
+    limits: {}
+    requests: {}
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param workspaceSubscriber.podSecurityContext.enabled Enabled workspace-subscriber pods' Security Context
+  ## @param workspaceSubscriber.podSecurityContext.fsGroup Set workspace-subscriber pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param workspaceSubscriber.containerSecurityContext.enabled Enabled workspace-subscriber containers' Security Context
+  ## @param workspaceSubscriber.containerSecurityContext.runAsUser Set workspace-subscriber containers' Security Context runAsUser
+  ## @param workspaceSubscriber.containerSecurityContext.runAsNonRoot Set workspace-subscriber containers' Security Context runAsNonRoot
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsNonRoot: true
+
+  ## @param workspaceSubscriber.configuration Configuration settings (env vars) for workspace-subscriber
+  ##
+  configuration: ""
+  ## @param workspaceSubscriber.secretConfiguration Configuration settings (env vars) for workspace-subscriber
+  ##
+  secretConfiguration: ""
+  ## @param workspaceSubscriber.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-subscriber
+  ##
+  existingConfigMap: ""
+  ## @param workspaceSubscriber.existingSecret The name of an existing ConfigMap with your custom configuration for workspace-subscriber
+  ##
+  existingSecret: ""
+  ## @param workspaceSubscriber.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param workspaceSubscriber.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param workspaceSubscriber.hostAliases workspace-subscriber pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param workspaceSubscriber.podLabels Extra labels for workspace-subscriber pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param workspaceSubscriber.podAnnotations Annotations for workspace-subscriber pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param workspaceSubscriber.podAffinityPreset Pod affinity preset. Ignored if `workspaceSubscriber.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param workspaceSubscriber.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `workspaceSubscriber.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node workspaceSubscriber.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param workspaceSubscriber.nodeAffinityPreset.type Node affinity preset type. Ignored if `workspaceSubscriber.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param workspaceSubscriber.nodeAffinityPreset.key Node label key to match. Ignored if `workspaceSubscriber.affinity` is set
+    ##
+    key: ""
+    ## @param workspaceSubscriber.nodeAffinityPreset.values Node label values to match. Ignored if `workspaceSubscriber.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param workspaceSubscriber.affinity Affinity for workspace-subscriber pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `workspaceSubscriber.podAffinityPreset`, `workspaceSubscriber.podAntiAffinityPreset`, and `workspaceSubscriber.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param workspaceSubscriber.nodeSelector Node labels for workspace-subscriber pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param workspaceSubscriber.tolerations Tolerations for workspace-subscriber pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param workspaceSubscriber.updateStrategy.type workspace-subscriber statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param workspaceSubscriber.priorityClassName workspace-subscriber pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param workspaceSubscriber.schedulerName Name of the k8s scheduler (other than default) for workspace-subscriber pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param workspaceSubscriber.lifecycleHooks for the workspace-subscriber container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param workspaceSubscriber.extraEnvVars Array with extra environment variables to add to workspace-subscriber nodes
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param workspaceSubscriber.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for workspace-subscriber nodes
+  ##
+  extraEnvVarsCM: ""
+  ## @param workspaceSubscriber.extraEnvVarsSecret Name of existing Secret containing extra env vars for workspace-subscriber nodes
+  ##
+  extraEnvVarsSecret: ""
+  ## @param workspaceSubscriber.extraVolumes Optionally specify extra list of additional volumes for the workspace-subscriber pod(s)
+  ##
+  extraVolumes: []
+  ## @param workspaceSubscriber.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the workspace-subscriber container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param workspaceSubscriber.sidecars Add additional sidecar containers to the workspace-subscriber pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param workspaceSubscriber.initContainers Add additional init containers to the workspace-subscriber pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section workspace-subscriber Service Parameters
+  ##
+  ##
+  service:
+    ## @param workspaceSubscriber.service.type workspace-subscriber service type
+    ##
+    type: ClusterIP
+    ## @param workspaceSubscriber.service.ports.http workspace-subscriber service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node ports to expose
+    ## @param workspaceSubscriber.service.nodePorts.http Node port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param workspaceSubscriber.service.clusterIP workspace-subscriber service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param workspaceSubscriber.service.loadBalancerIP workspace-subscriber service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param workspaceSubscriber.service.labelSelectorsOverride Selector for workspace-subscriber service
+    ##
+    labelSelectorsOverride: {}
+    ## @param workspaceSubscriber.service.loadBalancerSourceRanges workspace-subscriber service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param workspaceSubscriber.service.externalTrafficPolicy workspace-subscriber service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param workspaceSubscriber.service.annotations Additional custom annotations for workspace-subscriber service
+    ##
+    annotations: {}
+    ## @param workspaceSubscriber.service.extraPorts Extra ports to expose in workspace-subscriber service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+  ## @section workspace-subscriber ServiceAccount configuration
+  ##
+  serviceAccount:
+    ## @param workspaceSubscriber.serviceAccount.create Specifies whether a ServiceAccount should be created
+    ##
+    create: true
+    ## @param workspaceSubscriber.serviceAccount.name The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the common.names.fullname template
+    ##
+    name: ""
+    ## @param workspaceSubscriber.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
+    ##
+    automountServiceAccountToken: false
+
+## @section workspace-www Deployment Parameters
+##
+workspaceWww:
+  ## workspace-www image
+  ## @param workspaceWww.image.registry workspace-www image registry
+  ## @param workspaceWww.image.repository workspace-www image repository
+  ## @param workspaceWww.image.tag workspace-www image tag (immutable tags are recommended)
+  ## @param workspaceWww.image.pullPolicy workspace-www image pull policy
+  ## @param workspaceWww.image.pullSecrets workspace-www image pull secrets
+  ## @param workspaceWww.image.debug Enable workspace-www image debug mode
+  ##
+  image:
+    registry: gcr.io
+    repository: carto-onprem-artifacts/workspace-www
+    tag: "2021.12.20"
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    ## Enable debug mode
+    ##
+    debug: false
+  ## @param workspaceWww.replicaCount Number of workspace-www replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param workspaceWww.containerPorts.http workspace-www HTTP container port
+  ##
+  containerPorts:
+    http: 3000
+  ## Configure extra options for workspace-www containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param workspaceWww.livenessProbe.enabled Enable livenessProbe on workspace-www containers
+  ## @param workspaceWww.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param workspaceWww.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param workspaceWww.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param workspaceWww.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param workspaceWww.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param workspaceWww.readinessProbe.enabled Enable readinessProbe on workspace-www containers
+  ## @param workspaceWww.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param workspaceWww.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param workspaceWww.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param workspaceWww.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param workspaceWww.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param workspaceWww.startupProbe.enabled Enable startupProbe on workspace-www containers
+  ## @param workspaceWww.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param workspaceWww.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param workspaceWww.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param workspaceWww.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param workspaceWww.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param workspaceWww.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param workspaceWww.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param workspaceWww.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## workspace-www resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param workspaceWww.resources.limits The resources limits for the workspace-www containers
+  ## @param workspaceWww.resources.requests The requested resources for the workspace-www containers
+  ##
+  resources:
+    limits: {}
+    requests: {}
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param workspaceWww.podSecurityContext.enabled Enabled workspace-www pods' Security Context
+  ## @param workspaceWww.podSecurityContext.fsGroup Set workspace-www pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param workspaceWww.containerSecurityContext.enabled Enabled workspace-www containers' Security Context
+  ## @param workspaceWww.containerSecurityContext.runAsUser Set workspace-www containers' Security Context runAsUser
+  ## @param workspaceWww.containerSecurityContext.runAsNonRoot Set workspace-www containers' Security Context runAsNonRoot
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsNonRoot: true
+
+  ## @param workspaceWww.configuration Configuration settings (env vars) for workspace-www
+  ##
+  configuration: ""
+  ## @param workspaceWww.secretConfiguration Configuration settings (env vars) for workspace-www
+  ##
+  secretConfiguration: ""
+  ## @param workspaceWww.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-www
+  ##
+  existingConfigMap: ""
+  ## @param workspaceWww.existingSecret The name of an existing ConfigMap with your custom configuration for workspace-www
+  ##
+  existingSecret: ""
+  ## @param workspaceWww.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param workspaceWww.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param workspaceWww.hostAliases workspace-www pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param workspaceWww.podLabels Extra labels for workspace-www pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param workspaceWww.podAnnotations Annotations for workspace-www pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param workspaceWww.podAffinityPreset Pod affinity preset. Ignored if `workspaceWww.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param workspaceWww.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `workspaceWww.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node workspaceWww.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param workspaceWww.nodeAffinityPreset.type Node affinity preset type. Ignored if `workspaceWww.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param workspaceWww.nodeAffinityPreset.key Node label key to match. Ignored if `workspaceWww.affinity` is set
+    ##
+    key: ""
+    ## @param workspaceWww.nodeAffinityPreset.values Node label values to match. Ignored if `workspaceWww.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param workspaceWww.affinity Affinity for workspace-www pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `workspaceWww.podAffinityPreset`, `workspaceWww.podAntiAffinityPreset`, and `workspaceWww.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param workspaceWww.nodeSelector Node labels for workspace-www pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param workspaceWww.tolerations Tolerations for workspace-www pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param workspaceWww.updateStrategy.type workspace-www statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param workspaceWww.priorityClassName workspace-www pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param workspaceWww.schedulerName Name of the k8s scheduler (other than default) for workspace-www pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param workspaceWww.lifecycleHooks for the workspace-www container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param workspaceWww.extraEnvVars Array with extra environment variables to add to workspace-www nodes
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param workspaceWww.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for workspace-www nodes
+  ##
+  extraEnvVarsCM: ""
+  ## @param workspaceWww.extraEnvVarsSecret Name of existing Secret containing extra env vars for workspace-www nodes
+  ##
+  extraEnvVarsSecret: ""
+  ## @param workspaceWww.extraVolumes Optionally specify extra list of additional volumes for the workspace-www pod(s)
+  ##
+  extraVolumes: []
+  ## @param workspaceWww.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the workspace-www container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param workspaceWww.sidecars Add additional sidecar containers to the workspace-www pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param workspaceWww.initContainers Add additional init containers to the workspace-www pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section workspace-www Service Parameters
+  ##
+  ##
+  service:
+    ## @param workspaceWww.service.type workspace-www service type
+    ##
+    type: ClusterIP
+    ## @param workspaceWww.service.ports.http workspace-www service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node ports to expose
+    ## @param workspaceWww.service.nodePorts.http Node port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param workspaceWww.service.clusterIP workspace-www service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param workspaceWww.service.loadBalancerIP workspace-www service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param workspaceWww.service.labelSelectorsOverride Selector for workspace-www service
+    ##
+    labelSelectorsOverride: {}
+    ## @param workspaceWww.service.loadBalancerSourceRanges workspace-www service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param workspaceWww.service.externalTrafficPolicy workspace-www service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param workspaceWww.service.annotations Additional custom annotations for workspace-www service
+    ##
+    annotations: {}
+    ## @param workspaceWww.service.extraPorts Extra ports to expose in workspace-www service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+  ## @section workspace-www ServiceAccount configuration
+  ##
+  serviceAccount:
+    ## @param workspaceWww.serviceAccount.create Specifies whether a ServiceAccount should be created
+    ##
+    create: true
+    ## @param workspaceWww.serviceAccount.name The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the common.names.fullname template
+    ##
+    name: ""
+    ## @param workspaceWww.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
+    ##
+    automountServiceAccountToken: false
+
+## @section Init Container Parameters
+##
+workspaceMigrations:
+  ## Migrations image
+  ## @param workspaceMigrations.image.registry workspace-db image registry
+  ## @param workspaceMigrations.image.repository workspace-db image repository
+  ## @param workspaceMigrations.image.tag workspace-db image tag (immutable tags are recommended)
+  ## @param workspaceMigrations.image.pullPolicy workspace-db image pull policy
+  ## @param workspaceMigrations.image.pullSecrets workspace-db image pull secrets
+  ##
+  image:
+    registry: gcr.io
+    repository: carto-onprem-artifacts/workspace-db
+    tag: "2021.12.20"
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param workspaceMigrations.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param workspaceMigrations.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## Init container's resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param workspaceMigrations.resources.limits The resources limits for the init container
+  ## @param workspaceMigrations.resources.requests The requested resources for the init container
+  ##
+  resources:
+    limits: {}
+    requests: {}
+  ## Init container Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+  ## @param workspaceMigrations.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
+  ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
+  ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
+  ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
+  ##
+  containerSecurityContext:
+    enabled: true
+    fsGroup: 1001
+
+## @section Redis&trade; subchart parameters
+## Redis&trade; chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/redis/values.yaml
 ## @param redis.enabled Switch to enable or disable the Redis&trade; helm
 ## @param redis.auth.enabled Switch to enable or disable authentication
@@ -396,47 +2861,69 @@ postgresql:
 redis:
   enabled: true
   auth:
-    enabled: false
-    ## Redis password (both master and slave). Defaults to a random 10-character alphanumeric string if not set and auth.enabled is true.
+    enabled: true
+    ## Redis&trade; password (both master and slave). Defaults to a random 10-character alphanumeric string if not set and auth.enabled is true.
+    ## It should always be set using the password value or in the existingSecret to avoid issues
+    ## with Airflow.
     ## The password value is ignored if existingSecret is set
+    ##
     password: ""
     existingSecret: ""
   architecture: standalone
 
-## @section Carto self hosted configuration
+## @section External Redis&trade; parameters
+## External Redis&trade; configuration
+## All of these values are only used when redis.enabled is set to false
+## @param externalRedis.host Redis&trade; host
+## @param externalRedis.port Redis&trade; port number
+## @param externalRedis.password Redis&trade; password
+## @param externalRedis.existingSecret Name of an existing secret resource containing the Redis&trade; password in a 'redis-password' key
+## @param externalRedis.username Redis&trade; username
+##
+externalRedis:
+  host: localhost
+  port: 6379
+  password: ""
+  existingSecret: ""
+  ## Most Redis&trade; implementnations do not require a username to authenticate
+  ## and it should be enough with the password
+  ##
+  username: ""
 
-configuration:
-  onpremDomain: ec2-54-165-90-152.compute-1.amazonaws.com
-  reactAppGoogleMapsAPIKey: ""
-  externalDatabase:
-    enabled: false
-    workspacePostgresHost: ""
-    workspacePostgresPort: ""
-    postgresPassword: ""
-    existingSecret: ""
-  postgresql:
-    workspacePostgresHost: ""
-    workspacePostgresPort: ""
-    workspacePostgresPassword: ""
-    postgresPassword: ""
-  onpremTenantId: onp-bitnami-stag-1
-  onpremGCPProjectID: carto-tnt-onp-bitnami-stag-1
-  buckets:
-    workspaceGCSThumbnailsBucket: carto-tnt-onp-bitnami-stag-1-thumbnails-storage
-    workspaceGCSDatasetsBucket: carto-tnt-onp-bitnami-stag-1-client-storage
-    importGCSDataImportsBucket: carto-tnt-onp-bitnami-stag-1-import-storage
-  ssl:
-    enable: false
-    routerSSLCertificatePath: /etc/nginx/ssl/<cert>.crt
-    routerSSLCertificateKeyPath: /etc/nginx/ssl/<cert>.key
-  auth0:
-    cartoAuth0ClientID: ASCv194MEEl68A3scIp39N2QXShGpOxW
-    cartoAuth0CustomDomain: auth.stag.carto.com
-  acc:
-    accDomain: accounts.stag.app.carto.com
-    accGCPProjectID: carto-acc-us-east1-1-stag
-    accGCPProjectRegion: us-east1-1-stag
-  encryptionSecretKey: WnduIWnPpaiF6WEJ3jItbaVxkdVisjpm
-  cartoOnpremiseCartoDWLocation: us
-  cartoOnpremiseCustomerPackageVersion: "2021.12.13"
-  cartoOnpremiseVersion: "2021.12.13"
+## @section PostgreSQL subchart parameters
+## PostgreSQL chart configuration
+## ref: https://github.com/bitnami/charts/blob/master/bitnami/postgresql/values.yaml
+## @param postgresql.enabled Switch to enable or disable the PostgreSQL helm chart
+## @param postgresql.postgresqlUsername Airflow Postgresql username
+## @param postgresql.postgresqlPassword Airflow Postgresql password
+## @param postgresql.postgresqlDatabase Airflow Postgresql database
+## @param postgresql.existingSecret Name of an existing secret containing the PostgreSQL password ('postgresql-password' key)
+##
+postgresql:
+  enabled: true
+  postgresqlUsername: bn_airflow
+  postgresqlPassword: ""
+  postgresqlDatabase: bitnami_airflow
+  ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
+  ##
+  existingSecret: ""
+
+## @section External PostgreSQL parameters
+## External PostgreSQL configuration
+## All of these values are only used when postgresql.enabled is set to false
+## @param externalDatabase.host Database host
+## @param externalDatabase.user non-root Username for Airflow Database
+## @param externalDatabase.password Database password
+## @param externalDatabase.existingSecret Name of an existing secret resource containing the DB password
+## @param externalDatabase.existingSecretPasswordKey Name of an existing secret key containing the DB password
+## @param externalDatabase.database Database name
+## @param externalDatabase.port Database port number
+##
+externalDatabase:
+  host: localhost
+  user: bn_airflow
+  password: ""
+  existingSecret: ""
+  existingSecretPasswordKey: ""
+  database: bitnami_airflow
+  port: 5432

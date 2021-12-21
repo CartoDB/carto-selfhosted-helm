@@ -1,0 +1,154 @@
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.workspaceSubscriber.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: workspace-subscriber
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.workspaceSubscriber.replicaCount }}
+  {{- if .Values.workspaceSubscriber.updateStrategy }}
+  strategy: {{- toYaml .Values.workspaceSubscriber.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: workspace-subscriber
+  template:
+    metadata:
+      {{- if .Values.workspaceSubscriber.podAnnotations }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: workspace-subscriber
+        {{- if .Values.workspaceSubscriber.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.workspaceSubscriber.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.workspaceSubscriber.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.workspaceSubscriber.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceSubscriber.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.workspaceSubscriber.podAffinityPreset "component" "workspace-subscriber" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.workspaceSubscriber.podAntiAffinityPreset "component" "workspace-subscriber" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.workspaceSubscriber.nodeAffinityPreset.type "key" .Values.workspaceSubscriber.nodeAffinityPreset.key "values" .Values.workspaceSubscriber.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.workspaceSubscriber.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceSubscriber.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.workspaceSubscriber.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.workspaceSubscriber.priorityClassName }}
+      priorityClassName: {{ .Values.workspaceSubscriber.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.workspaceSubscriber.schedulerName }}
+      schedulerName: {{ .Values.workspaceSubscriber.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.workspaceSubscriber.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.workspaceSubscriber.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      initContainers:
+        {{- if .Values.postgresql.enabled }}
+        {{ include "carto.postgresql-init-container" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.workspaceSubscriber.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: workspace-subscriber
+          image: {{ template "carto.workspaceSubscriber.image" . }}
+          imagePullPolicy: {{ .Values.workspaceSubscriber.image.pullPolicy }}
+          {{- if .Values.workspaceSubscriber.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.workspaceSubscriber.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.workspaceSubscriber.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.workspaceSubscriber.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.args "context" $) | nindent 12 }}
+          {{- end }}
+          env:
+            - name: BITNAMI_DEBUG
+              value: {{ ternary "true" "false" (or .Values.workspaceSubscriber.image.debug .Values.diagnosticMode.enabled) | quote }}
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ ternary "postgresql-password" "db-password" .Values.postgresql.enabled | quote }}
+            {{- if .Values.workspaceSubscriber.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "carto.workspaceSubscriber.configmapName" . }}
+            - secretRef:
+                name: {{ include "carto.workspaceSubscriber.secretName" . }}
+            {{- if .Values.workspaceSubscriber.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.workspaceSubscriber.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.workspaceSubscriber.resources }}
+          resources: {{- toYaml .Values.workspaceSubscriber.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.workspaceSubscriber.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.workspaceSubscriber.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceSubscriber.livenessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.workspaceSubscriber.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.workspaceSubscriber.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceSubscriber.readinessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.workspaceSubscriber.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.workspaceSubscriber.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceSubscriber.startupProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.workspaceSubscriber.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.workspaceSubscriber.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+          {{- if .Values.workspaceSubscriber.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.workspaceSubscriber.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceSubscriber.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        {{- if .Values.workspaceSubscriber.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}

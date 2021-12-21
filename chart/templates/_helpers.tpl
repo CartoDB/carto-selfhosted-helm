@@ -1,79 +1,426 @@
 {{/* vim: set filetype=mustache: */}}
-{{/*
-Expand the name of the chart.
-*/}}
-{{- define "carto.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{/*
-Create chart name and version as used by the chart label.
-*/}}
-{{- define "carto.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
 
 {{/*
 Return the proper Carto ldsApi image name
 */}}
-{{- define "carto.ldsApiImage" -}}
+{{- define "carto.ldsApi.image" -}}
 {{- include "common.images.image" (dict "imageRoot" .Values.ldsApi.image "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto lds-api full name
+*/}}
+{{- define "carto.ldsApi.fullname" -}}
+{{- printf "%s-lds-api" (include "common.names.fullname" .) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto lds-api ConfigMap name
+*/}}
+{{- define "carto.ldsApi.configmapName" -}}
+{{- if .Values.ldsApi.existingConfigMap -}}
+{{- .Values.ldsApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.ldsApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto lds-api Secret name
+*/}}
+{{- define "carto.ldsApi.secretName" -}}
+{{- if .Values.ldsApi.existingSecret -}}
+{{- .Values.ldsApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.ldsApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the lds-api deployment
+*/}}
+{{- define "carto.ldsApi.serviceAccountName" -}}
+{{- if .Values.ldsApi.serviceAccount.create -}}
+{{ default (include "carto.ldsApi.fullname" .) .Values.ldsApi.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.ldsApi.serviceAccount.name }}
+{{- end -}}
 {{- end -}}
 
 {{/*
 Return the proper Carto importWorker image name
 */}}
-{{- define "carto.importWorkerImage" -}}
+{{- define "carto.importWorker.image" -}}
 {{- include "common.images.image" (dict "imageRoot" .Values.importWorker.image "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto import-worker full name
+*/}}
+{{- define "carto.importWorker.fullname" -}}
+{{- printf "%s-import-worker" (include "common.names.fullname" .) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto import-worker ConfigMap name
+*/}}
+{{- define "carto.importWorker.configmapName" -}}
+{{- if .Values.importWorker.existingConfigMap -}}
+{{- .Values.importWorker.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.importWorker.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto import-worker Secret name
+*/}}
+{{- define "carto.importWorker.secretName" -}}
+{{- if .Values.importWorker.existingSecret -}}
+{{- .Values.importWorker.existingSecret -}}
+{{- else -}}
+{{- include "carto.importWorker.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the import-worker deployment
+*/}}
+{{- define "carto.importWorker.serviceAccountName" -}}
+{{- if .Values.importWorker.serviceAccount.create -}}
+{{ default (include "carto.importWorker.fullname" .) .Values.importWorker.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.importWorker.serviceAccount.name }}
+{{- end -}}
 {{- end -}}
 
 {{/*
 Return the proper Carto importApi image name
 */}}
-{{- define "carto.importApiImage" -}}
+{{- define "carto.importApi.image" -}}
 {{- include "common.images.image" (dict "imageRoot" .Values.importApi.image "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto import-api full name
+*/}}
+{{- define "carto.importApi.fullname" -}}
+{{- printf "%s-import-api" (include "common.names.fullname" .) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto import-api ConfigMap name
+*/}}
+{{- define "carto.importApi.configmapName" -}}
+{{- if .Values.importApi.existingConfigMap -}}
+{{- .Values.importApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.importApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto import-api Secret name
+*/}}
+{{- define "carto.importApi.secretName" -}}
+{{- if .Values.importApi.existingSecret -}}
+{{- .Values.importApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.importApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the import-api deployment
+*/}}
+{{- define "carto.importApi.serviceAccountName" -}}
+{{- if .Values.importApi.serviceAccount.create -}}
+{{ default (include "carto.importApi.fullname" .) .Values.importApi.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.importApi.serviceAccount.name }}
+{{- end -}}
 {{- end -}}
 
 {{/*
 Return the proper Carto mapsApi image name
 */}}
-{{- define "carto.mapsApiImage" -}}
+{{- define "carto.mapsApi.image" -}}
 {{- include "common.images.image" (dict "imageRoot" .Values.mapsApi.image "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto maps-api full name
+*/}}
+{{- define "carto.mapsApi.fullname" -}}
+{{- printf "%s-maps-api" (include "common.names.fullname" .) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto maps-api ConfigMap name
+*/}}
+{{- define "carto.mapsApi.configmapName" -}}
+{{- if .Values.mapsApi.existingConfigMap -}}
+{{- .Values.mapsApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.mapsApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto maps-api Secret name
+*/}}
+{{- define "carto.mapsApi.secretName" -}}
+{{- if .Values.mapsApi.existingSecret -}}
+{{- .Values.mapsApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.mapsApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the maps-api deployment
+*/}}
+{{- define "carto.mapsApi.serviceAccountName" -}}
+{{- if .Values.mapsApi.serviceAccount.create -}}
+{{ default (include "carto.mapsApi.fullname" .) .Values.mapsApi.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.mapsApi.serviceAccount.name }}
+{{- end -}}
 {{- end -}}
 
 {{/*
 Return the proper Carto workspaceSubscriber image name
 */}}
-{{- define "carto.workspaceSubscriberImage" -}}
+{{- define "carto.workspaceSubscriber.image" -}}
 {{- include "common.images.image" (dict "imageRoot" .Values.workspaceSubscriber.image "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto workspace-subscriber full name
+*/}}
+{{- define "carto.workspaceSubscriber.fullname" -}}
+{{- printf "%s-workspace-subscriber" (include "common.names.fullname" .) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto workspace-subscriber ConfigMap name
+*/}}
+{{- define "carto.workspaceSubscriber.configmapName" -}}
+{{- if .Values.workspaceSubscriber.existingConfigMap -}}
+{{- .Values.workspaceSubscriber.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.workspaceSubscriber.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto workspace-subscriber Secret name
+*/}}
+{{- define "carto.workspaceSubscriber.secretName" -}}
+{{- if .Values.workspaceSubscriber.existingSecret -}}
+{{- .Values.workspaceSubscriber.existingSecret -}}
+{{- else -}}
+{{- include "carto.workspaceSubscriber.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the workspace-subscriber deployment
+*/}}
+{{- define "carto.workspaceSubscriber.serviceAccountName" -}}
+{{- if .Values.workspaceSubscriber.serviceAccount.create -}}
+{{ default (include "carto.workspaceSubscriber.fullname" .) .Values.workspaceSubscriber.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.workspaceSubscriber.serviceAccount.name }}
+{{- end -}}
 {{- end -}}
 
 {{/*
 Return the proper Carto workspaceApi image name
 */}}
-{{- define "carto.workspaceApiImage" -}}
+{{- define "carto.workspaceApi.image" -}}
 {{- include "common.images.image" (dict "imageRoot" .Values.workspaceApi.image "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
-Return the proper Carto workspaceWWW image name
+Return the proper Carto workspace-api full name
 */}}
-{{- define "carto.workspaceWWWImage" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.workspaceWWW.image "global" .Values.global) -}}
+{{- define "carto.workspaceApi.fullname" -}}
+{{- printf "%s-workspace-api" (include "common.names.fullname" .) -}}
 {{- end -}}
 
 {{/*
-Return the proper Carto accountsWWW image name
+Return the proper Carto workspace-api ConfigMap name
 */}}
-{{- define "carto.accountsWWWImage" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.accountsWWW.image "global" .Values.global) -}}
+{{- define "carto.workspaceApi.configmapName" -}}
+{{- if .Values.workspaceApi.existingConfigMap -}}
+{{- .Values.workspaceApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.workspaceApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto workspace-api Secret name
+*/}}
+{{- define "carto.workspaceApi.secretName" -}}
+{{- if .Values.workspaceApi.existingSecret -}}
+{{- .Values.workspaceApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.workspaceApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the workspace-api deployment
+*/}}
+{{- define "carto.workspaceApi.serviceAccountName" -}}
+{{- if .Values.workspaceApi.serviceAccount.create -}}
+{{ default (include "carto.workspaceApi.fullname" .) .Values.workspaceApi.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.workspaceApi.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto workspace-www image name
+*/}}
+{{- define "carto.workspaceWww.image" -}}
+{{- include "common.images.image" (dict "imageRoot" .Values.workspaceWww.image "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto workspace-www full name
+*/}}
+{{- define "carto.workspaceWww.fullname" -}}
+{{- printf "%s-workspace-www" (include "common.names.fullname" .) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto workspace-www ConfigMap name
+*/}}
+{{- define "carto.workspaceWww.configmapName" -}}
+{{- if .Values.workspaceWww.existingConfigMap -}}
+{{- .Values.workspaceWww.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.workspaceWww.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto workspace-www Secret name
+*/}}
+{{- define "carto.workspaceWww.secretName" -}}
+{{- if .Values.workspaceWww.existingSecret -}}
+{{- .Values.workspaceWww.existingSecret -}}
+{{- else -}}
+{{- include "carto.workspaceWww.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the workspace-www deployment
+*/}}
+{{- define "carto.workspaceWww.serviceAccountName" -}}
+{{- if .Values.workspaceWww.serviceAccount.create -}}
+{{ default (include "carto.workspaceWww.fullname" .) .Values.workspaceWww.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.workspaceWww.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto accounts-www image name
+*/}}
+{{- define "carto.accountsWww.image" -}}
+{{- include "common.images.image" (dict "imageRoot" .Values.accountsWww.image "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto accounts-www full name
+*/}}
+{{- define "carto.accountsWww.fullname" -}}
+{{- printf "%s-accounts-www" (include "common.names.fullname" .) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto accounts-www ConfigMap name
+*/}}
+{{- define "carto.accountsWww.configmapName" -}}
+{{- if .Values.accountsWww.existingConfigMap -}}
+{{- .Values.accountsWww.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.accountsWww.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto accounts-www Secret name
+*/}}
+{{- define "carto.accountsWww.secretName" -}}
+{{- if .Values.accountsWww.existingSecret -}}
+{{- .Values.accountsWww.existingSecret -}}
+{{- else -}}
+{{- include "carto.accountsWww.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the accounts-www deployment
+*/}}
+{{- define "carto.accountsWww.serviceAccountName" -}}
+{{- if .Values.accountsWww.serviceAccount.create -}}
+{{ default (include "carto.accountsWww.fullname" .) .Values.accountsWww.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.accountsWww.serviceAccount.name }}
+{{- end -}}
 {{- end -}}
 
 {{/*
 Return the proper Carto router image name
 */}}
-{{- define "carto.routerImage" -}}
+{{- define "carto.router.image" -}}
 {{- include "common.images.image" (dict "imageRoot" .Values.router.image "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto router full name
+*/}}
+{{- define "carto.router.fullname" -}}
+{{- printf "%s-router" (include "common.names.fullname" .) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto router ConfigMap name
+*/}}
+{{- define "carto.router.configmapName" -}}
+{{- if .Values.router.existingConfigMap -}}
+{{- .Values.router.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.router.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto router Secret name
+*/}}
+{{- define "carto.router.secretName" -}}
+{{- if .Values.router.existingSecret -}}
+{{- .Values.router.existingSecret -}}
+{{- else -}}
+{{- include "carto.router.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the router deployment
+*/}}
+{{- define "carto.router.serviceAccountName" -}}
+{{- if .Values.router.serviceAccount.create -}}
+{{ default (include "carto.router.fullname" .) .Values.router.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.router.serviceAccount.name }}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -84,264 +431,171 @@ Return the proper Docker Image Registry Secret Names
 {{- end -}}
 
 {{/*
-Return Carto Auth0 client ID
+Get the Postgresql credentials secret.
 */}}
-{{- define "configuration.auth0.cartoAuth0ClientID" -}}
-{{- .Values.configuration.auth0.cartoAuth0ClientID }}
-{{- end -}}
-
-{{/*
-Return Carto Docker Registry Base Path
-*/}}
-{{- define "configuration.dockerRegistryBasePath" -}}
-gcr.io/carto-onprem-artifacts
-{{- end -}}
-
-{{/*
-Return Carto on premise version
-*/}}
-{{- define "configuration.cartoOnpremiseVersion" -}}
-{{ .Values.configuration.cartoOnpremiseVersion }}
-{{- end -}}
-
-{{/*
-Return Carto Auth0 custom domain
-*/}}
-{{- define "configuration.auth0.cartoAuth0CustomDomain" -}}
-{{ .Values.configuration.auth0.cartoAuth0CustomDomain }}
-{{- end -}}
-
-{{/*
-Return Carto ACC domain
-*/}}
-{{- define "configuration.acc.accDomain" -}}
-{{ .Values.configuration.acc.accDomain }}
-{{- end -}}
-
-{{/*
-Return Carto acc GCP project ID
-*/}}
-{{- define "configuration.acc.accGCPProjectID" -}}
-{{ .Values.configuration.acc.accGCPProjectID }}
-{{- end -}}
-
-{{/*
-Return Carto acc GCP project region
-*/}}
-{{- define "configuration.acc.accGCPProjectRegion" -}}
-{{ .Values.configuration.acc.accGCPProjectRegion }}
-{{- end -}}
-
-{{/*
-Return Carto on premise domain
-*/}}
-{{- define "configuration.onpremDomain" -}}
-{{ .Values.configuration.onpremDomain }}
-{{- end -}}
-
-{{/*
-Return Carto on premise tenant id
-*/}}
-{{- define "configuration.onpremTenantId" -}}
-{{ .Values.configuration.onpremTenantId }}
-{{- end -}}
-
-{{/*
-Return Carto on premise GCP project ID
-*/}}
-{{- define "configuration.onpremGCPProjectID" -}}
-{{ .Values.configuration.onpremGCPProjectID }}
-{{- end -}}
-
-{{/*
-Return the common environment variablesproper Docker Image Registry Secret Names
-*/}}
-{{- define "carto.configure.common" -}}
-- name: ONPREM_DOMAIN
-  value: {{ include "configuration.onpremDomain" . }}
-{{- if .Values.configuration.reactAppGoogleMapsAPIKey }}
-- name: REACT_APP_GOOGLE_MAPS_API_KEY
-  value: {{ .Values.configuration.reactAppGoogleMapsAPIKey }}
-{{- end }}
-{{- if .Values.configuration.externalDatabase.enabled }}
-- name: WORKSPACE_POSTGRES_HOST
-  value: {{ .Values.configuration.externalDatabase.workspacePostgresHost }}
-- name: WORKSPACE_POSTGRES_PORT
-  value: {{ .Values.configuration.externalDatabase.workspacePostgresPort }}
-- name: POSTGRES_PASSWORD
-  {{- if .Values.configuration.externalDatabase.existingSecret }}
-  valueFrom:
-    secretKeyRef:
-      name: {{ include "carto.externalDatabase.secretName" . }}
-      key: {{ include "carto.externalDatabase.existingsecret.key" . }}
-  {{- else }}
-  value: {{ .Values.configuration.externalDatabase.postgresPassword }}
-  {{- end }}
+{{- define "carto.postgresql.secretName" -}}
+{{- if and (.Values.postgresql.enabled) (not .Values.postgresql.existingSecret) -}}
+    {{- printf "%s" (include "carto.postgresql.fullname" .) -}}
+{{- else if and (.Values.postgresql.enabled) (.Values.postgresql.existingSecret) -}}
+    {{- printf "%s" .Values.postgresql.existingSecret -}}
 {{- else }}
-- name: WORKSPACE_POSTGRES_HOST
-  value: {{ .Values.configuration.postgresql.workspacePostgresHost }}
-- name: WORKSPACE_POSTGRES_PORT
-  value: {{ .Values.configuration.postgresql.workspacePostgresPort }}
-- name: POSTGRES_PASSWORD
-  value: {{ .Values.configuration.postgresql.postgresPassword }}
-{{- end }}
-- name: ONPREM_TENANT_ID
-  value: {{ include "configuration.onpremTenantId" . }}
-- name: ONPREM_GCP_PROJECT_ID
-  value: {{ include "configuration.onpremGCPProjectID" . }}
-- name: WORKSPACE_GCS_THUMBNAILS_BUCKET
-  value: {{ .Values.configuration.workspaceGCSThumbnailsBucket }}
-- name: WORKSPACE_GCS_DATASETS_BUCKET
-  value: {{ .Values.configuration.workspaceGCSDatasetsBucket }}
-- name: IMPORT_GCS_DATA_IMPORTS_BUCKET
-  value: {{ .Values.configuration.importGCSDataImportsBucket }}
-{{- if .Values.configuration.ssl.enabled }}
-- name: ROUTER_SSL_AUTOGENERATE
-  value: 1
-- name: ROUTER_SSL_CERTIFICATE_PATH
-  value: {{ .Values.configuration.ssl.routerSSLCertificatePath }}
-- name: ROUTER_SSL_CERTIFICATE_KEY_PATH
-  value: {{ .Values.configuration.ssl.routerSSLCertificateKeyPath }}
-{{- end }}
-- name: CARTO_AUTH0_CLIENT_ID
-  value: {{ include "configuration.auth0.cartoAuth0ClientID" . }}
-- name: CARTO_AUTH0_CUSTOM_DOMAIN
-  value: {{ include "configuration.auth0.cartoAuth0CustomDomain" . }}
-- name: ACC_DOMAIN
-  value: {{ include "configuration.acc.accDomain" . }}
-- name: ACC_GCP_PROJECT_ID
-  value: {{ include "configuration.acc.accGCPProjectID" . }}
-- name: ACC_GCP_PROJECT_REGION
-  value: {{ include "configuration.acc.accGCPProjectRegion" . }}
-- name: ENCRYPTION_SECRET_KEY
-  value: {{ .Values.configuration.encryptionSecretKey }}
-- name: WORKSPACE_POSTGRES_PASSWORD
-  value: {{ .Values.configuration.postgresql.workspacePostgresPassword }}
-- name: CARTO_ONPREMISE_CARTO_DW_LOCATION
-  value: {{ .Values.configuration.cartoOnpremiseCartoDWLocation }}
-- name: CARTO_ONPREMISE_CUSTOMER_PACKAGE_VERSION
-  value: {{ .Values.configuration.cartoOnpremiseCustomerPackageVersion }}
-- name: CARTO_ONPREMISE_VERSION
-  value: {{ include "configuration.cartoOnpremiseVersion" . }}
-- name: GOOGLE_APPLICATION_CREDENTIALS
-  value: ../certs/key.json
-- name: CARTO3_ONPREM_VOLUMES_BASE_PATH
-  value: ./
-- name: DOCKER_REGISTRY_BASE_PATH
-  value: {{ include "configuration.dockerRegistryBasePath" . }}
-- name: CARTO_ONPREMISE_AUTH0_CLIENT_ID
-  value: {{ include "configuration.auth0.cartoAuth0ClientID" . }}
-- name: ROUTER_DOCKER_IMAGE
-  value: {{ include "configuration.dockerRegistryBasePath" . }}/router:{{ include "configuration.cartoOnpremiseVersion" . }}
-- name: ACCOUNTS_API_DOCKER_IMAGE
-  value: {{ include "configuration.dockerRegistryBasePath" . }}/accounts-api:{{ include "configuration.cartoOnpremiseVersion" . }}
-- name: ACCOUNTS_WWW_DOCKER_IMAGE
-  value: {{ include "configuration.dockerRegistryBasePath" . }}/accountsWWW:{{ include "configuration.cartoOnpremiseVersion" . }}
-- name: WORKSPACE_API_DOCKER_IMAGE
-  value: {{ include "configuration.dockerRegistryBasePath" . }}/workspaceApi:{{ include "configuration.cartoOnpremiseVersion" . }}
-- name: WORKSPACE_WWW_DOCKER_IMAGE
-  value: {{ include "configuration.dockerRegistryBasePath" . }}/workspaceWWW:{{ include "configuration.cartoOnpremiseVersion" . }}
-- name: MAPS_API_DOCKER_IMAGE
-  value: {{ include "configuration.dockerRegistryBasePath" . }}/mapsApi:{{ include "configuration.cartoOnpremiseVersion" . }}
-- name: INTEGRATION_TESTS_DOCKER_IMAGE
-  value: {{ include "configuration.dockerRegistryBasePath" . }}/integration-tests:{{ include "configuration.cartoOnpremiseVersion" . }}
-- name: ACCOUNTS_MIGRATIONS_DOCKER_IMAGE
-  value: {{ include "configuration.dockerRegistryBasePath" . }}/accounts-db:{{ include "configuration.cartoOnpremiseVersion" . }}
-- name: WORKSPACE_MIGRATIONS_DOCKER_IMAGE
-  value: {{ include "configuration.dockerRegistryBasePath" . }}/workspace-db{{ include "configuration.cartoOnpremiseVersion" . }}
-- name: IMPORT_API_DOCKER_IMAGE
-  value: {{ include "configuration.dockerRegistryBasePath" . }}/importApi:{{ include "configuration.cartoOnpremiseVersion" . }}
-- name: LDS_API_DOCKER_IMAGE
-  value: {{ include "configuration.dockerRegistryBasePath" . }}/ldsApi:{{ include "configuration.cartoOnpremiseVersion" . }}
-- name: REACT_APP_CLIENT_ID
-  value: {{ include "configuration.auth0.cartoAuth0ClientID" . }}
-- name: REACT_APP_AUTH0_DOMAIN
-  value: {{ include "configuration.auth0.cartoAuth0CustomDomain" . }}
-- name: REACT_APP_ACCOUNTS_API_URL
-  value: https://{{ include "configuration.acc.accDomain" . }}
-- name: REACT_APP_ACCOUNTS_URL
-  value: https://{{ include "configuration.onpremDomain" . }}/acc/
-- name: REACT_APP_WORKSPACE_API_URL
-  value: https://{{ include "configuration.onpremDomain" . }}/workspaceApi
-- name: REACT_APP_API_BASE_URL
-  value: https://{{ include "configuration.onpremDomain" . }}/api
-- name: REACT_APP_PUBLIC_MAP_URL
-  value: https://{{ include "configuration.onpremDomain" . }}/workspaceApi/maps/public
-- name: REACT_APP_AUTH0_AUDIENCE
-  value: carto-cloud-native-api
-- name: REACT_APP_WORKSPACE_URL_TEMPLATE
-  value: https://{tenantDomain}
-- name: REACT_APP_CUSTOM_TENANT
-  value: {{ include "configuration.onpremTenantId" . }}
-- name: REACT_APP_IMPORT_DATASET
-  value: carto_dw.carto-dw-{account-id}.shared
-- name: REACT_APP_HUBSPOT_ID
-  value: 474999
-- name: REACT_APP_HUBSPOT_LIMIT_FORM_ID
-  value: cd9486fa-5766-4bac-81b9-d8c6cd029b3b
-- name: AUTH0_AUDIENCE
-  value: carto-cloud-native-api
-- name: AUTH0_DOMAIN
-  value: {{ include "configuration.auth0.cartoAuth0CustomDomain" . }}
-- name: AUTH0_NAMESPACE
-  value: http://app.carto.com
-- name: LOG_LEVEL
-  value: debug
-- name: REDIS_CACHE_PREFIX
-  value: onprem
-- name: REDIS_HOST
-  value: redis
-- name: REDIS_PORT
-  value: 6379
-- name: PUBSUB_MODE
-  value: pull
-- name: PUBSUB_PROJECT_ID
-  value: {{ include "configuration.onpremGCPProjectID" . }}
-- name: PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE
-  value: projects/{project_id}/topics/data-updates
-- name: EVENT_BUS_TOPIC
-  value: projects/{{ include "configuration.acc.accGCPProjectID" . }}/topics/{{ include "configuration.acc.accGCPProjectRegion" . }}-event-bus
-- name: EVENT_BUS_PROJECT_ID
-  value: {{ include "configuration.acc.accGCPProjectID" . }}
-- name: DO_ENABLED
-  value: false
-- name: CARTO_ONPREMISE_NAME
-  value: {{ include "configuration.onpremTenantId" . }}
-- name: CARTO_ONPREMISE_DOMAIN
-  value: {{ include "configuration.onpremDomain" . }}
-- name: CARTO_ONPREMISE_GCP_PROJECT_ID
-  value: {{ include "configuration.onpremGCPProjectID" . }}
-- name: WORKSPACE_POSTGRES_USER
-  value: workspace_admin
-- name: WORKSPACE_POSTGRES_DB
-  value: workspace
-- name: WORKSPACE_TENANT_ID
-  value: {{ include "configuration.onpremTenantId" . }}
-- name: WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC
-  value: projects/{{ include "configuration.onpremGCPProjectID" . }}/topics/data-updates
-- name: WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION
-  value: projects/{{ include "configuration.onpremGCPProjectID" . }}/subscriptions/data-updates-workspace-sub
-- name: MAPS_API_V3_RESOURCE_URL_HOST
-  value: {{ include "configuration.onpremDomain" . }}
-- name: MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS
-  value: {{ include "configuration.onpremDomain" . }}
-- name: IMPORT_TENANT_ID
-  value: {{ include "configuration.onpremTenantId" . }}
-- name: IMPORT_WORKER_PROCESSING_DIR
-  value: /tmp/importWorker
-- name: IMPORT_PUBSUB_TENANT_BUS_TOPIC
-  value: projects/{{ include "configuration.onpremGCPProjectID" . }}/topics/tenant-bus
-- name: IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION
-  value: projects/{{ include "configuration.onpremGCPProjectID" . }}/subscriptions/tenant-bus-import-sub
+    {{- if .Values.externalDatabase.existingSecret -}}
+        {{- printf "%s" .Values.externalDatabase.existingSecret -}}
+    {{- else -}}
+        {{ printf "%s-%s" .Release.Name "externaldb" }}
+    {{- end -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
-Create the name of the service account to use
+Add environment variables to configure database values
 */}}
-{{- define "carto.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create -}}
-    {{ default (include "common.names.fullname" .) .Values.serviceAccount.name }}
-{{- else -}}
-    {{ default "default" .Values.serviceAccount.name }}
+{{- define "carto.postgresql.host" -}}
+{{- ternary (include "carto.postgresql.fullname" .) .Values.externalDatabase.host .Values.postgresql.enabled | quote -}}
 {{- end -}}
+
+{{/*
+Add environment variables to configure database values
+*/}}
+{{- define "carto.postgresql.user" -}}
+{{- ternary .Values.postgresql.postgresqlUsername .Values.externalDatabase.user .Values.postgresql.enabled | quote -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure database values
+*/}}
+{{- define "carto.postgresql.databaseName" -}}
+{{- ternary .Values.postgresql.postgresqlDatabase .Values.externalDatabase.database .Values.postgresql.enabled | quote -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure database values
+*/}}
+{{- define "carto.postgresql.existingsecret.key" -}}
+{{- if .Values.postgresql.enabled -}}
+    {{- printf "%s" "postgresql-password" -}}
+{{- else -}}
+    {{- if .Values.externalDatabase.existingSecret -}}
+        {{- if .Values.externalDatabase.existingSecretPasswordKey -}}
+            {{- printf "%s" .Values.externalDatabase.existingSecretPasswordKey -}}
+        {{- else -}}
+            {{- printf "%s" "postgresql-password" -}}
+        {{- end -}}
+    {{- else -}}
+        {{- printf "%s" "postgresql-password" -}}
+    {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure database values
+*/}}
+{{- define "carto.postgresql.port" -}}
+{{- ternary "5432" .Values.externalDatabase.port .Values.postgresql.enabled | quote -}}
+{{- end -}}
+
+{{/*
+Return YAML for the PostgreSQL init container
+*/}}
+{{- define "carto.postgresql-init-container" -}}
+# NOTE: The value postgresql.image is not available unless postgresql.enabled is not set. We could change this to use bitnami-shell if
+# it had the binary wait-for-port.
+# This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+- name: wait-for-db
+  image: {{ include "common.images.image" (dict "imageRoot" .Values.postgresql.image "global" .Values.global) }}
+  imagePullPolicy: {{ .Values.postgresql.image.pullPolicy  }}
+  command:
+    - /bin/bash
+  args:
+    - -ec
+    - |
+      #!/bin/bash
+
+      set -o errexit
+      set -o nounset
+      set -o pipefail
+
+      . /opt/bitnami/scripts/libos.sh
+      . /opt/bitnami/scripts/liblog.sh
+      . /opt/bitnami/scripts/libpostgresql.sh
+
+      check_postgresql_connection() {
+          echo "SELECT 1" | postgresql_remote_execute "$POSTGRESQL_CLIENT_DATABASE_HOST" "$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER" "$POSTGRESQL_CLIENT_DATABASE_NAME" "$POSTGRESQL_CLIENT_POSTGRES_USER" "$POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD"
+      }
+
+      info "Connecting to the PostgreSQL instance $POSTGRESQL_CLIENT_DATABASE_HOST:$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER"
+      if ! retry_while "check_postgresql_connection"; then
+          error "Could not connect to the database server"
+          return 1
+      else
+          info "Connected to the PostgreSQL instance"
+      fi
+  {{- if .Values.workspaceMigrations.containerSecurityContext.enabled }}
+  securityContext: {{- omit .Values.workspaceMigrations.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+  {{- end }}
+  env:
+    - name: POSTGRESQL_CLIENT_DATABASE_HOST
+      value: {{ ternary (include "carto.postgresql.fullname" .) .Values.externalDatabase.host .Values.postgresql.enabled }}
+    - name: POSTGRESQL_CLIENT_DATABASE_NAME
+      value: {{ ternary .Values.postgresql.postgresqlDatabase .Values.externalDatabase.port .Values.postgresql.enabled }}
+    - name: POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER
+      value: {{ ternary "5432" .Values.externalDatabase.port .Values.postgresql.enabled | quote}}
+    - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "carto.postgresql.secretName" . }}
+          key: "postgresql-password"
+    - name: POSTGRESQL_CLIENT_POSTGRES_USER
+      value: {{ ternary .Values.postgresql.postgresqlUsername .Values.externalDatabase.host .Values.postgresql.enabled | quote }}
+{{- end -}}
+
+{{/*
+Return YAML for the Redis init container
+*/}}
+{{- define "carto.redis-init-container" -}}
+# NOTE: The value redis.image is not available unless redis.enabled is not set. We could change this to use bitnami-shell if
+# it had the binary wait-for-port.
+# This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+- name: wait-for-redis
+  image: {{ include "common.images.image" (dict "imageRoot" .Values.redis.image "global" .Values.global) }}
+  imagePullPolicy: {{ .Values.redis.image.pullPolicy  }}
+  command:
+    - /bin/bash
+  args:
+    - -ec
+    - |
+      #!/bin/bash
+
+      set -o errexit
+      set -o nounset
+      set -o pipefail
+
+      . /opt/bitnami/scripts/libos.sh
+      . /opt/bitnami/scripts/liblog.sh
+      . /opt/bitnami/scripts/libredis.sh
+
+      check_redis_connection() {
+          echo "INFO" | redis -a "$REDIS_CLIENT_PASSWORD" -p "$REDIS_CLIENT_PORT_NUMBER" -h "$REDIS_CLIENT_DATABASE_NAME" "$REDIS_CLIENT_POSTGRES_USER" -h "$REDIS_CLIENT_HOST"
+      }
+
+      info "Connecting to the Redis instance $REDIS_CLIENT_HOST:$REDIS_CLIENT_PORT_NUMBER"
+      if ! retry_while "check_redis_connection"; then
+          error "Could not connect to the Redis server"
+          return 1
+      else
+          info "Connected to the Redis instance"
+      fi
+  {{- if .Values.workspaceMigrations.containerSecurityContext.enabled }}
+  securityContext: {{- omit .Values.workspaceMigrations.containerSecurityContext "enabled" | toYaml | nindent 4 }}
+  {{- end }}
+  env:
+    - name: REDIS_CLIENT_HOST
+      value: {{ ternary (include "carto.redis.fullname" .) .Values.externalRedis.host .Values.redis.enabled }}
+    - name: REDIS_CLIENT_PORT_NUMBER
+      value: {{ ternary "6379" .Values.externalRedis.port .Values.redis.enabled | quote }}
+    - name: REDIS_CLIENT_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "carto.redisSecretName" . }}
+          key: "redis-password"
 {{- end -}}

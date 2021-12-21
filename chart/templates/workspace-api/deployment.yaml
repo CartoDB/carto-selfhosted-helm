@@ -1,0 +1,174 @@
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.workspaceApi.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: workspace-api
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.workspaceApi.replicaCount }}
+  {{- if .Values.workspaceApi.updateStrategy }}
+  strategy: {{- toYaml .Values.workspaceApi.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: workspace-api
+  template:
+    metadata:
+      {{- if .Values.workspaceApi.podAnnotations }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: workspace-api
+        {{- if .Values.workspaceApi.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.workspaceApi.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.workspaceApi.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.workspaceApi.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceApi.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.workspaceApi.podAffinityPreset "component" "workspace-api" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.workspaceApi.podAntiAffinityPreset "component" "workspace-api" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.workspaceApi.nodeAffinityPreset.type "key" .Values.workspaceApi.nodeAffinityPreset.key "values" .Values.workspaceApi.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.workspaceApi.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceApi.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.workspaceApi.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.workspaceApi.priorityClassName }}
+      priorityClassName: {{ .Values.workspaceApi.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.workspaceApi.schedulerName }}
+      schedulerName: {{ .Values.workspaceApi.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.workspaceApi.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.workspaceApi.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      initContainers:
+        {{- if .Values.postgresql.enabled }}
+        {{ include "carto.postgresql-init-container" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.redis.enabled }}
+        {{ include "carto.redis-init-container" . | nindent 8 }}
+        {{- end }}
+        - name: workspace-migrations
+          image: {{ template "carto.workspaceMigrations.image" . }}
+          imagePullPolicy: {{ .Values.workspaceMigrations.image.pullPolicy }}
+          {{- if .Values.workspaceMigrations.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.workspaceMigrations.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.workspaceMigrations.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceMigrations.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.workspaceMigrations.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceMigrations.args "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.workspaceApi.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: workspace-api
+          image: {{ template "carto.workspaceApi.image" . }}
+          imagePullPolicy: {{ .Values.workspaceApi.image.pullPolicy }}
+          {{- if .Values.workspaceApi.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.workspaceApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.workspaceApi.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.workspaceApi.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.args "context" $) | nindent 12 }}
+          {{- end }}
+          env:
+            - name: BITNAMI_DEBUG
+              value: {{ ternary "true" "false" (or .Values.workspaceApi.image.debug .Values.diagnosticMode.enabled) | quote }}
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ ternary "postgresql-password" "db-password" .Values.postgresql.enabled | quote }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.redisSecretName" . }}
+                  key: {{ ternary "redis-password" "db-password" .Values.redis.enabled | quote }}
+            {{- if .Values.workspaceApi.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "carto.workspaceApi.configmapName" . }}
+            - secretRef:
+                name: {{ include "carto.workspaceApi.secretName" . }}
+            {{- if .Values.workspaceApi.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.workspaceApi.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.workspaceApi.resources }}
+          resources: {{- toYaml .Values.workspaceApi.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.workspaceApi.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.workspaceApi.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceApi.livenessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.workspaceApi.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.workspaceApi.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceApi.readinessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.workspaceApi.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.workspaceApi.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceApi.startupProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.workspaceApi.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.workspaceApi.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+          {{- if .Values.workspaceApi.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.workspaceApi.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceApi.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        {{- if .Values.workspaceApi.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
