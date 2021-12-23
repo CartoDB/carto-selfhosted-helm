@@ -44,7 +44,7 @@ Return the proper Carto ldsApi image name
 Return the proper Carto lds-api full name
 */}}
 {{- define "carto.ldsApi.fullname" -}}
-{{- printf "%s-lds-api" (include "common.names.fullname" .) -}}
+{{- printf "%s-lds-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -91,7 +91,7 @@ Return the proper Carto importWorker image name
 Return the proper Carto import-worker full name
 */}}
 {{- define "carto.importWorker.fullname" -}}
-{{- printf "%s-import-worker" (include "common.names.fullname" .) -}}
+{{- printf "%s-import-worker" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -138,7 +138,7 @@ Return the proper Carto importApi image name
 Return the proper Carto import-api full name
 */}}
 {{- define "carto.importApi.fullname" -}}
-{{- printf "%s-import-api" (include "common.names.fullname" .) -}}
+{{- printf "%s-import-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -185,7 +185,7 @@ Return the proper Carto mapsApi image name
 Return the proper Carto maps-api full name
 */}}
 {{- define "carto.mapsApi.fullname" -}}
-{{- printf "%s-maps-api" (include "common.names.fullname" .) -}}
+{{- printf "%s-maps-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -232,7 +232,7 @@ Return the proper Carto workspaceSubscriber image name
 Return the proper Carto workspace-subscriber full name
 */}}
 {{- define "carto.workspaceSubscriber.fullname" -}}
-{{- printf "%s-workspace-subscriber" (include "common.names.fullname" .) -}}
+{{- printf "%s-workspace-subscriber" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -279,7 +279,7 @@ Return the proper Carto workspaceApi image name
 Return the proper Carto workspace-api full name
 */}}
 {{- define "carto.workspaceApi.fullname" -}}
-{{- printf "%s-workspace-api" (include "common.names.fullname" .) -}}
+{{- printf "%s-workspace-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -326,7 +326,7 @@ Return the proper Carto workspace-www image name
 Return the proper Carto workspace-www full name
 */}}
 {{- define "carto.workspaceWww.fullname" -}}
-{{- printf "%s-workspace-www" (include "common.names.fullname" .) -}}
+{{- printf "%s-workspace-www" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -373,7 +373,7 @@ Return the proper Carto accounts-www image name
 Return the proper Carto accounts-www full name
 */}}
 {{- define "carto.accountsWww.fullname" -}}
-{{- printf "%s-accounts-www" (include "common.names.fullname" .) -}}
+{{- printf "%s-accounts-www" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -420,7 +420,7 @@ Return the proper Carto router image name
 Return the proper Carto router full name
 */}}
 {{- define "carto.router.fullname" -}}
-{{- printf "%s-router" (include "common.names.fullname" .) -}}
+{{- printf "%s-router" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
