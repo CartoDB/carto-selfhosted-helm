@@ -21,7 +21,7 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
 
 {{- $port := "" -}}
 {{- $servicePortString := printf "%v" .Values.router.service.ports.http -}}
-{{- if and (not (eq $servicePortString "80")) (not (eq $servicePortString "443")) -}}
+{{- if and (ne $servicePortString "80") (ne $servicePortString "443") -}}
   {{- $port = printf ":%s" $servicePortString -}}
 {{- end -}}
 
