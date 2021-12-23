@@ -20,7 +20,7 @@ spec:
   {{- if and .Values.workspaceSubscriber.service.clusterIP (eq .Values.workspaceSubscriber.service.type "ClusterIP") }}
   clusterIP: {{ .Values.workspaceSubscriber.service.clusterIP }}
   {{- end }}
-  {{- if ne .Values.workspaceSubscriber.service.type "ClusterIP" }}
+  {{- if and .Values.workspaceSubscriber.service.externalTrafficPolicy (ne .Values.workspaceSubscriber.service.type "ClusterIP") }}
   externalTrafficPolicy: {{ .Values.workspaceSubscriber.service.externalTrafficPolicy }}
   {{- end }}
   {{- if and .Values.workspaceSubscriber.service.loadBalancerIP (eq .Values.workspaceSubscriber.service.type "LoadBalancer") }}

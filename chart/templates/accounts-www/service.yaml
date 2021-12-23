@@ -20,7 +20,7 @@ spec:
   {{- if and .Values.accountsWww.service.clusterIP (eq .Values.accountsWww.service.type "ClusterIP") }}
   clusterIP: {{ .Values.accountsWww.service.clusterIP }}
   {{- end }}
-  {{- if ne .Values.accountsWww.service.type "ClusterIP" }}
+  {{- if and .Values.accountsWww.service.externalTrafficPolicy (ne .Values.accountsWww.service.type "ClusterIP") }}
   externalTrafficPolicy: {{ .Values.accountsWww.service.externalTrafficPolicy }}
   {{- end }}
   {{- if and .Values.accountsWww.service.loadBalancerIP (eq .Values.accountsWww.service.type "LoadBalancer") }}

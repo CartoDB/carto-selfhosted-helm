@@ -20,7 +20,7 @@ spec:
   {{- if and .Values.router.service.clusterIP (eq .Values.router.service.type "ClusterIP") }}
   clusterIP: {{ .Values.router.service.clusterIP }}
   {{- end }}
-  {{- if ne .Values.router.service.type "ClusterIP" }}
+  {{- if and .Values.router.service.externalTrafficPolicy (ne .Values.router.service.type "ClusterIP") }}
   externalTrafficPolicy: {{ .Values.router.service.externalTrafficPolicy }}
   {{- end }}
   {{- if and .Values.router.service.loadBalancerIP (eq .Values.router.service.type "LoadBalancer") }}

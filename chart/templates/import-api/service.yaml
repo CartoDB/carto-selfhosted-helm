@@ -20,7 +20,7 @@ spec:
   {{- if and .Values.importApi.service.clusterIP (eq .Values.importApi.service.type "ClusterIP") }}
   clusterIP: {{ .Values.importApi.service.clusterIP }}
   {{- end }}
-  {{- if ne .Values.importApi.service.type "ClusterIP" }}
+  {{- if and .Values.importApi.service.externalTrafficPolicy (ne .Values.importApi.service.type "ClusterIP") }}
   externalTrafficPolicy: {{ .Values.importApi.service.externalTrafficPolicy }}
   {{- end }}
   {{- if and .Values.importApi.service.loadBalancerIP (eq .Values.importApi.service.type "LoadBalancer") }}

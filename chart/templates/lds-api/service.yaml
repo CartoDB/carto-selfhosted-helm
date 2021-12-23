@@ -20,7 +20,7 @@ spec:
   {{- if and .Values.ldsApi.service.clusterIP (eq .Values.ldsApi.service.type "ClusterIP") }}
   clusterIP: {{ .Values.ldsApi.service.clusterIP }}
   {{- end }}
-  {{- if ne .Values.ldsApi.service.type "ClusterIP" }}
+  {{- if and .Values.ldsApi.service.externalTrafficPolicy (ne .Values.ldsApi.service.type "ClusterIP") }}
   externalTrafficPolicy: {{ .Values.ldsApi.service.externalTrafficPolicy }}
   {{- end }}
   {{- if and .Values.ldsApi.service.loadBalancerIP (eq .Values.ldsApi.service.type "LoadBalancer") }}

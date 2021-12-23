@@ -58,9 +58,10 @@ host. To configure CARTO with the URL of your service:
 1. Get the CARTO URL by running:
 
 {{- if eq .Values.router.service.type "ClusterIP" }}
+  {{- $port := default 80 .Values.router.service.ports.http | toString }}
 
-  echo URL  : http://127.0.0.1:{{ default "80" .Values.router.service.ports.http }}
-  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ default "80" .Values.router.service.ports.http }}:8080
+  echo "URL  : http://127.0.0.1{{- if ne $port "80" }}:{{ $port }}{{ end }}"
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }}
 
 {{- else if eq .Values.router.service.type "NodePort" }}
   export CARTO_HOST=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
@@ -92,9 +93,10 @@ host. To configure CARTO with the URL of your service:
 1. Get the CARTO URL by running:
 
 {{- if eq .Values.router.service.type "ClusterIP" }}
+{{- $port := default 80 .Values.router.service.ports.http | toString }}
 
-  echo URL  : http://127.0.0.1:{{ default "80" .Values.router.service.ports.http }}
-  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ default "80" .Values.router.service.ports.http }}:8080
+  echo "URL  : http://127.0.0.1{{- if ne $port "80" }}:{{ $port }}{{ end }}"
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }}
 
 {{- else if eq .Values.router.service.type "NodePort" }}
 

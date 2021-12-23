@@ -214,7 +214,7 @@ accountsWww:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/accounts-www
-    tag: "2021.12.20"
+    tag: "2021.12.23.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -515,7 +515,7 @@ importApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/import-api
-    tag: "2021.12.20"
+    tag: "2021.12.23.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -816,7 +816,7 @@ importWorker:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/import-api
-    tag: "2021.12.20"
+    tag: "2021.12.23.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1117,7 +1117,7 @@ ldsApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/lds-api
-    tag: "2021.12.20"
+    tag: "2021.12.23.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1418,7 +1418,7 @@ mapsApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/maps-api
-    tag: "2021.12.20"
+    tag: "2021.12.23.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1719,7 +1719,7 @@ router:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/router
-    tag: "2021.12.20"
+    tag: "2021.12.23.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2032,7 +2032,7 @@ workspaceApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-api
-    tag: "2021.12.20"
+    tag: "2021.12.23.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2333,7 +2333,7 @@ workspaceSubscriber:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-api
-    tag: "2021.12.20"
+    tag: "2021.12.23.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2634,7 +2634,7 @@ workspaceWww:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-www
-    tag: "2021.12.20"
+    tag: "2021.12.23.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2934,7 +2934,7 @@ workspaceMigrations:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-db
-    tag: "2021.12.20"
+    tag: "2021.12.23.01"
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
     ## Secrets must be manually created in the namespace.
