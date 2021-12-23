@@ -1,6 +1,39 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{/*
+Get the user defined LoadBalancerIP for this release.
+Note, returns 127.0.0.1 if using ClusterIP.
+*/}}
+{{- define "carto.serviceIP" -}}
+{{- if eq .Values.router.service.type "ClusterIP" -}}
+127.0.0.1
+{{- else -}}
+{{- .Values.router.service.loadBalancerIP | default "" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Gets the host to be used for this application.
+If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value will be empty.
+*/}}
+{{- define "carto.baseUrl" -}}
+{{- $host := include "carto.serviceIP" . -}}
+
+{{- $port := "" -}}
+{{- $servicePortString := printf "%v" .Values.router.service.ports.http -}}
+{{- if and (not (eq $servicePortString "80")) (not (eq $servicePortString "443")) -}}
+  {{- $port = printf ":%s" $servicePortString -}}
+{{- end -}}
+
+{{- $defaultUrl := "" -}}
+{{- if $host -}}
+  {{- $defaultUrl = printf "%s%s" $host $port -}}
+{{- end -}}
+
+{{- default $defaultUrl (printf "%s" .Values.onPremDomain) -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto ldsApi image name
 */}}
 {{- define "carto.ldsApi.image" -}}
@@ -424,10 +457,25 @@ Create the name of the service account to use for the router deployment
 {{- end -}}
 
 {{/*
+Return the proper Carto workspace migrations image name
+*/}}
+{{- define "carto.workspaceMigrations.image" -}}
+{{- include "common.images.image" (dict "imageRoot" .Values.workspaceMigrations.image "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.pullSecrets" (dict "images" (list .Values.ldsApi.image ) "global" .Values.global) -}}
+{{- include "common.images.pullSecrets" (dict "images" (dict .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image) "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified postgresql name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "carto.postgresql.fullname" -}}
+{{- include "common.names.dependency.fullname" (dict "chartName" "postgresql" "chartValues" .Values.postgresql "context" $) -}}
 {{- end -}}
 
 {{/*
@@ -464,6 +512,13 @@ Add environment variables to configure database values
 {{/*
 Add environment variables to configure database values
 */}}
+{{- define "carto.postgresql.adminUser" -}}
+{{- ternary "postgres" .Values.externalDatabase.adminUser .Values.postgresql.enabled | quote -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure database values
+*/}}
 {{- define "carto.postgresql.databaseName" -}}
 {{- ternary .Values.postgresql.postgresqlDatabase .Values.externalDatabase.database .Values.postgresql.enabled | quote -}}
 {{- end -}}
@@ -479,10 +534,29 @@ Add environment variables to configure database values
         {{- if .Values.externalDatabase.existingSecretPasswordKey -}}
             {{- printf "%s" .Values.externalDatabase.existingSecretPasswordKey -}}
         {{- else -}}
-            {{- printf "%s" "postgresql-password" -}}
+            {{- printf "%s" "db-password" -}}
         {{- end -}}
     {{- else -}}
-        {{- printf "%s" "postgresql-password" -}}
+        {{- printf "%s" "db-password" -}}
+    {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure database values
+*/}}
+{{- define "carto.postgresql.existingsecret.adminKey" -}}
+{{- if .Values.postgresql.enabled -}}
+    {{- printf "%s" "postgresql-postgres-password" -}}
+{{- else -}}
+    {{- if .Values.externalDatabase.existingSecret -}}
+        {{- if .Values.externalDatabase.existingSecretAdminPasswordKey -}}
+            {{- printf "%s" .Values.externalDatabase.existingSecretAdminPasswordKey -}}
+        {{- else -}}
+            {{- printf "%s" "db-admin-password" -}}
+        {{- end -}}
+    {{- else -}}
+        {{- printf "%s" "db-admin-password" -}}
     {{- end -}}
 {{- end -}}
 {{- end -}}
@@ -496,14 +570,19 @@ Add environment variables to configure database values
 
 {{/*
 Return YAML for the PostgreSQL init container
+Usage:
+Non-admin user
+{{ include "carto.postgresql-init-container" (dict "context" $) }}
+Admin user
+{{ include "carto.postgresql-init-container" (dict "context" $ "admin" "true") }}
 */}}
 {{- define "carto.postgresql-init-container" -}}
 # NOTE: The value postgresql.image is not available unless postgresql.enabled is not set. We could change this to use bitnami-shell if
 # it had the binary wait-for-port.
 # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
 - name: wait-for-db
-  image: {{ include "common.images.image" (dict "imageRoot" .Values.postgresql.image "global" .Values.global) }}
-  imagePullPolicy: {{ .Values.postgresql.image.pullPolicy  }}
+  image: {{ include "common.images.image" (dict "imageRoot" .context.Values.postgresql.image "global" .context.Values.global) }}
+  imagePullPolicy: {{ .context.Values.postgresql.image.pullPolicy  }}
   command:
     - /bin/bash
   args:
@@ -524,29 +603,99 @@ Return YAML for the PostgreSQL init container
       }
 
       info "Connecting to the PostgreSQL instance $POSTGRESQL_CLIENT_DATABASE_HOST:$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER"
-      if ! retry_while "check_postgresql_connection"; then
+      if ! retry_while "check_postgresql_connection" {{- if not .admin }} 100{{- end }}; then
           error "Could not connect to the database server"
-          return 1
+          exit 1
       else
           info "Connected to the PostgreSQL instance"
       fi
-  {{- if .Values.workspaceMigrations.containerSecurityContext.enabled }}
-  securityContext: {{- omit .Values.workspaceMigrations.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+  {{- if .context.Values.workspaceMigrations.containerSecurityContext.enabled }}
+  securityContext: {{- omit .context.Values.workspaceMigrations.containerSecurityContext "enabled" | toYaml | nindent 12 }}
   {{- end }}
   env:
     - name: POSTGRESQL_CLIENT_DATABASE_HOST
-      value: {{ ternary (include "carto.postgresql.fullname" .) .Values.externalDatabase.host .Values.postgresql.enabled }}
-    - name: POSTGRESQL_CLIENT_DATABASE_NAME
-      value: {{ ternary .Values.postgresql.postgresqlDatabase .Values.externalDatabase.port .Values.postgresql.enabled }}
+      value: {{ include "carto.postgresql.host" .context }}
     - name: POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER
-      value: {{ ternary "5432" .Values.externalDatabase.port .Values.postgresql.enabled | quote}}
+      value: {{ include "carto.postgresql.port" .context }}
+    {{- if .admin }}
     - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: {{ include "carto.postgresql.secretName" . }}
-          key: "postgresql-password"
+          name: {{ include "carto.postgresql.secretName" .context }}
+          key: {{ include "carto.postgresql.existingsecret.adminKey" .context | quote }}
     - name: POSTGRESQL_CLIENT_POSTGRES_USER
-      value: {{ ternary .Values.postgresql.postgresqlUsername .Values.externalDatabase.host .Values.postgresql.enabled | quote }}
+      value: {{ include "carto.postgresql.adminUser" .context }}
+    - name: POSTGRESQL_CLIENT_DATABASE_NAME
+      value: "postgres"
+    {{- else }}
+    - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "carto.postgresql.secretName" .context }}
+          key: {{ include "carto.postgresql.existingsecret.key" .context  }}
+    - name: POSTGRESQL_CLIENT_POSTGRES_USER
+      value: {{ include "carto.postgresql.user" .context | quote }}
+    - name: POSTGRESQL_CLIENT_DATABASE_NAME
+      value: {{ include "carto.postgresql.databaseName" .context }}
+    {{- end }}
+{{- end -}}
+
+{{/*
+Create a default fully qualified redis name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "carto.redis.fullname" -}}
+{{- include "common.names.dependency.fullname" (dict "chartName" "redis" "chartValues" .Values.redis "context" $) -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure database values
+*/}}
+{{- define "carto.redis.host" -}}
+{{- ternary (printf "%s-master" (include "carto.redis.fullname" .)) .Values.externalRedis.host .Values.redis.enabled | quote -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure database values
+*/}}
+{{- define "carto.redis.port" -}}
+{{- ternary "6379" .Values.externalRedis.port .Values.redis.enabled | quote -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure Redis values
+*/}}
+{{- define "carto.redis.existingsecret.key" -}}
+{{- if .Values.redis.enabled -}}
+    {{- printf "%s" "redis-password" -}}
+{{- else -}}
+    {{- if .Values.externalRedis.existingSecret -}}
+        {{- if .Values.externalRedis.existingSecretPasswordKey -}}
+            {{- printf "%s" .Values.externalRedis.existingSecretPasswordKey -}}
+        {{- else -}}
+            {{- printf "%s" "redis-password" -}}
+        {{- end -}}
+    {{- else -}}
+        {{- printf "%s" "redis-password" -}}
+    {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the Redis credentials secret.
+*/}}
+{{- define "carto.redis.secretName" -}}
+{{- if and (.Values.redis.enabled) (not .Values.redis.existingSecret) -}}
+    {{- printf "%s" (include "carto.redis.fullname" .) -}}
+{{- else if and (.Values.redis.enabled) (.Values.redis.existingSecret) -}}
+    {{- printf "%s" .Values.redis.existingSecret -}}
+{{- else }}
+    {{- if .Values.externalRedis.existingSecret -}}
+        {{- printf "%s" .Values.externalRedis.existingSecret -}}
+    {{- else -}}
+        {{ printf "%s-%s" .Release.Name "externalredis" }}
+    {{- end -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -575,13 +724,13 @@ Return YAML for the Redis init container
       . /opt/bitnami/scripts/libredis.sh
 
       check_redis_connection() {
-          echo "INFO" | redis -a "$REDIS_CLIENT_PASSWORD" -p "$REDIS_CLIENT_PORT_NUMBER" -h "$REDIS_CLIENT_DATABASE_NAME" "$REDIS_CLIENT_POSTGRES_USER" -h "$REDIS_CLIENT_HOST"
+          echo "INFO" | redis-cli -a "$REDIS_CLIENT_PASSWORD" -p "$REDIS_CLIENT_PORT_NUMBER" -h "$REDIS_CLIENT_HOST"
       }
 
       info "Connecting to the Redis instance $REDIS_CLIENT_HOST:$REDIS_CLIENT_PORT_NUMBER"
       if ! retry_while "check_redis_connection"; then
           error "Could not connect to the Redis server"
-          return 1
+          exit 1
       else
           info "Connected to the Redis instance"
       fi
@@ -596,6 +745,43 @@ Return YAML for the Redis init container
     - name: REDIS_CLIENT_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: {{ include "carto.redisSecretName" . }}
+          name: {{ include "carto.redis.secretName" . }}
           key: "redis-password"
+{{- end -}}
+
+{{/*
+Validate external Redis config
+*/}}
+{{- define "carto.validateValues.redis" -}}
+{{- if and (not .Values.redis.enabled) (not .Values.externalRedis.host) -}}
+CARTO: Missing Redis(TM)
+
+If redis.enabled=false you need to specify the host of an external Redis(TM) instance setting externalRedis.host
+{{- end -}}
+{{- end -}}
+
+{{/*
+Validate external Redis config
+*/}}
+{{- define "carto.validateValues.postgresql" -}}
+{{- if and (not .Values.redis.enabled) (not .Values.externalRedis.host) -}}
+CARTO: Missing PostgreSQL
+
+If postgresql.enabled=false you need to specify the host of an external PostgreSQL instance setting externalDatabase.host
+{{- end -}}
+{{- end -}}
+
+{{/*
+Compile all warnings into a single message, and call fail.
+*/}}
+{{- define "carto.validateValues" -}}
+{{- $messages := list -}}
+{{- $messages := append $messages (include "carto.validateValues.redis" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.postgresql" .) -}}
+{{- $messages := without $messages "" -}}
+{{- $message := join "\n" $messages -}}
+
+{{- if $message -}}
+{{-   printf "\nVALUES VALIDATION:\n%s" $message | fail -}}
+{{- end -}}
 {{- end -}}

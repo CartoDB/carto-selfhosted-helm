@@ -1,3 +1,4 @@
+{{- if (include "carto.baseUrl" .) }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
@@ -21,9 +22,12 @@ spec:
       app.kubernetes.io/component: workspace-api
   template:
     metadata:
-      {{- if .Values.workspaceApi.podAnnotations }}
-      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.podAnnotations "context" $) | nindent 8 }}
-      {{- end }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/workspace-api/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/workspace-api/secret.yaml") . | sha256sum }}
+        {{- if .Values.workspaceApi.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
         app.kubernetes.io/component: workspace-api
         {{- if .Values.workspaceApi.podLabels }}
@@ -60,7 +64,7 @@ spec:
       {{- end }}
       initContainers:
         {{- if .Values.postgresql.enabled }}
-        {{ include "carto.postgresql-init-container" . | nindent 8 }}
+        {{ include "carto.postgresql-init-container" (dict "context" $ "admin" "true") | nindent 8 }}
         {{- end }}
         {{- if .Values.redis.enabled }}
         {{ include "carto.redis-init-container" . | nindent 8 }}
@@ -73,10 +77,39 @@ spec:
           {{- end }}
           {{- if .Values.workspaceMigrations.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceMigrations.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
           {{- end }}
           {{- if .Values.workspaceMigrations.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceMigrations.args "context" $) | nindent 12 }}
+          {{- else }}
+          args:
+            - -ec
+            - |
+              set -a
+              . /config/.env
+              . /secret/.secret.env
+              /usr/src/app/onprem-init-db.sh
           {{- end }}
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ include "carto.postgresql.existingsecret.adminKey" . | quote }}
+            - name: WORKSPACE_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ include "carto.postgresql.existingsecret.key" . | quote }}
+            - name: POSTGRES_ADMIN_USER
+              value: {{ include "carto.postgresql.adminUser" . }}
+          volumeMounts:
+            - name: config-env
+              mountPath: /config
+            - name: secret-env
+              mountPath: /secret
         {{- if .Values.workspaceApi.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.initContainers "context" $) | nindent 8 }}
         {{- end }}
@@ -91,33 +124,38 @@ spec:
           command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
           {{- else if .Values.workspaceApi.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
           {{- else if .Values.workspaceApi.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.args "context" $) | nindent 12 }}
+          {{ else }}
+          args:
+            - -ec
+            - |
+              set -a
+              . /config/.env
+              . /secret/.secret.env
+              npm run start:built
           {{- end }}
           env:
-            - name: BITNAMI_DEBUG
-              value: {{ ternary "true" "false" (or .Values.workspaceApi.image.debug .Values.diagnosticMode.enabled) | quote }}
-            - name: POSTGRESQL_PASSWORD
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
-                  key: {{ ternary "postgresql-password" "db-password" .Values.postgresql.enabled | quote }}
+                  key: {{ include "carto.postgresql.existingsecret.key" . | quote }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "carto.redisSecretName" . }}
-                  key: {{ ternary "redis-password" "db-password" .Values.redis.enabled | quote }}
+                  name: {{ include "carto.redis.secretName" . }}
+                  key: {{ include "carto.redis.existingsecret.key" . | quote }}
             {{- if .Values.workspaceApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            - configMapRef:
-                name: {{ include "carto.workspaceApi.configmapName" . }}
-            - secretRef:
-                name: {{ include "carto.workspaceApi.secretName" . }}
             {{- if .Values.workspaceApi.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVarsCM "context" $) }}
@@ -136,7 +174,7 @@ spec:
           {{- if .Values.workspaceApi.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceApi.livenessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /
               port: http
           {{- else if .Values.workspaceApi.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.customLivenessProbe "context" $) | nindent 12 }}
@@ -144,7 +182,7 @@ spec:
           {{- if .Values.workspaceApi.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceApi.readinessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /
               port: http
           {{- else if .Values.workspaceApi.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.customReadinessProbe "context" $) | nindent 12 }}
@@ -162,6 +200,10 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: config-env
+              mountPath: /config
+            - name: secret-env
+              mountPath: /secret
           {{- if .Values.workspaceApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -169,6 +211,13 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceApi.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
+        - name: config-env
+          configMap:
+            name: {{ include "carto.workspaceApi.configmapName" . }}
+        - name: secret-env
+          secret:
+            secretName: {{ include "carto.workspaceApi.secretName" . }}
         {{- if .Values.workspaceApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
+{{- end }}

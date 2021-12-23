@@ -1,3 +1,4 @@
+{{- if (include "carto.baseUrl" .) }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
@@ -21,9 +22,12 @@ spec:
       app.kubernetes.io/component: workspace-www
   template:
     metadata:
-      {{- if .Values.workspaceWww.podAnnotations }}
-      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.podAnnotations "context" $) | nindent 8 }}
-      {{- end }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/workspace-www/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/workspace-www/secret.yaml") . | sha256sum }}
+        {{- if .Values.workspaceWww.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
         app.kubernetes.io/component: workspace-www
         {{- if .Values.workspaceWww.podLabels }}
@@ -73,23 +77,28 @@ spec:
           command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
           {{- else if .Values.workspaceWww.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
           {{- else if .Values.workspaceWww.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.args "context" $) | nindent 12 }}
+          {{ else }}
+          args:
+            - -ec
+            - |
+              set -a
+              . /config/.env
+              . /secret/.secret.env
+              nginx -g "daemon off;"
           {{- end }}
           env:
-            - name: BITNAMI_DEBUG
-              value: {{ ternary "true" "false" (or .Values.workspaceWww.image.debug .Values.diagnosticMode.enabled) | quote }}
             {{- if .Values.workspaceWww.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            - configMapRef:
-                name: {{ include "carto.workspaceWww.configmapName" . }}
-            - secretRef:
-                name: {{ include "carto.workspaceWww.secretName" . }}
             {{- if .Values.workspaceWww.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraEnvVarsCM "context" $) }}
@@ -108,7 +117,7 @@ spec:
           {{- if .Values.workspaceWww.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceWww.livenessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /
               port: http
           {{- else if .Values.workspaceWww.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.customLivenessProbe "context" $) | nindent 12 }}
@@ -116,7 +125,7 @@ spec:
           {{- if .Values.workspaceWww.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceWww.readinessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /
               port: http
           {{- else if .Values.workspaceWww.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.customReadinessProbe "context" $) | nindent 12 }}
@@ -134,6 +143,10 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: config-env
+              mountPath: /config
+            - name: secret-env
+              mountPath: /secret
           {{- if .Values.workspaceWww.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -141,6 +154,13 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceWww.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
+        - name: config-env
+          configMap:
+            name: {{ include "carto.workspaceWww.configmapName" . }}
+        - name: secret-env
+          secret:
+            secretName: {{ include "carto.workspaceWww.secretName" . }}
         {{- if .Values.workspaceWww.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
+{{- end }}

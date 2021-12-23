@@ -1,3 +1,4 @@
+{{- if (include "carto.baseUrl" .) }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
@@ -21,9 +22,12 @@ spec:
       app.kubernetes.io/component: import-api
   template:
     metadata:
-      {{- if .Values.importApi.podAnnotations }}
-      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.podAnnotations "context" $) | nindent 8 }}
-      {{- end }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/import-api/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/import-api/secret.yaml") . | sha256sum }}
+        {{- if .Values.importApi.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.importApi.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
         app.kubernetes.io/component: import-api
         {{- if .Values.importApi.podLabels }}
@@ -60,7 +64,7 @@ spec:
       {{- end }}
       initContainers:
         {{- if .Values.postgresql.enabled }}
-        {{ include "carto.postgresql-init-container" . | nindent 8 }}
+        {{ include "carto.postgresql-init-container" (dict "context" $) | nindent 8 }}
         {{- end }}
         {{- if .Values.importApi.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.importApi.initContainers "context" $) | nindent 8 }}
@@ -76,16 +80,25 @@ spec:
           command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
           {{- else if .Values.importApi.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
           {{- else if .Values.importApi.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.args "context" $) | nindent 12 }}
+          {{ else }}
+          args:
+            - -ec
+            - |
+              set -a
+              . /config/.env
+              . /secret/.secret.env
+              npm run start:built
           {{- end }}
           env:
-            - name: BITNAMI_DEBUG
-              value: {{ ternary "true" "false" (or .Values.importApi.image.debug .Values.diagnosticMode.enabled) | quote }}
-            - name: POSTGRESQL_PASSWORD
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
@@ -94,10 +107,6 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            - configMapRef:
-                name: {{ include "carto.importApi.configmapName" . }}
-            - secretRef:
-                name: {{ include "carto.importApi.secretName" . }}
             {{- if .Values.importApi.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.importApi.extraEnvVarsCM "context" $) }}
@@ -142,6 +151,10 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: config-env
+              mountPath: /config
+            - name: secret-env
+              mountPath: /secret
           {{- if .Values.importApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -149,6 +162,13 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.importApi.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
+        - name: config-env
+          configMap:
+            name: {{ include "carto.importApi.configmapName" . }}
+        - name: secret-env
+          secret:
+            secretName: {{ include "carto.importApi.secretName" . }}
         {{- if .Values.importApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
+{{- end }}

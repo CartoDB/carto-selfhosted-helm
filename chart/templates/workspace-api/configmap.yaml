@@ -12,7 +12,9 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  # Common configuration
-  {{- include "common.tplvalues.render" ( dict "value" .Values.commonConfiguration "context" $ ) | nindent 2 }}
-  # workspace-api configuration
-  {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceApi.configuration "context" $ ) | nindent 2 }}
+  .env:  |
+    # Common configuration
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonConfiguration "context" $ ) | nindent 4 }}
+    # workspace-api configuration
+    {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceApi.configuration "context" $ ) | nindent 4 }}
+{{- end }}

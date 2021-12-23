@@ -57,13 +57,149 @@ diagnosticMode:
   args:
     - infinity
 
-## @param commonConfiguration Configuration in the form of env vars to all Carto deployments
+## @section CARTO common parameters
 ##
-commonConfiguration: ""
 
-## @param commonSecretConfiguration Sensitive configuration in the form of env vars to all Carto deployments
+## @param onPremDomain CARTO on premises domain
 ##
-commonSecretConfiguration: ""
+onPremDomain: ""
+
+## @param commonConfiguration [object] Configuration script that will be run in all Carto instances
+##
+commonConfiguration: |
+  # CARTO Self hosted configuration
+
+  # Version
+  CARTO_ONPREMISE_VERSION="{{ .Chart.AppVersion }}"
+
+  # CARTO Self hosted configuration
+  # >>>>>>>>>>>>  TO BE CHANGED  >>>>>>>>>>>>>>>>>>>>>>>>>
+
+  # Fully qualified domain where CARTO will be accesible
+  ONPREM_DOMAIN="{{ include "carto.baseUrl" . }}"
+
+  # If you want to use Google Maps and have a API KEY set it here
+  # REACT_APP_GOOGLE_MAPS_API_KEY="CUSTOMIZED_FOR_USER_IF_NEEDED"
+
+  # Configuration onfiguration for PostgreSQL
+  WORKSPACE_POSTGRES_HOST="{{ include "carto.postgresql.host" . }}"
+  WORKSPACE_POSTGRES_PORT="{{ include "carto.postgresql.port" . }}"
+
+  # Customer project and tenant name
+  ONPREM_TENANT_ID="onp-<FILL_ME>"
+  ONPREM_GCP_PROJECT_ID="carto-tnt-${ONPREM_TENANT_ID}"
+
+  # Change the following and read the documentation to use your own buckets
+  WORKSPACE_GCS_THUMBNAILS_BUCKET="${ONPREM_GCP_PROJECT_ID}-thumbnails-storage"
+  WORKSPACE_GCS_DATASETS_BUCKET="${ONPREM_GCP_PROJECT_ID}-client-storage"
+  IMPORT_GCS_DATA_IMPORTS_BUCKET="${ONPREM_GCP_PROJECT_ID}-import-storage"
+
+  # Your custom certificates, read the documentation
+  # ROUTER_SSL_AUTOGENERATE="<1 to enable | 0 to disable>"
+  # ROUTER_SSL_CERTIFICATE_PATH="/etc/nginx/ssl/<cert>.crt"
+  # ROUTER_SSL_CERTIFICATE_KEY_PATH="/etc/nginx/ssl/<cert>.key"
+
+  # >>>>>>>>>>>>  END OF CHANGES  >>>>>>>>>>>>>>>>>>>>>>>>>
+
+  CARTO_AUTH0_CLIENT_ID="<FILL_ME>"
+  CARTO_AUTH0_CUSTOM_DOMAIN="<FILL_ME>"
+
+  ACC_DOMAIN="<FILL_ME>"
+  ACC_GCP_PROJECT_ID="<FILL_ME>"
+  ACC_GCP_PROJECT_REGION="<FILL_ME>"
+
+  CARTO_ONPREMISE_CARTO_DW_LOCATION="<FILL_ME>"
+
+  # <<<<<<<<<<<<<  END OF CUSTOMER CONFIG <<<<<<<<<<<<<<<<<<<
+
+  ### DO NOT EDIT BELOW THIS LINE
+
+  GOOGLE_APPLICATION_CREDENTIALS="../certs/key.json"
+  CARTO3_ONPREM_VOLUMES_BASE_PATH="./"
+
+  DOCKER_REGISTRY_BASE_PATH="gcr.io/carto-onprem-artifacts"
+  CARTO_ONPREMISE_AUTH0_CLIENT_ID="${CARTO_AUTH0_CLIENT_ID}"
+  WORKSPACE_THUMBNAILS_BUCKET="${ONPREM_GCP_PROJECT_ID}-thumbnails-storage"
+  WORKSPACE_DATASETS_BUCKET="${ONPREM_GCP_PROJECT_ID}-client-storage"
+  ### END VALUES FOR EACH ONPREM #########################
+
+  ### GENERIC CONF
+
+  ### WWW variables
+  REACT_APP_CLIENT_ID="${CARTO_AUTH0_CLIENT_ID}"
+  REACT_APP_AUTH0_DOMAIN="${CARTO_AUTH0_CUSTOM_DOMAIN}"
+  REACT_APP_ACCOUNTS_API_URL="https://${ACC_DOMAIN}"
+  REACT_APP_ACCOUNTS_URL="https://${ONPREM_DOMAIN}/acc/"
+  REACT_APP_WORKSPACE_API_URL="https://${ONPREM_DOMAIN}/workspace-api"
+  REACT_APP_API_BASE_URL="https://${ONPREM_DOMAIN}/api"
+  REACT_APP_PUBLIC_MAP_URL="https://${ONPREM_DOMAIN}/workspace-api/maps/public"
+  REACT_APP_AUTH0_AUDIENCE="carto-cloud-native-api"
+  REACT_APP_WORKSPACE_URL_TEMPLATE="https://{tenantDomain}"
+  REACT_APP_CUSTOM_TENANT="${ONPREM_TENANT_ID}"
+  REACT_APP_IMPORT_DATASET="carto_dw.carto-dw-{account-id}.shared"
+  REACT_APP_HUBSPOT_ID="474999"
+  REACT_APP_HUBSPOT_LIMIT_FORM_ID="cd9486fa-5766-4bac-81b9-d8c6cd029b3b"
+  REACT_APP_BIGQUERY_OAUTH="false"
+
+  ## Common config
+  ##
+  AUTH0_AUDIENCE="carto-cloud-native-api"
+  AUTH0_DOMAIN="${CARTO_AUTH0_CUSTOM_DOMAIN}"
+  AUTH0_NAMESPACE="http://app.carto.com"
+  LOG_LEVEL="debug"
+
+  REDIS_CACHE_PREFIX="onprem"
+  REDIS_HOST="{{ include "carto.redis.host" . }}"
+  REDIS_PORT="{{ include "carto.redis.port" . }}"
+
+  ## PUB SUB
+  ##
+  PUBSUB_MODE="pull"
+
+  PUBSUB_PROJECT_ID="${ONPREM_GCP_PROJECT_ID}"
+
+  ## Conflictive with onprem tenant && regular tenants
+  ##
+  PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE="projects/{project_id}/topics/data-updates"
+
+  EVENT_BUS_TOPIC="projects/${ACC_GCP_PROJECT_ID}/topics/${ACC_GCP_PROJECT_REGION}-event-bus"
+  EVENT_BUS_PROJECT_ID="${ACC_GCP_PROJECT_ID}"
+
+  DO_ENABLED="false"
+
+  ## Workspace config
+  ##
+  CARTO_ONPREMISE_NAME="${ONPREM_TENANT_ID}"
+  CARTO_ONPREMISE_DOMAIN="${ONPREM_DOMAIN}"
+  CARTO_ONPREMISE_GCP_PROJECT_ID="${ONPREM_GCP_PROJECT_ID}"
+
+  WORKSPACE_POSTGRES_USER="{{ include "carto.postgresql.user" . }}"
+  WORKSPACE_POSTGRES_DB="{{ include "carto.postgresql.databaseName" . }}"
+
+  # if you change the TENANT_ID you need to change the DataUpdate's topic and sub
+  WORKSPACE_TENANT_ID="${ONPREM_TENANT_ID}"
+
+  WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC="projects/${ONPREM_GCP_PROJECT_ID}/topics/data-updates"
+  WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION="projects/${ONPREM_GCP_PROJECT_ID}/subscriptions/data-updates-workspace-sub"
+
+  ## Maps API config
+  ##
+  MAPS_API_V3_RESOURCE_URL_HOST="${ONPREM_DOMAIN}"
+  MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS="${ONPREM_DOMAIN}"
+
+  ## Import API config
+  ##
+  IMPORT_TENANT_ID="${ONPREM_TENANT_ID}"
+  IMPORT_WORKER_PROCESSING_DIR="/tmp/import-worker"
+
+  IMPORT_PUBSUB_TENANT_BUS_TOPIC="projects/${ONPREM_GCP_PROJECT_ID}/topics/tenant-bus"
+  IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION="projects/${ONPREM_GCP_PROJECT_ID}/subscriptions/tenant-bus-import-sub"
+
+## @param commonSecretConfiguration [object] Sensitive configuration script that will be run in all CARTO deployments
+##
+commonSecretConfiguration: |
+  # CARTO self hosted sensitive information
+  ENCRYPTION_SECRET_KEY="<FILL_ME>"
 
 ## @section accounts-www Deployment Parameters
 ##
@@ -74,7 +210,6 @@ accountsWww:
   ## @param accountsWww.image.tag accounts-www image tag (immutable tags are recommended)
   ## @param accountsWww.image.pullPolicy accounts-www image pull policy
   ## @param accountsWww.image.pullSecrets accounts-www image pull secrets
-  ## @param accountsWww.image.debug Enable accounts-www image debug mode
   ##
   image:
     registry: gcr.io
@@ -93,16 +228,13 @@ accountsWww:
     ##   - myRegistryKeySecretName
     ##
     pullSecrets: []
-    ## Enable debug mode
-    ##
-    debug: false
   ## @param accountsWww.replicaCount Number of accounts-www replicas to deploy
   ##
   replicaCount: 1
   ## @param accountsWww.containerPorts.http accounts-www HTTP container port
   ##
   containerPorts:
-    http: 3000
+    http: 80
   ## Configure extra options for accounts-www containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param accountsWww.livenessProbe.enabled Enable livenessProbe on accounts-www containers
@@ -180,12 +312,13 @@ accountsWww:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 1001
-    runAsNonRoot: true
+    runAsUser: 0
+    runAsNonRoot: false
 
-  ## @param accountsWww.configuration Configuration settings (env vars) for accounts-www
+  ## @param accountsWww.configuration [object] Configuration settings (env vars) for accounts-www
   ##
-  configuration: ""
+  configuration: |
+    PORT={{ .Values.accountsWww.containerPorts.http }}
   ## @param accountsWww.secretConfiguration Configuration settings (env vars) for accounts-www
   ##
   secretConfiguration: ""
@@ -378,7 +511,6 @@ importApi:
   ## @param importApi.image.tag import-api image tag (immutable tags are recommended)
   ## @param importApi.image.pullPolicy import-api image pull policy
   ## @param importApi.image.pullSecrets import-api image pull secrets
-  ## @param importApi.image.debug Enable import-api image debug mode
   ##
   image:
     registry: gcr.io
@@ -397,9 +529,6 @@ importApi:
     ##   - myRegistryKeySecretName
     ##
     pullSecrets: []
-    ## Enable debug mode
-    ##
-    debug: false
   ## @param importApi.replicaCount Number of import-api replicas to deploy
   ##
   replicaCount: 1
@@ -484,12 +613,13 @@ importApi:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 1001
-    runAsNonRoot: true
+    runAsUser: 0
+    runAsNonRoot: false
 
-  ## @param importApi.configuration Configuration settings (env vars) for import-api
+  ## @param importApi.configuration [object] Configuration settings (env vars) for import-api
   ##
-  configuration: ""
+  configuration: |
+    PORT={{ .Values.importApi.containerPorts.http }}
   ## @param importApi.secretConfiguration Configuration settings (env vars) for import-api
   ##
   secretConfiguration: ""
@@ -682,11 +812,10 @@ importWorker:
   ## @param importWorker.image.tag import-worker image tag (immutable tags are recommended)
   ## @param importWorker.image.pullPolicy import-worker image pull policy
   ## @param importWorker.image.pullSecrets import-worker image pull secrets
-  ## @param importWorker.image.debug Enable import-worker image debug mode
   ##
   image:
     registry: gcr.io
-    repository: carto-onprem-artifacts/import-worker
+    repository: carto-onprem-artifacts/import-api
     tag: "2021.12.20"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -701,9 +830,6 @@ importWorker:
     ##   - myRegistryKeySecretName
     ##
     pullSecrets: []
-    ## Enable debug mode
-    ##
-    debug: false
   ## @param importWorker.replicaCount Number of import-worker replicas to deploy
   ##
   replicaCount: 1
@@ -788,12 +914,13 @@ importWorker:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 1001
-    runAsNonRoot: true
+    runAsUser: 0
+    runAsNonRoot: false
 
-  ## @param importWorker.configuration Configuration settings (env vars) for import-worker
+  ## @param importWorker.configuration [object] Configuration settings (env vars) for import-worker
   ##
-  configuration: ""
+  configuration: |
+    PORT={{ .Values.importWorker.containerPorts.http }}
   ## @param importWorker.secretConfiguration Configuration settings (env vars) for import-worker
   ##
   secretConfiguration: ""
@@ -986,7 +1113,6 @@ ldsApi:
   ## @param ldsApi.image.tag lds-api image tag (immutable tags are recommended)
   ## @param ldsApi.image.pullPolicy lds-api image pull policy
   ## @param ldsApi.image.pullSecrets lds-api image pull secrets
-  ## @param ldsApi.image.debug Enable lds-api image debug mode
   ##
   image:
     registry: gcr.io
@@ -1005,9 +1131,6 @@ ldsApi:
     ##   - myRegistryKeySecretName
     ##
     pullSecrets: []
-    ## Enable debug mode
-    ##
-    debug: false
   ## @param ldsApi.replicaCount Number of lds-api replicas to deploy
   ##
   replicaCount: 1
@@ -1092,12 +1215,13 @@ ldsApi:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 1001
-    runAsNonRoot: true
+    runAsUser: 0
+    runAsNonRoot: false
 
-  ## @param ldsApi.configuration Configuration settings (env vars) for lds-api
+  ## @param ldsApi.configuration [object] Configuration settings (env vars) for lds-api
   ##
-  configuration: ""
+  configuration: |
+    PORT={{ .Values.ldsApi.containerPorts.http }}
   ## @param ldsApi.secretConfiguration Configuration settings (env vars) for lds-api
   ##
   secretConfiguration: ""
@@ -1290,7 +1414,6 @@ mapsApi:
   ## @param mapsApi.image.tag maps-api image tag (immutable tags are recommended)
   ## @param mapsApi.image.pullPolicy maps-api image pull policy
   ## @param mapsApi.image.pullSecrets maps-api image pull secrets
-  ## @param mapsApi.image.debug Enable maps-api image debug mode
   ##
   image:
     registry: gcr.io
@@ -1309,9 +1432,6 @@ mapsApi:
     ##   - myRegistryKeySecretName
     ##
     pullSecrets: []
-    ## Enable debug mode
-    ##
-    debug: false
   ## @param mapsApi.replicaCount Number of maps-api replicas to deploy
   ##
   replicaCount: 1
@@ -1396,12 +1516,13 @@ mapsApi:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 1001
-    runAsNonRoot: true
+    runAsUser: 0
+    runAsNonRoot: false
 
-  ## @param mapsApi.configuration Configuration settings (env vars) for maps-api
+  ## @param mapsApi.configuration [object] Configuration settings (env vars) for maps-api
   ##
-  configuration: ""
+  configuration: |
+    PORT={{ .Values.mapsApi.containerPorts.http }}
   ## @param mapsApi.secretConfiguration Configuration settings (env vars) for maps-api
   ##
   secretConfiguration: ""
@@ -1594,7 +1715,6 @@ router:
   ## @param router.image.tag router image tag (immutable tags are recommended)
   ## @param router.image.pullPolicy router image pull policy
   ## @param router.image.pullSecrets router image pull secrets
-  ## @param router.image.debug Enable router image debug mode
   ##
   image:
     registry: gcr.io
@@ -1613,16 +1733,15 @@ router:
     ##   - myRegistryKeySecretName
     ##
     pullSecrets: []
-    ## Enable debug mode
-    ##
-    debug: false
   ## @param router.replicaCount Number of router replicas to deploy
   ##
   replicaCount: 1
   ## @param router.containerPorts.http router HTTP container port
+  ## @param router.containerPorts.https router HTTPS container port
   ##
   containerPorts:
-    http: 3000
+    http: 80
+    https: 443
   ## Configure extra options for router containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param router.livenessProbe.enabled Enable livenessProbe on router containers
@@ -1700,12 +1819,19 @@ router:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 1001
-    runAsNonRoot: true
+    runAsUser: 0
+    runAsNonRoot: false
 
-  ## @param router.configuration Configuration settings (env vars) for router
+  ## @param router.configuration [object] Configuration settings (env vars) for router
   ##
-  configuration: ""
+  configuration: |
+    # Router configuration for the different endpoints
+    ROUTER_ACCOUNTS_WWW_INTERNAL_URL={{ include "carto.accountsWww.fullname" . }}
+    ROUTER_WORKSPACE_API_INTERNAL_URL={{ include "carto.workspaceApi.fullname" . }}
+    ROUTER_WORKSPACE_WWW_INTERNAL_URL={{ include "carto.workspaceWww.fullname" . }}
+    ROUTER_MAPS_API_INTERNAL_URL={{ include "carto.mapsApi.fullname" . }}
+    ROUTER_IMPORT_API_INTERNAL_URL={{ include "carto.importApi.fullname" . }}
+    ROUTER_LDS_API_INTERNAL_URL={{ include "carto.ldsApi.fullname" . }}
   ## @param router.secretConfiguration Configuration settings (env vars) for router
   ##
   secretConfiguration: ""
@@ -1835,17 +1961,21 @@ router:
   service:
     ## @param router.service.type router service type
     ##
-    type: ClusterIP
+    type: LoadBalancer
     ## @param router.service.ports.http router service HTTP port
+    ## @param router.service.ports.https router service HTTPS port
     ##
     ports:
       http: 80
+      https: 443
     ## Node ports to expose
     ## @param router.service.nodePorts.http Node port for HTTP
+    ## @param router.service.nodePorts.https Node port for HTTPS
     ## NOTE: choose port between <30000-32767>
     ##
     nodePorts:
       http: ""
+      https: ""
     ## @param router.service.clusterIP router service Cluster IP
     ## e.g.:
     ## clusterIP: None
@@ -1898,7 +2028,6 @@ workspaceApi:
   ## @param workspaceApi.image.tag workspace-api image tag (immutable tags are recommended)
   ## @param workspaceApi.image.pullPolicy workspace-api image pull policy
   ## @param workspaceApi.image.pullSecrets workspace-api image pull secrets
-  ## @param workspaceApi.image.debug Enable workspace-api image debug mode
   ##
   image:
     registry: gcr.io
@@ -1917,9 +2046,6 @@ workspaceApi:
     ##   - myRegistryKeySecretName
     ##
     pullSecrets: []
-    ## Enable debug mode
-    ##
-    debug: false
   ## @param workspaceApi.replicaCount Number of workspace-api replicas to deploy
   ##
   replicaCount: 1
@@ -2004,12 +2130,13 @@ workspaceApi:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 1001
-    runAsNonRoot: true
+    runAsUser: 0
+    runAsNonRoot: false
 
-  ## @param workspaceApi.configuration Configuration settings (env vars) for workspace-api
+  ## @param workspaceApi.configuration [object] Configuration settings (env vars) for workspace-api
   ##
-  configuration: ""
+  configuration: |
+    PORT={{ .Values.workspaceApi.containerPorts.http }}
   ## @param workspaceApi.secretConfiguration Configuration settings (env vars) for workspace-api
   ##
   secretConfiguration: ""
@@ -2202,11 +2329,10 @@ workspaceSubscriber:
   ## @param workspaceSubscriber.image.tag workspace-subscriber image tag (immutable tags are recommended)
   ## @param workspaceSubscriber.image.pullPolicy workspace-subscriber image pull policy
   ## @param workspaceSubscriber.image.pullSecrets workspace-subscriber image pull secrets
-  ## @param workspaceSubscriber.image.debug Enable workspace-subscriber image debug mode
   ##
   image:
     registry: gcr.io
-    repository: carto-onprem-artifacts/workspace-subscriber
+    repository: carto-onprem-artifacts/workspace-api
     tag: "2021.12.20"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -2221,9 +2347,6 @@ workspaceSubscriber:
     ##   - myRegistryKeySecretName
     ##
     pullSecrets: []
-    ## Enable debug mode
-    ##
-    debug: false
   ## @param workspaceSubscriber.replicaCount Number of workspace-subscriber replicas to deploy
   ##
   replicaCount: 1
@@ -2308,12 +2431,13 @@ workspaceSubscriber:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 1001
-    runAsNonRoot: true
+    runAsUser: 0
+    runAsNonRoot: false
 
-  ## @param workspaceSubscriber.configuration Configuration settings (env vars) for workspace-subscriber
+  ## @param workspaceSubscriber.configuration [object] Configuration settings (env vars) for workspace-subscriber
   ##
-  configuration: ""
+  configuration: |
+    PORT={{ .Values.workspaceSubscriber.containerPorts.http }}
   ## @param workspaceSubscriber.secretConfiguration Configuration settings (env vars) for workspace-subscriber
   ##
   secretConfiguration: ""
@@ -2506,7 +2630,6 @@ workspaceWww:
   ## @param workspaceWww.image.tag workspace-www image tag (immutable tags are recommended)
   ## @param workspaceWww.image.pullPolicy workspace-www image pull policy
   ## @param workspaceWww.image.pullSecrets workspace-www image pull secrets
-  ## @param workspaceWww.image.debug Enable workspace-www image debug mode
   ##
   image:
     registry: gcr.io
@@ -2525,16 +2648,13 @@ workspaceWww:
     ##   - myRegistryKeySecretName
     ##
     pullSecrets: []
-    ## Enable debug mode
-    ##
-    debug: false
   ## @param workspaceWww.replicaCount Number of workspace-www replicas to deploy
   ##
   replicaCount: 1
   ## @param workspaceWww.containerPorts.http workspace-www HTTP container port
   ##
   containerPorts:
-    http: 3000
+    http: 80
   ## Configure extra options for workspace-www containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param workspaceWww.livenessProbe.enabled Enable livenessProbe on workspace-www containers
@@ -2612,10 +2732,10 @@ workspaceWww:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 1001
-    runAsNonRoot: true
+    runAsUser: 0
+    runAsNonRoot: false
 
-  ## @param workspaceWww.configuration Configuration settings (env vars) for workspace-www
+  ## @param workspaceWww.configuration [object] Configuration settings (env vars) for workspace-www
   ##
   configuration: ""
   ## @param workspaceWww.secretConfiguration Configuration settings (env vars) for workspace-www
@@ -2840,14 +2960,17 @@ workspaceMigrations:
     requests: {}
   ## Init container Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+  ## @param workspaceMigrations.containerSecurityContext.enabled Enable container security context
   ## @param workspaceMigrations.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
+  ## @param workspaceMigrations.containerSecurityContext.runAsNonRoot Force the init container to run as non root
   ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
   ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
   ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
   ##
   containerSecurityContext:
     enabled: true
-    fsGroup: 1001
+    runAsUser: 0
+    runAsNonRoot: false
 
 ## @section Redis&trade; subchart parameters
 ## Redis&trade; chart configuration
@@ -2864,7 +2987,7 @@ redis:
     enabled: true
     ## Redis&trade; password (both master and slave). Defaults to a random 10-character alphanumeric string if not set and auth.enabled is true.
     ## It should always be set using the password value or in the existingSecret to avoid issues
-    ## with Airflow.
+    ## with CARTO.
     ## The password value is ignored if existingSecret is set
     ##
     password: ""
@@ -2878,52 +3001,71 @@ redis:
 ## @param externalRedis.port Redis&trade; port number
 ## @param externalRedis.password Redis&trade; password
 ## @param externalRedis.existingSecret Name of an existing secret resource containing the Redis&trade; password in a 'redis-password' key
-## @param externalRedis.username Redis&trade; username
+## @param externalRedis.existingSecretPasswordKey Key of the existing secret
 ##
 externalRedis:
   host: localhost
   port: 6379
   password: ""
   existingSecret: ""
-  ## Most Redis&trade; implementnations do not require a username to authenticate
-  ## and it should be enough with the password
-  ##
-  username: ""
+  existingSecretPasswordKey: ""
 
 ## @section PostgreSQL subchart parameters
 ## PostgreSQL chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/postgresql/values.yaml
 ## @param postgresql.enabled Switch to enable or disable the PostgreSQL helm chart
-## @param postgresql.postgresqlUsername Airflow Postgresql username
-## @param postgresql.postgresqlPassword Airflow Postgresql password
-## @param postgresql.postgresqlDatabase Airflow Postgresql database
+## @param postgresql.postgresqlUsername CARTO Postgresql username
+## @param postgresql.postgresqlPassword CARTO Postgresql password
+## @param postgresql.postgresqlPostgresPassword CARTO Postgresql password for the postgres user
+## @param postgresql.postgresqlDatabase CARTO Postgresql database
 ## @param postgresql.existingSecret Name of an existing secret containing the PostgreSQL password ('postgresql-password' key)
 ##
 postgresql:
   enabled: true
-  postgresqlUsername: bn_airflow
+  ## @param postgresql.image.tag Tag of the PostgreSQL image
+  ##
+  image:
+    tag: "12.9.0-debian-10-r39"
+  postgresqlUsername: carto
   postgresqlPassword: ""
-  postgresqlDatabase: bitnami_airflow
+  postgresqlDatabase: workspace_db
+  postgresqlPostgresPassword: ""
   ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
   ##
   existingSecret: ""
-
+  ## @param postgresql.initdbScripts [array] Scripts for initializing the database
+  ##
+  initdbScripts:
+    # HACK: Temporary workaround until we propose the CARTO team to change the workspace-migrations logic so it accepts an already existing database
+    delete_db_and_user.sh: |
+      # Using bash because we need the postgres user and the initDbUser and initDbPassword values don't work
+      # correctly with the postgres user
+      PGPASSWORD=$POSTGRES_POSTGRES_PASSWORD psql -U postgres <<EOF
+      DROP DATABASE "{{ .Values.postgresqlDatabase }}";
+      DROP USER "{{ .Values.postgresqlUsername }}";
+      EOF
 ## @section External PostgreSQL parameters
 ## External PostgreSQL configuration
 ## All of these values are only used when postgresql.enabled is set to false
 ## @param externalDatabase.host Database host
-## @param externalDatabase.user non-root Username for Airflow Database
+## @param externalDatabase.user non-root Username for CARTO Database
+## @param externalDatabase.adminUser Database admin user
+## @param externalDatabase.adminPassword Database admin password
 ## @param externalDatabase.password Database password
 ## @param externalDatabase.existingSecret Name of an existing secret resource containing the DB password
-## @param externalDatabase.existingSecretPasswordKey Name of an existing secret key containing the DB password
+## @param externalDatabase.existingSecretPasswordKey Name of the key inside the secret containing the DB password
+## @param externalDatabase.existingSecretAdminPasswordKey Name of the key inside the secret containing the DB admin password
 ## @param externalDatabase.database Database name
 ## @param externalDatabase.port Database port number
 ##
 externalDatabase:
   host: localhost
-  user: bn_airflow
+  user: carto
   password: ""
+  adminUser: postgres
+  adminPassword: ""
   existingSecret: ""
   existingSecretPasswordKey: ""
-  database: bitnami_airflow
+  existingSecretAdminPasswordKey: ""
+  database: workspace_db
   port: 5432

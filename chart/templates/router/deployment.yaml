@@ -1,3 +1,4 @@
+{{- if (include "carto.baseUrl" .) }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
@@ -21,9 +22,12 @@ spec:
       app.kubernetes.io/component: router
   template:
     metadata:
-      {{- if .Values.router.podAnnotations }}
-      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.router.podAnnotations "context" $) | nindent 8 }}
-      {{- end }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/router/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/router/secret.yaml") . | sha256sum }}
+        {{- if .Values.router.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.router.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
         app.kubernetes.io/component: router
         {{- if .Values.router.podLabels }}
@@ -60,7 +64,7 @@ spec:
       {{- end }}
       initContainers:
         {{- if .Values.postgresql.enabled }}
-        {{ include "carto.postgresql-init-container" . | nindent 8 }}
+        {{ include "carto.postgresql-init-container" (dict "context" $) | nindent 8 }}
         {{- end }}
         {{- if .Values.router.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.router.initContainers "context" $) | nindent 8 }}
@@ -76,16 +80,25 @@ spec:
           command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
           {{- else if .Values.router.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.router.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
           {{- else if .Values.router.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.router.args "context" $) | nindent 12 }}
+          {{ else }}
+          args:
+            - -ec
+            - |
+              set -a
+              . /config/.env
+              . /secret/.secret.env
+              nginx -g "daemon off;"
           {{- end }}
           env:
-            - name: BITNAMI_DEBUG
-              value: {{ ternary "true" "false" (or .Values.router.image.debug .Values.diagnosticMode.enabled) | quote }}
-            - name: POSTGRESQL_PASSWORD
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
@@ -94,10 +107,6 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.router.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            - configMapRef:
-                name: {{ include "carto.router.configmapName" . }}
-            - secretRef:
-                name: {{ include "carto.router.secretName" . }}
             {{- if .Values.router.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.router.extraEnvVarsCM "context" $) }}
@@ -112,11 +121,13 @@ spec:
           ports:
             - name: http
               containerPort: {{ .Values.router.containerPorts.http }}
+            - name: https
+              containerPort: {{ .Values.router.containerPorts.https }}
           {{- if not .Values.diagnosticMode.enabled }}
           {{- if .Values.router.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.router.livenessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /
               port: http
           {{- else if .Values.router.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.router.customLivenessProbe "context" $) | nindent 12 }}
@@ -124,7 +135,7 @@ spec:
           {{- if .Values.router.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.router.readinessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /
               port: http
           {{- else if .Values.router.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.router.customReadinessProbe "context" $) | nindent 12 }}
@@ -132,7 +143,7 @@ spec:
           {{- if .Values.router.startupProbe.enabled }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.router.startupProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /
               port: http
           {{- else if .Values.router.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.router.customStartupProbe "context" $) | nindent 12 }}
@@ -142,6 +153,10 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.router.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: config-env
+              mountPath: /config
+            - name: secret-env
+              mountPath: /secret
           {{- if .Values.router.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.router.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -149,6 +164,13 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.router.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
+        - name: config-env
+          configMap:
+            name: {{ include "carto.router.configmapName" . }}
+        - name: secret-env
+          secret:
+            secretName: {{ include "carto.router.secretName" . }}
         {{- if .Values.router.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.router.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
+{{- end }}

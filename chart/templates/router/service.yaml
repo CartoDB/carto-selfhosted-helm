@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "carto.router.serviceAccountName" . }}
+  name: {{ template "carto.router.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
     app.kubernetes.io/component: router
@@ -36,6 +36,15 @@ spec:
       name: http
       {{- if and (or (eq .Values.router.service.type "NodePort") (eq .Values.router.service.type "LoadBalancer")) .Values.router.service.nodePorts.http }}
       nodePort: {{ .Values.router.service.nodePorts.http }}
+      {{- else if eq .Values.router.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    - port: {{ .Values.router.service.ports.https }}
+      targetPort: https
+      protocol: TCP
+      name: https
+      {{- if and (or (eq .Values.router.service.type "NodePort") (eq .Values.router.service.type "LoadBalancer")) .Values.router.service.nodePorts.https }}
+      nodePort: {{ .Values.router.service.nodePorts.https }}
       {{- else if eq .Values.router.service.type "ClusterIP" }}
       nodePort: null
       {{- end }}

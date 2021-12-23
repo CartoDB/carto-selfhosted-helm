@@ -12,7 +12,9 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  # Common configuration
-  {{- include "common.tplvalues.render" ( dict "value" .Values.commonConfiguration "context" $ ) | nindent 2 }}
-  # router configuration
-  {{- include "common.tplvalues.render" ( dict "value" .Values.router.configuration "context" $ ) | nindent 2 }}
+  .env: |
+    # Common configuration
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonConfiguration "context" $ ) | nindent 4 }}
+    # router configuration
+    {{- include "common.tplvalues.render" ( dict "value" .Values.router.configuration "context" $ ) | nindent 4 }}
+{{- end }}
