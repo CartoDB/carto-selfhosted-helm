@@ -5,9 +5,10 @@ This repository contains the Helm chart files for Carto 3, ready to launch on Ku
 ## Before you begin
 
 ### Prerequisites
-- Kubernetes 1.21.2
-- Docker 20.10.8
-- Helm 3.6.3
+
+- Kubernetes 1.12+
+- Helm 3.1.0
+- PV provisioner support in the underlying infrastructure
 
 ### Setup a Kubernetes Cluster
 

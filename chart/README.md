@@ -1852,17 +1852,15 @@ ENCRYPTION_SECRET_KEY="<FILL_ME>"
 | `externalDatabase.database`                       | Database name                                                      | `workspace_db` |
 | `externalDatabase.port`                           | Database port number                                               | `5432`         |
 
-See [readme-generator-for-helm](https://github.com/bitnami-labs/readme-generator-for-helm) to create the table.
-
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
 ```console
 helm install my-release \
-  --set livenessProbe.enabled=false \
+  --set ldsApi.livenessProbe.enabled=false \
     carto/carto
 ```
 
-The above command disables the Operator liveness probes.
+The above command disables the lds-api component liveness probes.
 
 Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example,
 
@@ -1880,7 +1878,7 @@ It is strongly recommended to use immutable tags in a production environment. Th
 
 ### Additional environment variables
 
-In case you want to add extra environment variables (useful for advanced operations like custom init scripts), you can use the `*.extraEnvVars` property.
+In case you want to add extra environment variables (useful for advanced operations like custom init scripts), you can use the `*.extraEnvVars` property. For instance, to add extra environment variables on lds-api containers:
 
 ```yaml
 ldsApi:
@@ -1889,21 +1887,21 @@ ldsApi:
       value: error
 ```
 
-Alternatively, you can use a ConfigMap or a Secret with the environment variables. To do so, use the `ldsApi.extraEnvVarsCM` or the `ldsApi.extraEnvVarsSecret` values.
+Alternatively, you can use a ConfigMap or a Secret with the environment variables. To do so, use the `*.extraEnvVarsCM` or the `*.extraEnvVarsSecret` values.
 
 ### Sidecars
 
-If additional containers are needed in the same pod as rabbitmq-cluster-operator (such as additional metrics or logging exporters), they can be defined using the `*.sidecars` parameter. If these sidecars export extra ports, extra port definitions can be added using the `*.service.extraPorts` parameter.
+If additional containers are needed in the any component's pods (such as additional metrics or logging exporters), they can be defined using the `*.sidecars` parameter. If these sidecars export extra ports, extra port definitions can be added using the `*.service.extraPorts` parameter.
 
 ### Pod affinity
 
 This chart allows you to set your custom affinity using the `*.affinity` parameter. Find more information about Pod affinity in the [kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity).
 
-As an alternative, use one of the preset configurations for pod affinity, pod anti-affinity, and node affinity available at the [bitnami/common](https://github.com/bitnami/charts/tree/master/bitnami/common#affinities) chart. To do so, set the `podAffinityPreset`, `podAntiAffinityPreset`, or `nodeAffinityPreset` parameters.
+As an alternative, use one of the preset configurations for pod affinity, pod anti-affinity, and node affinity available at the [bitnami/common](https://github.com/bitnami/charts/tree/master/bitnami/common#affinities) chart. To do so, set the `*.podAffinityPreset`, `*.podAntiAffinityPreset`, or `*.nodeAffinityPreset` parameters.
 
 ### Deploying extra resources
 
-There are cases where you may want to deploy extra objects, such your custom *RabbitmqCluster* objects. For covering this case, the chart allows adding the full specification of other objects using the `extraDeploy` parameter.
+There are cases where you may want to deploy extra objects, such a ConfigMap containing your app's configuration or some extra deployment with a micro service used by your app. For covering this case, the chart allows adding the full specification of other objects using the `extraDeploy` parameter.
 
 ## Troubleshooting
 
