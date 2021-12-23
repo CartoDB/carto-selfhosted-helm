@@ -97,12 +97,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
-                  key: {{ include "carto.postgresql.existingsecret.adminKey" . | quote }}
+                  key: {{ include "carto.postgresql.secret.adminKey" . | quote }}
             - name: WORKSPACE_POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
-                  key: {{ include "carto.postgresql.existingsecret.key" . | quote }}
+                  key: {{ include "carto.postgresql.secret.key" . | quote }}
             - name: POSTGRES_ADMIN_USER
               value: {{ include "carto.postgresql.adminUser" . }}
           volumeMounts:
@@ -146,7 +146,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
-                  key: {{ include "carto.postgresql.existingsecret.key" . | quote }}
+                  key: {{ include "carto.postgresql.secret.key" . | quote }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:

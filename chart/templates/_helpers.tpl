@@ -526,7 +526,7 @@ Add environment variables to configure database values
 {{/*
 Add environment variables to configure database values
 */}}
-{{- define "carto.postgresql.existingsecret.key" -}}
+{{- define "carto.postgresql.secret.key" -}}
 {{- if .Values.postgresql.enabled -}}
     {{- printf "%s" "postgresql-password" -}}
 {{- else -}}
@@ -545,7 +545,7 @@ Add environment variables to configure database values
 {{/*
 Add environment variables to configure database values
 */}}
-{{- define "carto.postgresql.existingsecret.adminKey" -}}
+{{- define "carto.postgresql.secret.adminKey" -}}
 {{- if .Values.postgresql.enabled -}}
     {{- printf "%s" "postgresql-postgres-password" -}}
 {{- else -}}
@@ -622,7 +622,7 @@ Admin user
       valueFrom:
         secretKeyRef:
           name: {{ include "carto.postgresql.secretName" .context }}
-          key: {{ include "carto.postgresql.existingsecret.adminKey" .context | quote }}
+          key: {{ include "carto.postgresql.secret.adminKey" .context | quote }}
     - name: POSTGRESQL_CLIENT_POSTGRES_USER
       value: {{ include "carto.postgresql.adminUser" .context }}
     - name: POSTGRESQL_CLIENT_DATABASE_NAME
@@ -632,7 +632,7 @@ Admin user
       valueFrom:
         secretKeyRef:
           name: {{ include "carto.postgresql.secretName" .context }}
-          key: {{ include "carto.postgresql.existingsecret.key" .context  }}
+          key: {{ include "carto.postgresql.secret.key" .context  }}
     - name: POSTGRESQL_CLIENT_POSTGRES_USER
       value: {{ include "carto.postgresql.user" .context | quote }}
     - name: POSTGRESQL_CLIENT_DATABASE_NAME

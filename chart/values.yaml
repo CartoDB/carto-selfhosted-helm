@@ -81,7 +81,7 @@ commonConfiguration: |
   # If you want to use Google Maps and have a API KEY set it here
   # REACT_APP_GOOGLE_MAPS_API_KEY="CUSTOMIZED_FOR_USER_IF_NEEDED"
 
-  # Configuration onfiguration for PostgreSQL
+  # Configuration for PostgreSQL
   WORKSPACE_POSTGRES_HOST="{{ include "carto.postgresql.host" . }}"
   WORKSPACE_POSTGRES_PORT="{{ include "carto.postgresql.port" . }}"
 
@@ -303,7 +303,7 @@ accountsWww:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 1001
+    fsGroup: 0
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param accountsWww.containerSecurityContext.enabled Enabled accounts-www containers' Security Context
@@ -604,7 +604,7 @@ importApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 1001
+    fsGroup: 0
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importApi.containerSecurityContext.enabled Enabled import-api containers' Security Context
@@ -905,7 +905,7 @@ importWorker:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 1001
+    fsGroup: 0
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importWorker.containerSecurityContext.enabled Enabled import-worker containers' Security Context
@@ -1206,7 +1206,7 @@ ldsApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 1001
+    fsGroup: 0
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param ldsApi.containerSecurityContext.enabled Enabled lds-api containers' Security Context
@@ -1507,7 +1507,7 @@ mapsApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 1001
+    fsGroup: 0
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param mapsApi.containerSecurityContext.enabled Enabled maps-api containers' Security Context
@@ -1810,7 +1810,7 @@ router:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 1001
+    fsGroup: 0
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param router.containerSecurityContext.enabled Enabled router containers' Security Context
@@ -2121,7 +2121,7 @@ workspaceApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 1001
+    fsGroup: 0
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceApi.containerSecurityContext.enabled Enabled workspace-api containers' Security Context
@@ -2422,7 +2422,7 @@ workspaceSubscriber:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 1001
+    fsGroup: 0
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceSubscriber.containerSecurityContext.enabled Enabled workspace-subscriber containers' Security Context
@@ -2723,7 +2723,7 @@ workspaceWww:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 1001
+    fsGroup: 0
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceWww.containerSecurityContext.enabled Enabled workspace-www containers' Security Context
