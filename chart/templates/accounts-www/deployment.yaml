@@ -92,14 +92,9 @@ spec:
               set -a
               . /config/.env
               . /secret/.secret.env
-              nginx -g "daemon off;"
+              /docker-entrypoint.sh nginx -g "daemon off;"
           {{- end }}
           env:
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "carto.postgresql.secretName" . }}
-                  key: {{ ternary "postgresql-password" "db-password" .Values.postgresql.enabled | quote }}
             {{- if .Values.accountsWww.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -152,6 +147,18 @@ spec:
               mountPath: /config
             - name: secret-env
               mountPath: /secret
+            - name: google-secret
+              mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
+              subPath: {{ template "carto.google.secretKey" . }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCAKey" . }}
+              subPath: {{ template "carto.tlsCerts.secretCAKey" . }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
+              subPath: {{ template "carto.tlsCerts.secretCertKey" . }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretKeyKey" . }}
+              subPath: {{ template "carto.tlsCerts.secretKeyKey" . }}
           {{- if .Values.accountsWww.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -165,6 +172,12 @@ spec:
         - name: secret-env
           secret:
             secretName: {{ include "carto.accountsWww.secretName" . }}
+        - name: tls-secret
+          secret:
+            secretName: {{ include "carto.tlsCerts.secretName" . }}
+        - name: google-secret
+          secret:
+            secretName: {{ include "carto.google.secretName" . }}
         {{- if .Values.accountsWww.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

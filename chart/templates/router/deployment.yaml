@@ -95,14 +95,10 @@ spec:
               set -a
               . /config/.env
               . /secret/.secret.env
-              nginx -g "daemon off;"
+              ROUTER_RESOLVER="$(grep nameserver /etc/resolv.conf  | awk '{print $2}')"
+              /docker-entrypoint.sh nginx -g "daemon off;"
           {{- end }}
           env:
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "carto.postgresql.secretName" . }}
-                  key: {{ ternary "postgresql-password" "db-password" .Values.postgresql.enabled | quote }}
             {{- if .Values.router.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.router.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -126,24 +122,21 @@ spec:
           {{- if not .Values.diagnosticMode.enabled }}
           {{- if .Values.router.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.router.livenessProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /
+            tcpSocket:
               port: http
           {{- else if .Values.router.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.router.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.router.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.router.readinessProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /
+            tcpSocket:
               port: http
           {{- else if .Values.router.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.router.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.router.startupProbe.enabled }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.router.startupProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /
+            tcpSocket:
               port: http
           {{- else if .Values.router.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.router.customStartupProbe "context" $) | nindent 12 }}
@@ -157,6 +150,18 @@ spec:
               mountPath: /config
             - name: secret-env
               mountPath: /secret
+            - name: google-secret
+              mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
+              subPath: {{ template "carto.google.secretKey" . }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCAKey" . }}
+              subPath: {{ template "carto.tlsCerts.secretCAKey" . }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
+              subPath: {{ template "carto.tlsCerts.secretCertKey" . }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretKeyKey" . }}
+              subPath: {{ template "carto.tlsCerts.secretKeyKey" . }}
           {{- if .Values.router.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.router.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -170,6 +175,12 @@ spec:
         - name: secret-env
           secret:
             secretName: {{ include "carto.router.secretName" . }}
+        - name: tls-secret
+          secret:
+            secretName: {{ include "carto.tlsCerts.secretName" . }}
+        - name: google-secret
+          secret:
+            secretName: {{ include "carto.google.secretName" . }}
         {{- if .Values.router.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.router.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

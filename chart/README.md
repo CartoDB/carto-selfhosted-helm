@@ -69,11 +69,19 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### CARTO common parameters
 
-| Name                        | Description                                                              | Value |
-| --------------------------- | ------------------------------------------------------------------------ | ----- |
-| `onPremDomain`              | CARTO on premises domain                                                 | `""`  |
-| `commonConfiguration`       | Configuration script that will be run in all Carto instances             | `{}`  |
-| `commonSecretConfiguration` | Sensitive configuration script that will be run in all CARTO deployments | `{}`  |
+| Name                         | Description                                                              | Value     |
+| ---------------------------- | ------------------------------------------------------------------------ | --------- |
+| `onPremDomain`               | CARTO on premises domain                                                 | `""`      |
+| `commonConfiguration`        | Configuration script that will be run in all Carto instances             | `{}`      |
+| `commonSecretConfiguration`  | Sensitive configuration script that will be run in all CARTO deployments | `{}`      |
+| `google.credentialFile`      | Content of the Google Credential file                                    | `""`      |
+| `google.existingSecret.name` | Secret containing the Google Credential file                             | `""`      |
+| `google.existingSecret.key`  | Key name of the Google Credential file inside the secret                 | `""`      |
+| `tlsCerts.autoGenerate`           | Generate self-signed TLS certificates                                    | `true`    |
+| `tlsCerts.existingSecret.name`    | Name of a secret containing the certificate                              | `""`      |
+| `tlsCerts.existingSecret.caKey`   | Key of the CA inside the secret                                          | `ca.crt`  |
+| `tlsCerts.existingSecret.certKey` | Key of the certificate inside the secret                                 | `tlsCerts.crt` |
+| `tlsCerts.existingSecret.keyKey`  | Key of the certificate key inside the secret                             | `tlsCerts.key` |
 
 ### accounts-www Deployment Parameters
 
@@ -81,7 +89,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------- |
 | `accountsWww.image.registry`                        | accounts-www image registry                                                                           | `gcr.io`                              |
 | `accountsWww.image.repository`                      | accounts-www image repository                                                                         | `carto-onprem-artifacts/accounts-www` |
-| `accountsWww.image.tag`                             | accounts-www image tag (immutable tags are recommended)                                               | `2021.12.23.01`                          |
+| `accountsWww.image.tag`                             | accounts-www image tag (immutable tags are recommended)                                               | `2021.12.23.01`                       |
 | `accountsWww.image.pullPolicy`                      | accounts-www image pull policy                                                                        | `IfNotPresent`                        |
 | `accountsWww.image.pullSecrets`                     | accounts-www image pull secrets                                                                       | `[]`                                  |
 | `accountsWww.replicaCount`                          | Number of accounts-www replicas to deploy                                                             | `1`                                   |
@@ -110,7 +118,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `accountsWww.resources.limits`                      | The resources limits for the accounts-www containers                                                  | `{}`                                  |
 | `accountsWww.resources.requests`                    | The requested resources for the accounts-www containers                                               | `{}`                                  |
 | `accountsWww.podSecurityContext.enabled`            | Enabled accounts-www pods' Security Context                                                           | `true`                                |
-| `accountsWww.podSecurityContext.fsGroup`            | Set accounts-www pod's Security Context fsGroup                                                       | `1001`                                |
+| `accountsWww.podSecurityContext.fsGroup`            | Set accounts-www pod's Security Context fsGroup                                                       | `0`                                   |
 | `accountsWww.containerSecurityContext.enabled`      | Enabled accounts-www containers' Security Context                                                     | `true`                                |
 | `accountsWww.containerSecurityContext.runAsUser`    | Set accounts-www containers' Security Context runAsUser                                               | `0`                                   |
 | `accountsWww.containerSecurityContext.runAsNonRoot` | Set accounts-www containers' Security Context runAsNonRoot                                            | `false`                               |
@@ -172,7 +180,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ----------------------------------- |
 | `importApi.image.registry`                        | import-api image registry                                                                           | `gcr.io`                            |
 | `importApi.image.repository`                      | import-api image repository                                                                         | `carto-onprem-artifacts/import-api` |
-| `importApi.image.tag`                             | import-api image tag (immutable tags are recommended)                                               | `2021.12.23.01`                        |
+| `importApi.image.tag`                             | import-api image tag (immutable tags are recommended)                                               | `2021.12.20`                        |
 | `importApi.image.pullPolicy`                      | import-api image pull policy                                                                        | `IfNotPresent`                      |
 | `importApi.image.pullSecrets`                     | import-api image pull secrets                                                                       | `[]`                                |
 | `importApi.replicaCount`                          | Number of import-api replicas to deploy                                                             | `1`                                 |
@@ -201,7 +209,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `importApi.resources.limits`                      | The resources limits for the import-api containers                                                  | `{}`                                |
 | `importApi.resources.requests`                    | The requested resources for the import-api containers                                               | `{}`                                |
 | `importApi.podSecurityContext.enabled`            | Enabled import-api pods' Security Context                                                           | `true`                              |
-| `importApi.podSecurityContext.fsGroup`            | Set import-api pod's Security Context fsGroup                                                       | `1001`                              |
+| `importApi.podSecurityContext.fsGroup`            | Set import-api pod's Security Context fsGroup                                                       | `0`                                 |
 | `importApi.containerSecurityContext.enabled`      | Enabled import-api containers' Security Context                                                     | `true`                              |
 | `importApi.containerSecurityContext.runAsUser`    | Set import-api containers' Security Context runAsUser                                               | `0`                                 |
 | `importApi.containerSecurityContext.runAsNonRoot` | Set import-api containers' Security Context runAsNonRoot                                            | `false`                             |
@@ -263,7 +271,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ----------------------------------- |
 | `importWorker.image.registry`                        | import-worker image registry                                                                           | `gcr.io`                            |
 | `importWorker.image.repository`                      | import-worker image repository                                                                         | `carto-onprem-artifacts/import-api` |
-| `importWorker.image.tag`                             | import-worker image tag (immutable tags are recommended)                                               | `2021.12.23.01`                        |
+| `importWorker.image.tag`                             | import-worker image tag (immutable tags are recommended)                                               | `2021.12.20`                        |
 | `importWorker.image.pullPolicy`                      | import-worker image pull policy                                                                        | `IfNotPresent`                      |
 | `importWorker.image.pullSecrets`                     | import-worker image pull secrets                                                                       | `[]`                                |
 | `importWorker.replicaCount`                          | Number of import-worker replicas to deploy                                                             | `1`                                 |
@@ -292,7 +300,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `importWorker.resources.limits`                      | The resources limits for the import-worker containers                                                  | `{}`                                |
 | `importWorker.resources.requests`                    | The requested resources for the import-worker containers                                               | `{}`                                |
 | `importWorker.podSecurityContext.enabled`            | Enabled import-worker pods' Security Context                                                           | `true`                              |
-| `importWorker.podSecurityContext.fsGroup`            | Set import-worker pod's Security Context fsGroup                                                       | `1001`                              |
+| `importWorker.podSecurityContext.fsGroup`            | Set import-worker pod's Security Context fsGroup                                                       | `0`                                 |
 | `importWorker.containerSecurityContext.enabled`      | Enabled import-worker containers' Security Context                                                     | `true`                              |
 | `importWorker.containerSecurityContext.runAsUser`    | Set import-worker containers' Security Context runAsUser                                               | `0`                                 |
 | `importWorker.containerSecurityContext.runAsNonRoot` | Set import-worker containers' Security Context runAsNonRoot                                            | `false`                             |
@@ -354,7 +362,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------- |
 | `ldsApi.image.registry`                        | lds-api image registry                                                                           | `gcr.io`                         |
 | `ldsApi.image.repository`                      | lds-api image repository                                                                         | `carto-onprem-artifacts/lds-api` |
-| `ldsApi.image.tag`                             | lds-api image tag (immutable tags are recommended)                                               | `2021.12.23.01`                     |
+| `ldsApi.image.tag`                             | lds-api image tag (immutable tags are recommended)                                               | `2021.12.23.01`                  |
 | `ldsApi.image.pullPolicy`                      | lds-api image pull policy                                                                        | `IfNotPresent`                   |
 | `ldsApi.image.pullSecrets`                     | lds-api image pull secrets                                                                       | `[]`                             |
 | `ldsApi.replicaCount`                          | Number of lds-api replicas to deploy                                                             | `1`                              |
@@ -383,7 +391,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `ldsApi.resources.limits`                      | The resources limits for the lds-api containers                                                  | `{}`                             |
 | `ldsApi.resources.requests`                    | The requested resources for the lds-api containers                                               | `{}`                             |
 | `ldsApi.podSecurityContext.enabled`            | Enabled lds-api pods' Security Context                                                           | `true`                           |
-| `ldsApi.podSecurityContext.fsGroup`            | Set lds-api pod's Security Context fsGroup                                                       | `1001`                           |
+| `ldsApi.podSecurityContext.fsGroup`            | Set lds-api pod's Security Context fsGroup                                                       | `0`                              |
 | `ldsApi.containerSecurityContext.enabled`      | Enabled lds-api containers' Security Context                                                     | `true`                           |
 | `ldsApi.containerSecurityContext.runAsUser`    | Set lds-api containers' Security Context runAsUser                                               | `0`                              |
 | `ldsApi.containerSecurityContext.runAsNonRoot` | Set lds-api containers' Security Context runAsNonRoot                                            | `false`                          |
@@ -445,7 +453,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ----------------------------------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------- |
 | `mapsApi.image.registry`                        | maps-api image registry                                                                           | `gcr.io`                          |
 | `mapsApi.image.repository`                      | maps-api image repository                                                                         | `carto-onprem-artifacts/maps-api` |
-| `mapsApi.image.tag`                             | maps-api image tag (immutable tags are recommended)                                               | `2021.12.23.01`                      |
+| `mapsApi.image.tag`                             | maps-api image tag (immutable tags are recommended)                                               | `2021.12.20`                      |
 | `mapsApi.image.pullPolicy`                      | maps-api image pull policy                                                                        | `IfNotPresent`                    |
 | `mapsApi.image.pullSecrets`                     | maps-api image pull secrets                                                                       | `[]`                              |
 | `mapsApi.replicaCount`                          | Number of maps-api replicas to deploy                                                             | `1`                               |
@@ -474,7 +482,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `mapsApi.resources.limits`                      | The resources limits for the maps-api containers                                                  | `{}`                              |
 | `mapsApi.resources.requests`                    | The requested resources for the maps-api containers                                               | `{}`                              |
 | `mapsApi.podSecurityContext.enabled`            | Enabled maps-api pods' Security Context                                                           | `true`                            |
-| `mapsApi.podSecurityContext.fsGroup`            | Set maps-api pod's Security Context fsGroup                                                       | `1001`                            |
+| `mapsApi.podSecurityContext.fsGroup`            | Set maps-api pod's Security Context fsGroup                                                       | `0`                               |
 | `mapsApi.containerSecurityContext.enabled`      | Enabled maps-api containers' Security Context                                                     | `true`                            |
 | `mapsApi.containerSecurityContext.runAsUser`    | Set maps-api containers' Security Context runAsUser                                               | `0`                               |
 | `mapsApi.containerSecurityContext.runAsNonRoot` | Set maps-api containers' Security Context runAsNonRoot                                            | `false`                           |
@@ -536,7 +544,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------- |
 | `router.image.registry`                        | router image registry                                                                            | `gcr.io`                        |
 | `router.image.repository`                      | router image repository                                                                          | `carto-onprem-artifacts/router` |
-| `router.image.tag`                             | router image tag (immutable tags are recommended)                                                | `2021.12.23.01`                    |
+| `router.image.tag`                             | router image tag (immutable tags are recommended)                                                | `2021.12.23.01`                 |
 | `router.image.pullPolicy`                      | router image pull policy                                                                         | `IfNotPresent`                  |
 | `router.image.pullSecrets`                     | router image pull secrets                                                                        | `[]`                            |
 | `router.replicaCount`                          | Number of router replicas to deploy                                                              | `1`                             |
@@ -566,7 +574,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `router.resources.limits`                      | The resources limits for the router containers                                                   | `{}`                            |
 | `router.resources.requests`                    | The requested resources for the router containers                                                | `{}`                            |
 | `router.podSecurityContext.enabled`            | Enabled router pods' Security Context                                                            | `true`                          |
-| `router.podSecurityContext.fsGroup`            | Set router pod's Security Context fsGroup                                                        | `1001`                          |
+| `router.podSecurityContext.fsGroup`            | Set router pod's Security Context fsGroup                                                        | `0`                             |
 | `router.containerSecurityContext.enabled`      | Enabled router containers' Security Context                                                      | `true`                          |
 | `router.containerSecurityContext.runAsUser`    | Set router containers' Security Context runAsUser                                                | `0`                             |
 | `router.containerSecurityContext.runAsNonRoot` | Set router containers' Security Context runAsNonRoot                                             | `false`                         |
@@ -630,7 +638,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------- |
 | `workspaceApi.image.registry`                        | workspace-api image registry                                                                           | `gcr.io`                               |
 | `workspaceApi.image.repository`                      | workspace-api image repository                                                                         | `carto-onprem-artifacts/workspace-api` |
-| `workspaceApi.image.tag`                             | workspace-api image tag (immutable tags are recommended)                                               | `2021.12.23.01`                           |
+| `workspaceApi.image.tag`                             | workspace-api image tag (immutable tags are recommended)                                               | `2021.12.23.01`                        |
 | `workspaceApi.image.pullPolicy`                      | workspace-api image pull policy                                                                        | `IfNotPresent`                         |
 | `workspaceApi.image.pullSecrets`                     | workspace-api image pull secrets                                                                       | `[]`                                   |
 | `workspaceApi.replicaCount`                          | Number of workspace-api replicas to deploy                                                             | `1`                                    |
@@ -659,7 +667,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `workspaceApi.resources.limits`                      | The resources limits for the workspace-api containers                                                  | `{}`                                   |
 | `workspaceApi.resources.requests`                    | The requested resources for the workspace-api containers                                               | `{}`                                   |
 | `workspaceApi.podSecurityContext.enabled`            | Enabled workspace-api pods' Security Context                                                           | `true`                                 |
-| `workspaceApi.podSecurityContext.fsGroup`            | Set workspace-api pod's Security Context fsGroup                                                       | `1001`                                 |
+| `workspaceApi.podSecurityContext.fsGroup`            | Set workspace-api pod's Security Context fsGroup                                                       | `0`                                    |
 | `workspaceApi.containerSecurityContext.enabled`      | Enabled workspace-api containers' Security Context                                                     | `true`                                 |
 | `workspaceApi.containerSecurityContext.runAsUser`    | Set workspace-api containers' Security Context runAsUser                                               | `0`                                    |
 | `workspaceApi.containerSecurityContext.runAsNonRoot` | Set workspace-api containers' Security Context runAsNonRoot                                            | `false`                                |
@@ -721,7 +729,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
 | `workspaceSubscriber.image.registry`                        | workspace-subscriber image registry                                                                           | `gcr.io`                               |
 | `workspaceSubscriber.image.repository`                      | workspace-subscriber image repository                                                                         | `carto-onprem-artifacts/workspace-api` |
-| `workspaceSubscriber.image.tag`                             | workspace-subscriber image tag (immutable tags are recommended)                                               | `2021.12.23.01`                           |
+| `workspaceSubscriber.image.tag`                             | workspace-subscriber image tag (immutable tags are recommended)                                               | `2021.12.23.01`                        |
 | `workspaceSubscriber.image.pullPolicy`                      | workspace-subscriber image pull policy                                                                        | `IfNotPresent`                         |
 | `workspaceSubscriber.image.pullSecrets`                     | workspace-subscriber image pull secrets                                                                       | `[]`                                   |
 | `workspaceSubscriber.replicaCount`                          | Number of workspace-subscriber replicas to deploy                                                             | `1`                                    |
@@ -750,7 +758,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `workspaceSubscriber.resources.limits`                      | The resources limits for the workspace-subscriber containers                                                  | `{}`                                   |
 | `workspaceSubscriber.resources.requests`                    | The requested resources for the workspace-subscriber containers                                               | `{}`                                   |
 | `workspaceSubscriber.podSecurityContext.enabled`            | Enabled workspace-subscriber pods' Security Context                                                           | `true`                                 |
-| `workspaceSubscriber.podSecurityContext.fsGroup`            | Set workspace-subscriber pod's Security Context fsGroup                                                       | `1001`                                 |
+| `workspaceSubscriber.podSecurityContext.fsGroup`            | Set workspace-subscriber pod's Security Context fsGroup                                                       | `0`                                    |
 | `workspaceSubscriber.containerSecurityContext.enabled`      | Enabled workspace-subscriber containers' Security Context                                                     | `true`                                 |
 | `workspaceSubscriber.containerSecurityContext.runAsUser`    | Set workspace-subscriber containers' Security Context runAsUser                                               | `0`                                    |
 | `workspaceSubscriber.containerSecurityContext.runAsNonRoot` | Set workspace-subscriber containers' Security Context runAsNonRoot                                            | `false`                                |
@@ -812,7 +820,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------- |
 | `workspaceWww.image.registry`                        | workspace-www image registry                                                                           | `gcr.io`                               |
 | `workspaceWww.image.repository`                      | workspace-www image repository                                                                         | `carto-onprem-artifacts/workspace-www` |
-| `workspaceWww.image.tag`                             | workspace-www image tag (immutable tags are recommended)                                               | `2021.12.23.01`                           |
+| `workspaceWww.image.tag`                             | workspace-www image tag (immutable tags are recommended)                                               | `2021.12.23.01`                        |
 | `workspaceWww.image.pullPolicy`                      | workspace-www image pull policy                                                                        | `IfNotPresent`                         |
 | `workspaceWww.image.pullSecrets`                     | workspace-www image pull secrets                                                                       | `[]`                                   |
 | `workspaceWww.replicaCount`                          | Number of workspace-www replicas to deploy                                                             | `1`                                    |
@@ -841,7 +849,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `workspaceWww.resources.limits`                      | The resources limits for the workspace-www containers                                                  | `{}`                                   |
 | `workspaceWww.resources.requests`                    | The requested resources for the workspace-www containers                                               | `{}`                                   |
 | `workspaceWww.podSecurityContext.enabled`            | Enabled workspace-www pods' Security Context                                                           | `true`                                 |
-| `workspaceWww.podSecurityContext.fsGroup`            | Set workspace-www pod's Security Context fsGroup                                                       | `1001`                                 |
+| `workspaceWww.podSecurityContext.fsGroup`            | Set workspace-www pod's Security Context fsGroup                                                       | `0`                                    |
 | `workspaceWww.containerSecurityContext.enabled`      | Enabled workspace-www containers' Security Context                                                     | `true`                                 |
 | `workspaceWww.containerSecurityContext.runAsUser`    | Set workspace-www containers' Security Context runAsUser                                               | `0`                                    |
 | `workspaceWww.containerSecurityContext.runAsNonRoot` | Set workspace-www containers' Security Context runAsNonRoot                                            | `false`                                |
@@ -903,7 +911,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | ----------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------- |
 | `workspaceMigrations.image.registry`                        | workspace-db image registry                                          | `gcr.io`                              |
 | `workspaceMigrations.image.repository`                      | workspace-db image repository                                        | `carto-onprem-artifacts/workspace-db` |
-| `workspaceMigrations.image.tag`                             | workspace-db image tag (immutable tags are recommended)              | `2021.12.23.01`                          |
+| `workspaceMigrations.image.tag`                             | workspace-db image tag (immutable tags are recommended)              | `2021.12.23.01`                       |
 | `workspaceMigrations.image.pullPolicy`                      | workspace-db image pull policy                                       | `IfNotPresent`                        |
 | `workspaceMigrations.image.pullSecrets`                     | workspace-db image pull secrets                                      | `[]`                                  |
 | `workspaceMigrations.command`                               | Override default container command (useful when using custom images) | `[]`                                  |

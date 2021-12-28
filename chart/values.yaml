@@ -176,9 +176,6 @@ commonConfiguration: |
   WORKSPACE_POSTGRES_USER="{{ include "carto.postgresql.user" . }}"
   WORKSPACE_POSTGRES_DB="{{ include "carto.postgresql.databaseName" . }}"
 
-  # if you change the TENANT_ID you need to change the DataUpdate's topic and sub
-  WORKSPACE_TENANT_ID="${ONPREM_TENANT_ID}"
-
   WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC="projects/${ONPREM_GCP_PROJECT_ID}/topics/data-updates"
   WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION="projects/${ONPREM_GCP_PROJECT_ID}/subscriptions/data-updates-workspace-sub"
 
@@ -201,6 +198,32 @@ commonSecretConfiguration: |
   # CARTO self hosted sensitive information
   ENCRYPTION_SECRET_KEY="<FILL_ME>"
 
+google:
+  ## @param google.credentialFile Content of the Google Credential file
+  ##
+  credentialFile: ""
+
+  ## @param google.existingSecret.name Secret containing the Google Credential file
+  ## @param google.existingSecret.key Key name of the Google Credential file inside the secret
+  ##
+  existingSecret:
+    name: ""
+    key: ""
+
+## @param tlsCerts.autoGenerate Generate self-signed TLS certificates
+## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
+## @param tlsCerts.existingSecret.caKey Key of the CA inside the secret
+## @param tlsCerts.existingSecret.certKey Key of the certificate inside the secret
+## @param tlsCerts.existingSecret.keyKey Key of the certificate key inside the secret
+##
+tlsCerts:
+  autoGenerate: true
+  existingSecret:
+    name: ""
+    caKey: "ca.crt"
+    keyKey: "tls.key"
+    certKey: "tls.crt"
+
 ## @section accounts-www Deployment Parameters
 ##
 accountsWww:
@@ -214,7 +237,7 @@ accountsWww:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/accounts-www
-    tag: "2021.12.23.01"
+    tag: "2021.12.27.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -515,7 +538,7 @@ importApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/import-api
-    tag: "2021.12.23.01"
+    tag: "2021.12.27.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -535,7 +558,7 @@ importApi:
   ## @param importApi.containerPorts.http import-api HTTP container port
   ##
   containerPorts:
-    http: 3000
+    http: 8003
   ## Configure extra options for import-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param importApi.livenessProbe.enabled Enable livenessProbe on import-api containers
@@ -619,7 +642,7 @@ importApi:
   ## @param importApi.configuration [object] Configuration settings (env vars) for import-api
   ##
   configuration: |
-    PORT={{ .Values.importApi.containerPorts.http }}
+    IMPORT_PORT={{ .Values.importApi.containerPorts.http }}
   ## @param importApi.secretConfiguration Configuration settings (env vars) for import-api
   ##
   secretConfiguration: ""
@@ -816,7 +839,7 @@ importWorker:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/import-api
-    tag: "2021.12.23.01"
+    tag: "2021.12.27.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -833,54 +856,6 @@ importWorker:
   ## @param importWorker.replicaCount Number of import-worker replicas to deploy
   ##
   replicaCount: 1
-  ## @param importWorker.containerPorts.http import-worker HTTP container port
-  ##
-  containerPorts:
-    http: 3000
-  ## Configure extra options for import-worker containers' liveness and readiness probes
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-  ## @param importWorker.livenessProbe.enabled Enable livenessProbe on import-worker containers
-  ## @param importWorker.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
-  ## @param importWorker.livenessProbe.periodSeconds Period seconds for livenessProbe
-  ## @param importWorker.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
-  ## @param importWorker.livenessProbe.failureThreshold Failure threshold for livenessProbe
-  ## @param importWorker.livenessProbe.successThreshold Success threshold for livenessProbe
-  ##
-  livenessProbe:
-    enabled: true
-    initialDelaySeconds: 10
-    periodSeconds: 30
-    timeoutSeconds: 5
-    successThreshold: 1
-    failureThreshold: 5
-  ## @param importWorker.readinessProbe.enabled Enable readinessProbe on import-worker containers
-  ## @param importWorker.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
-  ## @param importWorker.readinessProbe.periodSeconds Period seconds for readinessProbe
-  ## @param importWorker.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
-  ## @param importWorker.readinessProbe.failureThreshold Failure threshold for readinessProbe
-  ## @param importWorker.readinessProbe.successThreshold Success threshold for readinessProbe
-  ##
-  readinessProbe:
-    enabled: true
-    initialDelaySeconds: 10
-    periodSeconds: 30
-    timeoutSeconds: 5
-    successThreshold: 1
-    failureThreshold: 5
-  ## @param importWorker.startupProbe.enabled Enable startupProbe on import-worker containers
-  ## @param importWorker.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
-  ## @param importWorker.startupProbe.periodSeconds Period seconds for startupProbe
-  ## @param importWorker.startupProbe.timeoutSeconds Timeout seconds for startupProbe
-  ## @param importWorker.startupProbe.failureThreshold Failure threshold for startupProbe
-  ## @param importWorker.startupProbe.successThreshold Success threshold for startupProbe
-  ##
-  startupProbe:
-    enabled: false
-    initialDelaySeconds: 10
-    periodSeconds: 30
-    timeoutSeconds: 5
-    successThreshold: 1
-    failureThreshold: 5
   ## @param importWorker.customLivenessProbe Custom livenessProbe that overrides the default one
   ##
   customLivenessProbe: {}
@@ -919,8 +894,7 @@ importWorker:
 
   ## @param importWorker.configuration [object] Configuration settings (env vars) for import-worker
   ##
-  configuration: |
-    PORT={{ .Values.importWorker.containerPorts.http }}
+  configuration: ""
   ## @param importWorker.secretConfiguration Configuration settings (env vars) for import-worker
   ##
   secretConfiguration: ""
@@ -1044,52 +1018,6 @@ importWorker:
   ##    command: ['sh', '-c', 'echo "hello world"']
   ##
   initContainers: {}
-  ## @section import-worker Service Parameters
-  ##
-  ##
-  service:
-    ## @param importWorker.service.type import-worker service type
-    ##
-    type: ClusterIP
-    ## @param importWorker.service.ports.http import-worker service HTTP port
-    ##
-    ports:
-      http: 80
-    ## Node ports to expose
-    ## @param importWorker.service.nodePorts.http Node port for HTTP
-    ## NOTE: choose port between <30000-32767>
-    ##
-    nodePorts:
-      http: ""
-    ## @param importWorker.service.clusterIP import-worker service Cluster IP
-    ## e.g.:
-    ## clusterIP: None
-    ##
-    clusterIP: ""
-    ## @param importWorker.service.loadBalancerIP import-worker service Load Balancer IP
-    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
-    ##
-    loadBalancerIP: ""
-    ## @param importWorker.service.labelSelectorsOverride Selector for import-worker service
-    ##
-    labelSelectorsOverride: {}
-    ## @param importWorker.service.loadBalancerSourceRanges import-worker service Load Balancer sources
-    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
-    ## e.g:
-    ## loadBalancerSourceRanges:
-    ##   - 10.10.10.0/24
-    ##
-    loadBalancerSourceRanges: []
-    ## @param importWorker.service.externalTrafficPolicy import-worker service external traffic policy
-    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
-    ##
-    externalTrafficPolicy: Cluster
-    ## @param importWorker.service.annotations Additional custom annotations for import-worker service
-    ##
-    annotations: {}
-    ## @param importWorker.service.extraPorts Extra ports to expose in import-worker service (normally used with the `sidecars` value)
-    ##
-    extraPorts: []
   ## @section import-worker ServiceAccount configuration
   ##
   serviceAccount:
@@ -1117,7 +1045,7 @@ ldsApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/lds-api
-    tag: "2021.12.23.01"
+    tag: "2021.12.27.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1137,7 +1065,7 @@ ldsApi:
   ## @param ldsApi.containerPorts.http lds-api HTTP container port
   ##
   containerPorts:
-    http: 3000
+    http: 8004
   ## Configure extra options for lds-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param ldsApi.livenessProbe.enabled Enable livenessProbe on lds-api containers
@@ -1221,7 +1149,7 @@ ldsApi:
   ## @param ldsApi.configuration [object] Configuration settings (env vars) for lds-api
   ##
   configuration: |
-    PORT={{ .Values.ldsApi.containerPorts.http }}
+    LDS_PORT={{ .Values.ldsApi.containerPorts.http }}
   ## @param ldsApi.secretConfiguration Configuration settings (env vars) for lds-api
   ##
   secretConfiguration: ""
@@ -1418,7 +1346,7 @@ mapsApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/maps-api
-    tag: "2021.12.23.01"
+    tag: "2021.12.27.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1438,7 +1366,7 @@ mapsApi:
   ## @param mapsApi.containerPorts.http maps-api HTTP container port
   ##
   containerPorts:
-    http: 3000
+    http: 8002
   ## Configure extra options for maps-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param mapsApi.livenessProbe.enabled Enable livenessProbe on maps-api containers
@@ -1522,7 +1450,11 @@ mapsApi:
   ## @param mapsApi.configuration [object] Configuration settings (env vars) for maps-api
   ##
   configuration: |
-    PORT={{ .Values.mapsApi.containerPorts.http }}
+    MAPS_API_V3_PORT="{{ .Values.mapsApi.containerPorts.http }}"
+    MAPS_API_V3_RESOURCE_URL_TEMPLATE='https://{{ .Values.onPremDomain }}/${path}'
+    MAPS_API_V3_RESOURCE_URL_TEMPLATE_NEW='https://${host}/${path}'
+    MAPS_API_V3_TENANT_ID="$ONPREM_TENANT_ID"
+
   ## @param mapsApi.secretConfiguration Configuration settings (env vars) for maps-api
   ##
   secretConfiguration: ""
@@ -1719,7 +1651,7 @@ router:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/router
-    tag: "2021.12.23.01"
+    tag: "2021.12.27.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1826,12 +1758,16 @@ router:
   ##
   configuration: |
     # Router configuration for the different endpoints
-    ROUTER_ACCOUNTS_WWW_INTERNAL_URL={{ include "carto.accountsWww.fullname" . }}
-    ROUTER_WORKSPACE_API_INTERNAL_URL={{ include "carto.workspaceApi.fullname" . }}
-    ROUTER_WORKSPACE_WWW_INTERNAL_URL={{ include "carto.workspaceWww.fullname" . }}
-    ROUTER_MAPS_API_INTERNAL_URL={{ include "carto.mapsApi.fullname" . }}
-    ROUTER_IMPORT_API_INTERNAL_URL={{ include "carto.importApi.fullname" . }}
-    ROUTER_LDS_API_INTERNAL_URL={{ include "carto.ldsApi.fullname" . }}
+    ROUTER_ACCOUNTS_WWW_INTERNAL_URL={{ include "carto.accountsWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+    ROUTER_WORKSPACE_API_INTERNAL_URL={{ include "carto.workspaceApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+    ROUTER_WORKSPACE_WWW_INTERNAL_URL={{ include "carto.workspaceWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+    ROUTER_MAPS_API_INTERNAL_URL={{ include "carto.mapsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+    ROUTER_IMPORT_API_INTERNAL_URL={{ include "carto.importApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+    ROUTER_LDS_API_INTERNAL_URL={{ include "carto.ldsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+    ROUTER_SSL_CERTIFICATE_PATH=/usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
+    ROUTER_SSL_CERTIFICATE_KEY_PATH=/usr/src/certs/{{ template "carto.tlsCerts.secretKeyKey" . }}
+    # We use the certificates created in the chart
+    ROUTER_SSL_AUTOGENERATE=0
   ## @param router.secretConfiguration Configuration settings (env vars) for router
   ##
   secretConfiguration: ""
@@ -2032,7 +1968,7 @@ workspaceApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-api
-    tag: "2021.12.23.01"
+    tag: "2021.12.27.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2052,7 +1988,7 @@ workspaceApi:
   ## @param workspaceApi.containerPorts.http workspace-api HTTP container port
   ##
   containerPorts:
-    http: 3000
+    http: 8001
   ## Configure extra options for workspace-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param workspaceApi.livenessProbe.enabled Enable livenessProbe on workspace-api containers
@@ -2136,7 +2072,10 @@ workspaceApi:
   ## @param workspaceApi.configuration [object] Configuration settings (env vars) for workspace-api
   ##
   configuration: |
-    PORT={{ .Values.workspaceApi.containerPorts.http }}
+    WORKSPACE_PORT="{{ .Values.workspaceApi.containerPorts.http }}"
+    # if you change the TENANT_ID you need to change the DataUpdate's topic and sub
+    WORKSPACE_TENANT_ID="${ONPREM_TENANT_ID}"
+
   ## @param workspaceApi.secretConfiguration Configuration settings (env vars) for workspace-api
   ##
   secretConfiguration: ""
@@ -2333,7 +2272,7 @@ workspaceSubscriber:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-api
-    tag: "2021.12.23.01"
+    tag: "2021.12.27.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2350,54 +2289,6 @@ workspaceSubscriber:
   ## @param workspaceSubscriber.replicaCount Number of workspace-subscriber replicas to deploy
   ##
   replicaCount: 1
-  ## @param workspaceSubscriber.containerPorts.http workspace-subscriber HTTP container port
-  ##
-  containerPorts:
-    http: 3000
-  ## Configure extra options for workspace-subscriber containers' liveness and readiness probes
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-  ## @param workspaceSubscriber.livenessProbe.enabled Enable livenessProbe on workspace-subscriber containers
-  ## @param workspaceSubscriber.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
-  ## @param workspaceSubscriber.livenessProbe.periodSeconds Period seconds for livenessProbe
-  ## @param workspaceSubscriber.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
-  ## @param workspaceSubscriber.livenessProbe.failureThreshold Failure threshold for livenessProbe
-  ## @param workspaceSubscriber.livenessProbe.successThreshold Success threshold for livenessProbe
-  ##
-  livenessProbe:
-    enabled: true
-    initialDelaySeconds: 10
-    periodSeconds: 30
-    timeoutSeconds: 5
-    successThreshold: 1
-    failureThreshold: 5
-  ## @param workspaceSubscriber.readinessProbe.enabled Enable readinessProbe on workspace-subscriber containers
-  ## @param workspaceSubscriber.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
-  ## @param workspaceSubscriber.readinessProbe.periodSeconds Period seconds for readinessProbe
-  ## @param workspaceSubscriber.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
-  ## @param workspaceSubscriber.readinessProbe.failureThreshold Failure threshold for readinessProbe
-  ## @param workspaceSubscriber.readinessProbe.successThreshold Success threshold for readinessProbe
-  ##
-  readinessProbe:
-    enabled: true
-    initialDelaySeconds: 10
-    periodSeconds: 30
-    timeoutSeconds: 5
-    successThreshold: 1
-    failureThreshold: 5
-  ## @param workspaceSubscriber.startupProbe.enabled Enable startupProbe on workspace-subscriber containers
-  ## @param workspaceSubscriber.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
-  ## @param workspaceSubscriber.startupProbe.periodSeconds Period seconds for startupProbe
-  ## @param workspaceSubscriber.startupProbe.timeoutSeconds Timeout seconds for startupProbe
-  ## @param workspaceSubscriber.startupProbe.failureThreshold Failure threshold for startupProbe
-  ## @param workspaceSubscriber.startupProbe.successThreshold Success threshold for startupProbe
-  ##
-  startupProbe:
-    enabled: false
-    initialDelaySeconds: 10
-    periodSeconds: 30
-    timeoutSeconds: 5
-    successThreshold: 1
-    failureThreshold: 5
   ## @param workspaceSubscriber.customLivenessProbe Custom livenessProbe that overrides the default one
   ##
   customLivenessProbe: {}
@@ -2436,8 +2327,7 @@ workspaceSubscriber:
 
   ## @param workspaceSubscriber.configuration [object] Configuration settings (env vars) for workspace-subscriber
   ##
-  configuration: |
-    PORT={{ .Values.workspaceSubscriber.containerPorts.http }}
+  configuration: ""
   ## @param workspaceSubscriber.secretConfiguration Configuration settings (env vars) for workspace-subscriber
   ##
   secretConfiguration: ""
@@ -2561,52 +2451,6 @@ workspaceSubscriber:
   ##    command: ['sh', '-c', 'echo "hello world"']
   ##
   initContainers: {}
-  ## @section workspace-subscriber Service Parameters
-  ##
-  ##
-  service:
-    ## @param workspaceSubscriber.service.type workspace-subscriber service type
-    ##
-    type: ClusterIP
-    ## @param workspaceSubscriber.service.ports.http workspace-subscriber service HTTP port
-    ##
-    ports:
-      http: 80
-    ## Node ports to expose
-    ## @param workspaceSubscriber.service.nodePorts.http Node port for HTTP
-    ## NOTE: choose port between <30000-32767>
-    ##
-    nodePorts:
-      http: ""
-    ## @param workspaceSubscriber.service.clusterIP workspace-subscriber service Cluster IP
-    ## e.g.:
-    ## clusterIP: None
-    ##
-    clusterIP: ""
-    ## @param workspaceSubscriber.service.loadBalancerIP workspace-subscriber service Load Balancer IP
-    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
-    ##
-    loadBalancerIP: ""
-    ## @param workspaceSubscriber.service.labelSelectorsOverride Selector for workspace-subscriber service
-    ##
-    labelSelectorsOverride: {}
-    ## @param workspaceSubscriber.service.loadBalancerSourceRanges workspace-subscriber service Load Balancer sources
-    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
-    ## e.g:
-    ## loadBalancerSourceRanges:
-    ##   - 10.10.10.0/24
-    ##
-    loadBalancerSourceRanges: []
-    ## @param workspaceSubscriber.service.externalTrafficPolicy workspace-subscriber service external traffic policy
-    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
-    ##
-    externalTrafficPolicy: Cluster
-    ## @param workspaceSubscriber.service.annotations Additional custom annotations for workspace-subscriber service
-    ##
-    annotations: {}
-    ## @param workspaceSubscriber.service.extraPorts Extra ports to expose in workspace-subscriber service (normally used with the `sidecars` value)
-    ##
-    extraPorts: []
   ## @section workspace-subscriber ServiceAccount configuration
   ##
   serviceAccount:
@@ -2634,7 +2478,7 @@ workspaceWww:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-www
-    tag: "2021.12.23.01"
+    tag: "2021.12.27.01"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2934,7 +2778,7 @@ workspaceMigrations:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-db
-    tag: "2021.12.23.01"
+    tag: "2021.12.27.01"
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
     ## Secrets must be manually created in the namespace.

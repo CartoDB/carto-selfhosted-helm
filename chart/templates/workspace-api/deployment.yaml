@@ -97,12 +97,12 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
-                  key: {{ include "carto.postgresql.secret.adminKey" . | quote }}
+                  key: {{ include "carto.postgresql.secret.adminKey" . }}
             - name: WORKSPACE_POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
-                  key: {{ include "carto.postgresql.secret.key" . | quote }}
+                  key: {{ include "carto.postgresql.secret.key" . }}
             - name: POSTGRES_ADMIN_USER
               value: {{ include "carto.postgresql.adminUser" . }}
           volumeMounts:
@@ -142,11 +142,11 @@ spec:
               npm run start:built
           {{- end }}
           env:
-            - name: POSTGRES_PASSWORD
+            - name: WORKSPACE_POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
-                  key: {{ include "carto.postgresql.secret.key" . | quote }}
+                  key: {{ include "carto.postgresql.secret.key" . }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -204,6 +204,18 @@ spec:
               mountPath: /config
             - name: secret-env
               mountPath: /secret
+            - name: google-secret
+              mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
+              subPath: {{ template "carto.google.secretKey" . }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCAKey" . }}
+              subPath: {{ template "carto.tlsCerts.secretCAKey" . }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
+              subPath: {{ template "carto.tlsCerts.secretCertKey" . }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretKeyKey" . }}
+              subPath: {{ template "carto.tlsCerts.secretKeyKey" . }}
           {{- if .Values.workspaceApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -217,6 +229,12 @@ spec:
         - name: secret-env
           secret:
             secretName: {{ include "carto.workspaceApi.secretName" . }}
+        - name: tls-secret
+          secret:
+            secretName: {{ include "carto.tlsCerts.secretName" . }}
+        - name: google-secret
+          secret:
+            secretName: {{ include "carto.google.secretName" . }}
         {{- if .Values.workspaceApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

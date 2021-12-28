@@ -72,9 +72,7 @@ host. To configure CARTO with the URL of your service:
         Watch the status with: 'kubectl get svc --namespace {{ .Release.Namespace }} -w {{ include "carto.router.fullname" . }}'
 
   export CARTO_HOST=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} --template "{{ "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}" }}")
-
 {{- end }}
-
   {{ include "common.utils.secret.getvalue" (dict "secret" $postgresqlSecretName "field" "postgresql-password" "context" $) }}
   {{ include "common.utils.secret.getvalue" (dict "secret" $postgresqlSecretName "field" "postgresql-postgres-password" "context" $) }}
   {{ include "common.utils.secret.getvalue" (dict "secret" $redisSecretName "field" "redis-password" "context" $) }}

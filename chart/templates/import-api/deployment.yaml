@@ -66,6 +66,9 @@ spec:
         {{- if .Values.postgresql.enabled }}
         {{ include "carto.postgresql-init-container" (dict "context" $) | nindent 8 }}
         {{- end }}
+        {{- if .Values.redis.enabled }}
+        {{ include "carto.redis-init-container" . | nindent 8 }}
+        {{- end }}
         {{- if .Values.importApi.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.importApi.initContainers "context" $) | nindent 8 }}
         {{- end }}
@@ -98,11 +101,16 @@ spec:
               npm run start:built
           {{- end }}
           env:
-            - name: POSTGRES_PASSWORD
+            - name: WORKSPACE_POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ ternary "postgresql-password" "db-password" .Values.postgresql.enabled | quote }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.redis.secretName" . }}
+                  key: {{ include "carto.redis.existingsecret.key" . | quote }}
             {{- if .Values.importApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -125,7 +133,7 @@ spec:
           {{- if .Values.importApi.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.livenessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /
               port: http
           {{- else if .Values.importApi.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.customLivenessProbe "context" $) | nindent 12 }}
@@ -133,7 +141,7 @@ spec:
           {{- if .Values.importApi.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.readinessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /
               port: http
           {{- else if .Values.importApi.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.customReadinessProbe "context" $) | nindent 12 }}
@@ -141,7 +149,7 @@ spec:
           {{- if .Values.importApi.startupProbe.enabled }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.startupProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /
               port: http
           {{- else if .Values.importApi.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.customStartupProbe "context" $) | nindent 12 }}
@@ -155,6 +163,18 @@ spec:
               mountPath: /config
             - name: secret-env
               mountPath: /secret
+            - name: google-secret
+              mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
+              subPath: {{ template "carto.google.secretKey" . }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCAKey" . }}
+              subPath: {{ template "carto.tlsCerts.secretCAKey" . }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
+              subPath: {{ template "carto.tlsCerts.secretCertKey" . }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretKeyKey" . }}
+              subPath: {{ template "carto.tlsCerts.secretKeyKey" . }}
           {{- if .Values.importApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -168,6 +188,12 @@ spec:
         - name: secret-env
           secret:
             secretName: {{ include "carto.importApi.secretName" . }}
+        - name: tls-secret
+          secret:
+            secretName: {{ include "carto.tlsCerts.secretName" . }}
+        - name: google-secret
+          secret:
+            secretName: {{ include "carto.google.secretName" . }}
         {{- if .Values.importApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

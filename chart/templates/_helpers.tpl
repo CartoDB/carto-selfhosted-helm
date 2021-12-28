@@ -471,6 +471,72 @@ Return the proper Docker Image Registry Secret Names
 {{- end -}}
 
 {{/*
+Return the proper Carto Google Secret name
+*/}}
+{{- define "carto.google.secretName" -}}
+{{- if .Values.google.existingSecret.name -}}
+{{- .Values.google.existingSecret.name -}}
+{{- else -}}
+{{- printf "%s-google" (include "common.names.fullname" .) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto Google Secret name
+*/}}
+{{- define "carto.google.secretKey" -}}
+{{- if .Values.google.existingSecret.name -}}
+{{- .Values.google.existingSecret.key -}}
+{{- else -}}
+{{- print "key.json" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto TLS Secret name
+*/}}
+{{- define "carto.tlsCerts.secretName" -}}
+{{- if .Values.tlsCerts.existingSecret.name -}}
+{{- .Values.tlsCerts.existingSecret.name -}}
+{{- else -}}
+{{- printf "%s-tls" (include "common.names.fullname" .) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto TLS secret key for the CA cert
+*/}}
+{{- define "carto.tlsCerts.secretCAKey" -}}
+{{- if .Values.tlsCerts.existingSecret.name -}}
+{{- .Values.tlsCerts.existingSecret.caKey -}}
+{{- else -}}
+{{- print "ca.crt" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto TLS secret key for the TLS cert
+*/}}
+{{- define "carto.tlsCerts.secretCertKey" -}}
+{{- if .Values.tlsCerts.existingSecret.name -}}
+{{- .Values.tlsCerts.existingSecret.certKey -}}
+{{- else -}}
+{{- print "tls.crt" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto TLS secret key for the TLS key
+*/}}
+{{- define "carto.tlsCerts.secretKeyKey" -}}
+{{- if .Values.tlsCerts.existingSecret.name -}}
+{{- .Values.tlsCerts.existingSecret.keyKey -}}
+{{- else -}}
+{{- print "tls.key" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create a default fully qualified postgresql name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
@@ -622,7 +688,7 @@ Admin user
       valueFrom:
         secretKeyRef:
           name: {{ include "carto.postgresql.secretName" .context }}
-          key: {{ include "carto.postgresql.secret.adminKey" .context | quote }}
+          key: {{ include "carto.postgresql.secret.adminKey" .context }}
     - name: POSTGRESQL_CLIENT_POSTGRES_USER
       value: {{ include "carto.postgresql.adminUser" .context }}
     - name: POSTGRESQL_CLIENT_DATABASE_NAME
@@ -634,7 +700,7 @@ Admin user
           name: {{ include "carto.postgresql.secretName" .context }}
           key: {{ include "carto.postgresql.secret.key" .context  }}
     - name: POSTGRESQL_CLIENT_POSTGRES_USER
-      value: {{ include "carto.postgresql.user" .context | quote }}
+      value: {{ include "carto.postgresql.user" .context }}
     - name: POSTGRESQL_CLIENT_DATABASE_NAME
       value: {{ include "carto.postgresql.databaseName" .context }}
     {{- end }}
