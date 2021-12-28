@@ -1451,8 +1451,7 @@ mapsApi:
   ##
   configuration: |
     MAPS_API_V3_PORT="{{ .Values.mapsApi.containerPorts.http }}"
-    MAPS_API_V3_RESOURCE_URL_TEMPLATE='https://{{ .Values.onPremDomain }}/${path}'
-    MAPS_API_V3_RESOURCE_URL_TEMPLATE_NEW='https://${host}/${path}'
+    MAPS_API_V3_RESOURCE_URL_TEMPLATE_NEW='https://${host}/api/${path}'
     MAPS_API_V3_TENANT_ID="$ONPREM_TENANT_ID"
 
   ## @param mapsApi.secretConfiguration Configuration settings (env vars) for maps-api
