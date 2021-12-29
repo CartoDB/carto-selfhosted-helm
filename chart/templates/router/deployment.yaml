@@ -62,6 +62,7 @@ spec:
       {{- if .Values.router.podSecurityContext.enabled }}
       securityContext: {{- omit .Values.router.podSecurityContext "enabled" | toYaml | nindent 8 }}
       {{- end }}
+      {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
         {{- if .Values.postgresql.enabled }}
         {{ include "carto.postgresql-init-container" (dict "context" $) | nindent 8 }}
@@ -69,6 +70,7 @@ spec:
         {{- if .Values.router.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.router.initContainers "context" $) | nindent 8 }}
         {{- end }}
+      {{- end }}
       containers:
         - name: router
           image: {{ template "carto.router.image" . }}
