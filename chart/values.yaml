@@ -257,7 +257,7 @@ accountsWww:
   ## @param accountsWww.containerPorts.http accounts-www HTTP container port
   ##
   containerPorts:
-    http: 80
+    http: 8080
   ## Configure extra options for accounts-www containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param accountsWww.livenessProbe.enabled Enable livenessProbe on accounts-www containers
@@ -1671,8 +1671,8 @@ router:
   ## @param router.containerPorts.https router HTTPS container port
   ##
   containerPorts:
-    http: 80
-    https: 443
+    http: 8080
+    https: 8443
   ## Configure extra options for router containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param router.livenessProbe.enabled Enable livenessProbe on router containers
@@ -2497,7 +2497,7 @@ workspaceWww:
   ## @param workspaceWww.containerPorts.http workspace-www HTTP container port
   ##
   containerPorts:
-    http: 80
+    http: 8080
   ## Configure extra options for workspace-www containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param workspaceWww.livenessProbe.enabled Enable livenessProbe on workspace-www containers
