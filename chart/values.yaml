@@ -1767,6 +1767,9 @@ router:
     ROUTER_SSL_CERTIFICATE_KEY_PATH=/usr/src/certs/{{ template "carto.tlsCerts.secretKeyKey" . }}
     # We use the certificates created in the chart
     ROUTER_SSL_AUTOGENERATE=0
+    # Port binding
+    ROUTER_HTTP_PORT={{ .Values.router.containerPorts.http }}
+    ROUTER_HTTPS_PORT={{ .Values.router.containerPorts.https }}
   ## @param router.secretConfiguration Configuration settings (env vars) for router
   ##
   secretConfiguration: ""
