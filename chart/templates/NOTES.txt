@@ -1,0 +1,125 @@
+CHART NAME: {{ .Chart.Name }}
+CHART VERSION: {{ .Chart.Version }}
+APP VERSION: {{ .Chart.AppVersion }}
+
+** Please be patient while the chart is being deployed **
+
+{{- if .Values.diagnosticMode.enabled }}
+
+The chart has been deployed in diagnostic mode. All probes have been disabled and the command has been overwritten with:
+
+  command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 4 }}
+  args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 4 }}
+
+Get the list of pods by executing:
+
+  kubectl get pods --namespace {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+
+Access the pod you want to debug by executing
+
+  kubectl exec --namespace {{ .Release.Namespace }} -ti <NAME OF THE POD> -- bash
+
+{{- else }}
+{{/* The CARTO team should check if this should be an error instead of a Warning */}}
+{{- if or (contains "FILL_ME" .Values.commonConfiguration) (contains "FILL_ME" .Values.commonSecretConfiguration) }}
+
+WARNING: There are values in the CARTO configuration that you did not set according to the documentation. This may cause issues in the deployment. Please review the configuration.
+
+{{- if (contains "FILL_ME" .Values.commonConfiguration) }}
+
+Found these lines in commonConfiguration:
+{{ $lines := regexFindAll ".*FILL_ME.*" .Values.commonConfiguration -1 }}
+{{- range $lines }}
+{{ . }}
+{{- end }}
+{{- end }}
+
+{{- if (contains "FILL_ME" .Values.commonSecretConfiguration) }}
+
+Found these lines in commonSecretConfiguration:
+{{ $lines := regexFindAll ".*FILL_ME.*" .Values.commonSecretConfiguration -1 }}
+{{- range $lines }}
+{{ . }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- $baseUrl := (include "carto.baseUrl" .) -}}
+{{- $postgresqlSecretName := include "carto.postgresql.secretName" . -}}
+{{- $redisSecretName := include "carto.redis.secretName" . -}}
+{{- if not $baseUrl }}
+###############################################################################
+### ERROR: You did not provide an on premises URL in your 'helm install' call ###
+###############################################################################
+
+This deployment will be incomplete until you configure CARTO with a resolvable
+host. To configure CARTO with the URL of your service:
+
+1. Get the CARTO URL by running:
+
+{{- if eq .Values.router.service.type "ClusterIP" }}
+  {{- $port := default 80 .Values.router.service.ports.http | toString }}
+
+  echo "URL  : http://127.0.0.1{{- if ne $port "80" }}:{{ $port }}{{ end }}"
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }}
+
+{{- else if eq .Values.router.service.type "NodePort" }}
+  export CARTO_HOST=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  export CARTO_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "common.names.fullname" . }})
+
+{{- else }}
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+        Watch the status with: 'kubectl get svc --namespace {{ .Release.Namespace }} -w {{ include "carto.router.fullname" . }}'
+
+  export CARTO_HOST=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} --template "{{ "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}" }}")
+{{- end }}
+  {{ include "common.utils.secret.getvalue" (dict "secret" $postgresqlSecretName "field" "postgresql-password" "context" $) }}
+  {{ include "common.utils.secret.getvalue" (dict "secret" $postgresqlSecretName "field" "postgresql-postgres-password" "context" $) }}
+  {{ include "common.utils.secret.getvalue" (dict "secret" $redisSecretName "field" "redis-password" "context" $) }}
+
+2. Complete your CARTO deployment by running:
+
+  helm upgrade --namespace {{ .Release.Namespace }} {{ .Release.Name }} carto/{{ .Chart.Name }} \
+    --set router.service.type={{ .Values.router.service.type }} \
+    --set onPremDomain=$CARTO_HOST{{- if eq .Values.router.service.type "NodePort" }}:$CARTO_PORT{{- end }} \
+    --set postgresql.postgresqlPassword=$POSTGRESQL_PASSWORD \
+    --set postgresql.postgresqlPostgresPassword=$POSTGRESQL_POSTGRES_PASSWORD \
+    --set redis.auth.password=$REDIS_PASSWORD
+
+{{- else }}
+
+1. Get the CARTO URL by running:
+
+{{- if eq .Values.router.service.type "ClusterIP" }}
+{{- $port := default 80 .Values.router.service.ports.http | toString }}
+
+  echo "URL  : http://127.0.0.1{{- if ne $port "80" }}:{{ $port }}{{ end }}"
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }}
+
+{{- else if eq .Values.router.service.type "NodePort" }}
+
+  export CARTO_HOST=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  export CARTO_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "common.names.fullname" . }})
+
+{{- else }}
+
+  echo URL  : {{ $baseUrl }}
+
+{{- end }}
+
+{{- end  }}
+
+{{ include "carto.validateValues" . }}
+
+{{- $postgresqlSecretName := include "carto.postgresql.secretName" . -}}
+{{- $redisSecretName := include "carto.redis.secretName" . -}}
+{{- $passwordValidationErrors := list -}}
+
+{{- $postgresqlPasswordValidationErrors := include "common.validations.values.postgresql.passwords" (dict "secret" $postgresqlSecretName "subchart" true "context" $) -}}
+{{- $passwordValidationErrors = append $passwordValidationErrors $postgresqlPasswordValidationErrors -}}
+
+{{- $redisPasswordValidationErrors := include "common.validations.values.redis.passwords" (dict "secret" $redisSecretName "subchart" true "context" $) -}}
+{{- $passwordValidationErrors = append $passwordValidationErrors $redisPasswordValidationErrors -}}
+
+{{- include "common.errors.upgrade.passwords.empty" (dict "validationErrors" $passwordValidationErrors "context" $) -}}
+{{- end }}
