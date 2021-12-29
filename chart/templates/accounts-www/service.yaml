@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "carto.accountsWww.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: accounts-www
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.accountsWww.service.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.service.annotations "context" $) | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.accountsWww.service.type }}
+  {{- if and .Values.accountsWww.service.clusterIP (eq .Values.accountsWww.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.accountsWww.service.clusterIP }}
+  {{- end }}
+  {{- if and .Values.accountsWww.service.externalTrafficPolicy (ne .Values.accountsWww.service.type "ClusterIP") }}
+  externalTrafficPolicy: {{ .Values.accountsWww.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- if and .Values.accountsWww.service.loadBalancerIP (eq .Values.accountsWww.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.accountsWww.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq .Values.accountsWww.service.type "LoadBalancer") .Values.accountsWww.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml .Values.accountsWww.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.accountsWww.service.ports.http }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if and (or (eq .Values.accountsWww.service.type "NodePort") (eq .Values.accountsWww.service.type "LoadBalancer")) .Values.accountsWww.service.nodePorts.http }}
+      nodePort: {{ .Values.accountsWww.service.nodePorts.http }}
+      {{- else if eq .Values.accountsWww.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- if .Values.accountsWww.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  selector:
+    {{- if .Values.accountsWww.service.labelSelectorsOverride }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- else }}
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: accounts-www
+    {{- end }}

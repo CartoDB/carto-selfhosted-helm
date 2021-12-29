@@ -1,0 +1,28 @@
+apiVersion: v2
+appVersion: 3.0.0
+dependencies:
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 1.x.x
+  - condition: postgresql.enabled
+    name: postgresql
+    repository: https://charts.bitnami.com/bitnami
+    version: 10.x.x
+  - condition: redis.enabled
+    name: redis
+    repository: https://charts.bitnami.com/bitnami
+    version: 15.x.x
+description: CARTO is the world's leading Location Intelligence platform, enabling organizations to use spatial data and analysis for more efficient delivery routes, better behavioural marketing, strategic store placements, and much more.
+engine: gotpl
+home: https://github.com/cartodb/carto3-helm/tree/stable/chart
+keywords:
+  - carto
+  - data
+  - spatial
+  - analysis
+name: carto
+sources:
+  - https://carto.com/
+version: 0.0.1

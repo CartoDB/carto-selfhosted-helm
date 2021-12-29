@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "carto.ldsApi.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: lds-api
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.ldsApi.service.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.service.annotations "context" $) | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.ldsApi.service.type }}
+  {{- if and .Values.ldsApi.service.clusterIP (eq .Values.ldsApi.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.ldsApi.service.clusterIP }}
+  {{- end }}
+  {{- if and .Values.ldsApi.service.externalTrafficPolicy (ne .Values.ldsApi.service.type "ClusterIP") }}
+  externalTrafficPolicy: {{ .Values.ldsApi.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- if and .Values.ldsApi.service.loadBalancerIP (eq .Values.ldsApi.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.ldsApi.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq .Values.ldsApi.service.type "LoadBalancer") .Values.ldsApi.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml .Values.ldsApi.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.ldsApi.service.ports.http }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if and (or (eq .Values.ldsApi.service.type "NodePort") (eq .Values.ldsApi.service.type "LoadBalancer")) .Values.ldsApi.service.nodePorts.http }}
+      nodePort: {{ .Values.ldsApi.service.nodePorts.http }}
+      {{- else if eq .Values.ldsApi.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- if .Values.ldsApi.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  selector:
+    {{- if .Values.ldsApi.service.labelSelectorsOverride }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- else }}
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: lds-api
+    {{- end }}

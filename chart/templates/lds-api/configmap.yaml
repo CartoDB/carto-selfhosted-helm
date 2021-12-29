@@ -1,0 +1,20 @@
+{{- if not .Values.ldsApi.existingConfigMap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "carto.ldsApi.fullname" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: lds-api
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  .env: |
+    # Common configuration
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonConfiguration "context" $ ) | nindent 4 }}
+    # LDS-API configuration
+    {{- include "common.tplvalues.render" ( dict "value" .Values.ldsApi.configuration "context" $ ) | nindent 4 }}
+{{- end }}

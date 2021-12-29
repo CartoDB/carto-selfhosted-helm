@@ -1,0 +1,184 @@
+{{- if (include "carto.baseUrl" .) }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.workspaceWww.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: workspace-www
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.workspaceWww.replicaCount }}
+  {{- if .Values.workspaceWww.updateStrategy }}
+  strategy: {{- toYaml .Values.workspaceWww.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: workspace-www
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/workspace-www/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/workspace-www/secret.yaml") . | sha256sum }}
+        {{- if .Values.workspaceWww.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: workspace-www
+        {{- if .Values.workspaceWww.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.workspaceWww.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.workspaceWww.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.workspaceWww.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceWww.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.workspaceWww.podAffinityPreset "component" "workspace-www" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.workspaceWww.podAntiAffinityPreset "component" "workspace-www" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.workspaceWww.nodeAffinityPreset.type "key" .Values.workspaceWww.nodeAffinityPreset.key "values" .Values.workspaceWww.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.workspaceWww.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceWww.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.workspaceWww.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.workspaceWww.priorityClassName }}
+      priorityClassName: {{ .Values.workspaceWww.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.workspaceWww.schedulerName }}
+      schedulerName: {{ .Values.workspaceWww.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.workspaceWww.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.workspaceWww.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      initContainers:
+        {{- if .Values.workspaceWww.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: workspace-www
+          image: {{ template "carto.workspaceWww.image" . }}
+          imagePullPolicy: {{ .Values.workspaceWww.image.pullPolicy }}
+          {{- if .Values.workspaceWww.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.workspaceWww.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.workspaceWww.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.workspaceWww.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.args "context" $) | nindent 12 }}
+          {{ else }}
+          args:
+            - -ec
+            - |
+              set -a
+              . /config/.env
+              . /secret/.secret.env
+              /docker-entrypoint.sh nginx -g "daemon off;"
+          {{- end }}
+          env:
+            {{- if .Values.workspaceWww.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            {{- if .Values.workspaceWww.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.workspaceWww.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.workspaceWww.resources }}
+          resources: {{- toYaml .Values.workspaceWww.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.workspaceWww.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.workspaceWww.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceWww.livenessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /
+              port: http
+          {{- else if .Values.workspaceWww.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.workspaceWww.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceWww.readinessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /
+              port: http
+          {{- else if .Values.workspaceWww.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.workspaceWww.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceWww.startupProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.workspaceWww.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.workspaceWww.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: config-env
+              mountPath: /config
+            - name: secret-env
+              mountPath: /secret
+            - name: google-secret
+              mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
+              subPath: {{ template "carto.google.secretKey" . }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCAKey" . }}
+              subPath: {{ template "carto.tlsCerts.secretCAKey" . }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
+              subPath: {{ template "carto.tlsCerts.secretCertKey" . }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretKeyKey" . }}
+              subPath: {{ template "carto.tlsCerts.secretKeyKey" . }}
+          {{- if .Values.workspaceWww.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.workspaceWww.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceWww.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: config-env
+          configMap:
+            name: {{ include "carto.workspaceWww.configmapName" . }}
+        - name: secret-env
+          secret:
+            secretName: {{ include "carto.workspaceWww.secretName" . }}
+        - name: tls-secret
+          secret:
+            secretName: {{ include "carto.tlsCerts.secretName" . }}
+        - name: google-secret
+          secret:
+            secretName: {{ include "carto.google.secretName" . }}
+        {{- if .Values.workspaceWww.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+{{- end }}
