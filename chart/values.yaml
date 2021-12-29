@@ -257,7 +257,7 @@ accountsWww:
   ## @param accountsWww.containerPorts.http accounts-www HTTP container port
   ##
   containerPorts:
-    http: 80
+    http: 8080
   ## Configure extra options for accounts-www containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param accountsWww.livenessProbe.enabled Enable livenessProbe on accounts-www containers
@@ -326,7 +326,7 @@ accountsWww:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1001
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param accountsWww.containerSecurityContext.enabled Enabled accounts-www containers' Security Context
@@ -335,8 +335,8 @@ accountsWww:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 0
-    runAsNonRoot: false
+    runAsUser: 1001
+    runAsNonRoot: true
 
   ## @param accountsWww.configuration [object] Configuration settings (env vars) for accounts-www
   ##
@@ -627,7 +627,7 @@ importApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1001
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importApi.containerSecurityContext.enabled Enabled import-api containers' Security Context
@@ -636,8 +636,8 @@ importApi:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 0
-    runAsNonRoot: false
+    runAsUser: 1001
+    runAsNonRoot: true
 
   ## @param importApi.configuration [object] Configuration settings (env vars) for import-api
   ##
@@ -880,7 +880,7 @@ importWorker:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1001
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importWorker.containerSecurityContext.enabled Enabled import-worker containers' Security Context
@@ -889,8 +889,8 @@ importWorker:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 0
-    runAsNonRoot: false
+    runAsUser: 1001
+    runAsNonRoot: true
 
   ## @param importWorker.configuration [object] Configuration settings (env vars) for import-worker
   ##
@@ -1134,7 +1134,7 @@ ldsApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1001
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param ldsApi.containerSecurityContext.enabled Enabled lds-api containers' Security Context
@@ -1143,8 +1143,8 @@ ldsApi:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 0
-    runAsNonRoot: false
+    runAsUser: 1001
+    runAsNonRoot: true
 
   ## @param ldsApi.configuration [object] Configuration settings (env vars) for lds-api
   ##
@@ -1435,7 +1435,7 @@ mapsApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1001
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param mapsApi.containerSecurityContext.enabled Enabled maps-api containers' Security Context
@@ -1444,8 +1444,8 @@ mapsApi:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 0
-    runAsNonRoot: false
+    runAsUser: 1001
+    runAsNonRoot: true
 
   ## @param mapsApi.configuration [object] Configuration settings (env vars) for maps-api
   ##
@@ -1671,8 +1671,8 @@ router:
   ## @param router.containerPorts.https router HTTPS container port
   ##
   containerPorts:
-    http: 80
-    https: 443
+    http: 8080
+    https: 8443
   ## Configure extra options for router containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param router.livenessProbe.enabled Enable livenessProbe on router containers
@@ -1741,7 +1741,7 @@ router:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1001
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param router.containerSecurityContext.enabled Enabled router containers' Security Context
@@ -1750,8 +1750,8 @@ router:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 0
-    runAsNonRoot: false
+    runAsUser: 1001
+    runAsNonRoot: true
 
   ## @param router.configuration [object] Configuration settings (env vars) for router
   ##
@@ -1767,6 +1767,9 @@ router:
     ROUTER_SSL_CERTIFICATE_KEY_PATH=/usr/src/certs/{{ template "carto.tlsCerts.secretKeyKey" . }}
     # We use the certificates created in the chart
     ROUTER_SSL_AUTOGENERATE=0
+    # Port binding
+    ROUTER_HTTP_PORT={{ .Values.router.containerPorts.http }}
+    ROUTER_HTTPS_PORT={{ .Values.router.containerPorts.https }}
   ## @param router.secretConfiguration Configuration settings (env vars) for router
   ##
   secretConfiguration: ""
@@ -2056,7 +2059,7 @@ workspaceApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1001
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceApi.containerSecurityContext.enabled Enabled workspace-api containers' Security Context
@@ -2065,8 +2068,8 @@ workspaceApi:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 0
-    runAsNonRoot: false
+    runAsUser: 1001
+    runAsNonRoot: true
 
   ## @param workspaceApi.configuration [object] Configuration settings (env vars) for workspace-api
   ##
@@ -2312,7 +2315,7 @@ workspaceSubscriber:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1001
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceSubscriber.containerSecurityContext.enabled Enabled workspace-subscriber containers' Security Context
@@ -2321,8 +2324,8 @@ workspaceSubscriber:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 0
-    runAsNonRoot: false
+    runAsUser: 1001
+    runAsNonRoot: true
 
   ## @param workspaceSubscriber.configuration [object] Configuration settings (env vars) for workspace-subscriber
   ##
@@ -2497,7 +2500,7 @@ workspaceWww:
   ## @param workspaceWww.containerPorts.http workspace-www HTTP container port
   ##
   containerPorts:
-    http: 80
+    http: 8080
   ## Configure extra options for workspace-www containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param workspaceWww.livenessProbe.enabled Enable livenessProbe on workspace-www containers
@@ -2566,7 +2569,7 @@ workspaceWww:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1001
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceWww.containerSecurityContext.enabled Enabled workspace-www containers' Security Context
@@ -2575,8 +2578,8 @@ workspaceWww:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 0
-    runAsNonRoot: false
+    runAsUser: 1001
+    runAsNonRoot: true
 
   ## @param workspaceWww.configuration [object] Configuration settings (env vars) for workspace-www
   ##
@@ -2812,8 +2815,8 @@ workspaceMigrations:
   ##
   containerSecurityContext:
     enabled: true
-    runAsUser: 0
-    runAsNonRoot: false
+    runAsUser: 1001
+    runAsNonRoot: true
 
 ## @section Redis&trade; subchart parameters
 ## Redis&trade; chart configuration
