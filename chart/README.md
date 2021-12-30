@@ -52,6 +52,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `global.imagePullSecrets` | Global Docker registry secret names as an array | `[]`  |
 | `global.storageClass`     | Global StorageClass for Persistent Volume(s)    | `""`  |
 
+
 ### Common parameters
 
 | Name                     | Description                                                                             | Value           |
@@ -67,21 +68,23 @@ The command removes all the Kubernetes components associated with the chart and 
 | `diagnosticMode.command` | Command to override all containers in the deployment                                    | `["sleep"]`     |
 | `diagnosticMode.args`    | Args to override all containers in the deployment                                       | `["infinity"]`  |
 
+
 ### CARTO common parameters
 
-| Name                         | Description                                                              | Value     |
-| ---------------------------- | ------------------------------------------------------------------------ | --------- |
-| `onPremDomain`               | CARTO on premises domain                                                 | `""`      |
-| `commonConfiguration`        | Configuration script that will be run in all Carto instances             | `{}`      |
-| `commonSecretConfiguration`  | Sensitive configuration script that will be run in all CARTO deployments | `{}`      |
-| `google.credentialFile`      | Content of the Google Credential file                                    | `""`      |
-| `google.existingSecret.name` | Secret containing the Google Credential file                             | `""`      |
-| `google.existingSecret.key`  | Key name of the Google Credential file inside the secret                 | `""`      |
+| Name                              | Description                                                              | Value     |
+| --------------------------------- | ------------------------------------------------------------------------ | --------- |
+| `onPremDomain`                    | CARTO on premises domain                                                 | `""`      |
+| `commonConfiguration`             | Configuration script that will be run in all Carto instances             | `{}`      |
+| `commonSecretConfiguration`       | Sensitive configuration script that will be run in all CARTO deployments | `{}`      |
+| `google.credentialFile`           | Content of the Google Credential file                                    | `""`      |
+| `google.existingSecret.name`      | Secret containing the Google Credential file                             | `""`      |
+| `google.existingSecret.key`       | Key name of the Google Credential file inside the secret                 | `""`      |
 | `tlsCerts.autoGenerate`           | Generate self-signed TLS certificates                                    | `true`    |
 | `tlsCerts.existingSecret.name`    | Name of a secret containing the certificate                              | `""`      |
 | `tlsCerts.existingSecret.caKey`   | Key of the CA inside the secret                                          | `ca.crt`  |
-| `tlsCerts.existingSecret.certKey` | Key of the certificate inside the secret                                 | `tlsCerts.crt` |
-| `tlsCerts.existingSecret.keyKey`  | Key of the certificate key inside the secret                             | `tlsCerts.key` |
+| `tlsCerts.existingSecret.certKey` | Key of the certificate inside the secret                                 | `tls.crt` |
+| `tlsCerts.existingSecret.keyKey`  | Key of the certificate key inside the secret                             | `tls.key` |
+
 
 ### accounts-www Deployment Parameters
 
@@ -89,7 +92,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------- |
 | `accountsWww.image.registry`                        | accounts-www image registry                                                                           | `gcr.io`                              |
 | `accountsWww.image.repository`                      | accounts-www image repository                                                                         | `carto-onprem-artifacts/accounts-www` |
-| `accountsWww.image.tag`                             | accounts-www image tag (immutable tags are recommended)                                               | `2021.12.23.01`                       |
+| `accountsWww.image.tag`                             | accounts-www image tag (immutable tags are recommended)                                               | `2021.12.27.01`                       |
 | `accountsWww.image.pullPolicy`                      | accounts-www image pull policy                                                                        | `IfNotPresent`                        |
 | `accountsWww.image.pullSecrets`                     | accounts-www image pull secrets                                                                       | `[]`                                  |
 | `accountsWww.replicaCount`                          | Number of accounts-www replicas to deploy                                                             | `1`                                   |
@@ -151,6 +154,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `accountsWww.sidecars`                              | Add additional sidecar containers to the accounts-www pod(s)                                          | `{}`                                  |
 | `accountsWww.initContainers`                        | Add additional init containers to the accounts-www pod(s)                                             | `{}`                                  |
 
+
 ### accounts-www Service Parameters
 
 | Name                                           | Description                                                                             | Value       |
@@ -166,6 +170,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `accountsWww.service.annotations`              | Additional custom annotations for accounts-www service                                  | `{}`        |
 | `accountsWww.service.extraPorts`               | Extra ports to expose in accounts-www service (normally used with the `sidecars` value) | `[]`        |
 
+
 ### accounts-www ServiceAccount configuration
 
 | Name                                                      | Description                                          | Value   |
@@ -174,17 +179,18 @@ The command removes all the Kubernetes components associated with the chart and 
 | `accountsWww.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
 | `accountsWww.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
 
+
 ### import-api Deployment Parameters
 
 | Name                                              | Description                                                                                         | Value                               |
 | ------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ----------------------------------- |
 | `importApi.image.registry`                        | import-api image registry                                                                           | `gcr.io`                            |
 | `importApi.image.repository`                      | import-api image repository                                                                         | `carto-onprem-artifacts/import-api` |
-| `importApi.image.tag`                             | import-api image tag (immutable tags are recommended)                                               | `2021.12.20`                        |
+| `importApi.image.tag`                             | import-api image tag (immutable tags are recommended)                                               | `2021.12.27.01`                     |
 | `importApi.image.pullPolicy`                      | import-api image pull policy                                                                        | `IfNotPresent`                      |
 | `importApi.image.pullSecrets`                     | import-api image pull secrets                                                                       | `[]`                                |
 | `importApi.replicaCount`                          | Number of import-api replicas to deploy                                                             | `1`                                 |
-| `importApi.containerPorts.http`                   | import-api HTTP container port                                                                      | `3000`                              |
+| `importApi.containerPorts.http`                   | import-api HTTP container port                                                                      | `8003`                              |
 | `importApi.livenessProbe.enabled`                 | Enable livenessProbe on import-api containers                                                       | `true`                              |
 | `importApi.livenessProbe.initialDelaySeconds`     | Initial delay seconds for livenessProbe                                                             | `10`                                |
 | `importApi.livenessProbe.periodSeconds`           | Period seconds for livenessProbe                                                                    | `30`                                |
@@ -242,6 +248,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `importApi.sidecars`                              | Add additional sidecar containers to the import-api pod(s)                                          | `{}`                                |
 | `importApi.initContainers`                        | Add additional init containers to the import-api pod(s)                                             | `{}`                                |
 
+
 ### import-api Service Parameters
 
 | Name                                         | Description                                                                           | Value       |
@@ -257,6 +264,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `importApi.service.annotations`              | Additional custom annotations for import-api service                                  | `{}`        |
 | `importApi.service.extraPorts`               | Extra ports to expose in import-api service (normally used with the `sidecars` value) | `[]`        |
 
+
 ### import-api ServiceAccount configuration
 
 | Name                                                    | Description                                          | Value   |
@@ -265,35 +273,17 @@ The command removes all the Kubernetes components associated with the chart and 
 | `importApi.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
 | `importApi.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
 
+
 ### import-worker Deployment Parameters
 
 | Name                                                 | Description                                                                                            | Value                               |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ----------------------------------- |
 | `importWorker.image.registry`                        | import-worker image registry                                                                           | `gcr.io`                            |
 | `importWorker.image.repository`                      | import-worker image repository                                                                         | `carto-onprem-artifacts/import-api` |
-| `importWorker.image.tag`                             | import-worker image tag (immutable tags are recommended)                                               | `2021.12.20`                        |
+| `importWorker.image.tag`                             | import-worker image tag (immutable tags are recommended)                                               | `2021.12.27.01`                     |
 | `importWorker.image.pullPolicy`                      | import-worker image pull policy                                                                        | `IfNotPresent`                      |
 | `importWorker.image.pullSecrets`                     | import-worker image pull secrets                                                                       | `[]`                                |
 | `importWorker.replicaCount`                          | Number of import-worker replicas to deploy                                                             | `1`                                 |
-| `importWorker.containerPorts.http`                   | import-worker HTTP container port                                                                      | `3000`                              |
-| `importWorker.livenessProbe.enabled`                 | Enable livenessProbe on import-worker containers                                                       | `true`                              |
-| `importWorker.livenessProbe.initialDelaySeconds`     | Initial delay seconds for livenessProbe                                                                | `10`                                |
-| `importWorker.livenessProbe.periodSeconds`           | Period seconds for livenessProbe                                                                       | `30`                                |
-| `importWorker.livenessProbe.timeoutSeconds`          | Timeout seconds for livenessProbe                                                                      | `5`                                 |
-| `importWorker.livenessProbe.failureThreshold`        | Failure threshold for livenessProbe                                                                    | `5`                                 |
-| `importWorker.livenessProbe.successThreshold`        | Success threshold for livenessProbe                                                                    | `1`                                 |
-| `importWorker.readinessProbe.enabled`                | Enable readinessProbe on import-worker containers                                                      | `true`                              |
-| `importWorker.readinessProbe.initialDelaySeconds`    | Initial delay seconds for readinessProbe                                                               | `10`                                |
-| `importWorker.readinessProbe.periodSeconds`          | Period seconds for readinessProbe                                                                      | `30`                                |
-| `importWorker.readinessProbe.timeoutSeconds`         | Timeout seconds for readinessProbe                                                                     | `5`                                 |
-| `importWorker.readinessProbe.failureThreshold`       | Failure threshold for readinessProbe                                                                   | `5`                                 |
-| `importWorker.readinessProbe.successThreshold`       | Success threshold for readinessProbe                                                                   | `1`                                 |
-| `importWorker.startupProbe.enabled`                  | Enable startupProbe on import-worker containers                                                        | `false`                             |
-| `importWorker.startupProbe.initialDelaySeconds`      | Initial delay seconds for startupProbe                                                                 | `10`                                |
-| `importWorker.startupProbe.periodSeconds`            | Period seconds for startupProbe                                                                        | `30`                                |
-| `importWorker.startupProbe.timeoutSeconds`           | Timeout seconds for startupProbe                                                                       | `5`                                 |
-| `importWorker.startupProbe.failureThreshold`         | Failure threshold for startupProbe                                                                     | `5`                                 |
-| `importWorker.startupProbe.successThreshold`         | Success threshold for startupProbe                                                                     | `1`                                 |
 | `importWorker.customLivenessProbe`                   | Custom livenessProbe that overrides the default one                                                    | `{}`                                |
 | `importWorker.customReadinessProbe`                  | Custom readinessProbe that overrides the default one                                                   | `{}`                                |
 | `importWorker.customStartupProbe`                    | Custom startupProbe that overrides the default one                                                     | `{}`                                |
@@ -333,20 +323,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `importWorker.sidecars`                              | Add additional sidecar containers to the import-worker pod(s)                                          | `{}`                                |
 | `importWorker.initContainers`                        | Add additional init containers to the import-worker pod(s)                                             | `{}`                                |
 
-### import-worker Service Parameters
-
-| Name                                            | Description                                                                              | Value       |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------- |
-| `importWorker.service.type`                     | import-worker service type                                                               | `ClusterIP` |
-| `importWorker.service.ports.http`               | import-worker service HTTP port                                                          | `80`        |
-| `importWorker.service.nodePorts.http`           | Node port for HTTP                                                                       | `""`        |
-| `importWorker.service.clusterIP`                | import-worker service Cluster IP                                                         | `""`        |
-| `importWorker.service.loadBalancerIP`           | import-worker service Load Balancer IP                                                   | `""`        |
-| `importWorker.service.labelSelectorsOverride`   | Selector for import-worker service                                                       | `{}`        |
-| `importWorker.service.loadBalancerSourceRanges` | import-worker service Load Balancer sources                                              | `[]`        |
-| `importWorker.service.externalTrafficPolicy`    | import-worker service external traffic policy                                            | `Cluster`   |
-| `importWorker.service.annotations`              | Additional custom annotations for import-worker service                                  | `{}`        |
-| `importWorker.service.extraPorts`               | Extra ports to expose in import-worker service (normally used with the `sidecars` value) | `[]`        |
 
 ### import-worker ServiceAccount configuration
 
@@ -356,17 +332,18 @@ The command removes all the Kubernetes components associated with the chart and 
 | `importWorker.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
 | `importWorker.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
 
+
 ### lds-api Deployment Parameters
 
 | Name                                           | Description                                                                                      | Value                            |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------- |
 | `ldsApi.image.registry`                        | lds-api image registry                                                                           | `gcr.io`                         |
 | `ldsApi.image.repository`                      | lds-api image repository                                                                         | `carto-onprem-artifacts/lds-api` |
-| `ldsApi.image.tag`                             | lds-api image tag (immutable tags are recommended)                                               | `2021.12.23.01`                  |
+| `ldsApi.image.tag`                             | lds-api image tag (immutable tags are recommended)                                               | `2021.12.27.01`                  |
 | `ldsApi.image.pullPolicy`                      | lds-api image pull policy                                                                        | `IfNotPresent`                   |
 | `ldsApi.image.pullSecrets`                     | lds-api image pull secrets                                                                       | `[]`                             |
 | `ldsApi.replicaCount`                          | Number of lds-api replicas to deploy                                                             | `1`                              |
-| `ldsApi.containerPorts.http`                   | lds-api HTTP container port                                                                      | `3000`                           |
+| `ldsApi.containerPorts.http`                   | lds-api HTTP container port                                                                      | `8004`                           |
 | `ldsApi.livenessProbe.enabled`                 | Enable livenessProbe on lds-api containers                                                       | `true`                           |
 | `ldsApi.livenessProbe.initialDelaySeconds`     | Initial delay seconds for livenessProbe                                                          | `10`                             |
 | `ldsApi.livenessProbe.periodSeconds`           | Period seconds for livenessProbe                                                                 | `30`                             |
@@ -424,6 +401,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `ldsApi.sidecars`                              | Add additional sidecar containers to the lds-api pod(s)                                          | `{}`                             |
 | `ldsApi.initContainers`                        | Add additional init containers to the lds-api pod(s)                                             | `{}`                             |
 
+
 ### lds-api Service Parameters
 
 | Name                                      | Description                                                                        | Value       |
@@ -439,6 +417,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `ldsApi.service.annotations`              | Additional custom annotations for lds-api service                                  | `{}`        |
 | `ldsApi.service.extraPorts`               | Extra ports to expose in lds-api service (normally used with the `sidecars` value) | `[]`        |
 
+
 ### lds-api ServiceAccount configuration
 
 | Name                                                 | Description                                          | Value   |
@@ -447,17 +426,18 @@ The command removes all the Kubernetes components associated with the chart and 
 | `ldsApi.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
 | `ldsApi.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
 
+
 ### maps-api Deployment Parameters
 
 | Name                                            | Description                                                                                       | Value                             |
 | ----------------------------------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------- |
 | `mapsApi.image.registry`                        | maps-api image registry                                                                           | `gcr.io`                          |
 | `mapsApi.image.repository`                      | maps-api image repository                                                                         | `carto-onprem-artifacts/maps-api` |
-| `mapsApi.image.tag`                             | maps-api image tag (immutable tags are recommended)                                               | `2021.12.20`                      |
+| `mapsApi.image.tag`                             | maps-api image tag (immutable tags are recommended)                                               | `2021.12.27.01`                   |
 | `mapsApi.image.pullPolicy`                      | maps-api image pull policy                                                                        | `IfNotPresent`                    |
 | `mapsApi.image.pullSecrets`                     | maps-api image pull secrets                                                                       | `[]`                              |
 | `mapsApi.replicaCount`                          | Number of maps-api replicas to deploy                                                             | `1`                               |
-| `mapsApi.containerPorts.http`                   | maps-api HTTP container port                                                                      | `3000`                            |
+| `mapsApi.containerPorts.http`                   | maps-api HTTP container port                                                                      | `8002`                            |
 | `mapsApi.livenessProbe.enabled`                 | Enable livenessProbe on maps-api containers                                                       | `true`                            |
 | `mapsApi.livenessProbe.initialDelaySeconds`     | Initial delay seconds for livenessProbe                                                           | `10`                              |
 | `mapsApi.livenessProbe.periodSeconds`           | Period seconds for livenessProbe                                                                  | `30`                              |
@@ -515,6 +495,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `mapsApi.sidecars`                              | Add additional sidecar containers to the maps-api pod(s)                                          | `{}`                              |
 | `mapsApi.initContainers`                        | Add additional init containers to the maps-api pod(s)                                             | `{}`                              |
 
+
 ### maps-api Service Parameters
 
 | Name                                       | Description                                                                         | Value       |
@@ -530,6 +511,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `mapsApi.service.annotations`              | Additional custom annotations for maps-api service                                  | `{}`        |
 | `mapsApi.service.extraPorts`               | Extra ports to expose in maps-api service (normally used with the `sidecars` value) | `[]`        |
 
+
 ### maps-api ServiceAccount configuration
 
 | Name                                                  | Description                                          | Value   |
@@ -538,13 +520,14 @@ The command removes all the Kubernetes components associated with the chart and 
 | `mapsApi.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
 | `mapsApi.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
 
+
 ### router Deployment Parameters
 
 | Name                                           | Description                                                                                      | Value                           |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------- |
 | `router.image.registry`                        | router image registry                                                                            | `gcr.io`                        |
 | `router.image.repository`                      | router image repository                                                                          | `carto-onprem-artifacts/router` |
-| `router.image.tag`                             | router image tag (immutable tags are recommended)                                                | `2021.12.23.01`                 |
+| `router.image.tag`                             | router image tag (immutable tags are recommended)                                                | `2021.12.27.01`                 |
 | `router.image.pullPolicy`                      | router image pull policy                                                                         | `IfNotPresent`                  |
 | `router.image.pullSecrets`                     | router image pull secrets                                                                        | `[]`                            |
 | `router.replicaCount`                          | Number of router replicas to deploy                                                              | `1`                             |
@@ -607,6 +590,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `router.sidecars`                              | Add additional sidecar containers to the router pod(s)                                           | `{}`                            |
 | `router.initContainers`                        | Add additional init containers to the router pod(s)                                              | `{}`                            |
 
+
 ### router Service Parameters
 
 | Name                                      | Description                                                                       | Value          |
@@ -624,6 +608,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `router.service.annotations`              | Additional custom annotations for router service                                  | `{}`           |
 | `router.service.extraPorts`               | Extra ports to expose in router service (normally used with the `sidecars` value) | `[]`           |
 
+
 ### router ServiceAccount configuration
 
 | Name                                                 | Description                                          | Value   |
@@ -632,17 +617,18 @@ The command removes all the Kubernetes components associated with the chart and 
 | `router.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
 | `router.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
 
+
 ### workspace-api Deployment Parameters
 
 | Name                                                 | Description                                                                                            | Value                                  |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------- |
 | `workspaceApi.image.registry`                        | workspace-api image registry                                                                           | `gcr.io`                               |
 | `workspaceApi.image.repository`                      | workspace-api image repository                                                                         | `carto-onprem-artifacts/workspace-api` |
-| `workspaceApi.image.tag`                             | workspace-api image tag (immutable tags are recommended)                                               | `2021.12.23.01`                        |
+| `workspaceApi.image.tag`                             | workspace-api image tag (immutable tags are recommended)                                               | `2021.12.27.01`                        |
 | `workspaceApi.image.pullPolicy`                      | workspace-api image pull policy                                                                        | `IfNotPresent`                         |
 | `workspaceApi.image.pullSecrets`                     | workspace-api image pull secrets                                                                       | `[]`                                   |
 | `workspaceApi.replicaCount`                          | Number of workspace-api replicas to deploy                                                             | `1`                                    |
-| `workspaceApi.containerPorts.http`                   | workspace-api HTTP container port                                                                      | `3000`                                 |
+| `workspaceApi.containerPorts.http`                   | workspace-api HTTP container port                                                                      | `8001`                                 |
 | `workspaceApi.livenessProbe.enabled`                 | Enable livenessProbe on workspace-api containers                                                       | `true`                                 |
 | `workspaceApi.livenessProbe.initialDelaySeconds`     | Initial delay seconds for livenessProbe                                                                | `10`                                   |
 | `workspaceApi.livenessProbe.periodSeconds`           | Period seconds for livenessProbe                                                                       | `30`                                   |
@@ -700,6 +686,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `workspaceApi.sidecars`                              | Add additional sidecar containers to the workspace-api pod(s)                                          | `{}`                                   |
 | `workspaceApi.initContainers`                        | Add additional init containers to the workspace-api pod(s)                                             | `{}`                                   |
 
+
 ### workspace-api Service Parameters
 
 | Name                                            | Description                                                                              | Value       |
@@ -715,6 +702,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `workspaceApi.service.annotations`              | Additional custom annotations for workspace-api service                                  | `{}`        |
 | `workspaceApi.service.extraPorts`               | Extra ports to expose in workspace-api service (normally used with the `sidecars` value) | `[]`        |
 
+
 ### workspace-api ServiceAccount configuration
 
 | Name                                                       | Description                                          | Value   |
@@ -723,35 +711,17 @@ The command removes all the Kubernetes components associated with the chart and 
 | `workspaceApi.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
 | `workspaceApi.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
 
+
 ### workspace-subscriber Deployment Parameters
 
 | Name                                                        | Description                                                                                                   | Value                                  |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
 | `workspaceSubscriber.image.registry`                        | workspace-subscriber image registry                                                                           | `gcr.io`                               |
 | `workspaceSubscriber.image.repository`                      | workspace-subscriber image repository                                                                         | `carto-onprem-artifacts/workspace-api` |
-| `workspaceSubscriber.image.tag`                             | workspace-subscriber image tag (immutable tags are recommended)                                               | `2021.12.23.01`                        |
+| `workspaceSubscriber.image.tag`                             | workspace-subscriber image tag (immutable tags are recommended)                                               | `2021.12.27.01`                        |
 | `workspaceSubscriber.image.pullPolicy`                      | workspace-subscriber image pull policy                                                                        | `IfNotPresent`                         |
 | `workspaceSubscriber.image.pullSecrets`                     | workspace-subscriber image pull secrets                                                                       | `[]`                                   |
 | `workspaceSubscriber.replicaCount`                          | Number of workspace-subscriber replicas to deploy                                                             | `1`                                    |
-| `workspaceSubscriber.containerPorts.http`                   | workspace-subscriber HTTP container port                                                                      | `3000`                                 |
-| `workspaceSubscriber.livenessProbe.enabled`                 | Enable livenessProbe on workspace-subscriber containers                                                       | `true`                                 |
-| `workspaceSubscriber.livenessProbe.initialDelaySeconds`     | Initial delay seconds for livenessProbe                                                                       | `10`                                   |
-| `workspaceSubscriber.livenessProbe.periodSeconds`           | Period seconds for livenessProbe                                                                              | `30`                                   |
-| `workspaceSubscriber.livenessProbe.timeoutSeconds`          | Timeout seconds for livenessProbe                                                                             | `5`                                    |
-| `workspaceSubscriber.livenessProbe.failureThreshold`        | Failure threshold for livenessProbe                                                                           | `5`                                    |
-| `workspaceSubscriber.livenessProbe.successThreshold`        | Success threshold for livenessProbe                                                                           | `1`                                    |
-| `workspaceSubscriber.readinessProbe.enabled`                | Enable readinessProbe on workspace-subscriber containers                                                      | `true`                                 |
-| `workspaceSubscriber.readinessProbe.initialDelaySeconds`    | Initial delay seconds for readinessProbe                                                                      | `10`                                   |
-| `workspaceSubscriber.readinessProbe.periodSeconds`          | Period seconds for readinessProbe                                                                             | `30`                                   |
-| `workspaceSubscriber.readinessProbe.timeoutSeconds`         | Timeout seconds for readinessProbe                                                                            | `5`                                    |
-| `workspaceSubscriber.readinessProbe.failureThreshold`       | Failure threshold for readinessProbe                                                                          | `5`                                    |
-| `workspaceSubscriber.readinessProbe.successThreshold`       | Success threshold for readinessProbe                                                                          | `1`                                    |
-| `workspaceSubscriber.startupProbe.enabled`                  | Enable startupProbe on workspace-subscriber containers                                                        | `false`                                |
-| `workspaceSubscriber.startupProbe.initialDelaySeconds`      | Initial delay seconds for startupProbe                                                                        | `10`                                   |
-| `workspaceSubscriber.startupProbe.periodSeconds`            | Period seconds for startupProbe                                                                               | `30`                                   |
-| `workspaceSubscriber.startupProbe.timeoutSeconds`           | Timeout seconds for startupProbe                                                                              | `5`                                    |
-| `workspaceSubscriber.startupProbe.failureThreshold`         | Failure threshold for startupProbe                                                                            | `5`                                    |
-| `workspaceSubscriber.startupProbe.successThreshold`         | Success threshold for startupProbe                                                                            | `1`                                    |
 | `workspaceSubscriber.customLivenessProbe`                   | Custom livenessProbe that overrides the default one                                                           | `{}`                                   |
 | `workspaceSubscriber.customReadinessProbe`                  | Custom readinessProbe that overrides the default one                                                          | `{}`                                   |
 | `workspaceSubscriber.customStartupProbe`                    | Custom startupProbe that overrides the default one                                                            | `{}`                                   |
@@ -791,20 +761,6 @@ The command removes all the Kubernetes components associated with the chart and 
 | `workspaceSubscriber.sidecars`                              | Add additional sidecar containers to the workspace-subscriber pod(s)                                          | `{}`                                   |
 | `workspaceSubscriber.initContainers`                        | Add additional init containers to the workspace-subscriber pod(s)                                             | `{}`                                   |
 
-### workspace-subscriber Service Parameters
-
-| Name                                                   | Description                                                                                     | Value       |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------- | ----------- |
-| `workspaceSubscriber.service.type`                     | workspace-subscriber service type                                                               | `ClusterIP` |
-| `workspaceSubscriber.service.ports.http`               | workspace-subscriber service HTTP port                                                          | `80`        |
-| `workspaceSubscriber.service.nodePorts.http`           | Node port for HTTP                                                                              | `""`        |
-| `workspaceSubscriber.service.clusterIP`                | workspace-subscriber service Cluster IP                                                         | `""`        |
-| `workspaceSubscriber.service.loadBalancerIP`           | workspace-subscriber service Load Balancer IP                                                   | `""`        |
-| `workspaceSubscriber.service.labelSelectorsOverride`   | Selector for workspace-subscriber service                                                       | `{}`        |
-| `workspaceSubscriber.service.loadBalancerSourceRanges` | workspace-subscriber service Load Balancer sources                                              | `[]`        |
-| `workspaceSubscriber.service.externalTrafficPolicy`    | workspace-subscriber service external traffic policy                                            | `Cluster`   |
-| `workspaceSubscriber.service.annotations`              | Additional custom annotations for workspace-subscriber service                                  | `{}`        |
-| `workspaceSubscriber.service.extraPorts`               | Extra ports to expose in workspace-subscriber service (normally used with the `sidecars` value) | `[]`        |
 
 ### workspace-subscriber ServiceAccount configuration
 
@@ -814,13 +770,14 @@ The command removes all the Kubernetes components associated with the chart and 
 | `workspaceSubscriber.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
 | `workspaceSubscriber.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
 
+
 ### workspace-www Deployment Parameters
 
 | Name                                                 | Description                                                                                            | Value                                  |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------- |
 | `workspaceWww.image.registry`                        | workspace-www image registry                                                                           | `gcr.io`                               |
 | `workspaceWww.image.repository`                      | workspace-www image repository                                                                         | `carto-onprem-artifacts/workspace-www` |
-| `workspaceWww.image.tag`                             | workspace-www image tag (immutable tags are recommended)                                               | `2021.12.23.01`                        |
+| `workspaceWww.image.tag`                             | workspace-www image tag (immutable tags are recommended)                                               | `2021.12.27.01`                        |
 | `workspaceWww.image.pullPolicy`                      | workspace-www image pull policy                                                                        | `IfNotPresent`                         |
 | `workspaceWww.image.pullSecrets`                     | workspace-www image pull secrets                                                                       | `[]`                                   |
 | `workspaceWww.replicaCount`                          | Number of workspace-www replicas to deploy                                                             | `1`                                    |
@@ -882,6 +839,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `workspaceWww.sidecars`                              | Add additional sidecar containers to the workspace-www pod(s)                                          | `{}`                                   |
 | `workspaceWww.initContainers`                        | Add additional init containers to the workspace-www pod(s)                                             | `{}`                                   |
 
+
 ### workspace-www Service Parameters
 
 | Name                                            | Description                                                                              | Value       |
@@ -897,6 +855,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `workspaceWww.service.annotations`              | Additional custom annotations for workspace-www service                                  | `{}`        |
 | `workspaceWww.service.extraPorts`               | Extra ports to expose in workspace-www service (normally used with the `sidecars` value) | `[]`        |
 
+
 ### workspace-www ServiceAccount configuration
 
 | Name                                                       | Description                                          | Value   |
@@ -905,13 +864,14 @@ The command removes all the Kubernetes components associated with the chart and 
 | `workspaceWww.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
 | `workspaceWww.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
 
+
 ### Init Container Parameters
 
 | Name                                                        | Description                                                          | Value                                 |
 | ----------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------- |
 | `workspaceMigrations.image.registry`                        | workspace-db image registry                                          | `gcr.io`                              |
 | `workspaceMigrations.image.repository`                      | workspace-db image repository                                        | `carto-onprem-artifacts/workspace-db` |
-| `workspaceMigrations.image.tag`                             | workspace-db image tag (immutable tags are recommended)              | `2021.12.23.01`                       |
+| `workspaceMigrations.image.tag`                             | workspace-db image tag (immutable tags are recommended)              | `2021.12.27.01`                       |
 | `workspaceMigrations.image.pullPolicy`                      | workspace-db image pull policy                                       | `IfNotPresent`                        |
 | `workspaceMigrations.image.pullSecrets`                     | workspace-db image pull secrets                                      | `[]`                                  |
 | `workspaceMigrations.command`                               | Override default container command (useful when using custom images) | `[]`                                  |
@@ -922,15 +882,19 @@ The command removes all the Kubernetes components associated with the chart and 
 | `workspaceMigrations.containerSecurityContext.runAsUser`    | Set init container's Security Context runAsUser                      | `0`                                   |
 | `workspaceMigrations.containerSecurityContext.runAsNonRoot` | Force the init container to run as non root                          | `false`                               |
 
+
 ### Redis&trade; subchart parameters
 
-| Name                        | Description                                            | Value        |
-| --------------------------- | ------------------------------------------------------ | ------------ |
-| `redis.enabled`             | Switch to enable or disable the Redis&trade; helm      | `true`       |
-| `redis.auth.enabled`        | Switch to enable or disable authentication             | `true`       |
-| `redis.auth.password`       | Redis&trade; password                                  | `""`         |
-| `redis.auth.existingSecret` | Name of existing secret object containing the password | `""`         |
-| `redis.architecture`        | Cluster settings                                       | `standalone` |
+| Name                                | Description                                            | Value        |
+| ----------------------------------- | ------------------------------------------------------ | ------------ |
+| `redis.enabled`                     | Switch to enable or disable the Redis&trade; helm      | `true`       |
+| `redis.auth.enabled`                | Switch to enable or disable authentication             | `true`       |
+| `redis.auth.password`               | Redis&trade; password                                  | `""`         |
+| `redis.auth.existingSecret`         | Name of existing secret object containing the password | `""`         |
+| `redis.architecture`                | Cluster settings                                       | `standalone` |
+| `redis.master.persistence.enabled`  | Enable master persistent volumes                       | `false`      |
+| `redis.replica.persistence.enabled` | Enable replica persistent volumes                      | `false`      |
+
 
 ### External Redis&trade; parameters
 
@@ -941,6 +905,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `externalRedis.password`                  | Redis&trade; password                                                                              | `""`        |
 | `externalRedis.existingSecret`            | Name of an existing secret resource containing the Redis&trade; password in a 'redis-password' key | `""`        |
 | `externalRedis.existingSecretPasswordKey` | Key of the existing secret                                                                         | `""`        |
+
 
 ### PostgreSQL subchart parameters
 
@@ -954,6 +919,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `postgresql.existingSecret`             | Name of an existing secret containing the PostgreSQL password ('postgresql-password' key) | `""`                   |
 | `postgresql.image.tag`                  | Tag of the PostgreSQL image                                                               | `12.9.0-debian-10-r39` |
 | `postgresql.initdbScripts`              | Scripts for initializing the database                                                     | `[]`                   |
+
 
 ### External PostgreSQL parameters
 
@@ -969,6 +935,7 @@ The command removes all the Kubernetes components associated with the chart and 
 | `externalDatabase.existingSecretAdminPasswordKey` | Name of the key inside the secret containing the DB admin password | `""`           |
 | `externalDatabase.database`                       | Database name                                                      | `workspace_db` |
 | `externalDatabase.port`                           | Database port number                                               | `5432`         |
+
 
 ENCRYPTION_SECRET_KEY="<FILL_ME>"
 ` |
