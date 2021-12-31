@@ -152,15 +152,6 @@ spec:
             - name: google-secret
               mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
               subPath: {{ template "carto.google.secretKey" . }}
-            - name: tls-secret
-              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCAKey" . }}
-              subPath: {{ template "carto.tlsCerts.secretCAKey" . }}
-            - name: tls-secret
-              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
-              subPath: {{ template "carto.tlsCerts.secretCertKey" . }}
-            - name: tls-secret
-              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretKeyKey" . }}
-              subPath: {{ template "carto.tlsCerts.secretKeyKey" . }}
           {{- if .Values.workspaceWww.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -174,9 +165,6 @@ spec:
         - name: secret-env
           secret:
             secretName: {{ include "carto.workspaceWww.secretName" . }}
-        - name: tls-secret
-          secret:
-            secretName: {{ include "carto.tlsCerts.secretName" . }}
         - name: google-secret
           secret:
             secretName: {{ include "carto.google.secretName" . }}
