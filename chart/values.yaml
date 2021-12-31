@@ -2823,6 +2823,8 @@ workspaceMigrations:
 ## @param redis.auth.password Redis&trade; password
 ## @param redis.auth.existingSecret Name of existing secret object containing the password
 ## @param redis.architecture Cluster settings
+## @param redis.master.persistence.enabled Enable master persistent volumes
+## @param redis.replica.persistence.enabled Enable replica persistent volumes
 ##
 redis:
   enabled: true
@@ -2836,6 +2838,12 @@ redis:
     password: ""
     existingSecret: ""
   architecture: standalone
+  master:
+    persistence:
+      enabled: false
+  replica:
+    persistence:
+      enabled: false
 
 ## @section External Redis&trade; parameters
 ## External Redis&trade; configuration
