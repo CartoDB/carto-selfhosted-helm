@@ -1,0 +1,57 @@
+{
+  "phases": {
+    "package": {
+      "context": {
+        "resources": {
+          "url": "https://github.com/CartoDB/carto3-helm/archive/refs/tags/v0.0.4.tar.gz",
+          "path": "/chart"
+        }
+      },
+      "actions": [
+        {
+          "action_id": "linter-packaging",
+          "params": {
+            "kind": "HELM"
+          }
+        }
+      ]
+    },
+    "verify": {
+      "context": {
+        "resources": {
+          "url": "https://s3.amazonaws.com/bitnami-autobuild-ondemand/temporary/s3temp-bitnami-20220113161539-50692/carto-0.0.4.tgz?AWSAccessKeyId=AKIAJUJS62Y5YSCL4CIA&Expires=1642349739&Signature=d5xdKVbZ1zlkVpxujkErHPyZO2U=",
+          "path": "/tests"
+        },
+        "application": {
+          "kind": "HELM",
+          "details": {
+            "name": "carto",
+            "version": "0.0.4",
+            "repository": {
+              "url": "https://s3.amazonaws.com/bitnami-autobuild-ondemand/temporary/s3temp-bitnami-20220113161637-50838/carto3-helm.tar.gz?AWSAccessKeyId=AKIAJUJS62Y5YSCL4CIA&Expires=1642349797&Signature=NEvTRkDMWfWi/dT5j%2BLnca0gzZc="
+            }
+          },
+          "values": "b25QcmVtRG9tYWluOiAidGVzdC5jYXJ0by5sb2NhbCIKCmltcG9ydFdvcmtlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQoKd29ya3NwYWNlU3Vic2NyaWJlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQo="
+        },
+        "target_platform": {
+          "target_platform_id": "91d398a2-25c4-4cda-8732-75a3cfc179a1"
+        }
+      },
+      "actions": [
+        {
+          "action_id": "goss",
+          "params": {
+            "resources": {
+              "path": "goss/goss-accounts-www"
+            },
+            "config": {
+              "remote": {
+                "workload": "deploy-accounts-www"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
