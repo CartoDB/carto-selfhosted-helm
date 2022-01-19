@@ -1,0 +1,50 @@
+{
+  "phases": {
+    "package": {
+      "context": {
+        "resources": {
+          "url": "https://github.com/CartoDB/carto3-helm/archive/refs/tags/v0.0.4.tar.gz",
+          "path": "/chart"
+        }
+      },
+      "actions": [
+        {
+          "action_id": "helm-package"
+        },
+        {
+          "action_id": "linter-packaging",
+          "params": {
+            "kind": "HELM"
+          }
+        }
+      ]
+    },
+    "verify": {
+      "context": {
+        "resources": {
+          "url": "https://github.com/CartoDB/carto3-helm/archive/refs/tags/v0.0.4.tar.gz",
+          "path": "/chart/tests"
+        },
+        "runtime_parameters": "b25QcmVtRG9tYWluOiAidGVzdC5jYXJ0by5sb2NhbCIKCmltcG9ydFdvcmtlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQoKd29ya3NwYWNlU3Vic2NyaWJlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQo=",
+        "target_platform": {
+          "target_platform_id": "91d398a2-25c4-4cda-8732-75a3cfc179a1"
+        }
+      },
+      "actions": [
+        {
+          "action_id": "goss",
+          "params": {
+            "resources": {
+              "path": "goss/goss-accounts-www"
+            },
+            "config": {
+              "remote": {
+                "workload": "deploy-carto-accounts-www"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
