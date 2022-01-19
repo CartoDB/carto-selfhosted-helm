@@ -9,6 +9,9 @@
       },
       "actions": [
         {
+          "action_id": "helm-package"
+        },
+        {
           "action_id": "linter-packaging",
           "params": {
             "kind": "HELM"
@@ -30,8 +33,8 @@
               "url": "https://github.com/CartoDB/carto3-helm/releases/download/v0.0.4/carto-0.0.4.tgz"
             }
           },
-          "values": "b25QcmVtRG9tYWluOiAidGVzdC5jYXJ0by5sb2NhbCIKCmltcG9ydFdvcmtlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQoKd29ya3NwYWNlU3Vic2NyaWJlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQo="
         },
+        "runtime_parameters": "b25QcmVtRG9tYWluOiAidGVzdC5jYXJ0by5sb2NhbCIKCmltcG9ydFdvcmtlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQoKd29ya3NwYWNlU3Vic2NyaWJlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQo=",
         "target_platform": {
           "target_platform_id": "91d398a2-25c4-4cda-8732-75a3cfc179a1"
         }
