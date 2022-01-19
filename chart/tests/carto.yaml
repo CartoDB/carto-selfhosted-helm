@@ -22,17 +22,8 @@
     "verify": {
       "context": {
         "resources": {
-          "url": "https://github.com/CartoDB/carto3-helm/releases/download/v0.0.4/carto3-helm.tar.gz",
+          "url": "https://github.com/CartoDB/carto3-helm/archive/refs/tags/v0.0.4.tar.gz",
           "path": "chart/tests"
-        },
-        "application": {
-          "kind": "HELM",
-          "details": {
-            "name": "carto",
-            "package": {
-              "url": "https://github.com/CartoDB/carto3-helm/releases/download/v0.0.4/carto-0.0.4.tgz"
-            }
-          },
         },
         "runtime_parameters": "b25QcmVtRG9tYWluOiAidGVzdC5jYXJ0by5sb2NhbCIKCmltcG9ydFdvcmtlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQoKd29ya3NwYWNlU3Vic2NyaWJlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQo=",
         "target_platform": {
