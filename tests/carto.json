@@ -23,7 +23,7 @@
       "context": {
         "resources": {
           "url": "https://github.com/CartoDB/carto3-helm/tarball/c321361a7a237731c05572876d147cdba5190569",
-          "path": "/chart/tests"
+          "path": "/tests"
         },
         "runtime_parameters": "b25QcmVtRG9tYWluOiAidGVzdC5jYXJ0by5sb2NhbCIKCmltcG9ydFdvcmtlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQoKd29ya3NwYWNlU3Vic2NyaWJlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQo=",
         "target_platform": {
