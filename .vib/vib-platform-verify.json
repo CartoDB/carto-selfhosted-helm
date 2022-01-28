@@ -1,0 +1,47 @@
+{
+  "phases": {
+    "package": {
+      "context": {
+        "resources": {
+          "url": "{SHA_ARCHIVE}",
+          "path": "/chart"
+        }
+      },
+      "actions": [
+        {
+          "action_id": "helm-package"
+        }
+      ]
+    },
+    "verify": {
+      "context": {
+        "resources": {
+          "url": "{SHA_ARCHIVE}",
+          "path": "/chart"
+        },
+        "runtime_parameters": "b25QcmVtRG9tYWluOiAidGVzdC5jYXJ0by5sb2NhbCIKCmltcG9ydFdvcmtlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQoKd29ya3NwYWNlU3Vic2NyaWJlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQo=",
+        "target_platform": {
+          "target_platform_id": "{TARGET_PLATFORM}"
+        }
+      },
+      "actions": [
+        {
+          "action_id": "goss",
+          "params": {
+            "resources": {
+              "path": "/.vib/carto/goss"
+            },
+            "config": {
+              "remote": {
+                "workload": "deploy-carto-accounts-www"
+              },
+              "wait": {
+                "file": "goss-wait.yaml"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
