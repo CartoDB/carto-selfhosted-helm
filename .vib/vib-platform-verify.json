@@ -34,9 +34,6 @@
             "config": {
               "remote": {
                 "workload": "deploy-carto-accounts-www"
-              },
-              "wait": {
-                "file": "goss-wait.yaml"
               }
             }
           }
