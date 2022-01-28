@@ -29,7 +29,7 @@
           "action_id": "goss",
           "params": {
             "resources": {
-              "path": "/.vib/carto/goss"
+              "path": "/.vib/carto/goss/goss-accounts-www"
             },
             "config": {
               "remote": {
