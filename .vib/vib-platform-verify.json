@@ -17,7 +17,7 @@
       "context": {
         "resources": {
           "url": "{SHA_ARCHIVE}",
-          "path": "/chart"
+          "path": "/.vib/carto/"
         },
         "runtime_parameters": "b25QcmVtRG9tYWluOiAidGVzdC5jYXJ0by5sb2NhbCIKCmltcG9ydFdvcmtlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQoKd29ya3NwYWNlU3Vic2NyaWJlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQo=",
         "target_platform": {
@@ -29,7 +29,7 @@
           "action_id": "goss",
           "params": {
             "resources": {
-              "path": "/.vib/carto/goss/goss-accounts-www"
+              "path": "goss/goss-accounts-www"
             },
             "config": {
               "remote": {
