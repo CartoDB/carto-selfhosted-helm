@@ -107,7 +107,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
-                  key: {{ ternary "postgresql-password" "db-password" .Values.postgresql.enabled | quote }}
+                  key: {{ ternary "password" "db-password" .Values.postgresql.enabled | quote }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:

@@ -909,16 +909,16 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ### PostgreSQL subchart parameters
 
-| Name                                    | Description                                                                               | Value                  |
-| --------------------------------------- | ----------------------------------------------------------------------------------------- | ---------------------- |
-| `postgresql.enabled`                    | Switch to enable or disable the PostgreSQL helm chart                                     | `true`                 |
-| `postgresql.postgresqlUsername`         | CARTO Postgresql username                                                                 | `carto`                |
-| `postgresql.postgresqlPassword`         | CARTO Postgresql password                                                                 | `""`                   |
-| `postgresql.postgresqlPostgresPassword` | CARTO Postgresql password for the postgres user                                           | `""`                   |
-| `postgresql.postgresqlDatabase`         | CARTO Postgresql database                                                                 | `workspace_db`         |
-| `postgresql.existingSecret`             | Name of an existing secret containing the PostgreSQL password ('postgresql-password' key) | `""`                   |
-| `postgresql.image.tag`                  | Tag of the PostgreSQL image                                                               | `12.9.0-debian-10-r39` |
-| `postgresql.initdbScripts`              | Scripts for initializing the database                                                     | `[]`                   |
+| Name                                | Description                                                                               | Value                  |
+| ----------------------------------- | ----------------------------------------------------------------------------------------- | ---------------------- |
+| `postgresql.enabled`                | Switch to enable or disable the PostgreSQL helm chart                                     | `true`                 |
+| `postgresql.auth.username`          | CARTO Postgresql username                                                                 | `carto`                |
+| `postgresql.auth.password`          | CARTO Postgresql password                                                                 | `""`                   |
+| `postgresql.auth.postgresPassword`  | CARTO Postgresql password for the postgres user                                           | `""`                   |
+| `postgresql.auth.database`          | CARTO Postgresql database                                                                 | `workspace_db`         |
+| `postgresql.auth.existingSecret`    | Name of an existing secret containing the PostgreSQL password ('postgresql-password' key) | `""`                   |
+| `postgresql.image.tag`              | Tag of the PostgreSQL image                                                               | `13.5.0-debian-10-r84` |
+| `postgresql.primary.initdb.scripts` | Scripts for initializing the database                                                     | `[]`                   |
 
 
 ### External PostgreSQL parameters

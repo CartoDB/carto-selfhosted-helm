@@ -2865,36 +2865,39 @@ externalRedis:
 ## PostgreSQL chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/postgresql/values.yaml
 ## @param postgresql.enabled Switch to enable or disable the PostgreSQL helm chart
-## @param postgresql.postgresqlUsername CARTO Postgresql username
-## @param postgresql.postgresqlPassword CARTO Postgresql password
-## @param postgresql.postgresqlPostgresPassword CARTO Postgresql password for the postgres user
-## @param postgresql.postgresqlDatabase CARTO Postgresql database
-## @param postgresql.existingSecret Name of an existing secret containing the PostgreSQL password ('postgresql-password' key)
+## @param postgresql.auth.username CARTO Postgresql username
+## @param postgresql.auth.password CARTO Postgresql password
+## @param postgresql.auth.postgresPassword CARTO Postgresql password for the postgres user
+## @param postgresql.auth.database CARTO Postgresql database
+## @param postgresql.auth.existingSecret Name of an existing secret containing the PostgreSQL password ('postgresql-password' key)
 ##
 postgresql:
   enabled: true
   ## @param postgresql.image.tag Tag of the PostgreSQL image
   ##
   image:
-    tag: "12.9.0-debian-10-r39"
-  postgresqlUsername: carto
-  postgresqlPassword: ""
-  postgresqlDatabase: workspace_db
-  postgresqlPostgresPassword: ""
-  ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
+    tag: "13.5.0-debian-10-r84"
+  auth:
+    username: carto
+    password: ""
+    database: workspace_db
+    postgresPassword: ""
+    ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
+    ##
+    existingSecret: ""
+  ## @param postgresql.primary.initdb.scripts [array] Scripts for initializing the database
   ##
-  existingSecret: ""
-  ## @param postgresql.initdbScripts [array] Scripts for initializing the database
-  ##
-  initdbScripts:
-    # HACK: Temporary workaround until we propose the CARTO team to change the workspace-migrations logic so it accepts an already existing database
-    delete_db_and_user.sh: |
-      # Using bash because we need the postgres user and the initDbUser and initDbPassword values don't work
-      # correctly with the postgres user
-      PGPASSWORD=$POSTGRES_POSTGRES_PASSWORD psql -U postgres <<EOF
-      DROP DATABASE "{{ .Values.postgresqlDatabase }}";
-      DROP USER "{{ .Values.postgresqlUsername }}";
-      EOF
+  primary:
+    initdb:
+      scripts:
+        # HACK: Temporary workaround until we propose the CARTO team to change the workspace-migrations logic so it accepts an already existing database
+        delete_db_and_user.sh: |
+          # Using bash because we need the postgres user and the initDbUser and initDbPassword values don't work
+          # correctly with the postgres user
+          PGPASSWORD=$POSTGRES_POSTGRES_PASSWORD psql -U postgres <<EOF
+          DROP DATABASE "{{ .Values.auth.database }}";
+          DROP USER "{{ .Values.auth.username }}";
+          EOF
 ## @section External PostgreSQL parameters
 ## External PostgreSQL configuration
 ## All of these values are only used when postgresql.enabled is set to false
