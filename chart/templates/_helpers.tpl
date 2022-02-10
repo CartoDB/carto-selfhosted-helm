@@ -30,7 +30,7 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
   {{- $defaultUrl = printf "%s%s" $host $port -}}
 {{- end -}}
 
-{{- default $defaultUrl (printf "%s" .Values.onPremDomain) -}}
+{{- default $defaultUrl (printf "%s" .Values.selfHostedDomain) -}}
 {{- end -}}
 
 {{/*
