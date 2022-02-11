@@ -32,7 +32,7 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
     - customer.env
     - key.json
 
-  + Set your vars in `values.yaml` file. 
+  + Set your vars in `values.yaml` file.
   At least, the following variables must be replaced, you can find them in `customer.env` file:
 
     - selfHostedDomain
@@ -47,7 +47,7 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
 
     Then, replace your postgresql passwords:
 
-    ```
+    ```bash
     postgresql:
       enabled: true
       ## @param postgresql.image.tag Tag of the PostgreSQL image
