@@ -62,7 +62,7 @@ diagnosticMode:
 
 ## @param selfHostedDomain CARTO Self Hosted domain
 ##
-selfHostedDomain: ""
+selfHostedDomain: "<FILL_ME>"
 
 
 ## @param commonConfiguration [object] Configuration script that will be run in all Carto instances
@@ -87,7 +87,7 @@ commonConfiguration: |
   WORKSPACE_POSTGRES_PORT="{{ include "carto.postgresql.port" . }}"
 
   # Customer project and tenant name
-  SELFHOSTED_TENANT_ID="onp-<FILL_ME>"
+  SELFHOSTED_TENANT_ID="<FILL_ME>"
   SELFHOSTED_GCP_PROJECT_ID="carto-tnt-${SELFHOSTED_TENANT_ID}"
 
   # Change the following and read the documentation to use your own buckets
@@ -204,8 +204,8 @@ google:
   ## @param google.existingSecret.key Key name of the Google Credential file inside the secret
   ##
   existingSecret:
-    name: ""
-    key: ""
+    name: "google-serviceaccount"
+    key: "key.json"
 
 ## @param tlsCerts.autoGenerate Generate self-signed TLS certificates
 ## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
@@ -234,7 +234,7 @@ accountsWww:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/accounts-www
-    tag: ${CARTO_SELFHOSTED_VERSION}
+    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -254,7 +254,7 @@ accountsWww:
   ## @param accountsWww.containerPorts.http accounts-www HTTP container port
   ##
   containerPorts:
-    http: 80
+    http: 8080
   ## Configure extra options for accounts-www containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param accountsWww.livenessProbe.enabled Enable livenessProbe on accounts-www containers
@@ -535,7 +535,7 @@ importApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/import-api
-    tag: ${CARTO_SELFHOSTED_VERSION}
+    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -836,7 +836,7 @@ importWorker:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/import-api
-    tag: ${CARTO_SELFHOSTED_VERSION}
+    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1042,7 +1042,7 @@ ldsApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/lds-api
-    tag: ${CARTO_SELFHOSTED_VERSION}
+    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1343,7 +1343,7 @@ mapsApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/maps-api
-    tag: ${CARTO_SELFHOSTED_VERSION}
+    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1647,7 +1647,7 @@ router:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/router
-    tag: ${CARTO_SELFHOSTED_VERSION}
+    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1668,8 +1668,8 @@ router:
   ## @param router.containerPorts.https router HTTPS container port
   ##
   containerPorts:
-    http: 80
-    https: 443
+    http: 8080
+    https: 8443
   ## Configure extra options for router containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param router.livenessProbe.enabled Enable livenessProbe on router containers
@@ -1964,7 +1964,7 @@ workspaceApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-api
-    tag: ${CARTO_SELFHOSTED_VERSION}
+    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2268,7 +2268,7 @@ workspaceSubscriber:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-api
-    tag: ${CARTO_SELFHOSTED_VERSION}
+    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2474,7 +2474,7 @@ workspaceWww:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-www
-    tag: ${CARTO_SELFHOSTED_VERSION}
+    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2494,7 +2494,7 @@ workspaceWww:
   ## @param workspaceWww.containerPorts.http workspace-www HTTP container port
   ##
   containerPorts:
-    http: 80
+    http: 8080
   ## Configure extra options for workspace-www containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param workspaceWww.livenessProbe.enabled Enable livenessProbe on workspace-www containers
@@ -2774,7 +2774,7 @@ workspaceMigrations:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-db
-    tag: ${CARTO_SELFHOSTED_VERSION}
+    tag: "2022.02.10"
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
     ## Secrets must be manually created in the namespace.
