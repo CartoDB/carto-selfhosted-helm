@@ -73,7 +73,7 @@ The command removes all the Kubernetes components associated with the chart and 
 
 | Name                              | Description                                                              | Value     |
 | --------------------------------- | ------------------------------------------------------------------------ | --------- |
-| `selfHostedDomain`                    | CARTO on premises domain                                                 | `""`      |
+| `selfHostedDomain`                    | CARTO on premises domain                                             | `""`      |
 | `commonConfiguration`             | Configuration script that will be run in all Carto instances             | `{}`      |
 | `commonSecretConfiguration`       | Sensitive configuration script that will be run in all CARTO deployments | `{}`      |
 | `google.credentialFile`           | Content of the Google Credential file                                    | `""`      |
