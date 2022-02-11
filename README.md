@@ -28,24 +28,24 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
 
 ### Deploy CARTO in a self hosted environment
 
-  + Firstly, you need a package with two files:
-    - customer.env
-    - key.json
++ Firstly, you need a package with two files:
+  - customer.env
+  - key.json
 
-  + Set your vars in `values.yaml` file.
++ Set your vars in `values.yaml` file.
   At least, the following variables must be replaced, you can find them in `customer.env` file:
 
-    - selfHostedDomain
-    - SELFHOSTED_TENANT_ID
-    - CARTO_AUTH0_CLIENT_ID
-    - CARTO_AUTH0_CUSTOM_DOMAIN
-    - ACC_DOMAIN
-    - ACC_GCP_PROJECT_ID
-    - ACC_GCP_PROJECT_REGION
-    - CARTO_SELFHOSTED_CARTO_DW_LOCATION
-    - ENCRYPTION_SECRET_KEY
+  - selfHostedDomain
+  - SELFHOSTED_TENANT_ID
+  - CARTO_AUTH0_CLIENT_ID
+  - CARTO_AUTH0_CUSTOM_DOMAIN
+  - ACC_DOMAIN
+  - ACC_GCP_PROJECT_ID
+  - ACC_GCP_PROJECT_REGION
+  - CARTO_SELFHOSTED_CARTO_DW_LOCATION
+  - ENCRYPTION_SECRET_KEY
 
-    Then, replace your postgresql passwords:
+  Then, replace your postgresql passwords:
 
     ```bash
     postgresql:
@@ -61,24 +61,24 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
         postgresPassword: "***********"
     ```
 
-    Now, create a secret in your k8s cluster for the Google Service Account.
-    Note that the `key.json` file is the same that you can find in the package:
+  Now, create a secret in your k8s cluster for the Google Service Account.
+  Note that the `key.json` file is the same that you can find in the package:
 
-    `kubectl create secret generic google-serviceaccount --from-file=key.json --namespace=<namespace>`
+  `kubectl create secret generic google-serviceaccount --from-file=key.json --namespace=<namespace>`
 
-  + Install dependencies:
-    `helm dependency build`
++ Install dependencies:
+  `helm dependency build`
 
-  + Deploy Carto in your namespace:
++ Deploy Carto in your namespace:
 
   `kubectl config set-context --current --namespace=<namespace>`
 
   `helm install carto3-selfhosted . --values ./values.yaml`
 
-  + Add the Load Balancer IP to your DNS with your Domain:
++ Add the Load Balancer IP to your DNS with your Domain:
 
   `kubectl get svc carto3-selfhosted-router -o jsonpath='{.status.loadBalancer.ingress.*.ip}'`
 
-  + If you need to replace one variable now, you can modify it in `values.yaml` file and then run the following command:
++ If you need to replace one variable now, you can modify it in `values.yaml` file and then run the following command:
 
   `helm upgrade carto3-selfhosted . --values=./values.yaml`
