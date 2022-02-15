@@ -76,7 +76,7 @@ spec:
       {{- end }}
       containers:
         - name: lds-api
-          image: {{ template "carto.ldsApi.image" . }}
+          image: {{ .Values.ldsApi.image.registry }}/{{ .Values.ldsApi.image.repository }}:{{ .Values.selfHostedVersion }}
           imagePullPolicy: {{ .Values.ldsApi.image.pullPolicy }}
           {{- if .Values.ldsApi.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.ldsApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}

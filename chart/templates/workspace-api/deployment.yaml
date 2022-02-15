@@ -71,7 +71,7 @@ spec:
         {{ include "carto.redis-init-container" . | nindent 8 }}
         {{- end }}
         - name: workspace-migrations
-          image: {{ template "carto.workspaceMigrations.image" . }}
+          image: {{ .Values.workspaceMigrations.image.registry }}/{{ .Values.workspaceMigrations.image.repository }}:{{ .Values.selfHostedVersion }}
           imagePullPolicy: {{ .Values.workspaceMigrations.image.pullPolicy }}
           {{- if .Values.workspaceMigrations.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.workspaceMigrations.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -117,7 +117,7 @@ spec:
       {{- end }}
       containers:
         - name: workspace-api
-          image: {{ template "carto.workspaceApi.image" . }}
+          image: {{ .Values.workspaceApi.image.registry }}/{{ .Values.workspaceApi.image.repository }}:{{ .Values.selfHostedVersion }}
           imagePullPolicy: {{ .Values.workspaceApi.image.pullPolicy }}
           {{- if .Values.workspaceApi.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.workspaceApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}

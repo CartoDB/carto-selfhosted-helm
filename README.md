@@ -32,7 +32,9 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
   - customer.env
   - key.json
 
-+ Set your vars in `values.yaml` file.
++ Add your Carto Self Hosted version inside `carto3-helm/chart/values.yaml` in `selfHostedVersion` param.
+
++ Set your vars in `carto3-helm/chart/values.yaml` file.
   At least, the following variables must be replaced, you can find them in `customer.env` file:
 
   - selfHostedDomain
@@ -64,7 +66,23 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
   Now, create a secret in your k8s cluster for the Google Service Account.
   Note that the `key.json` file is the same that you can find in the package:
 
-  `kubectl create secret generic google-serviceaccount --from-file=key.json --namespace=<namespace>`
+  `kubectl create secret generic selfhosted-google-serviceaccount --from-file=key.json --namespace=<namespace>`
+
+  Add the secret ref in `carto3-helm/chart/values.yaml` in `existingSecret` param:
+
+    ```bash
+    google:
+    ## @param google.credentialFile Content of the Google Credential file
+    ##
+    credentialFile: ""
+  
+    ## @param google.existingSecret.name Secret containing the Google Credential file
+    ## @param google.existingSecret.key Key name of the Google Credential file inside the secret
+    ##
+    existingSecret:
+      name: "selfhosted-google-serviceaccount"
+      key: "key.json"
+    ```
 
 + Install dependencies:
   `helm dependency build`

@@ -70,7 +70,7 @@ spec:
       {{- end }}
       containers:
         - name: accounts-www
-          image: {{ template "carto.accountsWww.image" . }}
+          image: {{ .Values.accountsWww.image.registry }}/{{ .Values.accountsWww.image.repository }}:{{ .Values.selfHostedVersion }}
           imagePullPolicy: {{ .Values.accountsWww.image.pullPolicy }}
           {{- if .Values.accountsWww.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.accountsWww.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -127,7 +127,7 @@ spec:
           {{- if .Values.accountsWww.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.accountsWww.readinessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /acc/health
+              path: /acc/config.yaml
               port: http
           {{- else if .Values.accountsWww.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.customReadinessProbe "context" $) | nindent 12 }}
@@ -135,7 +135,7 @@ spec:
           {{- if .Values.accountsWww.startupProbe.enabled }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.accountsWww.startupProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /acc/health
+              path: /acc/config.yaml
               port: http
           {{- else if .Values.accountsWww.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.customStartupProbe "context" $) | nindent 12 }}

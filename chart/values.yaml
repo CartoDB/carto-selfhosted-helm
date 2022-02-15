@@ -64,6 +64,8 @@ diagnosticMode:
 ##
 selfHostedDomain: "<FILL_ME>"
 
+selfHostedVersion: "<FILL_ME>"
+
 
 ## @param commonConfiguration [object] Configuration script that will be run in all Carto instances
 ##
@@ -71,7 +73,7 @@ commonConfiguration: |
   # CARTO Self hosted configuration
   
   # Version
-  CARTO_SELFHOSTED_VERSION="2022.02.10"
+  CARTO_SELFHOSTED_VERSION="{{ .Chart.AppVersion }}"
 
   # CARTO Self hosted configuration
   # >>>>>>>>>>>>  TO BE CHANGED  >>>>>>>>>>>>>>>>>>>>>>>>>
@@ -131,7 +133,7 @@ commonConfiguration: |
   REACT_APP_ACCOUNTS_URL="https://${SELFHOSTED_DOMAIN}/acc/"
   REACT_APP_WORKSPACE_API_URL="https://${SELFHOSTED_DOMAIN}/workspace-api"
   REACT_APP_API_BASE_URL="https://${SELFHOSTED_DOMAIN}/api"
-  REACT_APP_PUBLIC_MAP_URL="https://${SELFHOSTED_DOMAIN}/workspace-api/maps/public"
+  REACT_APP_PUBLIC_MAP_URL="https://${SELFHOSTED_DOMAIN}/api/v3/maps/public"
   REACT_APP_AUTH0_AUDIENCE="carto-cloud-native-api"
   REACT_APP_WORKSPACE_URL_TEMPLATE="https://{tenantDomain}"
   REACT_APP_CUSTOM_TENANT="${SELFHOSTED_TENANT_ID}"
@@ -204,8 +206,8 @@ google:
   ## @param google.existingSecret.key Key name of the Google Credential file inside the secret
   ##
   existingSecret:
-    name: "google-serviceaccount"
-    key: "key.json"
+    name: ""
+    key: ""
 
 ## @param tlsCerts.autoGenerate Generate self-signed TLS certificates
 ## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
@@ -234,7 +236,6 @@ accountsWww:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/accounts-www
-    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -535,7 +536,6 @@ importApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/import-api
-    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -836,7 +836,6 @@ importWorker:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/import-api
-    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1042,7 +1041,6 @@ ldsApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/lds-api
-    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1343,7 +1341,6 @@ mapsApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/maps-api
-    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1647,7 +1644,6 @@ router:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/router
-    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1964,7 +1960,6 @@ workspaceApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-api
-    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2268,7 +2263,6 @@ workspaceSubscriber:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-api
-    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2474,7 +2468,6 @@ workspaceWww:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-www
-    tag: "2022.02.10"
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2774,7 +2767,6 @@ workspaceMigrations:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-db
-    tag: "2022.02.10"
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
     ## Secrets must be manually created in the namespace.

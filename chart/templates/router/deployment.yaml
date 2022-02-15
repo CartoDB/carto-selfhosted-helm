@@ -73,7 +73,7 @@ spec:
       {{- end }}
       containers:
         - name: router
-          image: {{ template "carto.router.image" . }}
+          image: {{ .Values.router.image.registry }}/{{ .Values.router.image.repository }}:{{ .Values.selfHostedVersion }}
           imagePullPolicy: {{ .Values.router.image.pullPolicy }}
           {{- if .Values.router.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.router.containerSecurityContext "enabled" | toYaml | nindent 12 }}
