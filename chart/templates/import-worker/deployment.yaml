@@ -73,7 +73,7 @@ spec:
       {{- end }}
       containers:
         - name: import-worker
-          image: {{ .Values.importWorker.image.registry }}/{{ .Values.importWorker.image.repository }}:{{ .Values.selfHostedVersion }}
+          image: {{ .Values.importWorker.image.registry }}/{{ .Values.importWorker.image.repository }}:{{ .Chart.AppVersion }}
           imagePullPolicy: {{ .Values.importWorker.image.pullPolicy }}
           {{- if .Values.importWorker.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.importWorker.containerSecurityContext "enabled" | toYaml | nindent 12 }}

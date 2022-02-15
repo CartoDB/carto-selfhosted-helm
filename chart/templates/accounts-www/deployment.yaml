@@ -70,7 +70,7 @@ spec:
       {{- end }}
       containers:
         - name: accounts-www
-          image: {{ .Values.accountsWww.image.registry }}/{{ .Values.accountsWww.image.repository }}:{{ .Values.selfHostedVersion }}
+          image: {{ .Values.accountsWww.image.registry }}/{{ .Values.accountsWww.image.repository }}:{{ .Chart.AppVersion }}
           imagePullPolicy: {{ .Values.accountsWww.image.pullPolicy }}
           {{- if .Values.accountsWww.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.accountsWww.containerSecurityContext "enabled" | toYaml | nindent 12 }}

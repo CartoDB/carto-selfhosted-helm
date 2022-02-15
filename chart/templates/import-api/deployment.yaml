@@ -76,7 +76,7 @@ spec:
       {{- end }}
       containers:
         - name: import-api
-          image: {{ .Values.importApi.image.registry }}/{{ .Values.importApi.image.repository }}:{{ .Values.selfHostedVersion }}
+          image: {{ .Values.importApi.image.registry }}/{{ .Values.importApi.image.repository }}:{{ .Chart.AppVersion }}
           imagePullPolicy: {{ .Values.importApi.image.pullPolicy }}
           {{- if .Values.importApi.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.importApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}

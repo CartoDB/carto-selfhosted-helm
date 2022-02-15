@@ -64,9 +64,6 @@ diagnosticMode:
 ##
 selfHostedDomain: "<FILL_ME>"
 
-selfHostedVersion: "<FILL_ME>"
-
-
 ## @param commonConfiguration [object] Configuration script that will be run in all Carto instances
 ##
 commonConfiguration: |

@@ -73,7 +73,7 @@ spec:
       {{- end }}
       containers:
         - name: router
-          image: {{ .Values.router.image.registry }}/{{ .Values.router.image.repository }}:{{ .Values.selfHostedVersion }}
+          image: {{ .Values.router.image.registry }}/{{ .Values.router.image.repository }}:{{ .Chart.AppVersion }}
           imagePullPolicy: {{ .Values.router.image.pullPolicy }}
           {{- if .Values.router.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.router.containerSecurityContext "enabled" | toYaml | nindent 12 }}
