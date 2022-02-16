@@ -37,7 +37,7 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
 Return the proper Carto ldsApi image name
 */}}
 {{- define "carto.ldsApi.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.ldsApi.image "global" .Values.global) -}}
+{{- include "selfhosted.images.image" (dict "imageRoot" .Values.ldsApi.image "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
@@ -84,7 +84,7 @@ Create the name of the service account to use for the lds-api deployment
 Return the proper Carto importWorker image name
 */}}
 {{- define "carto.importWorker.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.importWorker.image "global" .Values.global) -}}
+{{- include "selfhosted.images.image" (dict "imageRoot" .Values.importWorker.image "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
@@ -131,7 +131,7 @@ Create the name of the service account to use for the import-worker deployment
 Return the proper Carto importApi image name
 */}}
 {{- define "carto.importApi.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.importApi.image "global" .Values.global) -}}
+{{- include "selfhosted.images.image" (dict "imageRoot" .Values.importApi.image "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
@@ -178,7 +178,7 @@ Create the name of the service account to use for the import-api deployment
 Return the proper Carto mapsApi image name
 */}}
 {{- define "carto.mapsApi.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.mapsApi.image "global" .Values.global) -}}
+{{- include "selfhosted.images.image" (dict "imageRoot" .Values.mapsApi.image "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
@@ -225,7 +225,7 @@ Create the name of the service account to use for the maps-api deployment
 Return the proper Carto workspaceSubscriber image name
 */}}
 {{- define "carto.workspaceSubscriber.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.workspaceSubscriber.image "global" .Values.global) -}}
+{{- include "selfhosted.images.image" (dict "imageRoot" .Values.workspaceSubscriber.image "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
@@ -272,7 +272,7 @@ Create the name of the service account to use for the workspace-subscriber deplo
 Return the proper Carto workspaceApi image name
 */}}
 {{- define "carto.workspaceApi.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.workspaceApi.image "global" .Values.global) -}}
+{{- include "selfhosted.images.image" (dict "imageRoot" .Values.workspaceApi.image "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
@@ -319,7 +319,7 @@ Create the name of the service account to use for the workspace-api deployment
 Return the proper Carto workspace-www image name
 */}}
 {{- define "carto.workspaceWww.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.workspaceWww.image "global" .Values.global) -}}
+{{- include "selfhosted.images.image" (dict "imageRoot" .Values.workspaceWww.image "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
@@ -366,7 +366,7 @@ Create the name of the service account to use for the workspace-www deployment
 Return the proper Carto accounts-www image name
 */}}
 {{- define "carto.accountsWww.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.accountsWww.image "global" .Values.global) -}}
+{{- include "selfhosted.images.image" (dict "imageRoot" .Values.accountsWww.image "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
@@ -413,7 +413,7 @@ Create the name of the service account to use for the accounts-www deployment
 Return the proper Carto router image name
 */}}
 {{- define "carto.router.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.router.image "global" .Values.global) -}}
+{{- include "selfhosted.images.image" (dict "imageRoot" .Values.router.image "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
@@ -460,7 +460,7 @@ Create the name of the service account to use for the router deployment
 Return the proper Carto workspace migrations image name
 */}}
 {{- define "carto.workspaceMigrations.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.workspaceMigrations.image "global" .Values.global) -}}
+{{- include "selfhosted.images.image" (dict "imageRoot" .Values.workspaceMigrations.image "global" .Values.global) -}}
 {{- end -}}
 
 {{/*

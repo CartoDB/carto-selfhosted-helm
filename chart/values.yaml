@@ -16,6 +16,7 @@ global:
   ##
   imagePullSecrets: []
   storageClass: ""
+  selfHostedVersion: "2022.02.10"
 
 ## @section Common parameters
 ##
@@ -233,6 +234,8 @@ accountsWww:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/accounts-www
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -533,6 +536,8 @@ importApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/import-api
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -833,6 +838,8 @@ importWorker:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/import-api
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1038,6 +1045,8 @@ ldsApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/lds-api
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1338,6 +1347,8 @@ mapsApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/maps-api
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1641,6 +1652,8 @@ router:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/router
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1957,6 +1970,8 @@ workspaceApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-api
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2260,6 +2275,8 @@ workspaceSubscriber:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-api
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2465,6 +2482,8 @@ workspaceWww:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-www
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2764,6 +2783,8 @@ workspaceMigrations:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-db
+    ## Specify a custom image tag
+    ## tag: ""
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
     ## Secrets must be manually created in the namespace.

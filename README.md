@@ -32,7 +32,8 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
   - customer.env
   - key.json
 
-+ Add your Carto Self Hosted version inside `carto3-helm/chart/Chart.yaml` in `appVersion` param.
++ Add your Carto Self Hosted release version inside `carto3-helm/chart/values.yaml` in `selfHostedVersion` var.
+  Also add the version in `carto3-helm/chart/Chart.yaml` in `appVersion` param.
 
 + Set your vars in `carto3-helm/chart/values.yaml` file.
   At least, the following variables must be replaced, you can find them in `customer.env` file:
@@ -87,6 +88,9 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
 + Install dependencies:
   `helm dependency build`
 
++ Generate templates:
+  `helm template carto3-selfhosted .`
+
 + Deploy Carto in your namespace:
 
   `kubectl config set-context --current --namespace=<namespace>`
@@ -100,3 +104,5 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
 + If you need to replace one variable now, you can modify it in `values.yaml` file and then run the following command:
 
   `helm upgrade carto3-selfhosted . --values=./values.yaml`
+
++ If you need to overwrite an image name in one specific container, you could set it in `tag: ""` parameter in `values.yaml`

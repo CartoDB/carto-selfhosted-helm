@@ -73,7 +73,7 @@ spec:
       {{- end }}
       containers:
         - name: workspace-subscriber
-          image: {{ .Values.workspaceSubscriber.image.registry }}/{{ .Values.workspaceSubscriber.image.repository }}:{{ .Chart.AppVersion }}
+          image: {{ template "carto.workspaceSubscriber.image" . }}
           imagePullPolicy: {{ .Values.workspaceSubscriber.image.pullPolicy }}
           {{- if .Values.workspaceSubscriber.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.workspaceSubscriber.containerSecurityContext "enabled" | toYaml | nindent 12 }}
