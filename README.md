@@ -33,7 +33,6 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
   - key.json
 
 + Add your Carto Self Hosted release version inside `carto3-helm/chart/values.yaml` in `selfHostedVersion` var.
-  Also add the version in `carto3-helm/chart/Chart.yaml` in `appVersion` param.
 
 + Set your vars in `carto3-helm/chart/values.yaml` file.
   At least, the following variables must be replaced, you can find them in `customer.env` file:
