@@ -78,7 +78,7 @@ host. To configure CARTO with the URL of your service:
 
   helm upgrade --namespace {{ .Release.Namespace }} {{ .Release.Name }} carto/{{ .Chart.Name }} \
     --set router.service.type={{ .Values.router.service.type }} \
-    --set onPremDomain=$CARTO_HOST{{- if eq .Values.router.service.type "NodePort" }}:$CARTO_PORT{{- end }}
+    --set selfHostedDomain=$CARTO_HOST{{- if eq .Values.router.service.type "NodePort" }}:$CARTO_PORT{{- end }}
 
 {{- else }}
 

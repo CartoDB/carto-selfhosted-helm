@@ -73,7 +73,7 @@ spec:
       {{- end }}
       containers:
         - name: import-worker
-          image: {{ template "carto.importWorker.image" . }}
+          image: "{{ .Values.importWorker.image.name }}:{{- include "carto.importWorker.tag" . -}}"
           imagePullPolicy: {{ .Values.importWorker.image.pullPolicy }}
           {{- if .Values.importWorker.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.importWorker.containerSecurityContext "enabled" | toYaml | nindent 12 }}

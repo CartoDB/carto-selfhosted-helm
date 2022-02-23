@@ -1,3 +1,21 @@
+## @section CARTO parameters
+##
+
+cartoConfigValues:
+  selfHostedDomain: ""
+  selfhostedTenantId: ""
+  cartoAuth0ClientId: ""
+  cartoAuth0CustomDomain: ""
+  cartoAccDomain: ""
+  cartoAccGcpProjectId: ""
+  cartoAccGcpProjectRegion: ""
+  cartoSelfhostedDwLocation: ""
+  routerSslAutogenerate: ""
+
+cartoSecrets:
+  googleMapsApiKey: ""
+  encryptionSecretKey: ""
+
 ## @section Global parameters
 ## Global Docker image parameters
 ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
@@ -57,146 +75,13 @@ diagnosticMode:
   args:
     - infinity
 
-## @section CARTO common parameters
-##
-
-## @param onPremDomain CARTO on premises domain
-##
-onPremDomain: ""
-
 ## @param commonConfiguration [object] Configuration script that will be run in all Carto instances
 ##
-commonConfiguration: |
-  # CARTO Self hosted configuration
-
-  # Version
-  CARTO_ONPREMISE_VERSION="{{ .Chart.AppVersion }}"
-
-  # CARTO Self hosted configuration
-  # >>>>>>>>>>>>  TO BE CHANGED  >>>>>>>>>>>>>>>>>>>>>>>>>
-
-  # Fully qualified domain where CARTO will be accesible
-  ONPREM_DOMAIN="{{ include "carto.baseUrl" . }}"
-
-  # If you want to use Google Maps and have a API KEY set it here
-  # REACT_APP_GOOGLE_MAPS_API_KEY="CUSTOMIZED_FOR_USER_IF_NEEDED"
-
-  # Configuration for PostgreSQL
-  WORKSPACE_POSTGRES_HOST="{{ include "carto.postgresql.host" . }}"
-  WORKSPACE_POSTGRES_PORT="{{ include "carto.postgresql.port" . }}"
-
-  # Customer project and tenant name
-  ONPREM_TENANT_ID="onp-<FILL_ME>"
-  ONPREM_GCP_PROJECT_ID="carto-tnt-${ONPREM_TENANT_ID}"
-
-  # Change the following and read the documentation to use your own buckets
-  WORKSPACE_GCS_THUMBNAILS_BUCKET="${ONPREM_GCP_PROJECT_ID}-thumbnails-storage"
-  WORKSPACE_GCS_DATASETS_BUCKET="${ONPREM_GCP_PROJECT_ID}-client-storage"
-  IMPORT_GCS_DATA_IMPORTS_BUCKET="${ONPREM_GCP_PROJECT_ID}-import-storage"
-
-  # Your custom certificates, read the documentation
-  # ROUTER_SSL_AUTOGENERATE="<1 to enable | 0 to disable>"
-  # ROUTER_SSL_CERTIFICATE_PATH="/etc/nginx/ssl/<cert>.crt"
-  # ROUTER_SSL_CERTIFICATE_KEY_PATH="/etc/nginx/ssl/<cert>.key"
-
-  # >>>>>>>>>>>>  END OF CHANGES  >>>>>>>>>>>>>>>>>>>>>>>>>
-
-  CARTO_AUTH0_CLIENT_ID="<FILL_ME>"
-  CARTO_AUTH0_CUSTOM_DOMAIN="<FILL_ME>"
-
-  ACC_DOMAIN="<FILL_ME>"
-  ACC_GCP_PROJECT_ID="<FILL_ME>"
-  ACC_GCP_PROJECT_REGION="<FILL_ME>"
-
-  CARTO_ONPREMISE_CARTO_DW_LOCATION="<FILL_ME>"
-
-  # <<<<<<<<<<<<<  END OF CUSTOMER CONFIG <<<<<<<<<<<<<<<<<<<
-
-  ### DO NOT EDIT BELOW THIS LINE
-
-  GOOGLE_APPLICATION_CREDENTIALS="../certs/key.json"
-  CARTO3_ONPREM_VOLUMES_BASE_PATH="./"
-
-  DOCKER_REGISTRY_BASE_PATH="gcr.io/carto-onprem-artifacts"
-  CARTO_ONPREMISE_AUTH0_CLIENT_ID="${CARTO_AUTH0_CLIENT_ID}"
-  WORKSPACE_THUMBNAILS_BUCKET="${ONPREM_GCP_PROJECT_ID}-thumbnails-storage"
-  WORKSPACE_DATASETS_BUCKET="${ONPREM_GCP_PROJECT_ID}-client-storage"
-  ### END VALUES FOR EACH ONPREM #########################
-
-  ### GENERIC CONF
-
-  ### WWW variables
-  REACT_APP_CLIENT_ID="${CARTO_AUTH0_CLIENT_ID}"
-  REACT_APP_AUTH0_DOMAIN="${CARTO_AUTH0_CUSTOM_DOMAIN}"
-  REACT_APP_ACCOUNTS_API_URL="https://${ACC_DOMAIN}"
-  REACT_APP_ACCOUNTS_URL="https://${ONPREM_DOMAIN}/acc/"
-  REACT_APP_WORKSPACE_API_URL="https://${ONPREM_DOMAIN}/workspace-api"
-  REACT_APP_API_BASE_URL="https://${ONPREM_DOMAIN}/api"
-  REACT_APP_PUBLIC_MAP_URL="https://${ONPREM_DOMAIN}/workspace-api/maps/public"
-  REACT_APP_AUTH0_AUDIENCE="carto-cloud-native-api"
-  REACT_APP_WORKSPACE_URL_TEMPLATE="https://{tenantDomain}"
-  REACT_APP_CUSTOM_TENANT="${ONPREM_TENANT_ID}"
-  REACT_APP_IMPORT_DATASET="carto_dw.carto-dw-{account-id}.shared"
-  REACT_APP_HUBSPOT_ID="474999"
-  REACT_APP_HUBSPOT_LIMIT_FORM_ID="cd9486fa-5766-4bac-81b9-d8c6cd029b3b"
-  REACT_APP_BIGQUERY_OAUTH="false"
-
-  ## Common config
-  ##
-  AUTH0_AUDIENCE="carto-cloud-native-api"
-  AUTH0_DOMAIN="${CARTO_AUTH0_CUSTOM_DOMAIN}"
-  AUTH0_NAMESPACE="http://app.carto.com"
-  LOG_LEVEL="debug"
-
-  REDIS_CACHE_PREFIX="onprem"
-  REDIS_HOST="{{ include "carto.redis.host" . }}"
-  REDIS_PORT="{{ include "carto.redis.port" . }}"
-
-  ## PUB SUB
-  ##
-  PUBSUB_MODE="pull"
-
-  PUBSUB_PROJECT_ID="${ONPREM_GCP_PROJECT_ID}"
-
-  ## Conflictive with onprem tenant && regular tenants
-  ##
-  PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE="projects/{project_id}/topics/data-updates"
-
-  EVENT_BUS_TOPIC="projects/${ACC_GCP_PROJECT_ID}/topics/${ACC_GCP_PROJECT_REGION}-event-bus"
-  EVENT_BUS_PROJECT_ID="${ACC_GCP_PROJECT_ID}"
-
-  DO_ENABLED="false"
-
-  ## Workspace config
-  ##
-  CARTO_ONPREMISE_NAME="${ONPREM_TENANT_ID}"
-  CARTO_ONPREMISE_DOMAIN="${ONPREM_DOMAIN}"
-  CARTO_ONPREMISE_GCP_PROJECT_ID="${ONPREM_GCP_PROJECT_ID}"
-
-  WORKSPACE_POSTGRES_USER="{{ include "carto.postgresql.user" . }}"
-  WORKSPACE_POSTGRES_DB="{{ include "carto.postgresql.databaseName" . }}"
-
-  WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC="projects/${ONPREM_GCP_PROJECT_ID}/topics/data-updates"
-  WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION="projects/${ONPREM_GCP_PROJECT_ID}/subscriptions/data-updates-workspace-sub"
-
-  ## Maps API config
-  ##
-  MAPS_API_V3_RESOURCE_URL_HOST="${ONPREM_DOMAIN}"
-  MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS="${ONPREM_DOMAIN}"
-
-  ## Import API config
-  ##
-  IMPORT_TENANT_ID="${ONPREM_TENANT_ID}"
-  IMPORT_WORKER_PROCESSING_DIR="/tmp/import-worker"
-
-  IMPORT_PUBSUB_TENANT_BUS_TOPIC="projects/${ONPREM_GCP_PROJECT_ID}/topics/tenant-bus"
-  IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION="projects/${ONPREM_GCP_PROJECT_ID}/subscriptions/tenant-bus-import-sub"
+commonConfiguration:
 
 ## @param commonSecretConfiguration [object] Sensitive configuration script that will be run in all CARTO deployments
 ##
-commonSecretConfiguration: |
-  # CARTO self hosted sensitive information
-  ENCRYPTION_SECRET_KEY="<FILL_ME>"
+commonSecretConfiguration:
 
 google:
   ## @param google.credentialFile Content of the Google Credential file
@@ -237,7 +122,8 @@ accountsWww:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/accounts-www
-    tag: "2021.12.27.01"
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -257,7 +143,7 @@ accountsWww:
   ## @param accountsWww.containerPorts.http accounts-www HTTP container port
   ##
   containerPorts:
-    http: 80
+    http: 8080
   ## Configure extra options for accounts-www containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param accountsWww.livenessProbe.enabled Enable livenessProbe on accounts-www containers
@@ -538,7 +424,8 @@ importApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/import-api
-    tag: "2021.12.27.01"
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -839,7 +726,8 @@ importWorker:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/import-api
-    tag: "2021.12.27.01"
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1045,7 +933,8 @@ ldsApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/lds-api
-    tag: "2021.12.27.01"
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1346,7 +1235,8 @@ mapsApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/maps-api
-    tag: "2021.12.27.01"
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1452,7 +1342,7 @@ mapsApi:
   configuration: |
     MAPS_API_V3_PORT="{{ .Values.mapsApi.containerPorts.http }}"
     MAPS_API_V3_RESOURCE_URL_TEMPLATE_NEW='https://${host}/api/${path}'
-    MAPS_API_V3_TENANT_ID="$ONPREM_TENANT_ID"
+    MAPS_API_V3_TENANT_ID="$SELFHOSTED_TENANT_ID"
 
   ## @param mapsApi.secretConfiguration Configuration settings (env vars) for maps-api
   ##
@@ -1650,7 +1540,8 @@ router:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/router
-    tag: "2021.12.27.01"
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -1671,8 +1562,8 @@ router:
   ## @param router.containerPorts.https router HTTPS container port
   ##
   containerPorts:
-    http: 80
-    https: 443
+    http: 8080
+    https: 8443
   ## Configure extra options for router containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param router.livenessProbe.enabled Enable livenessProbe on router containers
@@ -1967,7 +1858,8 @@ workspaceApi:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-api
-    tag: "2021.12.27.01"
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2073,7 +1965,7 @@ workspaceApi:
   configuration: |
     WORKSPACE_PORT="{{ .Values.workspaceApi.containerPorts.http }}"
     # if you change the TENANT_ID you need to change the DataUpdate's topic and sub
-    WORKSPACE_TENANT_ID="${ONPREM_TENANT_ID}"
+    WORKSPACE_TENANT_ID="${SELFHOSTED_TENANT_ID}"
 
   ## @param workspaceApi.secretConfiguration Configuration settings (env vars) for workspace-api
   ##
@@ -2271,7 +2163,8 @@ workspaceSubscriber:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-api
-    tag: "2021.12.27.01"
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2477,7 +2370,8 @@ workspaceWww:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-www
-    tag: "2021.12.27.01"
+    ## Specify a custom image tag
+    ## tag: ""
     ## Specify a imagePullPolicy
     ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
     ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -2497,7 +2391,7 @@ workspaceWww:
   ## @param workspaceWww.containerPorts.http workspace-www HTTP container port
   ##
   containerPorts:
-    http: 80
+    http: 8080
   ## Configure extra options for workspace-www containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param workspaceWww.livenessProbe.enabled Enable livenessProbe on workspace-www containers
@@ -2777,7 +2671,8 @@ workspaceMigrations:
   image:
     registry: gcr.io
     repository: carto-onprem-artifacts/workspace-db
-    tag: "2021.12.27.01"
+    ## Specify a custom image tag
+    ## tag: ""
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.
     ## Secrets must be manually created in the namespace.
