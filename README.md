@@ -14,7 +14,7 @@ gcloud secrets versions access latest --secret="selfhosted-k8s-customer-package"
 gcloud secrets versions access latest --secret="selfhosted-k8s-customer-package-secrets" --project="carto-tnt-onp-$ONPREM_ID" > carto-secrets.yaml
 gcloud secrets versions access latest --secret="selfhosted-k8s-secret-sa-key" --project="carto-tnt-onp-$ONPREM_ID" > k8s-google-serviceaccount-secret.yaml
 ```
-- Clone https://github.com/CartoDB/carto3-helm repository and create new branch
+- Clone https://github.com/CartoDB/carto3-helm repository and create new branch from the refactor-charts one
 
 - Copy `carto-values.yaml` and `carto-secrets.yaml` inside charts folder
 
