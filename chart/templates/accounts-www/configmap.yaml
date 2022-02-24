@@ -53,7 +53,7 @@ data:
   PUBSUB_MODE: "pull"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE: "projects/{project_id}/topics/data-updates"
-  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/${ACC_GCP_PROJECT_REGION}-event-bus"
+  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   DO_ENABLED: "false"
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
