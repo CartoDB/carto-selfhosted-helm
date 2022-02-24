@@ -89,7 +89,6 @@ spec:
             - -ec
             - |
               set -a
-              . /config/.env
               . /secret/.secret.env
               /usr/src/app/onprem-init-db.sh
           {{- end }}
@@ -106,9 +105,12 @@ spec:
                   key: {{ include "carto.postgresql.secret.key" . }}
             - name: POSTGRES_ADMIN_USER
               value: {{ include "carto.postgresql.adminUser" . }}
+          envFrom:
+            {{- if not .Values.workspaceApi.existingConfigMap }}
+            - configMapRef:
+                name: {{ template "carto.workspaceApi.fullname" . }}
+            {{- end }}
           volumeMounts:
-            - name: config-env
-              mountPath: /config
             - name: secret-env
               mountPath: /secret
         {{- if .Values.workspaceApi.initContainers }}
@@ -139,7 +141,6 @@ spec:
             - -ec
             - |
               set -a
-              . /config/.env
               . /secret/.secret.env
               npm run start:built
           {{- end }}
@@ -158,6 +159,10 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
+            {{- if not .Values.workspaceApi.existingConfigMap }}
+            - configMapRef:
+                name: {{ template "carto.workspaceApi.fullname" . }}
+            {{- end }}
             {{- if .Values.workspaceApi.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVarsCM "context" $) }}
@@ -202,8 +207,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: config-env
-              mountPath: /config
             - name: secret-env
               mountPath: /secret
             - name: google-secret
@@ -216,9 +219,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceApi.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: config-env
-          configMap:
-            name: {{ include "carto.workspaceApi.configmapName" . }}
         - name: secret-env
           secret:
             secretName: {{ include "carto.workspaceApi.secretName" . }}

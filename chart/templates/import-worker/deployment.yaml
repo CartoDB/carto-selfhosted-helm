@@ -95,7 +95,6 @@ spec:
             - -ec
             - |
               set -a
-              . /config/.env
               . /secret/.secret.env
               npm run start:built:subscriber
           {{- end }}
@@ -109,6 +108,10 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
+            {{- if not .Values.importWorker.existingConfigMap }}
+            - configMapRef:
+                name: {{ template "carto.importWorker.fullname" . }}
+            {{- end }}
             {{- if .Values.importWorker.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVarsCM "context" $) }}
@@ -135,8 +138,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: config-env
-              mountPath: /config
             - name: secret-env
               mountPath: /secret
             - name: google-secret
@@ -149,9 +150,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.importWorker.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: config-env
-          configMap:
-            name: {{ include "carto.importWorker.configmapName" . }}
         - name: secret-env
           secret:
             secretName: {{ include "carto.importWorker.secretName" . }}

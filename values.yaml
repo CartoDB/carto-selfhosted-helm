@@ -226,7 +226,6 @@ accountsWww:
   ## @param accountsWww.configuration [object] Configuration settings (env vars) for accounts-www
   ##
   configuration: |
-    PORT={{ .Values.accountsWww.containerPorts.http }}
   ## @param accountsWww.secretConfiguration Configuration settings (env vars) for accounts-www
   ##
   secretConfiguration: ""
@@ -527,7 +526,6 @@ importApi:
   ## @param importApi.configuration [object] Configuration settings (env vars) for import-api
   ##
   configuration: |
-    IMPORT_PORT={{ .Values.importApi.containerPorts.http }}
   ## @param importApi.secretConfiguration Configuration settings (env vars) for import-api
   ##
   secretConfiguration: ""
@@ -1034,7 +1032,6 @@ ldsApi:
   ## @param ldsApi.configuration [object] Configuration settings (env vars) for lds-api
   ##
   configuration: |
-    LDS_PORT={{ .Values.ldsApi.containerPorts.http }}
   ## @param ldsApi.secretConfiguration Configuration settings (env vars) for lds-api
   ##
   secretConfiguration: ""
@@ -1335,9 +1332,6 @@ mapsApi:
   ## @param mapsApi.configuration [object] Configuration settings (env vars) for maps-api
   ##
   configuration: |
-    MAPS_API_V3_PORT="{{ .Values.mapsApi.containerPorts.http }}"
-    MAPS_API_V3_RESOURCE_URL_TEMPLATE_NEW='https://${host}/api/${path}'
-    MAPS_API_V3_TENANT_ID="$SELFHOSTED_TENANT_ID"
 
   ## @param mapsApi.secretConfiguration Configuration settings (env vars) for maps-api
   ##
@@ -1641,17 +1635,7 @@ router:
   ## @param router.configuration [object] Configuration settings (env vars) for router
   ##
   configuration: |
-    # Router configuration for the different endpoints
-    ROUTER_ACCOUNTS_WWW_INTERNAL_URL={{ include "carto.accountsWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
-    ROUTER_WORKSPACE_API_INTERNAL_URL={{ include "carto.workspaceApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
-    ROUTER_WORKSPACE_WWW_INTERNAL_URL={{ include "carto.workspaceWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
-    ROUTER_MAPS_API_INTERNAL_URL={{ include "carto.mapsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
-    ROUTER_IMPORT_API_INTERNAL_URL={{ include "carto.importApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
-    ROUTER_LDS_API_INTERNAL_URL={{ include "carto.ldsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
-    ROUTER_SSL_CERTIFICATE_PATH=/usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
-    ROUTER_SSL_CERTIFICATE_KEY_PATH=/usr/src/certs/{{ template "carto.tlsCerts.secretKeyKey" . }}
-    # We use the certificates created in the chart
-    ROUTER_SSL_AUTOGENERATE=0
+
   ## @param router.secretConfiguration Configuration settings (env vars) for router
   ##
   secretConfiguration: ""
@@ -1956,9 +1940,6 @@ workspaceApi:
   ## @param workspaceApi.configuration [object] Configuration settings (env vars) for workspace-api
   ##
   configuration: |
-    WORKSPACE_PORT="{{ .Values.workspaceApi.containerPorts.http }}"
-    # if you change the TENANT_ID you need to change the DataUpdate's topic and sub
-    WORKSPACE_TENANT_ID="${SELFHOSTED_TENANT_ID}"
 
   ## @param workspaceApi.secretConfiguration Configuration settings (env vars) for workspace-api
   ##

@@ -92,7 +92,6 @@ spec:
             - -ec
             - |
               set -a
-              . /config/.env
               . /secret/.secret.env
               /docker-entrypoint.sh nginx -g "daemon off;"
           {{- end }}
@@ -101,6 +100,10 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
+            {{- if not .Values.accountsWww.existingConfigMap }}
+            - configMapRef:
+                name: {{ template "carto.accountsWww.fullname" . }}
+            {{- end }}
             {{- if .Values.accountsWww.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraEnvVarsCM "context" $) }}
@@ -145,8 +148,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: config-env
-              mountPath: /config
             - name: secret-env
               mountPath: /secret
             - name: google-secret
@@ -159,9 +160,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.accountsWww.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: config-env
-          configMap:
-            name: {{ include "carto.accountsWww.configmapName" . }}
         - name: secret-env
           secret:
             secretName: {{ include "carto.accountsWww.secretName" . }}
