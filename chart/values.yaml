@@ -4,17 +4,19 @@
 cartoConfigValues:
   selfHostedDomain: ""
   selfHostedTenantId: ""
+  selfHostedGcpProjectId: ""
   cartoAuth0ClientId: ""
   cartoAuth0CustomDomain: ""
   cartoAccDomain: ""
   cartoAccGcpProjectId: ""
   cartoAccGcpProjectRegion: ""
   cartoSelfhostedDwLocation: ""
+  workspaceThumbnailsBucket: ""
+  workspaceImportsBucket: ""
+  importBucket: ""
   routerSslAutogenerate: ""
 
 cartoSecrets:
-  googleMapsApiKey: ""
-  encryptionSecretKey: ""
 
 ## @section Global parameters
 ## Global Docker image parameters
