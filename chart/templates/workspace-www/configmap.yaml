@@ -13,21 +13,11 @@ metadata:
   {{- end }}
 data:
   SELFHOSTED_DOMAIN: {{ .Values.cartoConfigValues.selfHostedDomain | quote }}
-  SELFHOSTED_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
-  WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.cartoConfigValues.workspaceThumbnailsBucket | quote }}
-  WORKSPACE_IMPORTS_BUCKET: {{ .Values.cartoConfigValues.workspaceImportsBucket | quote }}
-  IMPORT_BUCKET: {{ .Values.cartoConfigValues.importBucket | quote }}
-  ROUTER_SSL_AUTOGENERATE: {{ .Values.cartoConfigValues.routerSslAutogenerate | quote }}
   CARTO_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   CARTO_AUTH0_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   ACC_DOMAIN: {{ .Values.cartoConfigValues.cartoAccDomain | quote }}
   ACC_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   ACC_GCP_PROJECT_REGION: {{ .Values.cartoConfigValues.cartoAccGcpProjectRegion | quote }}
-  CARTO_SELFHOSTED_CARTO_DW_LOCATION: {{ .Values.cartoConfigValues.cartoSelfhostedDwLocation | quote }}
-  GOOGLE_APPLICATION_CREDENTIALS: "../certs/key.json"
-  CARTO3_SELFHOSTED_VOLUMES_BASE_PATH: "./"
-  DOCKER_REGISTRY_BASE_PATH: "gcr.io/carto-onprem-artifacts"
   CARTO_SELFHOSTED_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   REACT_APP_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   REACT_APP_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
@@ -46,28 +36,7 @@ data:
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
   LOG_LEVEL: "debug"
-  REDIS_CACHE_PREFIX: "onprem"
-  REDIS_HOST: {{ include "carto.redis.host" . }}
-  REDIS_PORT: {{ include "carto.redis.port" . }}
-  PUBSUB_MODE: "pull"
-  PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
-  PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE: "projects/{project_id}/topics/data-updates"
-  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
-  EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
-  DO_ENABLED: "false"
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   CARTO_SELFHOSTED_DOMAIN: {{ .Values.cartoConfigValues.selfHostedDomain | quote }}
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
-  WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
-  WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . }}
-  WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . }}
-  WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
-  WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/data-updates"
-  WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/data-updates-workspace-sub"
-  MAPS_API_V3_RESOURCE_URL_HOST: {{ .Values.cartoConfigValues.selfHostedDomain | quote }}
-  MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: {{ .Values.cartoConfigValues.selfHostedDomain | quote }}
-  IMPORT_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  IMPORT_WORKER_PROCESSING_DIR: "/tmp/import-worker"
-  IMPORT_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
-  IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-import-sub"
 {{- end }}

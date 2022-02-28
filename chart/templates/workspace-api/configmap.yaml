@@ -20,8 +20,6 @@ data:
   SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.cartoConfigValues.workspaceThumbnailsBucket | quote }}
   WORKSPACE_IMPORTS_BUCKET: {{ .Values.cartoConfigValues.workspaceImportsBucket | quote }}
-  IMPORT_BUCKET: {{ .Values.cartoConfigValues.importBucket | quote }}
-  ROUTER_SSL_AUTOGENERATE: {{ .Values.cartoConfigValues.routerSslAutogenerate | quote }}
   CARTO_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   CARTO_AUTH0_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   ACC_DOMAIN: {{ .Values.cartoConfigValues.cartoAccDomain | quote }}
@@ -30,21 +28,7 @@ data:
   CARTO_SELFHOSTED_CARTO_DW_LOCATION: {{ .Values.cartoConfigValues.cartoSelfhostedDwLocation | quote }}
   GOOGLE_APPLICATION_CREDENTIALS: "../certs/key.json"
   CARTO3_SELFHOSTED_VOLUMES_BASE_PATH: "./"
-  DOCKER_REGISTRY_BASE_PATH: "gcr.io/carto-onprem-artifacts"
   CARTO_SELFHOSTED_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
-  REACT_APP_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
-  REACT_APP_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
-  REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccDomain }}"
-  REACT_APP_ACCOUNTS_URL: "https://{{ .Values.cartoConfigValues.selfHostedDomain }}/acc/"
-  REACT_APP_WORKSPACE_API_URL: "https://{{ .Values.cartoConfigValues.selfHostedDomain }}/workspace-api"
-  REACT_APP_API_BASE_URL: "https://{{ .Values.cartoConfigValues.selfHostedDomain }}/api"
-  REACT_APP_PUBLIC_MAP_URL: "https://{{ .Values.cartoConfigValues.selfHostedDomain }}/api/v3/maps/public"
-  REACT_APP_AUTH0_AUDIENCE: "carto-cloud-native-api"
-  REACT_APP_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
-  REACT_APP_CUSTOM_TENANT: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  REACT_APP_HUBSPOT_ID: "474999"
-  REACT_APP_HUBSPOT_LIMIT_FORM_ID: "cd9486fa-5766-4bac-81b9-d8c6cd029b3b"
-  REACT_APP_BIGQUERY_OAUTH: "false"
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
@@ -69,8 +53,4 @@ data:
   WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/data-updates-workspace-sub"
   MAPS_API_V3_RESOURCE_URL_HOST: {{ .Values.cartoConfigValues.selfHostedDomain | quote }}
   MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: {{ .Values.cartoConfigValues.selfHostedDomain | quote }}
-  IMPORT_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  IMPORT_WORKER_PROCESSING_DIR: "/tmp/import-worker"
-  IMPORT_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
-  IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-import-sub"
 {{- end }}
