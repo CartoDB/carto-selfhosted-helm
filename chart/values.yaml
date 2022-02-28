@@ -17,6 +17,10 @@ cartoConfigValues:
   routerSslAutogenerate: ""
 
 cartoSecrets:
+  googleMapsApiKey: ""
+  encryptionSecretKey: ""
+  varnishDebugSecret: ""
+  varnishPurgeSecret: ""
 
 ## @section Global parameters
 ## Global Docker image parameters
