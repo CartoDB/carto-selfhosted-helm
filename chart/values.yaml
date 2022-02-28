@@ -2,7 +2,7 @@
 ##
 
 cartoConfigValues:
-  selfHostedDomain: ""
+  selfHostedDomain: "carto3-selfhosted.lan"
   selfHostedTenantId: ""
   selfHostedGcpProjectId: ""
   cartoAuth0ClientId: ""
