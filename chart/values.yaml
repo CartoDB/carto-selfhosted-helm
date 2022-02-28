@@ -3,7 +3,7 @@
 
 cartoConfigValues:
   selfHostedDomain: ""
-  selfhostedTenantId: ""
+  selfHostedTenantId: ""
   cartoAuth0ClientId: ""
   cartoAuth0CustomDomain: ""
   cartoAccDomain: ""
