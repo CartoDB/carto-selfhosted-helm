@@ -28,6 +28,12 @@ helm dependency build
 helm install carto3-selfhosted-v1 . -f carto-values.yaml -f carto-secrets.yaml
 ```
 
+- Add the Load Balancer IP to your DNS with your Domain:
+
+```bash
+kubectl get svc <carto3-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.ip}'
+```
+
 
 ## Before you begin
 
