@@ -6,14 +6,12 @@ This repository contains the Helm chart files for Carto 3, ready to launch on Ku
 
 - Create new SelfHosted environment in https://github.com/CartoDB/carto3-onprem-customers
 
-* Note: Set the remote onprem module branch to create-selfhosted-customer-package-k8s like in https://github.com/CartoDB/carto3-onprem-customers/blob/master/customers/alv-k8s-helm/config.hcl#L3
+- Download customer package files, they will be placed in the package folder
 
-- Download customer package:
 ```bash
-gcloud secrets versions access latest --secret="selfhosted-k8s-customer-package" --project="carto-tnt-onp-$ONPREM_ID" > carto-values.yaml
-gcloud secrets versions access latest --secret="selfhosted-k8s-customer-package-secrets" --project="carto-tnt-onp-$ONPREM_ID" > carto-secrets.yaml
-gcloud secrets versions access latest --secret="selfhosted-k8s-secret-sa-key" --project="carto-tnt-onp-$ONPREM_ID" > k8s-google-serviceaccount-secret.yaml
+./tools/download_k8s_secrets.sh customers/YOUR-CUSTOMER-ID
 ```
+
 - Clone https://github.com/CartoDB/carto3-helm repository and create new branch from the refactor-charts one
 
 - Copy `carto-values.yaml` and `carto-secrets.yaml` inside charts folder
