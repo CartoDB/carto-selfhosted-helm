@@ -12,27 +12,27 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  SELFHOSTED_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
-  WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.cartoConfigValues.workspaceThumbnailsBucket | quote }}
-  WORKSPACE_IMPORTS_BUCKET: {{ .Values.cartoConfigValues.workspaceImportsBucket | quote }}
-  IMPORT_BUCKET: {{ .Values.cartoConfigValues.importBucket | quote }}
   ACC_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   ACC_GCP_PROJECT_REGION: {{ .Values.cartoConfigValues.cartoAccGcpProjectRegion | quote }}
-  CARTO_SELFHOSTED_CARTO_DW_LOCATION: {{ .Values.cartoConfigValues.cartoSelfhostedDwLocation | quote }}
-  GOOGLE_APPLICATION_CREDENTIALS: "../certs/key.json"
   CARTO3_SELFHOSTED_VOLUMES_BASE_PATH: "./"
-  LOG_LEVEL: "debug"
-  DO_ENABLED: "false"
-  CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  CARTO_SELFHOSTED_CARTO_DW_LOCATION: {{ .Values.cartoConfigValues.cartoSelfhostedDwLocation | quote }}
   CARTO_SELFHOSTED_DOMAIN: {{ .Values.cartoConfigValues.selfHostedDomain | quote }}
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  DO_ENABLED: "false"
+  GOOGLE_APPLICATION_CREDENTIALS: "../certs/key.json"
+  IMPORT_BUCKET: {{ .Values.cartoConfigValues.importBucket | quote }}
+  IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-import-sub"
+  IMPORT_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
   IMPORT_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   IMPORT_WORKER_PROCESSING_DIR: "/tmp/import-worker"
-  IMPORT_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
-  IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-import-sub"
+  LOG_LEVEL: "debug"
+  SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  SELFHOSTED_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  WORKSPACE_IMPORTS_BUCKET: {{ .Values.cartoConfigValues.workspaceImportsBucket | quote }}
+  WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
   WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . }}
   WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . }}
-  WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
+  WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.cartoConfigValues.workspaceThumbnailsBucket | quote }}
 {{- end }}
