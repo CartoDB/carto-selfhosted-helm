@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: CARTO_APP_VERSION
+appVersion: 2022.03.01
 dependencies:
   - name: common
     repository: https://charts.bitnami.com/bitnami
@@ -25,4 +25,4 @@ keywords:
 name: carto
 sources:
   - https://carto.com/
-version: CARTO_CHART_VERSION
+version: 1.0.0
