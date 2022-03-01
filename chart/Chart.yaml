@@ -25,4 +25,4 @@ keywords:
 name: carto
 sources:
   - https://carto.com/
-version: 1.x.x
+version: CARTO_CHART_VERSION
