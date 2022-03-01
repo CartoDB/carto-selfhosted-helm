@@ -2,7 +2,7 @@
 
 This repository contains the Helm chart files for Carto 3, ready to launch on Kubernetes using [Kubernetes Helm](https://github.com/helm/helm).
 
-## Temp: Deploy CARTO in a self hosted environment
+## Deploy CARTO in a self hosted environment
 
 - Create new SelfHosted environment in https://github.com/CartoDB/carto3-onprem-customers
 
@@ -12,17 +12,45 @@ This repository contains the Helm chart files for Carto 3, ready to launch on Ku
 ./tools/download_k8s_secrets.sh customers/YOUR-CUSTOMER-ID
 ```
 
-- Clone https://github.com/CartoDB/carto3-helm repository and create new branch from the refactor-charts one
-
-- Copy `carto-values.yaml` and `carto-secrets.yaml` inside charts folder
-
 - Create the service account secret inside kubernetes
 ```bash
 kubectl apply -f k8s-google-serviceaccount-secret.yaml --namespace=<namespace>
 ```
+
+- Install helm plugin https://github.com/hayorov/helm-gcs to authenticate with Google
+
+```bash
+helm plugin install https://github.com/hayorov/helm-gcs
+```
+
+- Auth to Google:
+
+```bash
+gcloud auth login
+```
+
+- Add Carto repository to helm:
+
+```bash
+helm repo add carto3-selfhosted-charts gs://carto3-selfhosted-helm-charts-repository
+```
+
+- Check the repositories:
+
+```bash
+helm repo list
+NAME                    	URL                                          
+bitnami                 	https://charts.bitnami.com/bitnami           
+carto3-selfhosted-charts	gs://carto3-selfhosted-helm-charts-repository
+
+helm search repo carto3-selfhosted-charts -l
+NAME                          	CHART VERSION	APP VERSION	DESCRIPTION                                       
+carto3-selfhosted-charts/carto	1.3.14       	2022.02.10 	CARTO is the world's leading Location Intellige...
+carto3-selfhosted-charts/carto	0.0.1        	2022.02.10 	CARTO is the world's leading Location Intellige...
+```
+
 - Install Carto SelfHosted
 ```bash
-helm dependency build
 helm install carto3-selfhosted-v1 . -f carto-values.yaml -f carto-secrets.yaml
 ```
 
