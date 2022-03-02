@@ -2077,13 +2077,12 @@ httpCache:
   service:
     ## @param http-cache.service.type http-cache service type
     ##
-    type: LoadBalancer
+    type: ClusterIP
     ## @param http-cache.service.ports.http http-cache service HTTP port
     ## @param http-cache.service.ports.https http-cache service HTTPS port
     ##
     ports:
-      http: 80
-      https: 443
+      http: 6081
     ## Node ports to expose
     ## @param http-cache.service.nodePorts.http Node port for HTTP
     ## @param http-cache.service.nodePorts.https Node port for HTTPS
@@ -2091,7 +2090,6 @@ httpCache:
     ##
     nodePorts:
       http: ""
-      https: ""
     ## @param http-cache.service.clusterIP http-cache service Cluster IP
     ## e.g.:
     ## clusterIP: None
@@ -2168,7 +2166,7 @@ cdnInvalidatorSub:
   ## @param cdnInvalidatorSub.containerPorts.http cdnInvalidatorSub HTTP container port
   ##
   containerPorts:
-    http: 8080
+    http: 3000
   ## Configure extra options for cdnInvalidatorSub containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param cdnInvalidatorSub.livenessProbe.enabled Enable livenessProbe on cdnInvalidatorSub containers
@@ -2382,7 +2380,7 @@ cdnInvalidatorSub:
   service:
     ## @param cdnInvalidatorSub.service.type cdnInvalidatorSub service type
     ##
-    type: LoadBalancer
+    type: ClusterIP
     ## @param cdnInvalidatorSub.service.ports.http cdnInvalidatorSub service HTTP port
     ## @param cdnInvalidatorSub.service.ports.https cdnInvalidatorSub service HTTPS port
     ##

@@ -44,5 +44,5 @@ spec:
     {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.service.labelSelectorsOverride "context" $) | nindent 4 }}
     {{- else }}
     {{- include "common.labels.matchLabels" . | nindent 4 }}
-    app.kubernetes.io/component: cdnInvalidatorSub
+    app.kubernetes.io/component: cdn-invalidator-sub
     {{- end }}

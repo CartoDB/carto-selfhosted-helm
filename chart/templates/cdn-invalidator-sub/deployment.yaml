@@ -99,6 +99,12 @@ spec:
               npm run start
           {{- end }}
           env:
+            - name: WORKSPACE_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ include "carto.postgresql.secret.key" . }}
+
             {{- if .Values.cdnInvalidatorSub.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -124,21 +130,24 @@ spec:
           {{- if not .Values.diagnosticMode.enabled }}
           {{- if .Values.cdnInvalidatorSub.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.cdnInvalidatorSub.livenessProbe "enabled") "context" $) | nindent 12 }}
-            tcpSocket:
+            httpGet:
+              path: /
               port: http
           {{- else if .Values.cdnInvalidatorSub.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.cdnInvalidatorSub.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.cdnInvalidatorSub.readinessProbe "enabled") "context" $) | nindent 12 }}
-            tcpSocket:
+            httpGet:
+              path: /
               port: http
           {{- else if .Values.cdnInvalidatorSub.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.cdnInvalidatorSub.startupProbe.enabled }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.cdnInvalidatorSub.startupProbe "enabled") "context" $) | nindent 12 }}
-            tcpSocket:
+            httpGet:
+              path: /
               port: http
           {{- else if .Values.cdnInvalidatorSub.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.customStartupProbe "context" $) | nindent 12 }}
