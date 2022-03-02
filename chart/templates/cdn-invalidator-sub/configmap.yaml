@@ -1,0 +1,24 @@
+{{- if not .Values.cdnInvalidatorSub.existingConfigMap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "carto.cdnInvalidatorSub.fullname" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: cdnInvalidatorSub
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  CDN_INVALIDATOR_BACKEND_ENGINE: "varnish"
+  CDN_INVALIDATOR_OPERATION_MODE: "surrogate-key"
+  CDN_INVALIDATOR_SUBSCRIBER_SUBSCRIPTION: projects/${SELFHOSTED_GCP_PROJECT_ID}/subscriptions/event-bus-cdn-inval-sub
+  CDN_INVALIDATOR_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  CDN_INVALIDATOR_VARNISH_PURGE_BASE_URL: "http://http-cache:6081"
+  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
+  PUBSUB_MODE: "pull"
+  PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+{{- end }}

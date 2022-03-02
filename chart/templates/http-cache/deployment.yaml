@@ -2,10 +2,10 @@
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
-  name: {{ template "carto.router.fullname" . }}
+  name: {{ template "carto.httpCache.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: router
+    app.kubernetes.io/component: httpCache
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -13,83 +13,83 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ .Values.router.replicaCount }}
-  {{- if .Values.router.updateStrategy }}
-  strategy: {{- toYaml .Values.router.updateStrategy | nindent 4 }}
+  replicas: {{ .Values.httpCache.replicaCount }}
+  {{- if .Values.httpCache.updateStrategy }}
+  strategy: {{- toYaml .Values.httpCache.updateStrategy | nindent 4 }}
   {{- end }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
-      app.kubernetes.io/component: router
+      app.kubernetes.io/component: http-cache
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/router/configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/router/secret.yaml") . | sha256sum }}
-        {{- if .Values.router.podAnnotations }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.router.podAnnotations "context" $) | nindent 8 }}
+        checksum/config: {{ include (print $.Template.BasePath "/httpCache/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/httpCache/secret.yaml") . | sha256sum }}
+        {{- if .Values.httpCache.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
-        app.kubernetes.io/component: router
-        {{- if .Values.router.podLabels }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.router.podLabels "context" $) | nindent 8 }}
+        app.kubernetes.io/component: httpCache
+        {{- if .Values.httpCache.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: {{ template "carto.router.serviceAccountName" . }}
+      serviceAccountName: {{ template "carto.httpCache.serviceAccountName" . }}
       {{- include "carto.imagePullSecrets" . | nindent 6 }}
-      {{- if .Values.router.hostAliases }}
-      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.router.hostAliases "context" $) | nindent 8 }}
+      {{- if .Values.httpCache.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.hostAliases "context" $) | nindent 8 }}
       {{- end }}
-      {{- if .Values.router.affinity }}
-      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.router.affinity "context" $) | nindent 8 }}
+      {{- if .Values.httpCache.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.httpCache.affinity "context" $) | nindent 8 }}
       {{- else }}
       affinity:
-        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.router.podAffinityPreset "component" "router" "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.router.podAntiAffinityPreset "component" "router" "context" $) | nindent 10 }}
-        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.router.nodeAffinityPreset.type "key" .Values.router.nodeAffinityPreset.key "values" .Values.router.nodeAffinityPreset.values) | nindent 10 }}
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.httpCache.podAffinityPreset "component" "httpCache" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.httpCache.podAntiAffinityPreset "component" "httpCache" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.httpCache.nodeAffinityPreset.type "key" .Values.httpCache.nodeAffinityPreset.key "values" .Values.httpCache.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
-      {{- if .Values.router.nodeSelector }}
-      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.router.nodeSelector "context" $) | nindent 8 }}
+      {{- if .Values.httpCache.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.httpCache.nodeSelector "context" $) | nindent 8 }}
       {{- end }}
-      {{- if .Values.router.tolerations }}
-      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.router.tolerations "context" .) | nindent 8 }}
+      {{- if .Values.httpCache.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.tolerations "context" .) | nindent 8 }}
       {{- end }}
-      {{- if .Values.router.priorityClassName }}
-      priorityClassName: {{ .Values.router.priorityClassName | quote }}
+      {{- if .Values.httpCache.priorityClassName }}
+      priorityClassName: {{ .Values.httpCache.priorityClassName | quote }}
       {{- end }}
-      {{- if .Values.router.schedulerName }}
-      schedulerName: {{ .Values.router.schedulerName | quote }}
+      {{- if .Values.httpCache.schedulerName }}
+      schedulerName: {{ .Values.httpCache.schedulerName | quote }}
       {{- end }}
-      {{- if .Values.router.podSecurityContext.enabled }}
-      securityContext: {{- omit .Values.router.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- if .Values.httpCache.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.httpCache.podSecurityContext "enabled" | toYaml | nindent 8 }}
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
         {{- if .Values.postgresql.enabled }}
         {{ include "carto.postgresql-init-container" (dict "context" $) | nindent 8 }}
         {{- end }}
-        {{- if .Values.router.initContainers }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.router.initContainers "context" $) | nindent 8 }}
+        {{- if .Values.httpCache.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.initContainers "context" $) | nindent 8 }}
         {{- end }}
       {{- end }}
       containers:
-        - name: router
-          image: "{{ .Values.router.image.name }}:{{- include "carto.router.tag" . -}}"
-          imagePullPolicy: {{ .Values.router.image.pullPolicy }}
-          {{- if .Values.router.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.router.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+        - name: httpCache
+          image: "{{ .Values.httpCache.image.name }}:{{- include "carto.httpCache.tag" . -}}"
+          imagePullPolicy: {{ .Values.httpCache.image.pullPolicy }}
+          {{- if .Values.httpCache.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.httpCache.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
-          {{- else if .Values.router.command }}
-          command: {{- include "common.tplvalues.render" (dict "value" .Values.router.command "context" $) | nindent 12 }}
+          {{- else if .Values.httpCache.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.command "context" $) | nindent 12 }}
           {{- else }}
           command:
             - /bin/sh
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
-          {{- else if .Values.router.args }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.router.args "context" $) | nindent 12 }}
+          {{- else if .Values.httpCache.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.args "context" $) | nindent 12 }}
           {{ else }}
           args:
             - -ec
@@ -100,55 +100,55 @@ spec:
               /docker-entrypoint.sh nginx -g "daemon off;"
           {{- end }}
           env:
-            {{- if .Values.router.extraEnvVars }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.router.extraEnvVars "context" $) | nindent 12 }}
+            {{- if .Values.httpCache.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.router.existingConfigMap }}
+            {{- if not .Values.httpCache.existingConfigMap }}
             - configMapRef:
-                name: {{ template "carto.router.fullname" . }}
+                name: {{ template "carto.httpCache.fullname" . }}
             {{- end }}
-            {{- if .Values.router.extraEnvVarsCM }}
+            {{- if .Values.httpCache.extraEnvVarsCM }}
             - configMapRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.router.extraEnvVarsCM "context" $) }}
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.httpCache.extraEnvVarsCM "context" $) }}
             {{- end }}
-            {{- if .Values.router.extraEnvVarsSecret }}
+            {{- if .Values.httpCache.extraEnvVarsSecret }}
             - secretRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.router.extraEnvVarsSecret "context" $) }}
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.httpCache.extraEnvVarsSecret "context" $) }}
             {{- end }}
-          {{- if .Values.router.resources }}
-          resources: {{- toYaml .Values.router.resources | nindent 12 }}
+          {{- if .Values.httpCache.resources }}
+          resources: {{- toYaml .Values.httpCache.resources | nindent 12 }}
           {{- end }}
           ports:
             - name: http
-              containerPort: {{ .Values.router.containerPorts.http }}
+              containerPort: {{ .Values.httpCache.containerPorts.http }}
             - name: https
-              containerPort: {{ .Values.router.containerPorts.https }}
+              containerPort: {{ .Values.httpCache.containerPorts.https }}
           {{- if not .Values.diagnosticMode.enabled }}
-          {{- if .Values.router.livenessProbe.enabled }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.router.livenessProbe "enabled") "context" $) | nindent 12 }}
+          {{- if .Values.httpCache.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.httpCache.livenessProbe "enabled") "context" $) | nindent 12 }}
             tcpSocket:
               port: http
-          {{- else if .Values.router.customLivenessProbe }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.router.customLivenessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.httpCache.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.router.readinessProbe.enabled }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.router.readinessProbe "enabled") "context" $) | nindent 12 }}
+          {{- if .Values.httpCache.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.httpCache.readinessProbe "enabled") "context" $) | nindent 12 }}
             tcpSocket:
               port: http
-          {{- else if .Values.router.customReadinessProbe }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.router.customReadinessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.httpCache.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.router.startupProbe.enabled }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.router.startupProbe "enabled") "context" $) | nindent 12 }}
+          {{- if .Values.httpCache.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.httpCache.startupProbe "enabled") "context" $) | nindent 12 }}
             tcpSocket:
               port: http
-          {{- else if .Values.router.customStartupProbe }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.router.customStartupProbe "context" $) | nindent 12 }}
+          {{- else if .Values.httpCache.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- end }}
-          {{- if .Values.router.lifecycleHooks }}
-          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.router.lifecycleHooks "context" $) | nindent 12 }}
+          {{- if .Values.httpCache.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
             - name: secret-env
@@ -156,32 +156,23 @@ spec:
             - name: google-secret
               mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
               subPath: {{ template "carto.google.secretKey" . }}
-            - name: tls-secret
-              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCAKey" . }}
-              subPath: {{ template "carto.tlsCerts.secretCAKey" . }}
-            - name: tls-secret
-              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
-              subPath: {{ template "carto.tlsCerts.secretCertKey" . }}
-            - name: tls-secret
-              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretKeyKey" . }}
-              subPath: {{ template "carto.tlsCerts.secretKeyKey" . }}
-          {{- if .Values.router.extraVolumeMounts }}
-          {{- include "common.tplvalues.render" (dict "value" .Values.router.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- if .Values.httpCache.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
-        {{- if .Values.router.sidecars }}
-        {{- include "common.tplvalues.render" ( dict "value" .Values.router.sidecars "context" $) | nindent 8 }}
+        {{- if .Values.httpCache.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.httpCache.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
         - name: secret-env
           secret:
-            secretName: {{ include "carto.router.secretName" . }}
+            secretName: {{ include "carto.httpCache.secretName" . }}
         - name: tls-secret
           secret:
             secretName: {{ include "carto.tlsCerts.secretName" . }}
         - name: google-secret
           secret:
             secretName: {{ include "carto.google.secretName" . }}
-        {{- if .Values.router.extraVolumes }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.router.extraVolumes "context" $) | nindent 8 }}
+        {{- if .Values.httpCache.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
 {{- end }}

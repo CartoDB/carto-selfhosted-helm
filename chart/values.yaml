@@ -1829,6 +1829,617 @@ router:
     ##
     automountServiceAccountToken: false
 
+## @section http-cache Deployment Parameters
+##
+http-cache:
+  ## http-cache image
+  ## @param http-cache.image.registry http-cache image registry
+  ## @param http-cache.image.repository http-cache image repository
+  ## @param http-cache.image.tag http-cache image tag (immutable tags are recommended)
+  ## @param http-cache.image.pullPolicy http-cache image pull policy
+  ## @param http-cache.image.pullSecrets http-cache image pull secrets
+  ##
+  image:
+    name: gcr.io/carto-onprem-artifacts/http-cache
+    ## Specify a custom image tag
+    tag: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param http-cache.replicaCount Number of http-cache replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param http-cache.containerPorts.http http-cache HTTP container port
+  ## @param http-cache.containerPorts.https http-cache HTTPS container port
+  ##
+  containerPorts:
+    http: 6081
+  ## Configure extra options for http-cache containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param http-cache.livenessProbe.enabled Enable livenessProbe on http-cache containers
+  ## @param http-cache.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param http-cache.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param http-cache.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param http-cache.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param http-cache.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param http-cache.readinessProbe.enabled Enable readinessProbe on http-cache containers
+  ## @param http-cache.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param http-cache.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param http-cache.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param http-cache.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param http-cache.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param http-cache.startupProbe.enabled Enable startupProbe on http-cache containers
+  ## @param http-cache.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param http-cache.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param http-cache.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param http-cache.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param http-cache.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param http-cache.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param http-cache.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param http-cache.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## http-cache resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param http-cache.resources.limits The resources limits for the http-cache containers
+  ## @param http-cache.resources.requests The requested resources for the http-cache containers
+  ##
+  resources:
+    limits: {}
+    requests: {}
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param http-cache.podSecurityContext.enabled Enabled http-cache pods' Security Context
+  ## @param http-cache.podSecurityContext.fsGroup Set http-cache pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 0
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param http-cache.containerSecurityContext.enabled Enabled http-cache containers' Security Context
+  ## @param http-cache.containerSecurityContext.runAsUser Set http-cache containers' Security Context runAsUser
+  ## @param http-cache.containerSecurityContext.runAsNonRoot Set http-cache containers' Security Context runAsNonRoot
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 0
+    runAsNonRoot: false
+
+  ## @param http-cache.configuration [object] Configuration settings (env vars) for http-cache
+  ##
+  configuration: |
+
+  ## @param http-cache.secretConfiguration Configuration settings (env vars) for http-cache
+  ##
+  secretConfiguration: ""
+  ## @param http-cache.existingConfigMap The name of an existing ConfigMap with your custom configuration for http-cache
+  ##
+  existingConfigMap: ""
+  ## @param http-cache.existingSecret The name of an existing ConfigMap with your custom configuration for http-cache
+  ##
+  existingSecret: ""
+  ## @param http-cache.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param http-cache.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param http-cache.hostAliases http-cache pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param http-cache.podLabels Extra labels for http-cache pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param http-cache.podAnnotations Annotations for http-cache pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param http-cache.podAffinityPreset Pod affinity preset. Ignored if `http-cache.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param http-cache.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `http-cache.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node http-cache.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param http-cache.nodeAffinityPreset.type Node affinity preset type. Ignored if `http-cache.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param http-cache.nodeAffinityPreset.key Node label key to match. Ignored if `http-cache.affinity` is set
+    ##
+    key: ""
+    ## @param http-cache.nodeAffinityPreset.values Node label values to match. Ignored if `http-cache.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param http-cache.affinity Affinity for http-cache pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `http-cache.podAffinityPreset`, `http-cache.podAntiAffinityPreset`, and `http-cache.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param http-cache.nodeSelector Node labels for http-cache pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param http-cache.tolerations Tolerations for http-cache pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param http-cache.updateStrategy.type http-cache statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param http-cache.priorityClassName http-cache pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param http-cache.schedulerName Name of the k8s scheduler (other than default) for http-cache pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param http-cache.lifecycleHooks for the http-cache container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param http-cache.extraEnvVars Array with extra environment variables to add to http-cache nodes
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param http-cache.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for http-cache nodes
+  ##
+  extraEnvVarsCM: ""
+  ## @param http-cache.extraEnvVarsSecret Name of existing Secret containing extra env vars for http-cache nodes
+  ##
+  extraEnvVarsSecret: ""
+  ## @param http-cache.extraVolumes Optionally specify extra list of additional volumes for the http-cache pod(s)
+  ##
+  extraVolumes: []
+  ## @param http-cache.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the http-cache container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param http-cache.sidecars Add additional sidecar containers to the http-cache pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param http-cache.initContainers Add additional init containers to the http-cache pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section http-cache Service Parameters
+  ##
+  ##
+  service:
+    ## @param http-cache.service.type http-cache service type
+    ##
+    type: LoadBalancer
+    ## @param http-cache.service.ports.http http-cache service HTTP port
+    ## @param http-cache.service.ports.https http-cache service HTTPS port
+    ##
+    ports:
+      http: 80
+      https: 443
+    ## Node ports to expose
+    ## @param http-cache.service.nodePorts.http Node port for HTTP
+    ## @param http-cache.service.nodePorts.https Node port for HTTPS
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+      https: ""
+    ## @param http-cache.service.clusterIP http-cache service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param http-cache.service.loadBalancerIP http-cache service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param http-cache.service.labelSelectorsOverride Selector for http-cache service
+    ##
+    labelSelectorsOverride: {}
+    ## @param http-cache.service.loadBalancerSourceRanges http-cache service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param http-cache.service.externalTrafficPolicy http-cache service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param http-cache.service.annotations Additional custom annotations for http-cache service
+    ##
+    annotations: {}
+    ## @param http-cache.service.extraPorts Extra ports to expose in http-cache service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+  ## @section http-cache ServiceAccount configuration
+  ##
+  serviceAccount:
+    ## @param http-cache.serviceAccount.create Specifies whether a ServiceAccount should be created
+    ##
+    create: true
+    ## @param http-cache.serviceAccount.name The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the common.names.fullname template
+    ##
+    name: ""
+    ## @param http-cache.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
+    ##
+    automountServiceAccountToken: false
+
+## @section cdnInvalidatorSub Deployment Parameters
+##
+cdnInvalidatorSub:
+  ## cdnInvalidatorSub image
+  ## @param cdnInvalidatorSub.image.registry cdnInvalidatorSub image registry
+  ## @param cdnInvalidatorSub.image.repository cdnInvalidatorSub image repository
+  ## @param cdnInvalidatorSub.image.tag cdnInvalidatorSub image tag (immutable tags are recommended)
+  ## @param cdnInvalidatorSub.image.pullPolicy cdnInvalidatorSub image pull policy
+  ## @param cdnInvalidatorSub.image.pullSecrets cdnInvalidatorSub image pull secrets
+  ##
+  image:
+    name: gcr.io/carto-onprem-artifacts/consumers/cdn-invalidator-sub
+    ## Specify a custom image tag
+    tag: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param cdnInvalidatorSub.replicaCount Number of cdnInvalidatorSub replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param cdnInvalidatorSub.containerPorts.http cdnInvalidatorSub HTTP container port
+  ## @param cdnInvalidatorSub.containerPorts.https cdnInvalidatorSub HTTPS container port
+  ##
+  containerPorts:
+    http: 8080
+  ## Configure extra options for cdnInvalidatorSub containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param cdnInvalidatorSub.livenessProbe.enabled Enable livenessProbe on cdnInvalidatorSub containers
+  ## @param cdnInvalidatorSub.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param cdnInvalidatorSub.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param cdnInvalidatorSub.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param cdnInvalidatorSub.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param cdnInvalidatorSub.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param cdnInvalidatorSub.readinessProbe.enabled Enable readinessProbe on cdnInvalidatorSub containers
+  ## @param cdnInvalidatorSub.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param cdnInvalidatorSub.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param cdnInvalidatorSub.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param cdnInvalidatorSub.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param cdnInvalidatorSub.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param cdnInvalidatorSub.startupProbe.enabled Enable startupProbe on cdnInvalidatorSub containers
+  ## @param cdnInvalidatorSub.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param cdnInvalidatorSub.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param cdnInvalidatorSub.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param cdnInvalidatorSub.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param cdnInvalidatorSub.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param cdnInvalidatorSub.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param cdnInvalidatorSub.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param cdnInvalidatorSub.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## cdnInvalidatorSub resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param cdnInvalidatorSub.resources.limits The resources limits for the cdnInvalidatorSub containers
+  ## @param cdnInvalidatorSub.resources.requests The requested resources for the cdnInvalidatorSub containers
+  ##
+  resources:
+    limits: {}
+    requests: {}
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param cdnInvalidatorSub.podSecurityContext.enabled Enabled cdnInvalidatorSub pods' Security Context
+  ## @param cdnInvalidatorSub.podSecurityContext.fsGroup Set cdnInvalidatorSub pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 0
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param cdnInvalidatorSub.containerSecurityContext.enabled Enabled cdnInvalidatorSub containers' Security Context
+  ## @param cdnInvalidatorSub.containerSecurityContext.runAsUser Set cdnInvalidatorSub containers' Security Context runAsUser
+  ## @param cdnInvalidatorSub.containerSecurityContext.runAsNonRoot Set cdnInvalidatorSub containers' Security Context runAsNonRoot
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 0
+    runAsNonRoot: false
+
+  ## @param cdnInvalidatorSub.configuration [object] Configuration settings (env vars) for cdnInvalidatorSub
+  ##
+  configuration: |
+
+  ## @param cdnInvalidatorSub.secretConfiguration Configuration settings (env vars) for cdnInvalidatorSub
+  ##
+  secretConfiguration: ""
+  ## @param cdnInvalidatorSub.existingConfigMap The name of an existing ConfigMap with your custom configuration for cdnInvalidatorSub
+  ##
+  existingConfigMap: ""
+  ## @param cdnInvalidatorSub.existingSecret The name of an existing ConfigMap with your custom configuration for cdnInvalidatorSub
+  ##
+  existingSecret: ""
+  ## @param cdnInvalidatorSub.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param cdnInvalidatorSub.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param cdnInvalidatorSub.hostAliases cdnInvalidatorSub pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param cdnInvalidatorSub.podLabels Extra labels for cdnInvalidatorSub pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param cdnInvalidatorSub.podAnnotations Annotations for cdnInvalidatorSub pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param cdnInvalidatorSub.podAffinityPreset Pod affinity preset. Ignored if `cdnInvalidatorSub.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param cdnInvalidatorSub.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `cdnInvalidatorSub.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node cdnInvalidatorSub.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param cdnInvalidatorSub.nodeAffinityPreset.type Node affinity preset type. Ignored if `cdnInvalidatorSub.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param cdnInvalidatorSub.nodeAffinityPreset.key Node label key to match. Ignored if `cdnInvalidatorSub.affinity` is set
+    ##
+    key: ""
+    ## @param cdnInvalidatorSub.nodeAffinityPreset.values Node label values to match. Ignored if `cdnInvalidatorSub.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param cdnInvalidatorSub.affinity Affinity for cdnInvalidatorSub pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `cdnInvalidatorSub.podAffinityPreset`, `cdnInvalidatorSub.podAntiAffinityPreset`, and `cdnInvalidatorSub.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param cdnInvalidatorSub.nodeSelector Node labels for cdnInvalidatorSub pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param cdnInvalidatorSub.tolerations Tolerations for cdnInvalidatorSub pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param cdnInvalidatorSub.updateStrategy.type cdnInvalidatorSub statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param cdnInvalidatorSub.priorityClassName cdnInvalidatorSub pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param cdnInvalidatorSub.schedulerName Name of the k8s scheduler (other than default) for cdnInvalidatorSub pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param cdnInvalidatorSub.lifecycleHooks for the cdnInvalidatorSub container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param cdnInvalidatorSub.extraEnvVars Array with extra environment variables to add to cdnInvalidatorSub nodes
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param cdnInvalidatorSub.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for cdnInvalidatorSub nodes
+  ##
+  extraEnvVarsCM: ""
+  ## @param cdnInvalidatorSub.extraEnvVarsSecret Name of existing Secret containing extra env vars for cdnInvalidatorSub nodes
+  ##
+  extraEnvVarsSecret: ""
+  ## @param cdnInvalidatorSub.extraVolumes Optionally specify extra list of additional volumes for the cdnInvalidatorSub pod(s)
+  ##
+  extraVolumes: []
+  ## @param cdnInvalidatorSub.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the cdnInvalidatorSub container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param cdnInvalidatorSub.sidecars Add additional sidecar containers to the cdnInvalidatorSub pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param cdnInvalidatorSub.initContainers Add additional init containers to the cdnInvalidatorSub pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section cdnInvalidatorSub Service Parameters
+  ##
+  ##
+  service:
+    ## @param cdnInvalidatorSub.service.type cdnInvalidatorSub service type
+    ##
+    type: LoadBalancer
+    ## @param cdnInvalidatorSub.service.ports.http cdnInvalidatorSub service HTTP port
+    ## @param cdnInvalidatorSub.service.ports.https cdnInvalidatorSub service HTTPS port
+    ##
+    ports:
+      http: 3000
+    ## Node ports to expose
+    ## @param cdnInvalidatorSub.service.nodePorts.http Node port for HTTP
+    ## @param cdnInvalidatorSub.service.nodePorts.https Node port for HTTPS
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+      https: ""
+    ## @param cdnInvalidatorSub.service.clusterIP cdnInvalidatorSub service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param cdnInvalidatorSub.service.loadBalancerIP cdnInvalidatorSub service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param cdnInvalidatorSub.service.labelSelectorsOverride Selector for cdnInvalidatorSub service
+    ##
+    labelSelectorsOverride: {}
+    ## @param cdnInvalidatorSub.service.loadBalancerSourceRanges cdnInvalidatorSub service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param cdnInvalidatorSub.service.externalTrafficPolicy cdnInvalidatorSub service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param cdnInvalidatorSub.service.annotations Additional custom annotations for cdnInvalidatorSub service
+    ##
+    annotations: {}
+    ## @param cdnInvalidatorSub.service.extraPorts Extra ports to expose in cdnInvalidatorSub service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+  ## @section cdnInvalidatorSub ServiceAccount configuration
+  ##
+  serviceAccount:
+    ## @param cdnInvalidatorSub.serviceAccount.create Specifies whether a ServiceAccount should be created
+    ##
+    create: true
+    ## @param cdnInvalidatorSub.serviceAccount.name The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the common.names.fullname template
+    ##
+    name: ""
+    ## @param cdnInvalidatorSub.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
+    ##
+    automountServiceAccountToken: false
+
 ## @section workspace-api Deployment Parameters
 ##
 workspaceApi:
