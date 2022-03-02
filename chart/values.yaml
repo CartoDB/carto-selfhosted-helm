@@ -1861,7 +1861,6 @@ httpCache:
   ##
   replicaCount: 1
   ## @param http-cache.containerPorts.http http-cache HTTP container port
-  ## @param http-cache.containerPorts.https http-cache HTTPS container port
   ##
   containerPorts:
     http: 6081
@@ -2167,7 +2166,6 @@ cdnInvalidatorSub:
   ##
   replicaCount: 1
   ## @param cdnInvalidatorSub.containerPorts.http cdnInvalidatorSub HTTP container port
-  ## @param cdnInvalidatorSub.containerPorts.https cdnInvalidatorSub HTTPS container port
   ##
   containerPorts:
     http: 8080

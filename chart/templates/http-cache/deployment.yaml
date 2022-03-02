@@ -72,7 +72,7 @@ spec:
         {{- end }}
       {{- end }}
       containers:
-        - name: httpCache
+        - name: http-cache
           image: "{{ .Values.httpCache.image.name }}:{{- include "carto.httpCache.tag" . -}}"
           imagePullPolicy: {{ .Values.httpCache.image.pullPolicy }}
           {{- if .Values.httpCache.containerSecurityContext.enabled }}
@@ -96,7 +96,7 @@ spec:
             - |
               set -a
               . /secret/.secret.env
-              /entrypoint.sh"
+              /entrypoint.sh
           {{- end }}
           env:
             {{- if .Values.httpCache.extraEnvVars }}
@@ -121,8 +121,6 @@ spec:
           ports:
             - name: http
               containerPort: {{ .Values.httpCache.containerPorts.http }}
-            - name: https
-              containerPort: {{ .Values.httpCache.containerPorts.https }}
           {{- if not .Values.diagnosticMode.enabled }}
           {{- if .Values.httpCache.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.httpCache.livenessProbe "enabled") "context" $) | nindent 12 }}

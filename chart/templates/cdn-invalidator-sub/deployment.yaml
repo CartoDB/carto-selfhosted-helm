@@ -72,7 +72,7 @@ spec:
         {{- end }}
       {{- end }}
       containers:
-        - name: cdnInvalidatorSub
+        - name: cdn-invalidator-sub
           image: "{{ .Values.cdnInvalidatorSub.image.name }}:{{- include "carto.cdnInvalidatorSub.tag" . -}}"
           imagePullPolicy: {{ .Values.cdnInvalidatorSub.image.pullPolicy }}
           {{- if .Values.cdnInvalidatorSub.containerSecurityContext.enabled }}
@@ -121,8 +121,6 @@ spec:
           ports:
             - name: http
               containerPort: {{ .Values.cdnInvalidatorSub.containerPorts.http }}
-            - name: https
-              containerPort: {{ .Values.cdnInvalidatorSub.containerPorts.https }}
           {{- if not .Values.diagnosticMode.enabled }}
           {{- if .Values.cdnInvalidatorSub.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.cdnInvalidatorSub.livenessProbe "enabled") "context" $) | nindent 12 }}
