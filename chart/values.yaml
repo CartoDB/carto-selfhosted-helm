@@ -8,7 +8,7 @@ cartoConfigValues:
   cartoAuth0ClientId: ""
   cartoAuth0CustomDomain: ""
   cartoSelfhostedDwLocation: ""
-  httpCacheEnabled: true
+  httpCacheEnabled: "true"
   importBucket: ""
   routerSslAutogenerate: ""
   selfHostedDomain: "carto3-selfhosted.lan"
@@ -1832,7 +1832,7 @@ router:
 
 ## @section http-cache Deployment Parameters
 ##
-http-cache:
+httpCache:
   ## http-cache image
   ## @param http-cache.image.registry http-cache image registry
   ## @param http-cache.image.repository http-cache image repository
