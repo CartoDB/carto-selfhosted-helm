@@ -47,5 +47,5 @@ spec:
     {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.service.labelSelectorsOverride "context" $) | nindent 4 }}
     {{- else }}
     {{- include "common.labels.matchLabels" . | nindent 4 }}
-    app.kubernetes.io/component: httpCache
+    app.kubernetes.io/component: http-cache
     {{- end }}

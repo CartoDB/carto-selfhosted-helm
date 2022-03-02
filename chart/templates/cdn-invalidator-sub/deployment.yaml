@@ -19,7 +19,7 @@ spec:
   {{- end }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
-      app.kubernetes.io/component: cdnInvalidatorSub
+      app.kubernetes.io/component: cdn-invalidator-sub
   template:
     metadata:
       annotations:
@@ -29,7 +29,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
-        app.kubernetes.io/component: cdnInvalidatorSub
+        app.kubernetes.io/component: cdn-invalidator-sub
         {{- if .Values.cdnInvalidatorSub.podLabels }}
         {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.podLabels "context" $) | nindent 8 }}
         {{- end }}
