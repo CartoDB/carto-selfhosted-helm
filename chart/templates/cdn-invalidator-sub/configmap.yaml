@@ -14,11 +14,10 @@ metadata:
 data:
   CDN_INVALIDATOR_BACKEND_ENGINE: "varnish"
   CDN_INVALIDATOR_OPERATION_MODE: "surrogate-key"
-  CDN_INVALIDATOR_SUBSCRIBER_SUBSCRIPTION: projects/${SELFHOSTED_GCP_PROJECT_ID}/subscriptions/event-bus-cdn-inval-sub
+  CDN_INVALIDATOR_SUBSCRIBER_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/event-bus-cdn-inval-sub"
   CDN_INVALIDATOR_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   CDN_INVALIDATOR_VARNISH_PURGE_BASE_URL: "http://http-cache:6081"
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   PUBSUB_MODE: "pull"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
-  SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
 {{- end }}
