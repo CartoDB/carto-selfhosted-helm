@@ -2,19 +2,20 @@
 ##
 
 cartoConfigValues:
-  selfHostedDomain: "carto3-selfhosted.lan"
-  selfHostedTenantId: ""
-  selfHostedGcpProjectId: ""
-  cartoAuth0ClientId: ""
-  cartoAuth0CustomDomain: ""
   cartoAccDomain: ""
   cartoAccGcpProjectId: ""
   cartoAccGcpProjectRegion: ""
+  cartoAuth0ClientId: ""
+  cartoAuth0CustomDomain: ""
   cartoSelfhostedDwLocation: ""
-  workspaceThumbnailsBucket: ""
-  workspaceImportsBucket: ""
+  httpCacheEnabled: true
   importBucket: ""
   routerSslAutogenerate: ""
+  selfHostedDomain: "carto3-selfhosted.lan"
+  selfHostedGcpProjectId: ""
+  selfHostedTenantId: ""
+  workspaceImportsBucket: ""
+  workspaceThumbnailsBucket: ""
 
 cartoSecrets:
   googleMapsApiKey: ""
