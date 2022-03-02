@@ -1,4 +1,4 @@
-{{- if (include "carto.baseUrl" .) }}
+{{- if and (include "carto.baseUrl" .) (eq .Values.cartoConfigValues.httpCacheEnabled true)}}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
