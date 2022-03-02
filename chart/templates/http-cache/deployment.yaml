@@ -150,9 +150,6 @@ spec:
           volumeMounts:
             - name: secret-env
               mountPath: /secret
-            - name: google-secret
-              mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
-              subPath: {{ template "carto.google.secretKey" . }}
           {{- if .Values.httpCache.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -163,12 +160,6 @@ spec:
         - name: secret-env
           secret:
             secretName: {{ include "carto.httpCache.secretName" . }}
-        - name: tls-secret
-          secret:
-            secretName: {{ include "carto.tlsCerts.secretName" . }}
-        - name: google-secret
-          secret:
-            secretName: {{ include "carto.google.secretName" . }}
         {{- if .Values.httpCache.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
