@@ -96,8 +96,7 @@ spec:
             - |
               set -a
               . /secret/.secret.env
-              ROUTER_RESOLVER="$(grep nameserver /etc/resolv.conf  | awk '{print $2}')"
-              /docker-entrypoint.sh nginx -g "daemon off;"
+              npm run start
           {{- end }}
           env:
             {{- if .Values.cdnInvalidatorSub.extraEnvVars }}
