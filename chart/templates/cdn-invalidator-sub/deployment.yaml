@@ -23,8 +23,8 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/cdnInvalidatorSub/configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/cdnInvalidatorSub/secret.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/cdn-invalidator-sub/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/cdn-invalidator-sub/secret.yaml") . | sha256sum }}
         {{- if .Values.cdnInvalidatorSub.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.podAnnotations "context" $) | nindent 8 }}
         {{- end }}

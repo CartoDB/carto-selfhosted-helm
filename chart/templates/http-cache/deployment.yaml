@@ -23,8 +23,8 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/httpCache/configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/httpCache/secret.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/http-cache/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/http-cache/secret.yaml") . | sha256sum }}
         {{- if .Values.httpCache.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
