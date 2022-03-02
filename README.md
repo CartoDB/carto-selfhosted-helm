@@ -51,7 +51,7 @@ carto3-selfhosted-charts/carto	0.0.1        	2022.02.10 	CARTO is the world's le
 
 - Install Carto SelfHosted
 ```bash
-helm install carto3-selfhosted-v1 . -f carto-values.yaml -f carto-secrets.yaml
+helm install carto-selfhosted-v1 carto3-selfhosted-charts/carto -f carto-values.yaml -f carto-secrets.yaml
 ```
 
 - Add the Load Balancer IP to your DNS with your Domain:
