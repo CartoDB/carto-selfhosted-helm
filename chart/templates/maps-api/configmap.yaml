@@ -27,12 +27,18 @@ data:
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   DO_ENABLED: "false"
+  EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
+  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
+  GOOGLE_APPLICATION_CREDENTIALS: "../certs/key.json"
   LOG_LEVEL: "debug"
   MAPS_API_V3_PORT: "{{ .Values.mapsApi.containerPorts.http }}"
   MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: {{ .Values.cartoConfigValues.selfHostedDomain | quote }}
   MAPS_API_V3_RESOURCE_URL_HOST: {{ .Values.cartoConfigValues.selfHostedDomain | quote }}
   MAPS_API_V3_RESOURCE_URL_TEMPLATE_NEW: 'https://${host}/api/${path}'
   MAPS_API_V3_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE: "projects/{project_id}/topics/data-updates"
+  PUBSUB_MODE: "pull"
+  PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   REDIS_CACHE_PREFIX: "onprem"
   REDIS_HOST: {{ include "carto.redis.host" . }}
   REDIS_PORT: {{ include "carto.redis.port" . }}
@@ -40,11 +46,16 @@ data:
   SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   SELFHOSTED_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   WORKSPACE_IMPORTS_BUCKET: {{ .Values.cartoConfigValues.workspaceImportsBucket | quote }}
+  WORKSPACE_PORT: "{{ .Values.workspaceApi.containerPorts.http }}"
+  WORKSPACE_PORT: {{ .Values.workspaceApi.containerPorts.http  | quote }}
+
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
   WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . }}
   WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . }}
   WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/data-updates-workspace-sub"
   WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/data-updates"
+  WORKSPACE_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+
   WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.cartoConfigValues.workspaceThumbnailsBucket | quote }}
 {{- end }}
