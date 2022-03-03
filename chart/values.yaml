@@ -2082,7 +2082,7 @@ httpCache:
     ## @param http-cache.service.ports.https http-cache service HTTPS port
     ##
     ports:
-      http: 6081
+      http: 80
     ## Node ports to expose
     ## @param http-cache.service.nodePorts.http Node port for HTTP
     ## @param http-cache.service.nodePorts.https Node port for HTTPS
@@ -2385,7 +2385,7 @@ cdnInvalidatorSub:
     ## @param cdnInvalidatorSub.service.ports.https cdnInvalidatorSub service HTTPS port
     ##
     ports:
-      http: 3000
+      http: 80
     ## Node ports to expose
     ## @param cdnInvalidatorSub.service.nodePorts.http Node port for HTTP
     ## @param cdnInvalidatorSub.service.nodePorts.https Node port for HTTPS
