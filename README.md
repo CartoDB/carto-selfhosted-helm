@@ -54,12 +54,17 @@ carto3-selfhosted-charts/carto	0.0.1        	2022.02.10 	CARTO is the world's le
 helm install carto-selfhosted-v1 carto3-selfhosted-charts/carto -f carto-values.yaml -f carto-secrets.yaml
 ```
 
-- Add the Load Balancer IP to your DNS with your Domain:
+- Add the Kubernetes Load Balancer IP to your DNS with your Domain:
 
-```bash
-kubectl get svc <carto3-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.ip}'
-```
-
+  In GKE:
+  ```bash
+  kubectl get svc <carto3-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.ip}'
+  ```
+  
+  In EKS:
+  ```bash
+  nslookup $(kubectl get svc <carto3-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.hostname}')
+  ```
 
 ## Before you begin
 
