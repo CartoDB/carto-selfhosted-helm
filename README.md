@@ -4,7 +4,7 @@ This repository contains the Helm chart files for Carto 3, ready to launch on Ku
 
 ## Deploy CARTO in a self hosted environment
 
-- Create new SelfHosted environment in https://github.com/CartoDB/carto3-onprem-customers
+- Create new SelfHosted environment in [carto3-onprem-customers](https://github.com/CartoDB/carto3-onprem-customers)
 
 - Download customer package files, they will be placed in the package folder
 
@@ -17,7 +17,7 @@ This repository contains the Helm chart files for Carto 3, ready to launch on Ku
 kubectl apply -f k8s-google-serviceaccount-secret.yaml --namespace=<namespace>
 ```
 
-- Install helm plugin https://github.com/hayorov/helm-gcs to authenticate with Google
+- Install helm plugin [helm-gcs](https://github.com/hayorov/helm-gcs) to authenticate with Google
 
 ```bash
 helm plugin install https://github.com/hayorov/helm-gcs
@@ -51,7 +51,7 @@ carto3-selfhosted-charts/carto	0.0.1        	2022.02.10 	CARTO is the world's le
 
 - Install Carto SelfHosted
 ```bash
-helm install carto3-selfhosted-v1 . -f carto-values.yaml -f carto-secrets.yaml
+helm install carto-selfhosted-v1 carto3-selfhosted-charts/carto -f carto-values.yaml -f carto-secrets.yaml
 ```
 
 - Add the Load Balancer IP to your DNS with your Domain:
