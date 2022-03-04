@@ -457,6 +457,100 @@ Create the name of the service account to use for the router deployment
 {{- end -}}
 
 {{/*
+Return the proper Carto http-cache full name
+*/}}
+{{- define "carto.httpCache.fullname" -}}
+{{- printf "%s-http-cache" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper tag name for httpCache image
+*/}}
+{{- define "carto.httpCache.tag" -}}
+{{- default .Chart.AppVersion .Values.httpCache.image.tag -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto http-cache ConfigMap name
+*/}}
+{{- define "carto.httpCache.configmapName" -}}
+{{- if .Values.httpCache.existingConfigMap -}}
+{{- .Values.httpCache.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.httpCache.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto http-cache Secret name
+*/}}
+{{- define "carto.httpCache.secretName" -}}
+{{- if .Values.httpCache.existingSecret -}}
+{{- .Values.httpCache.existingSecret -}}
+{{- else -}}
+{{- include "carto.httpCache.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the http-cache deployment
+*/}}
+{{- define "carto.httpCache.serviceAccountName" -}}
+{{- if .Values.httpCache.serviceAccount.create -}}
+{{ default (include "carto.httpCache.fullname" .) .Values.httpCache.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.httpCache.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto cdn-invalidator-sub full name
+*/}}
+{{- define "carto.cdnInvalidatorSub.fullname" -}}
+{{- printf "%s-cdn-invalidator-sub" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper tag name for cdnInvalidatorSub image
+*/}}
+{{- define "carto.cdnInvalidatorSub.tag" -}}
+{{- default .Chart.AppVersion .Values.cdnInvalidatorSub.image.tag -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto cdn-invalidator-sub ConfigMap name
+*/}}
+{{- define "carto.cdnInvalidatorSub.configmapName" -}}
+{{- if .Values.cdnInvalidatorSub.existingConfigMap -}}
+{{- .Values.cdnInvalidatorSub.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.cdnInvalidatorSub.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto cdn-invalidator-sub Secret name
+*/}}
+{{- define "carto.cdnInvalidatorSub.secretName" -}}
+{{- if .Values.cdnInvalidatorSub.existingSecret -}}
+{{- .Values.cdnInvalidatorSub.existingSecret -}}
+{{- else -}}
+{{- include "carto.cdnInvalidatorSub.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the cdn-invalidator-sub deployment
+*/}}
+{{- define "carto.cdnInvalidatorSub.serviceAccountName" -}}
+{{- if .Values.cdnInvalidatorSub.serviceAccount.create -}}
+{{ default (include "carto.cdnInvalidatorSub.fullname" .) .Values.cdnInvalidatorSub.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.cdnInvalidatorSub.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper tag name for workspaceMigrations image
 */}}
 {{- define "carto.workspaceMigrations.tag" -}}
@@ -467,7 +561,7 @@ Return the proper tag name for workspaceMigrations image
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.pullSecrets" (dict "images" (dict .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image) "global" .Values.global) -}}
+{{- include "common.images.pullSecrets" (dict "images" (dict .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image) "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
