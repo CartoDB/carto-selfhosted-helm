@@ -39,14 +39,14 @@ helm repo add carto3-selfhosted-charts gs://carto3-selfhosted-helm-charts-reposi
 
 ```bash
 helm repo list
-NAME                    	URL                                          
-bitnami                 	https://charts.bitnami.com/bitnami           
-carto3-selfhosted-charts	gs://carto3-selfhosted-helm-charts-repository
+NAME                     URL                                          
+bitnami                  https://charts.bitnami.com/bitnami           
+carto3-selfhosted-charts gs://carto3-selfhosted-helm-charts-repository
 
 helm search repo carto3-selfhosted-charts -l
-NAME                          	CHART VERSION	APP VERSION	DESCRIPTION                                       
-carto3-selfhosted-charts/carto	1.3.14       	2022.02.10 	CARTO is the world's leading Location Intellige...
-carto3-selfhosted-charts/carto	0.0.1        	2022.02.10 	CARTO is the world's leading Location Intellige...
+NAME                             CHART VERSION   APP   VERSION   DESCRIPTION                                       
+carto3-selfhosted-charts/carto   1.3.14          2022.02.10   CARTO is the world's leading Location Intellige...
+carto3-selfhosted-charts/carto   0.0.1         2022.02.10   CARTO is the world's leading Location Intellige...
 ```
 
 - Install Carto SelfHosted
