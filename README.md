@@ -49,6 +49,11 @@ carto3-selfhosted-charts/carto   1.3.14          2022.02.10   CARTO is the world
 carto3-selfhosted-charts/carto   0.0.1           2022.02.10   CARTO is the world's leading Location Intellige...
 ```
 
+- Update repo if you have new chart versions
+```bash
+helm repo update
+```
+
 - Install Carto SelfHosted
 ```bash
 helm install carto-selfhosted-v1 carto3-selfhosted-charts/carto -f carto-values.yaml -f carto-secrets.yaml
