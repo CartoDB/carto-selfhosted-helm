@@ -17,18 +17,6 @@ This repository contains the Helm chart files for Carto 3, ready to launch on Ku
 kubectl apply -f k8s-google-serviceaccount-secret.yaml --namespace=<namespace>
 ```
 
-- Install helm plugin [helm-gcs](https://github.com/hayorov/helm-gcs) to authenticate with Google
-
-```bash
-helm plugin install https://github.com/hayorov/helm-gcs
-```
-
-- Auth to Google:
-
-```bash
-gcloud auth login
-```
-
 - Add Carto repository to helm:
 
 ```bash
