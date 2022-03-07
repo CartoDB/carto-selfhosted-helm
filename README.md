@@ -20,21 +20,22 @@ kubectl apply -f k8s-google-serviceaccount-secret.yaml --namespace=<namespace>
 - Add Carto repository to helm:
 
 ```bash
-helm repo add carto3-selfhosted-charts https://carto3-selfhosted-helm-charts-repository.storage.googleapis.com
+helm repo add carto-selfhosted-charts https://carto-selfhosted-charts.storage.googleapis.com
 ```
 
 - Check the repositories:
 
 ```bash
 helm repo list
-NAME                     URL                                          
-bitnami                  https://charts.bitnami.com/bitnami           
-carto3-selfhosted-charts https://carto3-selfhosted-helm-charts-repository.storage.googleapis.com
+NAME                   	URL                                                   
+carto-selfhosted-charts	https://carto-selfhosted-charts.storage.googleapis.com
 
-helm search repo carto3-selfhosted-charts -l
-NAME                             CHART VERSION   APP   VERSION   DESCRIPTION                                       
-carto3-selfhosted-charts/carto   1.3.14          2022.02.10   CARTO is the world's leading Location Intellige...
-carto3-selfhosted-charts/carto   0.0.1           2022.02.10   CARTO is the world's leading Location Intellige...
+helm search repo carto-selfhosted-charts -l
+NAME                         	CHART VERSION	APP VERSION  	DESCRIPTION                                       
+carto-selfhosted-charts/carto	1.6.6        	2022.03.07.03	CARTO is the world's leading Location Intellige...
+carto-selfhosted-charts/carto	1.5.5        	2022.03.04.06	CARTO is the world's leading Location Intellige...
+carto-selfhosted-charts/carto	1.3.14       	2022.02.10   	CARTO is the world's leading Location Intellige...
+carto-selfhosted-charts/carto	0.0.1        	2022.02.10   	CARTO is the world's leading Location Intellige...
 ```
 
 - Update repository if you have new chart versions
@@ -44,19 +45,19 @@ helm repo update
 
 - Install Carto SelfHosted
 ```bash
-helm install carto-selfhosted-v1 carto3-selfhosted-charts/carto -f carto-values.yaml -f carto-secrets.yaml
+helm install carto-selfhosted-v1 carto-selfhosted-charts/carto -f carto-values.yaml -f carto-secrets.yaml
 ```
 
 - Add the Kubernetes Load Balancer IP to your DNS with your Domain:
 
   In GKE:
   ```bash
-  kubectl get svc <carto3-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.ip}'
+  kubectl get svc <carto-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.ip}'
   ```
   
   In EKS:
   ```bash
-  nslookup $(kubectl get svc <carto3-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.hostname}')
+  nslookup $(kubectl get svc <carto-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.hostname}')
   ```
 
 ## Before you begin
