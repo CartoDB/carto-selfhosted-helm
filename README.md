@@ -20,7 +20,7 @@ kubectl apply -f k8s-google-serviceaccount-secret.yaml --namespace=<namespace>
 - Add Carto repository to helm:
 
 ```bash
-helm repo add carto3-selfhosted-charts gs://carto3-selfhosted-helm-charts-repository
+helm repo add carto3-selfhosted-charts https://carto3-selfhosted-helm-charts-repository.storage.googleapis.com
 ```
 
 - Check the repositories:
@@ -29,7 +29,7 @@ helm repo add carto3-selfhosted-charts gs://carto3-selfhosted-helm-charts-reposi
 helm repo list
 NAME                     URL                                          
 bitnami                  https://charts.bitnami.com/bitnami           
-carto3-selfhosted-charts gs://carto3-selfhosted-helm-charts-repository
+carto3-selfhosted-charts https://carto3-selfhosted-helm-charts-repository.storage.googleapis.com
 
 helm search repo carto3-selfhosted-charts -l
 NAME                             CHART VERSION   APP   VERSION   DESCRIPTION                                       
