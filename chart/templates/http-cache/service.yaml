@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "carto.httpCache.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: http-cache
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.httpCache.service.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.service.annotations "context" $) | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.httpCache.service.type }}
+  {{- if and .Values.httpCache.service.clusterIP (eq .Values.httpCache.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.httpCache.service.clusterIP }}
+  {{- end }}
+  {{- if and .Values.httpCache.service.externalTrafficPolicy (ne .Values.httpCache.service.type "ClusterIP") }}
+  externalTrafficPolicy: {{ .Values.httpCache.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- if and .Values.httpCache.service.loadBalancerIP (eq .Values.httpCache.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.httpCache.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq .Values.httpCache.service.type "LoadBalancer") .Values.httpCache.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml .Values.httpCache.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.httpCache.service.ports.http }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if and (or (eq .Values.httpCache.service.type "NodePort") (eq .Values.httpCache.service.type "LoadBalancer")) .Values.httpCache.service.nodePorts.http }}
+      nodePort: {{ .Values.httpCache.service.nodePorts.http }}
+      {{- else if eq .Values.httpCache.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- if .Values.httpCache.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  selector:
+    {{- if .Values.httpCache.service.labelSelectorsOverride }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- else }}
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: http-cache
+    {{- end }}

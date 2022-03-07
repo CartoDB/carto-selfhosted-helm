@@ -1,0 +1,181 @@
+{{- if and (include "carto.baseUrl" .) (eq .Values.cartoConfigValues.httpCacheEnabled "true") }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.cdnInvalidatorSub.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: cdn-invalidator-sub
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.cdnInvalidatorSub.replicaCount }}
+  {{- if .Values.cdnInvalidatorSub.updateStrategy }}
+  strategy: {{- toYaml .Values.cdnInvalidatorSub.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: cdn-invalidator-sub
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/cdn-invalidator-sub/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/cdn-invalidator-sub/secret.yaml") . | sha256sum }}
+        {{- if .Values.cdnInvalidatorSub.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: cdn-invalidator-sub
+        {{- if .Values.cdnInvalidatorSub.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.cdnInvalidatorSub.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.cdnInvalidatorSub.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.cdnInvalidatorSub.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.cdnInvalidatorSub.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.cdnInvalidatorSub.podAffinityPreset "component" "cdnInvalidatorSub" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.cdnInvalidatorSub.podAntiAffinityPreset "component" "cdnInvalidatorSub" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.cdnInvalidatorSub.nodeAffinityPreset.type "key" .Values.cdnInvalidatorSub.nodeAffinityPreset.key "values" .Values.cdnInvalidatorSub.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.cdnInvalidatorSub.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.cdnInvalidatorSub.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.cdnInvalidatorSub.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.cdnInvalidatorSub.priorityClassName }}
+      priorityClassName: {{ .Values.cdnInvalidatorSub.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.cdnInvalidatorSub.schedulerName }}
+      schedulerName: {{ .Values.cdnInvalidatorSub.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.cdnInvalidatorSub.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.cdnInvalidatorSub.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if not .Values.diagnosticMode.enabled }}
+      initContainers:
+        {{- if .Values.postgresql.enabled }}
+        {{ include "carto.postgresql-init-container" (dict "context" $) | nindent 8 }}
+        {{- end }}
+        {{- if .Values.cdnInvalidatorSub.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: cdn-invalidator-sub
+          image: "{{ .Values.cdnInvalidatorSub.image.name }}:{{- include "carto.cdnInvalidatorSub.tag" . -}}"
+          imagePullPolicy: {{ .Values.cdnInvalidatorSub.image.pullPolicy }}
+          {{- if .Values.cdnInvalidatorSub.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.cdnInvalidatorSub.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.cdnInvalidatorSub.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.cdnInvalidatorSub.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.args "context" $) | nindent 12 }}
+          {{ else }}
+          args:
+            - -ec
+            - |
+              set -a
+              . /secret/.secret.env
+              npm run start
+          {{- end }}
+          env:
+            - name: WORKSPACE_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ include "carto.postgresql.secret.key" . }}
+
+            {{- if .Values.cdnInvalidatorSub.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            {{- if not .Values.cdnInvalidatorSub.existingConfigMap }}
+            - configMapRef:
+                name: {{ template "carto.cdnInvalidatorSub.fullname" . }}
+            {{- end }}
+            {{- if .Values.cdnInvalidatorSub.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.cdnInvalidatorSub.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.cdnInvalidatorSub.resources }}
+          resources: {{- toYaml .Values.cdnInvalidatorSub.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.cdnInvalidatorSub.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.cdnInvalidatorSub.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.cdnInvalidatorSub.livenessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /
+              port: http
+          {{- else if .Values.cdnInvalidatorSub.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.cdnInvalidatorSub.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.cdnInvalidatorSub.readinessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /
+              port: http
+          {{- else if .Values.cdnInvalidatorSub.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.cdnInvalidatorSub.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.cdnInvalidatorSub.startupProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /
+              port: http
+          {{- else if .Values.cdnInvalidatorSub.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.cdnInvalidatorSub.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: secret-env
+              mountPath: /secret
+            - name: google-secret
+              mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
+              subPath: {{ template "carto.google.secretKey" . }}
+          {{- if .Values.cdnInvalidatorSub.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.cdnInvalidatorSub.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.cdnInvalidatorSub.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: secret-env
+          secret:
+            secretName: {{ include "carto.cdnInvalidatorSub.secretName" . }}
+        - name: google-secret
+          secret:
+            secretName: {{ include "carto.google.secretName" . }}
+        {{- if .Values.cdnInvalidatorSub.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+{{- end }}

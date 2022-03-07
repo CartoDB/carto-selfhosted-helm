@@ -13,7 +13,11 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
+  {{- if .Values.cartoConfigValues.selfHostedTenantId }}
   replicas: {{ .Values.workspaceSubscriber.replicaCount }}
+  {{- else }}
+  replicas: 0
+  {{- end }}
   {{- if .Values.workspaceSubscriber.updateStrategy }}
   strategy: {{- toYaml .Values.workspaceSubscriber.updateStrategy | nindent 4 }}
   {{- end }}
@@ -73,7 +77,7 @@ spec:
       {{- end }}
       containers:
         - name: workspace-subscriber
-          image: {{ template "carto.workspaceSubscriber.image" . }}
+          image: "{{ .Values.workspaceSubscriber.image.name }}:{{- include "carto.workspaceSubscriber.tag" . -}}"
           imagePullPolicy: {{ .Values.workspaceSubscriber.image.pullPolicy }}
           {{- if .Values.workspaceSubscriber.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.workspaceSubscriber.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -95,7 +99,6 @@ spec:
             - -ec
             - |
               set -a
-              . /config/.env
               . /secret/.secret.env
               npm run start:built:subscriber
           {{- end }}
@@ -109,6 +112,10 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
+            {{- if not .Values.workspaceSubscriber.existingConfigMap }}
+            - configMapRef:
+                name: {{ template "carto.workspaceSubscriber.fullname" . }}
+            {{- end }}
             {{- if .Values.workspaceSubscriber.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVarsCM "context" $) }}
@@ -135,8 +142,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: config-env
-              mountPath: /config
             - name: secret-env
               mountPath: /secret
             - name: google-secret
@@ -149,9 +154,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceSubscriber.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: config-env
-          configMap:
-            name: {{ include "carto.workspaceSubscriber.configmapName" . }}
         - name: secret-env
           secret:
             secretName: {{ include "carto.workspaceSubscriber.secretName" . }}

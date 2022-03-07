@@ -30,14 +30,7 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
   {{- $defaultUrl = printf "%s%s" $host $port -}}
 {{- end -}}
 
-{{- default $defaultUrl (printf "%s" .Values.onPremDomain) -}}
-{{- end -}}
-
-{{/*
-Return the proper Carto ldsApi image name
-*/}}
-{{- define "carto.ldsApi.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.ldsApi.image "global" .Values.global) -}}
+{{- default $defaultUrl (printf "%s" .Values.cartoConfigValues.selfHostedDomain) -}}
 {{- end -}}
 
 {{/*
@@ -45,6 +38,13 @@ Return the proper Carto lds-api full name
 */}}
 {{- define "carto.ldsApi.fullname" -}}
 {{- printf "%s-lds-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper tag name for ldsApi image
+*/}}
+{{- define "carto.ldsApi.tag" -}}
+{{- default .Chart.AppVersion .Values.ldsApi.image.tag -}}
 {{- end -}}
 
 {{/*
@@ -81,17 +81,17 @@ Create the name of the service account to use for the lds-api deployment
 {{- end -}}
 
 {{/*
-Return the proper Carto importWorker image name
-*/}}
-{{- define "carto.importWorker.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.importWorker.image "global" .Values.global) -}}
-{{- end -}}
-
-{{/*
 Return the proper Carto import-worker full name
 */}}
 {{- define "carto.importWorker.fullname" -}}
 {{- printf "%s-import-worker" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper tag name for importWorker image
+*/}}
+{{- define "carto.importWorker.tag" -}}
+{{- default .Chart.AppVersion .Values.importWorker.image.tag -}}
 {{- end -}}
 
 {{/*
@@ -128,17 +128,17 @@ Create the name of the service account to use for the import-worker deployment
 {{- end -}}
 
 {{/*
-Return the proper Carto importApi image name
-*/}}
-{{- define "carto.importApi.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.importApi.image "global" .Values.global) -}}
-{{- end -}}
-
-{{/*
 Return the proper Carto import-api full name
 */}}
 {{- define "carto.importApi.fullname" -}}
 {{- printf "%s-import-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper tag name for importApi image
+*/}}
+{{- define "carto.importApi.tag" -}}
+{{- default .Chart.AppVersion .Values.importApi.image.tag -}}
 {{- end -}}
 
 {{/*
@@ -175,17 +175,17 @@ Create the name of the service account to use for the import-api deployment
 {{- end -}}
 
 {{/*
-Return the proper Carto mapsApi image name
-*/}}
-{{- define "carto.mapsApi.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.mapsApi.image "global" .Values.global) -}}
-{{- end -}}
-
-{{/*
 Return the proper Carto maps-api full name
 */}}
 {{- define "carto.mapsApi.fullname" -}}
 {{- printf "%s-maps-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper tag name for mapsApi image
+*/}}
+{{- define "carto.mapsApi.tag" -}}
+{{- default .Chart.AppVersion .Values.mapsApi.image.tag -}}
 {{- end -}}
 
 {{/*
@@ -222,17 +222,17 @@ Create the name of the service account to use for the maps-api deployment
 {{- end -}}
 
 {{/*
-Return the proper Carto workspaceSubscriber image name
-*/}}
-{{- define "carto.workspaceSubscriber.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.workspaceSubscriber.image "global" .Values.global) -}}
-{{- end -}}
-
-{{/*
 Return the proper Carto workspace-subscriber full name
 */}}
 {{- define "carto.workspaceSubscriber.fullname" -}}
 {{- printf "%s-workspace-subscriber" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper tag name for workspaceSubscriber image
+*/}}
+{{- define "carto.workspaceSubscriber.tag" -}}
+{{- default .Chart.AppVersion .Values.workspaceSubscriber.image.tag -}}
 {{- end -}}
 
 {{/*
@@ -269,17 +269,17 @@ Create the name of the service account to use for the workspace-subscriber deplo
 {{- end -}}
 
 {{/*
-Return the proper Carto workspaceApi image name
-*/}}
-{{- define "carto.workspaceApi.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.workspaceApi.image "global" .Values.global) -}}
-{{- end -}}
-
-{{/*
 Return the proper Carto workspace-api full name
 */}}
 {{- define "carto.workspaceApi.fullname" -}}
 {{- printf "%s-workspace-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper tag name for workspaceApi image
+*/}}
+{{- define "carto.workspaceApi.tag" -}}
+{{- default .Chart.AppVersion .Values.workspaceApi.image.tag -}}
 {{- end -}}
 
 {{/*
@@ -316,17 +316,17 @@ Create the name of the service account to use for the workspace-api deployment
 {{- end -}}
 
 {{/*
-Return the proper Carto workspace-www image name
-*/}}
-{{- define "carto.workspaceWww.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.workspaceWww.image "global" .Values.global) -}}
-{{- end -}}
-
-{{/*
 Return the proper Carto workspace-www full name
 */}}
 {{- define "carto.workspaceWww.fullname" -}}
 {{- printf "%s-workspace-www" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper tag name for workspaceWww image
+*/}}
+{{- define "carto.workspaceWww.tag" -}}
+{{- default .Chart.AppVersion .Values.workspaceWww.image.tag -}}
 {{- end -}}
 
 {{/*
@@ -363,17 +363,17 @@ Create the name of the service account to use for the workspace-www deployment
 {{- end -}}
 
 {{/*
-Return the proper Carto accounts-www image name
-*/}}
-{{- define "carto.accountsWww.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.accountsWww.image "global" .Values.global) -}}
-{{- end -}}
-
-{{/*
 Return the proper Carto accounts-www full name
 */}}
 {{- define "carto.accountsWww.fullname" -}}
 {{- printf "%s-accounts-www" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper tag name for accountsWww image
+*/}}
+{{- define "carto.accountsWww.tag" -}}
+{{- default .Chart.AppVersion .Values.accountsWww.image.tag -}}
 {{- end -}}
 
 {{/*
@@ -410,17 +410,17 @@ Create the name of the service account to use for the accounts-www deployment
 {{- end -}}
 
 {{/*
-Return the proper Carto router image name
-*/}}
-{{- define "carto.router.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.router.image "global" .Values.global) -}}
-{{- end -}}
-
-{{/*
 Return the proper Carto router full name
 */}}
 {{- define "carto.router.fullname" -}}
 {{- printf "%s-router" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper tag name for router image
+*/}}
+{{- define "carto.router.tag" -}}
+{{- default .Chart.AppVersion .Values.router.image.tag -}}
 {{- end -}}
 
 {{/*
@@ -457,17 +457,111 @@ Create the name of the service account to use for the router deployment
 {{- end -}}
 
 {{/*
-Return the proper Carto workspace migrations image name
+Return the proper Carto http-cache full name
 */}}
-{{- define "carto.workspaceMigrations.image" -}}
-{{- include "common.images.image" (dict "imageRoot" .Values.workspaceMigrations.image "global" .Values.global) -}}
+{{- define "carto.httpCache.fullname" -}}
+{{- printf "%s-http-cache" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper tag name for httpCache image
+*/}}
+{{- define "carto.httpCache.tag" -}}
+{{- default .Chart.AppVersion .Values.httpCache.image.tag -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto http-cache ConfigMap name
+*/}}
+{{- define "carto.httpCache.configmapName" -}}
+{{- if .Values.httpCache.existingConfigMap -}}
+{{- .Values.httpCache.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.httpCache.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto http-cache Secret name
+*/}}
+{{- define "carto.httpCache.secretName" -}}
+{{- if .Values.httpCache.existingSecret -}}
+{{- .Values.httpCache.existingSecret -}}
+{{- else -}}
+{{- include "carto.httpCache.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the http-cache deployment
+*/}}
+{{- define "carto.httpCache.serviceAccountName" -}}
+{{- if .Values.httpCache.serviceAccount.create -}}
+{{ default (include "carto.httpCache.fullname" .) .Values.httpCache.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.httpCache.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto cdn-invalidator-sub full name
+*/}}
+{{- define "carto.cdnInvalidatorSub.fullname" -}}
+{{- printf "%s-cdn-invalidator-sub" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper tag name for cdnInvalidatorSub image
+*/}}
+{{- define "carto.cdnInvalidatorSub.tag" -}}
+{{- default .Chart.AppVersion .Values.cdnInvalidatorSub.image.tag -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto cdn-invalidator-sub ConfigMap name
+*/}}
+{{- define "carto.cdnInvalidatorSub.configmapName" -}}
+{{- if .Values.cdnInvalidatorSub.existingConfigMap -}}
+{{- .Values.cdnInvalidatorSub.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.cdnInvalidatorSub.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto cdn-invalidator-sub Secret name
+*/}}
+{{- define "carto.cdnInvalidatorSub.secretName" -}}
+{{- if .Values.cdnInvalidatorSub.existingSecret -}}
+{{- .Values.cdnInvalidatorSub.existingSecret -}}
+{{- else -}}
+{{- include "carto.cdnInvalidatorSub.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the cdn-invalidator-sub deployment
+*/}}
+{{- define "carto.cdnInvalidatorSub.serviceAccountName" -}}
+{{- if .Values.cdnInvalidatorSub.serviceAccount.create -}}
+{{ default (include "carto.cdnInvalidatorSub.fullname" .) .Values.cdnInvalidatorSub.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.cdnInvalidatorSub.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper tag name for workspaceMigrations image
+*/}}
+{{- define "carto.workspaceMigrations.tag" -}}
+{{- default .Chart.AppVersion .Values.workspaceMigrations.image.tag -}}
 {{- end -}}
 
 {{/*
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.pullSecrets" (dict "images" (dict .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image) "global" .Values.global) -}}
+{{- include "common.images.pullSecrets" (dict "images" (dict .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image) "global" .Values.global) -}}
 {{- end -}}
 
 {{/*

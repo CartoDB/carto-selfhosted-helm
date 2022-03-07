@@ -12,9 +12,16 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  .env: |
-    # Common configuration
-    {{- include "common.tplvalues.render" ( dict "value" .Values.commonConfiguration "context" $ ) | nindent 4 }}
-    # router configuration
-    {{- include "common.tplvalues.render" ( dict "value" .Values.router.configuration "context" $ ) | nindent 4 }}
+  HTTP_CACHE_ENABLED: {{ .Values.cartoConfigValues.httpCacheEnabled | quote }}
+  ROUTER_ACCOUNTS_WWW_INTERNAL_URL: {{ include "carto.accountsWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+  ROUTER_HTTP_CACHE_INTERNAL_URL: {{ include "carto.httpCache.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+  ROUTER_IMPORT_API_INTERNAL_URL: {{ include "carto.importApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+  ROUTER_LDS_API_INTERNAL_URL: {{ include "carto.ldsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+  ROUTER_MAPS_API_INTERNAL_URL: {{ include "carto.mapsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+  ROUTER_SSL_AUTOGENERATE: {{ .Values.cartoConfigValues.routerSslAutogenerate | quote }}
+  ROUTER_SSL_CERTIFICATE_KEY_PATH: /usr/src/certs/{{ template "carto.tlsCerts.secretKeyKey" . }}
+  ROUTER_SSL_CERTIFICATE_PATH: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
+  ROUTER_WORKSPACE_API_INTERNAL_URL: {{ include "carto.workspaceApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+  ROUTER_WORKSPACE_WWW_INTERNAL_URL: {{ include "carto.workspaceWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+  SELFHOSTED_DOMAIN: {{ .Values.cartoConfigValues.selfHostedDomain | quote }}
 {{- end }}

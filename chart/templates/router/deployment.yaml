@@ -73,7 +73,7 @@ spec:
       {{- end }}
       containers:
         - name: router
-          image: {{ template "carto.router.image" . }}
+          image: "{{ .Values.router.image.name }}:{{- include "carto.router.tag" . -}}"
           imagePullPolicy: {{ .Values.router.image.pullPolicy }}
           {{- if .Values.router.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.router.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -95,7 +95,6 @@ spec:
             - -ec
             - |
               set -a
-              . /config/.env
               . /secret/.secret.env
               ROUTER_RESOLVER="$(grep nameserver /etc/resolv.conf  | awk '{print $2}')"
               /docker-entrypoint.sh nginx -g "daemon off;"
@@ -105,6 +104,10 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.router.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
+            {{- if not .Values.router.existingConfigMap }}
+            - configMapRef:
+                name: {{ template "carto.router.fullname" . }}
+            {{- end }}
             {{- if .Values.router.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.router.extraEnvVarsCM "context" $) }}
@@ -148,8 +151,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.router.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: config-env
-              mountPath: /config
             - name: secret-env
               mountPath: /secret
             - name: google-secret
@@ -171,9 +172,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.router.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: config-env
-          configMap:
-            name: {{ include "carto.router.configmapName" . }}
         - name: secret-env
           secret:
             secretName: {{ include "carto.router.secretName" . }}

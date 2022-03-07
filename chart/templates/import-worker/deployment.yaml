@@ -13,7 +13,11 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
+  {{- if .Values.cartoConfigValues.selfHostedTenantId }}
   replicas: {{ .Values.importWorker.replicaCount }}
+  {{- else }}
+  replicas: 0
+  {{- end }}
   {{- if .Values.importWorker.updateStrategy }}
   strategy: {{- toYaml .Values.importWorker.updateStrategy | nindent 4 }}
   {{- end }}
@@ -73,7 +77,7 @@ spec:
       {{- end }}
       containers:
         - name: import-worker
-          image: {{ template "carto.importWorker.image" . }}
+          image: "{{ .Values.importWorker.image.name }}:{{- include "carto.importWorker.tag" . -}}"
           imagePullPolicy: {{ .Values.importWorker.image.pullPolicy }}
           {{- if .Values.importWorker.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.importWorker.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -95,7 +99,6 @@ spec:
             - -ec
             - |
               set -a
-              . /config/.env
               . /secret/.secret.env
               npm run start:built:subscriber
           {{- end }}
@@ -109,6 +112,10 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
+            {{- if not .Values.importWorker.existingConfigMap }}
+            - configMapRef:
+                name: {{ template "carto.importWorker.fullname" . }}
+            {{- end }}
             {{- if .Values.importWorker.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVarsCM "context" $) }}
@@ -135,8 +142,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: config-env
-              mountPath: /config
             - name: secret-env
               mountPath: /secret
             - name: google-secret
@@ -149,9 +154,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.importWorker.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: config-env
-          configMap:
-            name: {{ include "carto.importWorker.configmapName" . }}
         - name: secret-env
           secret:
             secretName: {{ include "carto.importWorker.secretName" . }}

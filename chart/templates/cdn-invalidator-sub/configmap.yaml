@@ -1,13 +1,13 @@
-{{- if not .Values.workspaceSubscriber.existingConfigMap }}
+{{- if not .Values.cdnInvalidatorSub.existingConfigMap }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "carto.workspaceSubscriber.fullname" . }}
+  name: {{ template "carto.cdnInvalidatorSub.fullname" . }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
-    app.kubernetes.io/component: workspace-subscriber
+    app.kubernetes.io/component: cdn-invalidator-sub
   {{- if .Values.commonAnnotations }}
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
@@ -19,13 +19,13 @@ data:
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
+
+  CDN_INVALIDATOR_BACKEND_ENGINE: "varnish"
+  CDN_INVALIDATOR_SUBSCRIBER_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/event-bus-cdn-inval-sub"
+  CDN_INVALIDATOR_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  CDN_INVALIDATOR_VARNISH_PURGE_BASE_URL: "http://{{ include "carto.httpCache.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
-  GOOGLE_APPLICATION_CREDENTIALS: "../certs/key.json"
-  IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-import-sub"
-  IMPORT_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
-  LOG_LEVEL: "debug"
-  PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE: "projects/{project_id}/topics/data-updates"
-  PUBSUB_MODE: "pull"
+  GOOGLE_APPLICATION_CREDENTIALS: "/usr/src/certs/key.json"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   SELFHOSTED_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
@@ -33,6 +33,4 @@ data:
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
   WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . }}
   WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . }}
-  WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/data-updates-workspace-sub"
-  WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/data-updates"
 {{- end }}

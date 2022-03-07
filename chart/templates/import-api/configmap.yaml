@@ -12,9 +12,38 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  .env: |
-    # Common configuration
-    {{- include "common.tplvalues.render" ( dict "value" .Values.commonConfiguration "context" $ ) | nindent 4 }}
-    # import-api configuration
-    {{- include "common.tplvalues.render" ( dict "value" .Values.importApi.configuration "context" $ ) | nindent 4 }}
+  ACC_DOMAIN: {{ .Values.cartoConfigValues.cartoAccDomain | quote }}
+  ACC_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
+  ACC_GCP_PROJECT_REGION: {{ .Values.cartoConfigValues.cartoAccGcpProjectRegion | quote }}
+  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
+  AUTH0_NAMESPACE: "http://app.carto.com"
+  CARTO3_SELFHOSTED_VOLUMES_BASE_PATH: "./"
+  CARTO_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
+  CARTO_AUTH0_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
+  CARTO_SELFHOSTED_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
+  CARTO_SELFHOSTED_CARTO_DW_LOCATION: {{ .Values.cartoConfigValues.cartoSelfhostedDwLocation | quote }}
+  CARTO_SELFHOSTED_DOMAIN: {{ .Values.cartoConfigValues.selfHostedDomain | quote }}
+  CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  IMPORT_BUCKET: {{ .Values.cartoConfigValues.importBucket | quote }}
+  IMPORT_PORT: {{ .Values.importApi.containerPorts.http | quote }}
+  IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-import-sub"
+  IMPORT_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
+  IMPORT_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  IMPORT_WORKER_PROCESSING_DIR: "/tmp/import-worker"
+  LOG_LEVEL: "debug"
+  GOOGLE_APPLICATION_CREDENTIALS: "../certs/key.json"
+  REDIS_CACHE_PREFIX: "onprem"
+  REDIS_HOST: {{ include "carto.redis.host" . }}
+  REDIS_PORT: {{ include "carto.redis.port" . }}
+  SELFHOSTED_DOMAIN: {{ .Values.cartoConfigValues.selfHostedDomain | quote }}
+  SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  SELFHOSTED_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  WORKSPACE_IMPORTS_BUCKET: {{ .Values.cartoConfigValues.workspaceImportsBucket | quote }}
+  WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
+  WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
+  WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . }}
+  WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . }}
+  WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.cartoConfigValues.workspaceThumbnailsBucket | quote }}
 {{- end }}

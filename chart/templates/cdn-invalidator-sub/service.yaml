@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "carto.cdnInvalidatorSub.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: cdn-invalidator-sub
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.cdnInvalidatorSub.service.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.service.annotations "context" $) | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.cdnInvalidatorSub.service.type }}
+  {{- if and .Values.cdnInvalidatorSub.service.clusterIP (eq .Values.cdnInvalidatorSub.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.cdnInvalidatorSub.service.clusterIP }}
+  {{- end }}
+  {{- if and .Values.cdnInvalidatorSub.service.externalTrafficPolicy (ne .Values.cdnInvalidatorSub.service.type "ClusterIP") }}
+  externalTrafficPolicy: {{ .Values.cdnInvalidatorSub.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- if and .Values.cdnInvalidatorSub.service.loadBalancerIP (eq .Values.cdnInvalidatorSub.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.cdnInvalidatorSub.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq .Values.cdnInvalidatorSub.service.type "LoadBalancer") .Values.cdnInvalidatorSub.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml .Values.cdnInvalidatorSub.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.cdnInvalidatorSub.service.ports.http }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if and (or (eq .Values.cdnInvalidatorSub.service.type "NodePort") (eq .Values.cdnInvalidatorSub.service.type "LoadBalancer")) .Values.cdnInvalidatorSub.service.nodePorts.http }}
+      nodePort: {{ .Values.cdnInvalidatorSub.service.nodePorts.http }}
+      {{- else if eq .Values.cdnInvalidatorSub.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+  selector:
+    {{- if .Values.cdnInvalidatorSub.service.labelSelectorsOverride }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- else }}
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: cdn-invalidator-sub
+    {{- end }}

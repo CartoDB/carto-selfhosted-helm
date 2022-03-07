@@ -70,7 +70,7 @@ spec:
       {{- end }}
       containers:
         - name: workspace-www
-          image: {{ template "carto.workspaceWww.image" . }}
+          image: "{{ .Values.workspaceWww.image.name }}:{{- include "carto.workspaceWww.tag" . -}}"
           imagePullPolicy: {{ .Values.workspaceWww.image.pullPolicy }}
           {{- if .Values.workspaceWww.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.workspaceWww.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -92,7 +92,6 @@ spec:
             - -ec
             - |
               set -a
-              . /config/.env
               . /secret/.secret.env
               /docker-entrypoint.sh nginx -g "daemon off;"
           {{- end }}
@@ -101,6 +100,10 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
+            {{- if not .Values.workspaceWww.existingConfigMap }}
+            - configMapRef:
+                name: {{ template "carto.workspaceWww.fullname" . }}
+            {{- end }}
             {{- if .Values.workspaceWww.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraEnvVarsCM "context" $) }}
@@ -145,8 +148,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: config-env
-              mountPath: /config
             - name: secret-env
               mountPath: /secret
             - name: google-secret
@@ -159,9 +160,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceWww.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: config-env
-          configMap:
-            name: {{ include "carto.workspaceWww.configmapName" . }}
         - name: secret-env
           secret:
             secretName: {{ include "carto.workspaceWww.secretName" . }}

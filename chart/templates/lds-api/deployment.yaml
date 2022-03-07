@@ -76,7 +76,7 @@ spec:
       {{- end }}
       containers:
         - name: lds-api
-          image: {{ template "carto.ldsApi.image" . }}
+          image: "{{ .Values.ldsApi.image.name }}:{{- include "carto.ldsApi.tag" . -}}"
           imagePullPolicy: {{ .Values.ldsApi.image.pullPolicy }}
           {{- if .Values.ldsApi.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.ldsApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}
@@ -98,7 +98,6 @@ spec:
             - -ec
             - |
               set -a
-              . /config/.env
               . /secret/.secret.env
               npm run start:built
           {{- end }}
@@ -117,6 +116,10 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
+            {{- if not .Values.ldsApi.existingConfigMap }}
+            - configMapRef:
+                name: {{ template "carto.ldsApi.fullname" . }}
+            {{- end }}
             {{- if .Values.ldsApi.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.ldsApi.extraEnvVarsCM "context" $) }}
@@ -161,8 +164,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: config-env
-              mountPath: /config
             - name: secret-env
               mountPath: /secret
             - name: google-secret
@@ -175,9 +176,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.ldsApi.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: config-env
-          configMap:
-            name: {{ include "carto.ldsApi.configmapName" . }}
         - name: secret-env
           secret:
             secretName: {{ include "carto.ldsApi.secretName" . }}
