@@ -35,7 +35,6 @@ NAME                          CHART VERSION APP VERSION   DESCRIPTION
 carto-selfhosted-charts/carto 1.6.6         2022.03.07.03 CARTO is the world's leading Location Intellige...
 carto-selfhosted-charts/carto 1.5.5         2022.03.04.06 CARTO is the world's leading Location Intellige...
 carto-selfhosted-charts/carto 1.3.14        2022.02.10    CARTO is the world's leading Location Intellige...
-carto-selfhosted-charts/carto 0.0.1         2022.02.10    CARTO is the world's leading Location Intellige...
 ```
 
 - Update repository if you have new chart versions
@@ -59,6 +58,42 @@ helm install carto-selfhosted-v1 carto-selfhosted-charts/carto -f carto-values.y
   ```bash
   nslookup $(kubectl get svc <carto-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.hostname}')
   ```
+
+- Custom Domain:
+  By default, the carto router deployment will create its own auto generate ssl certs, but if your want to install carto selfhosted with your custom domain and TLS certs, you have to do the following steps:
+  
+  - Change the `routerSslAutogenerate` value to `"1"` in `carto-values.yaml`
+
+  - Create a kubernetes secret with following content:
+    ```yaml
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: <tls-secret-name>
+    type: Opaque
+    data:
+      tls.key: "<base64 encoded key>"
+      tls.crt: "<base64 encoded certificate>"
+      ca.crt: "<base64 encoded public ca file>"
+    ```
+    Note that the content of certs should be formatted in base64 in one line, e.g: 
+    ```bash
+    cat certificate.crt | base64 -w0
+    ```
+  - Then create the object in kubernetes with `kubectl apply -f <secret-tls-file> -n <namespace>`
+
+  - Finally, you have to add the following lines to `carto-secrets.yaml`:
+    ```yaml
+    tlsCerts:
+      autoGenerate: false
+      existingSecret:
+        name: "<tls-secret-name>"
+        caKey: "ca.crt"
+        keyKey: "tls.key"
+        certKey: "tls.crt"
+    ```
+
+
 
 ## Before you begin
 
