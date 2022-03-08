@@ -69,7 +69,7 @@ helm install carto-selfhosted-v1 carto-selfhosted-charts/carto -f carto-values.y
     apiVersion: v1
     kind: Secret
     metadata:
-      name: <tls-secret-name>
+      name: <kubernetes-tls-secret-name>
     type: Opaque
     data:
       tls.key: "<base64 encoded key>"
@@ -87,7 +87,7 @@ helm install carto-selfhosted-v1 carto-selfhosted-charts/carto -f carto-values.y
     tlsCerts:
       autoGenerate: false
       existingSecret:
-        name: "<tls-secret-name>"
+        name: "<kubernetes-tls-secret-name>"
         caKey: "ca.crt"
         keyKey: "tls.key"
         certKey: "tls.crt"
