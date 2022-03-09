@@ -77,7 +77,7 @@ By default, the carto router deployment will create its own auto generate ssl ce
     tls.crt: "<base64 encoded certificate>"
     ca.crt: "<base64 encoded public ca file>"
   ```
-  Note that the content of certs should be formatted in base64 in one line, e.g: 
+  Note that the content of certs should be formatted in base64 in one line, e.g:
   ```bash
   cat certificate.crt | base64 -w0
   ```
