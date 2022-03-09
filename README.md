@@ -77,10 +77,10 @@ By default, the carto router deployment will create its own auto generate ssl ce
     tls.crt: "<base64 encoded certificate>"
     ca.crt: "<base64 encoded public ca file>"
   ```
-    Note that the content of certs should be formatted in base64 in one line, e.g: 
-    ```bash
-    cat certificate.crt | base64 -w0
-    ```
+  Note that the content of certs should be formatted in base64 in one line, e.g: 
+  ```bash
+  cat certificate.crt | base64 -w0
+  ```
 - Then create the object in kubernetes with `kubectl apply -f <secret-tls-file> -n <namespace>`
 
 - Finally, you have to add the following lines to `carto-secrets.yaml`:
