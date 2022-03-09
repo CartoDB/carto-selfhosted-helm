@@ -113,7 +113,7 @@ By default, Carto-Selfhosted is provisioned with a Postgresl statefulset kuberne
 
   ```
 
-- Add the secret reference in these lines, you can find this configuration inside `carto-secrets.yaml`:
+- Add the postgres IP/hostname and the secret reference in these lines, you can find this configuration inside `carto-secrets.yaml`:
 
   ```yaml
   externalDatabase:
@@ -122,7 +122,7 @@ By default, Carto-Selfhosted is provisioned with a Postgresl statefulset kuberne
     password: ""
     adminUser: postgres
     adminPassword: ""
-    existingSecret: "<kubernetes postgres secret name>"
+    existingSecret: "<kubernetes postgres created secret name>"
     existingSecretPasswordKey: "carto-password"
     existingSecretAdminPasswordKey: "admin-password"
     database: workspace_db
@@ -148,14 +148,14 @@ By default, Carto-Selfhosted is provisioned with a Redis statefulset kubernetes 
   kubectl create secret generic <my-external-redis-secret-name> --from-literal=password=<AUTH string password>
   ```
 
-- Add the secret reference in these lines, you can find this configuration inside `carto-secrets.yaml`:
+- Add the Redis IP/hostname and the secret reference in these lines, you can find this configuration inside `carto-secrets.yaml`:
 
   ```yaml
   externalRedis:
     host: <Redis IP/Hostname>
     port: 6379
     password: ""
-    existingSecret: "<kubernetes redis secret name>"
+    existingSecret: "<kubernetes redis created secret name>"
     existingSecretPasswordKey: "password"
   ```
 
