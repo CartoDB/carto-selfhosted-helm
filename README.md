@@ -95,6 +95,69 @@ By default, the carto router deployment will create its own auto generate ssl ce
   ```
 
 
+### External Postgres
+
+By default, Carto-Selfhosted is provisioned with a Postgresl statefulset kubernetes object, but you could connect this environment with your own Cloud Postgres instance, follow this steps to make it possible:
+
+- Add these lines in your `carto-values.yaml`, you can find it and uncomment inside the file:
+
+  ```yaml
+  postgresql:
+    enabled: false
+  ```
+
+- Create one secret in kubernetes with the Postgres passwords:
+
+  ```bash
+  kubectl create secret generic <my-external-postgres-secret-name> --from-literal=carto-password=<password> --from-literal=admin-password=<password>
+
+  ```
+
+- Add the secret reference in these lines, you can find this configuration inside `carto-secrets.yaml`:
+
+  ```yaml
+  externalDatabase:
+    host: <Postgres IP/Hostname>
+    user: carto
+    password: ""
+    adminUser: postgres
+    adminPassword: ""
+    existingSecret: "<kubernetes postgres secret name>"
+    existingSecretPasswordKey: "carto-password"
+    existingSecretAdminPasswordKey: "admin-password"
+    database: workspace_db
+    port: 5432
+  ```
+
+- Note: `carto` user and `workspace_db` database inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created. The `carto-password` indicated in the kubernetes secret created before is with which this user will be created
+
+### External Redis
+
+By default, Carto-Selfhosted is provisioned with a Redis statefulset kubernetes object, but you could connect this environment with your own Cloud Redis instance, follow this steps to make it possible:
+
+- Add these lines in your `carto-values.yaml`, you can find it and uncomment inside the file:
+
+  ```yaml
+  redis:
+    enabled: false
+  ```
+
+- Create one secret in kubernetes with the Redis AUTH string:
+
+  ```bash
+  kubectl create secret generic <my-external-redis-secret-name> --from-literal=password=<AUTH string password>
+  ```
+
+- Add the secret reference in these lines, you can find this configuration inside `carto-secrets.yaml`:
+
+  ```yaml
+  externalRedis:
+    host: <Redis IP/Hostname>
+    port: 6379
+    password: ""
+    existingSecret: "<kubernetes redis secret name>"
+    existingSecretPasswordKey: "password"
+  ```
 
 ## Before you begin
 
