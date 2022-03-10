@@ -98,8 +98,6 @@ spec:
           args:
             - -ec
             - |
-              set -a
-              . /secret/.secret.env
               npm run start:built:subscriber
           {{- end }}
           env:
@@ -124,6 +122,10 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVarsSecret "context" $) }}
             {{- end }}
+            {{- if not .Values.workspaceSubscriber.existingSecret }}
+            - secretRef:
+                name: {{ include "carto.workspaceSubscriber.secretName" . }}
+            {{- end }}
           {{- if .Values.workspaceSubscriber.resources }}
           resources: {{- toYaml .Values.workspaceSubscriber.resources | nindent 12 }}
           {{- end }}
@@ -142,8 +144,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: secret-env
-              mountPath: /secret
             - name: google-secret
               mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
               subPath: {{ template "carto.google.secretKey" . }}
@@ -154,9 +154,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceSubscriber.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: secret-env
-          secret:
-            secretName: {{ include "carto.workspaceSubscriber.secretName" . }}
         - name: google-secret
           secret:
             secretName: {{ include "carto.google.secretName" . }}

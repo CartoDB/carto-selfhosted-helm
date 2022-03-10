@@ -94,8 +94,6 @@ spec:
           args:
             - -ec
             - |
-              set -a
-              . /secret/.secret.env
               npm run start
           {{- end }}
           env:
@@ -120,6 +118,10 @@ spec:
             {{- if .Values.cdnInvalidatorSub.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+            {{- if not .Values.cdnInvalidatorSub.existingSecret }}
+            - secretRef:
+                name: {{ include "carto.cdnInvalidatorSub.secretName" . }}
             {{- end }}
           {{- if .Values.cdnInvalidatorSub.resources }}
           resources: {{- toYaml .Values.cdnInvalidatorSub.resources | nindent 12 }}
@@ -157,8 +159,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: secret-env
-              mountPath: /secret
             - name: google-secret
               mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
               subPath: {{ template "carto.google.secretKey" . }}
@@ -169,9 +169,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.cdnInvalidatorSub.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: secret-env
-          secret:
-            secretName: {{ include "carto.cdnInvalidatorSub.secretName" . }}
         - name: google-secret
           secret:
             secretName: {{ include "carto.google.secretName" . }}

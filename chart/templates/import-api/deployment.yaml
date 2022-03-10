@@ -97,8 +97,6 @@ spec:
           args:
             - -ec
             - |
-              set -a
-              . /secret/.secret.env
               npm run start:built
           {{- end }}
           env:
@@ -127,6 +125,10 @@ spec:
             {{- if .Values.importApi.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.importApi.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+            {{- if not .Values.importApi.existingSecret }}
+            - secretRef:
+                name: {{ include "carto.importApi.secretName" . }}
             {{- end }}
           {{- if .Values.importApi.resources }}
           resources: {{- toYaml .Values.importApi.resources | nindent 12 }}
@@ -164,8 +166,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: secret-env
-              mountPath: /secret
             - name: google-secret
               mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
               subPath: {{ template "carto.google.secretKey" . }}
@@ -176,9 +176,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.importApi.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: secret-env
-          secret:
-            secretName: {{ include "carto.importApi.secretName" . }}
         - name: google-secret
           secret:
             secretName: {{ include "carto.google.secretName" . }}

@@ -91,8 +91,6 @@ spec:
           args:
             - -ec
             - |
-              set -a
-              . /secret/.secret.env
               /docker-entrypoint.sh nginx -g "daemon off;"
           {{- end }}
           env:
@@ -111,6 +109,10 @@ spec:
             {{- if .Values.workspaceWww.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+            {{- if not .Values.workspaceWww.existingSecret }}
+            - secretRef:
+                name: {{ include "carto.workspaceWww.secretName" . }}
             {{- end }}
           {{- if .Values.workspaceWww.resources }}
           resources: {{- toYaml .Values.workspaceWww.resources | nindent 12 }}
@@ -148,8 +150,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: secret-env
-              mountPath: /secret
             - name: google-secret
               mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
               subPath: {{ template "carto.google.secretKey" . }}
@@ -160,9 +160,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceWww.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: secret-env
-          secret:
-            secretName: {{ include "carto.workspaceWww.secretName" . }}
         - name: google-secret
           secret:
             secretName: {{ include "carto.google.secretName" . }}
