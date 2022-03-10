@@ -98,8 +98,6 @@ spec:
           args:
             - -ec
             - |
-              set -a
-              . /secret/.secret.env
               npm run start:built:subscriber
           {{- end }}
           env:
@@ -123,6 +121,10 @@ spec:
             {{- if .Values.importWorker.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+            {{- if not .Values.importWorker.existingSecret }}
+            - secretRef:
+              name: {{ include "carto.importWorker.secretName" . }}
             {{- end }}
           {{- if .Values.importWorker.resources }}
           resources: {{- toYaml .Values.importWorker.resources | nindent 12 }}

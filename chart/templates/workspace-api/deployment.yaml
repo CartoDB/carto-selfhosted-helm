@@ -88,8 +88,6 @@ spec:
           args:
             - -ec
             - |
-              set -a
-              . /secret/.secret.env
               /usr/src/app/onprem-init-db.sh
           {{- end }}
           env:
@@ -109,6 +107,10 @@ spec:
             {{- if not .Values.workspaceApi.existingConfigMap }}
             - configMapRef:
                 name: {{ template "carto.workspaceApi.fullname" . }}
+            {{- end }}
+            {{- if not .Values.workspaceApi.existingSecret }}
+            - secretRef:
+              name: {{ include "carto.workspaceApi.secretName" . }}
             {{- end }}
           volumeMounts:
             - name: secret-env

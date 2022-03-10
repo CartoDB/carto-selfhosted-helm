@@ -57,7 +57,12 @@ data:
   WORKSPACE_THUMBNAILS_PUBLIC: {{ .Values.cartoConfigValues.workspaceThumbnailsPublic | quote }}
   WORKSPACE_THUMBNAILS_PROVIDER: {{ .Values.cartoConfigValues.storageProvider | quote }}
   WORKSPACE_IMPORTS_PROVIDER: {{ .Values.cartoConfigValues.storageProvider | quote }}
+  {{- if .Values.cartoConfigValues.storageProvider == 'gcp'}}
   WORKSPACE_THUMBNAILS_PROJECTID: {{ .Values.cartoConfigValues.gcsBucketsProjectId | quote }}
   WORKSPACE_IMPORTS_PROJECTID: {{ .Values.cartoConfigValues.gcsBucketsProjectId | quote }}
-  IMPORT_PROJECTID: {{ .Values.cartoConfigValues.gcsBucketsProjectId | quote }}
+  {{- end }}
+  {{- if .Values.cartoConfigValues.storageProvider == 's3'}}
+  WORKSPACE_THUMBNAILS_REGION: {{ .Values.cartoConfigValues.awsS3Region | quote }}
+  WORKSPACE_IMPORTS_REGION: {{ .Values.cartoConfigValues.awsS3Region | quote }}
+  {{- end }}
 {{- end }}
