@@ -124,7 +124,7 @@ spec:
             {{- end }}
             {{- if not .Values.importWorker.existingSecret }}
             - secretRef:
-              name: {{ include "carto.importWorker.secretName" . }}
+                name: {{ include "carto.importWorker.secretName" . }}
             {{- end }}
           {{- if .Values.importWorker.resources }}
           resources: {{- toYaml .Values.importWorker.resources | nindent 12 }}

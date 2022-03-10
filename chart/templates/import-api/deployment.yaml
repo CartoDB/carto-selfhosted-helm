@@ -128,7 +128,7 @@ spec:
             {{- end }}
             {{- if not .Values.importApi.existingSecret }}
             - secretRef:
-              name: {{ include "carto.importApi.secretName" . }}
+                name: {{ include "carto.importApi.secretName" . }}
             {{- end }}
           {{- if .Values.importApi.resources }}
           resources: {{- toYaml .Values.importApi.resources | nindent 12 }}
