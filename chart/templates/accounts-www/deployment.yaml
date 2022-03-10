@@ -112,7 +112,7 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraEnvVarsSecret "context" $) }}
             {{- end }}
-             {{- if not .Values.accountsWww.existingSecret }}
+            {{- if not .Values.accountsWww.existingSecret }}
             - secretRef:
                 name: {{ include "carto.accountsWww.secretName" . }}
             {{- end }}
