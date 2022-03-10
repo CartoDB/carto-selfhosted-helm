@@ -115,6 +115,10 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.httpCache.extraEnvVarsSecret "context" $) }}
             {{- end }}
+            {{- if not .Values.httpCache.existingSecret }}
+            - secretRef:
+                name: {{ include "carto.httpCache.secretName" . }}
+            {{- end }}
           {{- if .Values.httpCache.resources }}
           resources: {{- toYaml .Values.httpCache.resources | nindent 12 }}
           {{- end }}

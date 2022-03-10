@@ -112,6 +112,10 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraEnvVarsSecret "context" $) }}
             {{- end }}
+            {{- if not .Values.workspaceWww.existingSecret }}
+            - secretRef:
+                name: {{ include "carto.workspaceWww.secretName" . }}
+            {{- end }}
           {{- if .Values.workspaceWww.resources }}
           resources: {{- toYaml .Values.workspaceWww.resources | nindent 12 }}
           {{- end }}

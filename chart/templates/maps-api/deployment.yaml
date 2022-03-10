@@ -128,6 +128,10 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraEnvVarsSecret "context" $) }}
             {{- end }}
+            {{- if not .Values.mapsApi.existingSecret }}
+            - secretRef:
+                name: {{ include "carto.mapsApi.secretName" . }}
+            {{- end }}
           {{- if .Values.mapsApi.resources }}
           resources: {{- toYaml .Values.mapsApi.resources | nindent 12 }}
           {{- end }}

@@ -173,6 +173,10 @@ spec:
             - secretRef:
                 name: {{ include "carto.workspaceApi.secretName" . }}
             {{- end }}
+            {{- if not .Values.workspaceApi.existingSecret }}
+            - secretRef:
+                name: {{ include "carto.workspaceApi.secretName" . }}
+            {{- end }}
           {{- if .Values.workspaceApi.resources }}
           resources: {{- toYaml .Values.workspaceApi.resources | nindent 12 }}
           {{- end }}

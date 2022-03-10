@@ -116,6 +116,10 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.router.extraEnvVarsSecret "context" $) }}
             {{- end }}
+            {{- if not .Values.router.existingSecret }}
+            - secretRef:
+                name: {{ include "carto.router.secretName" . }}
+            {{- end }}
           {{- if .Values.router.resources }}
           resources: {{- toYaml .Values.router.resources | nindent 12 }}
           {{- end }}
