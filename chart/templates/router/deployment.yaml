@@ -94,8 +94,6 @@ spec:
           args:
             - -ec
             - |
-              set -a
-              . /secret/.secret.env
               ROUTER_RESOLVER="$(grep nameserver /etc/resolv.conf  | awk '{print $2}')"
               /docker-entrypoint.sh nginx -g "daemon off;"
           {{- end }}
@@ -155,8 +153,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.router.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: secret-env
-              mountPath: /secret
             - name: google-secret
               mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
               subPath: {{ template "carto.google.secretKey" . }}
@@ -176,9 +172,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.router.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: secret-env
-          secret:
-            secretName: {{ include "carto.router.secretName" . }}
         - name: tls-secret
           secret:
             secretName: {{ include "carto.tlsCerts.secretName" . }}

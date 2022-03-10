@@ -108,9 +108,10 @@ spec:
             - configMapRef:
                 name: {{ template "carto.workspaceApi.fullname" . }}
             {{- end }}
-          volumeMounts:
-            - name: secret-env
-              mountPath: /secret
+            {{- if not .Values.workspaceApi.existingSecret }}
+            - secretRef:
+                name: {{ include "carto.workspaceApi.secretName" . }}
+            {{- end }}
         {{- if .Values.workspaceApi.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.initContainers "context" $) | nindent 8 }}
         {{- end }}
@@ -138,8 +139,6 @@ spec:
           args:
             - -ec
             - |
-              set -a
-              . /secret/.secret.env
               npm run start:built
           {{- end }}
           env:
@@ -213,8 +212,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: secret-env
-              mountPath: /secret
             - name: google-secret
               mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
               subPath: {{ template "carto.google.secretKey" . }}
@@ -225,9 +222,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceApi.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: secret-env
-          secret:
-            secretName: {{ include "carto.workspaceApi.secretName" . }}
         - name: google-secret
           secret:
             secretName: {{ include "carto.google.secretName" . }}
