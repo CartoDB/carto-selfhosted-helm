@@ -12,18 +12,11 @@ This repository contains the Helm chart files for Carto 3, ready to launch on Ku
 ./tools/download_k8s_secrets.sh customers/YOUR-CUSTOMER-ID
 ```
 
-- Create the service account secret inside kubernetes
-```bash
-kubectl apply -f k8s-google-serviceaccount-secret.yaml --namespace=<namespace>
-```
-
 - Add Carto repository to helm:
 
 ```bash
 helm repo add carto-selfhosted-charts https://carto-selfhosted-charts.storage.googleapis.com
 ```
-
-- Check the repositories:
 
 ```bash
 helm repo list
@@ -37,7 +30,6 @@ carto-selfhosted-charts/carto 1.5.5         2022.03.04.06 CARTO is the world's l
 carto-selfhosted-charts/carto 1.3.14        2022.02.10    CARTO is the world's leading Location Intellige...
 ```
 
-- Update repository if you have new chart versions
 ```bash
 helm repo update
 ```
