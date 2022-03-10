@@ -31,10 +31,8 @@
             "resources": {
               "path": "goss/goss-accounts-www"
             },
-            "config": {
-              "remote": {
-                "workload": "deploy-carto-accounts-www"
-              }
+            "remote": {
+              "workload": "deploy-carto-accounts-www"
             }
           }
         }

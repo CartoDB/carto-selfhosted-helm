@@ -17,58 +17,146 @@ This repository contains the Helm chart files for Carto 3, ready to launch on Ku
 kubectl apply -f k8s-google-serviceaccount-secret.yaml --namespace=<namespace>
 ```
 
-- Install helm plugin [helm-gcs](https://github.com/hayorov/helm-gcs) to authenticate with Google
-
-```bash
-helm plugin install https://github.com/hayorov/helm-gcs
-```
-
-- Auth to Google:
-
-```bash
-gcloud auth login
-```
-
 - Add Carto repository to helm:
 
 ```bash
-helm repo add carto3-selfhosted-charts gs://carto3-selfhosted-helm-charts-repository
+helm repo add carto-selfhosted-charts https://carto-selfhosted-charts.storage.googleapis.com
 ```
 
 - Check the repositories:
 
 ```bash
 helm repo list
-NAME                     URL                                          
-bitnami                  https://charts.bitnami.com/bitnami           
-carto3-selfhosted-charts gs://carto3-selfhosted-helm-charts-repository
+NAME                    URL                                                   
+carto-selfhosted-charts https://carto-selfhosted-charts.storage.googleapis.com
 
-helm search repo carto3-selfhosted-charts -l
-NAME                             CHART VERSION   APP   VERSION   DESCRIPTION                                       
-carto3-selfhosted-charts/carto   1.3.14          2022.02.10   CARTO is the world's leading Location Intellige...
-carto3-selfhosted-charts/carto   0.0.1           2022.02.10   CARTO is the world's leading Location Intellige...
+helm search repo carto-selfhosted-charts -l
+NAME                          CHART VERSION APP VERSION   DESCRIPTION                                       
+carto-selfhosted-charts/carto 1.6.6         2022.03.07.03 CARTO is the world's leading Location Intellige...
+carto-selfhosted-charts/carto 1.5.5         2022.03.04.06 CARTO is the world's leading Location Intellige...
+carto-selfhosted-charts/carto 1.3.14        2022.02.10    CARTO is the world's leading Location Intellige...
 ```
 
-- Update repo if you have new chart versions
+- Update repository if you have new chart versions
 ```bash
 helm repo update
 ```
 
 - Install Carto SelfHosted
 ```bash
-helm install carto-selfhosted-v1 carto3-selfhosted-charts/carto -f carto-values.yaml -f carto-secrets.yaml
+helm install carto-selfhosted-v1 carto-selfhosted-charts/carto -f carto-values.yaml -f carto-secrets.yaml
 ```
 
 - Add the Kubernetes Load Balancer IP to your DNS with your Domain:
 
   In GKE:
   ```bash
-  kubectl get svc <carto3-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.ip}'
+  kubectl get svc <carto-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.ip}'
   ```
   
   In EKS:
   ```bash
-  nslookup $(kubectl get svc <carto3-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.hostname}')
+  nslookup $(kubectl get svc <carto-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.hostname}')
+  ```
+
+### Custom Domain
+
+By default, the carto router deployment will create its own auto generate ssl certs, but if your want to install carto selfhosted with your custom domain and TLS certs, you have to do the following steps:
+  
+- Change the `routerSslAutogenerate` value to `"1"` in `carto-values.yaml`
+
+- Create a kubernetes secret with following content:
+  ```yaml
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: <kubernetes-tls-secret-name>
+  type: Opaque
+  data:
+    tls.key: "<base64 encoded key>"
+    tls.crt: "<base64 encoded certificate>"
+    ca.crt: "<base64 encoded public ca file>"
+  ```
+  Note that the content of certs should be formatted in base64 in one line, e.g:
+  ```bash
+  cat certificate.crt | base64 -w0
+  ```
+- Then create the object in kubernetes with `kubectl apply -f <secret-tls-file> -n <namespace>`
+
+- Finally, you have to add the following lines to `carto-secrets.yaml`:
+  ```yaml
+  tlsCerts:
+    autoGenerate: false
+    existingSecret:
+      name: "<kubernetes-tls-secret-name>"
+      caKey: "ca.crt"
+      keyKey: "tls.key"
+      certKey: "tls.crt"
+  ```
+
+
+### External Postgres
+
+By default, Carto-Selfhosted is provisioned with a Postgresl statefulset kubernetes object, but you could connect this environment with your own Cloud Postgres instance, follow this steps to make it possible:
+
+- Add these lines in your `carto-values.yaml`, you can find it and uncomment inside the file:
+
+  ```yaml
+  postgresql:
+    enabled: false
+  ```
+
+- Create one secret in kubernetes with the Postgres passwords:
+
+  ```bash
+  kubectl create secret generic <my-external-postgres-secret-name> --from-literal=carto-password=<password> --from-literal=admin-password=<password>
+
+  ```
+
+- Add the postgres IP/hostname and the secret reference in these lines, you can find this configuration inside `carto-secrets.yaml`:
+
+  ```yaml
+  externalDatabase:
+    host: <Postgres IP/Hostname>
+    user: carto
+    password: ""
+    adminUser: postgres
+    adminPassword: ""
+    existingSecret: "<kubernetes postgres created secret name>"
+    existingSecretPasswordKey: "carto-password"
+    existingSecretAdminPasswordKey: "admin-password"
+    database: workspace_db
+    port: 5432
+  ```
+
+- Note: `carto` user and `workspace_db` database inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created. The `carto-password` indicated in the kubernetes secret created before is with which this user will be created
+
+### External Redis
+
+By default, Carto-Selfhosted is provisioned with a Redis statefulset kubernetes object, but you could connect this environment with your own Cloud Redis instance, follow this steps to make it possible:
+
+- Add these lines in your `carto-values.yaml`, you can find it and uncomment inside the file:
+
+  ```yaml
+  redis:
+    enabled: false
+  ```
+
+- Create one secret in kubernetes with the Redis AUTH string:
+
+  ```bash
+  kubectl create secret generic <my-external-redis-secret-name> --from-literal=password=<AUTH string password>
+  ```
+
+- Add the Redis IP/hostname and the secret reference in these lines, you can find this configuration inside `carto-secrets.yaml`:
+
+  ```yaml
+  externalRedis:
+    host: <Redis IP/Hostname>
+    port: 6379
+    password: ""
+    existingSecret: "<kubernetes redis created secret name>"
+    existingSecretPasswordKey: "password"
   ```
 
 ## Before you begin
