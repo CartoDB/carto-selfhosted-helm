@@ -45,12 +45,12 @@ jobs:
           helm dependency build chart
           helm package chart
           gsutil cp -r "${CHARTS_BUCKET}" .
-          mkdir carto3-selfhosted-charts
-          mv carto-selfhosted-charts/*.tgz carto3-selfhosted-charts/
-          mv "carto-${RELEASE_CHART_VERSION}.tgz" carto3-selfhosted-charts/
-          helm repo index carto3-selfhosted-charts --url "${CHARTS_REPOSITORY}"
+          mkdir packages-selfhosted-charts
+          mv carto-selfhosted-charts/*.tgz packages-selfhosted-charts/
+          mv carto-*.tgz packages-selfhosted-charts/
+          helm repo index packages-selfhosted-charts --url "${CHARTS_REPOSITORY}"
       - name: Upload chart
         if: startsWith(github.event.head_commit.message, 'Self Hosted automated version bump')
         shell: bash
         run: |
-          gsutil rsync -d carto3-selfhosted-charts/ "${CHARTS_BUCKET}"
+          gsutil rsync -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
