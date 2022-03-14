@@ -35,7 +35,7 @@ data:
   WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . }}
   IMPORT_PROVIDER: {{ .Values.cartoConfigValues.storageProvider | quote }}
   {{- if eq .Values.cartoConfigValues.storageProvider "gcp" }}
-  IMPORT_PROJECTID: {{ .Values.cartoConfigValues.gcsBucketsProjectId | quote }}
+  IMPORT_PROJECTID: {{ include "carto.gcsBucketsProjectId" . | quote }}
   {{- end }}
   {{- if eq .Values.cartoConfigValues.storageProvider "s3" }}
   IMPORT_REGION: {{ .Values.cartoConfigValues.awsS3Region | quote }}

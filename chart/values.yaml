@@ -9,6 +9,7 @@ cartoConfigValues:
   cartoAuth0CustomDomain: ""
   cartoSelfhostedDwLocation: ""
   httpCacheEnabled: "true"
+  storageProvider: "gcp"
   importBucket: ""
   routerSslAutogenerate: ""
   selfHostedDomain: "carto3-selfhosted.lan"
@@ -16,6 +17,9 @@ cartoConfigValues:
   selfHostedTenantId: ""
   workspaceImportsBucket: ""
   workspaceThumbnailsBucket: ""
+  workspaceThumbnailsPublic: ""
+  reactAppLaunchDarklyClientSideId: ""
+  gcsBucketsProjectId: ""
 
 cartoSecrets:
   googleMapsApiKey: ""
