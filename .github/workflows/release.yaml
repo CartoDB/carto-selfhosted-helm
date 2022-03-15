@@ -12,9 +12,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Retrieve Release Name
+      - name: Set up yq
         uses: frenck/action-setup-yq@v1
+      - name: Retrieve Release Name
         id: info
+        shell: bash
         run: |
           set -ex
           export CARTO_VERSION=$(cat chart/Chart.yaml | yq .appVersion --raw-output)
