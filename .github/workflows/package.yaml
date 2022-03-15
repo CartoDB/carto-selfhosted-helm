@@ -1,7 +1,7 @@
 name: "Create SelfHosted Helm Package"
 on:
   release:
-    types: [released]
+    types: [prereleased, released]
 env:
   GCLOUD_VERSION: '297.0.1' # https://github.com/google-github-actions/setup-gcloud/issues/128
   CHARTS_REPOSITORY: "https://carto-selfhosted-charts.storage.googleapis.com/"
@@ -12,7 +12,7 @@ env:
 jobs:
   helm-package:
     timeout-minutes: 3
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -30,6 +30,13 @@ jobs:
         shell: bash
         run: |
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      - name: Set up yq
+        uses: frenck/action-setup-yq@v1
+      - name: Edit package
+        if: github.event.action == 'prereleased'
+        shell: bash
+        run: |
+          yq -y -i '.version = .version + "-beta"' chart/Chart.yaml
       - name: Create package
         shell: bash
         run: |
