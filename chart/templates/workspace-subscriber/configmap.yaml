@@ -15,7 +15,7 @@ data:
   ACC_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   ACC_GCP_PROJECT_REGION: {{ .Values.cartoConfigValues.cartoAccGcpProjectRegion | quote }}  
   CARTO3_SELFHOSTED_VOLUMES_BASE_PATH: "./"
-  CARTO_SELFHOSTED_DOMAIN: {{ .Values.cartoConfigValues.selfHostedDomain | quote }}
+  CARTO_SELFHOSTED_DOMAIN: {{ .Values.customConfigValues.selfHostedDomain | quote }}
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
