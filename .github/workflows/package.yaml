@@ -1,0 +1,54 @@
+name: "Create SelfHosted Helm Package"
+on:
+  release:
+    types: [prereleased, released]
+env:
+  GCLOUD_VERSION: '297.0.1' # https://github.com/google-github-actions/setup-gcloud/issues/128
+  CHARTS_REPOSITORY: "https://carto-selfhosted-charts.storage.googleapis.com/"
+  CHARTS_BUCKET: "gs://carto-selfhosted-charts"
+  PROJECT_ID: carto-onprem-artifacts
+  ARTIFACTS_PROJECT_ID: "carto-artifacts"
+
+jobs:
+  helm-package:
+    timeout-minutes: 3
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Google Cloud Auth
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.CARTO_ARTIFACTS_SERVICE_ACCOUNT }}
+          project_id: ${{ env.ARTIFACTS_PROJECT_ID }}
+      - name: Google Cloud install
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          version: ${{ env.GCLOUD_VERSION }}
+      - name: Install helm
+        shell: bash
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      - name: Set up yq
+        uses: frenck/action-setup-yq@v1
+      - name: Edit package
+        if: github.event.action == 'prereleased'
+        shell: bash
+        run: |
+          yq -y -i '.version = .version + "-beta"' chart/Chart.yaml
+      - name: Create package
+        shell: bash
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm dependency build chart
+          helm package chart
+          gsutil cp -r "${CHARTS_BUCKET}" .
+          mkdir packages-selfhosted-charts
+          mv carto-selfhosted-charts/*.tgz packages-selfhosted-charts/
+          mv carto-${{ github.event.release.tag_name }}.tgz packages-selfhosted-charts/
+          helm repo index packages-selfhosted-charts --url "${CHARTS_REPOSITORY}"
+      - name: Upload chart
+        shell: bash
+        run: |
+          gsutil rsync -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
