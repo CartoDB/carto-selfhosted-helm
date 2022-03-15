@@ -14,13 +14,14 @@ dependencies:
     name: redis
     repository: https://charts.bitnami.com/bitnami
     version: 16.x.x
-description: CARTO is the world's leading Location Intelligence platform, enabling organizations to use spatial data and analysis for more efficient delivery routes, better behavioural marketing, strategic store placements, and much more.
+description: CARTO Location Intelligence Platform. Unlock the power of spatial analysis in the cloud
 engine: gotpl
-home: https://github.com/cartodb/carto3-helm/tree/stable/chart
+home: https://github.com/CartoDB/carto-selfhosted-helm/tree/main/chart
 keywords:
   - carto
   - data
   - spatial
+  - gis
   - analysis
 name: carto
 sources:
