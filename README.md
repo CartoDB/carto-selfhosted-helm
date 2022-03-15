@@ -1,4 +1,4 @@
-# Helm chart and Docker compose for Carto 3
+# Helm chart for Carto 3
 
 This repository contains the Helm chart files for Carto 3, ready to launch on Kubernetes using [Kubernetes Helm](https://github.com/helm/helm).
 
@@ -50,6 +50,17 @@ helm install carto-selfhosted-v1 carto-selfhosted-charts/carto -f carto-values.y
   ```bash
   nslookup $(kubectl get svc <carto-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.hostname}')
   ```
+
+
+### Uninstall
+
+```bash
+helm uninstall carto-selfhosted-v1 --wait
+
+# ⚠️ This is going to delete the data of the postgres inside the cluster ⚠️
+kubectl delete pvc data-carto-selfhosted-v1-postgresql-0
+```
+
 
 ### Custom Domain
 
