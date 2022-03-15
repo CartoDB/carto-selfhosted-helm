@@ -51,6 +51,17 @@ helm install carto-selfhosted-v1 carto-selfhosted-charts/carto -f carto-values.y
   nslookup $(kubectl get svc <carto-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.hostname}')
   ```
 
+
+### Uninstall
+
+```bash
+helm uninstall carto-selfhosted-v1 --wait
+
+# ⚠️ This is going to delete the data of the postgres inside the cluster ⚠️
+kubectl delete pvc data-carto-selfhosted-v1-postgresql-0
+```
+
+
 ### Custom Domain
 
 By default, the carto router deployment will create its own auto generate ssl certs, but if your want to install carto selfhosted with your custom domain and TLS certs, you have to do the following steps:
