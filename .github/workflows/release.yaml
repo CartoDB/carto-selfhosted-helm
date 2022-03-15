@@ -19,10 +19,8 @@ jobs:
         shell: bash
         run: |
           set -ex
-          export CARTO_VERSION=$(yq .appVersion chart/Chart.yaml)
-          echo "::set-output name=carto_version::${CARTO_VERSION}"
-          export RELEASE_NAME=$(yq .version chart/Chart.yaml)
-          echo "::set-output name=release_name::${RELEASE_NAME}"
+          echo "::set-output name=carto_version::$(yq .appVersion chart/Chart.yaml)"
+          echo "::set-output name=release_name::$(yq .version chart/Chart.yaml)"
       - uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
