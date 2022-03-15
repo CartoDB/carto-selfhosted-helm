@@ -34,6 +34,13 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
 {{- end -}}
 
 {{/*
+Create gcsBucketsProjectId using the gcsBucketsProjectId config or, if not defined, selfHostedGcpProjectId
+*/}}
+{{- define "carto.gcsBucketsProjectId" -}}
+{{ default .Values.cartoConfigValues.selfHostedGcpProjectId .Values.cartoConfigValues.gcsBucketsProjectId }}
+{{- end -}}
+
+{{/*
 Return the proper Carto lds-api full name
 */}}
 {{- define "carto.ldsApi.fullname" -}}
