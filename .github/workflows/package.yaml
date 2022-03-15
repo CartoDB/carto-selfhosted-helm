@@ -46,7 +46,7 @@ jobs:
           gsutil cp -r "${CHARTS_BUCKET}" .
           mkdir packages-selfhosted-charts
           mv carto-selfhosted-charts/*.tgz packages-selfhosted-charts/
-          mv carto-${{ github.event.release.tag_name }}.tgz packages-selfhosted-charts/
+          mv carto-${{ github.event.release.tag_name }}*.tgz packages-selfhosted-charts/
           helm repo index packages-selfhosted-charts --url "${CHARTS_REPOSITORY}"
       - name: Upload chart
         shell: bash
