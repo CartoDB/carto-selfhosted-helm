@@ -30,3 +30,20 @@ jobs:
           prerelease: true
           body: |
             Released the `${{ steps.info.outputs.release_name }}` version with `${{ steps.info.outputs.carto_version }}` Carto version
+      - name: Slack notification (#carto-selfhosted-helm)
+        if: always()
+        env:
+          SLACK_CHANNEL: C02PADFM0E4 #  #carto-selfhosted
+          JOB_STATUS: ${{ job.status }}
+        run: |
+           if [ 'success' == "${JOB_STATUS}" ];then
+             status_emoji=:white_check_mark:
+           else
+             status_emoji=:x:
+           fi
+           curl -F "text=Self Hosted Helm Chart Pre-Release \`${{ steps.info.outputs.release_name }}\` created:
+            - *Status:* ${status_emoji}
+            - *<https://github.com/CartoDB/carto-selfhosted-helm/releases|Releases>*" \
+            -F "channel=${SLACK_CHANNEL}" \
+            -H "Authorization: Bearer ${{ secrets.SLACK_KEY }}" \
+            -X POST https://slack.com/api/chat.postMessage
