@@ -1,4 +1,4 @@
-name: "Create SelfHosted Release"
+name: "Create SelfHosted Helm Package"
 on:
   release:
     types: [released]
