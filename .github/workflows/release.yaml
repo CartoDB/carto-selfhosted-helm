@@ -1,56 +1,33 @@
-name: "Create OnPrem Release"
+name: "Create SelfHosted Release"
 on:
   push:
     branches:
       - main
-env:
-  GCLOUD_VERSION: '297.0.1' # https://github.com/google-github-actions/setup-gcloud/issues/128
-  CHARTS_REPOSITORY: "https://carto-selfhosted-charts.storage.googleapis.com/"
-  CHARTS_BUCKET: "gs://carto-selfhosted-charts"
-  BASE_BRANCH_HELM: "main"
-  PROJECT_ID: carto-onprem-artifacts
-  ARTIFACTS_PROJECT_ID: "carto-artifacts"
-
+    paths:
+      - 'chart/Chart.yaml'
 jobs:
-  helm-package:
+  create-tag:
     timeout-minutes: 3
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        if: startsWith(github.event.head_commit.message, 'Self Hosted automated version bump')
         uses: actions/checkout@v2
-
-      - name: Google Cloud Auth
-        if: startsWith(github.event.head_commit.message, 'Self Hosted automated version bump')
-        uses: google-github-actions/auth@v0
+      - name: Retrieve Release Name
+        uses: frenck/action-setup-yq@v1
+        id: info
+        run: |
+          set -ex
+          export CARTO_VERSION=$(cat chart/Chart.yaml | yq .appVersion --raw-output)
+          echo "::set-output name=carto_version::${CARTO_VERSION}"
+          export RELEASE_NAME=$(cat chart/Chart.yaml | yq .version --rat-output)
+          echo "::set-output name=release_name::${RELEASE_NAME}"
+      - uses: ncipollo/release-action@v1
         with:
-          credentials_json: ${{ secrets.CARTO_ARTIFACTS_SERVICE_ACCOUNT }}
-          project_id: ${{ env.ARTIFACTS_PROJECT_ID }}
-      - name: Google Cloud install
-        if: startsWith(github.event.head_commit.message, 'Self Hosted automated version bump')
-        uses: google-github-actions/setup-gcloud@v0
-        with:
-          project_id: ${{ env.PROJECT_ID }}
-          version: ${{ env.GCLOUD_VERSION }}
-      - name: Install helm
-        if: startsWith(github.event.head_commit.message, 'Self Hosted automated version bump')
-        shell: bash
-        run: |
-          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-      - name: Create package
-        if: startsWith(github.event.head_commit.message, 'Self Hosted automated version bump')
-        shell: bash
-        run: |
-          helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm dependency build chart
-          helm package chart
-          gsutil cp -r "${CHARTS_BUCKET}" .
-          mkdir packages-selfhosted-charts
-          mv carto-selfhosted-charts/*.tgz packages-selfhosted-charts/
-          mv carto-*.tgz packages-selfhosted-charts/
-          helm repo index packages-selfhosted-charts --url "${CHARTS_REPOSITORY}"
-      - name: Upload chart
-        if: startsWith(github.event.head_commit.message, 'Self Hosted automated version bump')
-        shell: bash
-        run: |
-          gsutil rsync -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit: ${{ github.sha }}
+          name: ${{ steps.info.outputs.release_name }}
+          tag: ${{ steps.info.outputs.release_name }}
+          prerelease: true
+          body: |
+            Released the `${{ steps.info.outputs.release_name }}` \
+            version with `${{ steps.info.outputs.carto_version }}` Carto version
