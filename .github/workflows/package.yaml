@@ -52,7 +52,7 @@ jobs:
         shell: bash
         run: |
           gsutil rsync -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
-      - name: Slack notification (#carto-selfhosted-helm)
+      - name: Slack notification
         if: github.event.action == 'released'
         env:
           SLACK_CHANNEL: C02PADFM0E4 #  #carto-selfhosted
