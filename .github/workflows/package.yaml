@@ -36,7 +36,7 @@ jobs:
         if: github.event.action == 'prereleased'
         shell: bash
         run: |
-          yq -y -i '.version = .version + "-beta"' chart/Chart.yaml
+          yq -i '.version = .version + "-beta"' chart/Chart.yaml
       - name: Create package
         shell: bash
         run: |

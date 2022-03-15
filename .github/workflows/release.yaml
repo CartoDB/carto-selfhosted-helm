@@ -23,11 +23,10 @@ jobs:
           echo "::set-output name=release_name::$(yq .version chart/Chart.yaml)"
       - uses: ncipollo/release-action@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.X_GITHUB_CARTOFANTE }}
           commit: ${{ github.sha }}
           name: ${{ steps.info.outputs.release_name }}
           tag: ${{ steps.info.outputs.release_name }}
           prerelease: true
           body: |
-            Released the `${{ steps.info.outputs.release_name }}` \
-            version with `${{ steps.info.outputs.carto_version }}` Carto version
+            Released the `${{ steps.info.outputs.release_name }}` version with `${{ steps.info.outputs.carto_version }}` Carto version
