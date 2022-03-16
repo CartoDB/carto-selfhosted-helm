@@ -26,10 +26,12 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
 
 ### Installation Steps
 
-1. Obtain the configuration files provided by Carto.
+1. Authenticate and connect to your cluster
+
+2. Obtain the configuration files provided by Carto.
 That files are unique per self-hosted (**couldn't be shared between multiple installations**) and one could be public but the other one is private so please, be careful sharing it.
 
-2. Add our Carto helm repository with the next commands:
+3. Add our Carto helm repository with the next commands:
   ```bash
   # Add the carto-selfhosted repo.
   helm repo add carto-selfhosted https://carto-selfhosted-charts.storage.googleapis.com
@@ -41,7 +43,7 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
   helm search repo carto-selfhosted -l
   ```
 
-3. Configure your deployment. ¡¡ PENDING !!
+4. Configure your deployment. ¡¡ PENDING !!
 
 Open the file `carto-values.yaml` that you have received and configure the needed things:
 
@@ -50,12 +52,18 @@ Open the file `carto-values.yaml` that you have received and configure the neede
 - Configure [external DBs](#external-databases)
 - Configure external buckets
 
-4. Install your deployment:
+5. Install your deployment:
   ```bash
-  helm install <your_release_name> carto-selfhosted/carto --namespace <your_namespace> -f carto-values.yaml -f carto-secrets.yaml <other_custom_files>
+  helm install \
+    <your_own_installation_name|carto> \
+    carto-selfhosted/carto \
+    --namespace <your_namespace> \
+    -f carto-values.yaml \
+    -f carto-secrets.yaml \
+    <other_custom_files>
   ```
 
-5. Follow the instructions provided by the command.
+6. Follow the instructions provided by the command.
 
 ---
 
@@ -90,24 +98,29 @@ Open the file `carto-values.yaml` that you have received and configure the neede
   ```
   
 3. Update CARTO
-
-```bash
-helm upgrade carto-selfhosted-v1 carto-selfhosted-charts/carto -f carto-values.yaml -f carto-secrets.yaml
-```
+  ```bash
+  helm upgrade \
+    <your_own_installation_name|carto> \
+    carto-selfhosted/carto \
+    --namespace <your_namespace> \
+    -f carto-values.yaml \
+    -f carto-secrets.yaml \
+    <other_custom_files>
+  ```
 
 ## Unistallation
 
 To remove CARTO from your cluster you need to run:
 
 ```bash
-helm uninstall carto-selfhosted-v1 --wait
+helm uninstall <your_own_installation_name|carto> --wait
 ```
 
 If you were using the internal Postgres, to delete the data you need:
 
 ```bash
 # ⚠️ This is going to delete the data of the postgres inside the cluster ⚠️
-kubectl delete pvc data-carto-selfhosted-v1-postgresql-0
+kubectl delete pvc data-<your_own_installation_name|carto>-postgresql-0
 ```
 
 ## Configuration options
@@ -205,40 +218,3 @@ with your own Cloud Redis instance, follow this steps to make it possible:
     existingSecret: "carto-redis-config"
     existingSecretPasswordKey: "password"
   ```
-
-## Installation
-
-### Basic installation
-
-1. Obtain the configuration files provided by Carto.
-That files are unique per self-hosted (**couldn't be shared between multiple installations**) and one could be public but the other one is private so please, be careful sharing it.
-
-2. Add our Carto helm repository with the next commands:
-```bash
-# Add the carto-selfhosted repo.
-helm repo add carto-selfhosted https://carto-selfhosted-charts.storage.googleapis.com
-
-# Retrieve the latests version of the packages. REQUIRED before update to a new version.
-helm repo update
-
-# List the available versions of the package
-helm search repo carto-selfhosted -l
-```
-
-3. Configure your deployment. ¡¡ PENDING !!
-
-4. Install your deployment:
-```bash
-helm install <your_release_name> carto-selfhosted/carto --namespace <your_namespace> -f carto-values.yaml -f carto-secrets.yaml <other_custom_files>
-```
-
-5. Follow the instructions provided by the command.
-
-## Uninstall
-
-```bash
-helm uninstall carto-selfhosted-v1 --wait
-
-# ⚠️ This is going to delete the data of the postgres inside the cluster ⚠️
-kubectl delete pvc data-carto-selfhosted-v1-postgresql-0
-```
