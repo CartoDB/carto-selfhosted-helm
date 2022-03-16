@@ -52,7 +52,7 @@ jobs:
         shell: bash
         run: |
           gsutil rsync -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
-          gsutil -h "Cache-Control:public, max-age=300" cp packages-selfhosted-charts/index.yaml "${CHARTS_BUCKET}"
+          gsutil -h "Cache-Control:public, max-age=180,s-maxage=30" cp packages-selfhosted-charts/index.yaml "${CHARTS_BUCKET}"
       - name: Slack notification
         if: github.event.action == 'released'
         env:
