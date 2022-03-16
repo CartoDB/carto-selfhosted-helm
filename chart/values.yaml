@@ -22,10 +22,10 @@ cartoConfigValues:
   selfHostedTenantId: ""
   reactAppLaunchDarklyClientSideId: ""
 
-clientSecrets:
+customSecretsValues:
   googleMapsApiKey: ""
 
-cartoSecrets:
+cartoSecretsValues:
   encryptionSecretKey: ""
   varnishDebugSecret: ""
   varnishPurgeSecret: ""
