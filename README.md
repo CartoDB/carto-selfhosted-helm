@@ -8,7 +8,8 @@ This repository contains the Helm chart files for CARTO Platform. Run CARTO Self
 
 - Kubernetes 1.12+
 - Helm 3.1.0
-- PV provisioner support in the underlying infrastructure
+
+Currently the only Kubernetes that have been tested are EKS, GKE and AKS.
 
 #### Setup a Kubernetes Cluster
 
@@ -70,6 +71,22 @@ helm install carto-selfhosted-v1 carto-selfhosted-charts/carto -f carto-values.y
   ```
 
 6. Go to the configured domain and follow the process
+
+## Update
+
+1. Authenticate and connect to your cluster
+
+2. Update the helm chart:
+
+  ```bash
+  helm repo update
+  ```
+  
+3. Update CARTO
+
+```bash
+helm upgrade carto-selfhosted-v1 carto-selfhosted-charts/carto -f carto-values.yaml -f carto-secrets.yaml
+```
 
 ## Unistallation
 
