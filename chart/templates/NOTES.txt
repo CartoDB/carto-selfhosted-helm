@@ -32,7 +32,7 @@ Get the list of pods by executing:
 
 Access the pod you want to debug by executing
 
-  kubectl exec --namespace {{ .Release.Namespace }} -ti <NAME OF THE POD> -- bash
+  kubectl exec --namespace {{ .Release.Namespace }} -ti <NAME OF THE POD> -- sh
 
 {{- else }}
 {{/* The CARTO team should check if this should be an error instead of a Warning */}}
@@ -70,30 +70,9 @@ Found these lines in commonSecretConfiguration:
 This deployment will be incomplete until you configure CARTO with a resolvable
 host. To configure CARTO with the URL of your service:
 
-1. Get the CARTO URL by running:
+1. Edit the config field `customConfigValues.selfHostedDomain`
 
-{{- if eq .Values.router.service.type "ClusterIP" }}
-  {{- $port := default 80 .Values.router.service.ports.http | toString }}
-
-  echo "URL  : http://127.0.0.1{{- if ne $port "80" }}:{{ $port }}{{ end }}"
-  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }}
-
-{{- else if eq .Values.router.service.type "NodePort" }}
-  export CARTO_HOST=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
-  export CARTO_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "common.names.fullname" . }})
-
-{{- else }}
-  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-        Watch the status with: 'kubectl get svc --namespace {{ .Release.Namespace }} -w {{ include "carto.router.fullname" . }}'
-
-  export CARTO_HOST=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} --template "{{ "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}" }}")
-{{- end }}
-
-2. Complete your CARTO deployment by running:
-
-  helm upgrade --namespace {{ .Release.Namespace }} {{ .Release.Name }} carto/{{ .Chart.Name }} \
-    --set router.service.type={{ .Values.router.service.type }} \
-    --set selfHostedDomain=$CARTO_HOST{{- if eq .Values.router.service.type "NodePort" }}:$CARTO_PORT{{- end }}
+2. Complete your CARTO deployment reading the `Update` section of the documentation.
 
 {{- else }}
 
@@ -101,20 +80,30 @@ host. To configure CARTO with the URL of your service:
 
 {{- if eq .Values.router.service.type "ClusterIP" }}
 {{- $port := default 80 .Values.router.service.ports.http | toString }}
+{{- $port_https := default 443 .Values.router.service.ports.https | toString }}
+  {{/* TODO: We should check that HTTPS should be enabled ! */}}
 
-  echo "URL  : http://127.0.0.1{{- if ne $port "80" }}:{{ $port }}{{ end }}"
-  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }}
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }} {{ $port_https }}:{{ $port_https }}
+  export CARTO_HOST_IP=127.0.0.1
+  export CARTO_PORT={{- $port }}
 
 {{- else if eq .Values.router.service.type "NodePort" }}
 
-  export CARTO_HOST=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  export CARTO_HOST_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
   export CARTO_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "common.names.fullname" . }})
+{{- else if eq .Values.router.service.type "LoadBalancer" }}
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+        Watch the status with: 'kubectl get svc --namespace {{ .Release.Namespace }} -w {{ include "carto.router.fullname" . }}'
+
+  export CARTO_HOST_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} --template "{{ "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}" }}")
 
 {{- else }}
 
   echo URL  : {{ $baseUrl }}
 
 {{- end }}
+
+2. Add the `CARTO_HOST_IP` to your DNS or to `/etc/hosts` pointing to the domain `{{ $baseUrl }}`. Remember that CARTO only works with a domain and accessing (from the final client) using https.
 
 {{- end  }}
 
