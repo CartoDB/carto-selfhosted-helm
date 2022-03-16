@@ -1,6 +1,8 @@
-# Helm chart for Carto 3
+# CARTO self-hosted [Helm chart]
 
-This repository contains the Helm chart files for Carto 3, ready to launch on Kubernetes using [Kubernetes Helm](https://github.com/helm/helm).
+This repository contains the [Kubernetes Helm](https://github.com/helm/helm) chart files for CARTO Platform. Run CARTO Self Hosted in your own cloud infrastructre.
+
+If you are looking for another installation method, please refer to [carto-selfhosted repository](https://github.com/CartoDB/carto-selfhosted).
 
 ## Deploy CARTO in a self hosted environment
 
@@ -168,17 +170,11 @@ By default, Carto-Selfhosted is provisioned with a Redis statefulset kubernetes 
 
 - Kubernetes 1.12+
 - Helm 3.1.0
-- PV provisioner support in the underlying infrastructure
+- (Optional) PV provisioner support in the underlying infrastructure. Required only for non-production deployment without external and managed databases (Postgres and Redis).
 
 ### Setup a Kubernetes Cluster
 
 For setting up Kubernetes on other cloud platforms or bare-metal servers refer to the Kubernetes [getting started guide](http://kubernetes.io/docs/getting-started-guides/).
-
-### Install Docker
-
-Docker is an open source containerization technology for building and containerizing your applications.
-
-To install Docker, refer to the [Docker install guide](https://docs.docker.com/engine/install/).
 
 ### Install Helm
 
@@ -186,3 +182,41 @@ Helm is a tool for managing Kubernetes charts. Charts are packages of pre-config
 
 To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#install) and ensure that the `helm` binary is in the `PATH` of your shell.
 
+
+
+## Installation
+
+### Basic installation
+
+1. Obtain the configuration files provided by Carto.
+That files are unique per self-hosted (**couldn't be shared between multiple installations**) and one could be public but the other one is private so please, be careful sharing it.
+
+2. Add our Carto helm repository with the next commands:
+```bash
+# Add the carto-selfhosted repo.
+helm repo add carto-selfhosted https://carto-selfhosted-charts.storage.googleapis.com
+
+# Retrieve the latests version of the packages. REQUIRED before update to a new version.
+helm repo update
+
+# List the available versions of the package
+helm search repo carto-selfhosted -l
+```
+
+3. Configure your deployment. ¡¡ PENDING !!
+
+4. Install your deployment:
+```bash
+helm install <your_release_name> carto-selfhosted/carto --namespace <your_namespace> -f carto-values.yaml -f carto-secrets.yaml <other_custom_files>
+```
+
+5. Follow the instructions provided by the command.
+
+## Uninstall
+
+```bash
+helm uninstall carto-selfhosted-v1 --wait
+
+# ⚠️ This is going to delete the data of the postgres inside the cluster ⚠️
+kubectl delete pvc data-carto-selfhosted-v1-postgresql-0
+```

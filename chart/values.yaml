@@ -1776,7 +1776,7 @@ router:
   service:
     ## @param router.service.type router service type
     ##
-    type: LoadBalancer
+    type: ClusterIP
     ## @param router.service.ports.http router service HTTP port
     ## @param router.service.ports.https router service HTTPS port
     ##
