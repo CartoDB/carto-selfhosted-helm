@@ -3,7 +3,6 @@
 customConfigValues:
   selfHostedDomain: "carto3-selfhosted.lan"
   httpCacheEnabled: "true"
-  routerSslAutogenerate: ""
   importBucket: ""
   workspaceImportsBucket: ""
   workspaceThumbnailsBucket: ""
@@ -113,7 +112,6 @@ google:
 
 ## @param tlsCerts.autoGenerate Generate self-signed TLS certificates
 ## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
-## @param tlsCerts.existingSecret.caKey Key of the CA inside the secret
 ## @param tlsCerts.existingSecret.certKey Key of the certificate inside the secret
 ## @param tlsCerts.existingSecret.keyKey Key of the certificate key inside the secret
 ##
@@ -121,7 +119,6 @@ tlsCerts:
   autoGenerate: true
   existingSecret:
     name: ""
-    caKey: "ca.crt"
     keyKey: "tls.key"
     certKey: "tls.crt"
 
