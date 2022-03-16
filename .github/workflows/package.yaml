@@ -46,9 +46,25 @@ jobs:
           gsutil cp -r "${CHARTS_BUCKET}" .
           mkdir packages-selfhosted-charts
           mv carto-selfhosted-charts/*.tgz packages-selfhosted-charts/
-          mv carto-${{ github.event.release.tag_name }}.tgz packages-selfhosted-charts/
+          mv carto-${{ github.event.release.tag_name }}*.tgz packages-selfhosted-charts/
           helm repo index packages-selfhosted-charts --url "${CHARTS_REPOSITORY}"
       - name: Upload chart
         shell: bash
         run: |
           gsutil rsync -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
+      - name: Slack notification
+        if: github.event.action == 'released'
+        env:
+          SLACK_CHANNEL: C02PADFM0E4 #  #carto-selfhosted
+          JOB_STATUS: ${{ job.status }}
+        run: |
+           if [ 'success' == "${JOB_STATUS}" ];then
+             status_emoji=:rocket:
+           else
+             status_emoji=:x:
+           fi
+           curl -F "text=${status_emoji} Self Hosted Helm Chart Release \`${{ github.event.release.tag_name }}\` published:
+            - *<https://github.com/CartoDB/carto-selfhosted-helm/releases|Releases>*" \
+            -F "channel=${SLACK_CHANNEL}" \
+            -H "Authorization: Bearer ${{ secrets.SLACK_KEY }}" \
+            -X POST https://slack.com/api/chat.postMessage
