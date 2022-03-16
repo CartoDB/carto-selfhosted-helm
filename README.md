@@ -1,108 +1,162 @@
 # Helm chart for Carto 3
 
-This repository contains the Helm chart files for Carto 3, ready to launch on Kubernetes using [Kubernetes Helm](https://github.com/helm/helm).
+This repository contains the Helm chart files for CARTO Platform. Run CARTO Self Hosted in your own cloud infrastructre.
 
-## Deploy CARTO in a self hosted environment
+## Installation
 
-- Create new SelfHosted environment in [carto3-onprem-customers](https://github.com/CartoDB/carto3-onprem-customers)
+### Prerequisites
 
-- Download customer package files, they will be placed in the package folder
+- Kubernetes 1.12+
+- Helm 3.1.0
 
-```bash
-./tools/download_k8s_secrets.sh customers/YOUR-CUSTOMER-ID
-```
+Currently the only Kubernetes that have been tested are EKS, GKE and AKS.
 
-- Add Carto repository to helm:
+#### Setup a Kubernetes Cluster
+
+For setting up Kubernetes on other cloud platforms or bare-metal servers refer to the Kubernetes [getting started guide](http://kubernetes.io/docs/getting-started-guides/).
+
+#### Install Helm
+
+Helm is a tool for managing Kubernetes charts. Charts are packages of pre-configured Kubernetes resources.
+
+To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#install) and ensure that the `helm` binary is in the `PATH` of your shell.
+
+### Installation Steps
+
+1. Authenticate and connect to your cluster
+
+2. Add Carto repository to helm:
 
 ```bash
 helm repo add carto-selfhosted-charts https://carto-selfhosted-charts.storage.googleapis.com
 ```
 
-```bash
-helm repo list
-NAME                    URL                                                   
-carto-selfhosted-charts https://carto-selfhosted-charts.storage.googleapis.com
+  Update dependecies
 
-helm search repo carto-selfhosted-charts -l
-NAME                          CHART VERSION APP VERSION   DESCRIPTION                                       
-carto-selfhosted-charts/carto 1.6.6         2022.03.07.03 CARTO is the world's leading Location Intellige...
-carto-selfhosted-charts/carto 1.5.5         2022.03.04.06 CARTO is the world's leading Location Intellige...
-carto-selfhosted-charts/carto 1.3.14        2022.02.10    CARTO is the world's leading Location Intellige...
-```
+  ```bash
+  helm repo update
+  ```
 
-```bash
-helm repo update
-```
+3. Configure your deployment
 
-- Install Carto SelfHosted
+Open the file `carto-values.yaml` that you have received and configure the needed things:
+
+- Set your domain name in `selfHostedDomain`
+- Configure [TLS certificates](#tls-certificate)
+- Configure [external DBs](#external-databases)
+- Configure external buckets
+
+4. Deploy CARTO
+
 ```bash
 helm install carto-selfhosted-v1 carto-selfhosted-charts/carto -f carto-values.yaml -f carto-secrets.yaml
 ```
 
-- Add the Kubernetes Load Balancer IP to your DNS with your Domain:
+5. Configure your DNS to point to the deployment:
 
   In GKE:
+
+  Create an A record pointing to the IP:
+
   ```bash
-  kubectl get svc <carto-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.ip}'
+  kubectl get svc carto-selfhosted-v1-router -o jsonpath='{.status.loadBalancer.ingress.*.ip}'
   ```
   
   In EKS:
+
+  Create a CNAME record poiting to:
+
   ```bash
-  nslookup $(kubectl get svc <carto-selfhosted-v1>-router -o jsonpath='{.status.loadBalancer.ingress.*.hostname}')
+  kubectl get svc carto-selfhosted-v1-router -o jsonpath='{.status.loadBalancer.ingress.*.hostname}'
   ```
 
+6. Go to the configured domain and follow the process
 
-### Uninstall
+## Update
+
+1. Authenticate and connect to your cluster
+
+2. Update the helm chart:
+
+  ```bash
+  helm repo update
+  ```
+  
+3. Update CARTO
+
+```bash
+helm upgrade carto-selfhosted-v1 carto-selfhosted-charts/carto -f carto-values.yaml -f carto-secrets.yaml
+```
+
+## Unistallation
+
+To remove CARTO from your cluster you need to run:
 
 ```bash
 helm uninstall carto-selfhosted-v1 --wait
+```
 
+If you were using the internal Postgres, to delete the data you need:
+
+```bash
 # ⚠️ This is going to delete the data of the postgres inside the cluster ⚠️
 kubectl delete pvc data-carto-selfhosted-v1-postgresql-0
 ```
 
+## Configuration options
 
-### Custom Domain
+### TLS Certificate
 
-By default, the carto router deployment will create its own auto generate ssl certs, but if your want to install carto selfhosted with your custom domain and TLS certs, you have to do the following steps:
+By default, CARTO deployment will generate self-signed TLS certificates. You should configure it to use your
+certificates. To do so, follow these steps:
   
 - Change the `routerSslAutogenerate` value to `"1"` in `carto-values.yaml`
 
 - Create a kubernetes secret with following content:
+
   ```yaml
   apiVersion: v1
   kind: Secret
   metadata:
-    name: <kubernetes-tls-secret-name>
+    name: tls-certificate
   type: Opaque
   data:
     tls.key: "<base64 encoded key>"
     tls.crt: "<base64 encoded certificate>"
     ca.crt: "<base64 encoded public ca file>"
   ```
+
   Note that the content of certs should be formatted in base64 in one line, e.g:
+
   ```bash
   cat certificate.crt | base64 -w0
   ```
+
 - Then create the object in kubernetes with `kubectl apply -f <secret-tls-file> -n <namespace>`
 
 - Finally, you have to add the following lines to `carto-secrets.yaml`:
+
   ```yaml
   tlsCerts:
     autoGenerate: false
     existingSecret:
-      name: "<kubernetes-tls-secret-name>"
+      name: "tls-certificate"
       caKey: "ca.crt"
       keyKey: "tls.key"
       certKey: "tls.crt"
   ```
 
+### External Databases
 
-### External Postgres
+CARTO Platform needs to databases to operate, Postgres and Redis. Default option is to run with them inside the Kubernetes deployment,
+but it is recommended to use a managed version, with backups, high availability, etc.
 
-By default, Carto-Selfhosted is provisioned with a Postgresl statefulset kubernetes object, but you could connect this environment with your own Cloud Postgres instance, follow this steps to make it possible:
+#### External Postgres
 
-- Add these lines in your `carto-values.yaml`, you can find it and uncomment inside the file:
+By default, Carto-Selfhosted is provisioned with a Postgresl statefulset kubernetes object. But it is recommended to use an external
+managed Postges (13+) installation. To configure it you need to:
+
+- Edit `carto-values.yaml`. Uncomment the following lines you will find:
 
   ```yaml
   postgresql:
@@ -112,11 +166,11 @@ By default, Carto-Selfhosted is provisioned with a Postgresl statefulset kuberne
 - Create one secret in kubernetes with the Postgres passwords:
 
   ```bash
-  kubectl create secret generic <my-external-postgres-secret-name> --from-literal=carto-password=<password> --from-literal=admin-password=<password>
+  kubectl create secret generic carto-postgres-config --from-literal=carto-password=<password> --from-literal=admin-password=<password>
 
   ```
 
-- Add the postgres IP/hostname and the secret reference in these lines, you can find this configuration inside `carto-secrets.yaml`:
+- Edit the `carto-secrets.yaml` adding something like this to configure Postgres IP/hostname:
 
   ```yaml
   externalDatabase:
@@ -125,20 +179,23 @@ By default, Carto-Selfhosted is provisioned with a Postgresl statefulset kuberne
     password: ""
     adminUser: postgres
     adminPassword: ""
-    existingSecret: "<kubernetes postgres created secret name>"
+    existingSecret: "carto-postgres-config"
     existingSecretPasswordKey: "carto-password"
     existingSecretAdminPasswordKey: "admin-password"
     database: workspace_db
     port: 5432
   ```
 
-- Note: `carto` user and `workspace_db` database inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created. The `carto-password` indicated in the kubernetes secret created before is with which this user will be created
+- Note: `carto` user and `workspace_db` database inside the Postgres instance are going to be created automatically
+  during the installation process, they do not need to be pre-created. The `carto-password` indicated in the kubernetes
+  secret created before is with which this user will be created
 
-### External Redis
+#### External Redis
 
-By default, Carto-Selfhosted is provisioned with a Redis statefulset kubernetes object, but you could connect this environment with your own Cloud Redis instance, follow this steps to make it possible:
+By default, CARTO is provisioned with a Redis statefulset kubernetes object, but you could connect this environment
+with your own Cloud Redis instance, follow this steps to make it possible:
 
-- Add these lines in your `carto-values.yaml`, you can find it and uncomment inside the file:
+- Edit `carto-values.yaml`. Uncomment the following lines you will find:
 
   ```yaml
   redis:
@@ -148,41 +205,16 @@ By default, Carto-Selfhosted is provisioned with a Redis statefulset kubernetes 
 - Create one secret in kubernetes with the Redis AUTH string:
 
   ```bash
-  kubectl create secret generic <my-external-redis-secret-name> --from-literal=password=<AUTH string password>
+  kubectl create secret generic carto-redis-config --from-literal=password=<AUTH string password>
   ```
 
-- Add the Redis IP/hostname and the secret reference in these lines, you can find this configuration inside `carto-secrets.yaml`:
+- Edit the `carto-secrets.yaml` adding something like this to configure Redis IP/hostname:
 
   ```yaml
   externalRedis:
     host: <Redis IP/Hostname>
     port: 6379
     password: ""
-    existingSecret: "<kubernetes redis created secret name>"
+    existingSecret: "carto-redis-config"
     existingSecretPasswordKey: "password"
   ```
-
-## Before you begin
-
-### Prerequisites
-
-- Kubernetes 1.12+
-- Helm 3.1.0
-- PV provisioner support in the underlying infrastructure
-
-### Setup a Kubernetes Cluster
-
-For setting up Kubernetes on other cloud platforms or bare-metal servers refer to the Kubernetes [getting started guide](http://kubernetes.io/docs/getting-started-guides/).
-
-### Install Docker
-
-Docker is an open source containerization technology for building and containerizing your applications.
-
-To install Docker, refer to the [Docker install guide](https://docs.docker.com/engine/install/).
-
-### Install Helm
-
-Helm is a tool for managing Kubernetes charts. Charts are packages of pre-configured Kubernetes resources.
-
-To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#install) and ensure that the `helm` binary is in the `PATH` of your shell.
-
