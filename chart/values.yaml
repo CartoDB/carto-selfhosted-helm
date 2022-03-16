@@ -29,6 +29,8 @@ cartoSecretsValues:
   encryptionSecretKey: ""
   varnishDebugSecret: ""
   varnishPurgeSecret: ""
+  googleServiceAccount: ""
+
 
 ## @section Global parameters
 ## Global Docker image parameters
