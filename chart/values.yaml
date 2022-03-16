@@ -1,5 +1,15 @@
 ## @section CARTO parameters
 ##
+customConfigValues:
+  selfHostedDomain: "carto3-selfhosted.lan"
+  httpCacheEnabled: "true"
+  routerSslAutogenerate: ""
+  importBucket: ""
+  workspaceImportsBucket: ""
+  workspaceThumbnailsBucket: ""
+  workspaceThumbnailsPublic: ""
+  storageProvider: "gcp"
+  gcsBucketsProjectId: ""
 
 cartoConfigValues:
   cartoAccDomain: ""
@@ -8,24 +18,19 @@ cartoConfigValues:
   cartoAuth0ClientId: ""
   cartoAuth0CustomDomain: ""
   cartoSelfhostedDwLocation: ""
-  httpCacheEnabled: "true"
-  storageProvider: "gcp"
-  importBucket: ""
-  routerSslAutogenerate: ""
-  selfHostedDomain: "carto3-selfhosted.lan"
   selfHostedGcpProjectId: ""
   selfHostedTenantId: ""
-  workspaceImportsBucket: ""
-  workspaceThumbnailsBucket: ""
-  workspaceThumbnailsPublic: ""
   reactAppLaunchDarklyClientSideId: ""
-  gcsBucketsProjectId: ""
 
-cartoSecrets:
+customSecretsValues:
   googleMapsApiKey: ""
+
+cartoSecretsValues:
   encryptionSecretKey: ""
   varnishDebugSecret: ""
   varnishPurgeSecret: ""
+  googleServiceAccount: ""
+
 
 ## @section Global parameters
 ## Global Docker image parameters
