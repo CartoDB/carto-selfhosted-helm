@@ -114,9 +114,16 @@ By default, CARTO deployment is only accesible from inside the cluster.
 To open to the world, the easiest way is to use a `Service` of type `LoadBalancer`.
 To change it, upgrade your deployment adding the next parameters:
 
-```bash
--f https://raw.githubusercontent.com/CartoDB/carto-selfhosted-helm/main/customizations/service_loadBalancer/config.yml
-```
+- In AWS EKS:
+  ```bash
+  -f https://raw.githubusercontent.com/CartoDB/carto-selfhosted-helm/main/customizations/service_loadBalancer/aws_eks/config.yml
+  ```
+
+- In other cases (please, keep in min that you need to increase the timeout):
+  ```bash
+  -f https://raw.githubusercontent.com/CartoDB/carto-selfhosted-helm/main/customizations/service_loadBalancer/config.yml
+  ```
+
 
 ### TLS Certificate
 
