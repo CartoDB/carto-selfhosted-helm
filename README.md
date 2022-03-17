@@ -6,8 +6,6 @@ If you are looking for another installation method, please refer to [carto-selfh
 
 ## Installation
 
-- autoscaling
-- check package installed (something like helm list or similar)
 
 ### Prerequisites
 
@@ -110,6 +108,15 @@ kubectl delete pvc data-<your_own_installation_name|carto>-postgresql-0
 ```
 
 ## Configuration options
+
+### Made it public
+By default, CARTO deployment is only accesible from inside the cluster.
+To open to the world, the easiest way is to use a `Service` of type `LoadBalancer`.
+To change it, upgrade your deployment adding the next parameters:
+
+```bash
+-f https://raw.githubusercontent.com/CartoDB/carto-selfhosted-helm/main/customizations/service_loadBalancer/config.yml
+```
 
 ### TLS Certificate
 

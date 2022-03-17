@@ -2,6 +2,8 @@ CHART NAME: {{ .Chart.Name }}
 CHART VERSION: {{ .Chart.Version }}
 APP VERSION: {{ .Chart.AppVersion }}
 
+{{/* TODO: We should provide some type of link to the repo to redirect the people that only uses helm to the official documentation */}}
+
 {{- if  or (.Values.postgresql.enabled) (.Values.redis.enabled) }}
                                                    
                                                    
@@ -83,9 +85,13 @@ host. To configure CARTO with the URL of your service:
 {{- $port_https := default 443 .Values.router.service.ports.https | toString }}
   {{/* TODO: We should check that HTTPS should be enabled ! */}}
 
-  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }} {{ $port_https }}:{{ $port_https }}
   export CARTO_HOST_IP=127.0.0.1
   export CARTO_PORT={{- $port }}
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }} {{ $port_https }}:{{ $port_https }}
+
+  If the previous command fails regarding port permissions, try the next ones:
+  export CARTO_KUBECONFIG=$([[ ! -z "$KUBECONFIG" ]] && echo "$KUBECONFIG" || echo "$HOME/.kube/config")
+  sudo kubectl --kubeconfig=${CARTO_KUBECONFIG} port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }} {{ $port_https }}:{{ $port_https }}
 
 {{- else if eq .Values.router.service.type "NodePort" }}
 
@@ -95,13 +101,9 @@ host. To configure CARTO with the URL of your service:
   NOTE: It may take a few minutes for the LoadBalancer IP to be available.
         Watch the status with: 'kubectl get svc --namespace {{ .Release.Namespace }} -w {{ include "carto.router.fullname" . }}'
 
-  export CARTO_HOST_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} --template "{{ "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}" }}")
+  export CARTO_HOST_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress.*.ip}')
 
-  export CARTO_HOST_CNAME=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} --template "{{ "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}" }}")
-
-  OLD. TO BE DELETE AFTER TESTING:
-    - kubectl get svc carto-selfhosted-v1-router -o jsonpath='{.status.loadBalancer.ingress.*.ip}'
-    - kubectl get svc carto-selfhosted-v1-router -o jsonpath='{.status.loadBalancer.ingress.*.hostname}'
+  export CARTO_HOST_CNAME=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress.*.hostname}')
 
 {{- else }}
 

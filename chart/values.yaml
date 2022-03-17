@@ -1,7 +1,7 @@
 ## @section CARTO parameters
 ##
 customConfigValues:
-  selfHostedDomain: "carto3-selfhosted.lan"
+  selfHostedDomain: "carto-selfhosted.lan"
   httpCacheEnabled: "true"
   importBucket: ""
   workspaceImportsBucket: ""
