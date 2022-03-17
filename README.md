@@ -1,15 +1,21 @@
-# Helm chart for Carto 3
+# CARTO self-hosted [Helm chart]
 
-This repository contains the Helm chart files for CARTO Platform. Run CARTO Self Hosted in your own cloud infrastructre.
+This repository contains the [Kubernetes Helm](https://github.com/helm/helm) chart files for CARTO Platform. Run CARTO Self Hosted in your own cloud infrastructre.
+
+If you are looking for another installation method, please refer to [carto-selfhosted repository](https://github.com/CartoDB/carto-selfhosted).
 
 ## Installation
+
 
 ### Prerequisites
 
 - Kubernetes 1.12+
 - Helm 3.1.0
+- (Optional) PV provisioner support in the underlying infrastructure. Required only for non-production deployment without external and managed databases (Postgres and Redis).
 
+<!--
 Currently the only Kubernetes that have been tested are EKS, GKE and AKS.
+-->
 
 #### Setup a Kubernetes Cluster
 
@@ -25,19 +31,25 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
 
 1. Authenticate and connect to your cluster
 
-2. Add Carto repository to helm:
+2. Obtain the configuration files provided by Carto.
+That files are unique per self-hosted (**couldn't be shared between multiple installations**) and one could be public but the other one is private so please, be careful sharing it.
 
-```bash
-helm repo add carto-selfhosted-charts https://carto-selfhosted-charts.storage.googleapis.com
-```
-
-  Update dependecies
-
+3. Add our Carto helm repository with the next commands:
   ```bash
+  # Add the carto-selfhosted repo.
+  helm repo add carto-selfhosted https://carto-selfhosted-charts.storage.googleapis.com
+
+  # Retrieve the latests version of the packages. REQUIRED before update to a new version.
   helm repo update
+
+  # List the available versions of the package
+  helm search repo carto-selfhosted -l
   ```
 
-3. Configure your deployment
+4. Configure your deployment.
+<!--
+ ¡¡ PENDING to be extracted and organized in another section !!
+-->
 
 Open the file `carto-values.yaml` that you have received and configure the needed things:
 
@@ -46,31 +58,18 @@ Open the file `carto-values.yaml` that you have received and configure the neede
 - Configure [external DBs](#external-databases)
 - Configure external buckets
 
-4. Deploy CARTO
-
-```bash
-helm install carto-selfhosted-v1 carto-selfhosted-charts/carto -f carto-values.yaml -f carto-secrets.yaml
-```
-
-5. Configure your DNS to point to the deployment:
-
-  In GKE:
-
-  Create an A record pointing to the IP:
-
+5. Install your deployment:
   ```bash
-  kubectl get svc carto-selfhosted-v1-router -o jsonpath='{.status.loadBalancer.ingress.*.ip}'
-  ```
-  
-  In EKS:
-
-  Create a CNAME record poiting to:
-
-  ```bash
-  kubectl get svc carto-selfhosted-v1-router -o jsonpath='{.status.loadBalancer.ingress.*.hostname}'
+  helm install \
+    <your_own_installation_name|carto> \
+    carto-selfhosted/carto \
+    --namespace <your_namespace> \
+    -f carto-values.yaml \
+    -f carto-secrets.yaml \
+    <other_custom_files>
   ```
 
-6. Go to the configured domain and follow the process
+6. Follow the instructions provided by the command.
 
 ## Update
 
@@ -83,65 +82,59 @@ helm install carto-selfhosted-v1 carto-selfhosted-charts/carto -f carto-values.y
   ```
   
 3. Update CARTO
-
-```bash
-helm upgrade carto-selfhosted-v1 carto-selfhosted-charts/carto -f carto-values.yaml -f carto-secrets.yaml
-```
+  ```bash
+  helm upgrade \
+    <your_own_installation_name|carto> \
+    carto-selfhosted/carto \
+    --namespace <your_namespace> \
+    -f carto-values.yaml \
+    -f carto-secrets.yaml \
+    <other_custom_files>
+  ```
 
 ## Unistallation
 
 To remove CARTO from your cluster you need to run:
 
 ```bash
-helm uninstall carto-selfhosted-v1 --wait
+helm uninstall <your_own_installation_name|carto> --wait
 ```
 
 If you were using the internal Postgres, to delete the data you need:
 
 ```bash
 # ⚠️ This is going to delete the data of the postgres inside the cluster ⚠️
-kubectl delete pvc data-carto-selfhosted-v1-postgresql-0
+kubectl delete pvc data-<your_own_installation_name|carto>-postgresql-0
 ```
 
 ## Configuration options
+
+### Made it public
+By default, CARTO deployment is only accesible from inside the cluster.
+To open to the world, the easiest way is to use a `Service` of type `LoadBalancer`.
+To change it, upgrade your deployment adding the next parameters:
+
+```bash
+-f https://raw.githubusercontent.com/CartoDB/carto-selfhosted-helm/main/customizations/service_loadBalancer/config.yml
+```
 
 ### TLS Certificate
 
 By default, CARTO deployment will generate self-signed TLS certificates. You should configure it to use your
 certificates. To do so, follow these steps:
-  
-- Change the `routerSslAutogenerate` value to `"1"` in `carto-values.yaml`
 
 - Create a kubernetes secret with following content:
-
-  ```yaml
-  apiVersion: v1
-  kind: Secret
-  metadata:
-    name: tls-certificate
-  type: Opaque
-  data:
-    tls.key: "<base64 encoded key>"
-    tls.crt: "<base64 encoded certificate>"
-    ca.crt: "<base64 encoded public ca file>"
-  ```
-
-  Note that the content of certs should be formatted in base64 in one line, e.g:
-
   ```bash
-  cat certificate.crt | base64 -w0
+  kubectl create secret tls -n <namespace> tls-certificate --cert=path/to/cert/file --key=path/to/key/file
   ```
 
-- Then create the object in kubernetes with `kubectl apply -f <secret-tls-file> -n <namespace>`
-
-- Finally, you have to add the following lines to `carto-secrets.yaml`:
+- Add the following lines to `carto-values.yaml`:
 
   ```yaml
   tlsCerts:
     autoGenerate: false
     existingSecret:
       name: "tls-certificate"
-      caKey: "ca.crt"
       keyKey: "tls.key"
       certKey: "tls.crt"
   ```

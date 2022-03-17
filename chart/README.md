@@ -1880,4 +1880,4 @@ There are cases where you may want to deploy extra objects, such a ConfigMap con
 
 ## Troubleshooting
 
-Find more information about how to deal with common errors related to CARTO Helm chart in [this repository](https://github.com/cartoDB/carto3-helm).
+Find more information about how to deal with common errors related to CARTO Helm chart in [this repository](https://github.com/cartoDB/carto-selfhosted-helm).
