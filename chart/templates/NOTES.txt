@@ -97,13 +97,19 @@ host. To configure CARTO with the URL of your service:
 
   export CARTO_HOST_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} --template "{{ "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}" }}")
 
+  export CARTO_HOST_CNAME=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} --template "{{ "{{ range (index .status.loadBalancer.ingress 0) }}{{ . }}{{ end }}" }}")
+
+  OLD. TO BE DELETE AFTER TESTING:
+    - kubectl get svc carto-selfhosted-v1-router -o jsonpath='{.status.loadBalancer.ingress.*.ip}'
+    - kubectl get svc carto-selfhosted-v1-router -o jsonpath='{.status.loadBalancer.ingress.*.hostname}'
+
 {{- else }}
 
   echo URL  : {{ $baseUrl }}
 
 {{- end }}
 
-2. Add the `CARTO_HOST_IP` to your DNS or to `/etc/hosts` pointing to the domain `{{ $baseUrl }}`. Remember that CARTO only works with a domain and accessing (from the final client) using https.
+2. Add the `CARTO_HOST_IP` (An 'A' record) or your `CARTO_HOST_CNAME` (A 'CNAME' record) to your DNS or to `/etc/hosts` pointing to the domain `{{ $baseUrl }}`. Remember that CARTO only works with a domain and accessing (from the final client) using https.
 
 {{- end  }}
 

@@ -6,13 +6,18 @@ If you are looking for another installation method, please refer to [carto-selfh
 
 ## Installation
 
+- autoscaling
+- check package installed (something like helm list or similar)
+
 ### Prerequisites
 
 - Kubernetes 1.12+
 - Helm 3.1.0
 - (Optional) PV provisioner support in the underlying infrastructure. Required only for non-production deployment without external and managed databases (Postgres and Redis).
 
-~~Currently the only Kubernetes that have been tested are EKS, GKE and AKS.~~
+<!--
+Currently the only Kubernetes that have been tested are EKS, GKE and AKS.
+-->
 
 #### Setup a Kubernetes Cluster
 
@@ -43,7 +48,10 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
   helm search repo carto-selfhosted -l
   ```
 
-4. Configure your deployment. ¡¡ PENDING !!
+4. Configure your deployment.
+<!--
+ ¡¡ PENDING to be extracted and organized in another section !!
+-->
 
 Open the file `carto-values.yaml` that you have received and configure the needed things:
 
@@ -64,28 +72,6 @@ Open the file `carto-values.yaml` that you have received and configure the neede
   ```
 
 6. Follow the instructions provided by the command.
-
----
-
-5. Configure your DNS to point to the deployment:
-
-  In GKE:
-
-  Create an A record pointing to the IP:
-
-  ```bash
-  kubectl get svc carto-selfhosted-v1-router -o jsonpath='{.status.loadBalancer.ingress.*.ip}'
-  ```
-  
-  In EKS:
-
-  Create a CNAME record poiting to:
-
-  ```bash
-  kubectl get svc carto-selfhosted-v1-router -o jsonpath='{.status.loadBalancer.ingress.*.hostname}'
-  ```
-
-6. Go to the configured domain and follow the process
 
 ## Update
 
