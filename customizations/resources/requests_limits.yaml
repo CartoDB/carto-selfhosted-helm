@@ -1,0 +1,98 @@
+accountsWww:
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+    requests:
+      memory: "128Mi"
+      cpu: "125m"
+
+cdnInvalidatorSub:
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+    requests:
+      memory: "128Mi"
+      cpu: "125m"
+
+httpCache:
+  resources:
+    limits:
+      memory: "1024Mi"
+      cpu: "500m"
+    requests:
+      memory: "256Mi"
+      cpu: "125m"
+
+importApi:
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "1000m"
+    requests:
+      memory: "128Mi"
+      cpu: "250m"
+
+importWorker:
+  resources:
+    limits:
+      memory: "4096Mi"
+      cpu: "1000m"
+    requests:
+      memory: "1024Mi"
+      cpu: "250m"
+
+ldsApi:
+  resources:
+    limits:
+      memory: "1024Mi"
+      cpu: "1000m"
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+
+mapsApi:
+  resources:
+    limits:
+      memory: "1024Mi"
+      cpu: "1000m"
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+
+router:
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+    requests:
+      memory: "128Mi"
+      cpu: "250m"
+
+workspaceApi:
+  resources:
+    limits:
+      memory: "1024Mi"
+      cpu: "1000m"
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+
+workspaceSubscriber:
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+    requests:
+      memory: "128Mi"
+      cpu: "125m"
+
+workspaceWww:
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+    requests:
+      memory: "128Mi"
+      cpu: "125m"
