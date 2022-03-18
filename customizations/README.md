@@ -59,7 +59,7 @@ Don't forget to upgrade your chart after the change.
 By default, the `router` Service of CARTO self-hosted is configured in mode `ClusterIP` so it's only usable from inside the cluster.
 To access to it you can exec locally a [kubectl port-forward](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) but this only make it accessible to your machine.
 
-To made it accessible from the internet (or outside the Kubernetes network) you need to properly [configure the `router` Service](#service-as-loadbalancer) (the easiest way) or create an Ingress.
+To made it accessible from the internet (or outside the Kubernetes network) we recommended you to properly [configure the `router` Service](#service-as-loadbalancer).
 
 Additionally, depending of the way to reach your self-hosted from internet, you would need to [configure the HTTPS/TLS](#configure-tls).
 
@@ -86,8 +86,9 @@ We have examples for multiple cloud providers:
 TODO: Add the other providers
 -->
 
-
+<!--
 ### Ingress
+-->
 <!--
 TODO: Document Ingress
 -->
