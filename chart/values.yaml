@@ -217,7 +217,7 @@ accountsWww:
   ## @param accountsWww.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in accounts-www deployment
   ##
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
@@ -533,7 +533,7 @@ importApi:
   ## @param importApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in import-api deployment
   ##
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
@@ -801,7 +801,7 @@ importWorker:
   ## @param importWorker.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in import-worker deployment
   ##
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
@@ -1071,7 +1071,7 @@ ldsApi:
   ## @param ldsApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in lds-api deployment
   ##
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
@@ -1387,7 +1387,7 @@ mapsApi:
   ## @param mapsApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in maps-api deployment
   ##
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
@@ -1706,7 +1706,7 @@ router:
   ## @param router.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in router deployment
   ##
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
@@ -2642,7 +2642,7 @@ workspaceApi:
   ## @param workspaceApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in workspace-api deployment
   ##
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
@@ -3169,7 +3169,7 @@ workspaceWww:
   ## @param workspaceWww.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in workspace-www deployment
   ##
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
