@@ -1,0 +1,112 @@
+accountsWww:
+  ## accounts-www autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param accountsWww.autoscaling.enabled Enable autoscaling for the accounts-www containers
+  ## @param accountsWww.autoscaling.minReplicas The minimal number of containters for the accounts-www deployment
+  ## @param accountsWww.autoscaling.maxReplicas The maximum number of containers for the accounts-www deployment
+  ## @param accountsWww.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in accounts-www deployment
+  ##
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
+
+importApi:
+  ## import-api autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param importApi.autoscaling.enabled Enable autoscaling for the import-api containers
+  ## @param importApi.autoscaling.minReplicas The minimal number of containters for the import-api deployment
+  ## @param importApi.autoscaling.maxReplicas The maximum number of containers for the import-api deployment
+  ## @param importApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in import-api deployment
+  ##
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
+
+importWorker:
+  ## import-worker autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param importWorker.autoscaling.enabled Enable autoscaling for the import-worker containers
+  ## @param importWorker.autoscaling.minReplicas The minimal number of containters for the import-worker deployment
+  ## @param importWorker.autoscaling.maxReplicas The maximum number of containers for the import-worker deployment
+  ## @param importWorker.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in import-worker deployment
+  ##
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
+
+ldsApi:
+  ## lds-api autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param ldsApi.autoscaling.enabled Enable autoscaling for the lds-api containers
+  ## @param ldsApi.autoscaling.minReplicas The minimal number of containters for the workspldsace-api deployment
+  ## @param ldsApi.autoscaling.maxReplicas The maximum number of containers for the lds-api deployment
+  ## @param ldsApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in lds-api deployment
+  ##
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
+
+mapsApi:
+  ## maps-api autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param mapsApi.autoscaling.enabled Enable autoscaling for the maps-api containers
+  ## @param mapsApi.autoscaling.minReplicas The minimal number of containters for the maps-api deployment
+  ## @param mapsApi.autoscaling.maxReplicas The maximum number of containers for the maps-api deployment
+  ## @param mapsApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in maps-api deployment
+  ##
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
+
+router:
+  ## router autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param router.autoscaling.enabled Enable autoscaling for the router containers
+  ## @param router.autoscaling.minReplicas The minimal number of containters for the router deployment
+  ## @param router.autoscaling.maxReplicas The maximum number of containers for the router deployment
+  ## @param router.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in router deployment
+  ##
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
+
+workspaceApi:
+  ## workspace-api autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param workspaceApi.autoscaling.enabled Enable autoscaling for the workspace-api containers
+  ## @param workspaceApi.autoscaling.minReplicas The minimal number of containters for the workspace-api deployment
+  ## @param workspaceApi.autoscaling.maxReplicas The maximum number of containers for the workspace-api deployment
+  ## @param workspaceApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in workspace-api deployment
+  ##
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
+
+workspaceWww:
+  ## workspace-www autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param workspaceWww.autoscaling.enabled Enable autoscaling for the workspace-www containers
+  ## @param workspaceWww.autoscaling.minReplicas The minimal number of containters for the workspace-www deployment
+  ## @param workspaceWww.autoscaling.maxReplicas The maximum number of containers for the workspace-www deployment
+  ## @param workspaceWww.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in workspace-www deployment
+  ##
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
+
