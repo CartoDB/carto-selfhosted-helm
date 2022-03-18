@@ -127,7 +127,7 @@ TODO: Document and add the ability to do it
   ```
 
 ## Use external databases
-This package comes with an internal Postgres and Redis but it is not recommended for production. It does not have any logic for backups or any other monitoring. 
+This package comes with an internal Postgres and Redis but it is not recommended for production. It does not have any logic for backups or any other monitoring.
 
 So we recommend to use external databases, preferible managed database by your provider, with backups, high availability, etc.
 
