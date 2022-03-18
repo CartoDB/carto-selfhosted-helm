@@ -228,11 +228,11 @@ accountsWww:
   ##
   resources:
     limits:
-      memory: "512Mi"
+      memory: "1024Mi"
       cpu: "500m"
     requests:
-      memory: "128Mi"
-      cpu: "125m"
+      memory: "768Mi"
+      cpu: "375m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param accountsWww.podSecurityContext.enabled Enabled accounts-www pods' Security Context
@@ -547,8 +547,8 @@ importApi:
       memory: "512Mi"
       cpu: "1000m"
     requests:
-      memory: "128Mi"
-      cpu: "250m"
+      memory: "372Mi"
+      cpu: "750m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importApi.podSecurityContext.enabled Enabled import-api pods' Security Context
@@ -815,8 +815,8 @@ importWorker:
       memory: "4096Mi"
       cpu: "1000m"
     requests:
-      memory: "1024Mi"
-      cpu: "250m"
+      memory: "3072Mi"
+      cpu: "750m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importWorker.podSecurityContext.enabled Enabled import-worker pods' Security Context
@@ -1085,8 +1085,8 @@ ldsApi:
       memory: "1024Mi"
       cpu: "1000m"
     requests:
-      memory: "256Mi"
-      cpu: "250m"
+      memory: "768Mi"
+      cpu: "750m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param ldsApi.podSecurityContext.enabled Enabled lds-api pods' Security Context
@@ -1388,8 +1388,8 @@ mapsApi:
   ##
   autoscaling:
     enabled: false
-    minReplicas: 1
-    maxReplicas: 2
+    minReplicas: 2
+    maxReplicas: 3
     targetCPUUtilizationPercentage: 75
   ## maps-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
@@ -1401,8 +1401,8 @@ mapsApi:
       memory: "1024Mi"
       cpu: "1000m"
     requests:
-      memory: "256Mi"
-      cpu: "250m"
+      memory: "768Mi"
+      cpu: "750m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param mapsApi.podSecurityContext.enabled Enabled maps-api pods' Security Context
@@ -1720,8 +1720,8 @@ router:
       memory: "512Mi"
       cpu: "500m"
     requests:
-      memory: "128Mi"
-      cpu: "250m"
+      memory: "372Mi"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param router.podSecurityContext.enabled Enabled router pods' Security Context
@@ -2029,8 +2029,8 @@ httpCache:
       memory: "1024Mi"
       cpu: "500m"
     requests:
-      memory: "256Mi"
-      cpu: "125m"
+      memory: "768Mi"
+      cpu: "375m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param http-cache.podSecurityContext.enabled Enabled http-cache pods' Security Context
@@ -2336,8 +2336,8 @@ cdnInvalidatorSub:
       memory: "512Mi"
       cpu: "500m"
     requests:
-      memory: "128Mi"
-      cpu: "125m"
+      memory: "372Mi"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param cdnInvalidatorSub.podSecurityContext.enabled Enabled cdnInvalidatorSub pods' Security Context
@@ -2643,8 +2643,8 @@ workspaceApi:
   ##
   autoscaling:
     enabled: false
-    minReplicas: 1
-    maxReplicas: 2
+    minReplicas: 2
+    maxReplicas: 3
     targetCPUUtilizationPercentage: 75
   ## workspace-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
@@ -2656,8 +2656,8 @@ workspaceApi:
       memory: "1024Mi"
       cpu: "1000m"
     requests:
-      memory: "256Mi"
-      cpu: "250m"
+      memory: "768Mi"
+      cpu: "750m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceApi.podSecurityContext.enabled Enabled workspace-api pods' Security Context
@@ -2913,8 +2913,8 @@ workspaceSubscriber:
       memory: "512Mi"
       cpu: "500m"
     requests:
-      memory: "128Mi"
-      cpu: "125m"
+      memory: "372Mi"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceSubscriber.podSecurityContext.enabled Enabled workspace-subscriber pods' Security Context
@@ -3180,11 +3180,11 @@ workspaceWww:
   ##
   resources:
     limits:
-      memory: "512Mi"
+      memory: "1024Mi"
       cpu: "500m"
     requests:
-      memory: "128Mi"
-      cpu: "125m"
+      memory: "768Mi"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceWww.podSecurityContext.enabled Enabled workspace-www pods' Security Context

@@ -1,11 +1,11 @@
 accountsWww:
   resources:
     limits:
-      memory: "512Mi"
+      memory: "1024Mi"
       cpu: "500m"
     requests:
-      memory: "128Mi"
-      cpu: "125m"
+      memory: "768Mi"
+      cpu: "375m"
 
 cdnInvalidatorSub:
   resources:
@@ -13,8 +13,8 @@ cdnInvalidatorSub:
       memory: "512Mi"
       cpu: "500m"
     requests:
-      memory: "128Mi"
-      cpu: "125m"
+      memory: "372Mi"
+      cpu: "350m"
 
 httpCache:
   resources:
@@ -22,8 +22,8 @@ httpCache:
       memory: "1024Mi"
       cpu: "500m"
     requests:
-      memory: "256Mi"
-      cpu: "125m"
+      memory: "768Mi"
+      cpu: "375m"
 
 importApi:
   resources:
@@ -31,8 +31,8 @@ importApi:
       memory: "512Mi"
       cpu: "1000m"
     requests:
-      memory: "128Mi"
-      cpu: "250m"
+      memory: "372Mi"
+      cpu: "750m"
 
 importWorker:
   resources:
@@ -40,8 +40,8 @@ importWorker:
       memory: "4096Mi"
       cpu: "1000m"
     requests:
-      memory: "1024Mi"
-      cpu: "250m"
+      memory: "3072Mi"
+      cpu: "750m"
 
 ldsApi:
   resources:
@@ -49,8 +49,8 @@ ldsApi:
       memory: "1024Mi"
       cpu: "1000m"
     requests:
-      memory: "256Mi"
-      cpu: "250m"
+      memory: "768Mi"
+      cpu: "750m"
 
 mapsApi:
   resources:
@@ -58,8 +58,8 @@ mapsApi:
       memory: "1024Mi"
       cpu: "1000m"
     requests:
-      memory: "256Mi"
-      cpu: "250m"
+      memory: "768Mi"
+      cpu: "750m"
 
 router:
   resources:
@@ -67,8 +67,8 @@ router:
       memory: "512Mi"
       cpu: "500m"
     requests:
-      memory: "128Mi"
-      cpu: "250m"
+      memory: "372Mi"
+      cpu: "350m"
 
 workspaceApi:
   resources:
@@ -76,8 +76,8 @@ workspaceApi:
       memory: "1024Mi"
       cpu: "1000m"
     requests:
-      memory: "256Mi"
-      cpu: "250m"
+      memory: "768Mi"
+      cpu: "750m"
 
 workspaceSubscriber:
   resources:
@@ -85,14 +85,14 @@ workspaceSubscriber:
       memory: "512Mi"
       cpu: "500m"
     requests:
-      memory: "128Mi"
-      cpu: "125m"
+      memory: "372Mi"
+      cpu: "350m"
 
 workspaceWww:
   resources:
     limits:
-      memory: "512Mi"
+      memory: "1024Mi"
       cpu: "500m"
     requests:
-      memory: "128Mi"
-      cpu: "125m"
+      memory: "768Mi"
+      cpu: "350m"
