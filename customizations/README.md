@@ -1,11 +1,11 @@
 # Customizations
 
-That file explain how to configure your CARTO selfhosted to meet your needs.
+This file explains how to configure CARTO Self-Hosted to meet your needs.
 
 ## Production Ready
 
-By default, the Helm configuration with the config files provided by CARTO should work but it's not production ready.
-In the following steps we are going to explain the steps to approximate the installation to a production ready environment.
+By default, the Helm configuration provided by CARTO works out of the box, but it's **not production ready**.
+These are the steps to prepare the installation to a production ready environment.
 
 It should be configured:
 - **MANDATORY** Configure the domain to be used.
@@ -120,7 +120,7 @@ TODO: Document and add the ability to do it
   ```
 
 ## Use external databases
-This package comes with an internal Postgres and Redis but it isn't the recommended way because WE DON'T CREATE BACKUPS.
+This package comes with an internal Postgres and Redis but it is not recommended for production. It does not have any logic for backups or any other monitoring. 
 
 So we recommend to use external databases, preferible managed database by your provider, with backups, high availability, etc.
 
