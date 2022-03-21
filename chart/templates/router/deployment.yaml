@@ -157,9 +157,6 @@ spec:
               mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
               subPath: {{ template "carto.google.secretKey" . }}
             - name: tls-secret
-              mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCAKey" . }}
-              subPath: {{ template "carto.tlsCerts.secretCAKey" . }}
-            - name: tls-secret
               mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
               subPath: {{ template "carto.tlsCerts.secretCertKey" . }}
             - name: tls-secret

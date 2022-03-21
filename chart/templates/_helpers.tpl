@@ -605,17 +605,6 @@ Return the proper Carto TLS Secret name
 {{- end -}}
 
 {{/*
-Return the proper Carto TLS secret key for the CA cert
-*/}}
-{{- define "carto.tlsCerts.secretCAKey" -}}
-{{- if .Values.tlsCerts.existingSecret.name -}}
-{{- .Values.tlsCerts.existingSecret.caKey -}}
-{{- else -}}
-{{- print "ca.crt" -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Return the proper Carto TLS secret key for the TLS cert
 */}}
 {{- define "carto.tlsCerts.secretCertKey" -}}
