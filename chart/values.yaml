@@ -793,18 +793,6 @@ importWorker:
   ## @param importWorker.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
-  ## import-worker autoscaling configuration
-  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
-  ## @param importWorker.autoscaling.enabled Enable autoscaling for the import-worker containers
-  ## @param importWorker.autoscaling.minReplicas The minimal number of containters for the import-worker deployment
-  ## @param importWorker.autoscaling.maxReplicas The maximum number of containers for the import-worker deployment
-  ## @param importWorker.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in import-worker deployment
-  ##
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 2
-    targetCPUUtilizationPercentage: 75
   ## import-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param importWorker.resources.limits The resources limits for the import-worker containers
