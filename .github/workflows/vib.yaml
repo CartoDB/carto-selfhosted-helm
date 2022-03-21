@@ -37,4 +37,5 @@ jobs:
         with:
           pipeline: vib-platform-verify.json
         env:
-          TARGET_PLATFORM: ${{ matrix.target-platform-id }}
+          VIB_ENV_TARGET_PLATFORM: ${{ matrix.target-platform-id }}
+          VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ secrets.CARTO_RUNTIME_PARAMETERS }}
