@@ -132,7 +132,7 @@ This package comes with an internal Postgres and Redis but it is not recommended
 So we recommend to use external databases, preferible managed database by your provider, with backups, high availability, etc.
 
 ### Configure your own postgres
-CARTO self-hosted require a Postges (13+) to work.
+CARTO self-hosted require a Postges (version 13+) to work.
 In that Postgres, CARTO stores some metadata and also the credentials of the external connections configured by the CARTO self-hosted users.
 
 ⚠️ That Postgres has nothing to do with the connections that the user configures in the CARTO workspace since it stores the metadata of the entire CARTO self-hosted. ⚠️
@@ -166,7 +166,7 @@ To proceed you need:
 - Note: `externalDatabase.user` and `externalDatabase.databse` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
 
 ### Configure your own redis
-CARTO self-hosted require a Redis to work.
+CARTO self-hosted require a Redis (version 5+) to work.
 That Redis is mainly used as a cache for the postgres.
 
 To proceed you need:
