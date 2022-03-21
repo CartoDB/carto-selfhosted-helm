@@ -19,9 +19,14 @@
           "url": "{SHA_ARCHIVE}",
           "path": "/.vib/carto/"
         },
-        "runtime_parameters": "b25QcmVtRG9tYWluOiAidGVzdC5jYXJ0by5sb2NhbCIKCmltcG9ydFdvcmtlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQoKd29ya3NwYWNlU3Vic2NyaWJlcjoKICBjb21tYW5kOgogICAgLSBzaAogICAgLSAtYwogICAgLSBzbGVlcCBpbmZpbml0eQo=",
+        "runtime_parameters": "{CARTO_RUNTIME_PARAMETERS}",
         "target_platform": {
-          "target_platform_id": "{TARGET_PLATFORM}"
+          "target_platform_id": "{TARGET_PLATFORM}",
+          "size": {
+            "name": "L8",
+            "worker_nodes_instance_count": 1,
+            "master_nodes_instance_count": 1
+          }
         }
       },
       "actions": [
@@ -34,6 +39,15 @@
             "remote": {
               "workload": "deploy-carto-accounts-www"
             }
+          }
+        },
+        {
+          "action_id": "cypress",
+          "params": {
+            "resources": {
+              "path": "cypress"
+            },
+            "endpoint": "lb-carto-router-http"
           }
         }
       ]
