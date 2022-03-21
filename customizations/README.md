@@ -230,6 +230,9 @@ Also you can set your own preferences using the minimum and maximum values that 
 ### Enable static scaling
 You can set how many number of pods should have be running all time, for this, you can use the [static scale config](scale_components/static.yaml) and [configure your environment](#how-to-define-customizations)
 
+> Although we recommend the autoscaling configuration, you could choose the autoscaling feature for some components and the static configuration for the others. Remember that autoscaling override the static configuration, so if one component has both configurations, autoscaling will take precedence.
+
+
 ## Advanced configuration
 
 If you need a more advanced configuration you can check the [full chart documentation](../chart/README.md) or contact [support@carto.com](mailto:support@carto.com)
