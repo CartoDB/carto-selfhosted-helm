@@ -13,7 +13,7 @@ It should be configured:
 - [Configure DBs to be production ready](#use-external-databases). Our recomendation is to use managed DBs with backups and so on.
 
 Configuring it is optional:
-- Configure scale of the components (staticaly or with auto-scaling).
+- [Configure scale of the components](#autoscaling)
 - Use your own bucket to store the data (By default, GCP CARTO buckets are used)
 
 ## Architecture diagram
