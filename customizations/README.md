@@ -221,20 +221,6 @@ The Kubernetes Metrics Server collects resource metrics from the kubelets in you
 
 To learn how to deploy the Metrics Server, see the [metrics-server installation guide](https://github.com/kubernetes-sigs/metrics-server#installation).
 
-By default, some managed cluster such as GKE have installed the metric server in latest versions, for other cases, you can follow these steps.
-
-Installation Example:
-
-- Default:
-  ```bash
-  kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
-  ```
-
-- High Availability:
-  ```bash
-  kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/high-availability.yaml
-  ```
-
 #### Enable Carto autoscaling feature
 
 You can find an autoscaling config file example in [autoscaling config](scale_components/autoscaling.yaml), it is only necessary [customize your installation](#how-to-define-customizations) adding this file in the `install` or `upgrade` command and start to use the autoscaling feature.
