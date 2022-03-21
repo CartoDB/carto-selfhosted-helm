@@ -209,14 +209,30 @@ accountsWww:
   ## @param accountsWww.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
+  ## accounts-www autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param accountsWww.autoscaling.enabled Enable autoscaling for the accounts-www containers
+  ## @param accountsWww.autoscaling.minReplicas The minimal number of containters for the accounts-www deployment
+  ## @param accountsWww.autoscaling.maxReplicas The maximum number of containers for the accounts-www deployment
+  ## @param accountsWww.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in accounts-www deployment
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
   ## accounts-www resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param accountsWww.resources.limits The resources limits for the accounts-www containers
   ## @param accountsWww.resources.requests The requested resources for the accounts-www containers
   ##
   resources:
-    limits: {}
-    requests: {}
+    limits:
+      memory: "1024Mi"
+      cpu: "500m"
+    requests:
+      memory: "768Mi"
+      cpu: "375m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param accountsWww.podSecurityContext.enabled Enabled accounts-www pods' Security Context
@@ -509,14 +525,30 @@ importApi:
   ## @param importApi.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
+  ## import-api autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param importApi.autoscaling.enabled Enable autoscaling for the import-api containers
+  ## @param importApi.autoscaling.minReplicas The minimal number of containters for the import-api deployment
+  ## @param importApi.autoscaling.maxReplicas The maximum number of containers for the import-api deployment
+  ## @param importApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in import-api deployment
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
   ## import-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param importApi.resources.limits The resources limits for the import-api containers
   ## @param importApi.resources.requests The requested resources for the import-api containers
   ##
   resources:
-    limits: {}
-    requests: {}
+    limits:
+      memory: "512Mi"
+      cpu: "1000m"
+    requests:
+      memory: "372Mi"
+      cpu: "750m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importApi.podSecurityContext.enabled Enabled import-api pods' Security Context
@@ -767,8 +799,12 @@ importWorker:
   ## @param importWorker.resources.requests The requested resources for the import-worker containers
   ##
   resources:
-    limits: {}
-    requests: {}
+    limits:
+      memory: "4096Mi"
+      cpu: "1000m"
+    requests:
+      memory: "3072Mi"
+      cpu: "750m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importWorker.podSecurityContext.enabled Enabled import-worker pods' Security Context
@@ -1015,14 +1051,30 @@ ldsApi:
   ## @param ldsApi.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
+  ## lds-api autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param ldsApi.autoscaling.enabled Enable autoscaling for the lds-api containers
+  ## @param ldsApi.autoscaling.minReplicas The minimal number of containters for the workspldsace-api deployment
+  ## @param ldsApi.autoscaling.maxReplicas The maximum number of containers for the lds-api deployment
+  ## @param ldsApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in lds-api deployment
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
   ## lds-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param ldsApi.resources.limits The resources limits for the lds-api containers
   ## @param ldsApi.resources.requests The requested resources for the lds-api containers
   ##
   resources:
-    limits: {}
-    requests: {}
+    limits:
+      memory: "1024Mi"
+      cpu: "1000m"
+    requests:
+      memory: "768Mi"
+      cpu: "750m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param ldsApi.podSecurityContext.enabled Enabled lds-api pods' Security Context
@@ -1315,14 +1367,30 @@ mapsApi:
   ## @param mapsApi.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
+  ## maps-api autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param mapsApi.autoscaling.enabled Enable autoscaling for the maps-api containers
+  ## @param mapsApi.autoscaling.minReplicas The minimal number of containters for the maps-api deployment
+  ## @param mapsApi.autoscaling.maxReplicas The maximum number of containers for the maps-api deployment
+  ## @param mapsApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in maps-api deployment
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 75
   ## maps-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param mapsApi.resources.limits The resources limits for the maps-api containers
   ## @param mapsApi.resources.requests The requested resources for the maps-api containers
   ##
   resources:
-    limits: {}
-    requests: {}
+    limits:
+      memory: "1024Mi"
+      cpu: "1000m"
+    requests:
+      memory: "768Mi"
+      cpu: "750m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param mapsApi.podSecurityContext.enabled Enabled maps-api pods' Security Context
@@ -1618,14 +1686,30 @@ router:
   ## @param router.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
+  ## router autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param router.autoscaling.enabled Enable autoscaling for the router containers
+  ## @param router.autoscaling.minReplicas The minimal number of containters for the router deployment
+  ## @param router.autoscaling.maxReplicas The maximum number of containers for the router deployment
+  ## @param router.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in router deployment
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
   ## router resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param router.resources.limits The resources limits for the router containers
   ## @param router.resources.requests The requested resources for the router containers
   ##
   resources:
-    limits: {}
-    requests: {}
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+    requests:
+      memory: "372Mi"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param router.podSecurityContext.enabled Enabled router pods' Security Context
@@ -1929,8 +2013,12 @@ httpCache:
   ## @param http-cache.resources.requests The requested resources for the http-cache containers
   ##
   resources:
-    limits: {}
-    requests: {}
+    limits:
+      memory: "1024Mi"
+      cpu: "500m"
+    requests:
+      memory: "768Mi"
+      cpu: "375m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param http-cache.podSecurityContext.enabled Enabled http-cache pods' Security Context
@@ -2232,8 +2320,12 @@ cdnInvalidatorSub:
   ## @param cdnInvalidatorSub.resources.requests The requested resources for the cdnInvalidatorSub containers
   ##
   resources:
-    limits: {}
-    requests: {}
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+    requests:
+      memory: "372Mi"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param cdnInvalidatorSub.podSecurityContext.enabled Enabled cdnInvalidatorSub pods' Security Context
@@ -2530,14 +2622,30 @@ workspaceApi:
   ## @param workspaceApi.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
+  ## workspace-api autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param workspaceApi.autoscaling.enabled Enable autoscaling for the workspace-api containers
+  ## @param workspaceApi.autoscaling.minReplicas The minimal number of containters for the workspace-api deployment
+  ## @param workspaceApi.autoscaling.maxReplicas The maximum number of containers for the workspace-api deployment
+  ## @param workspaceApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in workspace-api deployment
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 75
   ## workspace-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param workspaceApi.resources.limits The resources limits for the workspace-api containers
   ## @param workspaceApi.resources.requests The requested resources for the workspace-api containers
   ##
   resources:
-    limits: {}
-    requests: {}
+    limits:
+      memory: "1024Mi"
+      cpu: "1000m"
+    requests:
+      memory: "768Mi"
+      cpu: "750m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceApi.podSecurityContext.enabled Enabled workspace-api pods' Security Context
@@ -2789,8 +2897,12 @@ workspaceSubscriber:
   ## @param workspaceSubscriber.resources.requests The requested resources for the workspace-subscriber containers
   ##
   resources:
-    limits: {}
-    requests: {}
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+    requests:
+      memory: "372Mi"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceSubscriber.podSecurityContext.enabled Enabled workspace-subscriber pods' Security Context
@@ -3037,14 +3149,30 @@ workspaceWww:
   ## @param workspaceWww.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
+  ## workspace-www autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param workspaceWww.autoscaling.enabled Enable autoscaling for the workspace-www containers
+  ## @param workspaceWww.autoscaling.minReplicas The minimal number of containters for the workspace-www deployment
+  ## @param workspaceWww.autoscaling.maxReplicas The maximum number of containers for the workspace-www deployment
+  ## @param workspaceWww.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in workspace-www deployment
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
   ## workspace-www resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param workspaceWww.resources.limits The resources limits for the workspace-www containers
   ## @param workspaceWww.resources.requests The requested resources for the workspace-www containers
   ##
   resources:
-    limits: {}
-    requests: {}
+    limits:
+      memory: "1024Mi"
+      cpu: "500m"
+    requests:
+      memory: "768Mi"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceWww.podSecurityContext.enabled Enabled workspace-www pods' Security Context
