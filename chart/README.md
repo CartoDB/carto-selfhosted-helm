@@ -1213,9 +1213,7 @@ Find more information about how to deal with common errors related to CARTO Helm
 
 ```bash
 git clone https://github.com/bitnami-labs/readme-generator-for-helm
-cd readme-generator-for-helm/
-docker build -t helm-readme-generator .
-cd ../
+docker build -t helm-readme-generator readme-generator-for-helm/
 docker run --rm -it \
   -v ${PWD}:/my_helm \
   -w /my_helm \
