@@ -165,6 +165,20 @@ To proceed you need:
   ```
 - Note: `externalDatabase.user` and `externalDatabase.databse` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
 
+- Note: In case you using an Azure Postgresql as an external database you should add two additional parameters to `externalDatabase` block
+  - `internalUser`: it's the same as `user` but without the `@database-name` prefix required to connect to Azure Postgresql
+  - `internalAdminUser`: it's the same as `adminUser` but without the `@database-name` prefix required to connect to Azure Postgresql
+
+```yaml
+externalDatabase:
+  ...
+  user: "carto@database-name"
+  internalUser: "carto"
+  ...
+  adminUser: "postgres@database-name"
+  internalAdminUser: "postgres"
+  ...
+```
 ### Configure your own redis
 CARTO self-hosted require a Redis (version 5+) to work.
 That Redis is mainly used as a cache for the postgres.
