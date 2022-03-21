@@ -51,7 +51,8 @@ jobs:
       - name: Upload chart
         shell: bash
         run: |
-          gsutil rsync -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
+          gsutil -h "Cache-Control:public,max-age=3600,s-maxage=3600" -m rsync -x "^index.yaml$" -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
+          gsutil -h "Cache-Control:public,max-age=180,s-maxage=30" cp packages-selfhosted-charts/index.yaml "${CHARTS_BUCKET}"
       - name: Slack notification
         if: github.event.action == 'released'
         env:

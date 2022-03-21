@@ -13,7 +13,7 @@ It should be configured:
 - [Configure DBs to be production ready](#use-external-databases). Our recomendation is to use managed DBs with backups and so on.
 
 Configuring it is optional:
-- Configure scale of the components (staticaly or with auto-scaling).
+- [Configure scale of the components](#components-scaling)
 - Use your own bucket to store the data (By default, GCP CARTO buckets are used)
 
 ## Architecture diagram
@@ -203,6 +203,50 @@ To proceed you need:
     existingSecret: "<your_own_installation_name|carto>-redis-secret"
     existingSecretPasswordKey: "password"
   ```
+
+## Components scaling
+
+### Autoscaling
+It is recommended to enable autoscaling in your installation, which will allow scaling based on the resources consumption needs of your cluster.
+
+This feature is based on [Kubernetes Horizontal Pod Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) functionality.
+
+#### Prerequisites
+
+To enable the autoscaling feature, you need to use a cluster that has a [Metrics Server](https://github.com/kubernetes-sigs/metrics-server#readme) deployed and configured.
+
+The Kubernetes Metrics Server collects resource metrics from the kubelets in your cluster, and exposes those metrics through the [Kubernetes API](https://kubernetes.io/docs/concepts/overview/kubernetes-api/), using an [APIService](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/) to add new kinds of resource that represent metric readings.
+
+- Verify that Metrics Server is installed and returning metrics by completing the following steps:
+
+  - Verify the installation by issuing the following command:
+    ```bash
+    kubectl get deploy,svc -n kube-system | egrep metrics-server
+    ```  
+  - If Metrics Server is installed, the output is similar to the following example:
+    ```bash
+    deployment.extensions/metrics-server   1/1     1            1           3d4h
+    service/metrics-server   ClusterIP   198.51.100.0   <none>        443/TCP         3d4h
+    ```  
+  - Verify that Metrics Server is returning data for pods by issuing the following command:
+    ```bash
+    kubectl get --raw "/apis/metrics.k8s.io/v1beta1/pods"
+    ```
+
+To learn how to deploy the Metrics Server, see the [metrics-server installation guide](https://github.com/kubernetes-sigs/metrics-server#installation).
+
+#### Enable Carto autoscaling feature
+
+You can find an autoscaling config file example in [autoscaling config](scale_components/autoscaling.yaml), it is only necessary [customize your installation](#how-to-define-customizations) adding this file in the `install` or `upgrade` command and start to use the autoscaling feature.
+
+Also you can set your own preferences using the minimum and maximum values that you need in this file.
+
+### Enable static scaling
+You can set how many number of pods should have be running all time, for this, you can use the [static scale config](scale_components/static.yaml) and [configure your environment](#how-to-define-customizations)
+
+> Although we recommend the autoscaling configuration, you could choose the autoscaling feature for some components and the static configuration for the others. Remember that autoscaling override the static configuration, so if one component has both configurations, autoscaling will take precedence.
+
+
 ## Advanced configuration
 
 If you need a more advanced configuration you can check the [full chart documentation](../chart/README.md) or contact [support@carto.com](mailto:support@carto.com)
