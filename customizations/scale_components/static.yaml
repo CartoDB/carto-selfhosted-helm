@@ -1,0 +1,20 @@
+accountsWww:
+  replicaCount: 1
+
+importApi:
+  replicaCount: 1
+
+ldsApi:
+  replicaCount: 1
+
+mapsApi:
+  replicaCount: 1
+
+router:
+  replicaCount: 1
+
+workspaceApi:
+  replicaCount: 1
+
+workspaceWww:
+  replicaCount: 1
