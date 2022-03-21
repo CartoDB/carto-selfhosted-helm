@@ -205,21 +205,19 @@ The Kubernetes Metrics Server collects resource metrics from the kubelets in you
 
 - Verify that Metrics Server is installed and returning metrics by completing the following steps:
 
-    - Verify the installation by issuing the following command:
-      ```bash
-      kubectl get deploy,svc -n kube-system | egrep metrics-server
-      ```
-
-    - If Metrics Server is installed, the output is similar to the following example:
-      ```bash
-      deployment.extensions/metrics-server   1/1     1            1           3d4h
-      service/metrics-server   ClusterIP   198.51.100.0   <none>        443/TCP         3d4h
-      ```
-
-    - Verify that Metrics Server is returning data for pods by issuing the following command:
-      ```bash
-      kubectl get --raw "/apis/metrics.k8s.io/v1beta1/pods"
-      ```
+  - Verify the installation by issuing the following command:
+    ```bash
+    kubectl get deploy,svc -n kube-system | egrep metrics-server
+    ```  
+  - If Metrics Server is installed, the output is similar to the following example:
+    ```bash
+    deployment.extensions/metrics-server   1/1     1            1           3d4h
+    service/metrics-server   ClusterIP   198.51.100.0   <none>        443/TCP         3d4h
+    ```  
+  - Verify that Metrics Server is returning data for pods by issuing the following command:
+    ```bash
+    kubectl get --raw "/apis/metrics.k8s.io/v1beta1/pods"
+    ```
 
 To learn how to deploy the Metrics Server, see the [metrics-server installation guide](https://github.com/kubernetes-sigs/metrics-server#installation).
 
