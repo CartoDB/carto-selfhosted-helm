@@ -17,6 +17,8 @@ customConfigValues:
   workspaceThumbnailsPublic: "true"
   ## @param customConfigValues.gcsBucketsProjectId If the bucket is GCP, the ProjectId to be used
   gcsBucketsProjectId: ""
+  ## @param customConfigValues.awsS3Region If the bucket is S3, the region to be used
+  awsS3Region: ""
 
 ## @section CARTO config parameters
 ## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
@@ -45,6 +47,18 @@ cartoConfigValues:
 customSecretsValues:
   ## @param customSecretsValues.googleMapsApiKey Google maps api-key value.
   googleMapsApiKey: ""
+  ## @param customSecretsValues.awsAccessKeyId If AWS is used in self-hosted, the AccessKey Id.
+  awsAccessKeyId: ""
+  ## @param customSecretsValues.awsAccessKeySecret If AWS is used in self-hosted, the AccessKey Secret.
+  awsAccessKeySecret: ""
+
+google:
+  ## @param google.existingSecret.name Secret containing the Google Credential file
+  ## @param google.existingSecret.key Key name of the Google Credential file inside the secret
+  ##
+  existingSecret:
+    name: ""
+    key: ""
 
 ## @section CARTO secrets values
 ## Secrets values provided by CARTO. Some of them could be customized by the client.
@@ -57,6 +71,19 @@ cartoSecretsValues:
   varnishDebugSecret: ""
   ## @param cartoSecretsValues.googleServiceAccount The secret used by the app to connect to google services. This couldn't be changed.
   googleServiceAccount: ""
+
+
+## @param tlsCerts.autoGenerate Generate self-signed TLS certificates
+## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
+## @param tlsCerts.existingSecret.certKey Key of the certificate inside the secret
+## @param tlsCerts.existingSecret.keyKey Key of the certificate key inside the secret
+##
+tlsCerts:
+  autoGenerate: true
+  existingSecret:
+    name: ""
+    keyKey: "tls.key"
+    certKey: "tls.crt"
 
 
 ## @section Global parameters
@@ -125,30 +152,6 @@ commonConfiguration: |
 ## @param commonSecretConfiguration [object] Sensitive configuration script that will be run in all CARTO deployments
 ##
 commonSecretConfiguration: |
-
-google:
-  ## @param google.credentialFile Content of the Google Credential file
-  ##
-  credentialFile: ""
-
-  ## @param google.existingSecret.name Secret containing the Google Credential file
-  ## @param google.existingSecret.key Key name of the Google Credential file inside the secret
-  ##
-  existingSecret:
-    name: ""
-    key: ""
-
-## @param tlsCerts.autoGenerate Generate self-signed TLS certificates
-## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
-## @param tlsCerts.existingSecret.certKey Key of the certificate inside the secret
-## @param tlsCerts.existingSecret.keyKey Key of the certificate key inside the secret
-##
-tlsCerts:
-  autoGenerate: true
-  existingSecret:
-    name: ""
-    keyKey: "tls.key"
-    certKey: "tls.crt"
 
 ## @section accounts-www Deployment Parameters
 ##

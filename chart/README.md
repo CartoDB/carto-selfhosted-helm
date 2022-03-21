@@ -76,6 +76,7 @@ helm install my-release -f values.yaml carto/carto
 | `customConfigValues.workspaceThumbnailsBucket` | Bucket to be used to store the thumbnails generated in the app                             | `""`                   |
 | `customConfigValues.workspaceThumbnailsPublic` | Indicate if the thumbnails could be accessed publicly                                      | `true`                 |
 | `customConfigValues.gcsBucketsProjectId`       | If the bucket is GCP, the ProjectId to be used                                             | `""`                   |
+| `customConfigValues.awsS3Region`               | If the bucket is S3, the region to be used                                                 | `""`                   |
 
 
 ### CARTO config parameters
@@ -95,19 +96,27 @@ helm install my-release -f values.yaml carto/carto
 
 ### Custom secret values
 
-| Name                                   | Description                | Value |
-| -------------------------------------- | -------------------------- | ----- |
-| `customSecretsValues.googleMapsApiKey` | Google maps api-key value. | `""`  |
+| Name                                     | Description                                              | Value |
+| ---------------------------------------- | -------------------------------------------------------- | ----- |
+| `customSecretsValues.googleMapsApiKey`   | Google maps api-key value.                               | `""`  |
+| `customSecretsValues.awsAccessKeyId`     | If AWS is used in self-hosted, the AccessKey Id.         | `""`  |
+| `customSecretsValues.awsAccessKeySecret` | If AWS is used in self-hosted, the AccessKey Secret.     | `""`  |
+| `google.existingSecret.name`             | Secret containing the Google Credential file             | `""`  |
+| `google.existingSecret.key`              | Key name of the Google Credential file inside the secret | `""`  |
 
 
 ### CARTO secrets values
 
-| Name                                      | Description                                                                         | Value |
-| ----------------------------------------- | ----------------------------------------------------------------------------------- | ----- |
-| `cartoSecretsValues.encryptionSecretKey`  | The secret used to encrypt the clients Carto connections stored in the database.    | `""`  |
-| `cartoSecretsValues.varnishPurgeSecret`   | The secret used (by the app) to exec purge request.                                 | `""`  |
-| `cartoSecretsValues.varnishDebugSecret`   | The secret used if someone would like to debug Varnish.                             | `""`  |
-| `cartoSecretsValues.googleServiceAccount` | The secret used by the app to connect to google services. This couldn't be changed. | `""`  |
+| Name                                      | Description                                                                         | Value     |
+| ----------------------------------------- | ----------------------------------------------------------------------------------- | --------- |
+| `cartoSecretsValues.encryptionSecretKey`  | The secret used to encrypt the clients Carto connections stored in the database.    | `""`      |
+| `cartoSecretsValues.varnishPurgeSecret`   | The secret used (by the app) to exec purge request.                                 | `""`      |
+| `cartoSecretsValues.varnishDebugSecret`   | The secret used if someone would like to debug Varnish.                             | `""`      |
+| `cartoSecretsValues.googleServiceAccount` | The secret used by the app to connect to google services. This couldn't be changed. | `""`      |
+| `tlsCerts.autoGenerate`                   | Generate self-signed TLS certificates                                               | `true`    |
+| `tlsCerts.existingSecret.name`            | Name of a secret containing the certificate                                         | `""`      |
+| `tlsCerts.existingSecret.certKey`         | Key of the certificate inside the secret                                            | `tls.crt` |
+| `tlsCerts.existingSecret.keyKey`          | Key of the certificate key inside the secret                                        | `tls.key` |
 
 
 ### Global parameters
@@ -121,27 +130,20 @@ helm install my-release -f values.yaml carto/carto
 
 ### Common parameters
 
-| Name                              | Description                                                                             | Value           |
-| --------------------------------- | --------------------------------------------------------------------------------------- | --------------- |
-| `kubeVersion`                     | Override Kubernetes version                                                             | `""`            |
-| `nameOverride`                    | String to partially override common.names.fullname                                      | `""`            |
-| `fullnameOverride`                | String to fully override common.names.fullname                                          | `""`            |
-| `commonLabels`                    | Labels to add to all deployed objects                                                   | `{}`            |
-| `commonAnnotations`               | Annotations to add to all deployed objects                                              | `{}`            |
-| `clusterDomain`                   | Kubernetes cluster domain name                                                          | `cluster.local` |
-| `extraDeploy`                     | Array of extra objects to deploy with the release                                       | `[]`            |
-| `diagnosticMode.enabled`          | Enable diagnostic mode (all probes will be disabled and the command will be overridden) | `false`         |
-| `diagnosticMode.command`          | Command to override all containers in the deployment                                    | `["sleep"]`     |
-| `diagnosticMode.args`             | Args to override all containers in the deployment                                       | `["infinity"]`  |
-| `commonConfiguration`             | Configuration script that will be run in all Carto instances                            | `{}`            |
-| `commonSecretConfiguration`       | Sensitive configuration script that will be run in all CARTO deployments                | `{}`            |
-| `google.credentialFile`           | Content of the Google Credential file                                                   | `""`            |
-| `google.existingSecret.name`      | Secret containing the Google Credential file                                            | `""`            |
-| `google.existingSecret.key`       | Key name of the Google Credential file inside the secret                                | `""`            |
-| `tlsCerts.autoGenerate`           | Generate self-signed TLS certificates                                                   | `true`          |
-| `tlsCerts.existingSecret.name`    | Name of a secret containing the certificate                                             | `""`            |
-| `tlsCerts.existingSecret.certKey` | Key of the certificate inside the secret                                                | `tls.crt`       |
-| `tlsCerts.existingSecret.keyKey`  | Key of the certificate key inside the secret                                            | `tls.key`       |
+| Name                        | Description                                                                             | Value           |
+| --------------------------- | --------------------------------------------------------------------------------------- | --------------- |
+| `kubeVersion`               | Override Kubernetes version                                                             | `""`            |
+| `nameOverride`              | String to partially override common.names.fullname                                      | `""`            |
+| `fullnameOverride`          | String to fully override common.names.fullname                                          | `""`            |
+| `commonLabels`              | Labels to add to all deployed objects                                                   | `{}`            |
+| `commonAnnotations`         | Annotations to add to all deployed objects                                              | `{}`            |
+| `clusterDomain`             | Kubernetes cluster domain name                                                          | `cluster.local` |
+| `extraDeploy`               | Array of extra objects to deploy with the release                                       | `[]`            |
+| `diagnosticMode.enabled`    | Enable diagnostic mode (all probes will be disabled and the command will be overridden) | `false`         |
+| `diagnosticMode.command`    | Command to override all containers in the deployment                                    | `["sleep"]`     |
+| `diagnosticMode.args`       | Args to override all containers in the deployment                                       | `["infinity"]`  |
+| `commonConfiguration`       | Configuration script that will be run in all Carto instances                            | `{}`            |
+| `commonSecretConfiguration` | Sensitive configuration script that will be run in all CARTO deployments                | `{}`            |
 
 
 ### accounts-www Deployment Parameters
