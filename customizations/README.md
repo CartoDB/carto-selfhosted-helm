@@ -223,17 +223,17 @@ There are two alternatives when connecting the environment with an external redi
     ```
 
 - Auto secret creation:
-    - [Add the following customization](#how-to-define-customizations) lines:
-      ```yaml
-      internalRedis:
-        # With that config, we disable the internal Redis provided by the package
-        enabled: false
-      externalRedis:
-        host: <Redis IP/Hostname>
-        port: "6379"
-        password: ""
-      ```
-      > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalRedis.password` that you set in previous lines.
+  - [Add the following customization](#how-to-define-customizations) lines:
+    ```yaml
+    internalRedis:
+      # With that config, we disable the internal Redis provided by the package
+      enabled: false
+    externalRedis:
+      host: <Redis IP/Hostname>
+      port: "6379"
+      password: ""
+    ```
+    > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalRedis.password` that you set in previous lines.
 
 ## Components scaling
 
