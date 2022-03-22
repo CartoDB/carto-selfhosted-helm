@@ -1148,17 +1148,18 @@ helm install my-release -f values.yaml carto/carto
 | `workspaceMigrations.containerSecurityContext.runAsNonRoot` | Force the init container to run as non root                          | `false`                                      |
 
 
-### Redis&trade; subchart parameters
+### Internal Redis&trade; subchart parameters
 
-| Name                                | Description                                            | Value        |
-| ----------------------------------- | ------------------------------------------------------ | ------------ |
-| `redis.enabled`                     | Switch to enable or disable the Redis&trade; helm      | `true`       |
-| `redis.auth.enabled`                | Switch to enable or disable authentication             | `true`       |
-| `redis.auth.password`               | Redis&trade; password                                  | `""`         |
-| `redis.auth.existingSecret`         | Name of existing secret object containing the password | `""`         |
-| `redis.architecture`                | Cluster settings                                       | `standalone` |
-| `redis.master.persistence.enabled`  | Enable master persistent volumes                       | `false`      |
-| `redis.replica.persistence.enabled` | Enable replica persistent volumes                      | `false`      |
+| Name                                        | Description                                                                                  | Value        |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------ |
+| `internalRedis.enabled`                     | Switch to enable or disable the Redis&trade; helm                                            | `true`       |
+| `internalRedis.auth.enabled`                | Switch to enable or disable authentication                                                   | `true`       |
+| `internalRedis.auth.password`               | Redis&trade; password                                                                        | `""`         |
+| `internalRedis.auth.existingSecret`         | Name of existing secret object containing the password                                       | `""`         |
+| `internalRedis.architecture`                | Cluster settings                                                                             | `standalone` |
+| `internalRedis.master.persistence.enabled`  | Enable master persistent volumes                                                             | `false`      |
+| `internalRedis.replica.persistence.enabled` | Enable replica persistent volumes                                                            | `false`      |
+| `internalRedis.nameOverride`                | String to partially override common.names.fullname template (will maintain the release name) | `redis`      |
 
 
 ### External Redis&trade; parameters
@@ -1172,18 +1173,19 @@ helm install my-release -f values.yaml carto/carto
 | `externalRedis.existingSecretPasswordKey` | Key of the existing secret                                                                         | `""`        |
 
 
-### PostgreSQL subchart parameters
+### Internal PostgreSQL subchart parameters
 
-| Name                                | Description                                                                               | Value                  |
-| ----------------------------------- | ----------------------------------------------------------------------------------------- | ---------------------- |
-| `postgresql.enabled`                | Switch to enable or disable the PostgreSQL helm chart                                     | `true`                 |
-| `postgresql.auth.username`          | CARTO Postgresql username                                                                 | `carto`                |
-| `postgresql.auth.password`          | CARTO Postgresql password                                                                 | `""`                   |
-| `postgresql.auth.postgresPassword`  | CARTO Postgresql password for the postgres user                                           | `""`                   |
-| `postgresql.auth.database`          | CARTO Postgresql database                                                                 | `workspace_db`         |
-| `postgresql.auth.existingSecret`    | Name of an existing secret containing the PostgreSQL password ('postgresql-password' key) | `""`                   |
-| `postgresql.image.tag`              | Tag of the PostgreSQL image                                                               | `13.5.0-debian-10-r84` |
-| `postgresql.primary.initdb.scripts` | Scripts for initializing the database                                                     | `[]`                   |
+| Name                                        | Description                                                                                  | Value                  |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------- |
+| `internalPostgresql.enabled`                | Switch to enable or disable the PostgreSQL helm chart                                        | `true`                 |
+| `internalPostgresql.auth.username`          | CARTO Postgresql username                                                                    | `carto`                |
+| `internalPostgresql.auth.password`          | CARTO Postgresql password                                                                    | `""`                   |
+| `internalPostgresql.auth.postgresPassword`  | CARTO Postgresql password for the postgres user                                              | `""`                   |
+| `internalPostgresql.auth.database`          | CARTO Postgresql database                                                                    | `workspace_db`         |
+| `internalPostgresql.auth.existingSecret`    | Name of an existing secret containing the PostgreSQL password ('postgresql-password' key)    | `""`                   |
+| `internalPostgresql.image.tag`              | Tag of the PostgreSQL image                                                                  | `13.5.0-debian-10-r84` |
+| `internalPostgresql.nameOverride`           | String to partially override common.names.fullname template (will maintain the release name) | `postgresql`           |
+| `internalPostgresql.primary.initdb.scripts` | Scripts for initializing the database                                                        | `[]`                   |
 
 
 ### External PostgreSQL parameters

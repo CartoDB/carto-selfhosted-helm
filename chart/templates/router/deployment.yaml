@@ -64,7 +64,7 @@ spec:
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
-        {{- if .Values.postgresql.enabled }}
+        {{- if .Values.internalPostgresql.enabled }}
         {{ include "carto.postgresql-init-container" (dict "context" $) | nindent 8 }}
         {{- end }}
         {{- if .Values.router.initContainers }}

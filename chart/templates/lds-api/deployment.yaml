@@ -64,10 +64,10 @@ spec:
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
-        {{- if .Values.postgresql.enabled }}
+        {{- if .Values.internalPostgresql.enabled }}
         {{ include "carto.postgresql-init-container" (dict "context" $) | nindent 8 }}
         {{- end }}
-        {{- if .Values.redis.enabled }}
+        {{- if .Values.internalRedis.enabled }}
         {{ include "carto.redis-init-container" . | nindent 8 }}
         {{- end }}
         {{- if .Values.ldsApi.initContainers }}
