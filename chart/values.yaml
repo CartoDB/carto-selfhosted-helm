@@ -3561,20 +3561,20 @@ internalPostgresql:
 ## @section External PostgreSQL parameters
 ## External PostgreSQL configuration
 ## All of these values are only used when postgresql.enabled is set to false
-## @param externalDatabase.host Database host
-## @param externalDatabase.user non-root Username for CARTO Database (seen from outside the database)
-## @param externalDatabase.internalUser non-root Username for CARTO Database (seen from inside the database). If this value is not defined, `externalDatabase.user` is used.
-## @param externalDatabase.password Database password
-## @param externalDatabase.adminUser Database admin user (seen from outside the database)
-## @param externalDatabase.internalAdminUser Database admin user (seen from inside the database). If this value is not defined, `externalDatabase.adminUser` is used.
-## @param externalDatabase.adminPassword Database admin password
-## @param externalDatabase.existingSecret Name of an existing secret resource containing the DB password
-## @param externalDatabase.existingSecretPasswordKey Name of the key inside the secret containing the DB password
-## @param externalDatabase.existingSecretAdminPasswordKey Name of the key inside the secret containing the DB admin password
-## @param externalDatabase.database Database name
-## @param externalDatabase.port Database port number
+## @param externalPostgresql.host Database host
+## @param externalPostgresql.user non-root Username for CARTO Database (seen from outside the database)
+## @param externalPostgresql.internalUser non-root Username for CARTO Database (seen from inside the database). If this value is not defined, `externalPostgresql.user` is used.
+## @param externalPostgresql.password Database password
+## @param externalPostgresql.adminUser Database admin user (seen from outside the database)
+## @param externalPostgresql.internalAdminUser Database admin user (seen from inside the database). If this value is not defined, `externalPostgresql.adminUser` is used.
+## @param externalPostgresql.adminPassword Database admin password
+## @param externalPostgresql.existingSecret Name of an existing secret resource containing the DB password
+## @param externalPostgresql.existingSecretPasswordKey Name of the key inside the secret containing the DB password
+## @param externalPostgresql.existingSecretAdminPasswordKey Name of the key inside the secret containing the DB admin password
+## @param externalPostgresql.database Database name
+## @param externalPostgresql.port Database port number
 ##
-externalDatabase:
+externalPostgresql:
   host: localhost
   user: carto
   internalUser: ""

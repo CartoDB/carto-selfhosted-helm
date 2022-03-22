@@ -329,10 +329,10 @@ In case you're using an Azure Postgres as an external database you should add tw
 Return default user and adminUser values in case the connection it's NOT to an Azure Postgres
 */}}
 {{- define "carto.postgresql.internalUser" -}}
-{{ default .Values.externalDatabase.user .Values.externalDatabase.internalUser }}
+{{ default .Values.externalPostgresql.user .Values.externalPostgresql.internalUser }}
 {{- end -}}
 {{- define "carto.postgresql.internalAdminUser" -}}
-{{ default .Values.externalDatabase.adminUser .Values.externalDatabase.internalAdminUser }}
+{{ default .Values.externalPostgresql.adminUser .Values.externalPostgresql.internalAdminUser }}
 {{- end -}}
 
 {{/*
@@ -656,8 +656,8 @@ Get the Postgresql credentials secret.
 {{- else if and (.Values.internalPostgresql.enabled) (.Values.internalPostgresql.auth.existingSecret) -}}
     {{- printf "%s" .Values.internalPostgresql.auth.existingSecret -}}
 {{- else }}
-    {{- if .Values.externalDatabase.existingSecret -}}
-        {{- printf "%s" .Values.externalDatabase.existingSecret -}}
+    {{- if .Values.externalPostgresql.existingSecret -}}
+        {{- printf "%s" .Values.externalPostgresql.existingSecret -}}
     {{- else -}}
         {{ printf "%s-%s" .Release.Name "externaldb" }}
     {{- end -}}
@@ -668,28 +668,28 @@ Get the Postgresql credentials secret.
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.host" -}}
-{{- ternary (include "carto.postgresql.fullname" .) .Values.externalDatabase.host .Values.internalPostgresql.enabled | quote -}}
+{{- ternary (include "carto.postgresql.fullname" .) .Values.externalPostgresql.host .Values.internalPostgresql.enabled | quote -}}
 {{- end -}}
 
 {{/*
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.user" -}}
-{{- ternary .Values.internalPostgresql.auth.username .Values.externalDatabase.user .Values.internalPostgresql.enabled | quote -}}
+{{- ternary .Values.internalPostgresql.auth.username .Values.externalPostgresql.user .Values.internalPostgresql.enabled | quote -}}
 {{- end -}}
 
 {{/*
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.adminUser" -}}
-{{- ternary "postgres" .Values.externalDatabase.adminUser .Values.internalPostgresql.enabled | quote -}}
+{{- ternary "postgres" .Values.externalPostgresql.adminUser .Values.internalPostgresql.enabled | quote -}}
 {{- end -}}
 
 {{/*
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.databaseName" -}}
-{{- ternary .Values.internalPostgresql.auth.database .Values.externalDatabase.database .Values.internalPostgresql.enabled | quote -}}
+{{- ternary .Values.internalPostgresql.auth.database .Values.externalPostgresql.database .Values.internalPostgresql.enabled | quote -}}
 {{- end -}}
 
 {{/*
@@ -699,9 +699,9 @@ Add environment variables to configure database values
 {{- if .Values.internalPostgresql.enabled -}}
     {{- printf "%s" "password" -}}
 {{- else -}}
-    {{- if .Values.externalDatabase.existingSecret -}}
-        {{- if .Values.externalDatabase.existingSecretPasswordKey -}}
-            {{- printf "%s" .Values.externalDatabase.existingSecretPasswordKey -}}
+    {{- if .Values.externalPostgresql.existingSecret -}}
+        {{- if .Values.externalPostgresql.existingSecretPasswordKey -}}
+            {{- printf "%s" .Values.externalPostgresql.existingSecretPasswordKey -}}
         {{- else -}}
             {{- printf "%s" "db-password" -}}
         {{- end -}}
@@ -718,9 +718,9 @@ Add environment variables to configure database values
 {{- if .Values.internalPostgresql.enabled -}}
     {{- print "postgres-password" -}}
 {{- else -}}
-    {{- if .Values.externalDatabase.existingSecret -}}
-        {{- if .Values.externalDatabase.existingSecretAdminPasswordKey -}}
-            {{- printf "%s" .Values.externalDatabase.existingSecretAdminPasswordKey -}}
+    {{- if .Values.externalPostgresql.existingSecret -}}
+        {{- if .Values.externalPostgresql.existingSecretAdminPasswordKey -}}
+            {{- printf "%s" .Values.externalPostgresql.existingSecretAdminPasswordKey -}}
         {{- else -}}
             {{- print "db-admin-password" -}}
         {{- end -}}
@@ -734,7 +734,7 @@ Add environment variables to configure database values
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.port" -}}
-{{- ternary "5432" .Values.externalDatabase.port .Values.internalPostgresql.enabled | quote -}}
+{{- ternary "5432" .Values.externalPostgresql.port .Values.internalPostgresql.enabled | quote -}}
 {{- end -}}
 
 {{/*
@@ -936,7 +936,7 @@ Validate external Redis config
 {{- if and (not .Values.internalRedis.enabled) (not .Values.externalRedis.host) -}}
 CARTO: Missing PostgreSQL
 
-If internalPostgresql.enabled=false you need to specify the host of an external PostgreSQL instance setting externalDatabase.host
+If internalPostgresql.enabled=false you need to specify the host of an external PostgreSQL instance setting externalPostgresql.host
 {{- end -}}
 {{- end -}}
 
