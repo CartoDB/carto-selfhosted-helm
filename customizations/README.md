@@ -165,7 +165,7 @@ To proceed you need:
   ```
 - Note: `externalDatabase.user` and `externalDatabase.databse` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
 
-- Note: In case you using an Azure Postgresql as an external database you should add two additional parameters to `externalDatabase` block
+- Note: In case you're using an Azure Postgresql as an external database you should add two additional parameters to the `externalDatabase` block
   - `internalUser`: it's the same as `user` but without the `@database-name` prefix required to connect to Azure Postgresql
   - `internalAdminUser`: it's the same as `adminUser` but without the `@database-name` prefix required to connect to Azure Postgresql
 
@@ -222,12 +222,12 @@ The Kubernetes Metrics Server collects resource metrics from the kubelets in you
   - Verify the installation by issuing the following command:
     ```bash
     kubectl get deploy,svc -n kube-system | egrep metrics-server
-    ```  
+    ```
   - If Metrics Server is installed, the output is similar to the following example:
     ```bash
     deployment.extensions/metrics-server   1/1     1            1           3d4h
     service/metrics-server   ClusterIP   198.51.100.0   <none>        443/TCP         3d4h
-    ```  
+    ```
   - Verify that Metrics Server is returning data for pods by issuing the following command:
     ```bash
     kubectl get --raw "/apis/metrics.k8s.io/v1beta1/pods"
