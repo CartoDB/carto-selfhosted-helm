@@ -184,11 +184,9 @@ There are two alternatives when connecting the environment with an external post
 
     > Note: `externalDatabase.user` and `externalDatabase.database` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
 
-
-- Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalDatabase` block
-  - `internalUser`: it's the same as `user` but without the `@database-name` prefix required to connect to Azure Postgres
-  - `internalAdminUser`: it's the same as `adminUser` but without the `@database-name` prefix required to connect to Azure Postgres
-
+> Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalDatabase` block
+- `internalUser`: it's the same as `user` but without the `@database-name` prefix required to connect to Azure Postgres
+- `internalAdminUser`: it's the same as `adminUser` but without the `@database-name` prefix required to connect to Azure Postgres
 ```yaml
 externalDatabase:
   ...
