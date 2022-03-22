@@ -323,7 +323,10 @@ Create the name of the service account to use for the workspace-api deployment
 {{- end -}}
 
 {{/*
-If we connect to an Azure Postgres database, the internal user and the user used to connect to the database are different
+In case you're using an Azure Postgres as an external database you should add two additional parameters
+- internalUser: the same as regular user but without the "@db-name" suffix required by Azure connection
+- internalAdminuser: the same as adminUser but without the "@db-name" suffix required by Azure connection
+Return default user and adminUser values in case the connection it's NOT to an Azure Postgres
 */}}
 {{- define "carto.postgresql.internalUser" -}}
 {{ default .Values.externalDatabase.user .Values.externalDatabase.internalUser }}

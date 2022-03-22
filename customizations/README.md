@@ -163,11 +163,11 @@ To proceed you need:
     database: "workspace_db"
     port: "5432"
   ```
-- Note: `externalDatabase.user` and `externalDatabase.databse` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
+- Note: `externalDatabase.user` and `externalDatabase.database` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
 
-- Note: In case you're using an Azure Postgresql as an external database you should add two additional parameters to the `externalDatabase` block
-  - `internalUser`: it's the same as `user` but without the `@database-name` prefix required to connect to Azure Postgresql
-  - `internalAdminUser`: it's the same as `adminUser` but without the `@database-name` prefix required to connect to Azure Postgresql
+- Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalDatabase` block
+  - `internalUser`: it's the same as `user` but without the `@database-name` prefix required to connect to Azure Postgres
+  - `internalAdminUser`: it's the same as `adminUser` but without the `@database-name` prefix required to connect to Azure Postgres
 
 ```yaml
 externalDatabase:
