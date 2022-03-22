@@ -91,18 +91,25 @@ spec:
               /usr/src/app/onprem-init-db.sh
           {{- end }}
           env:
-            - name: POSTGRES_PASSWORD
+            - name: POSTGRES_ADMIN_USER
+              value: {{ include "carto.postgresql.adminUser" . }}
+            - name: POSTGRES_LOGIN_USER
+              value: {{ include "carto.postgresql.internalAdminUser" . }}
+            - name: POSTGRES_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.adminKey" . }}
+            - name: WORKSPACE_POSTGRES_INTERNAL_USER
+              value: {{ include "carto.postgresql.internalUser" . }}
             - name: WORKSPACE_POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.key" . }}
-            - name: POSTGRES_ADMIN_USER
-              value: {{ include "carto.postgresql.adminUser" . }}
+            {{- if .Values.workspaceApi.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
           envFrom:
             {{- if not .Values.workspaceApi.existingConfigMap }}
             - configMapRef:

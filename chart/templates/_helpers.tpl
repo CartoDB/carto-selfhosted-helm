@@ -323,6 +323,19 @@ Create the name of the service account to use for the workspace-api deployment
 {{- end -}}
 
 {{/*
+In case you're using an Azure Postgres as an external database you should add two additional parameters
+- internalUser: the same as regular user but without the "@db-name" suffix required by Azure connection
+- internalAdminuser: the same as adminUser but without the "@db-name" suffix required by Azure connection
+Return default user and adminUser values in case the connection it's NOT to an Azure Postgres
+*/}}
+{{- define "carto.postgresql.internalUser" -}}
+{{ default .Values.externalDatabase.user .Values.externalDatabase.internalUser }}
+{{- end -}}
+{{- define "carto.postgresql.internalAdminUser" -}}
+{{ default .Values.externalDatabase.adminUser .Values.externalDatabase.internalAdminUser }}
+{{- end -}}
+
+{{/*
 Return the proper Carto workspace-www full name
 */}}
 {{- define "carto.workspaceWww.fullname" -}}
