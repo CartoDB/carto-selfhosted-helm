@@ -24,7 +24,7 @@
           "target_platform_id": "{TARGET_PLATFORM}",
           "size": {
             "name": "L8",
-            "worker_nodes_instance_count": 1,
+            "worker_nodes_instance_count": 3,
             "master_nodes_instance_count": 1
           }
         }
