@@ -842,7 +842,7 @@ Get the Redis credentials secret.
 */}}
 {{- define "carto.redis.secretName" -}}
 {{- if and (.Values.internalRedis.enabled) (not .Values.internalRedis.existingSecret) -}}
-    {{- printf "%s" (include "carto.redis.fullname" . | lower) -}}
+    {{- printf "%s" (include "carto.redis.fullname" .) -}}
 {{- else if and (.Values.internalRedis.enabled) (.Values.internalRedis.existingSecret) -}}
     {{- printf "%s" .Values.internalRedis.existingSecret -}}
 {{- else }}
