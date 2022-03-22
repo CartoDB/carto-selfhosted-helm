@@ -3530,7 +3530,7 @@ externalRedis:
 ##
 internalPostgresql:
   enabled: true
-  ## @param postgresql.image.tag Tag of the PostgreSQL image
+  ## @param internalPostgresql.image.tag Tag of the PostgreSQL image
   ##
   image:
     tag: "13.5.0-debian-10-r84"
@@ -3545,7 +3545,7 @@ internalPostgresql:
     ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
     ##
     existingSecret: ""
-  ## @param postgresql.primary.initdb.scripts [array] Scripts for initializing the database
+  ## @param internalPostgresql.primary.initdb.scripts [array] Scripts for initializing the database
   ##
   primary:
     initdb:
