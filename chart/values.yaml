@@ -3442,7 +3442,7 @@ workspaceMigrations:
 ##
 internalRedis:
   enabled: true
-  ## @param nameOverride String to partially override common.names.fullname template (will maintain the release name)
+  ## @param internalRedis.nameOverride String to partially override common.names.fullname template (will maintain the release name)
   ##
   nameOverride: "redis"
   auth:
@@ -3494,7 +3494,7 @@ internalPostgresql:
   ##
   image:
     tag: "13.5.0-debian-10-r84"
-  ## @param nameOverride String to partially override common.names.fullname template (will maintain the release name)
+  ## @param internalPostgresql.nameOverride String to partially override common.names.fullname template (will maintain the release name)
   ##
   nameOverride: "postgresql"
   auth:
