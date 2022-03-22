@@ -19,7 +19,7 @@ Configuring it is optional:
 ## Architecture diagram
 
 <!--
-We should add an arquitectural diagram to make it easier for customers to understand the parts and the relationship between them.
+TODO: We should add an arquitectural diagram to make it easier for customers to understand the parts and the relationship between them.
 -->
 
 ## How to define customizations
@@ -64,10 +64,10 @@ To made it accessible from the internet (or outside the Kubernetes network) we r
 Additionally, depending of the way to reach your self-hosted from internet, you would need to [configure the HTTPS/TLS](#configure-tls).
 
 ### Router general notes
-<!--
-TODO: Document timeout increment and disable internal TLS and so on
-TODO: Talk about static IP
--->
+By the nature of our app, there are some consideration to be taken:
+- The final client should access with HTTPS. This can be configured in our helm chart or in a load balancer prior to the application.
+- The timeout of all intermediate parts must be set to at least `605` seconds. We have everything ready from the router to the internal components but you must take this into account when configuring the input from the external network to the router.
+- Remember to configure a **static** IP/domain pointing to that endpoint.
 
 ### Service as LoadBalancer
 
@@ -181,6 +181,7 @@ There are two alternatives when connecting the environment with an external post
       port: "5432"
     ```
     > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalDatabase.password` and `externalDatabase.adminPassword` that you set in previous lines.
+
     > Note: `externalDatabase.user` and `externalDatabase.database` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
 
 > Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalDatabase` block
