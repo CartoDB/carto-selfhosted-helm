@@ -29,6 +29,13 @@ There are two ways to configure or customize the deployment:
   ```yaml
   customConfigValues:
     selfHostedDomain: "my.domain.com"
+
+  customSecretsValues:
+    googleMapsApiKey: "<google-maps-api-key>"
+
+  router:
+    service:
+      type: LoadBalancer
   ```
   And add the following at the end of ALL the install or upgrade command:
   ```bash
@@ -36,7 +43,9 @@ There are two ways to configure or customize the deployment:
   ```
 - Use the inline set. For example, add the following at the end of ALL the install or upgrade command:
   ```bash
-  ... --set customConfigValues.selfHostedDomain=my.domain.com
+  ... --set customConfigValues.selfHostedDomain=my.domain.com \
+    --set customSecretsValues.googleMapsApiKey=<google-maps-api-key> \
+    --set router.service.type=LoadBalancer
   ```
 
 
