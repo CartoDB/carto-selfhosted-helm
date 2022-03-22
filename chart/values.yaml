@@ -253,8 +253,10 @@ accountsWww:
     targetCPUUtilizationPercentage: 75
   ## accounts-www resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param accountsWww.resources.limits The resources limits for the accounts-www containers
-  ## @param accountsWww.resources.requests The requested resources for the accounts-www containers
+  ## @param accountsWww.resources.limits [object] The resources limits for the accounts-www containers
+  ## @skip accountsWww.resources.limits
+  ## @param accountsWww.resources.requests [object] The requested resources for the accounts-www containers
+  ## @skip accountsWww.resources.requests
   ##
   resources:
     limits:
@@ -568,8 +570,10 @@ importApi:
     targetCPUUtilizationPercentage: 75
   ## import-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param importApi.resources.limits The resources limits for the import-api containers
-  ## @param importApi.resources.requests The requested resources for the import-api containers
+  ## @param importApi.resources.limits [object] The resources limits for the import-api containers
+  ## @skip importApi.resources.limits
+  ## @param importApi.resources.requests [object] The requested resources for the import-api containers
+  ## @skip importApi.resources.requests
   ##
   resources:
     limits:
@@ -823,8 +827,10 @@ importWorker:
   customStartupProbe: {}
   ## import-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param importWorker.resources.limits The resources limits for the import-worker containers
-  ## @param importWorker.resources.requests The requested resources for the import-worker containers
+  ## @param importWorker.resources.limits [object] The resources limits for the import-worker containers
+  ## @skip importWorker.resources.limits
+  ## @param importWorker.resources.requests [object] The requested resources for the import-worker containers
+  ## @skip importWorker.resources.requests
   ##
   resources:
     limits:
@@ -1092,8 +1098,10 @@ ldsApi:
     targetCPUUtilizationPercentage: 75
   ## lds-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param ldsApi.resources.limits The resources limits for the lds-api containers
-  ## @param ldsApi.resources.requests The requested resources for the lds-api containers
+  ## @param ldsApi.resources.limits [object] The resources limits for the lds-api containers
+  ## @skip ldsApi.resources.limits
+  ## @param ldsApi.resources.requests [object] The requested resources for the lds-api containers
+  ## @skip ldsApi.resources.requests
   ##
   resources:
     limits:
@@ -1407,8 +1415,10 @@ mapsApi:
     targetCPUUtilizationPercentage: 75
   ## maps-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param mapsApi.resources.limits The resources limits for the maps-api containers
-  ## @param mapsApi.resources.requests The requested resources for the maps-api containers
+  ## @param mapsApi.resources.limits [object] The resources limits for the maps-api containers
+  ## @skip mapsApi.resources.limits
+  ## @param mapsApi.resources.requests [object] The requested resources for the maps-api containers
+  ## @skip mapsApi.resources.requests
   ##
   resources:
     limits:
@@ -1725,8 +1735,10 @@ router:
     targetCPUUtilizationPercentage: 75
   ## router resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param router.resources.limits The resources limits for the router containers
-  ## @param router.resources.requests The requested resources for the router containers
+  ## @param router.resources.limits [object] The resources limits for the router containers
+  ## @skip router.resources.limits
+  ## @param router.resources.requests [object] The requested resources for the router containers
+  ## @skip router.resources.requests
   ##
   resources:
     limits:
@@ -2033,8 +2045,10 @@ httpCache:
   customStartupProbe: {}
   ## http-cache resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param httpCache.resources.limits The resources limits for the http-cache containers
-  ## @param httpCache.resources.requests The requested resources for the http-cache containers
+  ## @param httpCache.resources.limits [object] The resources limits for the http-cache containers
+  ## @skip httpCache.resources.limits
+  ## @param httpCache.resources.requests [object] The requested resources for the http-cache containers
+  ## @skip httpCache.resources.requests
   ##
   resources:
     limits:
@@ -2337,8 +2351,10 @@ cdnInvalidatorSub:
   customStartupProbe: {}
   ## cdnInvalidatorSub resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param cdnInvalidatorSub.resources.limits The resources limits for the cdnInvalidatorSub containers
-  ## @param cdnInvalidatorSub.resources.requests The requested resources for the cdnInvalidatorSub containers
+  ## @param cdnInvalidatorSub.resources.limits [object] The resources limits for the cdnInvalidatorSub containers
+  ## @skip cdnInvalidatorSub.resources.limits
+  ## @param cdnInvalidatorSub.resources.requests [object] The requested resources for the cdnInvalidatorSub containers
+  ## @skip cdnInvalidatorSub.resources.requests
   ##
   resources:
     limits:
@@ -2655,8 +2671,10 @@ workspaceApi:
     targetCPUUtilizationPercentage: 75
   ## workspace-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceApi.resources.limits The resources limits for the workspace-api containers
-  ## @param workspaceApi.resources.requests The requested resources for the workspace-api containers
+  ## @param workspaceApi.resources.limits [object] The resources limits for the workspace-api containers
+  ## @skip workspaceApi.resources.limits
+  ## @param workspaceApi.resources.requests [object] The requested resources for the workspace-api containers
+  ## @skip workspaceApi.resources.requests
   ##
   resources:
     limits:
@@ -2911,8 +2929,10 @@ workspaceSubscriber:
   customStartupProbe: {}
   ## workspace-subscriber resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceSubscriber.resources.limits The resources limits for the workspace-subscriber containers
-  ## @param workspaceSubscriber.resources.requests The requested resources for the workspace-subscriber containers
+  ## @param workspaceSubscriber.resources.limits [object] The resources limits for the workspace-subscriber containers
+  ## @skip workspaceSubscriber.resources.limits
+  ## @param workspaceSubscriber.resources.requests [object] The requested resources for the workspace-subscriber containers
+  ## @skip workspaceSubscriber.resources.requests
   ##
   resources:
     limits:
@@ -3180,8 +3200,10 @@ workspaceWww:
     targetCPUUtilizationPercentage: 75
   ## workspace-www resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceWww.resources.limits The resources limits for the workspace-www containers
-  ## @param workspaceWww.resources.requests The requested resources for the workspace-www containers
+  ## @param workspaceWww.resources.limits [object] The resources limits for the workspace-www containers
+  ## @skip workspaceWww.resources.limits
+  ## @param workspaceWww.resources.requests [object] The requested resources for the workspace-www containers
+  ## @skip workspaceWww.resources.requests
   ##
   resources:
     limits:
@@ -3425,8 +3447,10 @@ workspaceMigrations:
   args: []
   ## Init container's resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceMigrations.resources.limits The resources limits for the init container
-  ## @param workspaceMigrations.resources.requests The requested resources for the init container
+  ## @param workspaceMigrations.resources.limits [object] The resources limits for the init container
+  ## @skip workspaceMigrations.resources.limits
+  ## @param workspaceMigrations.resources.requests [object] The requested resources for the init container
+  ## @skip workspaceMigrations.resources.requests
   ##
   resources:
     limits: {}
@@ -3532,10 +3556,12 @@ postgresql:
 ## External PostgreSQL configuration
 ## All of these values are only used when postgresql.enabled is set to false
 ## @param externalDatabase.host Database host
-## @param externalDatabase.user non-root Username for CARTO Database
-## @param externalDatabase.adminUser Database admin user
-## @param externalDatabase.adminPassword Database admin password
+## @param externalDatabase.user non-root Username for CARTO Database (seen from outside the database)
+## @param externalDatabase.internalUser non-root Username for CARTO Database (seen from inside the database). If this value is not defined, `externalDatabase.user` is used.
 ## @param externalDatabase.password Database password
+## @param externalDatabase.adminUser Database admin user (seen from outside the database)
+## @param externalDatabase.internalAdminUser Database admin user (seen from inside the database). If this value is not defined, `externalDatabase.adminUser` is used.
+## @param externalDatabase.adminPassword Database admin password
 ## @param externalDatabase.existingSecret Name of an existing secret resource containing the DB password
 ## @param externalDatabase.existingSecretPasswordKey Name of the key inside the secret containing the DB password
 ## @param externalDatabase.existingSecretAdminPasswordKey Name of the key inside the secret containing the DB admin password
@@ -3545,8 +3571,10 @@ postgresql:
 externalDatabase:
   host: localhost
   user: carto
+  internalUser: ""
   password: ""
   adminUser: postgres
+  internalAdminUser: ""
   adminPassword: ""
   existingSecret: ""
   existingSecretPasswordKey: ""
