@@ -181,7 +181,6 @@ There are two alternatives when connecting the environment with an external post
       port: "5432"
     ```
     > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalDatabase.password` and `externalDatabase.adminPassword` that you set in previous lines.
-
     > Note: `externalDatabase.user` and `externalDatabase.database` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
 
 > Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalDatabase` block
@@ -225,16 +224,16 @@ There are two alternatives when connecting the environment with an external redi
 
 - Auto secret creation:
     - [Add the following customization](#how-to-define-customizations) lines:
-    ```yaml
-    internalRedis:
-      # With that config, we disable the internal Redis provided by the package
-      enabled: false
-    externalRedis:
-      host: <Redis IP/Hostname>
-      port: "6379"
-      password: ""
-    ```
-    > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalRedis.password` that you set in previous lines.
+      ```yaml
+      internalRedis:
+        # With that config, we disable the internal Redis provided by the package
+        enabled: false
+      externalRedis:
+        host: <Redis IP/Hostname>
+        port: "6379"
+        password: ""
+      ```
+      > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalRedis.password` that you set in previous lines.
 
 ## Components scaling
 
