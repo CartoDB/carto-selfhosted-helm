@@ -21,7 +21,7 @@ WARNING: You are using a non production installation, please see External Postgr
 ** Please be patient while the chart is being deployed **
 
 ** Did you check our recommendations to customize your app in production mode? **
-https://github.com/CartoDB/carto-selfhosted-helm/blob/{{- include "chart.version" }}/customizations/README.md#production-ready
+https://github.com/CartoDB/carto-selfhosted-helm/blob/{{- include "chart.version" . }}/customizations/README.md#production-ready
 
 {{- if .Values.diagnosticMode.enabled }}
 
