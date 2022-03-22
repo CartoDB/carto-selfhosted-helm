@@ -4,7 +4,7 @@ APP VERSION: {{ .Chart.AppVersion }}
 
 {{/* TODO: We should provide some type of link to the repo to redirect the people that only uses helm to the official documentation */}}
 
-{{- if  or (.Values.postgresql.enabled) (.Values.redis.enabled) }}
+{{- if  or (.Values.internalPostgresql.enabled) (.Values.internalRedis.enabled) }}
                                                    
                                                    
                                                    

@@ -137,38 +137,55 @@ In that Postgres, CARTO stores some metadata and also the credentials of the ext
 
 ⚠️ That Postgres has nothing to do with the connections that the user configures in the CARTO workspace since it stores the metadata of the entire CARTO self-hosted. ⚠️
 
-To proceed you need:
-- Create one secret in kubernetes with the Postgres passwords:
-  ```bash
-  kubectl create secret generic \
-    -n <namespace> \
-    <your_own_installation_name|carto>-postgres-secret \
-    --from-literal=carto-password=<password> \
-    --from-literal=admin-password=<password>
-  ```
-- [Add the following customization](#how-to-define-customizations) lines:
-  ```yaml
-  postgresql:
-    # With that config, we disable the internal Postgres provided by the package
-    enabled: false
-  externalDatabase:
-    host: <Postgres IP/Hostname>
-    user: "carto"
-    # password: ""
-    adminUser: "postgres"
-    # adminPassword: ""
-    existingSecret: "<your_own_installation_name|carto>-postgres-secret"
-    existingSecretPasswordKey: "carto-password"
-    existingSecretAdminPasswordKey: "admin-password"
-    database: "workspace_db"
-    port: "5432"
-  ```
-- Note: `externalDatabase.user` and `externalDatabase.database` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
+There are two alternatives when connecting the environment with an external postgres:
 
-- Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalDatabase` block
-  - `internalUser`: it's the same as `user` but without the `@database-name` prefix required to connect to Azure Postgres
-  - `internalAdminUser`: it's the same as `adminUser` but without the `@database-name` prefix required to connect to Azure Postgres
+- Create a kubernetes secret by yourself:
+  - You can use this command with the Postgres passwords to create it:
+    ```bash
+    kubectl create secret generic \
+      -n <namespace> \
+      <your_own_installation_name|carto>-postgres-secret \
+      --from-literal=carto-password=<password> \
+      --from-literal=admin-password=<password>
+    ```
+  - [Add the following customization](#how-to-define-customizations) lines:
+    ```yaml
+    internalPostgresql:
+      # With that config, we disable the internal Postgres provided by the package
+      enabled: false
+    externalDatabase:
+      host: <Postgres IP/Hostname>
+      user: "carto"
+      adminUser: "postgres"
+      existingSecret: "<your_own_installation_name|carto>-postgres-secret"
+      existingSecretPasswordKey: "carto-password"
+      existingSecretAdminPasswordKey: "admin-password"
+      database: "workspace_db"
+      port: "5432"
+    ```
+    > Note: `externalDatabase.user` and `externalDatabase.database` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
 
+- Auto secret creation:
+  - [Add the following customization](#how-to-define-customizations) lines:
+    ```yaml
+    internalPostgresql:
+      # With that config, we disable the internal Postgres provided by the package
+      enabled: false
+    externalDatabase:
+      host: <Postgres IP/Hostname>
+      user: "carto"
+      password: ""
+      adminUser: "postgres"
+      adminPassword: ""
+      database: "workspace_db"
+      port: "5432"
+    ```
+    > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalDatabase.password` and `externalDatabase.adminPassword` that you set in previous lines.
+    > Note: `externalDatabase.user` and `externalDatabase.database` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
+
+> Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalDatabase` block
+- `internalUser`: it's the same as `user` but without the `@database-name` prefix required to connect to Azure Postgres
+- `internalAdminUser`: it's the same as `adminUser` but without the `@database-name` prefix required to connect to Azure Postgres
 ```yaml
 externalDatabase:
   ...
@@ -183,26 +200,40 @@ externalDatabase:
 CARTO self-hosted require a Redis (version 5+) to work.
 That Redis is mainly used as a cache for the postgres.
 
-To proceed you need:
-- Create one secret in kubernetes with the Redis AUTH string:
-  ```bash
-  kubectl create secret generic \
-    -n <namespace> \
-    <your_own_installation_name|carto>-redis-secret \
-    --from-literal=password=<AUTH string password>
-  ```
-- [Add the following customization](#how-to-define-customizations) lines:
-  ```yaml
-  redis:
-    # With that config, we disable the internal Redis provided by the package
-    enabled: false
-  externalRedis:
-    host: <Redis IP/Hostname>
-    port: "6379"
-    # password: ""
-    existingSecret: "<your_own_installation_name|carto>-redis-secret"
-    existingSecretPasswordKey: "password"
-  ```
+There are two alternatives when connecting the environment with an external redis:
+
+- Create a kubernetes secret by yourself:
+  - You can use this command with the Redis Auth string to create it:
+    ```bash
+    kubectl create secret generic \
+      -n <namespace> \
+      <your_own_installation_name|carto>-redis-secret \
+      --from-literal=password=<AUTH string password>
+    ```
+  - [Add the following customization](#how-to-define-customizations) lines:
+    ```yaml
+    internalRedis:
+      # With that config, we disable the internal Redis provided by the package
+      enabled: false
+    externalRedis:
+      host: <Redis IP/Hostname>
+      port: "6379"
+      existingSecret: "<your_own_installation_name|carto>-redis-secret"
+      existingSecretPasswordKey: "password"
+    ```
+
+- Auto secret creation:
+  - [Add the following customization](#how-to-define-customizations) lines:
+    ```yaml
+    internalRedis:
+      # With that config, we disable the internal Redis provided by the package
+      enabled: false
+    externalRedis:
+      host: <Redis IP/Hostname>
+      port: "6379"
+      password: ""
+    ```
+    > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalRedis.password` that you set in previous lines.
 
 ## Components scaling
 

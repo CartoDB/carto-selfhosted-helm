@@ -644,17 +644,17 @@ Create a default fully qualified postgresql name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "carto.postgresql.fullname" -}}
-{{- include "common.names.dependency.fullname" (dict "chartName" "postgresql" "chartValues" .Values.postgresql "context" $) -}}
+{{- include "common.names.dependency.fullname" (dict "chartName" "postgresql" "chartValues" .Values.internalPostgresql "context" $) -}}
 {{- end -}}
 
 {{/*
 Get the Postgresql credentials secret.
 */}}
 {{- define "carto.postgresql.secretName" -}}
-{{- if and (.Values.postgresql.enabled) (not .Values.postgresql.auth.existingSecret) -}}
+{{- if and (.Values.internalPostgresql.enabled) (not .Values.internalPostgresql.auth.existingSecret) -}}
     {{- printf "%s" (include "carto.postgresql.fullname" .) -}}
-{{- else if and (.Values.postgresql.enabled) (.Values.postgresql.auth.existingSecret) -}}
-    {{- printf "%s" .Values.postgresql.auth.existingSecret -}}
+{{- else if and (.Values.internalPostgresql.enabled) (.Values.internalPostgresql.auth.existingSecret) -}}
+    {{- printf "%s" .Values.internalPostgresql.auth.existingSecret -}}
 {{- else }}
     {{- if .Values.externalDatabase.existingSecret -}}
         {{- printf "%s" .Values.externalDatabase.existingSecret -}}
@@ -668,35 +668,35 @@ Get the Postgresql credentials secret.
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.host" -}}
-{{- ternary (include "carto.postgresql.fullname" .) .Values.externalDatabase.host .Values.postgresql.enabled | quote -}}
+{{- ternary (include "carto.postgresql.fullname" .) .Values.externalDatabase.host .Values.internalPostgresql.enabled | quote -}}
 {{- end -}}
 
 {{/*
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.user" -}}
-{{- ternary .Values.postgresql.auth.username .Values.externalDatabase.user .Values.postgresql.enabled | quote -}}
+{{- ternary .Values.internalPostgresql.auth.username .Values.externalDatabase.user .Values.internalPostgresql.enabled | quote -}}
 {{- end -}}
 
 {{/*
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.adminUser" -}}
-{{- ternary "postgres" .Values.externalDatabase.adminUser .Values.postgresql.enabled | quote -}}
+{{- ternary "postgres" .Values.externalDatabase.adminUser .Values.internalPostgresql.enabled | quote -}}
 {{- end -}}
 
 {{/*
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.databaseName" -}}
-{{- ternary .Values.postgresql.auth.database .Values.externalDatabase.database .Values.postgresql.enabled | quote -}}
+{{- ternary .Values.internalPostgresql.auth.database .Values.externalDatabase.database .Values.internalPostgresql.enabled | quote -}}
 {{- end -}}
 
 {{/*
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.secret.key" -}}
-{{- if .Values.postgresql.enabled -}}
+{{- if .Values.internalPostgresql.enabled -}}
     {{- printf "%s" "password" -}}
 {{- else -}}
     {{- if .Values.externalDatabase.existingSecret -}}
@@ -715,7 +715,7 @@ Add environment variables to configure database values
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.secret.adminKey" -}}
-{{- if .Values.postgresql.enabled -}}
+{{- if .Values.internalPostgresql.enabled -}}
     {{- print "postgres-password" -}}
 {{- else -}}
     {{- if .Values.externalDatabase.existingSecret -}}
@@ -734,7 +734,7 @@ Add environment variables to configure database values
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.port" -}}
-{{- ternary "5432" .Values.externalDatabase.port .Values.postgresql.enabled | quote -}}
+{{- ternary "5432" .Values.externalDatabase.port .Values.internalPostgresql.enabled | quote -}}
 {{- end -}}
 
 {{/*
@@ -746,12 +746,12 @@ Admin user
 {{ include "carto.postgresql-init-container" (dict "context" $ "admin" "true") }}
 */}}
 {{- define "carto.postgresql-init-container" -}}
-# NOTE: The value postgresql.image is not available unless postgresql.enabled is not set. We could change this to use bitnami-shell if
+# NOTE: The value internalPostgresql.image is not available unless internalPostgresql.enabled is not set. We could change this to use bitnami-shell if
 # it had the binary wait-for-port.
 # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
 - name: wait-for-db
-  image: {{ include "common.images.image" (dict "imageRoot" .context.Values.postgresql.image "global" .context.Values.global) }}
-  imagePullPolicy: {{ .context.Values.postgresql.image.pullPolicy  }}
+  image: {{ include "common.images.image" (dict "imageRoot" .context.Values.internalPostgresql.image "global" .context.Values.global) }}
+  imagePullPolicy: {{ .context.Values.internalPostgresql.image.pullPolicy  }}
   command:
     - /bin/bash
   args:
@@ -814,28 +814,28 @@ Create a default fully qualified redis name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "carto.redis.fullname" -}}
-{{- include "common.names.dependency.fullname" (dict "chartName" "redis" "chartValues" .Values.redis "context" $) -}}
+{{- include "common.names.dependency.fullname" (dict "chartName" "redis" "chartValues" .Values.internalRedis "context" $) -}}
 {{- end -}}
 
 {{/*
 Add environment variables to configure database values
 */}}
 {{- define "carto.redis.host" -}}
-{{- ternary (printf "%s-master" (include "carto.redis.fullname" .)) .Values.externalRedis.host .Values.redis.enabled | quote -}}
+{{- ternary (printf "%s-master" (include "carto.redis.fullname" .)) .Values.externalRedis.host .Values.internalRedis.enabled | quote -}}
 {{- end -}}
 
 {{/*
 Add environment variables to configure database values
 */}}
 {{- define "carto.redis.port" -}}
-{{- ternary "6379" .Values.externalRedis.port .Values.redis.enabled | quote -}}
+{{- ternary "6379" .Values.externalRedis.port .Values.internalRedis.enabled | quote -}}
 {{- end -}}
 
 {{/*
 Add environment variables to configure Redis values
 */}}
 {{- define "carto.redis.existingsecret.key" -}}
-{{- if .Values.redis.enabled -}}
+{{- if .Values.internalRedis.enabled -}}
     {{- print "redis-password" -}}
 {{- else -}}
     {{- if .Values.externalRedis.existingSecret -}}
@@ -854,10 +854,10 @@ Add environment variables to configure Redis values
 Get the Redis credentials secret.
 */}}
 {{- define "carto.redis.secretName" -}}
-{{- if and (.Values.redis.enabled) (not .Values.redis.existingSecret) -}}
+{{- if and (.Values.internalRedis.enabled) (not .Values.internalRedis.existingSecret) -}}
     {{- printf "%s" (include "carto.redis.fullname" .) -}}
-{{- else if and (.Values.redis.enabled) (.Values.redis.existingSecret) -}}
-    {{- printf "%s" .Values.redis.existingSecret -}}
+{{- else if and (.Values.internalRedis.enabled) (.Values.internalRedis.existingSecret) -}}
+    {{- printf "%s" .Values.internalRedis.existingSecret -}}
 {{- else }}
     {{- if .Values.externalRedis.existingSecret -}}
         {{- printf "%s" .Values.externalRedis.existingSecret -}}
@@ -875,8 +875,8 @@ Return YAML for the Redis init container
 # it had the binary wait-for-port.
 # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
 - name: wait-for-redis
-  image: {{ include "common.images.image" (dict "imageRoot" .Values.redis.image "global" .Values.global) }}
-  imagePullPolicy: {{ .Values.redis.image.pullPolicy  }}
+  image: {{ include "common.images.image" (dict "imageRoot" .Values.internalRedis.image "global" .Values.global) }}
+  imagePullPolicy: {{ .Values.internalRedis.image.pullPolicy  }}
   command:
     - /bin/bash
   args:
@@ -908,9 +908,9 @@ Return YAML for the Redis init container
   {{- end }}
   env:
     - name: REDIS_CLIENT_HOST
-      value: {{ ternary (include "carto.redis.fullname" .) .Values.externalRedis.host .Values.redis.enabled }}
+      value: {{ ternary (include "carto.redis.fullname" .) .Values.externalRedis.host .Values.internalRedis.enabled }}
     - name: REDIS_CLIENT_PORT_NUMBER
-      value: {{ ternary "6379" .Values.externalRedis.port .Values.redis.enabled | quote }}
+      value: {{ ternary "6379" .Values.externalRedis.port .Values.internalRedis.enabled | quote }}
     - name: REDIS_CLIENT_PASSWORD
       valueFrom:
         secretKeyRef:
@@ -922,10 +922,10 @@ Return YAML for the Redis init container
 Validate external Redis config
 */}}
 {{- define "carto.validateValues.redis" -}}
-{{- if and (not .Values.redis.enabled) (not .Values.externalRedis.host) -}}
+{{- if and (not .Values.internalRedis.enabled) (not .Values.externalRedis.host) -}}
 CARTO: Missing Redis(TM)
 
-If redis.enabled=false you need to specify the host of an external Redis(TM) instance setting externalRedis.host
+If internalRedis.enabled=false you need to specify the host of an external Redis(TM) instance setting externalRedis.host
 {{- end -}}
 {{- end -}}
 
@@ -933,10 +933,10 @@ If redis.enabled=false you need to specify the host of an external Redis(TM) ins
 Validate external Redis config
 */}}
 {{- define "carto.validateValues.postgresql" -}}
-{{- if and (not .Values.redis.enabled) (not .Values.externalRedis.host) -}}
+{{- if and (not .Values.internalRedis.enabled) (not .Values.externalRedis.host) -}}
 CARTO: Missing PostgreSQL
 
-If postgresql.enabled=false you need to specify the host of an external PostgreSQL instance setting externalDatabase.host
+If internalPostgresql.enabled=false you need to specify the host of an external PostgreSQL instance setting externalDatabase.host
 {{- end -}}
 {{- end -}}
 

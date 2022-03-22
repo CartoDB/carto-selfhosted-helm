@@ -1,34 +1,89 @@
-## @section CARTO parameters
-##
+## @section Custom config parameters
+## Global configuration to be edited by the client
 customConfigValues:
+  ## @param customConfigValues.selfHostedDomain Domain that is going to be used to access to the CARTO self-hosted.
   selfHostedDomain: "carto-selfhosted.lan"
-  httpCacheEnabled: "true"
-  importBucket: ""
-  workspaceImportsBucket: ""
-  workspaceThumbnailsBucket: ""
-  workspaceThumbnailsPublic: ""
+  ## @param customConfigValues.storageProvider Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob`
   storageProvider: "gcp"
+  ## @param customConfigValues.httpCacheEnabled Enable the internal httpCache
+  httpCacheEnabled: "true"
+  ## @param customConfigValues.importBucket Bucket to be used to store the import files
+  importBucket: ""
+  ## @param customConfigValues.workspaceImportsBucket Bucket to be used to store metadata of the workspace
+  workspaceImportsBucket: ""
+  ## @param customConfigValues.workspaceThumbnailsBucket Bucket to be used to store the thumbnails generated in the app
+  workspaceThumbnailsBucket: ""
+  ## @param customConfigValues.workspaceThumbnailsPublic Indicate if the thumbnails could be accessed publicly
+  workspaceThumbnailsPublic: "true"
+  ## @param customConfigValues.gcsBucketsProjectId If the bucket is GCP, the ProjectId to be used
   gcsBucketsProjectId: ""
+  ## @param customConfigValues.awsS3Region If the bucket is S3, the region to be used
+  awsS3Region: ""
 
+## @section CARTO config parameters
+## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
 cartoConfigValues:
-  cartoAccDomain: ""
+  ## @param cartoConfigValues.cartoAccApiDomain Domain of the Account API of Carto.
+  cartoAccApiDomain: ""
+  ## @param cartoConfigValues.cartoAccGcpProjectId GCP project ID of the Carto Accounts.
   cartoAccGcpProjectId: ""
+  ## @param cartoConfigValues.cartoAccGcpProjectRegion GCP project region of the Carto Accounts.
   cartoAccGcpProjectRegion: ""
+  ## @param cartoConfigValues.cartoAuth0ClientId Client ID of Auth0.
   cartoAuth0ClientId: ""
+  ## @param cartoConfigValues.cartoAuth0CustomDomain Custom Domain of Auth0.
   cartoAuth0CustomDomain: ""
+  ## @param cartoConfigValues.cartoSelfhostedDwLocation Location of the Carto Data Warehouse.
   cartoSelfhostedDwLocation: ""
+  ## @param cartoConfigValues.selfHostedGcpProjectId GCP project id used in the installation.
   selfHostedGcpProjectId: ""
+  ## @param cartoConfigValues.selfHostedTenantId Carto internal tenantId used in the installation.
   selfHostedTenantId: ""
-  reactAppLaunchDarklyClientSideId: ""
+  ## @param cartoConfigValues.launchDarklyClientSideId LaunchDarkly ClientSideId (by www) used to enable/disable features.
+  launchDarklyClientSideId: ""
 
+## @section Custom secret values
+## Global secrets to be edited by the client
 customSecretsValues:
+  ## @param customSecretsValues.googleMapsApiKey Google maps api-key value.
   googleMapsApiKey: ""
+  ## @param customSecretsValues.awsAccessKeyId If AWS is used in self-hosted, the AccessKey Id.
+  awsAccessKeyId: ""
+  ## @param customSecretsValues.awsAccessKeySecret If AWS is used in self-hosted, the AccessKey Secret.
+  awsAccessKeySecret: ""
 
+google:
+  ## @param google.existingSecret.name Secret containing the Google Credential file
+  ## @param google.existingSecret.key Key name of the Google Credential file inside the secret
+  ##
+  existingSecret:
+    name: ""
+    key: ""
+
+## @section CARTO secrets values
+## Secrets values provided by CARTO. Some of them could be customized by the client.
 cartoSecretsValues:
+  ## @param cartoSecretsValues.encryptionSecretKey The secret used to encrypt the clients Carto connections stored in the database.
   encryptionSecretKey: ""
-  varnishDebugSecret: ""
+  ## @param cartoSecretsValues.varnishPurgeSecret The secret used (by the app) to exec purge request.
   varnishPurgeSecret: ""
+  ## @param cartoSecretsValues.varnishDebugSecret The secret used if someone would like to debug Varnish.
+  varnishDebugSecret: ""
+  ## @param cartoSecretsValues.googleServiceAccount The secret used by the app to connect to google services. This couldn't be changed.
   googleServiceAccount: ""
+
+
+## @param tlsCerts.autoGenerate Generate self-signed TLS certificates
+## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
+## @param tlsCerts.existingSecret.certKey Key of the certificate inside the secret
+## @param tlsCerts.existingSecret.keyKey Key of the certificate key inside the secret
+##
+tlsCerts:
+  autoGenerate: true
+  existingSecret:
+    name: ""
+    keyKey: "tls.key"
+    certKey: "tls.crt"
 
 
 ## @section Global parameters
@@ -98,36 +153,11 @@ commonConfiguration: |
 ##
 commonSecretConfiguration: |
 
-google:
-  ## @param google.credentialFile Content of the Google Credential file
-  ##
-  credentialFile: ""
-
-  ## @param google.existingSecret.name Secret containing the Google Credential file
-  ## @param google.existingSecret.key Key name of the Google Credential file inside the secret
-  ##
-  existingSecret:
-    name: ""
-    key: ""
-
-## @param tlsCerts.autoGenerate Generate self-signed TLS certificates
-## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
-## @param tlsCerts.existingSecret.certKey Key of the certificate inside the secret
-## @param tlsCerts.existingSecret.keyKey Key of the certificate key inside the secret
-##
-tlsCerts:
-  autoGenerate: true
-  existingSecret:
-    name: ""
-    keyKey: "tls.key"
-    certKey: "tls.crt"
-
 ## @section accounts-www Deployment Parameters
 ##
 accountsWww:
   ## accounts-www image
-  ## @param accountsWww.image.registry accounts-www image registry
-  ## @param accountsWww.image.repository accounts-www image repository
+  ## @param accountsWww.image.name accounts-www image registry and repository
   ## @param accountsWww.image.tag accounts-www image tag (immutable tags are recommended)
   ## @param accountsWww.image.pullPolicy accounts-www image pull policy
   ## @param accountsWww.image.pullSecrets accounts-www image pull secrets
@@ -223,8 +253,10 @@ accountsWww:
     targetCPUUtilizationPercentage: 75
   ## accounts-www resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param accountsWww.resources.limits The resources limits for the accounts-www containers
-  ## @param accountsWww.resources.requests The requested resources for the accounts-www containers
+  ## @param accountsWww.resources.limits [object] The resources limits for the accounts-www containers
+  ## @skip accountsWww.resources.limits
+  ## @param accountsWww.resources.requests [object] The requested resources for the accounts-www containers
+  ## @skip accountsWww.resources.requests
   ##
   resources:
     limits:
@@ -442,8 +474,7 @@ accountsWww:
 ##
 importApi:
   ## import-api image
-  ## @param importApi.image.registry import-api image registry
-  ## @param importApi.image.repository import-api image repository
+  ## @param importApi.image.name import-api image registry and repository
   ## @param importApi.image.tag import-api image tag (immutable tags are recommended)
   ## @param importApi.image.pullPolicy import-api image pull policy
   ## @param importApi.image.pullSecrets import-api image pull secrets
@@ -539,8 +570,10 @@ importApi:
     targetCPUUtilizationPercentage: 75
   ## import-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param importApi.resources.limits The resources limits for the import-api containers
-  ## @param importApi.resources.requests The requested resources for the import-api containers
+  ## @param importApi.resources.limits [object] The resources limits for the import-api containers
+  ## @skip importApi.resources.limits
+  ## @param importApi.resources.requests [object] The requested resources for the import-api containers
+  ## @skip importApi.resources.requests
   ##
   resources:
     limits:
@@ -758,8 +791,7 @@ importApi:
 ##
 importWorker:
   ## import-worker image
-  ## @param importWorker.image.registry import-worker image registry
-  ## @param importWorker.image.repository import-worker image repository
+  ## @param importWorker.image.name import-worker image registry and repository
   ## @param importWorker.image.tag import-worker image tag (immutable tags are recommended)
   ## @param importWorker.image.pullPolicy import-worker image pull policy
   ## @param importWorker.image.pullSecrets import-worker image pull secrets
@@ -795,8 +827,10 @@ importWorker:
   customStartupProbe: {}
   ## import-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param importWorker.resources.limits The resources limits for the import-worker containers
-  ## @param importWorker.resources.requests The requested resources for the import-worker containers
+  ## @param importWorker.resources.limits [object] The resources limits for the import-worker containers
+  ## @skip importWorker.resources.limits
+  ## @param importWorker.resources.requests [object] The requested resources for the import-worker containers
+  ## @skip importWorker.resources.requests
   ##
   resources:
     limits:
@@ -968,8 +1002,7 @@ importWorker:
 ##
 ldsApi:
   ## lds-api image
-  ## @param ldsApi.image.registry lds-api image registry
-  ## @param ldsApi.image.repository lds-api image repository
+  ## @param ldsApi.image.name lds-api image registry and repository
   ## @param ldsApi.image.tag lds-api image tag (immutable tags are recommended)
   ## @param ldsApi.image.pullPolicy lds-api image pull policy
   ## @param ldsApi.image.pullSecrets lds-api image pull secrets
@@ -1065,8 +1098,10 @@ ldsApi:
     targetCPUUtilizationPercentage: 75
   ## lds-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param ldsApi.resources.limits The resources limits for the lds-api containers
-  ## @param ldsApi.resources.requests The requested resources for the lds-api containers
+  ## @param ldsApi.resources.limits [object] The resources limits for the lds-api containers
+  ## @skip ldsApi.resources.limits
+  ## @param ldsApi.resources.requests [object] The requested resources for the lds-api containers
+  ## @skip ldsApi.resources.requests
   ##
   resources:
     limits:
@@ -1284,8 +1319,7 @@ ldsApi:
 ##
 mapsApi:
   ## maps-api image
-  ## @param mapsApi.image.registry maps-api image registry
-  ## @param mapsApi.image.repository maps-api image repository
+  ## @param mapsApi.image.name maps-api image registry and repository
   ## @param mapsApi.image.tag maps-api image tag (immutable tags are recommended)
   ## @param mapsApi.image.pullPolicy maps-api image pull policy
   ## @param mapsApi.image.pullSecrets maps-api image pull secrets
@@ -1381,8 +1415,10 @@ mapsApi:
     targetCPUUtilizationPercentage: 75
   ## maps-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param mapsApi.resources.limits The resources limits for the maps-api containers
-  ## @param mapsApi.resources.requests The requested resources for the maps-api containers
+  ## @param mapsApi.resources.limits [object] The resources limits for the maps-api containers
+  ## @skip mapsApi.resources.limits
+  ## @param mapsApi.resources.requests [object] The requested resources for the maps-api containers
+  ## @skip mapsApi.resources.requests
   ##
   resources:
     limits:
@@ -1601,8 +1637,7 @@ mapsApi:
 ##
 router:
   ## router image
-  ## @param router.image.registry router image registry
-  ## @param router.image.repository router image repository
+  ## @param router.image.name router image registry and repository
   ## @param router.image.tag router image tag (immutable tags are recommended)
   ## @param router.image.pullPolicy router image pull policy
   ## @param router.image.pullSecrets router image pull secrets
@@ -1700,8 +1735,10 @@ router:
     targetCPUUtilizationPercentage: 75
   ## router resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param router.resources.limits The resources limits for the router containers
-  ## @param router.resources.requests The requested resources for the router containers
+  ## @param router.resources.limits [object] The resources limits for the router containers
+  ## @skip router.resources.limits
+  ## @param router.resources.requests [object] The requested resources for the router containers
+  ## @skip router.resources.requests
   ##
   resources:
     limits:
@@ -1920,15 +1957,14 @@ router:
     ##
     automountServiceAccountToken: false
 
-## @section http-cache Deployment Parameters
+## @section httpCache Deployment Parameters
 ##
 httpCache:
-  ## http-cache image
-  ## @param http-cache.image.registry http-cache image registry
-  ## @param http-cache.image.repository http-cache image repository
-  ## @param http-cache.image.tag http-cache image tag (immutable tags are recommended)
-  ## @param http-cache.image.pullPolicy http-cache image pull policy
-  ## @param http-cache.image.pullSecrets http-cache image pull secrets
+  ## httpCache image
+  ## @param httpCache.image.name http-cache image registry and repository
+  ## @param httpCache.image.tag http-cache image tag (immutable tags are recommended)
+  ## @param httpCache.image.pullPolicy http-cache image pull policy
+  ## @param httpCache.image.pullSecrets http-cache image pull secrets
   ##
   image:
     name: gcr.io/carto-onprem-artifacts/http-cache
@@ -1947,21 +1983,21 @@ httpCache:
     ##   - myRegistryKeySecretName
     ##
     pullSecrets: []
-  ## @param http-cache.replicaCount Number of http-cache replicas to deploy
+  ## @param httpCache.replicaCount Number of http-cache replicas to deploy
   ##
   replicaCount: 1
-  ## @param http-cache.containerPorts.http http-cache HTTP container port
+  ## @param httpCache.containerPorts.http http-cache HTTP container port
   ##
   containerPorts:
     http: 6081
   ## Configure extra options for http-cache containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-  ## @param http-cache.livenessProbe.enabled Enable livenessProbe on http-cache containers
-  ## @param http-cache.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
-  ## @param http-cache.livenessProbe.periodSeconds Period seconds for livenessProbe
-  ## @param http-cache.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
-  ## @param http-cache.livenessProbe.failureThreshold Failure threshold for livenessProbe
-  ## @param http-cache.livenessProbe.successThreshold Success threshold for livenessProbe
+  ## @param httpCache.livenessProbe.enabled Enable livenessProbe on http-cache containers
+  ## @param httpCache.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param httpCache.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param httpCache.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param httpCache.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param httpCache.livenessProbe.successThreshold Success threshold for livenessProbe
   ##
   livenessProbe:
     enabled: true
@@ -1970,12 +2006,12 @@ httpCache:
     timeoutSeconds: 5
     successThreshold: 1
     failureThreshold: 5
-  ## @param http-cache.readinessProbe.enabled Enable readinessProbe on http-cache containers
-  ## @param http-cache.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
-  ## @param http-cache.readinessProbe.periodSeconds Period seconds for readinessProbe
-  ## @param http-cache.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
-  ## @param http-cache.readinessProbe.failureThreshold Failure threshold for readinessProbe
-  ## @param http-cache.readinessProbe.successThreshold Success threshold for readinessProbe
+  ## @param httpCache.readinessProbe.enabled Enable readinessProbe on http-cache containers
+  ## @param httpCache.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param httpCache.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param httpCache.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param httpCache.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param httpCache.readinessProbe.successThreshold Success threshold for readinessProbe
   ##
   readinessProbe:
     enabled: true
@@ -1984,12 +2020,12 @@ httpCache:
     timeoutSeconds: 5
     successThreshold: 1
     failureThreshold: 5
-  ## @param http-cache.startupProbe.enabled Enable startupProbe on http-cache containers
-  ## @param http-cache.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
-  ## @param http-cache.startupProbe.periodSeconds Period seconds for startupProbe
-  ## @param http-cache.startupProbe.timeoutSeconds Timeout seconds for startupProbe
-  ## @param http-cache.startupProbe.failureThreshold Failure threshold for startupProbe
-  ## @param http-cache.startupProbe.successThreshold Success threshold for startupProbe
+  ## @param httpCache.startupProbe.enabled Enable startupProbe on http-cache containers
+  ## @param httpCache.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param httpCache.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param httpCache.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param httpCache.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param httpCache.startupProbe.successThreshold Success threshold for startupProbe
   ##
   startupProbe:
     enabled: false
@@ -1998,19 +2034,21 @@ httpCache:
     timeoutSeconds: 5
     successThreshold: 1
     failureThreshold: 5
-  ## @param http-cache.customLivenessProbe Custom livenessProbe that overrides the default one
+  ## @param httpCache.customLivenessProbe Custom livenessProbe that overrides the default one
   ##
   customLivenessProbe: {}
-  ## @param http-cache.customReadinessProbe Custom readinessProbe that overrides the default one
+  ## @param httpCache.customReadinessProbe Custom readinessProbe that overrides the default one
   ##
   customReadinessProbe: {}
-  ## @param http-cache.customStartupProbe Custom startupProbe that overrides the default one
+  ## @param httpCache.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
   ## http-cache resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param http-cache.resources.limits The resources limits for the http-cache containers
-  ## @param http-cache.resources.requests The requested resources for the http-cache containers
+  ## @param httpCache.resources.limits [object] The resources limits for the http-cache containers
+  ## @skip httpCache.resources.limits
+  ## @param httpCache.resources.requests [object] The requested resources for the http-cache containers
+  ## @skip httpCache.resources.requests
   ##
   resources:
     limits:
@@ -2021,93 +2059,93 @@ httpCache:
       cpu: "375m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-  ## @param http-cache.podSecurityContext.enabled Enabled http-cache pods' Security Context
-  ## @param http-cache.podSecurityContext.fsGroup Set http-cache pod's Security Context fsGroup
+  ## @param httpCache.podSecurityContext.enabled Enabled http-cache pods' Security Context
+  ## @param httpCache.podSecurityContext.fsGroup Set http-cache pod's Security Context fsGroup
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 0
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-  ## @param http-cache.containerSecurityContext.enabled Enabled http-cache containers' Security Context
-  ## @param http-cache.containerSecurityContext.runAsUser Set http-cache containers' Security Context runAsUser
-  ## @param http-cache.containerSecurityContext.runAsNonRoot Set http-cache containers' Security Context runAsNonRoot
+  ## @param httpCache.containerSecurityContext.enabled Enabled http-cache containers' Security Context
+  ## @param httpCache.containerSecurityContext.runAsUser Set http-cache containers' Security Context runAsUser
+  ## @param httpCache.containerSecurityContext.runAsNonRoot Set http-cache containers' Security Context runAsNonRoot
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 0
     runAsNonRoot: false
 
-  ## @param http-cache.configuration [object] Configuration settings (env vars) for http-cache
+  ## @param httpCache.configuration [object] Configuration settings (env vars) for http-cache
   ##
   configuration: |
 
-  ## @param http-cache.secretConfiguration Configuration settings (env vars) for http-cache
+  ## @param httpCache.secretConfiguration Configuration settings (env vars) for http-cache
   ##
   secretConfiguration: ""
-  ## @param http-cache.existingConfigMap The name of an existing ConfigMap with your custom configuration for http-cache
+  ## @param httpCache.existingConfigMap The name of an existing ConfigMap with your custom configuration for http-cache
   ##
   existingConfigMap: ""
-  ## @param http-cache.existingSecret The name of an existing ConfigMap with your custom configuration for http-cache
+  ## @param httpCache.existingSecret The name of an existing ConfigMap with your custom configuration for http-cache
   ##
   existingSecret: ""
-  ## @param http-cache.command Override default container command (useful when using custom images)
+  ## @param httpCache.command Override default container command (useful when using custom images)
   ##
   command: []
-  ## @param http-cache.args Override default container args (useful when using custom images)
+  ## @param httpCache.args Override default container args (useful when using custom images)
   ##
   args: []
-  ## @param http-cache.hostAliases http-cache pods host aliases
+  ## @param httpCache.hostAliases http-cache pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
   hostAliases: []
-  ## @param http-cache.podLabels Extra labels for http-cache pods
+  ## @param httpCache.podLabels Extra labels for http-cache pods
   ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
   ##
   podLabels: {}
-  ## @param http-cache.podAnnotations Annotations for http-cache pods
+  ## @param httpCache.podAnnotations Annotations for http-cache pods
   ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
   ##
   podAnnotations: {}
-  ## @param http-cache.podAffinityPreset Pod affinity preset. Ignored if `http-cache.affinity` is set. Allowed values: `soft` or `hard`
+  ## @param httpCache.podAffinityPreset Pod affinity preset. Ignored if `httpCache.affinity` is set. Allowed values: `soft` or `hard`
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAffinityPreset: ""
-  ## @param http-cache.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `http-cache.affinity` is set. Allowed values: `soft` or `hard`
+  ## @param httpCache.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `httpCache.affinity` is set. Allowed values: `soft` or `hard`
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAntiAffinityPreset: soft
-  ## Node http-cache.affinity preset
+  ## Node httpCache.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
   nodeAffinityPreset:
-    ## @param http-cache.nodeAffinityPreset.type Node affinity preset type. Ignored if `http-cache.affinity` is set. Allowed values: `soft` or `hard`
+    ## @param httpCache.nodeAffinityPreset.type Node affinity preset type. Ignored if `httpCache.affinity` is set. Allowed values: `soft` or `hard`
     ##
     type: ""
-    ## @param http-cache.nodeAffinityPreset.key Node label key to match. Ignored if `http-cache.affinity` is set
+    ## @param httpCache.nodeAffinityPreset.key Node label key to match. Ignored if `httpCache.affinity` is set
     ##
     key: ""
-    ## @param http-cache.nodeAffinityPreset.values Node label values to match. Ignored if `http-cache.affinity` is set
+    ## @param httpCache.nodeAffinityPreset.values Node label values to match. Ignored if `httpCache.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
     ##   - e2e-az2
     ##
     values: []
-  ## @param http-cache.affinity Affinity for http-cache pods assignment
+  ## @param httpCache.affinity Affinity for http-cache pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
-  ## NOTE: `http-cache.podAffinityPreset`, `http-cache.podAntiAffinityPreset`, and `http-cache.nodeAffinityPreset` will be ignored when it's set
+  ## NOTE: `httpCache.podAffinityPreset`, `httpCache.podAntiAffinityPreset`, and `httpCache.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param http-cache.nodeSelector Node labels for http-cache pods assignment
+  ## @param httpCache.nodeSelector Node labels for http-cache pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
-  ## @param http-cache.tolerations Tolerations for http-cache pods assignment
+  ## @param httpCache.tolerations Tolerations for http-cache pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations: []
-  ## @param http-cache.updateStrategy.type http-cache statefulset strategy type
+  ## @param httpCache.updateStrategy.type http-cache statefulset strategy type
   ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
   ##
   updateStrategy:
@@ -2115,36 +2153,36 @@ httpCache:
     ## Can be set to RollingUpdate or OnDelete
     ##
     type: RollingUpdate
-  ## @param http-cache.priorityClassName http-cache pods' priorityClassName
+  ## @param httpCache.priorityClassName http-cache pods' priorityClassName
   ##
   priorityClassName: ""
-  ## @param http-cache.schedulerName Name of the k8s scheduler (other than default) for http-cache pods
+  ## @param httpCache.schedulerName Name of the k8s scheduler (other than default) for http-cache pods
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param http-cache.lifecycleHooks for the http-cache container(s) to automate configuration before or after startup
+  ## @param httpCache.lifecycleHooks for the http-cache container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
-  ## @param http-cache.extraEnvVars Array with extra environment variables to add to http-cache nodes
+  ## @param httpCache.extraEnvVars Array with extra environment variables to add to http-cache nodes
   ## e.g:
   ## extraEnvVars:
   ##   - name: FOO
   ##     value: "bar"
   ##
   extraEnvVars: []
-  ## @param http-cache.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for http-cache nodes
+  ## @param httpCache.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for http-cache nodes
   ##
   extraEnvVarsCM: ""
-  ## @param http-cache.extraEnvVarsSecret Name of existing Secret containing extra env vars for http-cache nodes
+  ## @param httpCache.extraEnvVarsSecret Name of existing Secret containing extra env vars for http-cache nodes
   ##
   extraEnvVarsSecret: ""
-  ## @param http-cache.extraVolumes Optionally specify extra list of additional volumes for the http-cache pod(s)
+  ## @param httpCache.extraVolumes Optionally specify extra list of additional volumes for the http-cache pod(s)
   ##
   extraVolumes: []
-  ## @param http-cache.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the http-cache container(s)
+  ## @param httpCache.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the http-cache container(s)
   ##
   extraVolumeMounts: []
-  ## @param http-cache.sidecars Add additional sidecar containers to the http-cache pod(s)
+  ## @param httpCache.sidecars Add additional sidecar containers to the http-cache pod(s)
   ## e.g:
   ## sidecars:
   ##   - name: your-image-name
@@ -2155,7 +2193,7 @@ httpCache:
   ##         containerPort: 1234
   ##
   sidecars: {}
-  ## @param http-cache.initContainers Add additional init containers to the http-cache pod(s)
+  ## @param httpCache.initContainers Add additional init containers to the http-cache pod(s)
   ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
   ## e.g:
   ## initContainers:
@@ -2169,61 +2207,59 @@ httpCache:
   ##
   ##
   service:
-    ## @param http-cache.service.type http-cache service type
+    ## @param httpCache.service.type http-cache service type
     ##
     type: ClusterIP
-    ## @param http-cache.service.ports.http http-cache service HTTP port
-    ## @param http-cache.service.ports.https http-cache service HTTPS port
+    ## @param httpCache.service.ports.http http-cache service HTTP port
     ##
     ports:
       http: 80
     ## Node ports to expose
-    ## @param http-cache.service.nodePorts.http Node port for HTTP
-    ## @param http-cache.service.nodePorts.https Node port for HTTPS
+    ## @param httpCache.service.nodePorts.http Node port for HTTP
     ## NOTE: choose port between <30000-32767>
     ##
     nodePorts:
       http: ""
-    ## @param http-cache.service.clusterIP http-cache service Cluster IP
+    ## @param httpCache.service.clusterIP http-cache service Cluster IP
     ## e.g.:
     ## clusterIP: None
     ##
     clusterIP: ""
-    ## @param http-cache.service.loadBalancerIP http-cache service Load Balancer IP
+    ## @param httpCache.service.loadBalancerIP http-cache service Load Balancer IP
     ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
     ##
     loadBalancerIP: ""
-    ## @param http-cache.service.labelSelectorsOverride Selector for http-cache service
+    ## @param httpCache.service.labelSelectorsOverride Selector for http-cache service
     ##
     labelSelectorsOverride: {}
-    ## @param http-cache.service.loadBalancerSourceRanges http-cache service Load Balancer sources
+    ## @param httpCache.service.loadBalancerSourceRanges http-cache service Load Balancer sources
     ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
     ## e.g:
     ## loadBalancerSourceRanges:
     ##   - 10.10.10.0/24
     ##
     loadBalancerSourceRanges: []
-    ## @param http-cache.service.externalTrafficPolicy http-cache service external traffic policy
+    ## @param httpCache.service.externalTrafficPolicy http-cache service external traffic policy
     ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
     ##
     externalTrafficPolicy: Cluster
-    ## @param http-cache.service.annotations Additional custom annotations for http-cache service
+    ## @param httpCache.service.annotations Additional custom annotations for http-cache service
     ##
     annotations: {}
-    ## @param http-cache.service.extraPorts Extra ports to expose in http-cache service (normally used with the `sidecars` value)
+    ## @param httpCache.service.extraPorts Extra ports to expose in http-cache service (normally used with the `sidecars` value)
     ##
     extraPorts: []
   ## @section http-cache ServiceAccount configuration
   ##
   serviceAccount:
-    ## @param http-cache.serviceAccount.create Specifies whether a ServiceAccount should be created
+    ## @param httpCache.serviceAccount.create Specifies whether a ServiceAccount should be created
     ##
     create: true
-    ## @param http-cache.serviceAccount.name The name of the ServiceAccount to use.
+    ## @param httpCache.serviceAccount.name The name of the ServiceAccount to use.
     ## If not set and create is true, a name is generated using the common.names.fullname template
     ##
     name: ""
-    ## @param http-cache.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
+    ## @param httpCache.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
     ##
     automountServiceAccountToken: false
 
@@ -2231,8 +2267,7 @@ httpCache:
 ##
 cdnInvalidatorSub:
   ## cdnInvalidatorSub image
-  ## @param cdnInvalidatorSub.image.registry cdnInvalidatorSub image registry
-  ## @param cdnInvalidatorSub.image.repository cdnInvalidatorSub image repository
+  ## @param cdnInvalidatorSub.image.name cdnInvalidatorSub image registry and repository
   ## @param cdnInvalidatorSub.image.tag cdnInvalidatorSub image tag (immutable tags are recommended)
   ## @param cdnInvalidatorSub.image.pullPolicy cdnInvalidatorSub image pull policy
   ## @param cdnInvalidatorSub.image.pullSecrets cdnInvalidatorSub image pull secrets
@@ -2316,8 +2351,10 @@ cdnInvalidatorSub:
   customStartupProbe: {}
   ## cdnInvalidatorSub resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param cdnInvalidatorSub.resources.limits The resources limits for the cdnInvalidatorSub containers
-  ## @param cdnInvalidatorSub.resources.requests The requested resources for the cdnInvalidatorSub containers
+  ## @param cdnInvalidatorSub.resources.limits [object] The resources limits for the cdnInvalidatorSub containers
+  ## @skip cdnInvalidatorSub.resources.limits
+  ## @param cdnInvalidatorSub.resources.requests [object] The requested resources for the cdnInvalidatorSub containers
+  ## @skip cdnInvalidatorSub.resources.requests
   ##
   resources:
     limits:
@@ -2480,7 +2517,6 @@ cdnInvalidatorSub:
     ##
     type: ClusterIP
     ## @param cdnInvalidatorSub.service.ports.http cdnInvalidatorSub service HTTP port
-    ## @param cdnInvalidatorSub.service.ports.https cdnInvalidatorSub service HTTPS port
     ##
     ports:
       http: 80
@@ -2539,8 +2575,7 @@ cdnInvalidatorSub:
 ##
 workspaceApi:
   ## workspace-api image
-  ## @param workspaceApi.image.registry workspace-api image registry
-  ## @param workspaceApi.image.repository workspace-api image repository
+  ## @param workspaceApi.image.name workspace-api image registry and repository
   ## @param workspaceApi.image.tag workspace-api image tag (immutable tags are recommended)
   ## @param workspaceApi.image.pullPolicy workspace-api image pull policy
   ## @param workspaceApi.image.pullSecrets workspace-api image pull secrets
@@ -2636,8 +2671,10 @@ workspaceApi:
     targetCPUUtilizationPercentage: 75
   ## workspace-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceApi.resources.limits The resources limits for the workspace-api containers
-  ## @param workspaceApi.resources.requests The requested resources for the workspace-api containers
+  ## @param workspaceApi.resources.limits [object] The resources limits for the workspace-api containers
+  ## @skip workspaceApi.resources.limits
+  ## @param workspaceApi.resources.requests [object] The requested resources for the workspace-api containers
+  ## @skip workspaceApi.resources.requests
   ##
   resources:
     limits:
@@ -2856,8 +2893,7 @@ workspaceApi:
 ##
 workspaceSubscriber:
   ## workspace-subscriber image
-  ## @param workspaceSubscriber.image.registry workspace-subscriber image registry
-  ## @param workspaceSubscriber.image.repository workspace-subscriber image repository
+  ## @param workspaceSubscriber.image.name workspace-subscriber image registry and repository
   ## @param workspaceSubscriber.image.tag workspace-subscriber image tag (immutable tags are recommended)
   ## @param workspaceSubscriber.image.pullPolicy workspace-subscriber image pull policy
   ## @param workspaceSubscriber.image.pullSecrets workspace-subscriber image pull secrets
@@ -2893,8 +2929,10 @@ workspaceSubscriber:
   customStartupProbe: {}
   ## workspace-subscriber resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceSubscriber.resources.limits The resources limits for the workspace-subscriber containers
-  ## @param workspaceSubscriber.resources.requests The requested resources for the workspace-subscriber containers
+  ## @param workspaceSubscriber.resources.limits [object] The resources limits for the workspace-subscriber containers
+  ## @skip workspaceSubscriber.resources.limits
+  ## @param workspaceSubscriber.resources.requests [object] The requested resources for the workspace-subscriber containers
+  ## @skip workspaceSubscriber.resources.requests
   ##
   resources:
     limits:
@@ -3066,8 +3104,7 @@ workspaceSubscriber:
 ##
 workspaceWww:
   ## workspace-www image
-  ## @param workspaceWww.image.registry workspace-www image registry
-  ## @param workspaceWww.image.repository workspace-www image repository
+  ## @param workspaceWww.image.name workspace-www image registry and repository
   ## @param workspaceWww.image.tag workspace-www image tag (immutable tags are recommended)
   ## @param workspaceWww.image.pullPolicy workspace-www image pull policy
   ## @param workspaceWww.image.pullSecrets workspace-www image pull secrets
@@ -3163,8 +3200,10 @@ workspaceWww:
     targetCPUUtilizationPercentage: 75
   ## workspace-www resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceWww.resources.limits The resources limits for the workspace-www containers
-  ## @param workspaceWww.resources.requests The requested resources for the workspace-www containers
+  ## @param workspaceWww.resources.limits [object] The resources limits for the workspace-www containers
+  ## @skip workspaceWww.resources.limits
+  ## @param workspaceWww.resources.requests [object] The requested resources for the workspace-www containers
+  ## @skip workspaceWww.resources.requests
   ##
   resources:
     limits:
@@ -3382,8 +3421,7 @@ workspaceWww:
 ##
 workspaceMigrations:
   ## Migrations image
-  ## @param workspaceMigrations.image.registry workspace-db image registry
-  ## @param workspaceMigrations.image.repository workspace-db image repository
+  ## @param workspaceMigrations.image.name workspace-db image registry and repository
   ## @param workspaceMigrations.image.tag workspace-db image tag (immutable tags are recommended)
   ## @param workspaceMigrations.image.pullPolicy workspace-db image pull policy
   ## @param workspaceMigrations.image.pullSecrets workspace-db image pull secrets
@@ -3409,8 +3447,10 @@ workspaceMigrations:
   args: []
   ## Init container's resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceMigrations.resources.limits The resources limits for the init container
-  ## @param workspaceMigrations.resources.requests The requested resources for the init container
+  ## @param workspaceMigrations.resources.limits [object] The resources limits for the init container
+  ## @skip workspaceMigrations.resources.limits
+  ## @param workspaceMigrations.resources.requests [object] The requested resources for the init container
+  ## @skip workspaceMigrations.resources.requests
   ##
   resources:
     limits: {}
@@ -3429,19 +3469,22 @@ workspaceMigrations:
     runAsUser: 0
     runAsNonRoot: false
 
-## @section Redis&trade; subchart parameters
-## Redis&trade; chart configuration
+## @section Internal Redis&trade; subchart parameters
+## Internal Redis &trade; chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/redis/values.yaml
-## @param redis.enabled Switch to enable or disable the Redis&trade; helm
-## @param redis.auth.enabled Switch to enable or disable authentication
-## @param redis.auth.password Redis&trade; password
-## @param redis.auth.existingSecret Name of existing secret object containing the password
-## @param redis.architecture Cluster settings
-## @param redis.master.persistence.enabled Enable master persistent volumes
-## @param redis.replica.persistence.enabled Enable replica persistent volumes
+## @param internalRedis.enabled Switch to enable or disable the Redis&trade; helm
+## @param internalRedis.auth.enabled Switch to enable or disable authentication
+## @param internalRedis.auth.password Redis&trade; password
+## @param internalRedis.auth.existingSecret Name of existing secret object containing the password
+## @param internalRedis.architecture Cluster settings
+## @param internalRedis.master.persistence.enabled Enable master persistent volumes
+## @param internalRedis.replica.persistence.enabled Enable replica persistent volumes
 ##
-redis:
+internalRedis:
   enabled: true
+  ## @param internalRedis.nameOverride String to partially override common.names.fullname template (will maintain the release name)
+  ##
+  nameOverride: "redis"
   auth:
     enabled: true
     ## Redis&trade; password (both master and slave). Defaults to a random 10-character alphanumeric string if not set and auth.enabled is true.
@@ -3475,22 +3518,25 @@ externalRedis:
   existingSecret: ""
   existingSecretPasswordKey: ""
 
-## @section PostgreSQL subchart parameters
-## PostgreSQL chart configuration
+## @section Internal PostgreSQL subchart parameters
+## Internal PostgreSQL chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/postgresql/values.yaml
-## @param postgresql.enabled Switch to enable or disable the PostgreSQL helm chart
-## @param postgresql.auth.username CARTO Postgresql username
-## @param postgresql.auth.password CARTO Postgresql password
-## @param postgresql.auth.postgresPassword CARTO Postgresql password for the postgres user
-## @param postgresql.auth.database CARTO Postgresql database
-## @param postgresql.auth.existingSecret Name of an existing secret containing the PostgreSQL password ('postgresql-password' key)
+## @param internalPostgresql.enabled Switch to enable or disable the PostgreSQL helm chart
+## @param internalPostgresql.auth.username CARTO Postgresql username
+## @param internalPostgresql.auth.password CARTO Postgresql password
+## @param internalPostgresql.auth.postgresPassword CARTO Postgresql password for the postgres user
+## @param internalPostgresql.auth.database CARTO Postgresql database
+## @param internalPostgresql.auth.existingSecret Name of an existing secret containing the PostgreSQL password ('postgresql-password' key)
 ##
-postgresql:
+internalPostgresql:
   enabled: true
-  ## @param postgresql.image.tag Tag of the PostgreSQL image
+  ## @param internalPostgresql.image.tag Tag of the PostgreSQL image
   ##
   image:
     tag: "13.5.0-debian-10-r84"
+  ## @param internalPostgresql.nameOverride String to partially override common.names.fullname template (will maintain the release name)
+  ##
+  nameOverride: "postgresql"
   auth:
     username: carto
     password: ""
@@ -3499,7 +3545,7 @@ postgresql:
     ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
     ##
     existingSecret: ""
-  ## @param postgresql.primary.initdb.scripts [array] Scripts for initializing the database
+  ## @param internalPostgresql.primary.initdb.scripts [array] Scripts for initializing the database
   ##
   primary:
     initdb:
@@ -3516,10 +3562,12 @@ postgresql:
 ## External PostgreSQL configuration
 ## All of these values are only used when postgresql.enabled is set to false
 ## @param externalDatabase.host Database host
-## @param externalDatabase.user non-root Username for CARTO Database
-## @param externalDatabase.adminUser Database admin user
-## @param externalDatabase.adminPassword Database admin password
+## @param externalDatabase.user non-root Username for CARTO Database (seen from outside the database)
+## @param externalDatabase.internalUser non-root Username for CARTO Database (seen from inside the database). If this value is not defined, `externalDatabase.user` is used.
 ## @param externalDatabase.password Database password
+## @param externalDatabase.adminUser Database admin user (seen from outside the database)
+## @param externalDatabase.internalAdminUser Database admin user (seen from inside the database). If this value is not defined, `externalDatabase.adminUser` is used.
+## @param externalDatabase.adminPassword Database admin password
 ## @param externalDatabase.existingSecret Name of an existing secret resource containing the DB password
 ## @param externalDatabase.existingSecretPasswordKey Name of the key inside the secret containing the DB password
 ## @param externalDatabase.existingSecretAdminPasswordKey Name of the key inside the secret containing the DB admin password
@@ -3529,8 +3577,10 @@ postgresql:
 externalDatabase:
   host: localhost
   user: carto
+  internalUser: ""
   password: ""
   adminUser: postgres
+  internalAdminUser: ""
   adminPassword: ""
   existingSecret: ""
   existingSecretPasswordKey: ""
