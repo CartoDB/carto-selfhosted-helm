@@ -12,7 +12,7 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  ACC_DOMAIN: {{ .Values.cartoConfigValues.cartoAccDomain | quote }}
+  ACC_DOMAIN: {{ .Values.cartoConfigValues.cartoAccApiDomain | quote }}
   ACC_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   ACC_GCP_PROJECT_REGION: {{ .Values.cartoConfigValues.cartoAccGcpProjectRegion | quote }}
   AUTH0_AUDIENCE: "carto-cloud-native-api"

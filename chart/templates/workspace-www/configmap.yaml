@@ -12,7 +12,7 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  ACC_DOMAIN: {{ .Values.cartoConfigValues.cartoAccDomain | quote }}
+  ACC_DOMAIN: {{ .Values.cartoConfigValues.cartoAccApiDomain | quote }}
   ACC_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   ACC_GCP_PROJECT_REGION: {{ .Values.cartoConfigValues.cartoAccGcpProjectRegion | quote }}
   AUTH0_AUDIENCE: "carto-cloud-native-api"
@@ -25,7 +25,7 @@ data:
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   LOG_LEVEL: "debug"
-  REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccDomain }}"
+  REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
   REACT_APP_ACCOUNTS_URL: "https://{{ .Values.customConfigValues.selfHostedDomain }}/acc/"
   REACT_APP_API_BASE_URL: "https://{{ .Values.customConfigValues.selfHostedDomain }}/api"
   REACT_APP_AUTH0_AUDIENCE: "carto-cloud-native-api"
@@ -35,7 +35,7 @@ data:
   REACT_APP_CUSTOM_TENANT: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   REACT_APP_HUBSPOT_ID: "474999"
   REACT_APP_HUBSPOT_LIMIT_FORM_ID: "cd9486fa-5766-4bac-81b9-d8c6cd029b3b"
-  REACT_APP_LAUNCH_DARKLY_CLIENT_SIDE_ID: {{ .Values.cartoConfigValues.reactAppLaunchDarklyClientSideId | quote }}
+  REACT_APP_LAUNCH_DARKLY_CLIENT_SIDE_ID: {{ .Values.cartoConfigValues.launchDarklyClientSideId | quote }}
   REACT_APP_PUBLIC_MAP_URL: "https://{{ .Values.customConfigValues.selfHostedDomain }}/api/v3/maps/public"
   REACT_APP_WORKSPACE_API_URL: "https://{{ .Values.customConfigValues.selfHostedDomain }}/workspace-api"
   REACT_APP_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
