@@ -1190,20 +1190,20 @@ helm install my-release -f values.yaml carto/carto
 
 ### External PostgreSQL parameters
 
-| Name                                              | Description                                                                                                                          | Value          |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
-| `externalPostgresql.host`                           | Database host                                                                                                                        | `localhost`    |
-| `externalPostgresql.user`                           | non-root Username for CARTO Database (seen from outside the database)                                                                | `carto`        |
+| Name                                                | Description                                                                                                                            | Value          |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| `externalPostgresql.host`                           | Database host                                                                                                                          | `localhost`    |
+| `externalPostgresql.user`                           | non-root Username for CARTO Database (seen from outside the database)                                                                  | `carto`        |
 | `externalPostgresql.internalUser`                   | non-root Username for CARTO Database (seen from inside the database). If this value is not defined, `externalPostgresql.user` is used. | `""`           |
-| `externalPostgresql.password`                       | Database password                                                                                                                    | `""`           |
-| `externalPostgresql.adminUser`                      | Database admin user (seen from outside the database)                                                                                 | `postgres`     |
+| `externalPostgresql.password`                       | Database password                                                                                                                      | `""`           |
+| `externalPostgresql.adminUser`                      | Database admin user (seen from outside the database)                                                                                   | `postgres`     |
 | `externalPostgresql.internalAdminUser`              | Database admin user (seen from inside the database). If this value is not defined, `externalPostgresql.adminUser` is used.             | `""`           |
-| `externalPostgresql.adminPassword`                  | Database admin password                                                                                                              | `""`           |
-| `externalPostgresql.existingSecret`                 | Name of an existing secret resource containing the DB password                                                                       | `""`           |
-| `externalPostgresql.existingSecretPasswordKey`      | Name of the key inside the secret containing the DB password                                                                         | `""`           |
-| `externalPostgresql.existingSecretAdminPasswordKey` | Name of the key inside the secret containing the DB admin password                                                                   | `""`           |
-| `externalPostgresql.database`                       | Database name                                                                                                                        | `workspace_db` |
-| `externalPostgresql.port`                           | Database port number                                                                                                                 | `5432`         |
+| `externalPostgresql.adminPassword`                  | Database admin password                                                                                                                | `""`           |
+| `externalPostgresql.existingSecret`                 | Name of an existing secret resource containing the DB password                                                                         | `""`           |
+| `externalPostgresql.existingSecretPasswordKey`      | Name of the key inside the secret containing the DB password                                                                           | `""`           |
+| `externalPostgresql.existingSecretAdminPasswordKey` | Name of the key inside the secret containing the DB admin password                                                                     | `""`           |
+| `externalPostgresql.database`                       | Database name                                                                                                                          | `workspace_db` |
+| `externalPostgresql.port`                           | Database port number                                                                                                                   | `5432`         |
 
 
 ## Configuration and installation details
