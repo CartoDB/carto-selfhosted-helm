@@ -1,0 +1,8 @@
+{
+  "hosts": {
+    "carto.vmw": "{{ TARGET_IP }}"
+  },
+  "chromeWebSecurity": false,
+  "defaultCommandTimeout": 90000,
+  "requestTimeout": 60000
+}

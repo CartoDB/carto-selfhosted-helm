@@ -16,5 +16,5 @@ file:
     filetype: file
     contains: []
 port:
-    tcp:80:
+    tcp:8080:
       listening: true
