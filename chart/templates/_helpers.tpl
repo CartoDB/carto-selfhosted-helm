@@ -919,7 +919,7 @@ If internalRedis.enabled=false you need to specify the host of an external Redis
 {{/*
 Validate external Redis config
 */}}
-{{- define "carto.validate.Values.postgresql" -}}
+{{- define "carto.validateValues.postgresql" -}}
 {{- if and (not .Values.internalRedis.enabled) (not .Values.externalRedis.host) -}}
 CARTO: Missing PostgreSQL
 
@@ -933,7 +933,7 @@ Compile all warnings into a single message, and call fail.
 {{- define "carto.validateValues" -}}
 {{- $messages := list -}}
 {{- $messages := append $messages (include "carto.validateValues.redis" .) -}}
-{{- $messages := append $messages (include "carto.validate.Values.postgresql" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.postgresql" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 
