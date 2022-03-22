@@ -163,8 +163,22 @@ To proceed you need:
     database: "workspace_db"
     port: "5432"
   ```
-- Note: `externalDatabase.user` and `externalDatabase.databse` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
+- Note: `externalDatabase.user` and `externalDatabase.database` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
 
+- Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalDatabase` block
+  - `internalUser`: it's the same as `user` but without the `@database-name` prefix required to connect to Azure Postgres
+  - `internalAdminUser`: it's the same as `adminUser` but without the `@database-name` prefix required to connect to Azure Postgres
+
+```yaml
+externalDatabase:
+  ...
+  user: "carto@database-name"
+  internalUser: "carto"
+  ...
+  adminUser: "postgres@database-name"
+  internalAdminUser: "postgres"
+  ...
+```
 ### Configure your own redis
 CARTO self-hosted require a Redis (version 5+) to work.
 That Redis is mainly used as a cache for the postgres.
@@ -208,12 +222,12 @@ The Kubernetes Metrics Server collects resource metrics from the kubelets in you
   - Verify the installation by issuing the following command:
     ```bash
     kubectl get deploy,svc -n kube-system | egrep metrics-server
-    ```  
+    ```
   - If Metrics Server is installed, the output is similar to the following example:
     ```bash
     deployment.extensions/metrics-server   1/1     1            1           3d4h
     service/metrics-server   ClusterIP   198.51.100.0   <none>        443/TCP         3d4h
-    ```  
+    ```
   - Verify that Metrics Server is returning data for pods by issuing the following command:
     ```bash
     kubectl get --raw "/apis/metrics.k8s.io/v1beta1/pods"
