@@ -53,7 +53,7 @@ There are two ways to configure or customize the deployment:
 
 The most important step to have your CARTO self-hosted ready to be used is to configure the domain to be used.
 
-⚠️ CARTO self-hosted is not designed to be used in the path of a URL, it needs a full domain or subdomain. ⚠️
+> ⚠️ CARTO self-hosted is not designed to be used in the path of a URL, it needs a full domain or subdomain. ⚠️
 
 To do this you need to [add the following customization](#how-to-define-customizations):
 ```yaml
@@ -106,7 +106,7 @@ TODO: Document Ingress
 By default, the package generate a self-signed certificate with a validity of 365 days.
 Some times you need to use a valid certificate or need to totally disable it to leave the management to an external proxy.
 
-⚠️ CARTO self-hosted only works if the final client use HTTPS protocol. ⚠️
+> ⚠️ CARTO self-hosted only works if the final client use HTTPS protocol. ⚠️
 
 #### Disable internal HTTPS
 <!--
@@ -141,10 +141,10 @@ This package comes with an internal Postgres and Redis but it is not recommended
 So we recommend to use external databases, preferible managed database by your provider, with backups, high availability, etc.
 
 ### Configure your own postgres
-CARTO self-hosted require a Postges (version 13+) to work.
+CARTO self-hosted require a Postges (version 11+) to work.
 In that Postgres, CARTO stores some metadata and also the credentials of the external connections configured by the CARTO self-hosted users.
 
-⚠️ That Postgres has nothing to do with the connections that the user configures in the CARTO workspace since it stores the metadata of the entire CARTO self-hosted. ⚠️
+> ⚠️ That Postgres has nothing to do with the connections that the user configures in the CARTO workspace since it stores the metadata of the entire CARTO self-hosted. ⚠️
 
 There are two alternatives when connecting the environment with an external postgres:
 
@@ -290,4 +290,4 @@ You can set how many number of pods should have be running all time, for this, y
 
 ## Advanced configuration
 
-If you need a more advanced configuration you can check the [full chart documentation](../chart/README.md) or contact [support@carto.com](mailto:support@carto.com)
+If you need a more advanced configuration you can check the [full chart documentation](../chart/README.md) with all the available [parameters](../chart/README.md#parameters) or contact [support@carto.com](mailto:support@carto.com)
