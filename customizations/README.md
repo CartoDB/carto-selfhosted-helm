@@ -41,7 +41,7 @@ There are two ways to configure or customize the deployment:
   ```bash
   ... -f <my_customization_file>.yaml
   ```
-- Use the inline set. For example, add the following at the end of ALL the install or upgrade command:
+- Use the parameters as arguments. You can specify each parameter using the `--set key=value[,key=value]` argument. For example, add the following at the end of ALL the install or upgrade command:
   ```bash
   ... --set customConfigValues.selfHostedDomain=my.domain.com \
     --set customSecretsValues.googleMapsApiKey=<google-maps-api-key> \
@@ -148,6 +148,8 @@ In that Postgres, CARTO stores some metadata and also the credentials of the ext
 
 There are two alternatives when connecting the environment with an external postgres:
 
+> Note: `externalDatabase.user` and `externalDatabase.database` inside the Postgres instance are going to be created automatically during the installation process. Please, not create it manually.
+
 - Create a kubernetes secret by yourself:
   - You can use this command with the Postgres passwords to create it:
     ```bash
@@ -172,7 +174,6 @@ There are two alternatives when connecting the environment with an external post
       database: "workspace_db"
       port: "5432"
     ```
-    > Note: `externalDatabase.user` and `externalDatabase.database` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
 
 - Auto secret creation:
   - [Add the following customization](#how-to-define-customizations) lines:
@@ -190,8 +191,6 @@ There are two alternatives when connecting the environment with an external post
       port: "5432"
     ```
     > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalDatabase.password` and `externalDatabase.adminPassword` that you set in previous lines.
-
-    > Note: `externalDatabase.user` and `externalDatabase.database` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
 
 > Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalDatabase` block
 - `internalUser`: it's the same as `user` but without the `@database-name` prefix required to connect to Azure Postgres
