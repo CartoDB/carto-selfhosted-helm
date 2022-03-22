@@ -3518,8 +3518,8 @@ externalRedis:
   existingSecret: ""
   existingSecretPasswordKey: ""
 
-## @section PostgreSQL subchart parameters
-## PostgreSQL chart configuration
+## @section Internal PostgreSQL subchart parameters
+## Internal PostgreSQL chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/postgresql/values.yaml
 ## @param internalPostgresql.enabled Switch to enable or disable the PostgreSQL helm chart
 ## @param internalPostgresql.auth.username CARTO Postgresql username

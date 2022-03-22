@@ -1173,7 +1173,7 @@ helm install my-release -f values.yaml carto/carto
 | `externalRedis.existingSecretPasswordKey` | Key of the existing secret                                                                         | `""`        |
 
 
-### PostgreSQL subchart parameters
+### Internal PostgreSQL subchart parameters
 
 | Name                                        | Description                                                                                  | Value                  |
 | ------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------- |
