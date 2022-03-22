@@ -6,6 +6,7 @@ If you are looking for another installation method, please refer to [carto-selfh
 
 ## Installation
 
+
 ### Prerequisites
 
 - Kubernetes 1.12+
