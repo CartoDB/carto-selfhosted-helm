@@ -684,7 +684,7 @@ Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.secret.key" -}}
 {{- if .Values.internalPostgresql.enabled -}}
-    {{- printf "%s" "postgres-password" -}}
+    {{- printf "%s" "password" -}}
 {{- else -}}
     {{- if .Values.externalDatabase.existingSecret -}}
         {{- if .Values.externalDatabase.existingSecretPasswordKey -}}
