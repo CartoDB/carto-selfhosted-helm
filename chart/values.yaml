@@ -3507,9 +3507,6 @@ internalPostgresql:
     existingSecret: ""
   ## @param postgresql.primary.initdb.scripts [array] Scripts for initializing the database
   ##
-  ## Service account for PostgreSQL to use.
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-  ##
   primary:
     initdb:
       scripts:
