@@ -3469,19 +3469,22 @@ workspaceMigrations:
     runAsUser: 0
     runAsNonRoot: false
 
-## @section Redis&trade; subchart parameters
-## Redis&trade; chart configuration
+## @section Internal Redis&trade; subchart parameters
+## Internal Redis &trade; chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/redis/values.yaml
-## @param redis.enabled Switch to enable or disable the Redis&trade; helm
-## @param redis.auth.enabled Switch to enable or disable authentication
-## @param redis.auth.password Redis&trade; password
-## @param redis.auth.existingSecret Name of existing secret object containing the password
-## @param redis.architecture Cluster settings
-## @param redis.master.persistence.enabled Enable master persistent volumes
-## @param redis.replica.persistence.enabled Enable replica persistent volumes
+## @param internalRedis.enabled Switch to enable or disable the Redis&trade; helm
+## @param internalRedis.auth.enabled Switch to enable or disable authentication
+## @param internalRedis.auth.password Redis&trade; password
+## @param internalRedis.auth.existingSecret Name of existing secret object containing the password
+## @param internalRedis.architecture Cluster settings
+## @param internalRedis.master.persistence.enabled Enable master persistent volumes
+## @param internalRedis.replica.persistence.enabled Enable replica persistent volumes
 ##
-redis:
+internalRedis:
   enabled: true
+  ## @param internalRedis.nameOverride String to partially override common.names.fullname template (will maintain the release name)
+  ##
+  nameOverride: "redis"
   auth:
     enabled: true
     ## Redis&trade; password (both master and slave). Defaults to a random 10-character alphanumeric string if not set and auth.enabled is true.
@@ -3515,22 +3518,25 @@ externalRedis:
   existingSecret: ""
   existingSecretPasswordKey: ""
 
-## @section PostgreSQL subchart parameters
-## PostgreSQL chart configuration
+## @section Internal PostgreSQL subchart parameters
+## Internal PostgreSQL chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/postgresql/values.yaml
-## @param postgresql.enabled Switch to enable or disable the PostgreSQL helm chart
-## @param postgresql.auth.username CARTO Postgresql username
-## @param postgresql.auth.password CARTO Postgresql password
-## @param postgresql.auth.postgresPassword CARTO Postgresql password for the postgres user
-## @param postgresql.auth.database CARTO Postgresql database
-## @param postgresql.auth.existingSecret Name of an existing secret containing the PostgreSQL password ('postgresql-password' key)
+## @param internalPostgresql.enabled Switch to enable or disable the PostgreSQL helm chart
+## @param internalPostgresql.auth.username CARTO Postgresql username
+## @param internalPostgresql.auth.password CARTO Postgresql password
+## @param internalPostgresql.auth.postgresPassword CARTO Postgresql password for the postgres user
+## @param internalPostgresql.auth.database CARTO Postgresql database
+## @param internalPostgresql.auth.existingSecret Name of an existing secret containing the PostgreSQL password ('postgresql-password' key)
 ##
-postgresql:
+internalPostgresql:
   enabled: true
-  ## @param postgresql.image.tag Tag of the PostgreSQL image
+  ## @param internalPostgresql.image.tag Tag of the PostgreSQL image
   ##
   image:
     tag: "13.5.0-debian-10-r84"
+  ## @param internalPostgresql.nameOverride String to partially override common.names.fullname template (will maintain the release name)
+  ##
+  nameOverride: "postgresql"
   auth:
     username: carto
     password: ""
@@ -3539,7 +3545,7 @@ postgresql:
     ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
     ##
     existingSecret: ""
-  ## @param postgresql.primary.initdb.scripts [array] Scripts for initializing the database
+  ## @param internalPostgresql.primary.initdb.scripts [array] Scripts for initializing the database
   ##
   primary:
     initdb:

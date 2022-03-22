@@ -6,12 +6,14 @@ dependencies:
     tags:
       - bitnami-common
     version: 1.x.x
-  - condition: postgresql.enabled
+  - condition: internalPostgresql.enabled
     name: postgresql
+    alias: internalPostgresql
     repository: https://charts.bitnami.com/bitnami
     version: 11.x.x
-  - condition: redis.enabled
+  - condition: internalRedis.enabled
     name: redis
+    alias: internalRedis
     repository: https://charts.bitnami.com/bitnami
     version: 16.x.x
 description: CARTO Location Intelligence Platform. Unlock the power of spatial analysis in the cloud
