@@ -2,65 +2,13 @@
 
 [The CARTO Helm chart](https://github.com/CartoDB/carto-selfhosted) deploys CARTO in a self hosted environment.
 
-## TL;DR
-
-```console
-# TODO: Chart repository to be replaced by the Carto team
-$ helm repo add carto https://charts.carto.com/carto
-$ helm install my-release carto/carto
-```
-
 ## Introduction
 
 This chart bootstraps a [CARTO self hosted](https://github.com/CartoDB/carto-selfhosted) Deployment in a [Kubernetes](https://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
 
-## Prerequisites
+## Install, upgrade & uninstall
 
-- Kubernetes 1.12+
-- Helm 3.1.0
-- PV provisioner support in the underlying infrastructure
-
-## Installing the Chart
-
-To install the chart with the release name `my-release`:
-
-```console
-helm install my-release carto/carto
-```
-
-This command deploys CARTO on the Kubernetes cluster using the default configuration. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
-
-> **Tip**: List all releases using `helm list`
-
-## Uninstalling the Chart
-
-To uninstall/delete the `my-release` deployment:
-
-```console
-helm delete my-release
-```
-
-The command removes all the Kubernetes components associated with the chart and deletes the release.
-
-## Using Parameters
-
-Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
-
-```console
-helm install my-release \
-  --set ldsApi.livenessProbe.enabled=false \
-    carto/carto
-```
-
-The above command disables the lds-api component liveness probes.
-
-Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart. For example,
-
-```console
-helm install my-release -f values.yaml carto/carto
-```
-
-> **Tip**: You can use the default [values.yaml](values.yaml)
+To install, upgrade or uninstall this chart, please refer to [the root README.md](../README.md) of this repository.
 
 ## Parameters
 

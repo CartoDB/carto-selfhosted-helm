@@ -1,6 +1,13 @@
 {{/* vim: set filetype=mustache: */}}
 
 {{/*
+Return the version of the chart without removing `-*` from the version
+*/}}
+{{- define "chart.version" -}}
+{{- regexReplaceAll "-*" .Chart.Version "" -}}
+{{- end -}}
+
+{{/*
 Get the user defined LoadBalancerIP for this release.
 Note, returns 127.0.0.1 if using ClusterIP.
 */}}
