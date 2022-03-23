@@ -30,8 +30,9 @@ There are two ways to configure or customize the deployment:
   customConfigValues:
     selfHostedDomain: "my.domain.com"
 
-  customSecretsValues:
-    googleMapsApiKey: "<google-maps-api-key>"
+  customSecrets:
+    googleMapsApiKey:
+      value: "<google-maps-api-key>"
 
   router:
     service:
@@ -44,7 +45,7 @@ There are two ways to configure or customize the deployment:
 - Use the parameters as arguments. You can specify each parameter using the `--set key=value[,key=value]` argument. For example, add the following at the end of ALL the install or upgrade command:
   ```bash
   ... --set customConfigValues.selfHostedDomain=my.domain.com \
-    --set customSecretsValues.googleMapsApiKey=<google-maps-api-key> \
+    --set customSecrets.googleMapsApiKey.value=<google-maps-api-key> \
     --set router.service.type=LoadBalancer
   ```
 

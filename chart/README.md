@@ -108,7 +108,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `extraDeploy`               | Array of extra objects to deploy with the release                                       | `[]`            |
 | `diagnosticMode.enabled`    | Enable diagnostic mode (all probes will be disabled and the command will be overridden) | `false`         |
 | `diagnosticMode.command`    | Command to override all containers in the deployment                                    | `["sleep"]`     |
-| `diagnosticMode.args`       | Args to override all containers in the deployment                                       | `["infinity"]`  |
+| `diagnosticMode.args`       | Args to override all containers in the deployment                                       | `["999d"]`      |
 | `commonConfiguration`       | Configuration script that will be run in all Carto instances                            | `{}`            |
 | `commonSecretConfiguration` | Sensitive configuration script that will be run in all CARTO deployments                | `{}`            |
 
