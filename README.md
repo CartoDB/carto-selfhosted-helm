@@ -70,7 +70,7 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
   ```bash
   helm repo update
   ```
-  
+
 3. Update CARTO
   ```bash
   helm upgrade \

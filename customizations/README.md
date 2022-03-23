@@ -19,7 +19,7 @@ Configuring it is optional:
 ## Architecture diagram
 
 <!--
-We should add an arquitectural diagram to make it easier for customers to understand the parts and the relationship between them.
+TODO: We should add an arquitectural diagram to make it easier for customers to understand the parts and the relationship between them.
 -->
 
 ## How to define customizations
@@ -29,14 +29,23 @@ There are two ways to configure or customize the deployment:
   ```yaml
   customConfigValues:
     selfHostedDomain: "my.domain.com"
+
+  customSecretsValues:
+    googleMapsApiKey: "<google-maps-api-key>"
+
+  router:
+    service:
+      type: LoadBalancer
   ```
   And add the following at the end of ALL the install or upgrade command:
   ```bash
   ... -f <my_customization_file>.yaml
   ```
-- Use the inline set. For example, add the following at the end of ALL the install or upgrade command:
+- Use the parameters as arguments. You can specify each parameter using the `--set key=value[,key=value]` argument. For example, add the following at the end of ALL the install or upgrade command:
   ```bash
-  ... --set customConfigValues.selfHostedDomain=my.domain.com
+  ... --set customConfigValues.selfHostedDomain=my.domain.com \
+    --set customSecretsValues.googleMapsApiKey=<google-maps-api-key> \
+    --set router.service.type=LoadBalancer
   ```
 
 
@@ -44,7 +53,7 @@ There are two ways to configure or customize the deployment:
 
 The most important step to have your CARTO self-hosted ready to be used is to configure the domain to be used.
 
-⚠️ CARTO self-hosted is not designed to be used in the path of a URL, it needs a full domain or subdomain. ⚠️
+> ⚠️ CARTO self-hosted is not designed to be used in the path of a URL, it needs a full domain or subdomain. ⚠️
 
 To do this you need to [add the following customization](#how-to-define-customizations):
 ```yaml
@@ -64,10 +73,10 @@ To made it accessible from the internet (or outside the Kubernetes network) we r
 Additionally, depending of the way to reach your self-hosted from internet, you would need to [configure the HTTPS/TLS](#configure-tls).
 
 ### Router general notes
-<!--
-TODO: Document timeout increment and disable internal TLS and so on
-TODO: Talk about static IP
--->
+By the nature of our app, there are some consideration to be taken:
+- The final client should access with HTTPS. This can be configured in our helm chart or in a load balancer prior to the application.
+- The timeout of all intermediate parts must be set to at least `605` seconds. We have everything ready from the router to the internal components but you must take this into account when configuring the input from the external network to the router.
+- Remember to configure a **static** IP/domain pointing to that endpoint.
 
 ### Service as LoadBalancer
 
@@ -97,7 +106,7 @@ TODO: Document Ingress
 By default, the package generate a self-signed certificate with a validity of 365 days.
 Some times you need to use a valid certificate or need to totally disable it to leave the management to an external proxy.
 
-⚠️ CARTO self-hosted only works if the final client use HTTPS protocol. ⚠️
+> ⚠️ CARTO self-hosted only works if the final client use HTTPS protocol. ⚠️
 
 #### Disable internal HTTPS
 <!--
@@ -132,12 +141,14 @@ This package comes with an internal Postgres and Redis but it is not recommended
 So we recommend to use external databases, preferible managed database by your provider, with backups, high availability, etc.
 
 ### Configure your own postgres
-CARTO self-hosted require a Postges (version 13+) to work.
+CARTO self-hosted require a Postges (version 11+) to work.
 In that Postgres, CARTO stores some metadata and also the credentials of the external connections configured by the CARTO self-hosted users.
 
-⚠️ That Postgres has nothing to do with the connections that the user configures in the CARTO workspace since it stores the metadata of the entire CARTO self-hosted. ⚠️
+> ⚠️ That Postgres has nothing to do with the connections that the user configures in the CARTO workspace since it stores the metadata of the entire CARTO self-hosted. ⚠️
 
 There are two alternatives when connecting the environment with an external postgres:
+
+> Note: `externalDatabase.user` and `externalDatabase.database` inside the Postgres instance are going to be created automatically during the installation process. Please, not create it manually.
 
 - Create a kubernetes secret by yourself:
   - You can use this command with the Postgres passwords to create it:
@@ -163,7 +174,6 @@ There are two alternatives when connecting the environment with an external post
       database: "workspace_db"
       port: "5432"
     ```
-    > Note: `externalPostgresql.user` and `externalPostgresql.database` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
 
 - Auto secret creation:
   - [Add the following customization](#how-to-define-customizations) lines:
@@ -180,8 +190,7 @@ There are two alternatives when connecting the environment with an external post
       database: "workspace_db"
       port: "5432"
     ```
-    > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalPostgresql.password` and `externalPostgresql.adminPassword` that you set in previous lines.
-    > Note: `externalPostgresql.user` and `externalPostgresql.database` inside the Postgres instance are going to be created automatically during the installation process, they do not need to be pre-created.
+    > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalDatabase.password` and `externalDatabase.adminPassword` that you set in previous lines.
 
 > Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalPostgresql` block
 - `internalUser`: it's the same as `user` but without the `@database-name` prefix required to connect to Azure Postgres
@@ -280,4 +289,4 @@ You can set how many number of pods should have be running all time, for this, y
 
 ## Advanced configuration
 
-If you need a more advanced configuration you can check the [full chart documentation](../chart/README.md) or contact [support@carto.com](mailto:support@carto.com)
+If you need a more advanced configuration you can check the [full chart documentation](../chart/README.md) with all the available [parameters](../chart/README.md#parameters) or contact [support@carto.com](mailto:support@carto.com)
