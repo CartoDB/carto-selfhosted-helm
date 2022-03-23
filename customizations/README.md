@@ -25,9 +25,9 @@ TODO: We should add an arquitectural diagram to make it easier for customers to 
 ## How to define customizations
 
 There are two ways to configure or customize the deployment:
-- [**RECOMMENDED**] Create a dedicated [yaml](https://yaml.org/) file. For example, you can create a file with the next content:
+- [**RECOMMENDED**] Create a dedicated [customization.yaml](https://yaml.org/) file. For example, you can create a file with the next content:
   ```yaml
-  customConfigValues:
+  appConfigValues:
     selfHostedDomain: "my.domain.com"
 
   customSecretsValues:
@@ -39,11 +39,11 @@ There are two ways to configure or customize the deployment:
   ```
   And add the following at the end of ALL the install or upgrade command:
   ```bash
-  ... -f <my_customization_file>.yaml
+  ... -f customization.yaml
   ```
 - Use the parameters as arguments. You can specify each parameter using the `--set key=value[,key=value]` argument. For example, add the following at the end of ALL the install or upgrade command:
   ```bash
-  ... --set customConfigValues.selfHostedDomain=my.domain.com \
+  ... --set appConfigValues.selfHostedDomain=my.domain.com \
     --set customSecretsValues.googleMapsApiKey=<google-maps-api-key> \
     --set router.service.type=LoadBalancer
   ```
@@ -57,7 +57,7 @@ The most important step to have your CARTO self-hosted ready to be used is to co
 
 To do this you need to [add the following customization](#how-to-define-customizations):
 ```yaml
-customConfigValues:
+appConfigValues:
   selfHostedDomain: "my.domain.com"
 ```
 

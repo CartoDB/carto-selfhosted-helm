@@ -74,7 +74,7 @@ Found these lines in commonSecretConfiguration:
 This deployment will be incomplete until you configure CARTO with a resolvable
 host. To configure CARTO with the URL of your service:
 
-1. Edit the config field `customConfigValues.selfHostedDomain`
+1. Edit the config field `appConfigValues.selfHostedDomain`
 
 2. Complete your CARTO deployment reading the `Update` section of the documentation.
 
