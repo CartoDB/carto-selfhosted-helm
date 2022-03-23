@@ -1138,20 +1138,20 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### External PostgreSQL parameters
 
-| Name                                              | Description                                                                                                                          | Value          |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
-| `externalDatabase.host`                           | Database host                                                                                                                        | `localhost`    |
-| `externalDatabase.user`                           | non-root Username for CARTO Database (seen from outside the database)                                                                | `carto`        |
-| `externalDatabase.internalUser`                   | non-root Username for CARTO Database (seen from inside the database). If this value is not defined, `externalDatabase.user` is used. | `""`           |
-| `externalDatabase.password`                       | Database password                                                                                                                    | `""`           |
-| `externalDatabase.adminUser`                      | Database admin user (seen from outside the database)                                                                                 | `postgres`     |
-| `externalDatabase.internalAdminUser`              | Database admin user (seen from inside the database). If this value is not defined, `externalDatabase.adminUser` is used.             | `""`           |
-| `externalDatabase.adminPassword`                  | Database admin password                                                                                                              | `""`           |
-| `externalDatabase.existingSecret`                 | Name of an existing secret resource containing the DB password                                                                       | `""`           |
-| `externalDatabase.existingSecretPasswordKey`      | Name of the key inside the secret containing the DB password                                                                         | `""`           |
-| `externalDatabase.existingSecretAdminPasswordKey` | Name of the key inside the secret containing the DB admin password                                                                   | `""`           |
-| `externalDatabase.database`                       | Database name                                                                                                                        | `workspace_db` |
-| `externalDatabase.port`                           | Database port number                                                                                                                 | `5432`         |
+| Name                                                | Description                                                                                                                            | Value          |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| `externalPostgresql.host`                           | Database host                                                                                                                          | `localhost`    |
+| `externalPostgresql.user`                           | non-root Username for CARTO Database (seen from outside the database)                                                                  | `carto`        |
+| `externalPostgresql.internalUser`                   | non-root Username for CARTO Database (seen from inside the database). If this value is not defined, `externalPostgresql.user` is used. | `""`           |
+| `externalPostgresql.password`                       | Database password                                                                                                                      | `""`           |
+| `externalPostgresql.adminUser`                      | Database admin user (seen from outside the database)                                                                                   | `postgres`     |
+| `externalPostgresql.internalAdminUser`              | Database admin user (seen from inside the database). If this value is not defined, `externalPostgresql.adminUser` is used.             | `""`           |
+| `externalPostgresql.adminPassword`                  | Database admin password                                                                                                                | `""`           |
+| `externalPostgresql.existingSecret`                 | Name of an existing secret resource containing the DB password                                                                         | `""`           |
+| `externalPostgresql.existingSecretPasswordKey`      | Name of the key inside the secret containing the DB password                                                                           | `""`           |
+| `externalPostgresql.existingSecretAdminPasswordKey` | Name of the key inside the secret containing the DB admin password                                                                     | `""`           |
+| `externalPostgresql.database`                       | Database name                                                                                                                          | `workspace_db` |
+| `externalPostgresql.port`                           | Database port number                                                                                                                   | `5432`         |
 
 
 ## Configuration and installation details

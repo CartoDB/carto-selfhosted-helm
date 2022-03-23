@@ -148,7 +148,7 @@ In that Postgres, CARTO stores some metadata and also the credentials of the ext
 
 There are two alternatives when connecting the environment with an external postgres:
 
-> Note: `externalDatabase.user` and `externalDatabase.database` inside the Postgres instance are going to be created automatically during the installation process. Please, not create it manually.
+> Note: `externalPostgresql.user` and `externalPostgresql.database` inside the Postgres instance are going to be created automatically during the installation process. Please, not create it manually.
 
 - Create a kubernetes secret by yourself:
   - You can use this command with the Postgres passwords to create it:
@@ -164,7 +164,7 @@ There are two alternatives when connecting the environment with an external post
     internalPostgresql:
       # With that config, we disable the internal Postgres provided by the package
       enabled: false
-    externalDatabase:
+    externalPostgresql:
       host: <Postgres IP/Hostname>
       user: "carto"
       adminUser: "postgres"
@@ -181,7 +181,7 @@ There are two alternatives when connecting the environment with an external post
     internalPostgresql:
       # With that config, we disable the internal Postgres provided by the package
       enabled: false
-    externalDatabase:
+    externalPostgresql:
       host: <Postgres IP/Hostname>
       user: "carto"
       password: ""
@@ -190,13 +190,13 @@ There are two alternatives when connecting the environment with an external post
       database: "workspace_db"
       port: "5432"
     ```
-    > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalDatabase.password` and `externalDatabase.adminPassword` that you set in previous lines.
+    > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalPostgresql.password` and `externalPostgresql.adminPassword` that you set in previous lines.
 
-> Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalDatabase` block
+> Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalPostgresql` block
 - `internalUser`: it's the same as `user` but without the `@database-name` prefix required to connect to Azure Postgres
 - `internalAdminUser`: it's the same as `adminUser` but without the `@database-name` prefix required to connect to Azure Postgres
 ```yaml
-externalDatabase:
+externalPostgresql:
   ...
   user: "carto@database-name"
   internalUser: "carto"
