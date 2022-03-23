@@ -14,8 +14,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### Custom config parameters
 
-| Name                                           | Description                                                                                | Value                  |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------- |
+| Name                                        | Description                                                                                | Value                  |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------- |
 | `appConfigValues.selfHostedDomain`          | Domain that is going to be used to access to the CARTO self-hosted.                        | `carto-selfhosted.lan` |
 | `appConfigValues.storageProvider`           | Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob` | `gcp`                  |
 | `appConfigValues.httpCacheEnabled`          | Enable the internal httpCache                                                              | `true`                 |
