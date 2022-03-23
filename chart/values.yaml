@@ -191,7 +191,7 @@ diagnosticMode:
   ## @param diagnosticMode.args Args to override all containers in the deployment
   ##
   args:
-    - infinity
+    - 999d
 
 ## @param commonConfiguration [object] Configuration script that will be run in all Carto instances
 ##

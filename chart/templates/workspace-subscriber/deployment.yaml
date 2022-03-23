@@ -145,7 +145,7 @@ spec:
           {{- end }}
           volumeMounts:
             - name: google-secret
-              mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
+              mountPath: /usr/src/certs/key.json
               subPath: {{ template "carto.google.secretKey" . }}
           {{- if .Values.workspaceSubscriber.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraVolumeMounts "context" $) | nindent 12 }}

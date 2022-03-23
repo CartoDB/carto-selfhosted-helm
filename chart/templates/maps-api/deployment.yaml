@@ -165,21 +165,15 @@ spec:
           {{- if .Values.mapsApi.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
-          volumeMounts:
-            - name: google-secret
-              mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
-              subPath: {{ template "carto.google.secretKey" . }}
           {{- if .Values.mapsApi.extraVolumeMounts }}
+          volumeMounts:
           {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
         {{- if .Values.mapsApi.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.mapsApi.sidecars "context" $) | nindent 8 }}
         {{- end }}
+      {{- if .Values.mapsApi.extraVolumes }}
       volumes:
-        - name: google-secret
-          secret:
-            secretName: {{ include "carto.google.secretName" . }}
-        {{- if .Values.mapsApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraVolumes "context" $) | nindent 8 }}
-        {{- end }}
+      {{- end }}
 {{- end }}
