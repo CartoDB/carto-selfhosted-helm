@@ -10,6 +10,7 @@ wording:
     - feat
     - doc
     - bump
+    - revert
   minor:
     - change
     - fix
