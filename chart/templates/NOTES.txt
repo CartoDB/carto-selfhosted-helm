@@ -81,7 +81,6 @@ host. To configure CARTO with the URL of your service:
 {{- else }}
 
 1. Get the CARTO URL by running:
-
 {{- if eq .Values.router.service.type "ClusterIP" }}
 {{- $port := default 80 .Values.router.service.ports.http | toString }}
 {{- $port_https := default 443 .Values.router.service.ports.https | toString }}

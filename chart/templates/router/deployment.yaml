@@ -165,9 +165,9 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.router.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: google-secret
+        - name: tls-secret
           secret:
-            secretName: {{ include "carto.google.secretName" . }}
+            secretName: {{ include "carto.tlsCerts.secretName" . }}
         {{- if .Values.router.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.router.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

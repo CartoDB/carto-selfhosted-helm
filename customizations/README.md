@@ -27,10 +27,10 @@ TODO: We should add an arquitectural diagram to make it easier for customers to 
 There are two ways to configure or customize the deployment:
 - [**RECOMMENDED**] Create a dedicated [yaml](https://yaml.org/) file. For example, you can create a file with the next content:
   ```yaml
-  customConfigValues:
+  clientConfigValues:
     selfHostedDomain: "my.domain.com"
 
-  customSecrets:
+  clientSecrets:
     googleMapsApiKey:
       value: "<google-maps-api-key>"
 
@@ -40,12 +40,12 @@ There are two ways to configure or customize the deployment:
   ```
   And add the following at the end of ALL the install or upgrade command:
   ```bash
-  ... -f <my_customization_file>.yaml
+  ... -f customization.yaml
   ```
 - Use the parameters as arguments. You can specify each parameter using the `--set key=value[,key=value]` argument. For example, add the following at the end of ALL the install or upgrade command:
   ```bash
-  ... --set customConfigValues.selfHostedDomain=my.domain.com \
-    --set customSecrets.googleMapsApiKey.value=<google-maps-api-key> \
+  ... --set clientConfigValues.selfHostedDomain=my.domain.com \
+    --set clientSecrets.googleMapsApiKey.value=<google-maps-api-key> \
     --set router.service.type=LoadBalancer
   ```
 

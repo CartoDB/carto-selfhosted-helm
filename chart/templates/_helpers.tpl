@@ -43,6 +43,57 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
 {{/*
 Create gcsBucketsProjectId using the gcsBucketsProjectId config or, if not defined, selfHostedGcpProjectId
 */}}
+{{- define "carto._utils.secretAssociaciation" -}}
+REACT_APP_GOOGLE_MAPS_API_KEY: appSecrets.googleMapsApiKey
+IMPORT_ACCESSKEYID: appSecrets.awsAccessKeyId
+WORKSPACE_THUMBNAILS_ACCESSKEYID: appSecrets.awsAccessKeyId
+WORKSPACE_IMPORTS_ACCESSKEYID: appSecrets.awsAccessKeyId
+IMPORT_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
+WORKSPACE_THUMBNAILS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
+WORKSPACE_IMPORTS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
+ENCRYPTION_SECRET_KEY: cartoSecrets.encryptionSecretKey
+VARNISH_PURGE_SECRET: cartoSecrets.varnishPurgeSecret
+VARNISH_DEBUG_SECRET: cartoSecrets.varnishDebugSecret
+{{- end -}}
+
+{{/*
+Create gcsBucketsProjectId using the gcsBucketsProjectId config or, if not defined, selfHostedGcpProjectId
+*/}}
+{{- define "carto._utils.generateSecretObject" -}}
+{{- $var := .var -}}
+{{- $context := .context -}}
+{{- $mapSecrets := include "carto._utils.secretAssociaciation" . | fromYaml -}}
+{{- $key := get $mapSecrets $var -}}
+{{- $secretGroupName := regexReplaceAll "\\..*" $key "" -}}
+{{- $secretEntryName := regexReplaceAll ".*\\." $key "" -}}
+{{- $secretGroup := get $context.Values $secretGroupName -}}
+{{- $secretEntry := get $secretGroup $secretEntryName -}}
+{{- $secretValue := $secretEntry.value -}}
+{{- $secretExistingName := $secretEntry.existingSecret.name -}}
+{{- $secretExistingKey := $secretEntry.existingSecret.key -}}
+
+{{/*
+{{ get $mapSecrets $key }}({{ $key }})={{ $secretValue }}:{{ $secretExistingName }}:{{ $secretExistingKey }}:
+*/}}
+{{- if not $secretExistingName }}
+{{ $var }}: {{ $secretValue | b64enc | quote }}  # {{ $key }}.value
+{{- end }}
+{{- end -}}
+
+{{/*
+Create gcsBucketsProjectId using the gcsBucketsProjectId config or, if not defined, selfHostedGcpProjectId
+*/}}
+{{- define "carto._utils.generateSecretObjects" -}}
+{{- $vars := .vars -}}
+{{- $context := .context -}}
+{{- range $vars -}}
+{{ include "carto._utils.generateSecretObject" (dict "var" . "context" $context ) }}
+{{- end }}
+{{- end -}}
+
+{{/*
+Create gcsBucketsProjectId using the gcsBucketsProjectId config or, if not defined, selfHostedGcpProjectId
+*/}}
 {{- define "carto.gcsBucketsProjectId" -}}
 {{ default .Values.cartoConfigValues.selfHostedGcpProjectId .Values.customConfigValues.gcsBucketsProjectId }}
 {{- end -}}

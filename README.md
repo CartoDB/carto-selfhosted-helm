@@ -56,7 +56,7 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
     --namespace <your_namespace> \
     -f carto-values.yaml \
     -f carto-secrets.yaml \
-    <other_custom_files>
+    -f customization.yaml
   ```
 
 6. Follow the instructions provided by the command.
@@ -79,7 +79,7 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
     --namespace <your_namespace> \
     -f carto-values.yaml \
     -f carto-secrets.yaml \
-    <other_custom_files>
+    -f customization.yaml
   ```
 
 ## Unistallation
