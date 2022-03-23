@@ -1,0 +1,24 @@
+name: PR Lint
+on:
+  pull_request:
+    # By default, a workflow only runs when a pull_request's activity type is opened, synchronize, or reopened. We
+    # explicity override here so that PR titles are re-linted when the PR text content is edited.
+    #
+    # Possible values: https://help.github.com/en/actions/reference/events-that-trigger-workflows#pull-request-event-pull_request
+    types: [opened, edited, reopened, synchronize]
+
+jobs:
+  pr-lint:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: morrisoncole/pr-lint-action@v1.6.1
+        with:
+          title-regex: "^(\s*update|feat|doc|bump|change|fix|refactor|breaking)+\(.+\): .+"  # e.g. "feat(chart): Add new template"
+          on-failed-regex-fail-action: true
+          on-failed-regex-request-changes: false
+          on-failed-regex-create-review: true
+          on-failed-regex-comment:
+            "The format `<type>(<scope>): <subject>` (`^(\s*update|feat|doc|bump|change|fix|refactor|breaking)+\(.+\): .+`) is acceptable. e.g., `feat(chart): Add new template`"
+          on-succeeded-regex-dismiss-review-comment:
+            "This PR has a valid name :heavy_check_mark:"
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
