@@ -18,7 +18,7 @@ jobs:
           on-failed-regex-request-changes: false
           on-failed-regex-create-review: true
           on-failed-regex-comment:
-            ":no_entry: This PR has a invalid name, the format should be `<type>(<scope>): <subject>`. e.g., `feat(chart): Add new template`"
+            ":x: This PR has a invalid name, the format should be `<type>(<scope>): <subject>`. e.g., `feat(chart): Add new template`"
           on-succeeded-regex-dismiss-review-comment:
             ":heavy_check_mark: This PR has a valid name"
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
