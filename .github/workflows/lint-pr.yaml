@@ -18,7 +18,7 @@ jobs:
           on-failed-regex-request-changes: false
           on-failed-regex-create-review: true
           on-failed-regex-comment:
-            "The format `<type>(<scope>): <subject>` (`^(\s*update|feat|doc|bump|change|fix|refactor|breaking)+\(.+\): .+`) is acceptable. e.g., `feat(chart): Add new template`"
+            "The format `<type>(<scope>): <subject>` is acceptable. e.g., `feat(chart): Add new template`"
           on-succeeded-regex-dismiss-review-comment:
             "This PR has a valid name :heavy_check_mark:"
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
