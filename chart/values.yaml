@@ -42,35 +42,35 @@ cartoConfigValues:
   ## @param cartoConfigValues.launchDarklyClientSideId LaunchDarkly ClientSideId (by www) used to enable/disable features.
   launchDarklyClientSideId: ""
 
-## @section Custom secret
+## @section App secret
 ## Global secrets to be edited by the client
-customSecrets:
-  ## @extra customSecrets.googleMapsApiKey Google maps api-key value.
+appSecrets:
+  ## @extra appSecrets.googleMapsApiKey Google maps api-key value.
   googleMapsApiKey:
-    ## @param customSecrets.googleMapsApiKey.value Value of the secret `Google maps api-key`. One of `customSecrets.googleMapsApiKey.value` or `customSecrets.googleMapsApiKey.existingSecret` could be defined.
+    ## @param appSecrets.googleMapsApiKey.value Value of the secret `Google maps api-key`. One of `appSecrets.googleMapsApiKey.value` or `appSecrets.googleMapsApiKey.existingSecret` could be defined.
     value: ""
-    ## @param customSecrets.googleMapsApiKey.existingSecret.name Name of the pre-existent secret containing the `customSecrets.googleMapsApiKey.existingSecret.key`. If `customSecrets.googleMapsApiKey.value` is defined, this value is going to be ignored and not used.
-    ## @param customSecrets.googleMapsApiKey.existingSecret.key Key to find in `customSecrets.googleMapsApiKey.existingSecret.name` where the value of `customSecrets.googleMapsApiKey` is found. If `customSecrets.googleMapsApiKey.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.googleMapsApiKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.googleMapsApiKey.existingSecret.key`. If `appSecrets.googleMapsApiKey.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.googleMapsApiKey.existingSecret.key Key to find in `appSecrets.googleMapsApiKey.existingSecret.name` where the value of `appSecrets.googleMapsApiKey` is found. If `appSecrets.googleMapsApiKey.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""
       key: ""
-  ## @extra customSecrets.awsAccessKeyId If AWS is used in self-hosted, the AccessKey Id.
+  ## @extra appSecrets.awsAccessKeyId If AWS is used in self-hosted, the AccessKey Id.
   awsAccessKeyId:
-    ## @param customSecrets.awsAccessKeyId.value Value of the secret `AccessKey Id` (Only required if AWS is used). One of `customSecrets.awsAccessKeyId.value` or `customSecrets.awsAccessKeyId.existingSecret` could be defined.
+    ## @param appSecrets.awsAccessKeyId.value Value of the secret `AccessKey Id` (Only required if AWS is used). One of `appSecrets.awsAccessKeyId.value` or `appSecrets.awsAccessKeyId.existingSecret` could be defined.
     value: ""
-    ## @param customSecrets.awsAccessKeyId.existingSecret.name Name of the pre-existent secret containing the `customSecrets.awsAccessKeyId.existingSecret.key`. If `customSecrets.awsAccessKeyId.value` is defined, this value is going to be ignored and not used.
-    ## @param customSecrets.awsAccessKeyId.existingSecret.key Key to find in `customSecrets.awsAccessKeyId.existingSecret.name` where the value of `customSecrets.awsAccessKeyId` is found. If `customSecrets.awsAccessKeyId.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.awsAccessKeyId.existingSecret.name Name of the pre-existent secret containing the `appSecrets.awsAccessKeyId.existingSecret.key`. If `appSecrets.awsAccessKeyId.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.awsAccessKeyId.existingSecret.key Key to find in `appSecrets.awsAccessKeyId.existingSecret.name` where the value of `appSecrets.awsAccessKeyId` is found. If `appSecrets.awsAccessKeyId.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""
       key: ""
-  ## @extra customSecrets.awsAccessKeySecret If AWS is used in self-hosted, the AccessKey Secret.
+  ## @extra appSecrets.awsAccessKeySecret If AWS is used in self-hosted, the AccessKey Secret.
   awsAccessKeySecret:
-    ## @param customSecrets.awsAccessKeySecret.value Value of the secret `AccessKey Secret` (Only required if AWS is used). One of `customSecrets.awsAccessKeySecret.value` or `customSecrets.awsAccessKeySecret.existingSecret` could be defined.
+    ## @param appSecrets.awsAccessKeySecret.value Value of the secret `AccessKey Secret` (Only required if AWS is used). One of `appSecrets.awsAccessKeySecret.value` or `appSecrets.awsAccessKeySecret.existingSecret` could be defined.
     value: ""
-    ## @param customSecrets.awsAccessKeySecret.existingSecret.name Name of the pre-existent secret containing the `customSecrets.awsAccessKeySecret.existingSecret.key`. If `customSecrets.awsAccessKeySecret.value` is defined, this value is going to be ignored and not used.
-    ## @param customSecrets.awsAccessKeySecret.existingSecret.key Key to find in `customSecrets.awsAccessKeySecret.existingSecret.name` where the value of `customSecrets.awsAccessKeySecret` is found. If `customSecrets.awsAccessKeySecret.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.awsAccessKeySecret.existingSecret.name Name of the pre-existent secret containing the `appSecrets.awsAccessKeySecret.existingSecret.key`. If `appSecrets.awsAccessKeySecret.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.awsAccessKeySecret.existingSecret.key Key to find in `appSecrets.awsAccessKeySecret.existingSecret.name` where the value of `appSecrets.awsAccessKeySecret` is found. If `appSecrets.awsAccessKeySecret.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""

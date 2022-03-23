@@ -595,8 +595,8 @@ Return the proper Docker Image Registry Secret Names
 Return the proper Carto Google Secret name
 */}}
 {{- define "carto.google.secretName" -}}
-{{- if .Values.google.existingSecret.name -}}
-{{- .Values.google.existingSecret.name -}}
+{{- if .Values.cartoSecrets.googleServiceAccount.existingSecret.name -}}
+{{- .Values.cartoSecrets.googleServiceAccount.existingSecret.name -}}
 {{- else -}}
 {{- printf "%s-google" (include "common.names.fullname" .) -}}
 {{- end -}}
@@ -606,8 +606,8 @@ Return the proper Carto Google Secret name
 Return the proper Carto Google Secret name
 */}}
 {{- define "carto.google.secretKey" -}}
-{{- if .Values.google.existingSecret.name -}}
-{{- .Values.google.existingSecret.key -}}
+{{- if .Values.cartoSecrets.googleServiceAccount.existingSecret.name -}}
+{{- .Values.cartoSecrets.googleServiceAccount.existingSecret.key -}}
 {{- else -}}
 {{- print "key.json" -}}
 {{- end -}}
