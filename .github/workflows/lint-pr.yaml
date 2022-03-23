@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: morrisoncole/pr-lint-action@v1.6.1
         with:
-          title-regex: "^(\s*update|feat|doc|bump|change|fix|refactor|breaking)+\(.+\): .+"  # e.g. "feat(chart): Add new template"
+          title-regex: '^(\s*update|feat|doc|bump|change|fix|refactor|breaking)+\(.+\): .+'  # e.g. "feat(chart): Add new template"
           on-failed-regex-fail-action: true
           on-failed-regex-request-changes: false
           on-failed-regex-create-review: true
