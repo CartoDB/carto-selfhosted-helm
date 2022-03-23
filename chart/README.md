@@ -16,15 +16,15 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 | Name                                           | Description                                                                                | Value                  |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------- |
-| `customConfigValues.selfHostedDomain`          | Domain that is going to be used to access to the CARTO self-hosted.                        | `carto-selfhosted.lan` |
-| `customConfigValues.storageProvider`           | Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob` | `gcp`                  |
-| `customConfigValues.httpCacheEnabled`          | Enable the internal httpCache                                                              | `true`                 |
-| `customConfigValues.importBucket`              | Bucket to be used to store the import files                                                | `""`                   |
-| `customConfigValues.workspaceImportsBucket`    | Bucket to be used to store metadata of the workspace                                       | `""`                   |
-| `customConfigValues.workspaceThumbnailsBucket` | Bucket to be used to store the thumbnails generated in the app                             | `""`                   |
-| `customConfigValues.workspaceThumbnailsPublic` | Indicate if the thumbnails could be accessed publicly                                      | `true`                 |
-| `customConfigValues.gcsBucketsProjectId`       | If the bucket is GCP, the ProjectId to be used                                             | `""`                   |
-| `customConfigValues.awsS3Region`               | If the bucket is S3, the region to be used                                                 | `""`                   |
+| `appConfigValues.selfHostedDomain`          | Domain that is going to be used to access to the CARTO self-hosted.                        | `carto-selfhosted.lan` |
+| `appConfigValues.storageProvider`           | Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob` | `gcp`                  |
+| `appConfigValues.httpCacheEnabled`          | Enable the internal httpCache                                                              | `true`                 |
+| `appConfigValues.importBucket`              | Bucket to be used to store the import files                                                | `""`                   |
+| `appConfigValues.workspaceImportsBucket`    | Bucket to be used to store metadata of the workspace                                       | `""`                   |
+| `appConfigValues.workspaceThumbnailsBucket` | Bucket to be used to store the thumbnails generated in the app                             | `""`                   |
+| `appConfigValues.workspaceThumbnailsPublic` | Indicate if the thumbnails could be accessed publicly                                      | `true`                 |
+| `appConfigValues.gcsBucketsProjectId`       | If the bucket is GCP, the ProjectId to be used                                             | `""`                   |
+| `appConfigValues.awsS3Region`               | If the bucket is S3, the region to be used                                                 | `""`                   |
 
 
 ### CARTO config parameters
