@@ -51,7 +51,7 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
   ```bash
   helm install \
     <your_own_installation_name|carto> \
-    carto-selfhosted/carto \
+    carto/carto \
     --namespace <your_namespace> \
     -f carto-values.yaml \
     -f carto-secrets.yaml \
@@ -75,7 +75,7 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
   ```bash
   helm upgrade \
     <your_own_installation_name|carto> \
-    carto-selfhosted/carto \
+    carto/carto \
     --namespace <your_namespace> \
     -f carto-values.yaml \
     -f carto-secrets.yaml \
