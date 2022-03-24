@@ -25,7 +25,7 @@ TODO: We should add an arquitectural diagram to make it easier for customers to 
 ## How to define customizations
 
 There are two ways to configure or customize the deployment:
-- [**RECOMMENDED**] Create a dedicated [customization.yaml](https://yaml.org/) file. For example, you can create a file with the next content:
+- [**RECOMMENDED**] Create a dedicated `customization.yaml` ([yaml official documentation](https://yaml.org/)) file. For example, you can create a file with the next content:
   ```yaml
   appConfigValues:
     selfHostedDomain: "my.domain.com"
