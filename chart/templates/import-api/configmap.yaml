@@ -23,10 +23,10 @@ data:
   CARTO_AUTH0_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   CARTO_SELFHOSTED_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   CARTO_SELFHOSTED_CARTO_DW_LOCATION: {{ .Values.cartoConfigValues.cartoSelfhostedDwLocation | quote }}
-  CARTO_SELFHOSTED_DOMAIN: {{ .Values.customConfigValues.selfHostedDomain | quote }}
+  CARTO_SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  IMPORT_BUCKET: {{ .Values.customConfigValues.importBucket | quote }}
+  IMPORT_BUCKET: {{ .Values.appConfigValues.importBucket | quote }}
   IMPORT_PORT: {{ .Values.importApi.containerPorts.http | quote }}
   IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-import-sub"
   IMPORT_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
@@ -37,18 +37,18 @@ data:
   REDIS_CACHE_PREFIX: "onprem"
   REDIS_HOST: {{ include "carto.redis.host" . }}
   REDIS_PORT: {{ include "carto.redis.port" . }}
-  SELFHOSTED_DOMAIN: {{ .Values.customConfigValues.selfHostedDomain | quote }}
+  SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   SELFHOSTED_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
   WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . }}
   WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . }}
-  IMPORT_PROVIDER: {{ .Values.customConfigValues.storageProvider | quote }}
-  {{- if eq .Values.customConfigValues.storageProvider "gcp" }}
+  IMPORT_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
+  {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
   IMPORT_PROJECTID: {{ include "carto.gcsBucketsProjectId" . | quote }}
   {{- end }}
-  {{- if eq .Values.customConfigValues.storageProvider "s3" }}
-  IMPORT_REGION: {{ .Values.customConfigValues.awsS3Region | quote }}
+  {{- if eq .Values.appConfigValues.storageProvider "s3" }}
+  IMPORT_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
   {{- end }}
 {{- end }}

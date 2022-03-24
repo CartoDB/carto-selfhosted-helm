@@ -37,14 +37,14 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
   {{- $defaultUrl = printf "%s%s" $host $port -}}
 {{- end -}}
 
-{{- default $defaultUrl (printf "%s" .Values.customConfigValues.selfHostedDomain) -}}
+{{- default $defaultUrl (printf "%s" .Values.appConfigValues.selfHostedDomain) -}}
 {{- end -}}
 
 {{/*
 Create gcsBucketsProjectId using the gcsBucketsProjectId config or, if not defined, selfHostedGcpProjectId
 */}}
 {{- define "carto.gcsBucketsProjectId" -}}
-{{ default .Values.cartoConfigValues.selfHostedGcpProjectId .Values.customConfigValues.gcsBucketsProjectId }}
+{{ default .Values.cartoConfigValues.selfHostedGcpProjectId .Values.appConfigValues.gcsBucketsProjectId }}
 {{- end -}}
 
 {{/*
