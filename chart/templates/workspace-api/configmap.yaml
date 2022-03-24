@@ -42,7 +42,6 @@ data:
   SELFHOSTED_DOMAIN: {{ .Values.customConfigValues.selfHostedDomain | quote }}
   SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   SELFHOSTED_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  WORKSPACE_IMPORTS_BUCKET: {{ .Values.customConfigValues.workspaceImportsBucket | quote }}
   WORKSPACE_PORT: "{{ .Values.workspaceApi.containerPorts.http }}"
   WORKSPACE_PORT: {{ .Values.workspaceApi.containerPorts.http  | quote }}
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
@@ -52,6 +51,7 @@ data:
   WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/data-updates-workspace-sub"
   WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/data-updates"
   WORKSPACE_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  WORKSPACE_IMPORTS_BUCKET: {{ .Values.customConfigValues.workspaceImportsBucket | quote }}
   WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.customConfigValues.workspaceThumbnailsBucket | quote }}
   WORKSPACE_THUMBNAILS_PUBLIC: {{ .Values.customConfigValues.workspaceThumbnailsPublic | quote }}
   WORKSPACE_THUMBNAILS_PROVIDER: {{ .Values.customConfigValues.storageProvider | quote }}
@@ -63,5 +63,9 @@ data:
   {{- if eq .Values.customConfigValues.storageProvider "s3" }}
   WORKSPACE_THUMBNAILS_REGION: {{ .Values.customConfigValues.awsS3Region | quote }}
   WORKSPACE_IMPORTS_REGION: {{ .Values.customConfigValues.awsS3Region | quote }}
+  {{- end }}
+  {{- if eq .Values.customConfigValues.storageProvider "azure-blob" }}
+  WORKSPACE_THUMBNAILS_STORAGE_ACCOUNT: {{ .Values.customConfigValues.azureStorageAccount | quote }}
+  WORKSPACE_IMPORTS_STORAGE_ACCOUNT: {{ .Values.customConfigValues.azureStorageAccount | quote }}
   {{- end }}
 {{- end }}

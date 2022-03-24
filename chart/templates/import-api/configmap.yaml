@@ -26,7 +26,6 @@ data:
   CARTO_SELFHOSTED_DOMAIN: {{ .Values.customConfigValues.selfHostedDomain | quote }}
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  IMPORT_BUCKET: {{ .Values.customConfigValues.importBucket | quote }}
   IMPORT_PORT: {{ .Values.importApi.containerPorts.http | quote }}
   IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-import-sub"
   IMPORT_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
@@ -45,10 +44,14 @@ data:
   WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . }}
   WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . }}
   IMPORT_PROVIDER: {{ .Values.customConfigValues.storageProvider | quote }}
+  IMPORT_BUCKET: {{ .Values.customConfigValues.importBucket | quote }}
   {{- if eq .Values.customConfigValues.storageProvider "gcp" }}
   IMPORT_PROJECTID: {{ include "carto.gcsBucketsProjectId" . | quote }}
   {{- end }}
   {{- if eq .Values.customConfigValues.storageProvider "s3" }}
   IMPORT_REGION: {{ .Values.customConfigValues.awsS3Region | quote }}
+  {{- end }}
+  {{- if eq .Values.customConfigValues.storageProvider "azure-blob" }}
+  IMPORT_STORAGE_ACCOUNT: {{ .Values.customConfigValues.azureStorageAccount | quote }}
   {{- end }}
 {{- end }}
