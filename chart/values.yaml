@@ -335,6 +335,7 @@ accountsWww:
   ## @param accountsWww.configuration [object] Configuration settings (env vars) for accounts-www
   ##
   configuration: |
+
   ## @param accountsWww.secretConfiguration Configuration settings (env vars) for accounts-www
   ##
   secretConfiguration: ""

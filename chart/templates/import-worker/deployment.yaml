@@ -106,11 +106,13 @@ spec:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.key" . }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "ENCRYPTION_SECRET_KEY" "IMPORT_ACCESSKEYID" "IMPORT_SECRETACCESSKEY") "context" $ ) | nindent 12 }}
             {{- if .Values.importWorker.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.importWorker.existingConfigMap }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY" "IMPORT_ACCESSKEYID" "IMPORT_SECRETACCESSKEY") "context" $ ) -}}
+            {{- if $secretContent }}
             - configMapRef:
                 name: {{ template "carto.importWorker.fullname" . }}
             {{- end }}

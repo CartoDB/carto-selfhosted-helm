@@ -107,11 +107,13 @@ spec:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.key" . }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "ENCRYPTION_SECRET_KEY" "WORKSPACE_THUMBNAILS_ACCESSKEYID" "WORKSPACE_THUMBNAILS_SECRETACCESSKEY" "WORKSPACE_IMPORTS_ACCESSKEYID" "WORKSPACE_IMPORTS_SECRETACCESSKEY") "context" $ ) | nindent 12 }}
             {{- if .Values.workspaceApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.workspaceApi.existingConfigMap }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY" "WORKSPACE_THUMBNAILS_ACCESSKEYID" "WORKSPACE_THUMBNAILS_SECRETACCESSKEY" "WORKSPACE_IMPORTS_ACCESSKEYID" "WORKSPACE_IMPORTS_SECRETACCESSKEY") "context" $ ) -}}
+            {{- if $secretContent }}
             - configMapRef:
                 name: {{ template "carto.workspaceApi.fullname" . }}
             {{- end }}

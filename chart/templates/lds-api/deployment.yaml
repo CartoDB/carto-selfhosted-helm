@@ -110,11 +110,13 @@ spec:
                 secretKeyRef:
                   name: {{ include "carto.redis.secretName" . }}
                   key: {{ include "carto.redis.existingsecret.key" . | quote }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) | nindent 12 }}
             {{- if .Values.ldsApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.ldsApi.existingConfigMap }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) -}}
+            {{- if $secretContent }}
             - configMapRef:
                 name: {{ template "carto.ldsApi.fullname" . }}
             {{- end }}

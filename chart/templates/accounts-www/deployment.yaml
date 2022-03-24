@@ -97,10 +97,6 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.accountsWww.existingConfigMap }}
-            - configMapRef:
-                name: {{ template "carto.accountsWww.fullname" . }}
-            {{- end }}
             {{- if .Values.accountsWww.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraEnvVarsCM "context" $) }}
@@ -108,10 +104,6 @@ spec:
             {{- if .Values.accountsWww.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraEnvVarsSecret "context" $) }}
-            {{- end }}
-            {{- if not .Values.accountsWww.existingSecret }}
-            - secretRef:
-                name: {{ include "carto.accountsWww.secretName" . }}
             {{- end }}
           {{- if .Values.accountsWww.resources }}
           resources: {{- toYaml .Values.accountsWww.resources | nindent 12 }}
@@ -149,9 +141,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: google-secret
-              mountPath: /usr/src/certs/key.json
-              subPath: {{ template "carto.google.secretKey" . }}
           {{- if .Values.accountsWww.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}

@@ -41,7 +41,7 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
 {{- end -}}
 
 {{/*
-Create gcsBucketsProjectId using the gcsBucketsProjectId config or, if not defined, selfHostedGcpProjectId
+Association between env secret and path of the secret in values.yaml
 */}}
 {{- define "carto._utils.secretAssociaciation" -}}
 REACT_APP_GOOGLE_MAPS_API_KEY: appSecrets.googleMapsApiKey
@@ -57,7 +57,7 @@ VARNISH_DEBUG_SECRET: cartoSecrets.varnishDebugSecret
 {{- end -}}
 
 {{/*
-Create gcsBucketsProjectId using the gcsBucketsProjectId config or, if not defined, selfHostedGcpProjectId
+Generate secret file content for a variable if a existingSecret.name is not provided
 */}}
 {{- define "carto._utils.generateSecretObject" -}}
 {{- $var := .var -}}
@@ -81,13 +81,52 @@ Create gcsBucketsProjectId using the gcsBucketsProjectId config or, if not defin
 {{- end -}}
 
 {{/*
-Create gcsBucketsProjectId using the gcsBucketsProjectId config or, if not defined, selfHostedGcpProjectId
+Generate a secret file content for multiple variables
 */}}
 {{- define "carto._utils.generateSecretObjects" -}}
 {{- $vars := .vars -}}
 {{- $context := .context -}}
 {{- range $vars -}}
 {{ include "carto._utils.generateSecretObject" (dict "var" . "context" $context ) }}
+{{- end }}
+{{- end -}}
+
+{{/*
+Generate the secret def of one secret to be used in pods definitions
+*/}}
+{{- define "carto._utils.generateSecretDef" -}}
+{{- $var := .var -}}
+{{- $context := .context -}}
+{{- $mapSecrets := include "carto._utils.secretAssociaciation" . | fromYaml -}}
+{{- $key := get $mapSecrets $var -}}
+{{- $secretGroupName := regexReplaceAll "\\..*" $key "" -}}
+{{- $secretEntryName := regexReplaceAll ".*\\." $key "" -}}
+{{- $secretGroup := get $context.Values $secretGroupName -}}
+{{- $secretEntry := get $secretGroup $secretEntryName -}}
+{{- $secretValue := $secretEntry.value -}}
+{{- $secretExistingName := $secretEntry.existingSecret.name -}}
+{{- $secretExistingKey := $secretEntry.existingSecret.key -}}
+
+{{/*
+{{ get $mapSecrets $key }}({{ $key }})={{ $secretValue }}:{{ $secretExistingName }}:{{ $secretExistingKey }}:
+*/}}
+{{- if $secretExistingName }}
+- name: {{ $var }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ $secretExistingName | quote }}  # {{ $key }}.existingSecret.name
+      key: {{ $secretExistingKey | quote }}    # {{ $key }}.existingSecret.key
+{{- end }}
+{{- end -}}
+
+{{/*
+Generate the secret def to be used in pods definitions
+*/}}
+{{- define "carto._utils.generateSecretDefs" -}}
+{{- $vars := .vars -}}
+{{- $context := .context -}}
+{{- range $vars -}}
+{{ include "carto._utils.generateSecretDef" (dict "var" . "context" $context ) }}
 {{- end }}
 {{- end -}}
 
