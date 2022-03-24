@@ -4,8 +4,8 @@ on:
     types: [prereleased, released]
 env:
   GCLOUD_VERSION: '297.0.1' # https://github.com/google-github-actions/setup-gcloud/issues/128
-  CHARTS_REPOSITORY: "https://carto-selfhosted-charts.storage.googleapis.com/"
-  CHARTS_BUCKET: "gs://carto-selfhosted-charts"
+  CHARTS_REPOSITORY: "https://helm.carto.com/"
+  CHARTS_BUCKET: "gs://carto-helm"
   PROJECT_ID: carto-onprem-artifacts
   ARTIFACTS_PROJECT_ID: "carto-artifacts"
 
