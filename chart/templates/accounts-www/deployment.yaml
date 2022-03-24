@@ -152,9 +152,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.accountsWww.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: google-secret
-          secret:
-            secretName: {{ include "carto.google.secretName" . }}
         {{- if .Values.accountsWww.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

@@ -112,12 +112,12 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY" "WORKSPACE_THUMBNAILS_ACCESSKEYID" "WORKSPACE_THUMBNAILS_SECRETACCESSKEY" "WORKSPACE_IMPORTS_ACCESSKEYID" "WORKSPACE_IMPORTS_SECRETACCESSKEY") "context" $ ) -}}
-            {{- if $secretContent }}
+            {{- if not .Values.workspaceApi.existingConfigMap }}
             - configMapRef:
                 name: {{ template "carto.workspaceApi.fullname" . }}
             {{- end }}
-            {{- if not .Values.workspaceApi.existingSecret }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY" "WORKSPACE_THUMBNAILS_ACCESSKEYID" "WORKSPACE_THUMBNAILS_SECRETACCESSKEY" "WORKSPACE_IMPORTS_ACCESSKEYID" "WORKSPACE_IMPORTS_SECRETACCESSKEY") "context" $ ) -}}
+            {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.workspaceApi.secretName" . }}
             {{- end }}
@@ -161,6 +161,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "carto.redis.secretName" . }}
                   key: {{ include "carto.redis.existingsecret.key" . | quote }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "ENCRYPTION_SECRET_KEY" "WORKSPACE_THUMBNAILS_ACCESSKEYID" "WORKSPACE_THUMBNAILS_SECRETACCESSKEY" "WORKSPACE_IMPORTS_ACCESSKEYID" "WORKSPACE_IMPORTS_SECRETACCESSKEY") "context" $ ) | nindent 12 }}
             {{- if .Values.workspaceApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
