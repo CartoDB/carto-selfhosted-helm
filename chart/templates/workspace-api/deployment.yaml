@@ -177,7 +177,8 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVarsSecret "context" $) }}
             {{- end }}
-            {{- if not .Values.workspaceApi.existingSecret }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY" "WORKSPACE_THUMBNAILS_ACCESSKEYID" "WORKSPACE_THUMBNAILS_SECRETACCESSKEY" "WORKSPACE_IMPORTS_ACCESSKEYID" "WORKSPACE_IMPORTS_SECRETACCESSKEY") "context" $ ) -}}
+            {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.workspaceApi.secretName" . }}
             {{- end }}

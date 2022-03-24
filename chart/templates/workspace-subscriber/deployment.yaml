@@ -111,8 +111,7 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) -}}
-            {{- if $secretContent }}
+            {{- if not .Values.workspaceSubscriber.existingConfigMap }}
             - configMapRef:
                 name: {{ template "carto.workspaceSubscriber.fullname" . }}
             {{- end }}
@@ -124,7 +123,8 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVarsSecret "context" $) }}
             {{- end }}
-            {{- if not .Values.workspaceSubscriber.existingSecret }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) -}}
+            {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.workspaceSubscriber.secretName" . }}
             {{- end }}
