@@ -23,7 +23,7 @@ data:
   CARTO_AUTH0_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   CARTO_SELFHOSTED_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   CARTO_SELFHOSTED_CARTO_DW_LOCATION: {{ .Values.cartoConfigValues.cartoSelfhostedDwLocation | quote }}
-  CARTO_SELFHOSTED_DOMAIN: {{ .Values.customConfigValues.selfHostedDomain | quote }}
+  CARTO_SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   DO_ENABLED: "false"
@@ -31,18 +31,18 @@ data:
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   GOOGLE_APPLICATION_CREDENTIALS: "../certs/key.json"
   LOG_LEVEL: "debug"
-  MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: {{ .Values.customConfigValues.selfHostedDomain | quote }}
-  MAPS_API_V3_RESOURCE_URL_HOST: {{ .Values.customConfigValues.selfHostedDomain | quote }}
+  MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: {{ .Values.appConfigValues.selfHostedDomain | quote }}
+  MAPS_API_V3_RESOURCE_URL_HOST: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE: "projects/{project_id}/topics/data-updates"
   PUBSUB_MODE: "pull"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   REDIS_CACHE_PREFIX: "onprem"
   REDIS_HOST: {{ include "carto.redis.host" . }}
   REDIS_PORT: {{ include "carto.redis.port" . }}
-  SELFHOSTED_DOMAIN: {{ .Values.customConfigValues.selfHostedDomain | quote }}
+  SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   SELFHOSTED_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  WORKSPACE_IMPORTS_BUCKET: {{ .Values.customConfigValues.workspaceImportsBucket | quote }}
+  WORKSPACE_IMPORTS_BUCKET: {{ .Values.appConfigValues.workspaceImportsBucket | quote }}
   WORKSPACE_PORT: "{{ .Values.workspaceApi.containerPorts.http }}"
   WORKSPACE_PORT: {{ .Values.workspaceApi.containerPorts.http  | quote }}
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
@@ -52,16 +52,16 @@ data:
   WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/data-updates-workspace-sub"
   WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/data-updates"
   WORKSPACE_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.customConfigValues.workspaceThumbnailsBucket | quote }}
-  WORKSPACE_THUMBNAILS_PUBLIC: {{ .Values.customConfigValues.workspaceThumbnailsPublic | quote }}
-  WORKSPACE_THUMBNAILS_PROVIDER: {{ .Values.customConfigValues.storageProvider | quote }}
-  WORKSPACE_IMPORTS_PROVIDER: {{ .Values.customConfigValues.storageProvider | quote }}
-  {{- if eq .Values.customConfigValues.storageProvider "gcp" }}
+  WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.appConfigValues.workspaceThumbnailsBucket | quote }}
+  WORKSPACE_THUMBNAILS_PUBLIC: {{ .Values.appConfigValues.workspaceThumbnailsPublic | quote }}
+  WORKSPACE_THUMBNAILS_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
+  WORKSPACE_IMPORTS_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
+  {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
   WORKSPACE_THUMBNAILS_PROJECTID: {{ include "carto.gcsBucketsProjectId" . | quote }}
   WORKSPACE_IMPORTS_PROJECTID: {{ include "carto.gcsBucketsProjectId" . | quote }}
   {{- end }}
-  {{- if eq .Values.customConfigValues.storageProvider "s3" }}
-  WORKSPACE_THUMBNAILS_REGION: {{ .Values.customConfigValues.awsS3Region | quote }}
-  WORKSPACE_IMPORTS_REGION: {{ .Values.customConfigValues.awsS3Region | quote }}
+  {{- if eq .Values.appConfigValues.storageProvider "s3" }}
+  WORKSPACE_THUMBNAILS_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
+  WORKSPACE_IMPORTS_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
   {{- end }}
 {{- end }}
