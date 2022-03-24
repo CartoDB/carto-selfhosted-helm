@@ -6,7 +6,6 @@ If you are looking for another installation method, please refer to [carto-selfh
 
 ## Installation
 
-
 ### Prerequisites
 
 - Kubernetes 1.12+
@@ -36,14 +35,14 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
 
 3. Add our Carto helm repository with the next commands:
   ```bash
-  # Add the carto-selfhosted repo.
-  helm repo add carto-selfhosted https://carto-selfhosted-charts.storage.googleapis.com
+  # Add the carto repo.
+  helm repo add carto https://helm.carto.com
 
   # Retrieve the latests version of the packages. REQUIRED before update to a new version.
   helm repo update
 
   # List the available versions of the package
-  helm search repo carto-selfhosted -l
+  helm search repo carto -l
   ```
 
 4. Configure your deployment. Please, refer to [Customizations](customizations/README.md). You need to, at least, configure your domain.
@@ -52,12 +51,13 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
   ```bash
   helm install \
     <your_own_installation_name|carto> \
-    carto-selfhosted/carto \
+    carto/carto \
     --namespace <your_namespace> \
     -f carto-values.yaml \
     -f carto-secrets.yaml \
     <other_custom_files>
   ```
+  > Note: You can specify the '-f' flag multiple times. The priority will be given to the last (right-most) file specified. For example, if both `carto-values.yaml` and `customization.yaml` contained a key called 'Test', the value set in `customization.yaml` would take precedence. So, for this reason follow the order describe in the above example.
 
 6. Follow the instructions provided by the command.
 
@@ -70,12 +70,12 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
   ```bash
   helm repo update
   ```
-  
+
 3. Update CARTO
   ```bash
   helm upgrade \
     <your_own_installation_name|carto> \
-    carto-selfhosted/carto \
+    carto/carto \
     --namespace <your_namespace> \
     -f carto-values.yaml \
     -f carto-secrets.yaml \

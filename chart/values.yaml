@@ -1,19 +1,19 @@
 ## @section Custom config parameters
 ## Global configuration to be edited by the client
-customConfigValues:
-  ## @param customConfigValues.selfHostedDomain Domain that is going to be used to access to the CARTO self-hosted.
+appConfigValues:
+  ## @param appConfigValues.selfHostedDomain Domain that is going to be used to access to the CARTO self-hosted.
   selfHostedDomain: "carto-selfhosted.lan"
-  ## @param customConfigValues.storageProvider Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob`
+  ## @param appConfigValues.storageProvider Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob`
   storageProvider: "gcp"
-  ## @param customConfigValues.httpCacheEnabled Enable the internal httpCache
+  ## @param appConfigValues.httpCacheEnabled Enable the internal httpCache
   httpCacheEnabled: "true"
-  ## @param customConfigValues.importBucket Bucket to be used to store the import files
+  ## @param appConfigValues.importBucket Bucket to be used to store the import files
   importBucket: ""
-  ## @param customConfigValues.workspaceImportsBucket Bucket to be used to store metadata of the workspace
+  ## @param appConfigValues.workspaceImportsBucket Bucket to be used to store metadata of the workspace
   workspaceImportsBucket: ""
-  ## @param customConfigValues.workspaceThumbnailsBucket Bucket to be used to store the thumbnails generated in the app
+  ## @param appConfigValues.workspaceThumbnailsBucket Bucket to be used to store the thumbnails generated in the app
   workspaceThumbnailsBucket: ""
-  ## @param customConfigValues.workspaceThumbnailsPublic Indicate if the thumbnails could be accessed publicly
+  ## @param appConfigValues.workspaceThumbnailsPublic Indicate if the thumbnails could be accessed publicly
   workspaceThumbnailsPublic: "true"
   ## @param customConfigValues.gcpBucketsProjectId If the bucket is GCP, the ProjectId to be used
   gcpBucketsProjectId: ""
@@ -3561,20 +3561,20 @@ internalPostgresql:
 ## @section External PostgreSQL parameters
 ## External PostgreSQL configuration
 ## All of these values are only used when postgresql.enabled is set to false
-## @param externalDatabase.host Database host
-## @param externalDatabase.user non-root Username for CARTO Database (seen from outside the database)
-## @param externalDatabase.internalUser non-root Username for CARTO Database (seen from inside the database). If this value is not defined, `externalDatabase.user` is used.
-## @param externalDatabase.password Database password
-## @param externalDatabase.adminUser Database admin user (seen from outside the database)
-## @param externalDatabase.internalAdminUser Database admin user (seen from inside the database). If this value is not defined, `externalDatabase.adminUser` is used.
-## @param externalDatabase.adminPassword Database admin password
-## @param externalDatabase.existingSecret Name of an existing secret resource containing the DB password
-## @param externalDatabase.existingSecretPasswordKey Name of the key inside the secret containing the DB password
-## @param externalDatabase.existingSecretAdminPasswordKey Name of the key inside the secret containing the DB admin password
-## @param externalDatabase.database Database name
-## @param externalDatabase.port Database port number
+## @param externalPostgresql.host Database host
+## @param externalPostgresql.user non-root Username for CARTO Database (seen from outside the database)
+## @param externalPostgresql.internalUser non-root Username for CARTO Database (seen from inside the database). If this value is not defined, `externalPostgresql.user` is used.
+## @param externalPostgresql.password Database password
+## @param externalPostgresql.adminUser Database admin user (seen from outside the database)
+## @param externalPostgresql.internalAdminUser Database admin user (seen from inside the database). If this value is not defined, `externalPostgresql.adminUser` is used.
+## @param externalPostgresql.adminPassword Database admin password
+## @param externalPostgresql.existingSecret Name of an existing secret resource containing the DB password
+## @param externalPostgresql.existingSecretPasswordKey Name of the key inside the secret containing the DB password
+## @param externalPostgresql.existingSecretAdminPasswordKey Name of the key inside the secret containing the DB admin password
+## @param externalPostgresql.database Database name
+## @param externalPostgresql.port Database port number
 ##
-externalDatabase:
+externalPostgresql:
   host: localhost
   user: carto
   internalUser: ""

@@ -1,3 +1,4 @@
+{{/* vim: set filetype=mustache: */}}
 CHART NAME: {{ .Chart.Name }}
 CHART VERSION: {{ .Chart.Version }}
 APP VERSION: {{ .Chart.AppVersion }}
@@ -7,11 +8,9 @@ APP VERSION: {{ .Chart.AppVersion }}
 {{- if  or (.Values.internalPostgresql.enabled) (.Values.internalRedis.enabled) }}
                                                    
                                                    
-                                                   
  +-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
  |N||O||T| |F||O||R| |P||R||O||D||U||C||T||I||O||N|
  +-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
-                                                   
                                                    
                                                    
 
@@ -20,6 +19,9 @@ WARNING: You are using a non production installation, please see External Postgr
 {{- end }}
 
 ** Please be patient while the chart is being deployed **
+
+** Did you check our recommendations to customize your app in production mode? **
+https://github.com/CartoDB/carto-selfhosted-helm/blob/{{- include "chart.version" . }}/customizations/README.md#production-ready
 
 {{- if .Values.diagnosticMode.enabled }}
 
@@ -72,7 +74,7 @@ Found these lines in commonSecretConfiguration:
 This deployment will be incomplete until you configure CARTO with a resolvable
 host. To configure CARTO with the URL of your service:
 
-1. Edit the config field `customConfigValues.selfHostedDomain`
+1. Edit the config field `appConfigValues.selfHostedDomain`
 
 2. Complete your CARTO deployment reading the `Update` section of the documentation.
 
