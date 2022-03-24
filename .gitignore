@@ -1,5 +1,4 @@
 *.tgz
-**/customization.yaml
 /.idea/*
 .vscode
 .DS_Store
@@ -8,3 +7,4 @@
 **/carto-secrets.yaml
 **/carto-values.yaml
 **/customer.env
+**/customization.yaml
