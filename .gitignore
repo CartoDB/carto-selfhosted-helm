@@ -1,4 +1,5 @@
 *.tgz
+**/customization.yaml
 /.idea/*
 .vscode
 .DS_Store
