@@ -15,9 +15,9 @@ appConfigValues:
   workspaceThumbnailsBucket: ""
   ## @param appConfigValues.workspaceThumbnailsPublic Indicate if the thumbnails could be accessed publicly
   workspaceThumbnailsPublic: "true"
-  ## @param customConfigValues.gcpBucketsProjectId If the bucket is GCP, the ProjectId to be used
+  ## @param appConfigValues.gcpBucketsProjectId If the bucket is GCP, the ProjectId to be used
   gcpBucketsProjectId: ""
-  ## @param customConfigValues.awsS3Region If the bucket is S3, the region to be used
+  ## @param appConfigValues.awsS3Region If the bucket is S3, the region to be used
   awsS3Region: ""
 
 ## @section CARTO config parameters

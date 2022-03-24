@@ -57,8 +57,8 @@ data:
   WORKSPACE_THUMBNAILS_PUBLIC: {{ .Values.appConfigValues.workspaceThumbnailsPublic | quote }}
   WORKSPACE_THUMBNAILS_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
   {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
-  WORKSPACE_THUMBNAILS_PROJECTID: {{ include "carto.gcsBucketsProjectId" . | quote }}
-  WORKSPACE_IMPORTS_PROJECTID: {{ include "carto.gcsBucketsProjectId" . | quote }}
+  WORKSPACE_THUMBNAILS_PROJECTID: {{ include "carto.gcpBucketsProjectId" . | quote }}
+  WORKSPACE_IMPORTS_PROJECTID: {{ include "carto.gcpBucketsProjectId" . | quote }}
   {{- if .Values.customSecretsValues.gcpBucketsServiceAccountKey }}
   WORKSPACE_THUMBNAILS_KEYFILENAME: "../certs/gcp-buckets-service-account-key.json"
   WORKSPACE_IMPORTS_KEYFILENAME: "../certs/gcp-buckets-service-account-key.json"
@@ -68,8 +68,8 @@ data:
   WORKSPACE_THUMBNAILS_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
   WORKSPACE_IMPORTS_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
   {{- end }}
-  {{- if eq .Values.customConfigValues.storageProvider "azure-blob" }}
-  WORKSPACE_THUMBNAILS_STORAGE_ACCOUNT: {{ .Values.customConfigValues.azureStorageAccount | quote }}
-  WORKSPACE_IMPORTS_STORAGE_ACCOUNT: {{ .Values.customConfigValues.azureStorageAccount | quote }}
+  {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
+  WORKSPACE_THUMBNAILS_STORAGE_ACCOUNT: {{ .Values.appConfigValues.azureStorageAccount | quote }}
+  WORKSPACE_IMPORTS_STORAGE_ACCOUNT: {{ .Values.appConfigValues.azureStorageAccount | quote }}
   {{- end }}
 {{- end }}

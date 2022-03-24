@@ -147,7 +147,7 @@ spec:
             - name: google-secret
               mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
               subPath: {{ template "carto.google.secretKey" . }}
-            {{- if and (eq .Values.customConfigValues.storageProvider "gcp") (.Values.customSecretsValues.gcpBucketsServiceAccountKey) }}
+            {{- if and (eq .Values.appConfigValues.storageProvider "gcp") (.Values.customSecretsValues.gcpBucketsServiceAccountKey) }}
             - name: gcp-buckets-service-account-key
               mountPath: /usr/src/certs/gcp-buckets-service-account-key.json
               subPath: gcp-buckets-service-account-key.json
@@ -162,7 +162,7 @@ spec:
         - name: google-secret
           secret:
             secretName: {{ include "carto.google.secretName" . }}
-        {{- if and (eq .Values.customConfigValues.storageProvider "gcp") (.Values.customSecretsValues.gcpBucketsServiceAccountKey) }}
+        {{- if and (eq .Values.appConfigValues.storageProvider "gcp") (.Values.customSecretsValues.gcpBucketsServiceAccountKey) }}
         - name: gcp-buckets-service-account-key
           secret:
             secretName: gcp-buckets-service-account-key
