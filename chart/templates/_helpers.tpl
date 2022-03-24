@@ -34,10 +34,10 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
 {{- end -}}
 
 {{/*
-Create gcsBucketsProjectId using the gcsBucketsProjectId config or, if not defined, selfHostedGcpProjectId
+Create gcpBucketsProjectId using the gcpBucketsProjectId config or, if not defined, selfHostedGcpProjectId.
 */}}
-{{- define "carto.gcsBucketsProjectId" -}}
-{{ default .Values.cartoConfigValues.selfHostedGcpProjectId .Values.customConfigValues.gcsBucketsProjectId }}
+{{- define "carto.gcpBucketsProjectId" -}}
+{{ default .Values.cartoConfigValues.selfHostedGcpProjectId .Values.customConfigValues.gcpBucketsProjectId }}
 {{- end -}}
 
 {{/*

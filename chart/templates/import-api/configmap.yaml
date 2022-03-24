@@ -46,7 +46,10 @@ data:
   IMPORT_PROVIDER: {{ .Values.customConfigValues.storageProvider | quote }}
   IMPORT_BUCKET: {{ .Values.customConfigValues.importBucket | quote }}
   {{- if eq .Values.customConfigValues.storageProvider "gcp" }}
-  IMPORT_PROJECTID: {{ include "carto.gcsBucketsProjectId" . | quote }}
+  IMPORT_PROJECTID: {{ include "carto.gcpBucketsProjectId" . | quote }}
+  {{- if .Values.customSecretsValues.gcpBucketsServiceAccountKey }}
+  IMPORT_KEYFILENAME: "../certs/gcp-buckets-service-account-key.json"
+  {{- end }}
   {{- end }}
   {{- if eq .Values.customConfigValues.storageProvider "s3" }}
   IMPORT_REGION: {{ .Values.customConfigValues.awsS3Region | quote }}

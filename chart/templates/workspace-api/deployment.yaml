@@ -218,6 +218,11 @@ spec:
             - name: google-secret
               mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
               subPath: {{ template "carto.google.secretKey" . }}
+            {{- if and (eq .Values.customConfigValues.storageProvider "gcp") (.Values.customSecretsValues.gcpBucketsServiceAccountKey) }}
+            - name: gcp-buckets-service-account-key
+              mountPath: /usr/src/certs/gcp-buckets-service-account-key.json
+              subPath: gcp-buckets-service-account-key.json
+            {{- end }}
           {{- if .Values.workspaceApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -228,6 +233,11 @@ spec:
         - name: google-secret
           secret:
             secretName: {{ include "carto.google.secretName" . }}
+        {{- if and (eq .Values.customConfigValues.storageProvider "gcp") (.Values.customSecretsValues.gcpBucketsServiceAccountKey) }}
+        - name: gcp-buckets-service-account-key
+          secret:
+            secretName: gcp-buckets-service-account-key
+        {{- end }}
         {{- if .Values.workspaceApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

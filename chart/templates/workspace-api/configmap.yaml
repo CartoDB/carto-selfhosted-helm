@@ -57,8 +57,12 @@ data:
   WORKSPACE_THUMBNAILS_PROVIDER: {{ .Values.customConfigValues.storageProvider | quote }}
   WORKSPACE_IMPORTS_PROVIDER: {{ .Values.customConfigValues.storageProvider | quote }}
   {{- if eq .Values.customConfigValues.storageProvider "gcp" }}
-  WORKSPACE_THUMBNAILS_PROJECTID: {{ include "carto.gcsBucketsProjectId" . | quote }}
-  WORKSPACE_IMPORTS_PROJECTID: {{ include "carto.gcsBucketsProjectId" . | quote }}
+  WORKSPACE_THUMBNAILS_PROJECTID:  {{ include "carto.gcpBucketsProjectId" . | quote }}
+  WORKSPACE_IMPORTS_PROJECTID: {{ include "carto.gcpBucketsProjectId" . | quote }}
+  {{- if .Values.customSecretsValues.gcpBucketsServiceAccountKey }}
+  WORKSPACE_THUMBNAILS_KEYFILENAME: "../certs/gcp-buckets-service-account-key.json"
+  WORKSPACE_IMPORTS_KEYFILENAME: "../certs/gcp-buckets-service-account-key.json"
+  {{- end }}
   {{- end }}
   {{- if eq .Values.customConfigValues.storageProvider "s3" }}
   WORKSPACE_THUMBNAILS_REGION: {{ .Values.customConfigValues.awsS3Region | quote }}
