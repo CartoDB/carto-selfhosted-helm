@@ -6,7 +6,6 @@ If you are looking for another installation method, please refer to [carto-selfh
 
 ## Installation
 
-
 ### Prerequisites
 
 - Kubernetes 1.12+
@@ -58,6 +57,7 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
     -f carto-secrets.yaml \
     -f customization.yaml
   ```
+  > Note: You can specify the '-f' flag multiple times. The priority will be given to the last (right-most) file specified. For example, if both `carto-values.yaml` and `customization.yaml` contained a key called 'Test', the value set in `customization.yaml` would take precedence. So, for this reason follow the order describe in the above example.
 
 6. Follow the instructions provided by the command.
 

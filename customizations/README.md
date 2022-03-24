@@ -25,12 +25,12 @@ TODO: We should add an arquitectural diagram to make it easier for customers to 
 ## How to define customizations
 
 There are two ways to configure or customize the deployment:
-- [**RECOMMENDED**] Create a dedicated [yaml](https://yaml.org/) file. For example, you can create a file with the next content:
+- [**RECOMMENDED**] Create a dedicated `customization.yaml` ([yaml official documentation](https://yaml.org/)) file. For example, you can create a file with the next content:
   ```yaml
-  clientConfigValues:
+  appConfigValues:
     selfHostedDomain: "my.domain.com"
 
-  clientSecrets:
+  appSecrets:
     googleMapsApiKey:
       value: "<google-maps-api-key>"
 
@@ -44,8 +44,8 @@ There are two ways to configure or customize the deployment:
   ```
 - Use the parameters as arguments. You can specify each parameter using the `--set key=value[,key=value]` argument. For example, add the following at the end of ALL the install or upgrade command:
   ```bash
-  ... --set clientConfigValues.selfHostedDomain=my.domain.com \
-    --set clientSecrets.googleMapsApiKey.value=<google-maps-api-key> \
+  ... --set appConfigValues.selfHostedDomain=my.domain.com \
+    --set appSecrets.googleMapsApiKey.value=<google-maps-api-key> \
     --set router.service.type=LoadBalancer
   ```
 
@@ -58,7 +58,7 @@ The most important step to have your CARTO self-hosted ready to be used is to co
 
 To do this you need to [add the following customization](#how-to-define-customizations):
 ```yaml
-customConfigValues:
+appConfigValues:
   selfHostedDomain: "my.domain.com"
 ```
 
@@ -149,7 +149,7 @@ In that Postgres, CARTO stores some metadata and also the credentials of the ext
 
 There are two alternatives when connecting the environment with an external postgres:
 
-> Note: `externalDatabase.user` and `externalDatabase.database` inside the Postgres instance are going to be created automatically during the installation process. Please, not create it manually.
+> Note: `externalPostgresql.user` and `externalPostgresql.database` inside the Postgres instance are going to be created automatically during the installation process. Please, not create it manually.
 
 - Create a kubernetes secret by yourself:
   - You can use this command with the Postgres passwords to create it:
@@ -165,7 +165,7 @@ There are two alternatives when connecting the environment with an external post
     internalPostgresql:
       # With that config, we disable the internal Postgres provided by the package
       enabled: false
-    externalDatabase:
+    externalPostgresql:
       host: <Postgres IP/Hostname>
       user: "carto"
       adminUser: "postgres"
@@ -182,7 +182,7 @@ There are two alternatives when connecting the environment with an external post
     internalPostgresql:
       # With that config, we disable the internal Postgres provided by the package
       enabled: false
-    externalDatabase:
+    externalPostgresql:
       host: <Postgres IP/Hostname>
       user: "carto"
       password: ""
@@ -191,13 +191,13 @@ There are two alternatives when connecting the environment with an external post
       database: "workspace_db"
       port: "5432"
     ```
-    > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalDatabase.password` and `externalDatabase.adminPassword` that you set in previous lines.
+    > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalPostgresql.password` and `externalPostgresql.adminPassword` that you set in previous lines.
 
-> Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalDatabase` block
+> Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalPostgresql` block
 - `internalUser`: it's the same as `user` but without the `@database-name` prefix required to connect to Azure Postgres
 - `internalAdminUser`: it's the same as `adminUser` but without the `@database-name` prefix required to connect to Azure Postgres
 ```yaml
-externalDatabase:
+externalPostgresql:
   ...
   user: "carto@database-name"
   internalUser: "carto"

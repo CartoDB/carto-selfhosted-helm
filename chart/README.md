@@ -14,17 +14,17 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### Custom config parameters
 
-| Name                                           | Description                                                                                | Value                  |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------- |
-| `customConfigValues.selfHostedDomain`          | Domain that is going to be used to access to the CARTO self-hosted.                        | `carto-selfhosted.lan` |
-| `customConfigValues.storageProvider`           | Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob` | `gcp`                  |
-| `customConfigValues.httpCacheEnabled`          | Enable the internal httpCache                                                              | `true`                 |
-| `customConfigValues.importBucket`              | Bucket to be used to store the import files                                                | `""`                   |
-| `customConfigValues.workspaceImportsBucket`    | Bucket to be used to store metadata of the workspace                                       | `""`                   |
-| `customConfigValues.workspaceThumbnailsBucket` | Bucket to be used to store the thumbnails generated in the app                             | `""`                   |
-| `customConfigValues.workspaceThumbnailsPublic` | Indicate if the thumbnails could be accessed publicly                                      | `true`                 |
-| `customConfigValues.gcsBucketsProjectId`       | If the bucket is GCP, the ProjectId to be used                                             | `""`                   |
-| `customConfigValues.awsS3Region`               | If the bucket is S3, the region to be used                                                 | `""`                   |
+| Name                                        | Description                                                                                | Value                  |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------- |
+| `appConfigValues.selfHostedDomain`          | Domain that is going to be used to access to the CARTO self-hosted.                        | `carto-selfhosted.lan` |
+| `appConfigValues.storageProvider`           | Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob` | `gcp`                  |
+| `appConfigValues.httpCacheEnabled`          | Enable the internal httpCache                                                              | `true`                 |
+| `appConfigValues.importBucket`              | Bucket to be used to store the import files                                                | `""`                   |
+| `appConfigValues.workspaceImportsBucket`    | Bucket to be used to store metadata of the workspace                                       | `""`                   |
+| `appConfigValues.workspaceThumbnailsBucket` | Bucket to be used to store the thumbnails generated in the app                             | `""`                   |
+| `appConfigValues.workspaceThumbnailsPublic` | Indicate if the thumbnails could be accessed publicly                                      | `true`                 |
+| `appConfigValues.gcsBucketsProjectId`       | If the bucket is GCP, the ProjectId to be used                                             | `""`                   |
+| `appConfigValues.awsS3Region`               | If the bucket is S3, the region to be used                                                 | `""`                   |
 
 
 ### CARTO config parameters
@@ -1157,20 +1157,20 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### External PostgreSQL parameters
 
-| Name                                              | Description                                                                                                                          | Value          |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
-| `externalDatabase.host`                           | Database host                                                                                                                        | `localhost`    |
-| `externalDatabase.user`                           | non-root Username for CARTO Database (seen from outside the database)                                                                | `carto`        |
-| `externalDatabase.internalUser`                   | non-root Username for CARTO Database (seen from inside the database). If this value is not defined, `externalDatabase.user` is used. | `""`           |
-| `externalDatabase.password`                       | Database password                                                                                                                    | `""`           |
-| `externalDatabase.adminUser`                      | Database admin user (seen from outside the database)                                                                                 | `postgres`     |
-| `externalDatabase.internalAdminUser`              | Database admin user (seen from inside the database). If this value is not defined, `externalDatabase.adminUser` is used.             | `""`           |
-| `externalDatabase.adminPassword`                  | Database admin password                                                                                                              | `""`           |
-| `externalDatabase.existingSecret`                 | Name of an existing secret resource containing the DB password                                                                       | `""`           |
-| `externalDatabase.existingSecretPasswordKey`      | Name of the key inside the secret containing the DB password                                                                         | `""`           |
-| `externalDatabase.existingSecretAdminPasswordKey` | Name of the key inside the secret containing the DB admin password                                                                   | `""`           |
-| `externalDatabase.database`                       | Database name                                                                                                                        | `workspace_db` |
-| `externalDatabase.port`                           | Database port number                                                                                                                 | `5432`         |
+| Name                                                | Description                                                                                                                            | Value          |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| `externalPostgresql.host`                           | Database host                                                                                                                          | `localhost`    |
+| `externalPostgresql.user`                           | non-root Username for CARTO Database (seen from outside the database)                                                                  | `carto`        |
+| `externalPostgresql.internalUser`                   | non-root Username for CARTO Database (seen from inside the database). If this value is not defined, `externalPostgresql.user` is used. | `""`           |
+| `externalPostgresql.password`                       | Database password                                                                                                                      | `""`           |
+| `externalPostgresql.adminUser`                      | Database admin user (seen from outside the database)                                                                                   | `postgres`     |
+| `externalPostgresql.internalAdminUser`              | Database admin user (seen from inside the database). If this value is not defined, `externalPostgresql.adminUser` is used.             | `""`           |
+| `externalPostgresql.adminPassword`                  | Database admin password                                                                                                                | `""`           |
+| `externalPostgresql.existingSecret`                 | Name of an existing secret resource containing the DB password                                                                         | `""`           |
+| `externalPostgresql.existingSecretPasswordKey`      | Name of the key inside the secret containing the DB password                                                                           | `""`           |
+| `externalPostgresql.existingSecretAdminPasswordKey` | Name of the key inside the secret containing the DB admin password                                                                     | `""`           |
+| `externalPostgresql.database`                       | Database name                                                                                                                          | `workspace_db` |
+| `externalPostgresql.port`                           | Database port number                                                                                                                   | `5432`         |
 
 
 ## Configuration and installation details

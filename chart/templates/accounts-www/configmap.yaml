@@ -19,14 +19,14 @@ data:
   CARTO_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   CARTO_AUTH0_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   CARTO_SELFHOSTED_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
-  CARTO_SELFHOSTED_DOMAIN: {{ .Values.customConfigValues.selfHostedDomain | quote }}
+  CARTO_SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   LOG_LEVEL: "debug"
   PORT: {{ .Values.accountsWww.containerPorts.http | quote }}
   REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
-  REACT_APP_ACCOUNTS_URL: "https://{{ .Values.customConfigValues.selfHostedDomain }}/acc/"
-  REACT_APP_API_BASE_URL: "https://{{ .Values.customConfigValues.selfHostedDomain }}/api"
+  REACT_APP_ACCOUNTS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/"
+  REACT_APP_API_BASE_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api"
   REACT_APP_AUTH0_AUDIENCE: "carto-cloud-native-api"
   REACT_APP_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   REACT_APP_BIGQUERY_OAUTH: "false"
@@ -35,8 +35,8 @@ data:
   REACT_APP_HUBSPOT_ID: "474999"
   REACT_APP_HUBSPOT_LIMIT_FORM_ID: "cd9486fa-5766-4bac-81b9-d8c6cd029b3b"
   REACT_APP_LAUNCH_DARKLY_CLIENT_SIDE_ID: {{ .Values.cartoConfigValues.launchDarklyClientSideId | quote }}
-  REACT_APP_PUBLIC_MAP_URL: "https://{{ .Values.customConfigValues.selfHostedDomain }}/api/v3/maps/public"
-  REACT_APP_WORKSPACE_API_URL: "https://{{ .Values.customConfigValues.selfHostedDomain }}/workspace-api"
+  REACT_APP_PUBLIC_MAP_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api/v3/maps/public"
+  REACT_APP_WORKSPACE_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/workspace-api"
   REACT_APP_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
-  SELFHOSTED_DOMAIN: {{ .Values.customConfigValues.selfHostedDomain | quote }}
+  SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
 {{- end }}
