@@ -41,6 +41,96 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
 {{- end -}}
 
 {{/*
+Association between env secret and path of the secret in values.yaml
+*/}}
+{{- define "carto._utils.secretAssociaciation" -}}
+REACT_APP_GOOGLE_MAPS_API_KEY: appSecrets.googleMapsApiKey
+IMPORT_ACCESSKEYID: appSecrets.awsAccessKeyId
+WORKSPACE_THUMBNAILS_ACCESSKEYID: appSecrets.awsAccessKeyId
+WORKSPACE_IMPORTS_ACCESSKEYID: appSecrets.awsAccessKeyId
+IMPORT_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
+WORKSPACE_THUMBNAILS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
+WORKSPACE_IMPORTS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
+ENCRYPTION_SECRET_KEY: cartoSecrets.encryptionSecretKey
+VARNISH_PURGE_SECRET: cartoSecrets.varnishPurgeSecret
+VARNISH_DEBUG_SECRET: cartoSecrets.varnishDebugSecret
+{{- end -}}
+
+{{/*
+Generate secret file content for a variable if a existingSecret.name is not provided
+*/}}
+{{- define "carto._utils.generateSecretObject" -}}
+{{- $var := .var -}}
+{{- $context := .context -}}
+{{- $mapSecrets := include "carto._utils.secretAssociaciation" . | fromYaml -}}
+{{- $key := get $mapSecrets $var -}}
+{{- $secretGroupName := regexReplaceAll "\\..*" $key "" -}}
+{{- $secretEntryName := regexReplaceAll ".*\\." $key "" -}}
+{{- $secretGroup := get $context.Values $secretGroupName -}}
+{{- $secretEntry := get $secretGroup $secretEntryName -}}
+{{- $secretValue := $secretEntry.value -}}
+{{- $secretExistingName := $secretEntry.existingSecret.name -}}
+{{- $secretExistingKey := $secretEntry.existingSecret.key -}}
+
+{{/*
+{{ get $mapSecrets $key }}({{ $key }})={{ $secretValue }}:{{ $secretExistingName }}:{{ $secretExistingKey }}:
+*/}}
+{{- if not $secretExistingName }}
+{{ $var }}: {{ $secretValue | b64enc | quote }}  # {{ $key }}.value
+{{- end }}
+{{- end -}}
+
+{{/*
+Generate a secret file content for multiple variables
+*/}}
+{{- define "carto._utils.generateSecretObjects" -}}
+{{- $vars := .vars -}}
+{{- $context := .context -}}
+{{- range $vars -}}
+{{ include "carto._utils.generateSecretObject" (dict "var" . "context" $context ) }}
+{{- end }}
+{{- end -}}
+
+{{/*
+Generate the secret def of one secret to be used in pods definitions
+*/}}
+{{- define "carto._utils.generateSecretDef" -}}
+{{- $var := .var -}}
+{{- $context := .context -}}
+{{- $mapSecrets := include "carto._utils.secretAssociaciation" . | fromYaml -}}
+{{- $key := get $mapSecrets $var -}}
+{{- $secretGroupName := regexReplaceAll "\\..*" $key "" -}}
+{{- $secretEntryName := regexReplaceAll ".*\\." $key "" -}}
+{{- $secretGroup := get $context.Values $secretGroupName -}}
+{{- $secretEntry := get $secretGroup $secretEntryName -}}
+{{- $secretValue := $secretEntry.value -}}
+{{- $secretExistingName := $secretEntry.existingSecret.name -}}
+{{- $secretExistingKey := $secretEntry.existingSecret.key -}}
+
+{{/*
+{{ get $mapSecrets $key }}({{ $key }})={{ $secretValue }}:{{ $secretExistingName }}:{{ $secretExistingKey }}:
+*/}}
+{{- if $secretExistingName }}
+- name: {{ $var }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ $secretExistingName | quote }}  # {{ $key }}.existingSecret.name
+      key: {{ $secretExistingKey | quote }}    # {{ $key }}.existingSecret.key
+{{- end }}
+{{- end -}}
+
+{{/*
+Generate the secret def to be used in pods definitions
+*/}}
+{{- define "carto._utils.generateSecretDefs" -}}
+{{- $vars := .vars -}}
+{{- $context := .context -}}
+{{- range $vars -}}
+{{ include "carto._utils.generateSecretDef" (dict "var" . "context" $context ) }}
+{{- end }}
+{{- end -}}
+
+{{/*
 Create gcpBucketsProjectId using the gcpBucketsProjectId config or, if not defined, selfHostedGcpProjectId.
 */}}
 {{- define "carto.gcpBucketsProjectId" -}}
@@ -595,8 +685,8 @@ Return the proper Docker Image Registry Secret Names
 Return the proper Carto Google Secret name
 */}}
 {{- define "carto.google.secretName" -}}
-{{- if .Values.google.existingSecret.name -}}
-{{- .Values.google.existingSecret.name -}}
+{{- if .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name -}}
+{{- .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name -}}
 {{- else -}}
 {{- printf "%s-google" (include "common.names.fullname" .) -}}
 {{- end -}}
@@ -606,8 +696,8 @@ Return the proper Carto Google Secret name
 Return the proper Carto Google Secret name
 */}}
 {{- define "carto.google.secretKey" -}}
-{{- if .Values.google.existingSecret.name -}}
-{{- .Values.google.existingSecret.key -}}
+{{- if .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name -}}
+{{- .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.key -}}
 {{- else -}}
 {{- print "key.json" -}}
 {{- end -}}

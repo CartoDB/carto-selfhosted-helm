@@ -24,7 +24,6 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/accounts-www/configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/accounts-www/secret.yaml") . | sha256sum }}
         {{- if .Values.accountsWww.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
@@ -110,10 +109,6 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraEnvVarsSecret "context" $) }}
             {{- end }}
-            {{- if not .Values.accountsWww.existingSecret }}
-            - secretRef:
-                name: {{ include "carto.accountsWww.secretName" . }}
-            {{- end }}
           {{- if .Values.accountsWww.resources }}
           resources: {{- toYaml .Values.accountsWww.resources | nindent 12 }}
           {{- end }}
@@ -150,9 +145,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: google-secret
-              mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
-              subPath: {{ template "carto.google.secretKey" . }}
           {{- if .Values.accountsWww.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -160,9 +152,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.accountsWww.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: google-secret
-          secret:
-            secretName: {{ include "carto.google.secretName" . }}
         {{- if .Values.accountsWww.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

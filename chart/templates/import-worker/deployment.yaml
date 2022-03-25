@@ -106,6 +106,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.key" . }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "ENCRYPTION_SECRET_KEY" "IMPORT_ACCESSKEYID" "IMPORT_SECRETACCESSKEY") "context" $ ) | nindent 12 }}
             {{- if .Values.importWorker.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -122,7 +123,8 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVarsSecret "context" $) }}
             {{- end }}
-            {{- if not .Values.importWorker.existingSecret }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY" "IMPORT_ACCESSKEYID" "IMPORT_SECRETACCESSKEY") "context" $ ) -}}
+            {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.importWorker.secretName" . }}
             {{- end }}
@@ -145,7 +147,7 @@ spec:
           {{- end }}
           volumeMounts:
             - name: google-secret
-              mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
+              mountPath: /usr/src/certs/key.json
               subPath: {{ template "carto.google.secretKey" . }}
             {{- if and (eq .Values.appConfigValues.storageProvider "gcp") (.Values.customSecretsValues.gcpBucketsServiceAccountKey) }}
             - name: gcp-buckets-service-account-key

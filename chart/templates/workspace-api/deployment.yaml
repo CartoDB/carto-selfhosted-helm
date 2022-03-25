@@ -107,6 +107,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.key" . }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "ENCRYPTION_SECRET_KEY" "WORKSPACE_THUMBNAILS_ACCESSKEYID" "WORKSPACE_THUMBNAILS_SECRETACCESSKEY" "WORKSPACE_IMPORTS_ACCESSKEYID" "WORKSPACE_IMPORTS_SECRETACCESSKEY") "context" $ ) | nindent 12 }}
             {{- if .Values.workspaceApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -115,7 +116,8 @@ spec:
             - configMapRef:
                 name: {{ template "carto.workspaceApi.fullname" . }}
             {{- end }}
-            {{- if not .Values.workspaceApi.existingSecret }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY" "WORKSPACE_THUMBNAILS_ACCESSKEYID" "WORKSPACE_THUMBNAILS_SECRETACCESSKEY" "WORKSPACE_IMPORTS_ACCESSKEYID" "WORKSPACE_IMPORTS_SECRETACCESSKEY") "context" $ ) -}}
+            {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.workspaceApi.secretName" . }}
             {{- end }}
@@ -159,6 +161,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "carto.redis.secretName" . }}
                   key: {{ include "carto.redis.existingsecret.key" . | quote }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "ENCRYPTION_SECRET_KEY" "WORKSPACE_THUMBNAILS_ACCESSKEYID" "WORKSPACE_THUMBNAILS_SECRETACCESSKEY" "WORKSPACE_IMPORTS_ACCESSKEYID" "WORKSPACE_IMPORTS_SECRETACCESSKEY") "context" $ ) | nindent 12 }}
             {{- if .Values.workspaceApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -175,7 +178,8 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVarsSecret "context" $) }}
             {{- end }}
-            {{- if not .Values.workspaceApi.existingSecret }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY" "WORKSPACE_THUMBNAILS_ACCESSKEYID" "WORKSPACE_THUMBNAILS_SECRETACCESSKEY" "WORKSPACE_IMPORTS_ACCESSKEYID" "WORKSPACE_IMPORTS_SECRETACCESSKEY") "context" $ ) -}}
+            {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.workspaceApi.secretName" . }}
             {{- end }}
@@ -216,7 +220,7 @@ spec:
           {{- end }}
           volumeMounts:
             - name: google-secret
-              mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
+              mountPath: /usr/src/certs/key.json
               subPath: {{ template "carto.google.secretKey" . }}
             {{- if and (eq .Values.appConfigValues.storageProvider "gcp") (.Values.customSecretsValues.gcpBucketsServiceAccountKey) }}
             - name: gcp-buckets-service-account-key
