@@ -8,11 +8,13 @@ By default, the Helm configuration provided by CARTO works out of the box, but i
 These are the steps to prepare the installation to a production ready environment.
 
 It should be configured:
+
 - **MANDATORY** [Configure the domain to be used](#configure-the-domain-of-your-self-hosted).
 - [Allow the external traffic](#access-to-carto-from-outside-the-cluster) to access the app.
 - [Configure DBs to be production ready](#use-external-databases). Our recomendation is to use managed DBs with backups and so on.
 
 Configuring it is optional:
+
 - [Configure scale of the components](#components-scaling)
 - Use your own bucket to store the data (By default, GCP CARTO buckets are used)
 
@@ -25,7 +27,9 @@ TODO: We should add an arquitectural diagram to make it easier for customers to 
 ## How to define customizations
 
 There are two ways to configure or customize the deployment:
+
 - [**RECOMMENDED**] Create a dedicated `customization.yaml` ([yaml official documentation](https://yaml.org/)) file. For example, you can create a file with the next content:
+
   ```yaml
   appConfigValues:
     selfHostedDomain: "my.domain.com"
@@ -38,17 +42,20 @@ There are two ways to configure or customize the deployment:
     service:
       type: LoadBalancer
   ```
+
   And add the following at the end of ALL the install or upgrade command:
+
   ```bash
   ... -f customization.yaml
   ```
+
 - Use the parameters as arguments. You can specify each parameter using the `--set key=value[,key=value]` argument. For example, add the following at the end of ALL the install or upgrade command:
+
   ```bash
   ... --set appConfigValues.selfHostedDomain=my.domain.com \
     --set appSecrets.googleMapsApiKey.value=<google-maps-api-key> \
     --set router.service.type=LoadBalancer
   ```
-
 
 ## Configure the domain of your self-hosted
 
@@ -57,6 +64,7 @@ The most important step to have your CARTO self-hosted ready to be used is to co
 > ⚠️ CARTO self-hosted is not designed to be used in the path of a URL, it needs a full domain or subdomain. ⚠️
 
 To do this you need to [add the following customization](#how-to-define-customizations):
+
 ```yaml
 appConfigValues:
   selfHostedDomain: "my.domain.com"
@@ -64,8 +72,8 @@ appConfigValues:
 
 Don't forget to upgrade your chart after the change.
 
-
 ## Access to CARTO from outside the cluster
+
 By default, the `router` Service of CARTO self-hosted is configured in mode `ClusterIP` so it's only usable from inside the cluster.
 To access to it you can exec locally a [kubectl port-forward](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) but this only make it accessible to your machine.
 
@@ -74,7 +82,9 @@ To made it accessible from the internet (or outside the Kubernetes network) we r
 Additionally, depending of the way to reach your self-hosted from internet, you would need to [configure the HTTPS/TLS](#configure-tls).
 
 ### Router general notes
+
 By the nature of our app, there are some consideration to be taken:
+
 - The final client should access with HTTPS. This can be configured in our helm chart or in a load balancer prior to the application.
 - The timeout of all intermediate parts must be set to at least `605` seconds. We have everything ready from the router to the internal components but you must take this into account when configuring the input from the external network to the router.
 - Remember to configure a **static** IP/domain pointing to that endpoint.
@@ -91,6 +101,7 @@ TODO: We need to talk about TLS and so on...
 -->
 
 We have examples for multiple cloud providers:
+
 - [AWS EKS](service_loadBalancer/aws_eks/config.yaml)
 <!--
 TODO: Add the other providers
@@ -104,6 +115,7 @@ TODO: Document Ingress
 -->
 
 ### Configure TLS
+
 By default, the package generate a self-signed certificate with a validity of 365 days.
 Some times you need to use a valid certificate or need to totally disable it to leave the management to an external proxy.
 
@@ -117,6 +129,7 @@ TODO: Document and add the ability to do it
 #### Configure your own certificates in CARTO
 
 - Create a kubernetes secret with following content:
+
   ```bash
   kubectl create secret tls \
     -n <namespace> \
@@ -137,11 +150,13 @@ TODO: Document and add the ability to do it
   ```
 
 ## Use external databases
+
 This package comes with an internal Postgres and Redis but it is not recommended for production. It does not have any logic for backups or any other monitoring.
 
 So we recommend to use external databases, preferible managed database by your provider, with backups, high availability, etc.
 
 ### Configure your own postgres
+
 CARTO self-hosted require a Postges (version 11+) to work.
 In that Postgres, CARTO stores some metadata and also the credentials of the external connections configured by the CARTO self-hosted users.
 
@@ -153,6 +168,7 @@ There are two alternatives when connecting the environment with an external post
 
 - Create a kubernetes secret by yourself:
   - You can use this command with the Postgres passwords to create it:
+
     ```bash
     kubectl create secret generic \
       -n <namespace> \
@@ -160,7 +176,9 @@ There are two alternatives when connecting the environment with an external post
       --from-literal=carto-password=<password> \
       --from-literal=admin-password=<password>
     ```
+
   - [Add the following customization](#how-to-define-customizations) lines:
+
     ```yaml
     internalPostgresql:
       # With that config, we disable the internal Postgres provided by the package
@@ -178,6 +196,7 @@ There are two alternatives when connecting the environment with an external post
 
 - Auto secret creation:
   - [Add the following customization](#how-to-define-customizations) lines:
+
     ```yaml
     internalPostgresql:
       # With that config, we disable the internal Postgres provided by the package
@@ -191,11 +210,14 @@ There are two alternatives when connecting the environment with an external post
       database: "workspace_db"
       port: "5432"
     ```
+
     > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalPostgresql.password` and `externalPostgresql.adminPassword` that you set in previous lines.
 
 > Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalPostgresql` block
+
 - `internalUser`: it's the same as `user` but without the `@database-name` prefix required to connect to Azure Postgres
 - `internalAdminUser`: it's the same as `adminUser` but without the `@database-name` prefix required to connect to Azure Postgres
+
 ```yaml
 externalPostgresql:
   ...
@@ -206,7 +228,9 @@ externalPostgresql:
   internalAdminUser: "postgres"
   ...
 ```
+
 ### Configure your own redis
+
 CARTO self-hosted require a Redis (version 5+) to work.
 That Redis is mainly used as a cache for the postgres.
 
@@ -214,13 +238,16 @@ There are two alternatives when connecting the environment with an external redi
 
 - Create a kubernetes secret by yourself:
   - You can use this command with the Redis Auth string to create it:
+
     ```bash
     kubectl create secret generic \
       -n <namespace> \
       <your_own_installation_name|carto>-redis-secret \
       --from-literal=password=<AUTH string password>
     ```
+
   - [Add the following customization](#how-to-define-customizations) lines:
+
     ```yaml
     internalRedis:
       # With that config, we disable the internal Redis provided by the package
@@ -234,6 +261,7 @@ There are two alternatives when connecting the environment with an external redi
 
 - Auto secret creation:
   - [Add the following customization](#how-to-define-customizations) lines:
+
     ```yaml
     internalRedis:
       # With that config, we disable the internal Redis provided by the package
@@ -243,11 +271,13 @@ There are two alternatives when connecting the environment with an external redi
       port: "6379"
       password: ""
     ```
+
     > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalRedis.password` that you set in previous lines.
 
 ## Components scaling
 
 ### Autoscaling
+
 It is recommended to enable autoscaling in your installation, which will allow scaling based on the resources consumption needs of your cluster.
 
 This feature is based on [Kubernetes Horizontal Pod Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) functionality.
@@ -261,15 +291,20 @@ The Kubernetes Metrics Server collects resource metrics from the kubelets in you
 - Verify that Metrics Server is installed and returning metrics by completing the following steps:
 
   - Verify the installation by issuing the following command:
+
     ```bash
     kubectl get deploy,svc -n kube-system | egrep metrics-server
     ```
+
   - If Metrics Server is installed, the output is similar to the following example:
+
     ```bash
     deployment.extensions/metrics-server   1/1     1            1           3d4h
     service/metrics-server   ClusterIP   198.51.100.0   <none>        443/TCP         3d4h
     ```
+
   - Verify that Metrics Server is returning data for pods by issuing the following command:
+
     ```bash
     kubectl get --raw "/apis/metrics.k8s.io/v1beta1/pods"
     ```
@@ -283,10 +318,10 @@ You can find an autoscaling config file example in [autoscaling config](scale_co
 Also you can set your own preferences using the minimum and maximum values that you need in this file.
 
 ### Enable static scaling
+
 You can set how many number of pods should have be running all time, for this, you can use the [static scale config](scale_components/static.yaml) and [configure your environment](#how-to-define-customizations)
 
 > Although we recommend the autoscaling configuration, you could choose the autoscaling feature for some components and the static configuration for the others. Remember that autoscaling override the static configuration, so if one component has both configurations, autoscaling will take precedence.
-
 
 ## Advanced configuration
 
