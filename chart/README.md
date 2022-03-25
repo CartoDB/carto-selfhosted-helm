@@ -23,7 +23,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.workspaceImportsBucket`    | Bucket to be used to store metadata of the workspace                                       | `""`                   |
 | `appConfigValues.workspaceThumbnailsBucket` | Bucket to be used to store the thumbnails generated in the app                             | `""`                   |
 | `appConfigValues.workspaceThumbnailsPublic` | Indicate if the thumbnails could be accessed publicly                                      | `true`                 |
-| `appConfigValues.gcsBucketsProjectId`       | If the bucket is GCP, the ProjectId to be used                                             | `""`                   |
+| `appConfigValues.gcpBucketsProjectId`       | If the bucket is GCP, the ProjectId to be used                                             | `""`                   |
 | `appConfigValues.awsS3Region`               | If the bucket is S3, the region to be used                                                 | `""`                   |
 
 
