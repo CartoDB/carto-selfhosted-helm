@@ -104,7 +104,7 @@ host. To configure CARTO with the URL of your service:
   NOTE: It you plan to access from your browser to the NodePort, you need to upgrade
         `appConfigValues.selfHostedDomain` from `{{ $baseUrl }}` to `{{ $baseUrl }}:${CARTO_HTTPS_PORT}`.
         After that change, you must wait some minutes while the change is propagated.
-        {{ /* TODO: Only show (or update it) when https is enabled in app side */}}
+        {{/* TODO: Only show (or update it) when https is enabled in app side */}}
         You also need to use the `https://{{ $baseUrl }}:${CARTO_HTTPS_PORT}` to access directly to it.
 
 {{- else if eq .Values.router.service.type "LoadBalancer" }}
