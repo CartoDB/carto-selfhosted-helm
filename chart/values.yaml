@@ -113,7 +113,7 @@ cartoSecrets:
       # key: "lolo"
   ## @extra cartoSecrets.defaultGoogleServiceAccount The secret used by the app to connect to google services. This couldn't be changed.
   defaultGoogleServiceAccount:
-    ## @param cartoSecrets.defaultGoogleServiceAccount.value Value of the secret used by the app to connect to google services. This couldn't be changed. One of `cartoSecrets.defaultGoogleServiceAccount.value` or `cartoSecrets.defaultGoogleServiceAccount.existingSecret` should be defined.
+    ## @param cartoSecrets.defaultGoogleServiceAccount.value Value of the secret used by the app to connect to google services. This couldn't be changed. One of `cartoSecrets.defaultGoogleServiceAccount.value` or `cartoSecrets.defaultGoogleServiceAccount.existingSecret` could be defined.
     value: ""
     ## @param cartoSecrets.defaultGoogleServiceAccount.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.defaultGoogleServiceAccount.existingSecret.key`. If `cartoSecrets.defaultGoogleServiceAccount.value` is defined, this value is going to be ignored and not used.
     ## @param cartoSecrets.defaultGoogleServiceAccount.existingSecret.key Key to find in `cartoSecrets.defaultGoogleServiceAccount.existingSecret.name` where the value of `cartoSecrets.defaultGoogleServiceAccount` is found. If `cartoSecrets.defaultGoogleServiceAccount.value` is defined, this value is going to be ignored and not used.
