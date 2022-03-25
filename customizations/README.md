@@ -1,61 +1,41 @@
-# Customizations
+# Configurations
 
-This file explains how to configure CARTO Self-Hosted to meet your needs.
+This file explains how to configure CARTO Self-Hosted to meet your needs. In this folder you will find also
+examples _yaml_ files that you can pass to `helm` to apply those configurations.
 
 ## Production Ready
 
 By default, the Helm configuration provided by CARTO works out of the box, but it's **not production ready**.
-These are the steps to prepare the installation to a production ready environment.
+There are several things to configure to prepare it for production workloads:
 
-It should be configured:
+1. [Configure the domain](#configure-the-domain-of-your-self-hosted) that will be used.
+2. [Expose service](#access-to-carto-from-outside-the-cluster) to be accessed from outside the cluster.
+   - [Configure TLS termination](#configure-tls-termination-in-the-service)
+3. [Use external Databases](#use-external-databases). Our recomendation is to use managed DBs with backups and so on.
 
-- **MANDATORY** [Configure the domain to be used](#configure-the-domain-of-your-self-hosted).
-- [Allow the external traffic](#access-to-carto-from-outside-the-cluster) to access the app.
-- [Configure DBs to be production ready](#use-external-databases). Our recomendation is to use managed DBs with backups and so on.
-
-Configuring it is optional:
+Optional configurations:
 
 - [Configure scale of the components](#components-scaling)
 - Use your own bucket to store the data (By default, GCP CARTO buckets are used)
 
-## Architecture diagram
+## How to apply the configurations
 
-<!--
-TODO: We should add an arquitectural diagram to make it easier for customers to understand the parts and the relationship between them.
--->
-
-## How to define customizations
-
-There are two ways to configure or customize the deployment:
-
-- [**RECOMMENDED**] Create a dedicated `customization.yaml` ([yaml official documentation](https://yaml.org/)) file. For example, you can create a file with the next content:
+Create a dedicated [yaml](https://yaml.org/) file `client-conf.yaml` for your configuration. For example, you could create a file with the next content:
 
   ```yaml
   appConfigValues:
     selfHostedDomain: "my.domain.com"
-
-  appSecrets:
-    googleMapsApiKey:
-      value: "<google-maps-api-key>"
-
-  router:
-    service:
-      type: LoadBalancer
   ```
 
-  And add the following at the end of ALL the install or upgrade command:
+  And add the following at the end of ALL the `helm install` or `helm upgrade` command:
 
   ```bash
-  ... -f customization.yaml
+  helm instal .. -f customization.yaml
   ```
 
-- Use the parameters as arguments. You can specify each parameter using the `--set key=value[,key=value]` argument. For example, add the following at the end of ALL the install or upgrade command:
+## Available Configurations
 
-  ```bash
-  ... --set appConfigValues.selfHostedDomain=my.domain.com \
-    --set appSecrets.googleMapsApiKey.value=<google-maps-api-key> \
-    --set router.service.type=LoadBalancer
-  ```
+There are several things that you can configure in you CARTO Self Hosted:
 
 ## Configure the domain of your self-hosted
 
@@ -63,7 +43,7 @@ The most important step to have your CARTO self-hosted ready to be used is to co
 
 > ⚠️ CARTO self-hosted is not designed to be used in the path of a URL, it needs a full domain or subdomain. ⚠️
 
-To do this you need to [add the following customization](#how-to-define-customizations):
+To do this you need to [add the following customization](#how-to-apply-the-configurations):
 
 ```yaml
 appConfigValues:
@@ -74,59 +54,40 @@ Don't forget to upgrade your chart after the change.
 
 ## Access to CARTO from outside the cluster
 
-By default, the `router` Service of CARTO self-hosted is configured in mode `ClusterIP` so it's only usable from inside the cluster.
-To access to it you can exec locally a [kubectl port-forward](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) but this only make it accessible to your machine.
+The entry point to the CARTO Self Hosted is through the `router` Service. By default it is configured in `ClusterIP` mode. That means it's only usable from inside the cluster. If you want to connect to your deployment with this mode, you neeed to use [kubectl port-forward](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/). But this only makes it accessible to your machine.
 
-To made it accessible from the internet (or outside the Kubernetes network) we recommended you to properly [configure the `router` Service](#service-as-loadbalancer).
+In order to make it accessible from the outside of the Kubernetes network, the [easiest way](#enable-and-configure-loadbalancer-mode) is to use the `LoadBalancer` mode.
 
-Additionally, depending of the way to reach your self-hosted from internet, you would need to [configure the HTTPS/TLS](#configure-tls).
+Probably you would need to [configure the HTTPS/TLS](#configure-tls-termination-in-the-service) if you are not terminating the TLS sessions before.
 
-### Router general notes
+### Requirements when exposing the service
 
-By the nature of our app, there are some consideration to be taken:
+- CARTO only works with HTTPS. TLS termination can be in the application (and configure it in the helm chart) or in a load balancer prior to the application.
+- The connection timeout of all incoming connections must be at least `605` seconds.
+- Configure a domain pointing to the exposed service.
 
-- The final client should access with HTTPS. This can be configured in our helm chart or in a load balancer prior to the application.
-- The timeout of all intermediate parts must be set to at least `605` seconds. We have everything ready from the router to the internal components but you must take this into account when configuring the input from the external network to the router.
-- Remember to configure a **static** IP/domain pointing to that endpoint.
+### Enable and configure LoadBalancer mode
 
-### Service as LoadBalancer
-
-That's the easiest way of open your CARTO self-hosted to the world.
-You need to change the `router` Service type to `LoadBalancer`.
-
-You can check an example [here](service_loadBalancer/config.yaml) (keep in mind the [general notes](#router-general-notes) before to proceed).
-
-<!--
-TODO: We need to talk about TLS and so on...
--->
-
-We have examples for multiple cloud providers:
+This is the easiest way of open your CARTO self-hosted to the world. You need to change the `router` Service type to `LoadBalancer`.
+You can find an [example](service_loadBalancer/config.yaml). But we have prepared also a few specifics for different Kubernetes versions:
 
 - [AWS EKS](service_loadBalancer/aws_eks/config.yaml)
 <!--
 TODO: Add the other providers
 -->
 
-<!--
-### Ingress
--->
-<!--
-TODO: Document Ingress
--->
+### Configure TLS termination in the service
 
-### Configure TLS
-
-By default, the package generate a self-signed certificate with a validity of 365 days.
-Some times you need to use a valid certificate or need to totally disable it to leave the management to an external proxy.
+By default, the package generates a self-signed certificate with a validity of 365 days.
 
 > ⚠️ CARTO self-hosted only works if the final client use HTTPS protocol. ⚠️
 
-#### Disable internal HTTPS
 <!--
+#### Disable internal HTTPS
 TODO: Document and add the ability to do it
 -->
 
-#### Configure your own certificates in CARTO
+To add your own certificate you need:
 
 - Create a kubernetes secret with following content:
 
@@ -138,7 +99,7 @@ TODO: Document and add the ability to do it
     --key=path/to/key/file
   ```
 
-- [Add the following customization](#how-to-define-customizations) lines:
+- Add the following lines to you `client-conf.yaml`:
 
   ```yaml
   tlsCerts:
@@ -155,7 +116,7 @@ This package comes with an internal Postgres and Redis but it is not recommended
 
 So we recommend to use external databases, preferible managed database by your provider, with backups, high availability, etc.
 
-### Configure your own postgres
+### Configure your own Postgres
 
 CARTO self-hosted require a Postges (version 11+) to work.
 In that Postgres, CARTO stores some metadata and also the credentials of the external connections configured by the CARTO self-hosted users.
@@ -164,9 +125,9 @@ In that Postgres, CARTO stores some metadata and also the credentials of the ext
 
 There are two alternatives when connecting the environment with an external postgres:
 
-> Note: `externalPostgresql.user` and `externalPostgresql.database` inside the Postgres instance are going to be created automatically during the installation process. Please, not create it manually.
+> Note: `externalPostgresql.user` and `externalPostgresql.database` inside the Postgres instance are going to be created automatically during the installation process. Do not create then manually.
 
-- Create a kubernetes secret by yourself:
+- Create a kubernetes secret:
   - You can use this command with the Postgres passwords to create it:
 
     ```bash
@@ -181,7 +142,7 @@ There are two alternatives when connecting the environment with an external post
 
     ```yaml
     internalPostgresql:
-      # With that config, we disable the internal Postgres provided by the package
+      # With this config, we disable the internal Postgres provided by the package
       enabled: false
     externalPostgresql:
       host: <Postgres IP/Hostname>
@@ -199,7 +160,7 @@ There are two alternatives when connecting the environment with an external post
 
     ```yaml
     internalPostgresql:
-      # With that config, we disable the internal Postgres provided by the package
+      # With this config, we disable the internal Postgres provided by the package
       enabled: false
     externalPostgresql:
       host: <Postgres IP/Hostname>
@@ -213,10 +174,10 @@ There are two alternatives when connecting the environment with an external post
 
     > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalPostgresql.password` and `externalPostgresql.adminPassword` that you set in previous lines.
 
-> Note: In case you're using an Azure Postgres as an external database you should add two additional parameters to the `externalPostgresql` block
+> Note: In case you are using an Azure Postgres as an external database you should add two additional parameters to the `externalPostgresql` block
 
-- `internalUser`: it's the same as `user` but without the `@database-name` prefix required to connect to Azure Postgres
-- `internalAdminUser`: it's the same as `adminUser` but without the `@database-name` prefix required to connect to Azure Postgres
+- `internalUser`: it is the same as `user` but without the `@database-name` prefix required to connect to Azure Postgres
+- `internalAdminUser`: it is the same as `adminUser` but without the `@database-name` prefix required to connect to Azure Postgres
 
 ```yaml
 externalPostgresql:
