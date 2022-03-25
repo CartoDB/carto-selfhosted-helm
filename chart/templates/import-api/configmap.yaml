@@ -47,7 +47,7 @@ data:
   IMPORT_BUCKET: {{ .Values.appConfigValues.importBucket | quote }}
   {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
   IMPORT_PROJECTID: {{ include "carto.gcpBucketsProjectId" . | quote }}
-  {{- if .Values.customSecretsValues.gcpBucketsServiceAccountKey }}
+  {{- if .Values.appSecrets.gcpBucketsServiceAccountKey }}
   IMPORT_KEYFILENAME: "../certs/gcp-buckets-service-account-key.json"
   {{- end }}
   {{- end }}

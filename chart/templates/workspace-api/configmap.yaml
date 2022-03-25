@@ -29,7 +29,7 @@ data:
   DO_ENABLED: "false"
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
-  GOOGLE_APPLICATION_CREDENTIALS: "../certs/key.json"
+  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   LOG_LEVEL: "debug"
   MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   MAPS_API_V3_RESOURCE_URL_HOST: {{ .Values.appConfigValues.selfHostedDomain | quote }}
@@ -59,10 +59,9 @@ data:
   {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
   WORKSPACE_THUMBNAILS_PROJECTID: {{ include "carto.gcpBucketsProjectId" . | quote }}
   WORKSPACE_IMPORTS_PROJECTID: {{ include "carto.gcpBucketsProjectId" . | quote }}
-  {{- if .Values.customSecretsValues.gcpBucketsServiceAccountKey }}
-  WORKSPACE_THUMBNAILS_KEYFILENAME: "../certs/gcp-buckets-service-account-key.json"
-  WORKSPACE_IMPORTS_KEYFILENAME: "../certs/gcp-buckets-service-account-key.json"
-  {{- end }}
+  WORKSPACE_THUMBNAILS_KEYFILENAME: {{ include "carto.gcpBucketsServiceAccountKey.secretMountAbsolutePath" . }}
+  WORKSPACE_THUMBNAILS_KEYFILENAME: {{ include "carto.gcpBucketsServiceAccountKey.secretMountAbsolutePath" . }}
+  WORKSPACE_IMPORTS_KEYFILENAME: {{ include "carto.gcpBucketsServiceAccountKey.secretMountAbsolutePath" . }}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}
   WORKSPACE_THUMBNAILS_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}

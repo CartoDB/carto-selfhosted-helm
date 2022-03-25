@@ -55,6 +55,16 @@ appSecrets:
     existingSecret:
       name: ""
       key: ""
+  ## @extra appSecrets.gcpBucketsServiceAccountKey If GCP is used in self-hosted, the AccessKey Secret.
+  gcpBucketsServiceAccountKey:
+    ## @param appSecrets.gcpBucketsServiceAccountKey.value Value of the secret `AccessKey Secret` (Only required if GCP is used). One of `appSecrets.gcpBucketsServiceAccountKey.value` or `appSecrets.gcpBucketsServiceAccountKey.existingSecret` could be defined.
+    value: ""
+    ## @param appSecrets.gcpBucketsServiceAccountKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.gcpBucketsServiceAccountKey.existingSecret.key`. If `appSecrets.gcpBucketsServiceAccountKey.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.gcpBucketsServiceAccountKey.existingSecret.key Key to find in `appSecrets.gcpBucketsServiceAccountKey.existingSecret.name` where the value of `appSecrets.gcpBucketsServiceAccountKey` is found. If `appSecrets.gcpBucketsServiceAccountKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
   ## @extra appSecrets.awsAccessKeyId If AWS is used in self-hosted, the AccessKey Id.
   awsAccessKeyId:
     ## @param appSecrets.awsAccessKeyId.value Value of the secret `AccessKey Id` (Only required if AWS is used). One of `appSecrets.awsAccessKeyId.value` or `appSecrets.awsAccessKeyId.existingSecret` could be defined.
@@ -71,6 +81,16 @@ appSecrets:
     value: ""
     ## @param appSecrets.awsAccessKeySecret.existingSecret.name Name of the pre-existent secret containing the `appSecrets.awsAccessKeySecret.existingSecret.key`. If `appSecrets.awsAccessKeySecret.value` is defined, this value is going to be ignored and not used.
     ## @param appSecrets.awsAccessKeySecret.existingSecret.key Key to find in `appSecrets.awsAccessKeySecret.existingSecret.name` where the value of `appSecrets.awsAccessKeySecret` is found. If `appSecrets.awsAccessKeySecret.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra appSecrets.azureStorageAccessKey If Azure is used in self-hosted, the AccessKey Secret.
+  azureStorageAccessKey:
+    ## @param appSecrets.azureStorageAccessKey.value Value of the secret `AccessKey Secret` (Only required if Azure is used). One of `appSecrets.azureStorageAccessKey.value` or `appSecrets.azureStorageAccessKey.existingSecret` could be defined.
+    value: ""
+    ## @param appSecrets.azureStorageAccessKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.azureStorageAccessKey.existingSecret.key`. If `appSecrets.azureStorageAccessKey.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.azureStorageAccessKey.existingSecret.key Key to find in `appSecrets.azureStorageAccessKey.existingSecret.name` where the value of `appSecrets.azureStorageAccessKey` is found. If `appSecrets.azureStorageAccessKey.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""

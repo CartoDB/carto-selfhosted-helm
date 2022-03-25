@@ -43,17 +43,20 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
 {{/*
 Association between env secret and path of the secret in values.yaml
 */}}
-{{- define "carto._utils.secretAssociaciation" -}}
-REACT_APP_GOOGLE_MAPS_API_KEY: appSecrets.googleMapsApiKey
-IMPORT_ACCESSKEYID: appSecrets.awsAccessKeyId
-WORKSPACE_THUMBNAILS_ACCESSKEYID: appSecrets.awsAccessKeyId
-WORKSPACE_IMPORTS_ACCESSKEYID: appSecrets.awsAccessKeyId
-IMPORT_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
-WORKSPACE_THUMBNAILS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
-WORKSPACE_IMPORTS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
+{{- define "carto._utils.secretAssociation" -}}
 ENCRYPTION_SECRET_KEY: cartoSecrets.encryptionSecretKey
-VARNISH_PURGE_SECRET: cartoSecrets.varnishPurgeSecret
+IMPORT_ACCESSKEYID: appSecrets.awsAccessKeyId
+IMPORT_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
+IMPORT_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
+REACT_APP_GOOGLE_MAPS_API_KEY: appSecrets.googleMapsApiKey
 VARNISH_DEBUG_SECRET: cartoSecrets.varnishDebugSecret
+VARNISH_PURGE_SECRET: cartoSecrets.varnishPurgeSecret
+WORKSPACE_IMPORTS_ACCESSKEYID: appSecrets.awsAccessKeyId
+WORKSPACE_IMPORTS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
+WORKSPACE_IMPORTS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
+WORKSPACE_THUMBNAILS_ACCESSKEYID: appSecrets.awsAccessKeyId
+WORKSPACE_THUMBNAILS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
+WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
 {{- end -}}
 
 {{/*
@@ -62,7 +65,7 @@ Generate secret file content for a variable if a existingSecret.name is not prov
 {{- define "carto._utils.generateSecretObject" -}}
 {{- $var := .var -}}
 {{- $context := .context -}}
-{{- $mapSecrets := include "carto._utils.secretAssociaciation" . | fromYaml -}}
+{{- $mapSecrets := include "carto._utils.secretAssociation" . | fromYaml -}}
 {{- $key := get $mapSecrets $var -}}
 {{- $secretGroupName := regexReplaceAll "\\..*" $key "" -}}
 {{- $secretEntryName := regexReplaceAll ".*\\." $key "" -}}
@@ -97,7 +100,7 @@ Generate the secret def of one secret to be used in pods definitions
 {{- define "carto._utils.generateSecretDef" -}}
 {{- $var := .var -}}
 {{- $context := .context -}}
-{{- $mapSecrets := include "carto._utils.secretAssociaciation" . | fromYaml -}}
+{{- $mapSecrets := include "carto._utils.secretAssociation" . | fromYaml -}}
 {{- $key := get $mapSecrets $var -}}
 {{- $secretGroupName := regexReplaceAll "\\..*" $key "" -}}
 {{- $secretEntryName := regexReplaceAll ".*\\." $key "" -}}
@@ -135,6 +138,49 @@ Create gcpBucketsProjectId using the gcpBucketsProjectId config or, if not defin
 */}}
 {{- define "carto.gcpBucketsProjectId" -}}
 {{ default .Values.cartoConfigValues.selfHostedGcpProjectId .Values.appConfigValues.gcpBucketsProjectId }}
+{{- end -}}
+
+{{/*
+Return the proper GCP Buckets Service Account Key Secret name
+*/}}
+{{- define "carto.gcpBucketsServiceAccountKey.secretName" -}}
+{{- if .Values.appSecrets.gcpBucketsServiceAccountKey.existingSecret.name }}
+{{- .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name -}}
+{{- else -}}
+{{- printf "%s-gcp-buckets-service-account-key" (include "common.names.fullname" .) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper GCP Buckets Service Account Key Secret key
+*/}}
+{{- define "carto.gcpBucketsServiceAccountKey.secretKey" -}}
+{{- if .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.key -}}
+{{- .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.key -}}
+{{- else -}}
+{{- print "key.json" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the directory where the GCP Buckets Service Account Key Secret will  be mounted
+*/}}
+{{- define "carto.gcpBucketsServiceAccountKey.secretMountDir" -}}
+{{- print "/usr/src/certs/gcp-buckets-service-account" -}}
+{{- end -}}
+
+{{/*
+Return the filename where the GCP Buckets Service Account Key Secret will be mounted
+*/}}
+{{- define "carto.gcpBucketsServiceAccountKey.secretMountFilename" -}}
+{{- print "key.json" -}}
+{{- end -}}
+
+{{/*
+Return the absolute path where the GCP Buckets Service Account Key Secret will be mounted
+*/}}
+{{- define "carto.gcpBucketsServiceAccountKey.secretMountAbsolutePath" -}}
+{{- printf "%s/%s" (include "carto.gcpBucketsServiceAccountKey.secretMountDir" .) (include "carto.gcpBucketsServiceAccountKey.secretMountFilename" .) -}}
 {{- end -}}
 
 {{/*
@@ -682,6 +728,10 @@ Return the proper Docker Image Registry Secret Names
 {{- end -}}
 
 {{/*
+Google Secret => Default Google Service Account
+*/}}
+
+{{/*
 Return the proper Carto Google Secret name
 */}}
 {{- define "carto.google.secretName" -}}
@@ -693,7 +743,7 @@ Return the proper Carto Google Secret name
 {{- end -}}
 
 {{/*
-Return the proper Carto Google Secret name
+Return the proper Carto Google Secret key
 */}}
 {{- define "carto.google.secretKey" -}}
 {{- if .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name -}}
@@ -701,6 +751,27 @@ Return the proper Carto Google Secret name
 {{- else -}}
 {{- print "key.json" -}}
 {{- end -}}
+{{- end -}}
+
+{{/*
+Return the directory where the Google Secret will be mounted
+*/}}
+{{- define "carto.google.secretMountDir" -}}
+{{- print "/usr/src/certs/gcp-default-service-account" -}}
+{{- end -}}
+
+{{/*
+Return the filename where the Google Secret will be mounted
+*/}}
+{{- define "carto.google.secretMountFilename" -}}
+{{- print "key.json" -}}
+{{- end -}}
+
+{{/*
+Return the absolute path where the Google Secret will be mounted
+*/}}
+{{- define "carto.google.secretMountAbsolutePath" -}}
+{{- printf "%s/%s" (include "carto.google.secretMountDir" .) (include "carto.google.secretMountFilename" .) -}}
 {{- end -}}
 
 {{/*
