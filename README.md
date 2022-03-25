@@ -31,9 +31,10 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
 1. Authenticate and connect to your cluster
 
 2. Obtain the configuration files provided by Carto.
-That files are unique per self-hosted (**couldn't be shared between multiple installations**) and one could be public but the other one is private so please, be careful sharing it.
+That files are unique per self-hosted (**they cannot be shared between multiple installations**) and contain secrets, be careful storing and sharing them.
 
-3. Add our Carto helm repository with the next commands:
+3. Add CARTO helm repository:
+
   ```bash
   # Add the carto repo.
   helm repo add carto https://helm.carto.com
@@ -45,9 +46,11 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
   helm search repo carto -l
   ```
 
-4. Configure your deployment. Please, refer to [Customizations](customizations/README.md). You need to, at least, configure your domain.
+4. Configure your deployment. Please, read the available [configuration](customizations/README.md) options. At least you need 
+to configure your domain.
 
-5. Install your deployment:
+5. Install CARTO:
+
   ```bash
   helm install \
     <your_own_installation_name|carto> \
@@ -57,9 +60,10 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
     -f carto-secrets.yaml \
     -f customization.yaml
   ```
-  > Note: You can specify the '-f' flag multiple times. The priority will be given to the last (right-most) file specified. For example, if both `carto-values.yaml` and `customization.yaml` contained a key called 'Test', the value set in `customization.yaml` would take precedence. So, for this reason follow the order describe in the above example.
 
-6. Follow the instructions provided by the command.
+  > Note: You can specify the '-f' flag multiple times. The priority will be given to the last (right-most) file specified. For example, if both `carto-values.yaml` and `client-conf.yaml` contained a key called 'Test', the value set in `client-conf.yaml` would take precedence. For this reason, please follow the order describe in the above example.
+
+6. Read and follow the instructions provided by the previous command.
 
 ## Update
 
@@ -72,6 +76,7 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
   ```
 
 3. Update CARTO
+
   ```bash
   helm upgrade \
     <your_own_installation_name|carto> \
