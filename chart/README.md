@@ -42,29 +42,48 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cartoConfigValues.launchDarklyClientSideId`  | LaunchDarkly ClientSideId (by www) used to enable/disable features. | `""`  |
 
 
-### Custom secret values
+### App secret
 
-| Name                                     | Description                                              | Value |
-| ---------------------------------------- | -------------------------------------------------------- | ----- |
-| `customSecretsValues.googleMapsApiKey`   | Google maps api-key value.                               | `""`  |
-| `customSecretsValues.awsAccessKeyId`     | If AWS is used in self-hosted, the AccessKey Id.         | `""`  |
-| `customSecretsValues.awsAccessKeySecret` | If AWS is used in self-hosted, the AccessKey Secret.     | `""`  |
-| `google.existingSecret.name`             | Secret containing the Google Credential file             | `""`  |
-| `google.existingSecret.key`              | Key name of the Google Credential file inside the secret | `""`  |
+| Name                                                | Description                                                                                                                                                                                                                          | Value |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----- |
+| `appSecrets.googleMapsApiKey`                       | Google maps api-key value.                                                                                                                                                                                                           |       |
+| `appSecrets.googleMapsApiKey.value`                 | Value of the secret `Google maps api-key`. One of `appSecrets.googleMapsApiKey.value` or `appSecrets.googleMapsApiKey.existingSecret` could be defined.                                                                              | `""`  |
+| `appSecrets.googleMapsApiKey.existingSecret.name`   | Name of the pre-existent secret containing the `appSecrets.googleMapsApiKey.existingSecret.key`. If `appSecrets.googleMapsApiKey.value` is defined, this value is going to be ignored and not used.                                  | `""`  |
+| `appSecrets.googleMapsApiKey.existingSecret.key`    | Key to find in `appSecrets.googleMapsApiKey.existingSecret.name` where the value of `appSecrets.googleMapsApiKey` is found. If `appSecrets.googleMapsApiKey.value` is defined, this value is going to be ignored and not used.       | `""`  |
+| `appSecrets.awsAccessKeyId`                         | If AWS is used in self-hosted, the AccessKey Id.                                                                                                                                                                                     |       |
+| `appSecrets.awsAccessKeyId.value`                   | Value of the secret `AccessKey Id` (Only required if AWS is used). One of `appSecrets.awsAccessKeyId.value` or `appSecrets.awsAccessKeyId.existingSecret` could be defined.                                                          | `""`  |
+| `appSecrets.awsAccessKeyId.existingSecret.name`     | Name of the pre-existent secret containing the `appSecrets.awsAccessKeyId.existingSecret.key`. If `appSecrets.awsAccessKeyId.value` is defined, this value is going to be ignored and not used.                                      | `""`  |
+| `appSecrets.awsAccessKeyId.existingSecret.key`      | Key to find in `appSecrets.awsAccessKeyId.existingSecret.name` where the value of `appSecrets.awsAccessKeyId` is found. If `appSecrets.awsAccessKeyId.value` is defined, this value is going to be ignored and not used.             | `""`  |
+| `appSecrets.awsAccessKeySecret`                     | If AWS is used in self-hosted, the AccessKey Secret.                                                                                                                                                                                 |       |
+| `appSecrets.awsAccessKeySecret.value`               | Value of the secret `AccessKey Secret` (Only required if AWS is used). One of `appSecrets.awsAccessKeySecret.value` or `appSecrets.awsAccessKeySecret.existingSecret` could be defined.                                              | `""`  |
+| `appSecrets.awsAccessKeySecret.existingSecret.name` | Name of the pre-existent secret containing the `appSecrets.awsAccessKeySecret.existingSecret.key`. If `appSecrets.awsAccessKeySecret.value` is defined, this value is going to be ignored and not used.                              | `""`  |
+| `appSecrets.awsAccessKeySecret.existingSecret.key`  | Key to find in `appSecrets.awsAccessKeySecret.existingSecret.name` where the value of `appSecrets.awsAccessKeySecret` is found. If `appSecrets.awsAccessKeySecret.value` is defined, this value is going to be ignored and not used. | `""`  |
 
 
-### CARTO secrets values
+### CARTO secrets
 
-| Name                                      | Description                                                                         | Value     |
-| ----------------------------------------- | ----------------------------------------------------------------------------------- | --------- |
-| `cartoSecretsValues.encryptionSecretKey`  | The secret used to encrypt the clients Carto connections stored in the database.    | `""`      |
-| `cartoSecretsValues.varnishPurgeSecret`   | The secret used (by the app) to exec purge request.                                 | `""`      |
-| `cartoSecretsValues.varnishDebugSecret`   | The secret used if someone would like to debug Varnish.                             | `""`      |
-| `cartoSecretsValues.googleServiceAccount` | The secret used by the app to connect to google services. This couldn't be changed. | `""`      |
-| `tlsCerts.autoGenerate`                   | Generate self-signed TLS certificates                                               | `true`    |
-| `tlsCerts.existingSecret.name`            | Name of a secret containing the certificate                                         | `""`      |
-| `tlsCerts.existingSecret.certKey`         | Key of the certificate inside the secret                                            | `tls.crt` |
-| `tlsCerts.existingSecret.keyKey`          | Key of the certificate key inside the secret                                        | `tls.key` |
+| Name                                                           | Description                                                                                                                                                                                                                                                           | Value     |
+| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `cartoSecrets.encryptionSecretKey`                             | The secret used to encrypt the clients Carto connections stored in the database.                                                                                                                                                                                      |           |
+| `cartoSecrets.encryptionSecretKey.value`                       | Value of the secret used to encrypt the clients Carto connections stored in the database. One of `cartoSecrets.encryptionSecretKey.value` or `cartoSecrets.encryptionSecretKey.existingSecret` could be defined.                                                      | `""`      |
+| `cartoSecrets.encryptionSecretKey.existingSecret.name`         | Name of the pre-existent secret containing the `cartoSecrets.encryptionSecretKey.existingSecret.key`. If `cartoSecrets.encryptionSecretKey.value` is defined, this value is going to be ignored and not used.                                                         | `""`      |
+| `cartoSecrets.encryptionSecretKey.existingSecret.key`          | Key to find in `cartoSecrets.encryptionSecretKey.existingSecret.name` where the value of `cartoSecrets.encryptionSecretKey` is found. If `cartoSecrets.encryptionSecretKey.value` is defined, this value is going to be ignored and not used.                         | `""`      |
+| `cartoSecrets.varnishPurgeSecret`                              | The secret used (by the app) to exec purge request.                                                                                                                                                                                                                   |           |
+| `cartoSecrets.varnishPurgeSecret.value`                        | Value of the secret used (by the app) to exec purge request. One of `cartoSecrets.varnishPurgeSecret.value` or `cartoSecrets.varnishPurgeSecret.existingSecret` could be defined.                                                                                     | `""`      |
+| `cartoSecrets.varnishPurgeSecret.existingSecret.name`          | Name of the pre-existent secret containing the `cartoSecrets.varnishPurgeSecret.existingSecret.key`. If `cartoSecrets.varnishPurgeSecret.value` is defined, this value is going to be ignored and not used.                                                           | `""`      |
+| `cartoSecrets.varnishPurgeSecret.existingSecret.key`           | Key to find in `cartoSecrets.varnishPurgeSecret.existingSecret.name` where the value of `cartoSecrets.varnishPurgeSecret` is found. If `cartoSecrets.varnishPurgeSecret.value` is defined, this value is going to be ignored and not used.                            | `""`      |
+| `cartoSecrets.varnishDebugSecret`                              | The secret used if someone would like to debug Varnish.                                                                                                                                                                                                               |           |
+| `cartoSecrets.varnishDebugSecret.value`                        | Value of the secret used if someone would like to debug Varnish. One of `cartoSecrets.varnishDebugSecret.value` or `cartoSecrets.varnishDebugSecret.existingSecret` could be defined.                                                                                 | `""`      |
+| `cartoSecrets.varnishDebugSecret.existingSecret.name`          | Name of the pre-existent secret containing the `cartoSecrets.varnishDebugSecret.existingSecret.key`. If `cartoSecrets.varnishDebugSecret.value` is defined, this value is going to be ignored and not used.                                                           | `""`      |
+| `cartoSecrets.varnishDebugSecret.existingSecret.key`           | Key to find in `cartoSecrets.varnishDebugSecret.existingSecret.name` where the value of `cartoSecrets.varnishDebugSecret` is found. If `cartoSecrets.varnishDebugSecret.value` is defined, this value is going to be ignored and not used.                            | `""`      |
+| `cartoSecrets.defaultGoogleServiceAccount`                     | The secret used by the app to connect to google services. This couldn't be changed.                                                                                                                                                                                   |           |
+| `cartoSecrets.defaultGoogleServiceAccount.value`               | Value of the secret used by the app to connect to google services. This couldn't be changed. One of `cartoSecrets.defaultGoogleServiceAccount.value` or `cartoSecrets.defaultGoogleServiceAccount.existingSecret` could be defined.                                   | `""`      |
+| `cartoSecrets.defaultGoogleServiceAccount.existingSecret.name` | Name of the pre-existent secret containing the `cartoSecrets.defaultGoogleServiceAccount.existingSecret.key`. If `cartoSecrets.defaultGoogleServiceAccount.value` is defined, this value is going to be ignored and not used.                                         | `""`      |
+| `cartoSecrets.defaultGoogleServiceAccount.existingSecret.key`  | Key to find in `cartoSecrets.defaultGoogleServiceAccount.existingSecret.name` where the value of `cartoSecrets.defaultGoogleServiceAccount` is found. If `cartoSecrets.defaultGoogleServiceAccount.value` is defined, this value is going to be ignored and not used. | `""`      |
+| `tlsCerts.autoGenerate`                                        | Generate self-signed TLS certificates                                                                                                                                                                                                                                 | `true`    |
+| `tlsCerts.existingSecret.name`                                 | Name of a secret containing the certificate                                                                                                                                                                                                                           | `""`      |
+| `tlsCerts.existingSecret.certKey`                              | Key of the certificate inside the secret                                                                                                                                                                                                                              | `tls.crt` |
+| `tlsCerts.existingSecret.keyKey`                               | Key of the certificate key inside the secret                                                                                                                                                                                                                          | `tls.key` |
 
 
 ### Global parameters
@@ -89,7 +108,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `extraDeploy`               | Array of extra objects to deploy with the release                                       | `[]`            |
 | `diagnosticMode.enabled`    | Enable diagnostic mode (all probes will be disabled and the command will be overridden) | `false`         |
 | `diagnosticMode.command`    | Command to override all containers in the deployment                                    | `["sleep"]`     |
-| `diagnosticMode.args`       | Args to override all containers in the deployment                                       | `["infinity"]`  |
+| `diagnosticMode.args`       | Args to override all containers in the deployment                                       | `["999d"]`      |
 | `commonConfiguration`       | Configuration script that will be run in all Carto instances                            | `{}`            |
 | `commonSecretConfiguration` | Sensitive configuration script that will be run in all CARTO deployments                | `{}`            |
 

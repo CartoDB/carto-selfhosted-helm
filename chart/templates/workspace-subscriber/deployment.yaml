@@ -106,6 +106,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.key" . }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) | nindent 12 }}
             {{- if .Values.workspaceSubscriber.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -122,7 +123,8 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVarsSecret "context" $) }}
             {{- end }}
-            {{- if not .Values.workspaceSubscriber.existingSecret }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) -}}
+            {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.workspaceSubscriber.secretName" . }}
             {{- end }}
@@ -145,7 +147,7 @@ spec:
           {{- end }}
           volumeMounts:
             - name: google-secret
-              mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
+              mountPath: /usr/src/certs/key.json
               subPath: {{ template "carto.google.secretKey" . }}
           {{- if .Values.workspaceSubscriber.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraVolumeMounts "context" $) | nindent 12 }}

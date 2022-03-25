@@ -24,7 +24,6 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/router/configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/router/secret.yaml") . | sha256sum }}
         {{- if .Values.router.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.router.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
@@ -114,10 +113,6 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.router.extraEnvVarsSecret "context" $) }}
             {{- end }}
-            {{- if not .Values.router.existingSecret }}
-            - secretRef:
-                name: {{ include "carto.router.secretName" . }}
-            {{- end }}
           {{- if .Values.router.resources }}
           resources: {{- toYaml .Values.router.resources | nindent 12 }}
           {{- end }}
@@ -153,9 +148,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.router.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: google-secret
-              mountPath: /usr/src/certs/{{ template "carto.google.secretKey" . }}
-              subPath: {{ template "carto.google.secretKey" . }}
             - name: tls-secret
               mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
               subPath: {{ template "carto.tlsCerts.secretCertKey" . }}
@@ -172,9 +164,6 @@ spec:
         - name: tls-secret
           secret:
             secretName: {{ include "carto.tlsCerts.secretName" . }}
-        - name: google-secret
-          secret:
-            secretName: {{ include "carto.google.secretName" . }}
         {{- if .Values.router.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.router.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
