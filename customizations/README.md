@@ -139,7 +139,7 @@ from the configuration, or let the chart to create the [secrets automatically](#
     ```bash
     kubectl create secret generic \
       -n <namespace> \
-      mycarto-postgres-secret \
+      mycarto-custom-postgres-secret \
       --from-literal=carto-password=<password> \
       --from-literal=admin-password=<password>
     ```
@@ -157,7 +157,7 @@ Add the following lines to you `customizations.yaml` to connect to the external 
       host: <Postgres IP/Hostname>
       user: "carto"
       adminUser: "postgres"
-      existingSecret: "mycarto-postgres-secret"
+      existingSecret: "mycarto-custom-postgres-secret"
       existingSecretPasswordKey: "carto-password"
       existingSecretAdminPasswordKey: "admin-password"
       database: "workspace_db"
@@ -219,7 +219,7 @@ or let the chart to create the [secrets automatically](#setup-redis-with-automat
   ```bash
   kubectl create secret generic \
     -n <namespace> \
-    mycarto-redis-secret \
+    mycarto-custom-redis-secret \
     --from-literal=password=<AUTH string password>
   ```
 
@@ -234,7 +234,7 @@ Add the following lines to you `customizations.yaml` to connect to the external 
   externalRedis:
     host: <Redis IP/Hostname>
     port: "6379"
-    existingSecret: "mycarto-redis-secret"
+    existingSecret: "mycarto-custom-redis-secret"
     existingSecretPasswordKey: "password"
   ```
 
