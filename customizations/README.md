@@ -123,45 +123,18 @@ To add your own certificate you need:
 
 ### Configure external Postgres
 
-CARTO Self Hosted requires a Postgres (version 11+) to work. This package comes with an internal Postgres but it is not recommended for production. It does not have any logic for backups or any other monitoring.
+CARTO Self Hosted requires a Postgres (version 11+) to work. This package comes with an internal Postgres but it is **not recommended for production**. It does not have any logic for backups or any other monitoring.
 
-This Postgres is used to store some metadata and also the credentials of the external connections configured by the CARTO Self Hosted users.
+This Postgres is used to store some CARTO internal metadata.
 
-> ⚠️ That Postgres has nothing to do with the connections that the user configures in the CARTO workspace since it stores the metadata of the entire CARTO Self Hosted. ⚠️
+> ⚠️ This Postgres has nothing to do with the ones that the user configures and connect through CARTO workspace. ⚠️
 
-There are two alternatives when connecting the environment with an external postgres:
+There are alternatives on how to configure Postgres. [Set the secrets manually](#setup-postgres-creating-secrets) and point to them
+from the configuration, or let the chart to create the [secrets automatically](#setup-postgres-with-automatic-secret-creation).
 
-> Note: `externalPostgresql.user` and `externalPostgresql.database` inside the Postgres instance are going to be created automatically during the installation process. Do not create then manually.
+#### Setup Postgres creating secrets
 
-- Create a kubernetes secret with the passwords:
-
-    ```bash
-    kubectl create secret generic \
-      -n <namespace> \
-      <your_own_installation_name|carto>-postgres-secret \
-      --from-literal=carto-password=<password> \
-      --from-literal=admin-password=<password>
-    ```
-
-- Add the following lines to you `client-conf.yaml` to connect to the external Postgres:
-
-  ```yaml
-  internalPostgresql:
-    # With this config, we disable the internal Postgres provided by the package
-    enabled: false
-  externalPostgresql:
-    host: <Postgres IP/Hostname>
-    user: "carto"
-    adminUser: "postgres"
-    existingSecret: "<your_own_installation_name|carto>-postgres-secret"
-    existingSecretPasswordKey: "carto-password"
-    existingSecretAdminPasswordKey: "admin-password"
-    database: "workspace_db"
-    port: "5432"
-  ```
-
-- Create a kubernetes secret:
-  - You can use this command with the Postgres passwords to create it:
+1. Add the secret:
 
     ```bash
     kubectl create secret generic \
@@ -171,11 +144,14 @@ There are two alternatives when connecting the environment with an external post
       --from-literal=admin-password=<password>
     ```
 
-  - [Add the following customization](#how-to-define-customizations) lines:
+  > Note: `externalPostgresql.user` and `externalPostgresql.database` inside the Postgres instance are going to be created automatically during the installation process. Do not create then manually.
+
+2. Configure the package:
+Add the following lines to you `client-conf.yaml` to connect to the external Postgres:
 
     ```yaml
     internalPostgresql:
-      # With this config, we disable the internal Postgres provided by the package
+      # Disable the internal Postgres
       enabled: false
     externalPostgresql:
       host: <Postgres IP/Hostname>
@@ -188,12 +164,14 @@ There are two alternatives when connecting the environment with an external post
       port: "5432"
     ```
 
-- Auto secret creation:
-  - [Add the following customization](#how-to-define-customizations) lines:
+#### Setup Postgres with automatic secret creation
+
+1. Configure the package:
+Add the following lines to you `client-conf.yaml` to connect to the external Postgres:
 
     ```yaml
     internalPostgresql:
-      # With this config, we disable the internal Postgres provided by the package
+      # Disable the internal Postgres
       enabled: false
     externalPostgresql:
       host: <Postgres IP/Hostname>
@@ -207,7 +185,9 @@ There are two alternatives when connecting the environment with an external post
 
     > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalPostgresql.password` and `externalPostgresql.adminPassword` that you set in previous lines.
 
-> Note: In case you are using an Azure Postgres as an external database you should add two additional parameters to the `externalPostgresql` block
+#### Setup Azure Postgres
+
+In case you are using an Azure Postgres as an external database you should add two additional parameters to the `externalPostgresql` block
 
 - `internalUser`: it is the same as `user` but without the `@database-name` prefix required to connect to Azure Postgres
 - `internalAdminUser`: it is the same as `adminUser` but without the `@database-name` prefix required to connect to Azure Postgres
@@ -228,45 +208,52 @@ externalPostgresql:
 CARTO Self Hosted require a Redis (version 5+) to work. This Redis instance does not need persistance as it is used as a cache.
 This package comes with an internal Redis but it is not recommended for production. It does not have any logic for backups or any other monitoring.
 
-There are two alternatives when connecting the environment with an external Redis:
+In the same way as with Postgres, there are two alternatives regarding the secrets,
+[set the secrets manually](#setup-redis-creating-secrets)and point to them from the configuration,
+or let the chart to create the [secrets automatically](#setup-redis-with-automatic-secret-creation).
 
-- Create a kubernetes secret by yourself:
-  - You can use this command with the Redis Auth string to create it:
+#### Setup Redis creating secrets
 
-    ```bash
-    kubectl create secret generic \
-      -n <namespace> \
-      <your_own_installation_name|carto>-redis-secret \
-      --from-literal=password=<AUTH string password>
-    ```
+1. Add the secret:
 
-  - [Add the following customization](#how-to-define-customizations) lines:
+  ```bash
+  kubectl create secret generic \
+    -n <namespace> \
+    <your_own_installation_name|carto>-redis-secret \
+    --from-literal=password=<AUTH string password>
+  ```
 
-    ```yaml
-    internalRedis:
-      # With that config, we disable the internal Redis provided by the package
-      enabled: false
-    externalRedis:
-      host: <Redis IP/Hostname>
-      port: "6379"
-      existingSecret: "<your_own_installation_name|carto>-redis-secret"
-      existingSecretPasswordKey: "password"
-    ```
+2. Configure the package:
 
-- Auto secret creation:
-  - [Add the following customization](#how-to-define-customizations) lines:
+Add the following lines to you `client-conf.yaml` to connect to the external Postgres:
 
-    ```yaml
-    internalRedis:
-      # With that config, we disable the internal Redis provided by the package
-      enabled: false
-    externalRedis:
-      host: <Redis IP/Hostname>
-      port: "6379"
-      password: ""
-    ```
+  ```yaml
+  internalRedis:
+    # Disable the internal Redis
+    enabled: false
+  externalRedis:
+    host: <Redis IP/Hostname>
+    port: "6379"
+    existingSecret: "<your_own_installation_name|carto>-redis-secret"
+    existingSecretPasswordKey: "password"
+  ```
 
-    > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalRedis.password` that you set in previous lines.
+#### Setup Redis with automatic secret creation
+
+1. Configure the package:
+Add the following lines to you `client-conf.yaml` to connect to the external Postgres:
+
+  ```yaml
+  internalRedis:
+    # Disable the internal Redis
+    enabled: false
+  externalRedis:
+    host: <Redis IP/Hostname>
+    port: "6379"
+    password: ""
+  ```
+
+  > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalRedis.password` that you set in previous lines.
 
 ## Components scaling
 
@@ -308,13 +295,13 @@ To learn how to deploy the Metrics Server, see the [metrics-server installation 
 
 #### Enable Carto autoscaling feature
 
-You can find an autoscaling config file example in [autoscaling config](scale_components/autoscaling.yaml), it is only necessary [customize your installation](#how-to-define-customizations) adding this file in the `install` or `upgrade` command and start to use the autoscaling feature.
+You can find an autoscaling config file example in [autoscaling config](scale_components/autoscaling.yaml). Adding it with `-f customizations/scale_components/autoscaling.yaml` the `install` or `upgrade` is enough to start using the autoscaling feature.
 
-Also you can set your own preferences using the minimum and maximum values that you need in this file.
+You can edit the file to set your own scaling needs by modifying the minimum and maximum values.
 
 ### Enable static scaling
 
-You can set how many number of pods should have be running all time, for this, you can use the [static scale config](scale_components/static.yaml) and [configure your environment](#how-to-define-customizations)
+You can set statically set the number  of pods should be running. To do it, use [static scale config](scale_components/static.yaml) adding it with `-f customizations/scale_components/static.yaml` to the the `install` or `upgrade` commands.
 
 > Although we recommend the autoscaling configuration, you could choose the autoscaling feature for some components and the static configuration for the others. Remember that autoscaling override the static configuration, so if one component has both configurations, autoscaling will take precedence.
 
