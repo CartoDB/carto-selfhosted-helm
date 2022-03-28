@@ -61,9 +61,9 @@ Don't forget to upgrade your chart after the change.
 ### Access to CARTO from outside the cluster
 
 The entry point to the CARTO Self Hosted is through the `router` Service. By default it is configured in `ClusterIP` mode. That means it's
-only usable from inside the cluster. If you want to connect to your deployment with this mode, you need to use [kubectl port-forward]
-(<https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/>). But this only makes it accessible
-to your machine.
+only usable from inside the cluster. If you want to connect to your deployment with this mode, you need to use
+[kubectl port-forward](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/).
+But this only makes it accessible to your machine.
 
 In order to make it accessible from the outside of the Kubernetes network, the [easiest way](#enable-and-configure-loadbalancer-mode)
 is to use the `LoadBalancer` mode.
