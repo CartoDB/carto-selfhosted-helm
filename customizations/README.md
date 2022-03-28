@@ -1,4 +1,4 @@
-# Configurations
+# Customizations
 
 This file explains how to configure CARTO Self Hosted to meet your needs. In this folder you will find also
 examples _yaml_ files that you can pass to `helm` to apply those configurations.
@@ -35,7 +35,7 @@ And add the following at the end of ALL the `helm install` or `helm upgrade` com
 
 You can also override values through the command line to `helm`. Adding the argument: `--set key=value[,key=value]`
 
-## Available Configurations
+# Available Configurations
 
 There are several things that you can configure in you CARTO Self Hosted:
 
@@ -80,7 +80,7 @@ sessions before.
 ### Enable and configure LoadBalancer mode
 
 This is the easiest way of open your CARTO Self Hosted to the world. You need to change the `router` Service type to `LoadBalancer`.
-You can find an [example](service_loadBalancer/config.yaml). But we have prepared also a few specifics for different Kubernetes versions:
+You can find an [example](service_loadBalancer/config.yaml). But we have prepared also a few specifics for different Kubernetes flavours:
 
 - [AWS EKS](service_loadBalancer/aws_eks/config.yaml)
 <!--
