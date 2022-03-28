@@ -49,7 +49,7 @@ To do this you need to [add the following customization](#how-to-apply-the-confi
 
 ```yaml
 appConfigValues:
-  selfHostedDomain: "my.domain.com"ç
+  selfHostedDomain: "my.domain.com"
 appSecrets:
   #googleMapsApiKey:
   #value: "<google-maps-api-key>"
