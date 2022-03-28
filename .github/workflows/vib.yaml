@@ -3,6 +3,8 @@ on: # rebuild any PRs and main branch changes
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - '**.md'
 env:
   CSP_API_URL: https://console.cloud.vmware.com
   CSP_API_TOKEN: ${{ secrets.CSP_API_TOKEN }}
