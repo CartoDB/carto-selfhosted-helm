@@ -105,7 +105,7 @@ To add your own certificate you need:
   ```bash
   kubectl create secret tls \
     -n <namespace> \
-    mycarto-tls-certificate \
+    mycarto-custom-tls-certificate \
     --cert=path/to/cert/file \
     --key=path/to/key/file
   ```
@@ -116,7 +116,7 @@ To add your own certificate you need:
   tlsCerts:
     autoGenerate: false
     existingSecret:
-      name: "mycarto-tls-certificate"
+      name: "mycarto-custom-tls-certificate"
       keyKey: "tls.key"
       certKey: "tls.crt"
   ```
