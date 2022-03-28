@@ -16,7 +16,7 @@ There are several things to configure to prepare it for production workloads:
 Optional configurations:
 
 - [Configure scale of the components](#components-scaling)
-- [Use your own bucket to store the data](#custom-bucket) (by default, GCP CARTO buckets are used)
+- [Use your own bucket to store the data](#custom-buckets) (by default, GCP CARTO buckets are used)
 
 ## How to apply the configurations
 
