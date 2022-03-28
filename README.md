@@ -1,6 +1,6 @@
-# CARTO self-hosted [Helm chart]
+# CARTO Self Hosted [Helm chart]
 
-This repository contains the [Kubernetes Helm](https://github.com/helm/helm) chart files for CARTO Platform. Run CARTO Self Hosted in your own cloud infrastructre.
+This repository contains the [Kubernetes Helm](https://github.com/helm/helm) chart files for CARTO Platform. Run CARTO Self Hosted in your own cloud infrastructure.
 
 If you are looking for another installation method, please refer to [carto-selfhosted repository](https://github.com/CartoDB/carto-selfhosted).
 
@@ -31,9 +31,10 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
 1. Authenticate and connect to your cluster
 
 2. Obtain the configuration files provided by Carto.
-That files are unique per self-hosted (**couldn't be shared between multiple installations**) and one could be public but the other one is private so please, be careful sharing it.
+That files are unique per Self Hosted (**they cannot be shared between multiple installations**) and contain secrets, be careful storing and sharing them.
 
-3. Add our Carto helm repository with the next commands:
+3. Add CARTO helm repository:
+
   ```bash
   # Add the carto repo.
   helm repo add carto https://helm.carto.com
@@ -45,21 +46,24 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
   helm search repo carto -l
   ```
 
-4. Configure your deployment. Please, refer to [Customizations](customizations/README.md). You need to, at least, configure your domain.
+4. Configure your deployment. Please, read the available [customizations](customizations/README.md) options. At least you will need
+to configure your domain.
 
-5. Install your deployment:
+5. Install CARTO:
+
   ```bash
   helm install \
-    <your_own_installation_name|carto> \
+    mycarto \
     carto/carto \
     --namespace <your_namespace> \
     -f carto-values.yaml \
     -f carto-secrets.yaml \
-    -f customization.yaml
+    -f customizations.yaml
   ```
-  > Note: You can specify the '-f' flag multiple times. The priority will be given to the last (right-most) file specified. For example, if both `carto-values.yaml` and `customization.yaml` contained a key called 'Test', the value set in `customization.yaml` would take precedence. So, for this reason follow the order describe in the above example.
 
-6. Follow the instructions provided by the command.
+  > Note: You can specify the '-f' flag multiple times. The priority will be given to the last (right-most) file specified. For example, if both `carto-values.yaml` and `customizations.yaml` contained a key called 'Test', the value set in `customizations.yaml` would take precedence. For this reason, please follow the order describe in the above example.
+
+6. Read and follow the instructions provided by the previous command.
 
 ## Update
 
@@ -72,27 +76,28 @@ That files are unique per self-hosted (**couldn't be shared between multiple ins
   ```
 
 3. Update CARTO
+
   ```bash
   helm upgrade \
-    <your_own_installation_name|carto> \
+    mycarto \
     carto/carto \
     --namespace <your_namespace> \
     -f carto-values.yaml \
     -f carto-secrets.yaml \
-    -f customization.yaml
+    -f customizations.yaml
   ```
 
-## Unistallation
+## Uninstall
 
 To remove CARTO from your cluster you need to run:
 
 ```bash
-helm uninstall <your_own_installation_name|carto> --wait
+helm uninstall mycarto --wait
 ```
 
 If you were using the internal Postgres, to delete the data you need:
 
 ```bash
 # ⚠️ This is going to delete the data of the postgres inside the cluster ⚠️
-kubectl delete pvc data-<your_own_installation_name|carto>-postgresql-0
+kubectl delete pvc data-mycarto-postgresql-0
 ```

@@ -87,7 +87,8 @@ host. To configure CARTO with the URL of your service:
   {{/* TODO: We should check that HTTPS should be enabled ! */}}
 
   export CARTO_HOST_IP=127.0.0.1
-  export CARTO_PORT={{- $port }}
+  export CARTO_HTTP_PORT={{- $port }}
+  export CARTO_HTTPS_PORT={{- $port_https }}
   kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }} {{ $port_https }}:{{ $port_https }}
 
   If the previous command fails regarding port permissions, try the next ones:
@@ -97,7 +98,15 @@ host. To configure CARTO with the URL of your service:
 {{- else if eq .Values.router.service.type "NodePort" }}
 
   export CARTO_HOST_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
-  export CARTO_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "common.names.fullname" . }})
+  export CARTO_HTTP_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[?(@.name=='http')].nodePort}" services {{ include "carto.router.fullname" . }})
+  export CARTO_HTTPS_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[?(@.name=='https')].nodePort}" services {{ include "carto.router.fullname" . }})
+
+  NOTE: It you plan to access from your browser to the NodePort, you need to upgrade
+        `appConfigValues.selfHostedDomain` from `{{ $baseUrl }}` to `{{ $baseUrl }}:${CARTO_HTTPS_PORT}`.
+        After that change, you must wait some minutes while the change is propagated.
+        {{/* TODO: Only show (or update it) when https is enabled in app side */}}
+        You also need to use the `https://{{ $baseUrl }}:${CARTO_HTTPS_PORT}` to access directly to it.
+
 {{- else if eq .Values.router.service.type "LoadBalancer" }}
   NOTE: It may take a few minutes for the LoadBalancer IP to be available.
         Watch the status with: 'kubectl get svc --namespace {{ .Release.Namespace }} -w {{ include "carto.router.fullname" . }}'
