@@ -1,6 +1,6 @@
-# CARTO self-hosted [Helm chart]
+# CARTO Self Hosted [Helm chart]
 
-This repository contains the [Kubernetes Helm](https://github.com/helm/helm) chart files for CARTO Platform. Run CARTO Self Hosted in your own cloud infrastructre.
+This repository contains the [Kubernetes Helm](https://github.com/helm/helm) chart files for CARTO Platform. Run CARTO Self Hosted in your own cloud infrastructure.
 
 If you are looking for another installation method, please refer to [carto-selfhosted repository](https://github.com/CartoDB/carto-selfhosted).
 
@@ -31,7 +31,7 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
 1. Authenticate and connect to your cluster
 
 2. Obtain the configuration files provided by Carto.
-That files are unique per self-hosted (**they cannot be shared between multiple installations**) and contain secrets, be careful storing and sharing them.
+That files are unique per Self Hosted (**they cannot be shared between multiple installations**) and contain secrets, be careful storing and sharing them.
 
 3. Add CARTO helm repository:
 
@@ -46,7 +46,7 @@ That files are unique per self-hosted (**they cannot be shared between multiple 
   helm search repo carto -l
   ```
 
-4. Configure your deployment. Please, read the available [configuration](customizations/README.md) options. At least you need 
+4. Configure your deployment. Please, read the available [customizations](customizations/README.md) options. At least you will need
 to configure your domain.
 
 5. Install CARTO:
@@ -87,7 +87,7 @@ to configure your domain.
     -f customization.yaml
   ```
 
-## Unistallation
+## Uninstall
 
 To remove CARTO from your cluster you need to run:
 

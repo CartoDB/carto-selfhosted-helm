@@ -1,6 +1,6 @@
 # Configurations
 
-This file explains how to configure CARTO Self-Hosted to meet your needs. In this folder you will find also
+This file explains how to configure CARTO Self Hosted to meet your needs. In this folder you will find also
 examples _yaml_ files that you can pass to `helm` to apply those configurations.
 
 ## Production Ready
@@ -37,11 +37,11 @@ Create a dedicated [yaml](https://yaml.org/) file `client-conf.yaml` for your co
 
 There are several things that you can configure in you CARTO Self Hosted:
 
-## Configure the domain of your self-hosted
+## Configure the domain of your Self Hosted
 
-The most important step to have your CARTO self-hosted ready to be used is to configure the domain to be used.
+The most important step to have your CARTO Self Hosted ready to be used is to configure the domain to be used.
 
-> ⚠️ CARTO self-hosted is not designed to be used in the path of a URL, it needs a full domain or subdomain. ⚠️
+> ⚠️ CARTO Self Hosted is not designed to be used in the path of a URL, it needs a full domain or subdomain. ⚠️
 
 To do this you need to [add the following customization](#how-to-apply-the-configurations):
 
@@ -73,7 +73,7 @@ sessions before.
 
 ### Enable and configure LoadBalancer mode
 
-This is the easiest way of open your CARTO self-hosted to the world. You need to change the `router` Service type to `LoadBalancer`.
+This is the easiest way of open your CARTO Self Hosted to the world. You need to change the `router` Service type to `LoadBalancer`.
 You can find an [example](service_loadBalancer/config.yaml). But we have prepared also a few specifics for different Kubernetes versions:
 
 - [AWS EKS](service_loadBalancer/aws_eks/config.yaml)
@@ -85,7 +85,7 @@ TODO: Add the other providers
 
 By default, the package generates a self-signed certificate with a validity of 365 days.
 
-> ⚠️ CARTO self-hosted only works if the final client use HTTPS protocol. ⚠️
+> ⚠️ CARTO Self Hosted only works if the final client use HTTPS protocol. ⚠️
 
 <!--
 #### Disable internal HTTPS
@@ -124,14 +124,41 @@ We recommend to use external databases, preferable managed database by your prov
 
 ### Configure your own Postgres
 
-CARTO self-hosted requires a Postgres (version 11+) to work.
-In that Postgres, CARTO stores some metadata and also the credentials of the external connections configured by the CARTO self-hosted users.
+CARTO Self Hosted requires a Postgres (version 11+) to work.
+In that Postgres, CARTO stores some metadata and also the credentials of the external connections configured by the CARTO Self Hosted users.
 
-> ⚠️ That Postgres has nothing to do with the connections that the user configures in the CARTO workspace since it stores the metadata of the entire CARTO self-hosted. ⚠️
+> ⚠️ That Postgres has nothing to do with the connections that the user configures in the CARTO workspace since it stores the metadata of the entire CARTO Self Hosted. ⚠️
 
 There are two alternatives when connecting the environment with an external postgres:
 
 > Note: `externalPostgresql.user` and `externalPostgresql.database` inside the Postgres instance are going to be created automatically during the installation process. Do not create then manually.
+
+- Create a kubernetes secret with the passwords:
+
+    ```bash
+    kubectl create secret generic \
+      -n <namespace> \
+      <your_own_installation_name|carto>-postgres-secret \
+      --from-literal=carto-password=<password> \
+      --from-literal=admin-password=<password>
+    ```
+
+- Add the following lines to you `client-conf.yaml` to connect to the external Postgres:
+
+  ```yaml
+  internalPostgresql:
+    # With this config, we disable the internal Postgres provided by the package
+    enabled: false
+  externalPostgresql:
+    host: <Postgres IP/Hostname>
+    user: "carto"
+    adminUser: "postgres"
+    existingSecret: "<your_own_installation_name|carto>-postgres-secret"
+    existingSecretPasswordKey: "carto-password"
+    existingSecretAdminPasswordKey: "admin-password"
+    database: "workspace_db"
+    port: "5432"
+  ```
 
 - Create a kubernetes secret:
   - You can use this command with the Postgres passwords to create it:
@@ -198,7 +225,7 @@ externalPostgresql:
 
 ### Configure your own redis
 
-CARTO self-hosted require a Redis (version 5+) to work. This Redis instance does not need persistance as it is used as a cache.
+CARTO Self Hosted require a Redis (version 5+) to work. This Redis instance does not need persistance as it is used as a cache.
 
 There are two alternatives when connecting the environment with an external redis:
 
