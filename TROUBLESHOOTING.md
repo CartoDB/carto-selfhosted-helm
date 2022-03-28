@@ -3,4 +3,4 @@
 In this section you could find some common problems and the proper way to solve it.
 
 ## Things to check if you have any type of error
-- Did you have enough space in the cluster?. Please check it you have any pod in a `Pending` state before open any type of ticket.
+Do you have enough space in the cluster? If you have a pod with a `Pending` it probably means you do not. Please check the resources available.
