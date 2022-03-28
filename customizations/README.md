@@ -11,7 +11,7 @@ There are several things to configure to prepare it for production workloads:
 1. [Configure the domain](#configure-the-domain-of-your-self-hosted) that will be used.
 2. [Expose service](#access-to-carto-from-outside-the-cluster) to be accessed from outside the cluster.
    - [Configure TLS termination](#configure-tls-termination-in-the-service)
-3. [Use external Databases](#use-external-databases). Our recomendation is to use managed DBs with backups and so on.
+3. [Use external Databases](#use-external-databases). Our recommendation is to use managed DBs with backups and so on.
 
 Optional configurations:
 
@@ -54,11 +54,16 @@ Don't forget to upgrade your chart after the change.
 
 ## Access to CARTO from outside the cluster
 
-The entry point to the CARTO Self Hosted is through the `router` Service. By default it is configured in `ClusterIP` mode. That means it's only usable from inside the cluster. If you want to connect to your deployment with this mode, you neeed to use [kubectl port-forward](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/). But this only makes it accessible to your machine.
+The entry point to the CARTO Self Hosted is through the `router` Service. By default it is configured in `ClusterIP` mode. That means it's
+only usable from inside the cluster. If you want to connect to your deployment with this mode, you need to use [kubectl port-forward]
+(https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/). But this only makes it accessible
+to your machine.
 
-In order to make it accessible from the outside of the Kubernetes network, the [easiest way](#enable-and-configure-loadbalancer-mode) is to use the `LoadBalancer` mode.
+In order to make it accessible from the outside of the Kubernetes network, the [easiest way](#enable-and-configure-loadbalancer-mode)
+is to use the `LoadBalancer` mode.
 
-Probably you would need to [configure the HTTPS/TLS](#configure-tls-termination-in-the-service) if you are not terminating the TLS sessions before.
+Probably you would need to [configure the HTTPS/TLS](#configure-tls-termination-in-the-service) if you are not terminating the TLS
+sessions before.
 
 ### Requirements when exposing the service
 
@@ -112,13 +117,14 @@ To add your own certificate you need:
 
 ## Use external databases
 
-This package comes with an internal Postgres and Redis but it is not recommended for production. It does not have any logic for backups or any other monitoring.
+This package comes with an internal Postgres and Redis but it is not recommended for production. It does not have any logic
+for backups or any other monitoring.
 
-So we recommend to use external databases, preferible managed database by your provider, with backups, high availability, etc.
+We recommend to use external databases, preferable managed database by your provider, with backups, high availability, etc.
 
 ### Configure your own Postgres
 
-CARTO self-hosted require a Postges (version 11+) to work.
+CARTO self-hosted requires a Postgres (version 11+) to work.
 In that Postgres, CARTO stores some metadata and also the credentials of the external connections configured by the CARTO self-hosted users.
 
 > ⚠️ That Postgres has nothing to do with the connections that the user configures in the CARTO workspace since it stores the metadata of the entire CARTO self-hosted. ⚠️
@@ -192,8 +198,7 @@ externalPostgresql:
 
 ### Configure your own redis
 
-CARTO self-hosted require a Redis (version 5+) to work.
-That Redis is mainly used as a cache for the postgres.
+CARTO self-hosted require a Redis (version 5+) to work. This Redis instance does not need persistance as it is used as a cache.
 
 There are two alternatives when connecting the environment with an external redis:
 
@@ -239,7 +244,8 @@ There are two alternatives when connecting the environment with an external redi
 
 ### Autoscaling
 
-It is recommended to enable autoscaling in your installation, which will allow scaling based on the resources consumption needs of your cluster.
+It is recommended to enable autoscaling in your installation. This will allow the cluster to adapt dynamically to the needs of the service
+and maximize the use of the resources of your cluster.
 
 This feature is based on [Kubernetes Horizontal Pod Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) functionality.
 
