@@ -20,7 +20,7 @@ Optional configurations:
 
 ## How to apply the configurations
 
-Create a dedicated [yaml](https://yaml.org/) file `client-conf.yaml` for your configuration. For example, you could create a file with the next content:
+Create a dedicated [yaml](https://yaml.org/) file `customizations.yaml` for your configuration. For example, you could create a file with the next content:
 
   ```yaml
   appConfigValues:
@@ -30,7 +30,7 @@ Create a dedicated [yaml](https://yaml.org/) file `client-conf.yaml` for your co
 And add the following at the end of ALL the `helm install` or `helm upgrade` command:
 
   ```bash
-  helm instal .. -f client-conf.yaml
+  helm instal .. -f customizations.yaml
   ```
 
 You can also override values through the command-line to `helm`. Adding the argument: `--set key=value[,key=value]`
@@ -110,7 +110,7 @@ To add your own certificate you need:
     --key=path/to/key/file
   ```
 
-- Add the following lines to you `client-conf.yaml`:
+- Add the following lines to you `customizations.yaml`:
 
   ```yaml
   tlsCerts:
@@ -147,7 +147,7 @@ from the configuration, or let the chart to create the [secrets automatically](#
   > Note: `externalPostgresql.user` and `externalPostgresql.database` inside the Postgres instance are going to be created automatically during the installation process. Do not create then manually.
 
 2. Configure the package:
-Add the following lines to you `client-conf.yaml` to connect to the external Postgres:
+Add the following lines to you `customizations.yaml` to connect to the external Postgres:
 
     ```yaml
     internalPostgresql:
@@ -167,7 +167,7 @@ Add the following lines to you `client-conf.yaml` to connect to the external Pos
 #### Setup Postgres with automatic secret creation
 
 1. Configure the package:
-Add the following lines to you `client-conf.yaml` to connect to the external Postgres:
+Add the following lines to you `customizations.yaml` to connect to the external Postgres:
 
     ```yaml
     internalPostgresql:
@@ -225,7 +225,7 @@ or let the chart to create the [secrets automatically](#setup-redis-with-automat
 
 2. Configure the package:
 
-Add the following lines to you `client-conf.yaml` to connect to the external Postgres:
+Add the following lines to you `customizations.yaml` to connect to the external Postgres:
 
   ```yaml
   internalRedis:
@@ -241,7 +241,7 @@ Add the following lines to you `client-conf.yaml` to connect to the external Pos
 #### Setup Redis with automatic secret creation
 
 1. Configure the package:
-Add the following lines to you `client-conf.yaml` to connect to the external Postgres:
+Add the following lines to you `customizations.yaml` to connect to the external Postgres:
 
   ```yaml
   internalRedis:

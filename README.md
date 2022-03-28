@@ -58,10 +58,10 @@ to configure your domain.
     --namespace <your_namespace> \
     -f carto-values.yaml \
     -f carto-secrets.yaml \
-    -f client-conf.yaml
+    -f customizations.yaml
   ```
 
-  > Note: You can specify the '-f' flag multiple times. The priority will be given to the last (right-most) file specified. For example, if both `carto-values.yaml` and `client-conf.yaml` contained a key called 'Test', the value set in `client-conf.yaml` would take precedence. For this reason, please follow the order describe in the above example.
+  > Note: You can specify the '-f' flag multiple times. The priority will be given to the last (right-most) file specified. For example, if both `carto-values.yaml` and `customizations.yaml` contained a key called 'Test', the value set in `customizations.yaml` would take precedence. For this reason, please follow the order describe in the above example.
 
 6. Read and follow the instructions provided by the previous command.
 
@@ -84,7 +84,7 @@ to configure your domain.
     --namespace <your_namespace> \
     -f carto-values.yaml \
     -f carto-secrets.yaml \
-    -f client-conf.yaml
+    -f customizations.yaml
   ```
 
 ## Uninstall
