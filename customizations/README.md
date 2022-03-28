@@ -105,7 +105,7 @@ To add your own certificate you need:
   ```bash
   kubectl create secret tls \
     -n <namespace> \
-    <your_own_installation_name|carto>-tls-certificate \
+    mycarto-tls-certificate \
     --cert=path/to/cert/file \
     --key=path/to/key/file
   ```
@@ -116,7 +116,7 @@ To add your own certificate you need:
   tlsCerts:
     autoGenerate: false
     existingSecret:
-      name: "<your_own_installation_name|carto>-tls-certificate"
+      name: "mycarto-tls-certificate"
       keyKey: "tls.key"
       certKey: "tls.crt"
   ```
@@ -139,7 +139,7 @@ from the configuration, or let the chart to create the [secrets automatically](#
     ```bash
     kubectl create secret generic \
       -n <namespace> \
-      <your_own_installation_name|carto>-postgres-secret \
+      mycarto-postgres-secret \
       --from-literal=carto-password=<password> \
       --from-literal=admin-password=<password>
     ```
@@ -157,7 +157,7 @@ Add the following lines to you `client-conf.yaml` to connect to the external Pos
       host: <Postgres IP/Hostname>
       user: "carto"
       adminUser: "postgres"
-      existingSecret: "<your_own_installation_name|carto>-postgres-secret"
+      existingSecret: "mycarto-postgres-secret"
       existingSecretPasswordKey: "carto-password"
       existingSecretAdminPasswordKey: "admin-password"
       database: "workspace_db"
@@ -219,7 +219,7 @@ or let the chart to create the [secrets automatically](#setup-redis-with-automat
   ```bash
   kubectl create secret generic \
     -n <namespace> \
-    <your_own_installation_name|carto>-redis-secret \
+    mycarto-redis-secret \
     --from-literal=password=<AUTH string password>
   ```
 
@@ -234,7 +234,7 @@ Add the following lines to you `client-conf.yaml` to connect to the external Pos
   externalRedis:
     host: <Redis IP/Hostname>
     port: "6379"
-    existingSecret: "<your_own_installation_name|carto>-redis-secret"
+    existingSecret: "mycarto-redis-secret"
     existingSecretPasswordKey: "password"
   ```
 

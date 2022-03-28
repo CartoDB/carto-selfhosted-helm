@@ -53,7 +53,7 @@ to configure your domain.
 
   ```bash
   helm install \
-    <your_own_installation_name|carto> \
+    mycarto \
     carto/carto \
     --namespace <your_namespace> \
     -f carto-values.yaml \
@@ -79,7 +79,7 @@ to configure your domain.
 
   ```bash
   helm upgrade \
-    <your_own_installation_name|carto> \
+    mycarto \
     carto/carto \
     --namespace <your_namespace> \
     -f carto-values.yaml \
@@ -92,12 +92,12 @@ to configure your domain.
 To remove CARTO from your cluster you need to run:
 
 ```bash
-helm uninstall <your_own_installation_name|carto> --wait
+helm uninstall mycarto --wait
 ```
 
 If you were using the internal Postgres, to delete the data you need:
 
 ```bash
 # ⚠️ This is going to delete the data of the postgres inside the cluster ⚠️
-kubectl delete pvc data-<your_own_installation_name|carto>-postgresql-0
+kubectl delete pvc data-mycarto-postgresql-0
 ```
