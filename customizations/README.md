@@ -27,11 +27,13 @@ Create a dedicated [yaml](https://yaml.org/) file `client-conf.yaml` for your co
     selfHostedDomain: "my.domain.com"
   ```
 
-  And add the following at the end of ALL the `helm install` or `helm upgrade` command:
+And add the following at the end of ALL the `helm install` or `helm upgrade` command:
 
   ```bash
-  helm instal .. -f customization.yaml
+  helm instal .. -f client-conf.yaml
   ```
+
+You can also override values through the command line to `helm`. Adding the argument: `--set key=value[,key=value]`
 
 ## Available Configurations
 
@@ -47,7 +49,11 @@ To do this you need to [add the following customization](#how-to-apply-the-confi
 
 ```yaml
 appConfigValues:
-  selfHostedDomain: "my.domain.com"
+  selfHostedDomain: "my.domain.com"ç
+appSecrets:
+  #googleMapsApiKey:
+  #value: "<google-maps-api-key>"
+  #other secrets, like buckets' configuration
 ```
 
 Don't forget to upgrade your chart after the change.
