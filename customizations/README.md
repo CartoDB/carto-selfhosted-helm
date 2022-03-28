@@ -16,7 +16,7 @@ There are several things to configure to prepare it for production workloads:
 Optional configurations:
 
 - [Configure scale of the components](#components-scaling)
-- Use your own bucket to store the data (By default, GCP CARTO buckets are used)
+- [Use your own bucket to store the data](#custom-bucket) (by default, GCP CARTO buckets are used)
 
 ## How to apply the configurations
 
@@ -26,9 +26,9 @@ Create a dedicated [yaml](https://yaml.org/) file `customizations.yaml` for your
   appConfigValues:
     selfHostedDomain: "my.domain.com"
   appSecrets:
-    #googleMapsApiKey:
-    #value: "<google-maps-api-key>"
-    #other secrets, like buckets' configuration
+    # googleMapsApiKey:
+    #   value: "<google-maps-api-key>"
+    # Other secrets, like buckets' configuration
   ```
 
 And add the following at the end of ALL the `helm install` or `helm upgrade` command:
@@ -110,7 +110,7 @@ To add your own certificate you need:
     --key=path/to/key/file
   ```
 
-- Add the following lines to you `customizations.yaml`:
+- Add the following lines to your `customizations.yaml`:
 
   ```yaml
   tlsCerts:
@@ -304,6 +304,105 @@ You can edit the file to set your own scaling needs by modifying the minimum and
 You can set statically set the number  of pods should be running. To do it, use [static scale config](scale_components/static.yaml) adding it with `-f customizations/scale_components/static.yaml` to the `install` or `upgrade` commands.
 
 > Although we recommend the autoscaling configuration, you could choose the autoscaling feature for some components and the static configuration for the others. Remember that autoscaling override the static configuration, so if one component has both configurations, autoscaling will take precedence.
+
+
+## Custom Buckets
+
+If you want to keep as much information as possible in your platform you can configure Carto to use your own. Supported storage services are:
+
++ Google Compute Storage
++ AWS S3
++ Azure Storage
+
+> :warning: You can only set one provider at a time
+
+> These buckets are used as temporary storage when importing data into datawarehouses, for storing maps, thumbnails, and other internal processes data
+
+<!--
+TODO: Add the code related to Terraform
+-->
+
+### Requirements
+
+For using you own buckets you need 3 different buckets in your preferred Cloud provider
+
++ Import Bucket
++ Client Bucket
++ Thumbnails Bucket
+
+> There's no name constraints
+
+It's mandatory to have credentials for those buckets, our supported credentials methods are
+
++ GCP: Service Account Key
++ AWS: Access Key ID and Secret Access Key
++ Azure: Storage Access Key
+
+> :warning: Those credentials should have permissions to interact with the above bucketse
+### Google Compute Storage
+
+Add the following lines to your `customizations.yaml`:
+
+```yaml
+appConfigValues:
+  storageProvider: "gcp"
+  importBucket: "carto-import-bucket"
+  workspaceImportsBucket: "carto-client-bucket"
+  workspaceThumbnailsBucket: "carto-thumbnails-bucket"
+  workspaceThumbnailsPublic: false
+
+appSecrets:
+  gcpBucketsServiceAccountKey:
+    value: |
+      {
+      <REDACTED>
+      }
+```
+
+> `appSecrets.gcpBucketsServiceAccountKey.value` should be in plain text
+
+### AWS S3
+
+Add the following lines to your `customizations.yaml`:
+
+```yaml
+appConfigValues:
+  storageProvider: "s3"
+  importBucket: "carto-import-bucket"
+  workspaceImportsBucket: "carto-client-bucket"
+  workspaceThumbnailsBucket: "carto-thumbnails-bucket"
+  workspaceThumbnailsPublic: false
+
+appSecrets:
+  awsAccessKeyId:
+    value: "<REDACTED>"
+  awsAccessKeySecret:
+    value: "<REDACTED>"
+```
+
+> `appSecrets.awsAccessKeyId.value` should be in plain text
+
+> `appSecrets.awsAccessKeySecret.value` should be in plain text
+
+### Azure Storage
+
+Add the following lines to your `customizations.yaml`:
+
+```yaml
+appConfigValues:
+  storageProvider: "azure-blob"
+  importBucket: "carto-import-bucket"
+  workspaceImportsBucket: "carto-client-bucket"
+  workspaceThumbnailsBucket: "carto-thumbnails-bucket"
+  workspaceThumbnailsPublic: false
+
+appSecrets:
+  azureStorageAccessKey:
+    value: "<REDACTED>"
+```
+
+> `appSecrets.azureStorageAccessKey.value` should be in plain text
+
 
 ## Advanced configuration
 
