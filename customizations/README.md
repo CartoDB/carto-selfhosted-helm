@@ -33,13 +33,13 @@ And add the following at the end of ALL the `helm install` or `helm upgrade` com
   helm instal .. -f client-conf.yaml
   ```
 
-You can also override values through the command line to `helm`. Adding the argument: `--set key=value[,key=value]`
+You can also override values through the command-line to `helm`. Adding the argument: `--set key=value[,key=value]`
 
-# Available Configurations
+## Available Configurations
 
 There are several things that you can configure in you CARTO Self Hosted:
 
-## Configure the domain of your Self Hosted
+### Configure the domain of your Self Hosted
 
 The most important step to have your CARTO Self Hosted ready to be used is to configure the domain to be used.
 
@@ -58,11 +58,11 @@ appSecrets:
 
 Don't forget to upgrade your chart after the change.
 
-## Access to CARTO from outside the cluster
+### Access to CARTO from outside the cluster
 
 The entry point to the CARTO Self Hosted is through the `router` Service. By default it is configured in `ClusterIP` mode. That means it's
 only usable from inside the cluster. If you want to connect to your deployment with this mode, you need to use [kubectl port-forward]
-(https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/). But this only makes it accessible
+(<https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/>). But this only makes it accessible
 to your machine.
 
 In order to make it accessible from the outside of the Kubernetes network, the [easiest way](#enable-and-configure-loadbalancer-mode)
@@ -71,13 +71,13 @@ is to use the `LoadBalancer` mode.
 Probably you would need to [configure the HTTPS/TLS](#configure-tls-termination-in-the-service) if you are not terminating the TLS
 sessions before.
 
-### Requirements when exposing the service
+#### Requirements when exposing the service
 
 - CARTO only works with HTTPS. TLS termination can be in the application (and configure it in the helm chart) or in a load balancer prior to the application.
 - The connection timeout of all incoming connections must be at least `605` seconds.
 - Configure a domain pointing to the exposed service.
 
-### Enable and configure LoadBalancer mode
+#### Enable and configure LoadBalancer mode
 
 This is the easiest way of open your CARTO Self Hosted to the world. You need to change the `router` Service type to `LoadBalancer`.
 You can find an [example](service_loadBalancer/config.yaml). But we have prepared also a few specifics for different Kubernetes flavours:
@@ -87,7 +87,7 @@ You can find an [example](service_loadBalancer/config.yaml). But we have prepare
 TODO: Add the other providers
 -->
 
-### Configure TLS termination in the service
+#### Configure TLS termination in the service
 
 By default, the package generates a self-signed certificate with a validity of 365 days.
 
@@ -121,17 +121,11 @@ To add your own certificate you need:
       certKey: "tls.crt"
   ```
 
-## Use external databases
+### Configure external Postgres
 
-This package comes with an internal Postgres and Redis but it is not recommended for production. It does not have any logic
-for backups or any other monitoring.
+CARTO Self Hosted requires a Postgres (version 11+) to work. This package comes with an internal Postgres but it is not recommended for production. It does not have any logic for backups or any other monitoring.
 
-We recommend to use external databases, preferable managed database by your provider, with backups, high availability, etc.
-
-### Configure your own Postgres
-
-CARTO Self Hosted requires a Postgres (version 11+) to work.
-In that Postgres, CARTO stores some metadata and also the credentials of the external connections configured by the CARTO Self Hosted users.
+This Postgres is used to store some metadata and also the credentials of the external connections configured by the CARTO Self Hosted users.
 
 > ⚠️ That Postgres has nothing to do with the connections that the user configures in the CARTO workspace since it stores the metadata of the entire CARTO Self Hosted. ⚠️
 
@@ -229,11 +223,12 @@ externalPostgresql:
   ...
 ```
 
-### Configure your own redis
+### Configure external Redis
 
 CARTO Self Hosted require a Redis (version 5+) to work. This Redis instance does not need persistance as it is used as a cache.
+This package comes with an internal Redis but it is not recommended for production. It does not have any logic for backups or any other monitoring.
 
-There are two alternatives when connecting the environment with an external redis:
+There are two alternatives when connecting the environment with an external Redis:
 
 - Create a kubernetes secret by yourself:
   - You can use this command with the Redis Auth string to create it:
