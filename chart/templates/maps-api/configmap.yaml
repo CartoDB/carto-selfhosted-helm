@@ -29,7 +29,7 @@ data:
   DO_ENABLED: "false"
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
-  GOOGLE_APPLICATION_CREDENTIALS: "../certs/key.json"
+  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   LOG_LEVEL: "debug"
   MAPS_API_V3_PORT: "{{ .Values.mapsApi.containerPorts.http }}"
   MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: {{ .Values.appConfigValues.selfHostedDomain | quote }}

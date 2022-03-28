@@ -147,7 +147,7 @@ Return the proper GCP Buckets Service Account Key Secret name
 {{- if .Values.appSecrets.gcpBucketsServiceAccountKey.existingSecret.name }}
 {{- .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name -}}
 {{- else -}}
-{{- printf "%s-gcp-buckets-service-account-key" (include "common.names.fullname" .) -}}
+{{- printf "%s-gcp-buckets-service-account" (include "common.names.fullname" .) -}}
 {{- end -}}
 {{- end -}}
 
@@ -738,7 +738,7 @@ Return the proper Carto Google Secret name
 {{- if .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name -}}
 {{- .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name -}}
 {{- else -}}
-{{- printf "%s-google" (include "common.names.fullname" .) -}}
+{{- printf "%s-gcp-default-service-account" (include "common.names.fullname" .) -}}
 {{- end -}}
 {{- end -}}
 

@@ -32,7 +32,7 @@ data:
   IMPORT_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   IMPORT_WORKER_PROCESSING_DIR: "/tmp/import-worker"
   LOG_LEVEL: "debug"
-  GOOGLE_APPLICATION_CREDENTIALS: "../certs/key.json"
+  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   REDIS_CACHE_PREFIX: "onprem"
   REDIS_HOST: {{ include "carto.redis.host" . }}
   REDIS_PORT: {{ include "carto.redis.port" . }}
@@ -47,9 +47,7 @@ data:
   IMPORT_BUCKET: {{ .Values.appConfigValues.importBucket | quote }}
   {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
   IMPORT_PROJECTID: {{ include "carto.gcpBucketsProjectId" . | quote }}
-  {{- if .Values.appSecrets.gcpBucketsServiceAccountKey }}
-  IMPORT_KEYFILENAME: "../certs/gcp-buckets-service-account-key.json"
-  {{- end }}
+  IMPORT_KEYFILENAME: {{ include "carto.gcpBucketsServiceAccountKey.secretMountAbsolutePath" . }}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}
   IMPORT_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
