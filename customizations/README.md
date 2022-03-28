@@ -301,7 +301,7 @@ You can edit the file to set your own scaling needs by modifying the minimum and
 
 ### Enable static scaling
 
-You can set statically set the number  of pods should be running. To do it, use [static scale config](scale_components/static.yaml) adding it with `-f customizations/scale_components/static.yaml` to the the `install` or `upgrade` commands.
+You can set statically set the number  of pods should be running. To do it, use [static scale config](scale_components/static.yaml) adding it with `-f customizations/scale_components/static.yaml` to the `install` or `upgrade` commands.
 
 > Although we recommend the autoscaling configuration, you could choose the autoscaling feature for some components and the static configuration for the others. Remember that autoscaling override the static configuration, so if one component has both configurations, autoscaling will take precedence.
 
