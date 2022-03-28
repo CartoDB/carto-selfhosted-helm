@@ -25,6 +25,10 @@ Create a dedicated [yaml](https://yaml.org/) file `customizations.yaml` for your
   ```yaml
   appConfigValues:
     selfHostedDomain: "my.domain.com"
+  appSecrets:
+    #googleMapsApiKey:
+    #value: "<google-maps-api-key>"
+    #other secrets, like buckets' configuration
   ```
 
 And add the following at the end of ALL the `helm install` or `helm upgrade` command:
@@ -50,10 +54,6 @@ To do this you need to [add the following customization](#how-to-apply-the-confi
 ```yaml
 appConfigValues:
   selfHostedDomain: "my.domain.com"
-appSecrets:
-  #googleMapsApiKey:
-  #value: "<google-maps-api-key>"
-  #other secrets, like buckets' configuration
 ```
 
 Don't forget to upgrade your chart after the change.
