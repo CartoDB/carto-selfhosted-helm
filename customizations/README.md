@@ -316,7 +316,7 @@ If you want to keep as much data as possible in your infrastructure you can conf
 
 > :warning: You can only set one provider at a time
 
-> These buckets are used as temporary storage when importing data into datawarehouses, for storing maps, thumbnails, and other internal processes data
+These buckets are used as temporary storage when importing data, for map thumbnails, and other internal data.
 
 <!--
 TODO: Add the code related to Terraform
@@ -324,7 +324,7 @@ TODO: Add the code related to Terraform
 
 ### Requirements
 
-For using you own buckets you need 3 different buckets in your preferred Cloud provider
+You need to create 3 buckets in your preferred Cloud provider
 
 + Import Bucket
 + Client Bucket
@@ -338,7 +338,7 @@ It's mandatory to have credentials for those buckets, our supported credentials 
 + AWS: Access Key ID and Secret Access Key
 + Azure: Storage Access Key
 
-> :warning: Those credentials should have permissions to interact with the above bucketse
+> :warning: Those credentials should have permissions to interact (read/write) with the above buckets
 ### Google Compute Storage
 
 Add the following lines to your `customizations.yaml`:
@@ -355,7 +355,7 @@ appSecrets:
   gcpBucketsServiceAccountKey:
     value: |
       {
-      <REDACTED>
+      <REDACTED_JSON_SERVICE_ACCOUNT>
       }
 ```
 
