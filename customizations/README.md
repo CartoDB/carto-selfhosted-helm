@@ -308,7 +308,7 @@ You can set statically set the number  of pods should be running. To do it, use 
 
 ## Custom Buckets
 
-If you want to keep as much information as possible in your platform you can configure Carto to use your own. Supported storage services are:
+If you want to keep as much data as possible in your infrastructure you can configure CARTO Self Hosted to use your own cloud storage. Supported storage services are:
 
 + Google Compute Storage
 + AWS S3
