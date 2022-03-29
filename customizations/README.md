@@ -314,9 +314,7 @@ If you want to keep as much data as possible in your infrastructure you can conf
 + AWS S3
 + Azure Storage
 
-> :warning: You can only set one provider at a time
-
-> These buckets are used as temporary storage when importing data, for map thumbnails, and other internal data.
+> :warning: You can only set one provider at a time. These buckets are used as temporary storage when importing data, for map thumbnails, and other internal data.
 
 <!--
 TODO: Add the code related to Terraform
@@ -380,9 +378,7 @@ appSecrets:
     value: "<REDACTED>"
 ```
 
-> `appSecrets.awsAccessKeyId.value` should be in plain text
-
-> `appSecrets.awsAccessKeySecret.value` should be in plain text
+> `appSecrets.awsAccessKeyId.value` and `appSecrets.awsAccessKeySecret.value` should be in plain text
 
 ### Azure Storage
 
