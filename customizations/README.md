@@ -316,7 +316,7 @@ If you want to keep as much data as possible in your infrastructure you can conf
 
 > :warning: You can only set one provider at a time
 
-These buckets are used as temporary storage when importing data, for map thumbnails, and other internal data.
+> These buckets are used as temporary storage when importing data, for map thumbnails, and other internal data.
 
 <!--
 TODO: Add the code related to Terraform
