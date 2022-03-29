@@ -1,12 +1,12 @@
 # Customizations
 
 This file explains how to configure CARTO Self Hosted to meet your needs. In this folder you will find also
-examples _yaml_ files that you can pass to `helm` to apply those configurations.
+examples _yaml_ files that you can pass to `helm` to adapt CARTO Self Hosted to your needs.
 
 ## Production Ready
 
-By default, the Helm configuration provided by CARTO works out of the box, but it's **not production ready**.
-There are several things to configure to prepare it for production workloads:
+The default Helm configuration provided by CARTO works out of the box, but it's **not production ready**.
+There are several things to prepare to make it production ready:
 
 1. [Configure the domain](#configure-the-domain-of-your-self-hosted) that will be used.
 2. [Expose service](#access-to-carto-from-outside-the-cluster) to be accessed from outside the cluster.
@@ -25,7 +25,7 @@ Create a dedicated [yaml](https://yaml.org/) file `customizations.yaml` for your
   ```yaml
   appConfigValues:
     selfHostedDomain: "my.domain.com"
-  appSecrets:
+  #appSecrets:
     #googleMapsApiKey:
     #value: "<google-maps-api-key>"
     #other secrets, like buckets' configuration
@@ -209,7 +209,7 @@ CARTO Self Hosted require a Redis (version 5+) to work. This Redis instance does
 This package comes with an internal Redis but it is not recommended for production. It does not have any logic for backups or any other monitoring.
 
 In the same way as with Postgres, there are two alternatives regarding the secrets,
-[set the secrets manually](#setup-redis-creating-secrets)and point to them from the configuration,
+[set the secrets manually](#setup-redis-creating-secrets) and point to them from the configuration,
 or let the chart to create the [secrets automatically](#setup-redis-with-automatic-secret-creation).
 
 #### Setup Redis creating secrets
