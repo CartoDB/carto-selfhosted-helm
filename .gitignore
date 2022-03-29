@@ -2,9 +2,9 @@
 /.idea/*
 .vscode
 .DS_Store
-**/key.json
+**/*key.json
 **/k8s-google-serviceaccount-secret.yaml
-**/carto-secrets.yaml
-**/carto-values.yaml
+**/carto-secrets.yaml*
+**/carto-values.yaml*
 **/customer.env
 **/customization.yaml

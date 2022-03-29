@@ -13,7 +13,7 @@ metadata:
   {{- end }}
 data:
   ACC_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
-  ACC_GCP_PROJECT_REGION: {{ .Values.cartoConfigValues.cartoAccGcpProjectRegion | quote }}  
+  ACC_GCP_PROJECT_REGION: {{ .Values.cartoConfigValues.cartoAccGcpProjectRegion | quote }}
   CARTO3_SELFHOSTED_VOLUMES_BASE_PATH: "./"
   CARTO_SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
@@ -24,7 +24,7 @@ data:
   CDN_INVALIDATOR_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   CDN_INVALIDATOR_VARNISH_PURGE_BASE_URL: "http://{{ include "carto.httpCache.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
-  GOOGLE_APPLICATION_CREDENTIALS: "/usr/src/certs/key.json"
+  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   SELFHOSTED_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
