@@ -31,7 +31,7 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
 1. Authenticate and connect to your cluster
 
 2. Obtain the configuration files provided by Carto.
-That files are unique per Self Hosted (**they cannot be shared between multiple installations**) and contain secrets, be careful storing and sharing them.
+These files are unique per Self Hosted (**they cannot be shared between multiple installations**) and contain secrets, be careful storing and sharing them.
 
 3. Add CARTO helm repository:
 
@@ -47,7 +47,7 @@ That files are unique per Self Hosted (**they cannot be shared between multiple 
   ```
 
 4. Configure your deployment. Please, read the available [customizations](customizations/README.md) options. At least you will need
-to configure your domain.
+to configure the domain name.
 
 5. Install CARTO:
 
@@ -63,7 +63,7 @@ to configure your domain.
 
   > Note: You can specify the '-f' flag multiple times. The priority will be given to the last (right-most) file specified. For example, if both `carto-values.yaml` and `customizations.yaml` contained a key called 'Test', the value set in `customizations.yaml` would take precedence. For this reason, please follow the order describe in the above example.
 
-6. Read and follow the instructions provided by the previous command.
+6. Read and follow the instructions provided by the previous command (eg: what you need to configure your DNS).
 
 ## Update
 
