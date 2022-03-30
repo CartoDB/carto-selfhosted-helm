@@ -3,7 +3,7 @@ on:
   release:
     types: [prereleased, released]
 env:
-  GCLOUD_VERSION: '297.0.1' # https://github.com/google-github-actions/setup-gcloud/issues/128
+  GCLOUD_VERSION: '297.0.1' # https://github.com/google-github-actions/setup-gcloud@v0
   CHARTS_REPOSITORY: "https://helm.carto.com/"
   CHARTS_BUCKET: "gs://carto-helm"
   PROJECT_ID: carto-onprem-artifacts
