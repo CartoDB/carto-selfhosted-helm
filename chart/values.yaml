@@ -3609,9 +3609,9 @@ internalPostgresql:
   ##
   nameOverride: "postgresql"
   auth:
-    username: carto
+    username: workspace_admin
     password: ""
-    database: workspace_db
+    database: workspace
     postgresPassword: ""
     ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
     ##
@@ -3647,7 +3647,7 @@ internalPostgresql:
 ##
 externalPostgresql:
   host: localhost
-  user: carto
+  user: workspace_admin
   internalUser: ""
   password: ""
   adminUser: postgres
@@ -3656,5 +3656,5 @@ externalPostgresql:
   existingSecret: ""
   existingSecretPasswordKey: ""
   existingSecretAdminPasswordKey: ""
-  database: workspace_db
+  database: workspace
   port: 5432

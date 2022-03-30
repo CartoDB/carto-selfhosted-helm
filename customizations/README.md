@@ -155,12 +155,12 @@ Add the following lines to you `customizations.yaml` to connect to the external 
       enabled: false
     externalPostgresql:
       host: <Postgres IP/Hostname>
-      user: "carto"
+      user: "workspace_admin"
       adminUser: "postgres"
       existingSecret: "mycarto-custom-postgres-secret"
       existingSecretPasswordKey: "carto-password"
       existingSecretAdminPasswordKey: "admin-password"
-      database: "workspace_db"
+      database: "workspace"
       port: "5432"
     ```
 
@@ -175,11 +175,11 @@ Add the following lines to you `customizations.yaml` to connect to the external 
       enabled: false
     externalPostgresql:
       host: <Postgres IP/Hostname>
-      user: "carto"
+      user: "workspace_admin"
       password: ""
       adminUser: "postgres"
       adminPassword: ""
-      database: "workspace_db"
+      database: "workspace"
       port: "5432"
     ```
 
@@ -195,8 +195,8 @@ In case you are using an Azure Postgres as an external database you should add t
 ```yaml
 externalPostgresql:
   ...
-  user: "carto@database-name"
-  internalUser: "carto"
+  user: "workspace_admin@database-name"
+  internalUser: "workspace_admin"
   ...
   adminUser: "postgres@database-name"
   internalAdminUser: "postgres"

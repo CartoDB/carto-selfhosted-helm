@@ -1153,10 +1153,10 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | Name                                        | Description                                                                                  | Value                  |
 | ------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------- |
 | `internalPostgresql.enabled`                | Switch to enable or disable the PostgreSQL helm chart                                        | `true`                 |
-| `internalPostgresql.auth.username`          | CARTO Postgresql username                                                                    | `carto`                |
+| `internalPostgresql.auth.username`          | CARTO Postgresql username                                                                    | `workspace_admin`      |
 | `internalPostgresql.auth.password`          | CARTO Postgresql password                                                                    | `""`                   |
 | `internalPostgresql.auth.postgresPassword`  | CARTO Postgresql password for the postgres user                                              | `""`                   |
-| `internalPostgresql.auth.database`          | CARTO Postgresql database                                                                    | `workspace_db`         |
+| `internalPostgresql.auth.database`          | CARTO Postgresql database                                                                    | `workspace`            |
 | `internalPostgresql.auth.existingSecret`    | Name of an existing secret containing the PostgreSQL password ('postgresql-password' key)    | `""`                   |
 | `internalPostgresql.image.tag`              | Tag of the PostgreSQL image                                                                  | `13.5.0-debian-10-r84` |
 | `internalPostgresql.nameOverride`           | String to partially override common.names.fullname template (will maintain the release name) | `postgresql`           |
@@ -1165,20 +1165,20 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### External PostgreSQL parameters
 
-| Name                                                | Description                                                                                                                            | Value          |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| `externalPostgresql.host`                           | Database host                                                                                                                          | `localhost`    |
-| `externalPostgresql.user`                           | non-root Username for CARTO Database (seen from outside the database)                                                                  | `carto`        |
-| `externalPostgresql.internalUser`                   | non-root Username for CARTO Database (seen from inside the database). If this value is not defined, `externalPostgresql.user` is used. | `""`           |
-| `externalPostgresql.password`                       | Database password                                                                                                                      | `""`           |
-| `externalPostgresql.adminUser`                      | Database admin user (seen from outside the database)                                                                                   | `postgres`     |
-| `externalPostgresql.internalAdminUser`              | Database admin user (seen from inside the database). If this value is not defined, `externalPostgresql.adminUser` is used.             | `""`           |
-| `externalPostgresql.adminPassword`                  | Database admin password                                                                                                                | `""`           |
-| `externalPostgresql.existingSecret`                 | Name of an existing secret resource containing the DB password                                                                         | `""`           |
-| `externalPostgresql.existingSecretPasswordKey`      | Name of the key inside the secret containing the DB password                                                                           | `""`           |
-| `externalPostgresql.existingSecretAdminPasswordKey` | Name of the key inside the secret containing the DB admin password                                                                     | `""`           |
-| `externalPostgresql.database`                       | Database name                                                                                                                          | `workspace_db` |
-| `externalPostgresql.port`                           | Database port number                                                                                                                   | `5432`         |
+| Name                                                | Description                                                                                                                            | Value             |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| `externalPostgresql.host`                           | Database host                                                                                                                          | `localhost`       |
+| `externalPostgresql.user`                           | non-root Username for CARTO Database (seen from outside the database)                                                                  | `workspace_admin` |
+| `externalPostgresql.internalUser`                   | non-root Username for CARTO Database (seen from inside the database). If this value is not defined, `externalPostgresql.user` is used. | `""`              |
+| `externalPostgresql.password`                       | Database password                                                                                                                      | `""`              |
+| `externalPostgresql.adminUser`                      | Database admin user (seen from outside the database)                                                                                   | `postgres`        |
+| `externalPostgresql.internalAdminUser`              | Database admin user (seen from inside the database). If this value is not defined, `externalPostgresql.adminUser` is used.             | `""`              |
+| `externalPostgresql.adminPassword`                  | Database admin password                                                                                                                | `""`              |
+| `externalPostgresql.existingSecret`                 | Name of an existing secret resource containing the DB password                                                                         | `""`              |
+| `externalPostgresql.existingSecretPasswordKey`      | Name of the key inside the secret containing the DB password                                                                           | `""`              |
+| `externalPostgresql.existingSecretAdminPasswordKey` | Name of the key inside the secret containing the DB admin password                                                                     | `""`              |
+| `externalPostgresql.database`                       | Database name                                                                                                                          | `workspace`       |
+| `externalPostgresql.port`                           | Database port number                                                                                                                   | `5432`            |
 
 
 ## Configuration and installation details
