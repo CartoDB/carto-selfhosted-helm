@@ -167,7 +167,7 @@ tlsCerts:
 ## @param global.storageClass Global StorageClass for Persistent Volume(s)
 ##
 global:
-  imageRegistry: ""
+  imageRegistry: "gcr.io/carto-onprem-artifacts"
   ## E.g.
   ## imagePullSecrets:
   ##   - myRegistryKeySecretName
@@ -233,7 +233,7 @@ accountsWww:
   ## @param accountsWww.image.pullSecrets accounts-www image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/accounts-www
+    name: ""
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -551,7 +551,7 @@ importApi:
   ## @param importApi.image.pullSecrets import-api image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/import-api
+    name: ""
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -868,7 +868,7 @@ importWorker:
   ## @param importWorker.image.pullSecrets import-worker image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/import-api
+    name: ""
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -1079,7 +1079,7 @@ ldsApi:
   ## @param ldsApi.image.pullSecrets lds-api image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/lds-api
+    name: ""
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -1396,7 +1396,7 @@ mapsApi:
   ## @param mapsApi.image.pullSecrets maps-api image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/maps-api
+    name: ""
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -1714,7 +1714,7 @@ router:
   ## @param router.image.pullSecrets router image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/router
+    name: ""
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -2038,7 +2038,7 @@ httpCache:
   ## @param httpCache.image.pullSecrets http-cache image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/http-cache
+    name: ""
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -2344,7 +2344,7 @@ cdnInvalidatorSub:
   ## @param cdnInvalidatorSub.image.pullSecrets cdnInvalidatorSub image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/consumers/cdn-invalidator-sub
+    name: ""
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -2652,7 +2652,7 @@ workspaceApi:
   ## @param workspaceApi.image.pullSecrets workspace-api image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/workspace-api
+    name: ""
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -2970,7 +2970,7 @@ workspaceSubscriber:
   ## @param workspaceSubscriber.image.pullSecrets workspace-subscriber image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/workspace-api
+    name: ""
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -3181,7 +3181,7 @@ workspaceWww:
   ## @param workspaceWww.image.pullSecrets workspace-www image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/workspace-www
+    name: ""
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -3540,12 +3540,12 @@ workspaceMigrations:
     runAsUser: 0
     runAsNonRoot: false
 
-## @section Internal Redis&trade; subchart parameters
+## @section Internal Redis subchart parameters
 ## Internal Redis &trade; chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/redis/values.yaml
-## @param internalRedis.enabled Switch to enable or disable the Redis&trade; helm
+## @param internalRedis.enabled Switch to enable or disable the Redis helm
 ## @param internalRedis.auth.enabled Switch to enable or disable authentication
-## @param internalRedis.auth.password Redis&trade; password
+## @param internalRedis.auth.password Redis password
 ## @param internalRedis.auth.existingSecret Name of existing secret object containing the password
 ## @param internalRedis.architecture Cluster settings
 ## @param internalRedis.master.persistence.enabled Enable master persistent volumes
@@ -3558,7 +3558,7 @@ internalRedis:
   nameOverride: "redis"
   auth:
     enabled: true
-    ## Redis&trade; password (both master and slave). Defaults to a random 10-character alphanumeric string if not set and auth.enabled is true.
+    ## Redis password (both master and slave). Defaults to a random 10-character alphanumeric string if not set and auth.enabled is true.
     ## It should always be set using the password value or in the existingSecret to avoid issues
     ## with CARTO.
     ## The password value is ignored if existingSecret is set
@@ -3573,13 +3573,13 @@ internalRedis:
     persistence:
       enabled: false
 
-## @section External Redis&trade; parameters
-## External Redis&trade; configuration
+## @section External Redis parameters
+## External Redis configuration
 ## All of these values are only used when redis.enabled is set to false
-## @param externalRedis.host Redis&trade; host
-## @param externalRedis.port Redis&trade; port number
-## @param externalRedis.password Redis&trade; password
-## @param externalRedis.existingSecret Name of an existing secret resource containing the Redis&trade; password in a 'redis-password' key
+## @param externalRedis.host Redis host
+## @param externalRedis.port Redis port number
+## @param externalRedis.password Redis password
+## @param externalRedis.existingSecret Name of an existing secret resource containing the Redis password in a 'redis-password' key
 ## @param externalRedis.existingSecretPasswordKey Key of the existing secret
 ##
 externalRedis:

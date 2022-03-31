@@ -72,7 +72,7 @@ spec:
       {{- end }}
       containers:
         - name: router
-          image: "{{ .Values.router.image.name }}:{{- include "carto.router.tag" . -}}"
+          image: "{{- include "carto.router.image" . -}}:{{- include "carto.router.tag" . -}}"
           imagePullPolicy: {{ .Values.router.image.pullPolicy }}
           {{- if .Values.router.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.router.containerSecurityContext "enabled" | toYaml | nindent 12 }}

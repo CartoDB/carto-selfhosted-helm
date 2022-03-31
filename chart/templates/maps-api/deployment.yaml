@@ -76,7 +76,7 @@ spec:
       {{- end }}
       containers:
         - name: maps-api
-          image: "{{ .Values.mapsApi.image.name }}:{{- include "carto.mapsApi.tag" . -}}"
+          image: "{{- include "carto.mapsApi.image" . -}}:{{- include "carto.mapsApi.tag" . -}}"
           imagePullPolicy: {{ .Values.mapsApi.image.pullPolicy }}
           {{- if .Values.mapsApi.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.mapsApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}

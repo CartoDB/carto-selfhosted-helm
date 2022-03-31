@@ -73,7 +73,7 @@ spec:
       {{- end }}
       containers:
         - name: http-cache
-          image: "{{ .Values.httpCache.image.name }}:{{- include "carto.httpCache.tag" . -}}"
+          image: "{{- include "carto.httpCache.image" . -}}:{{- include "carto.httpCache.tag" . -}}"
           imagePullPolicy: {{ .Values.httpCache.image.pullPolicy }}
           {{- if .Values.httpCache.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.httpCache.containerSecurityContext "enabled" | toYaml | nindent 12 }}

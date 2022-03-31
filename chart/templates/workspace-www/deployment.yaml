@@ -70,7 +70,7 @@ spec:
       {{- end }}
       containers:
         - name: workspace-www
-          image: "{{ .Values.workspaceWww.image.name }}:{{- include "carto.workspaceWww.tag" . -}}"
+          image: "{{- include "carto.workspaceWww.image" . -}}:{{- include "carto.workspaceWww.tag" . -}}"
           imagePullPolicy: {{ .Values.workspaceWww.image.pullPolicy }}
           {{- if .Values.workspaceWww.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.workspaceWww.containerSecurityContext "enabled" | toYaml | nindent 12 }}

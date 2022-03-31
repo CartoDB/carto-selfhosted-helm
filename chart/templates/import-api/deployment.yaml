@@ -76,7 +76,7 @@ spec:
       {{- end }}
       containers:
         - name: import-api
-          image: "{{ .Values.importApi.image.name }}:{{- include "carto.importApi.tag" . -}}"
+          image: "{{- include "carto.importApi.image" . -}}:{{- include "carto.importApi.tag" . -}}"
           imagePullPolicy: {{ .Values.importApi.image.pullPolicy }}
           {{- if .Values.importApi.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.importApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}

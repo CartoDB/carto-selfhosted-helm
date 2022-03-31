@@ -127,7 +127,7 @@ spec:
       {{- end }}
       containers:
         - name: workspace-api
-          image: "{{ .Values.workspaceApi.image.name }}:{{- include "carto.workspaceApi.tag" . -}}"
+          image: "{{- include "carto.workspaceApi.image" . -}}:{{- include "carto.workspaceApi.tag" . -}}"
           imagePullPolicy: {{ .Values.workspaceApi.image.pullPolicy }}
           {{- if .Values.workspaceApi.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.workspaceApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}

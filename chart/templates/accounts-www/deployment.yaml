@@ -69,7 +69,7 @@ spec:
       {{- end }}
       containers:
         - name: accounts-www
-          image: "{{ .Values.accountsWww.image.name }}:{{- include "carto.accountsWww.tag" . -}}"
+          image: "{{- include "carto.accountsWww.image" . -}}:{{- include "carto.accountsWww.tag" . -}}"
           imagePullPolicy: {{ .Values.accountsWww.image.pullPolicy }}
           {{- if .Values.accountsWww.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.accountsWww.containerSecurityContext "enabled" | toYaml | nindent 12 }}

@@ -73,7 +73,7 @@ spec:
       {{- end }}
       containers:
         - name: cdn-invalidator-sub
-          image: "{{ .Values.cdnInvalidatorSub.image.name }}:{{- include "carto.cdnInvalidatorSub.tag" . -}}"
+          image: "{{- include "carto.cdnInvalidatorSub.image" . -}}:{{- include "carto.cdnInvalidatorSub.tag" . -}}"
           imagePullPolicy: {{ .Values.cdnInvalidatorSub.image.pullPolicy }}
           {{- if .Values.cdnInvalidatorSub.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.cdnInvalidatorSub.containerSecurityContext "enabled" | toYaml | nindent 12 }}

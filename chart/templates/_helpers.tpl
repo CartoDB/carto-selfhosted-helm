@@ -191,6 +191,17 @@ Return the proper Carto lds-api full name
 {{- end -}}
 
 {{/*
+Return the proper image name for ldsApi
+*/}}
+{{- define "carto.ldsApi.image" -}}
+{{- if .Values.ldsApi.image.name -}}
+{{- .Values.ldsApi.image.name -}}
+{{- else -}}
+{{- printf "%s/%s" .Values.global.imageRegistry "lds-api" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper tag name for ldsApi image
 */}}
 {{- define "carto.ldsApi.tag" -}}
@@ -235,6 +246,17 @@ Return the proper Carto import-worker full name
 */}}
 {{- define "carto.importWorker.fullname" -}}
 {{- printf "%s-import-worker" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper image name for importWorker
+*/}}
+{{- define "carto.importWorker.image" -}}
+{{- if .Values.importWorker.image.name -}}
+{{- .Values.importWorker.image.name -}}
+{{- else -}}
+{{- printf "%s/%s" .Values.global.imageRegistry "import-api" -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -285,6 +307,17 @@ Return the proper Carto import-api full name
 {{- end -}}
 
 {{/*
+Return the proper image name for importApi
+*/}}
+{{- define "carto.importApi.image" -}}
+{{- if .Values.importApi.image.name -}}
+{{- .Values.importApi.image.name -}}
+{{- else -}}
+{{- printf "%s/%s" .Values.global.imageRegistry "import-api" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper tag name for importApi image
 */}}
 {{- define "carto.importApi.tag" -}}
@@ -329,6 +362,17 @@ Return the proper Carto maps-api full name
 */}}
 {{- define "carto.mapsApi.fullname" -}}
 {{- printf "%s-maps-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper image name for mapsApi
+*/}}
+{{- define "carto.mapsApi.image" -}}
+{{- if .Values.mapsApi.image.name -}}
+{{- .Values.mapsApi.image.name -}}
+{{- else -}}
+{{- printf "%s/%s" .Values.global.imageRegistry "maps-api" -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -379,6 +423,17 @@ Return the proper Carto workspace-subscriber full name
 {{- end -}}
 
 {{/*
+Return the proper image name for workspaceSubscriber
+*/}}
+{{- define "carto.workspaceSubscriber.image" -}}
+{{- if .Values.workspaceSubscriber.image.name -}}
+{{- .Values.workspaceSubscriber.image.name -}}
+{{- else -}}
+{{- printf "%s/%s" .Values.global.imageRegistry "workspace-api" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper tag name for workspaceSubscriber image
 */}}
 {{- define "carto.workspaceSubscriber.tag" -}}
@@ -423,6 +478,17 @@ Return the proper Carto workspace-api full name
 */}}
 {{- define "carto.workspaceApi.fullname" -}}
 {{- printf "%s-workspace-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper image name for workspaceApi
+*/}}
+{{- define "carto.workspaceApi.image" -}}
+{{- if .Values.workspaceApi.image.name -}}
+{{- .Values.workspaceApi.image.name -}}
+{{- else -}}
+{{- printf "%s/%s" .Values.global.imageRegistry "workspace-api" -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -486,6 +552,17 @@ Return the proper Carto workspace-www full name
 {{- end -}}
 
 {{/*
+Return the proper image name for workspaceWww
+*/}}
+{{- define "carto.workspaceWww.image" -}}
+{{- if .Values.workspaceWww.image.name -}}
+{{- .Values.workspaceWww.image.name -}}
+{{- else -}}
+{{- printf "%s/%s" .Values.global.imageRegistry "workspace-www" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper tag name for workspaceWww image
 */}}
 {{- define "carto.workspaceWww.tag" -}}
@@ -530,6 +607,17 @@ Return the proper Carto accounts-www full name
 */}}
 {{- define "carto.accountsWww.fullname" -}}
 {{- printf "%s-accounts-www" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper image name for accountsWww
+*/}}
+{{- define "carto.accountsWww.image" -}}
+{{- if .Values.accountsWww.image.name -}}
+{{- .Values.accountsWww.image.name -}}
+{{- else -}}
+{{- printf "%s/%s" .Values.global.imageRegistry "accounts-www" -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -580,6 +668,17 @@ Return the proper Carto router full name
 {{- end -}}
 
 {{/*
+Return the proper image name for router
+*/}}
+{{- define "carto.router.image" -}}
+{{- if .Values.router.image.name -}}
+{{- .Values.router.image.name -}}
+{{- else -}}
+{{- printf "%s/%s" .Values.global.imageRegistry "router" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper tag name for router image
 */}}
 {{- define "carto.router.tag" -}}
@@ -624,6 +723,17 @@ Return the proper Carto http-cache full name
 */}}
 {{- define "carto.httpCache.fullname" -}}
 {{- printf "%s-http-cache" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper image name for httpCache
+*/}}
+{{- define "carto.httpCache.image" -}}
+{{- if .Values.httpCache.image.name -}}
+{{- .Values.httpCache.image.name -}}
+{{- else -}}
+{{- printf "%s/%s" .Values.global.imageRegistry "http-cache" -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -714,6 +824,17 @@ Create the name of the service account to use for the cdn-invalidator-sub deploy
 {{- end -}}
 
 {{/*
+Return the proper image name for cdnInvalidatorSub
+*/}}
+{{- define "carto.cdnInvalidatorSub.image" -}}
+{{- if .Values.cdnInvalidatorSub.image.name -}}
+{{- .Values.cdnInvalidatorSub.image.name -}}
+{{- else -}}
+{{- printf "%s/%s" .Values.global.imageRegistry "cdn-invalidator-sub" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper tag name for workspaceMigrations image
 */}}
 {{- define "carto.workspaceMigrations.tag" -}}
@@ -724,7 +845,20 @@ Return the proper tag name for workspaceMigrations image
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.pullSecrets" (dict "images" (dict .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image) "global" .Values.global) -}}
+{{- include "common.images.pullSecrets" (dict "images" (dict
+  .Values.accountsWww.image
+  .Values.importApi.image
+  .Values.importWorker.image
+  .Values.ldsApi.image
+  .Values.mapsApi.image
+  .Values.router.image
+  .Values.httpCache.image
+  .Values.cdnInvalidatorSub.image
+  .Values.workspaceApi.image
+  .Values.workspaceSubscriber.image
+  .Values.workspaceWww.image
+  .Values.workspaceMigrations.image
+) "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
