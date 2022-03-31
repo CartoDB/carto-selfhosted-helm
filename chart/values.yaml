@@ -3498,7 +3498,7 @@ workspaceMigrations:
   ## @param workspaceMigrations.image.pullSecrets workspace-db image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/workspace-db
+    name: ""
     ## Specify a custom image tag
     tag: ""
     pullPolicy: IfNotPresent

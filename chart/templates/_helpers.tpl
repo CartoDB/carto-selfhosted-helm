@@ -835,6 +835,17 @@ Return the proper image name for cdnInvalidatorSub
 {{- end -}}
 
 {{/*
+Return the proper image name for workspaceMigrations
+*/}}
+{{- define "carto.workspaceMigrations.image" -}}
+{{- if .Values.workspaceMigrations.image.name -}}
+{{- .Values.workspaceMigrations.image.name -}}
+{{- else -}}
+{{- printf "%s/%s" .Values.global.imageRegistry "workspace-db" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper tag name for workspaceMigrations image
 */}}
 {{- define "carto.workspaceMigrations.tag" -}}
