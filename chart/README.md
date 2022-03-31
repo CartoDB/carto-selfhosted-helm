@@ -1108,19 +1108,19 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### Init Container Parameters
 
-| Name                                                        | Description                                                          | Value                                        |
-| ----------------------------------------------------------- | -------------------------------------------------------------------- | -------------------------------------------- |
-| `workspaceMigrations.image.name`                            | workspace-db image registry and repository                           | `gcr.io/carto-onprem-artifacts/workspace-db` |
-| `workspaceMigrations.image.tag`                             | workspace-db image tag (immutable tags are recommended)              | `""`                                         |
-| `workspaceMigrations.image.pullPolicy`                      | workspace-db image pull policy                                       | `IfNotPresent`                               |
-| `workspaceMigrations.image.pullSecrets`                     | workspace-db image pull secrets                                      | `[]`                                         |
-| `workspaceMigrations.command`                               | Override default container command (useful when using custom images) | `[]`                                         |
-| `workspaceMigrations.args`                                  | Override default container args (useful when using custom images)    | `[]`                                         |
-| `workspaceMigrations.resources.limits`                      | The resources limits for the init container                          | `{}`                                         |
-| `workspaceMigrations.resources.requests`                    | The requested resources for the init container                       | `{}`                                         |
-| `workspaceMigrations.containerSecurityContext.enabled`      | Enable container security context                                    | `true`                                       |
-| `workspaceMigrations.containerSecurityContext.runAsUser`    | Set init container's Security Context runAsUser                      | `0`                                          |
-| `workspaceMigrations.containerSecurityContext.runAsNonRoot` | Force the init container to run as non root                          | `false`                                      |
+| Name                                                        | Description                                                          | Value          |
+| ----------------------------------------------------------- | -------------------------------------------------------------------- | -------------- |
+| `workspaceMigrations.image.name`                            | workspace-db image registry and repository                           | `""`           |
+| `workspaceMigrations.image.tag`                             | workspace-db image tag (immutable tags are recommended)              | `""`           |
+| `workspaceMigrations.image.pullPolicy`                      | workspace-db image pull policy                                       | `IfNotPresent` |
+| `workspaceMigrations.image.pullSecrets`                     | workspace-db image pull secrets                                      | `[]`           |
+| `workspaceMigrations.command`                               | Override default container command (useful when using custom images) | `[]`           |
+| `workspaceMigrations.args`                                  | Override default container args (useful when using custom images)    | `[]`           |
+| `workspaceMigrations.resources.limits`                      | The resources limits for the init container                          | `{}`           |
+| `workspaceMigrations.resources.requests`                    | The requested resources for the init container                       | `{}`           |
+| `workspaceMigrations.containerSecurityContext.enabled`      | Enable container security context                                    | `true`         |
+| `workspaceMigrations.containerSecurityContext.runAsUser`    | Set init container's Security Context runAsUser                      | `0`            |
+| `workspaceMigrations.containerSecurityContext.runAsNonRoot` | Force the init container to run as non root                          | `false`        |
 
 
 ### Internal Redis subchart parameters
