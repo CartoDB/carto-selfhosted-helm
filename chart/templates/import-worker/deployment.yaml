@@ -13,11 +13,7 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  {{- if .Values.cartoConfigValues.selfHostedTenantId }}
   replicas: {{ .Values.importWorker.replicaCount }}
-  {{- else }}
-  replicas: 0
-  {{- end }}
   {{- if .Values.importWorker.updateStrategy }}
   strategy: {{- toYaml .Values.importWorker.updateStrategy | nindent 4 }}
   {{- end }}
