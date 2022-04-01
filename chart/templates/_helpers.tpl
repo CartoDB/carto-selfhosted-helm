@@ -830,7 +830,7 @@ Return the proper image name for cdnInvalidatorSub
 {{- if .Values.cdnInvalidatorSub.image.name -}}
 {{- .Values.cdnInvalidatorSub.image.name -}}
 {{- else -}}
-{{- printf "%s/%s" .Values.global.imageRegistry "cdn-invalidator-sub" -}}
+{{- printf "%s/%s" .Values.global.imageRegistry "consumers/cdn-invalidator-sub" -}}
 {{- end -}}
 {{- end -}}
 
