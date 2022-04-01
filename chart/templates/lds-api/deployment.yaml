@@ -168,9 +168,9 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: google-secret
-              mountPath: /usr/src/certs/key.json
-              subPath: {{ template "carto.google.secretKey" . }}
+            - name: gcp-default-service-account-key
+              mountPath: {{ include "carto.google.secretMountDir" . }}
+              readOnly: true
           {{- if .Values.ldsApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -178,9 +178,12 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.ldsApi.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: google-secret
+        - name: gcp-default-service-account-key
           secret:
             secretName: {{ include "carto.google.secretName" . }}
+            items:
+              - key: {{ include "carto.google.secretKey" . }}
+                path: {{ include "carto.google.secretMountFilename" . }}
         {{- if .Values.ldsApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
