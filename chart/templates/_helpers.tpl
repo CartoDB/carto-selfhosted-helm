@@ -134,6 +134,25 @@ Generate the secret def to be used in pods definitions
 {{- end -}}
 
 {{/*
+As a replacement for "common.images.image" that forces you to set image.tag value
+*/}}
+{{- define "carto.images.image" -}}
+{{- $registryName := .imageRoot.registry -}}
+{{- $repositoryName := .imageRoot.repository -}}
+{{- $tag := (coalesce .imageRoot.tag .Chart.AppVersion) | toString -}}
+{{- if .global }}
+    {{- if .global.imageRegistry }}
+     {{- $registryName = .global.imageRegistry -}}
+    {{- end -}}
+{{- end -}}
+{{- if $registryName }}
+{{- printf "%s/%s:%s" $registryName $repositoryName $tag -}}
+{{- else -}}
+{{- printf "%s:%s" $repositoryName $tag -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create gcpBucketsProjectId using the gcpBucketsProjectId config or, if not defined, selfHostedGcpProjectId.
 */}}
 {{- define "carto.gcpBucketsProjectId" -}}
@@ -191,10 +210,10 @@ Return the proper Carto lds-api full name
 {{- end -}}
 
 {{/*
-Return the proper tag name for ldsApi image
+Return the proper Carto lds-api image name
 */}}
-{{- define "carto.ldsApi.tag" -}}
-{{- default .Chart.AppVersion .Values.ldsApi.image.tag -}}
+{{- define "carto.ldsApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.ldsApi.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{/*
@@ -238,10 +257,10 @@ Return the proper Carto import-worker full name
 {{- end -}}
 
 {{/*
-Return the proper tag name for importWorker image
+Return the proper Carto import-worker image name
 */}}
-{{- define "carto.importWorker.tag" -}}
-{{- default .Chart.AppVersion .Values.importWorker.image.tag -}}
+{{- define "carto.importWorker.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.importWorker.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{/*
@@ -285,10 +304,10 @@ Return the proper Carto import-api full name
 {{- end -}}
 
 {{/*
-Return the proper tag name for importApi image
+Return the proper Carto import-api image name
 */}}
-{{- define "carto.importApi.tag" -}}
-{{- default .Chart.AppVersion .Values.importApi.image.tag -}}
+{{- define "carto.importApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.importApi.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{/*
@@ -332,10 +351,10 @@ Return the proper Carto maps-api full name
 {{- end -}}
 
 {{/*
-Return the proper tag name for mapsApi image
+Return the proper Carto maps-api image name
 */}}
-{{- define "carto.mapsApi.tag" -}}
-{{- default .Chart.AppVersion .Values.mapsApi.image.tag -}}
+{{- define "carto.mapsApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.mapsApi.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{/*
@@ -379,10 +398,10 @@ Return the proper Carto workspace-subscriber full name
 {{- end -}}
 
 {{/*
-Return the proper tag name for workspaceSubscriber image
+Return the proper Carto workspace-subscriber image name
 */}}
-{{- define "carto.workspaceSubscriber.tag" -}}
-{{- default .Chart.AppVersion .Values.workspaceSubscriber.image.tag -}}
+{{- define "carto.workspaceSubscriber.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.workspaceSubscriber.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{/*
@@ -426,10 +445,10 @@ Return the proper Carto workspace-api full name
 {{- end -}}
 
 {{/*
-Return the proper tag name for workspaceApi image
+Return the proper Carto workspaceApi image name
 */}}
-{{- define "carto.workspaceApi.tag" -}}
-{{- default .Chart.AppVersion .Values.workspaceApi.image.tag -}}
+{{- define "carto.workspaceApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.workspaceApi.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{/*
@@ -486,10 +505,10 @@ Return the proper Carto workspace-www full name
 {{- end -}}
 
 {{/*
-Return the proper tag name for workspaceWww image
+Return the proper Carto workspace-www image name
 */}}
-{{- define "carto.workspaceWww.tag" -}}
-{{- default .Chart.AppVersion .Values.workspaceWww.image.tag -}}
+{{- define "carto.workspaceWww.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.workspaceWww.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{/*
@@ -533,10 +552,10 @@ Return the proper Carto accounts-www full name
 {{- end -}}
 
 {{/*
-Return the proper tag name for accountsWww image
+Return the proper Carto accounts-www image name
 */}}
-{{- define "carto.accountsWww.tag" -}}
-{{- default .Chart.AppVersion .Values.accountsWww.image.tag -}}
+{{- define "carto.accountsWww.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.accountsWww.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{/*
@@ -580,10 +599,10 @@ Return the proper Carto router full name
 {{- end -}}
 
 {{/*
-Return the proper tag name for router image
+Return the proper Carto router image name
 */}}
-{{- define "carto.router.tag" -}}
-{{- default .Chart.AppVersion .Values.router.image.tag -}}
+{{- define "carto.router.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.router.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{/*
@@ -627,10 +646,10 @@ Return the proper Carto http-cache full name
 {{- end -}}
 
 {{/*
-Return the proper tag name for httpCache image
+Return the proper Carto http-cache image name
 */}}
-{{- define "carto.httpCache.tag" -}}
-{{- default .Chart.AppVersion .Values.httpCache.image.tag -}}
+{{- define "carto.httpCache.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.httpCache.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{/*
@@ -674,10 +693,10 @@ Return the proper Carto cdn-invalidator-sub full name
 {{- end -}}
 
 {{/*
-Return the proper tag name for cdnInvalidatorSub image
+Return the proper Carto cdn-invalidator-sub image name
 */}}
-{{- define "carto.cdnInvalidatorSub.tag" -}}
-{{- default .Chart.AppVersion .Values.cdnInvalidatorSub.image.tag -}}
+{{- define "carto.cdnInvalidatorSub.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.cdnInvalidatorSub.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{/*
@@ -714,10 +733,10 @@ Create the name of the service account to use for the cdn-invalidator-sub deploy
 {{- end -}}
 
 {{/*
-Return the proper tag name for workspaceMigrations image
+Return the proper Carto workspace-db image name
 */}}
-{{- define "carto.workspaceMigrations.tag" -}}
-{{- default .Chart.AppVersion .Values.workspaceMigrations.image.tag -}}
+{{- define "carto.workspaceMigrations.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.workspaceMigrations.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{/*
