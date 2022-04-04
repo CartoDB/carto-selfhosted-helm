@@ -212,6 +212,8 @@ In the same way as with Postgres, there are two alternatives regarding the secre
 [set the secrets manually](#setup-redis-creating-secrets) and point to them from the configuration,
 or let the chart to create the [secrets automatically](#setup-redis-with-automatic-secret-creation).
 
+> :warning: In case you are using a Redis TLS with a self-signed certificate you should add an extra parameter named `externalRedis.tls_ca` which value it's the CA cert of the self-signed certificate in plain text
+
 #### Setup Redis creating secrets
 
 1. Add the secret:
@@ -227,7 +229,6 @@ or let the chart to create the [secrets automatically](#setup-redis-with-automat
 
 Add the following lines to you `customizations.yaml` to connect to the external Postgres:
 
-> :warning: In case you are using a Redis TLS with a self-signed certificate you should add an extra parameter named `externalRedis.tls_ca` which value it's the CA cert of the self-signed certificate in plain text
 
   ```yaml
   internalRedis:
@@ -250,8 +251,6 @@ Add the following lines to you `customizations.yaml` to connect to the external 
 
 1. Configure the package:
 Add the following lines to you `customizations.yaml` to connect to the external Postgres:
-
-> :warning: In case you are using a Redis TLS with a self-signed certificate you should add an extra parameter named `externalRedis.tls_ca` which value it's the CA cert of the self-signed certificate in plain text
 
   ```yaml
   internalRedis:
