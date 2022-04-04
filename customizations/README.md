@@ -212,6 +212,8 @@ In the same way as with Postgres, there are two alternatives regarding the secre
 [set the secrets manually](#setup-redis-creating-secrets) and point to them from the configuration,
 or let the chart to create the [secrets automatically](#setup-redis-with-automatic-secret-creation).
 
+> :warning: In case you are using a Redis TLS with a self-signed certificate you should add an extra parameter named `externalRedis.tlsCA` which value it's the CA cert of the self-signed certificate in plain text
+
 #### Setup Redis creating secrets
 
 1. Add the secret:
@@ -227,6 +229,7 @@ or let the chart to create the [secrets automatically](#setup-redis-with-automat
 
 Add the following lines to you `customizations.yaml` to connect to the external Postgres:
 
+
   ```yaml
   internalRedis:
     # Disable the internal Redis
@@ -236,6 +239,12 @@ Add the following lines to you `customizations.yaml` to connect to the external 
     port: "6379"
     existingSecret: "mycarto-custom-redis-secret"
     existingSecretPasswordKey: "password"
+    tlsEnabled: true
+    # Only applies if your Redis TLS certificate it's self-signed
+    # tlsCA: |
+    #   -----BEGIN CERTIFICATE-----
+    #   ...
+    #   -----END CERTIFICATE-----
   ```
 
 #### Setup Redis with automatic secret creation
@@ -251,6 +260,12 @@ Add the following lines to you `customizations.yaml` to connect to the external 
     host: <Redis IP/Hostname>
     port: "6379"
     password: ""
+    tlsEnabled: true
+    # Only applies if your Redis TLS certificate it's self-signed
+    # tlsCA: |
+    #   -----BEGIN CERTIFICATE-----
+    #   ...
+    #   -----END CERTIFICATE-----
   ```
 
   > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalRedis.password` that you set in previous lines.
