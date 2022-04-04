@@ -35,12 +35,12 @@ data:
   IMPORT_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
   IMPORT_BUCKET: {{ .Values.appConfigValues.importBucket | quote }}
   {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
-    {{- if .Values.appConfigValues.gcpBucketsProjectId }}
+  {{- if .Values.appConfigValues.gcpBucketsProjectId }}
   IMPORT_PROJECTID: {{ .Values.appConfigValues.gcpBucketsProjectId | quote }}
-    {{- end }}
-    {{- if ( include "carto.gcpBucketsServiceAccountKey.used" . ) }}
+  {{- end }}
+  {{- if ( include "carto.gcpBucketsServiceAccountKey.used" . ) }}
   IMPORT_KEYFILENAME: {{ include "carto.gcpBucketsServiceAccountKey.secretMountAbsolutePath" . }}
-    {{- end }}
+  {{- end }}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}
   IMPORT_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}

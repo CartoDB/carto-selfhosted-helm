@@ -137,9 +137,7 @@ Generate the secret def to be used in pods definitions
 Return true if a `appSecrets.gcpBucketsServiceAccountKey` is specified in any way
 */}}
 {{- define "carto.gcpBucketsServiceAccountKey.used" -}}
-{{- if .Values.appSecrets.gcpBucketsServiceAccountKey.existingSecret.name }}
-true
-{{- else if .Values.appSecrets.gcpBucketsServiceAccountKey.value -}}
+{{- if or (.Values.appSecrets.gcpBucketsServiceAccountKey.existingSecret.name) (.Values.appSecrets.gcpBucketsServiceAccountKey.value) }}
 true
 {{- end -}}
 {{- end -}}
