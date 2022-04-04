@@ -238,9 +238,11 @@ spec:
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
+            {{- if ( include "carto.gcpBucketsServiceAccountKey.used" . ) }}
             - name: gcp-buckets-service-account-key
               mountPath: {{ include "carto.gcpBucketsServiceAccountKey.secretMountDir" . }}
               readOnly: true
+            {{- end }}
           {{- if .Values.workspaceApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -254,12 +256,14 @@ spec:
             items:
               - key: {{ include "carto.google.secretKey" . }}
                 path: {{ include "carto.google.secretMountFilename" . }}
+        {{- if ( include "carto.gcpBucketsServiceAccountKey.used" . ) }}
         - name: gcp-buckets-service-account-key
           secret:
             secretName: {{ include "carto.gcpBucketsServiceAccountKey.secretName" . }}
             items:
               - key: {{ include "carto.gcpBucketsServiceAccountKey.secretKey" . }}
                 path: {{ include "carto.gcpBucketsServiceAccountKey.secretMountFilename" . }}
+        {{- end }}
         {{- if .Values.workspaceApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
