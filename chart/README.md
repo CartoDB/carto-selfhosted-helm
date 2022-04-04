@@ -1149,15 +1149,17 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `internalRedis.nameOverride`                | String to partially override common.names.fullname template (will maintain the release name) | `redis`      |
 
 
-### External Redis&trade; parameters
+### External Redis parameters
 
-| Name                                      | Description                                                                                        | Value       |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------------- | ----------- |
-| `externalRedis.host`                      | Redis&trade; host                                                                                  | `localhost` |
-| `externalRedis.port`                      | Redis&trade; port number                                                                           | `6379`      |
-| `externalRedis.password`                  | Redis&trade; password                                                                              | `""`        |
-| `externalRedis.existingSecret`            | Name of an existing secret resource containing the Redis&trade; password in a 'redis-password' key | `""`        |
-| `externalRedis.existingSecretPasswordKey` | Key of the existing secret                                                                         | `""`        |
+| Name                                      | Description                                                                                 | Value       |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------- | ----------- |
+| `externalRedis.host`                      | Redis host                                                                                  | `localhost` |
+| `externalRedis.port`                      | Redis port number                                                                           | `6379`      |
+| `externalRedis.password`                  | Redis password                                                                              | `""`        |
+| `externalRedis.tls_enabled`               | Whether or not connect to Redis via TLS                                                     | `false`     |
+| `externalRedis.tls_ca`                    | CA certificate in case Redis TLS cert it's selfsigned                                       | `""`        |
+| `externalRedis.existingSecret`            | Name of an existing secret resource containing the Redis password in a 'redis-password' key | `""`        |
+| `externalRedis.existingSecretPasswordKey` | Key of the existing secret                                                                  | `""`        |
 
 
 ### Internal PostgreSQL subchart parameters
