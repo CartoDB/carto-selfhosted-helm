@@ -77,7 +77,7 @@ spec:
       {{- end }}
       containers:
         - name: workspace-subscriber
-          image: "{{ .Values.workspaceSubscriber.image.name }}:{{- include "carto.workspaceSubscriber.tag" . -}}"
+          image: {{ template "carto.workspaceSubscriber.image" . }}
           imagePullPolicy: {{ .Values.workspaceSubscriber.image.pullPolicy }}
           {{- if .Values.workspaceSubscriber.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.workspaceSubscriber.containerSecurityContext "enabled" | toYaml | nindent 12 }}

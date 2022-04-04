@@ -227,13 +227,15 @@ commonSecretConfiguration: |
 ##
 accountsWww:
   ## accounts-www image
-  ## @param accountsWww.image.name accounts-www image registry and repository
+  ## @param accountsWww.image.registry accounts-www image registry
+  ## @param accountsWww.image.repository accounts-www image repository
   ## @param accountsWww.image.tag accounts-www image tag (immutable tags are recommended)
   ## @param accountsWww.image.pullPolicy accounts-www image pull policy
   ## @param accountsWww.image.pullSecrets accounts-www image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/accounts-www
+    registry: gcr.io/carto-onprem-artifacts
+    repository: accounts-www
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -545,13 +547,15 @@ accountsWww:
 ##
 importApi:
   ## import-api image
-  ## @param importApi.image.name import-api image registry and repository
+  ## @param importApi.image.registry import-api image registry
+  ## @param importApi.image.repository import-api image repository
   ## @param importApi.image.tag import-api image tag (immutable tags are recommended)
   ## @param importApi.image.pullPolicy import-api image pull policy
   ## @param importApi.image.pullSecrets import-api image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/import-api
+    registry: gcr.io/carto-onprem-artifacts
+    repository: import-api
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -862,13 +866,15 @@ importApi:
 ##
 importWorker:
   ## import-worker image
-  ## @param importWorker.image.name import-worker image registry and repository
+  ## @param importWorker.image.registry import-worker image registry
+  ## @param importWorker.image.repository import-worker image repository
   ## @param importWorker.image.tag import-worker image tag (immutable tags are recommended)
   ## @param importWorker.image.pullPolicy import-worker image pull policy
   ## @param importWorker.image.pullSecrets import-worker image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/import-api
+    registry: gcr.io/carto-onprem-artifacts
+    repository: import-api
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -1073,13 +1079,15 @@ importWorker:
 ##
 ldsApi:
   ## lds-api image
-  ## @param ldsApi.image.name lds-api image registry and repository
+  ## @param ldsApi.image.registry lds-api image registry
+  ## @param ldsApi.image.repository lds-api image repository
   ## @param ldsApi.image.tag lds-api image tag (immutable tags are recommended)
   ## @param ldsApi.image.pullPolicy lds-api image pull policy
   ## @param ldsApi.image.pullSecrets lds-api image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/lds-api
+    registry: gcr.io/carto-onprem-artifacts
+    repository: lds-api
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -1390,13 +1398,15 @@ ldsApi:
 ##
 mapsApi:
   ## maps-api image
-  ## @param mapsApi.image.name maps-api image registry and repository
+  ## @param mapsApi.image.registry maps-api image registry
+  ## @param mapsApi.image.repository maps-api image repository
   ## @param mapsApi.image.tag maps-api image tag (immutable tags are recommended)
   ## @param mapsApi.image.pullPolicy maps-api image pull policy
   ## @param mapsApi.image.pullSecrets maps-api image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/maps-api
+    registry: gcr.io/carto-onprem-artifacts
+    repository: maps-api
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -1708,13 +1718,15 @@ mapsApi:
 ##
 router:
   ## router image
-  ## @param router.image.name router image registry and repository
+  ## @param router.image.registry router image registry
+  ## @param router.image.repository router image repository
   ## @param router.image.tag router image tag (immutable tags are recommended)
   ## @param router.image.pullPolicy router image pull policy
   ## @param router.image.pullSecrets router image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/router
+    registry: gcr.io/carto-onprem-artifacts
+    repository: router
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -2032,13 +2044,15 @@ router:
 ##
 httpCache:
   ## httpCache image
-  ## @param httpCache.image.name http-cache image registry and repository
+  ## @param httpCache.image.registry http-cache image registry
+  ## @param httpCache.image.repository http-cache image repository
   ## @param httpCache.image.tag http-cache image tag (immutable tags are recommended)
   ## @param httpCache.image.pullPolicy http-cache image pull policy
   ## @param httpCache.image.pullSecrets http-cache image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/http-cache
+    registry: gcr.io/carto-onprem-artifacts
+    repository: http-cache
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -2338,13 +2352,15 @@ httpCache:
 ##
 cdnInvalidatorSub:
   ## cdnInvalidatorSub image
-  ## @param cdnInvalidatorSub.image.name cdnInvalidatorSub image registry and repository
-  ## @param cdnInvalidatorSub.image.tag cdnInvalidatorSub image tag (immutable tags are recommended)
-  ## @param cdnInvalidatorSub.image.pullPolicy cdnInvalidatorSub image pull policy
-  ## @param cdnInvalidatorSub.image.pullSecrets cdnInvalidatorSub image pull secrets
+  ## @param cdnInvalidatorSub.image.registry cdn-invalidator-sub image registry
+  ## @param cdnInvalidatorSub.image.repository cdn-invalidator-sub image repository
+  ## @param cdnInvalidatorSub.image.tag cdn-invalidator-sub image tag (immutable tags are recommended)
+  ## @param cdnInvalidatorSub.image.pullPolicy cdn-invalidator-sub image pull policy
+  ## @param cdnInvalidatorSub.image.pullSecrets cdn-invalidator-sub image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/consumers/cdn-invalidator-sub
+    registry: gcr.io/carto-onprem-artifacts
+    repository: consumers/cdn-invalidator-sub
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -2646,13 +2662,15 @@ cdnInvalidatorSub:
 ##
 workspaceApi:
   ## workspace-api image
-  ## @param workspaceApi.image.name workspace-api image registry and repository
+  ## @param workspaceApi.image.registry workspace-api image registry
+  ## @param workspaceApi.image.repository workspace-api image repository
   ## @param workspaceApi.image.tag workspace-api image tag (immutable tags are recommended)
   ## @param workspaceApi.image.pullPolicy workspace-api image pull policy
   ## @param workspaceApi.image.pullSecrets workspace-api image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/workspace-api
+    registry: gcr.io/carto-onprem-artifacts
+    repository: workspace-api
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -2964,13 +2982,15 @@ workspaceApi:
 ##
 workspaceSubscriber:
   ## workspace-subscriber image
-  ## @param workspaceSubscriber.image.name workspace-subscriber image registry and repository
+  ## @param workspaceSubscriber.image.registry workspace-subscriber image registry
+  ## @param workspaceSubscriber.image.repository workspace-subscriber image repository
   ## @param workspaceSubscriber.image.tag workspace-subscriber image tag (immutable tags are recommended)
   ## @param workspaceSubscriber.image.pullPolicy workspace-subscriber image pull policy
   ## @param workspaceSubscriber.image.pullSecrets workspace-subscriber image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/workspace-api
+    registry: gcr.io/carto-onprem-artifacts
+    repository: workspace-api
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -3175,13 +3195,15 @@ workspaceSubscriber:
 ##
 workspaceWww:
   ## workspace-www image
-  ## @param workspaceWww.image.name workspace-www image registry and repository
+  ## @param workspaceWww.image.registry workspace-www image registry
+  ## @param workspaceWww.image.repository workspace-www image repository
   ## @param workspaceWww.image.tag workspace-www image tag (immutable tags are recommended)
   ## @param workspaceWww.image.pullPolicy workspace-www image pull policy
   ## @param workspaceWww.image.pullSecrets workspace-www image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/workspace-www
+    registry: gcr.io/carto-onprem-artifacts
+    repository: workspace-www
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -3491,14 +3513,16 @@ workspaceWww:
 ## @section Init Container Parameters
 ##
 workspaceMigrations:
-  ## Migrations image
-  ## @param workspaceMigrations.image.name workspace-db image registry and repository
+  ## workspace-db image
+  ## @param workspaceMigrations.image.registry workspace-db image registry
+  ## @param workspaceMigrations.image.repository workspace-db image repository
   ## @param workspaceMigrations.image.tag workspace-db image tag (immutable tags are recommended)
   ## @param workspaceMigrations.image.pullPolicy workspace-db image pull policy
   ## @param workspaceMigrations.image.pullSecrets workspace-db image pull secrets
   ##
   image:
-    name: gcr.io/carto-onprem-artifacts/workspace-db
+    registry: gcr.io/carto-onprem-artifacts
+    repository: workspace-db
     ## Specify a custom image tag
     tag: ""
     pullPolicy: IfNotPresent
@@ -3573,19 +3597,23 @@ internalRedis:
     persistence:
       enabled: false
 
-## @section External Redis&trade; parameters
-## External Redis&trade; configuration
+## @section External Redis parameters
+## External Redis configuration
 ## All of these values are only used when redis.enabled is set to false
-## @param externalRedis.host Redis&trade; host
-## @param externalRedis.port Redis&trade; port number
-## @param externalRedis.password Redis&trade; password
-## @param externalRedis.existingSecret Name of an existing secret resource containing the Redis&trade; password in a 'redis-password' key
+## @param externalRedis.host Redis host
+## @param externalRedis.port Redis port number
+## @param externalRedis.password Redis password
+## @param externalRedis.tlsEnabled Whether or not connect to Redis via TLS
+## @param externalRedis.tlsCA CA certificate in case Redis TLS cert it's selfsigned
+## @param externalRedis.existingSecret Name of an existing secret resource containing the Redis password in a 'redis-password' key
 ## @param externalRedis.existingSecretPasswordKey Key of the existing secret
 ##
 externalRedis:
   host: localhost
   port: 6379
   password: ""
+  tlsEnabled: false
+  tlsCA: ""
   existingSecret: ""
   existingSecretPasswordKey: ""
 
