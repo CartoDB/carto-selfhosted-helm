@@ -3603,8 +3603,8 @@ internalRedis:
 ## @param externalRedis.host Redis host
 ## @param externalRedis.port Redis port number
 ## @param externalRedis.password Redis password
-## @param externalRedis.tls_enabled Whether or not connect to Redis via TLS
-## @param externalRedis.tls_ca CA certificate in case Redis TLS cert it's selfsigned
+## @param externalRedis.tlsEnabled Whether or not connect to Redis via TLS
+## @param externalRedis.tlsCA CA certificate in case Redis TLS cert it's selfsigned
 ## @param externalRedis.existingSecret Name of an existing secret resource containing the Redis password in a 'redis-password' key
 ## @param externalRedis.existingSecretPasswordKey Key of the existing secret
 ##
@@ -3612,8 +3612,8 @@ externalRedis:
   host: localhost
   port: 6379
   password: ""
-  tls_enabled: false
-  tls_ca: ""
+  tlsEnabled: false
+  tlsCA: ""
   existingSecret: ""
   existingSecretPasswordKey: ""
 

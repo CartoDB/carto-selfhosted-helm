@@ -21,9 +21,9 @@ data:
   REDIS_CACHE_PREFIX: "onprem"
   REDIS_HOST: {{ include "carto.redis.host" . }}
   REDIS_PORT: {{ include "carto.redis.port" . }}
-  REDIS_TLS_ENABLED: {{ .Values.externalRedis.tls_enabled | quote }}
-  {{- if and .Values.externalRedis.tls_enabled .Values.externalRedis.tls_ca }}
-  REDIS_TLS_CA: {{ .Values.externalRedis.tls_ca | quote }}
+  REDIS_TLS_ENABLED: {{ .Values.externalRedis.tlsEnabled | quote }}
+  {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+  REDIS_TLS_CA: {{ .Values.externalRedis.tlsCA | quote }}
   {{- end }}
   SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}

@@ -4,6 +4,9 @@ accountsWww:
 importApi:
   replicaCount: 1
 
+importWorker:
+  replicaCount: 0
+
 ldsApi:
   replicaCount: 1
 
@@ -18,3 +21,6 @@ workspaceApi:
 
 workspaceWww:
   replicaCount: 1
+
+cdnInvalidatorSub:
+  replicaCount: 0

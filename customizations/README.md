@@ -212,7 +212,7 @@ In the same way as with Postgres, there are two alternatives regarding the secre
 [set the secrets manually](#setup-redis-creating-secrets) and point to them from the configuration,
 or let the chart to create the [secrets automatically](#setup-redis-with-automatic-secret-creation).
 
-> :warning: In case you are using a Redis TLS with a self-signed certificate you should add an extra parameter named `externalRedis.tls_ca` which value it's the CA cert of the self-signed certificate in plain text
+> :warning: In case you are using a Redis TLS with a self-signed certificate you should add an extra parameter named `externalRedis.tlsCA` which value it's the CA cert of the self-signed certificate in plain text
 
 #### Setup Redis creating secrets
 
@@ -239,9 +239,9 @@ Add the following lines to you `customizations.yaml` to connect to the external 
     port: "6379"
     existingSecret: "mycarto-custom-redis-secret"
     existingSecretPasswordKey: "password"
-    tls_enabled: true
-    # If your Redis TLS Cert it's self-signed
-    # tls_ca: |
+    tlsEnabled: true
+    # Only applies if your Redis TLS certificate it's self-signed
+    # tlsCA: |
     #   -----BEGIN CERTIFICATE-----
     #   ...
     #   -----END CERTIFICATE-----
@@ -260,9 +260,9 @@ Add the following lines to you `customizations.yaml` to connect to the external 
     host: <Redis IP/Hostname>
     port: "6379"
     password: ""
-    tls_enabled: true
-    # If your Redis TLS Cert it's self-signed
-    # tls_ca: |
+    tlsEnabled: true
+    # Only applies if your Redis TLS certificate it's self-signed
+    # tlsCA: |
     #   -----BEGIN CERTIFICATE-----
     #   ...
     #   -----END CERTIFICATE-----
