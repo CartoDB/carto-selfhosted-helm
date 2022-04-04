@@ -13,7 +13,12 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
+  # We need the tenant config values to start this component without errors
+  {{- if .Values.cartoConfigValues.selfHostedTenantId }}
   replicas: {{ .Values.cdnInvalidatorSub.replicaCount }}
+  {{- else }}
+  replicas: 0
+  {{- end }}
   {{- if .Values.cdnInvalidatorSub.updateStrategy }}
   strategy: {{- toYaml .Values.cdnInvalidatorSub.updateStrategy | nindent 4 }}
   {{- end }}
