@@ -2046,7 +2046,6 @@ httpCache:
   ## httpCache image
   ## @param httpCache.image.registry http-cache image registry
   ## @param httpCache.image.repository http-cache image repository
-  ## @param httpCache.image.name http-cache image registry and repository
   ## @param httpCache.image.tag http-cache image tag (immutable tags are recommended)
   ## @param httpCache.image.pullPolicy http-cache image pull policy
   ## @param httpCache.image.pullSecrets http-cache image pull secrets
