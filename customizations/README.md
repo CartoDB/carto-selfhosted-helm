@@ -227,6 +227,8 @@ or let the chart to create the [secrets automatically](#setup-redis-with-automat
 
 Add the following lines to you `customizations.yaml` to connect to the external Postgres:
 
+> :warning: In case you are using a Redis TLS with a self-signed certificate you should add an extra parameter named `externalRedis.tls_ca` which value it's the CA cert of the self-signed certificate in plain text
+
   ```yaml
   internalRedis:
     # Disable the internal Redis
@@ -236,12 +238,20 @@ Add the following lines to you `customizations.yaml` to connect to the external 
     port: "6379"
     existingSecret: "mycarto-custom-redis-secret"
     existingSecretPasswordKey: "password"
+    tls_enabled: true
+    # If your Redis TLS Cert it's self-signed
+    # tls_ca: |
+    #   -----BEGIN CERTIFICATE-----
+    #   ...
+    #   -----END CERTIFICATE-----
   ```
 
 #### Setup Redis with automatic secret creation
 
 1. Configure the package:
 Add the following lines to you `customizations.yaml` to connect to the external Postgres:
+
+> :warning: In case you are using a Redis TLS with a self-signed certificate you should add an extra parameter named `externalRedis.tls_ca` which value it's the CA cert of the self-signed certificate in plain text
 
   ```yaml
   internalRedis:
@@ -251,6 +261,12 @@ Add the following lines to you `customizations.yaml` to connect to the external 
     host: <Redis IP/Hostname>
     port: "6379"
     password: ""
+    tls_enabled: true
+    # If your Redis TLS Cert it's self-signed
+    # tls_ca: |
+    #   -----BEGIN CERTIFICATE-----
+    #   ...
+    #   -----END CERTIFICATE-----
   ```
 
   > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalRedis.password` that you set in previous lines.
