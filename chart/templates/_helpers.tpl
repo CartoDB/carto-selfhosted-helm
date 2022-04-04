@@ -153,10 +153,12 @@ As a replacement for "common.images.image" that forces you to set image.tag valu
 {{- end -}}
 
 {{/*
-Create gcpBucketsProjectId using the gcpBucketsProjectId config or, if not defined, selfHostedGcpProjectId.
+Return true if a `appSecrets.gcpBucketsServiceAccountKey` is specified in any way
 */}}
-{{- define "carto.gcpBucketsProjectId" -}}
-{{ default .Values.cartoConfigValues.selfHostedGcpProjectId .Values.appConfigValues.gcpBucketsProjectId }}
+{{- define "carto.gcpBucketsServiceAccountKey.used" -}}
+{{- if or (.Values.appSecrets.gcpBucketsServiceAccountKey.existingSecret.name) (.Values.appSecrets.gcpBucketsServiceAccountKey.value) }}
+true
+{{- end -}}
 {{- end -}}
 
 {{/*
