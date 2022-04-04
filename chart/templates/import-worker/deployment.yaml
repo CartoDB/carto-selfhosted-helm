@@ -13,7 +13,8 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  # We need the tenant config values to start this component without errors
+  # In order to publish the charts in official marketplaces, it's necessary that all components are able to start with default values without errors
+  # Components which needs other configuration requirements such as client specific parameters should not boot if these values ​​are not provided
   {{- if .Values.cartoConfigValues.selfHostedTenantId }}
   replicas: {{ .Values.importWorker.replicaCount }}
   {{- else }}
