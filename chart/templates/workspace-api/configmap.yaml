@@ -61,10 +61,14 @@ data:
   WORKSPACE_THUMBNAILS_PUBLIC: {{ .Values.appConfigValues.workspaceThumbnailsPublic | quote }}
   WORKSPACE_THUMBNAILS_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
   {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
-  WORKSPACE_IMPORTS_PROJECTID: {{ include "carto.gcpBucketsProjectId" . | quote }}
+  {{- if .Values.appConfigValues.gcpBucketsProjectId }}
+  WORKSPACE_IMPORTS_PROJECTID: {{ .Values.appConfigValues.gcpBucketsProjectId | quote }}
+  WORKSPACE_THUMBNAILS_PROJECTID: {{ .Values.appConfigValues.gcpBucketsProjectId | quote }}
+  {{- end }}
+  {{- if ( include "carto.gcpBucketsServiceAccountKey.used" . ) }}
   WORKSPACE_IMPORTS_KEYFILENAME: {{ include "carto.gcpBucketsServiceAccountKey.secretMountAbsolutePath" . }}
-  WORKSPACE_THUMBNAILS_PROJECTID: {{ include "carto.gcpBucketsProjectId" . | quote }}
   WORKSPACE_THUMBNAILS_KEYFILENAME: {{ include "carto.gcpBucketsServiceAccountKey.secretMountAbsolutePath" . }}
+  {{- end }}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}
   WORKSPACE_THUMBNAILS_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
