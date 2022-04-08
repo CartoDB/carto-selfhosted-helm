@@ -2,6 +2,8 @@
 
 This repository contains the [Kubernetes Helm](https://github.com/helm/helm) chart files for CARTO Platform. Run CARTO Self Hosted in your own cloud infrastructure.
 
+To be able to run CARTO Self Hosted you need to have a license. [Contact CARTO](https://carto.com/request-live-demo/) to get one.
+
 If you are looking for another installation method, please refer to [carto-selfhosted repository](https://github.com/CartoDB/carto-selfhosted).
 
 ## Installation
@@ -10,6 +12,7 @@ If you are looking for another installation method, please refer to [carto-selfh
 
 - Kubernetes 1.12+
 - Helm 3.1.0
+- Configuration and license files received from CARTO
 - (Optional) PV provisioner support in the underlying infrastructure. Required only for non-production deployment without external and managed databases (Postgres and Redis).
 
 <!--
