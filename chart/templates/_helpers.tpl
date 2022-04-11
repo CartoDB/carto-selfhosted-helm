@@ -500,6 +500,27 @@ Return default user and adminUser values in case the connection it's NOT to an A
 {{- end -}}
 
 {{/*
+Return the directory where the Postgresql CA cert will  be mounted
+*/}}
+{{- define "carto.externalPostgresqlSslCA.secretMountDir" -}}
+{{- print "/usr/src/certs/external-postgresql-ssl-ca" -}}
+{{- end -}}
+
+{{/*
+Return the filename where the Postgresql CA will be mounted
+*/}}
+{{- define "carto.externalPostgresqlSslCA.secretMountFilename" -}}
+{{- print "ca.crt" -}}
+{{- end -}}
+
+{{/*
+Return the absolute path where the Postgresql CA cert will be mounted
+*/}}
+{{- define "carto.externalPostgresqlSslCA.secretMountAbsolutePath" -}}
+{{- printf "%s/%s" (include "carto.externalPostgresqlSslCA.secretMountDir" .) (include "carto.externalPostgresqlSslCA.secretMountFilename" .) -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto workspace-www full name
 */}}
 {{- define "carto.workspaceWww.fullname" -}}
@@ -848,7 +869,7 @@ Get the Postgresql credentials secret.
     {{- if .Values.externalPostgresql.existingSecret -}}
         {{- printf "%s" .Values.externalPostgresql.existingSecret -}}
     {{- else -}}
-        {{ printf "%s-%s" .Release.Name "externaldb" }}
+        {{ printf "%s-%s" .Release.Name "externalpostgresql" }}
     {{- end -}}
 {{- end -}}
 {{- end -}}

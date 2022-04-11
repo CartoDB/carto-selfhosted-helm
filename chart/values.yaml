@@ -142,7 +142,6 @@ cartoSecrets:
       name: ""
       key: ""
 
-
 ## @param tlsCerts.autoGenerate Generate self-signed TLS certificates
 ## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
 ## @param tlsCerts.existingSecret.certKey Key of the certificate inside the secret
@@ -154,7 +153,6 @@ tlsCerts:
     name: ""
     keyKey: "tls.key"
     certKey: "tls.crt"
-
 
 ## @section Global parameters
 ## Global Docker image parameters
@@ -3606,7 +3604,6 @@ internalRedis:
 ## @param externalRedis.tlsEnabled Whether or not connect to Redis via TLS
 ## @param externalRedis.tlsCA CA certificate in case Redis TLS cert it's selfsigned
 ## @param externalRedis.existingSecret Name of an existing secret resource containing the Redis password in a 'redis-password' key
-## @param externalRedis.existingSecretPasswordKey Key of the existing secret
 ##
 externalRedis:
   host: localhost
@@ -3615,7 +3612,6 @@ externalRedis:
   tlsEnabled: false
   tlsCA: ""
   existingSecret: ""
-  existingSecretPasswordKey: ""
 
 ## @section Internal PostgreSQL subchart parameters
 ## Internal PostgreSQL chart configuration
@@ -3625,7 +3621,9 @@ externalRedis:
 ## @param internalPostgresql.auth.password CARTO Postgresql password
 ## @param internalPostgresql.auth.postgresPassword CARTO Postgresql password for the postgres user
 ## @param internalPostgresql.auth.database CARTO Postgresql database
-## @param internalPostgresql.auth.existingSecret Name of an existing secret containing the PostgreSQL password ('postgresql-password' key)
+## @param externalPostgresql.sslEnabled Whether or not connect to CARTO Postgresql via TLS
+## @param externalPostgresql.sslCA CA certificate in case CARTO Postgresql TLS cert it's selfsigned
+## @param internalPostgresql.auth.existingSecret Name of an existing secret containing the CARTO Postgresql password ('postgresql-password' key)
 ##
 internalPostgresql:
   enabled: true
@@ -3641,6 +3639,8 @@ internalPostgresql:
     password: ""
     database: workspace
     postgresPassword: ""
+    tlsEnabled: false
+    # tlsCA: |
     ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
     ##
     existingSecret: ""

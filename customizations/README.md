@@ -162,6 +162,12 @@ Add the following lines to you `customizations.yaml` to connect to the external 
       existingSecretAdminPasswordKey: "admin-password"
       database: "workspace"
       port: "5432"
+      sslEnabled: true
+      # Only applies if your Postgresql SSL certificate it's self-signed
+      # sslCA: |
+      #   -----BEGIN CERTIFICATE-----
+      #   ...
+      #   -----END CERTIFICATE-----
     ```
 
 #### Setup Postgres with automatic secret creation
@@ -181,6 +187,12 @@ Add the following lines to you `customizations.yaml` to connect to the external 
       adminPassword: ""
       database: "workspace"
       port: "5432"
+      sslEnabled: true
+      # Only applies if your Postgresql SSL certificate it's self-signed
+      # sslCA: |
+      #   -----BEGIN CERTIFICATE-----
+      #   ...
+      #   -----END CERTIFICATE-----
     ```
 
     > Note: One kubernetes secret is going to be created automatically during the installation process with the `externalPostgresql.password` and `externalPostgresql.adminPassword` that you set in previous lines.
