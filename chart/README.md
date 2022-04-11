@@ -1140,6 +1140,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | Name                                        | Description                                                                                  | Value        |
 | ------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------ |
 | `internalRedis.enabled`                     | Switch to enable or disable the Redis&trade; helm                                            | `true`       |
+| `internalRedis.tlsEnabled`                  | Whether or not connect to Redis via TLS                                                      | `false`      |
 | `internalRedis.auth.enabled`                | Switch to enable or disable authentication                                                   | `true`       |
 | `internalRedis.auth.password`               | Redis&trade; password                                                                        | `""`         |
 | `internalRedis.auth.existingSecret`         | Name of existing secret object containing the password                                       | `""`         |
@@ -1151,30 +1152,30 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### External Redis parameters
 
-| Name                                      | Description                                                                                 | Value       |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------- | ----------- |
-| `externalRedis.host`                      | Redis host                                                                                  | `localhost` |
-| `externalRedis.port`                      | Redis port number                                                                           | `6379`      |
-| `externalRedis.password`                  | Redis password                                                                              | `""`        |
-| `externalRedis.tlsEnabled`                | Whether or not connect to Redis via TLS                                                     | `false`     |
-| `externalRedis.tlsCA`                     | CA certificate in case Redis TLS cert it's selfsigned                                       | `""`        |
-| `externalRedis.existingSecret`            | Name of an existing secret resource containing the Redis password in a 'redis-password' key | `""`        |
-| `externalRedis.existingSecretPasswordKey` | Key of the existing secret                                                                  | `""`        |
+| Name                           | Description                                                                                 | Value       |
+| ------------------------------ | ------------------------------------------------------------------------------------------- | ----------- |
+| `externalRedis.host`           | Redis host                                                                                  | `localhost` |
+| `externalRedis.port`           | Redis port number                                                                           | `6379`      |
+| `externalRedis.password`       | Redis password                                                                              | `""`        |
+| `externalRedis.tlsEnabled`     | Whether or not connect to Redis via TLS                                                     | `false`     |
+| `externalRedis.tlsCA`          | CA certificate in case Redis TLS cert it's selfsigned                                       | `""`        |
+| `externalRedis.existingSecret` | Name of an existing secret resource containing the Redis password in a 'redis-password' key | `""`        |
 
 
 ### Internal PostgreSQL subchart parameters
 
-| Name                                        | Description                                                                                  | Value                  |
-| ------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------- |
-| `internalPostgresql.enabled`                | Switch to enable or disable the PostgreSQL helm chart                                        | `true`                 |
-| `internalPostgresql.auth.username`          | CARTO Postgresql username                                                                    | `workspace_admin`      |
-| `internalPostgresql.auth.password`          | CARTO Postgresql password                                                                    | `""`                   |
-| `internalPostgresql.auth.postgresPassword`  | CARTO Postgresql password for the postgres user                                              | `""`                   |
-| `internalPostgresql.auth.database`          | CARTO Postgresql database                                                                    | `workspace`            |
-| `internalPostgresql.auth.existingSecret`    | Name of an existing secret containing the PostgreSQL password ('postgresql-password' key)    | `""`                   |
-| `internalPostgresql.image.tag`              | Tag of the PostgreSQL image                                                                  | `13.5.0-debian-10-r84` |
-| `internalPostgresql.nameOverride`           | String to partially override common.names.fullname template (will maintain the release name) | `postgresql`           |
-| `internalPostgresql.primary.initdb.scripts` | Scripts for initializing the database                                                        | `[]`                   |
+| Name                                        | Description                                                                                     | Value                  |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------- |
+| `internalPostgresql.enabled`                | Switch to enable or disable the PostgreSQL helm chart                                           | `true`                 |
+| `internalPostgresql.auth.username`          | CARTO Postgresql username                                                                       | `workspace_admin`      |
+| `internalPostgresql.auth.password`          | CARTO Postgresql password                                                                       | `""`                   |
+| `internalPostgresql.auth.postgresPassword`  | CARTO Postgresql password for the postgres user                                                 | `""`                   |
+| `internalPostgresql.auth.database`          | CARTO Postgresql database                                                                       | `workspace`            |
+| `internalPostgresql.sslEnabled`             | Whether or not connect to CARTO Postgresql via TLS                                              | `false`                |
+| `internalPostgresql.auth.existingSecret`    | Name of an existing secret containing the CARTO Postgresql password ('postgresql-password' key) | `""`                   |
+| `internalPostgresql.image.tag`              | Tag of the PostgreSQL image                                                                     | `13.5.0-debian-10-r84` |
+| `internalPostgresql.nameOverride`           | String to partially override common.names.fullname template (will maintain the release name)    | `postgresql`           |
+| `internalPostgresql.primary.initdb.scripts` | Scripts for initializing the database                                                           | `[]`                   |
 
 
 ### External PostgreSQL parameters
@@ -1193,6 +1194,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `externalPostgresql.existingSecretAdminPasswordKey` | Name of the key inside the secret containing the DB admin password                                                                     | `""`              |
 | `externalPostgresql.database`                       | Database name                                                                                                                          | `workspace`       |
 | `externalPostgresql.port`                           | Database port number                                                                                                                   | `5432`            |
+| `externalPostgresql.sslEnabled`                     | Whether or not connect to CARTO Postgresql via TLS                                                                                     | `false`           |
+| `externalPostgresql.sslCA`                          | CA certificate in case CARTO Postgresql TLS cert it's selfsigned                                                                       | `""`              |
 
 
 ## Configuration and installation details
