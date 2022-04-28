@@ -152,8 +152,8 @@ spec:
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
             {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
-            - name: external-postgresql-ssl-ca
-              mountPath: {{ include "carto.externalPostgresqlSslCA.secretMountDir" . }}
+            - name: postgresql-ssl-ca
+              mountPath: {{ include "carto.postgresql.secretMountDir" . }}
               readOnly: true
             {{- end }}
           {{- if .Values.workspaceSubscriber.extraVolumeMounts }}
@@ -170,9 +170,9 @@ spec:
               - key: {{ include "carto.google.secretKey" . }}
                 path: {{ include "carto.google.secretMountFilename" . }}
         {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
-        - name: external-postgresql-ssl-ca
+        - name: postgresql-ssl-ca
           configMap:
-            name: {{ template "carto.workspaceApi.fullname" . }}-external-postgresql-ssl-ca
+            name: {{ include "carto.postgresql.configMapName" . }}
         {{- end }}
         {{- if .Values.workspaceSubscriber.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraVolumes "context" $) | nindent 8 }}

@@ -49,7 +49,7 @@ data:
   WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . }}
   WORKSPACE_POSTGRES_SSL_ENABLED: {{ .Values.externalPostgresql.sslEnabled | quote }}
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA  }}
-  WORKSPACE_POSTGRES_SSL_CA: "{{ include "carto.externalPostgresqlSslCA.secretMountAbsolutePath" . }}"
+  WORKSPACE_POSTGRES_SSL_CA: "{{ include "carto.postgresql.secretMountAbsolutePath" . }}"
   {{- end }}
   IMPORT_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
   IMPORT_BUCKET: {{ .Values.appConfigValues.importBucket | quote }}
