@@ -263,7 +263,7 @@ spec:
             {{- end }}
             {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
             - name: postgresql-ssl-ca
-              mountPath: {{ include "carto.postgresql.secretMountDir" . }}
+              mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
               readOnly: true
             {{- end }}
           {{- if .Values.workspaceApi.extraVolumeMounts }}

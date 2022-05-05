@@ -940,14 +940,14 @@ Get the Postgresql config map name
 {{/*
 Return the directory where the Postgresql CA cert will  be mounted
 */}}
-{{- define "carto.postgresql.secretMountDir" -}}
+{{- define "carto.postgresql.configMapMountDir" -}}
 {{- print "/usr/src/certs/postgresql-ssl-ca" -}}
 {{- end -}}
 
 {{/*
 Return the filename where the Postgresql CA will be mounted
 */}}
-{{- define "carto.postgresql.secretMountFilename" -}}
+{{- define "carto.postgresql.configMapMountFilename" -}}
 {{- print "ca.crt" -}}
 {{- end -}}
 
@@ -955,7 +955,7 @@ Return the filename where the Postgresql CA will be mounted
 Return the absolute path where the Postgresql CA cert will be mounted
 */}}
 {{- define "carto.postgresql.secretMountAbsolutePath" -}}
-{{- printf "%s/%s" (include "carto.postgresql.secretMountDir" .) (include "carto.postgresql.secretMountFilename" .) -}}
+{{- printf "%s/%s" (include "carto.postgresql.configMapMountDir" .) (include "carto.postgresql.configMapMountFilename" .) -}}
 {{- end -}}
 
 

@@ -12,5 +12,5 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  {{ include "carto.postgresql.secretMountFilename" . }}: {{ .Values.externalPostgresql.sslCA | quote }}
+  {{ include "carto.postgresql.configMapMountFilename" . }}: {{ .Values.externalPostgresql.sslCA | quote }}
 {{- end }}
