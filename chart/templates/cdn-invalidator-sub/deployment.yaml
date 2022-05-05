@@ -169,6 +169,11 @@ spec:
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
+            {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+            - name: postgresql-ssl-ca
+              mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
           {{- if .Values.cdnInvalidatorSub.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -182,6 +187,11 @@ spec:
             items:
               - key: {{ include "carto.google.secretKey" . }}
                 path: {{ include "carto.google.secretMountFilename" . }}
+        {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+        - name: postgresql-ssl-ca
+          configMap:
+            name: {{ include "carto.postgresql.configMapName" . }}
+        {{- end }}
         {{- if .Values.cdnInvalidatorSub.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

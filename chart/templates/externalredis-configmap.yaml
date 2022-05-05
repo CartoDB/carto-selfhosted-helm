@@ -1,0 +1,16 @@
+{{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "carto.redis.configMapName" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  namespace: {{ .Release.Namespace | quote }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  {{ include "carto.externalRedisTlsCA.secretMountFilename" . }}: {{ .Values.externalRedis.tlsCA | quote }}
+{{- end }}

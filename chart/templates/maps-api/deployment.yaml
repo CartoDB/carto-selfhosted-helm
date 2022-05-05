@@ -167,15 +167,34 @@ spec:
           {{- if .Values.mapsApi.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.mapsApi.extraVolumeMounts }}
           volumeMounts:
+            - name: gcp-default-service-account-key
+              mountPath: {{ include "carto.google.secretMountDir" . }}
+              readOnly: true
+            {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+            - name: postgresql-ssl-ca
+              mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+          {{- if .Values.mapsApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
         {{- if .Values.mapsApi.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.mapsApi.sidecars "context" $) | nindent 8 }}
         {{- end }}
-      {{- if .Values.mapsApi.extraVolumes }}
       volumes:
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: {{ include "carto.google.secretName" . }}
+            items:
+              - key: {{ include "carto.google.secretKey" . }}
+                path: {{ include "carto.google.secretMountFilename" . }}
+        {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+        - name: postgresql-ssl-ca
+          configMap:
+            name: {{ include "carto.postgresql.configMapName" . }}
+        {{- end }}
+        {{- if .Values.mapsApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraVolumes "context" $) | nindent 8 }}
       {{- end }}
 {{- end }}

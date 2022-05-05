@@ -108,6 +108,11 @@ spec:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.key" . }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.redis.secretName" . }}
+                  key: {{ include "carto.redis.existingsecret.key" . | quote }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) | nindent 12 }}
             {{- if .Values.workspaceSubscriber.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVars "context" $) | nindent 12 }}
@@ -151,6 +156,11 @@ spec:
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
+            {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+            - name: postgresql-ssl-ca
+              mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
           {{- if .Values.workspaceSubscriber.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -164,6 +174,11 @@ spec:
             items:
               - key: {{ include "carto.google.secretKey" . }}
                 path: {{ include "carto.google.secretMountFilename" . }}
+        {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+        - name: postgresql-ssl-ca
+          configMap:
+            name: {{ include "carto.postgresql.configMapName" . }}
+        {{- end }}
         {{- if .Values.workspaceSubscriber.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

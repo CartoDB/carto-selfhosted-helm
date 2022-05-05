@@ -166,6 +166,11 @@ spec:
               mountPath: {{ include "carto.gcpBucketsServiceAccountKey.secretMountDir" . }}
               readOnly: true
             {{- end }}
+            {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+            - name: postgresql-ssl-ca
+              mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
           {{- if .Values.importWorker.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -186,6 +191,11 @@ spec:
             items:
               - key: {{ include "carto.gcpBucketsServiceAccountKey.secretKey" . }}
                 path: {{ include "carto.gcpBucketsServiceAccountKey.secretMountFilename" . }}
+        {{- end }}
+        {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+        - name: postgresql-ssl-ca
+          configMap:
+            name: {{ include "carto.postgresql.configMapName" . }}
         {{- end }}
         {{- if .Values.importWorker.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.extraVolumes "context" $) | nindent 8 }}

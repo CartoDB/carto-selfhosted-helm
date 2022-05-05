@@ -32,4 +32,8 @@ data:
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
   WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . }}
   WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . }}
+  WORKSPACE_POSTGRES_SSL_ENABLED: {{ .Values.externalPostgresql.sslEnabled | quote }}
+  {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA  }}
+  WORKSPACE_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
+  {{- end }}
 {{- end }}

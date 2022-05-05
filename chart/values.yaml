@@ -142,7 +142,6 @@ cartoSecrets:
       name: ""
       key: ""
 
-
 ## @param tlsCerts.autoGenerate Generate self-signed TLS certificates
 ## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
 ## @param tlsCerts.existingSecret.certKey Key of the certificate inside the secret
@@ -154,7 +153,6 @@ tlsCerts:
     name: ""
     keyKey: "tls.key"
     certKey: "tls.crt"
-
 
 ## @section Global parameters
 ## Global Docker image parameters
@@ -3568,6 +3566,7 @@ workspaceMigrations:
 ## Internal Redis &trade; chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/redis/values.yaml
 ## @param internalRedis.enabled Switch to enable or disable the Redis&trade; helm
+## @param internalRedis.tlsEnabled Whether or not connect to Redis via TLS
 ## @param internalRedis.auth.enabled Switch to enable or disable authentication
 ## @param internalRedis.auth.password Redis&trade; password
 ## @param internalRedis.auth.existingSecret Name of existing secret object containing the password
@@ -3577,6 +3576,7 @@ workspaceMigrations:
 ##
 internalRedis:
   enabled: true
+  tlsEnabled: false
   ## @param internalRedis.nameOverride String to partially override common.names.fullname template (will maintain the release name)
   ##
   nameOverride: "redis"
@@ -3625,10 +3625,12 @@ externalRedis:
 ## @param internalPostgresql.auth.password CARTO Postgresql password
 ## @param internalPostgresql.auth.postgresPassword CARTO Postgresql password for the postgres user
 ## @param internalPostgresql.auth.database CARTO Postgresql database
-## @param internalPostgresql.auth.existingSecret Name of an existing secret containing the PostgreSQL password ('postgresql-password' key)
+## @param internalPostgresql.sslEnabled Whether or not connect to CARTO Postgresql via TLS
+## @param internalPostgresql.auth.existingSecret Name of an existing secret containing the CARTO Postgresql password ('postgresql-password' key)
 ##
 internalPostgresql:
   enabled: true
+  sslEnabled: false
   ## @param internalPostgresql.image.tag Tag of the PostgreSQL image
   ##
   image:
@@ -3672,6 +3674,8 @@ internalPostgresql:
 ## @param externalPostgresql.existingSecretAdminPasswordKey Name of the key inside the secret containing the DB admin password
 ## @param externalPostgresql.database Database name
 ## @param externalPostgresql.port Database port number
+## @param externalPostgresql.sslEnabled Whether or not connect to CARTO Postgresql via TLS
+## @param externalPostgresql.sslCA CA certificate in case CARTO Postgresql TLS cert it's selfsigned
 ##
 externalPostgresql:
   host: localhost
@@ -3686,3 +3690,5 @@ externalPostgresql:
   existingSecretAdminPasswordKey: ""
   database: workspace
   port: 5432
+  sslEnabled: false
+  sslCA: ""

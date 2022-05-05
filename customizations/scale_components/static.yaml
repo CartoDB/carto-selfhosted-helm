@@ -4,6 +4,12 @@ accountsWww:
 importApi:
   replicaCount: 1
 
+importWorker:
+  replicaCount: 1
+
+cdnInvalidatorSub:
+  replicaCount: 1
+
 ldsApi:
   replicaCount: 1
 
@@ -13,7 +19,13 @@ mapsApi:
 router:
   replicaCount: 1
 
+httpCache:
+  replicaCount: 1
+
 workspaceApi:
+  replicaCount: 1
+
+workspaceSubscriber:
   replicaCount: 1
 
 workspaceWww:
