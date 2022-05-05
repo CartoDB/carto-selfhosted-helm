@@ -21,6 +21,13 @@ data:
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
+  REDIS_CACHE_PREFIX: "onprem"
+  REDIS_HOST: {{ include "carto.redis.host" . }}
+  REDIS_PORT: {{ include "carto.redis.port" . }}
+  REDIS_TLS_ENABLED: {{ .Values.externalRedis.tlsEnabled | quote }}
+  {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+  REDIS_TLS_CA: {{ .Values.externalRedis.tlsCA | quote }}
+  {{- end }}
   IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-import-sub"
   IMPORT_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
   LOG_LEVEL: "debug"
@@ -35,7 +42,7 @@ data:
   WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . }}
   WORKSPACE_POSTGRES_SSL_ENABLED: {{ .Values.externalPostgresql.sslEnabled | quote }}
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA  }}
-  WORKSPACE_POSTGRES_SSL_CA: "{{ include "carto.postgresql.secretMountAbsolutePath" . }}"
+  WORKSPACE_POSTGRES_SSL_CA: {{ include "carto.postgresql.secretMountAbsolutePath" . }}
   {{- end }}
   WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/data-updates-workspace-sub"
   WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/data-updates"

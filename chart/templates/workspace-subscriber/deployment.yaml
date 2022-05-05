@@ -108,6 +108,11 @@ spec:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.key" . }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.redis.secretName" . }}
+                  key: {{ include "carto.redis.existingsecret.key" . | quote }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) | nindent 12 }}
             {{- if .Values.workspaceSubscriber.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVars "context" $) | nindent 12 }}
