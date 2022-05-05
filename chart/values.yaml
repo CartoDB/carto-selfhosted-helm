@@ -3606,6 +3606,7 @@ internalRedis:
 ## @param externalRedis.tlsEnabled Whether or not connect to Redis via TLS
 ## @param externalRedis.tlsCA CA certificate in case Redis TLS cert it's selfsigned
 ## @param externalRedis.existingSecret Name of an existing secret resource containing the Redis password in a 'redis-password' key
+## @param externalRedis.existingSecretPasswordKey Key of the existing secret
 ##
 externalRedis:
   host: localhost
@@ -3614,6 +3615,7 @@ externalRedis:
   tlsEnabled: false
   tlsCA: ""
   existingSecret: ""
+  existingSecretPasswordKey: ""
 
 ## @section Internal PostgreSQL subchart parameters
 ## Internal PostgreSQL chart configuration
