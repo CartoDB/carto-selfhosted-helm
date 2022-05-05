@@ -218,12 +218,12 @@ externalPostgresql:
 
 #### Configure Postgres SSL with custom CA
 
-By default CARTO will try to connect to your Postgresql via SSL. In case you don't want to connect via SSL , which is not recommended, you can configure it via the `externalPostgresql.sslEnabled` parameters
+By default CARTO will try to connect to your Postgresql without SSL. In case you want to connect via SSL, you can configure it via the `externalPostgresql.sslEnabled` parameter
 
 ```yaml
 externalPostgresql:
   ...
-  sslEnabled: false
+  sslEnabled: true
 ```
 
 > :warning: In case you are connecting to a Postgresql where the SSL certificate is selfsigned or from a custom CA you can configure it via the `externalPostgresql.sslCA` parameter
@@ -231,7 +231,7 @@ externalPostgresql:
 ```yaml
 externalPostgresql:
   ...
-  sslEnabled: false
+  sslEnabled: true
   sslCA: |
     #   -----BEGIN CERTIFICATE-----
     #   ...
@@ -304,12 +304,12 @@ externalRedis:
 
 #### Configure Redis TLS
 
-By default CARTO will try to connect to your Redis via TLS. In case you don't want to connect via TLS , which is not recommended, you can configure it via the `externalRedis.tlsEnabled` parameters
+By default CARTO will try to connect to your Redis without TLS. In case you want to connect via TLS, you can configure it via the `externalRedis.tlsEnabled` parameter
 
 ```yaml
 externalRedis:
   ...
-  tlsEnabled: false
+  tlsEnabled: true
 ```
 
 > :warning: In case you are connecting to a Redis where the TLS certificate is selfsigned or from a custom CA you can configure it via the `externalRedis.tlsCA` parameter
@@ -317,7 +317,7 @@ externalRedis:
 ```yaml
 externalRedis:
   ...
-  tlsEnabled: false
+  tlsEnabled: true
   tlsCA: |
     #   -----BEGIN CERTIFICATE-----
     #   ...
