@@ -42,7 +42,7 @@ data:
   WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . }}
   WORKSPACE_POSTGRES_SSL_ENABLED: {{ .Values.externalPostgresql.sslEnabled | quote }}
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA  }}
-  WORKSPACE_POSTGRES_SSL_CA: {{ include "carto.postgresql.secretMountAbsolutePath" . }}
+  WORKSPACE_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
   {{- end }}
   WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/data-updates-workspace-sub"
   WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/data-updates"

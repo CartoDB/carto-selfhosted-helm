@@ -931,9 +931,9 @@ Get the Postgresql config map name
 */}}
 {{- define "carto.postgresql.configMapName" -}}
 {{- if .Values.internalPostgresql.enabled -}}
-  {{- printf "%s-%s" (include "carto.postgresql.fullname" .) "ssl-ca" -}}
+  {{- include "carto.postgresql.fullname" . -}}
 {{- else }}
-  {{- printf "%s-%s-%s" .Release.Name "externalpostgresql" "ssl-ca" -}}
+  {{- printf "%s-%s" .Release.Name "externalpostgresql" -}}
 {{- end -}}
 {{- end -}}
 
@@ -954,7 +954,7 @@ Return the filename where the Postgresql CA will be mounted
 {{/*
 Return the absolute path where the Postgresql CA cert will be mounted
 */}}
-{{- define "carto.postgresql.secretMountAbsolutePath" -}}
+{{- define "carto.postgresql.configMapMountAbsolutePath" -}}
 {{- printf "%s/%s" (include "carto.postgresql.configMapMountDir" .) (include "carto.postgresql.configMapMountFilename" .) -}}
 {{- end -}}
 
