@@ -392,6 +392,61 @@ Create the name of the service account to use for the maps-api deployment
 {{- end -}}
 {{- end -}}
 
+
+
+
+{{/*
+Return the proper Carto sql-worker full name
+*/}}
+{{- define "carto.sqlWorker.fullname" -}}
+{{- printf "%s-sql-worker" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto sql-worker image name
+*/}}
+{{- define "carto.sqlWorker.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.sqlWorker.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto sql-worker ConfigMap name
+*/}}
+{{- define "carto.sqlWorker.configmapName" -}}
+{{- if .Values.sqlWorker.existingConfigMap -}}
+{{- .Values.sqlWorker.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.sqlWorker.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto sql-worker Secret name
+*/}}
+{{- define "carto.sqlWorker.secretName" -}}
+{{- if .Values.sqlWorker.existingSecret -}}
+{{- .Values.sqlWorker.existingSecret -}}
+{{- else -}}
+{{- include "carto.sqlWorker.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the sql-worker deployment
+*/}}
+{{- define "carto.sqlWorker.serviceAccountName" -}}
+{{- if .Values.sqlWorker.serviceAccount.create -}}
+{{ default (include "carto.sqlWorker.fullname" .) .Values.sqlWorker.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.sqlWorker.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+
+
+
+
+
 {{/*
 Return the proper Carto workspace-subscriber full name
 */}}

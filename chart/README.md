@@ -572,6 +572,81 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `mapsApi.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
 
 
+### sql-worker Deployment Parameters
+
+| Name                                              | Description                                                                                         | Value                           |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `sqlWorker.image.registry`                        | sql-worker image registry                                                                           | `gcr.io/carto-onprem-artifacts` |
+| `sqlWorker.image.repository`                      | sql-worker image repository                                                                         | `maps-api`                      |
+| `sqlWorker.image.tag`                             | sql-worker image tag (immutable tags are recommended)                                               | `""`                            |
+| `sqlWorker.image.pullPolicy`                      | sql-worker image pull policy                                                                        | `IfNotPresent`                  |
+| `sqlWorker.image.pullSecrets`                     | sql-worker image pull secrets                                                                       | `[]`                            |
+| `sqlWorker.replicaCount`                          | Number of sql-worker replicas to deploy                                                             | `1`                             |
+| `sqlWorker.containerPorts.http`                   | sqlWorker HTTP container port                                                                       | `8002`                          |
+| `sqlWorker.livenessProbe.enabled`                 | Enable livenessProbe on sqlWorker containers                                                        | `true`                          |
+| `sqlWorker.livenessProbe.initialDelaySeconds`     | Initial delay seconds for livenessProbe                                                             | `10`                            |
+| `sqlWorker.livenessProbe.periodSeconds`           | Period seconds for livenessProbe                                                                    | `30`                            |
+| `sqlWorker.livenessProbe.timeoutSeconds`          | Timeout seconds for livenessProbe                                                                   | `5`                             |
+| `sqlWorker.livenessProbe.failureThreshold`        | Failure threshold for livenessProbe                                                                 | `5`                             |
+| `sqlWorker.livenessProbe.successThreshold`        | Success threshold for livenessProbe                                                                 | `1`                             |
+| `sqlWorker.readinessProbe.enabled`                | Enable readinessProbe on sqlWorker containers                                                       | `true`                          |
+| `sqlWorker.readinessProbe.initialDelaySeconds`    | Initial delay seconds for readinessProbe                                                            | `10`                            |
+| `sqlWorker.readinessProbe.periodSeconds`          | Period seconds for readinessProbe                                                                   | `30`                            |
+| `sqlWorker.readinessProbe.timeoutSeconds`         | Timeout seconds for readinessProbe                                                                  | `5`                             |
+| `sqlWorker.readinessProbe.failureThreshold`       | Failure threshold for readinessProbe                                                                | `5`                             |
+| `sqlWorker.readinessProbe.successThreshold`       | Success threshold for readinessProbe                                                                | `1`                             |
+| `sqlWorker.startupProbe.enabled`                  | Enable startupProbe on sqlWorker containers                                                         | `false`                         |
+| `sqlWorker.startupProbe.initialDelaySeconds`      | Initial delay seconds for startupProbe                                                              | `10`                            |
+| `sqlWorker.startupProbe.periodSeconds`            | Period seconds for startupProbe                                                                     | `30`                            |
+| `sqlWorker.startupProbe.timeoutSeconds`           | Timeout seconds for startupProbe                                                                    | `5`                             |
+| `sqlWorker.startupProbe.failureThreshold`         | Failure threshold for startupProbe                                                                  | `5`                             |
+| `sqlWorker.startupProbe.successThreshold`         | Success threshold for startupProbe                                                                  | `1`                             |
+| `sqlWorker.resources.limits`                      | The resources limits for the sql-worker containers                                                  | `{}`                            |
+| `sqlWorker.resources.requests`                    | The requested resources for the sql-worker containers                                               | `{}`                            |
+| `sqlWorker.podSecurityContext.enabled`            | Enabled sql-worker pods' Security Context                                                           | `true`                          |
+| `sqlWorker.podSecurityContext.fsGroup`            | Set sql-worker pod's Security Context fsGroup                                                       | `0`                             |
+| `sqlWorker.containerSecurityContext.enabled`      | Enabled sql-worker containers' Security Context                                                     | `true`                          |
+| `sqlWorker.containerSecurityContext.runAsUser`    | Set sql-worker containers' Security Context runAsUser                                               | `0`                             |
+| `sqlWorker.containerSecurityContext.runAsNonRoot` | Set sql-worker containers' Security Context runAsNonRoot                                            | `false`                         |
+| `sqlWorker.configuration`                         | Configuration settings (env vars) for sql-worker                                                    | `{}`                            |
+| `sqlWorker.secretConfiguration`                   | Configuration settings (env vars) for sql-worker                                                    | `""`                            |
+| `sqlWorker.existingConfigMap`                     | The name of an existing ConfigMap with your custom configuration for sql-worker                     | `""`                            |
+| `sqlWorker.existingSecret`                        | The name of an existing ConfigMap with your custom configuration for sql-worker                     | `""`                            |
+| `sqlWorker.command`                               | Override default container command (useful when using custom images)                                | `[]`                            |
+| `sqlWorker.args`                                  | Override default container args (useful when using custom images)                                   | `[]`                            |
+| `sqlWorker.hostAliases`                           | sql-worker pods host aliases                                                                        | `[]`                            |
+| `sqlWorker.podLabels`                             | Extra labels for sql-worker pods                                                                    | `{}`                            |
+| `sqlWorker.podAnnotations`                        | Annotations for sql-worker pods                                                                     | `{}`                            |
+| `sqlWorker.podAffinityPreset`                     | Pod affinity preset. Ignored if `sqlWorker.affinity` is set. Allowed values: `soft` or `hard`       | `""`                            |
+| `sqlWorker.podAntiAffinityPreset`                 | Pod anti-affinity preset. Ignored if `sqlWorker.affinity` is set. Allowed values: `soft` or `hard`  | `soft`                          |
+| `sqlWorker.nodeAffinityPreset.type`               | Node affinity preset type. Ignored if `sqlWorker.affinity` is set. Allowed values: `soft` or `hard` | `""`                            |
+| `sqlWorker.nodeAffinityPreset.key`                | Node label key to match. Ignored if `sqlWorker.affinity` is set                                     | `""`                            |
+| `sqlWorker.nodeAffinityPreset.values`             | Node label values to match. Ignored if `sqlWorker.affinity` is set                                  | `[]`                            |
+| `sqlWorker.affinity`                              | Affinity for sql-worker pods assignment                                                             | `{}`                            |
+| `sqlWorker.nodeSelector`                          | Node labels for sql-worker pods assignment                                                          | `{}`                            |
+| `sqlWorker.tolerations`                           | Tolerations for sql-worker pods assignment                                                          | `[]`                            |
+| `sqlWorker.updateStrategy.type`                   | sql-worker statefulset strategy type                                                                | `RollingUpdate`                 |
+| `sqlWorker.priorityClassName`                     | sql-worker pods' priorityClassName                                                                  | `""`                            |
+| `sqlWorker.schedulerName`                         | Name of the k8s scheduler (other than default) for sql-worker pods                                  | `""`                            |
+| `sqlWorker.lifecycleHooks`                        | for the sql-worker container(s) to automate configuration before or after startup                   | `{}`                            |
+| `sqlWorker.extraEnvVars`                          | Array with extra environment variables to add to sql-worker nodes                                   | `[]`                            |
+| `sqlWorker.extraEnvVarsCM`                        | Name of existing ConfigMap containing extra env vars for sql-worker nodes                           | `""`                            |
+| `sqlWorker.extraEnvVarsSecret`                    | Name of existing Secret containing extra env vars for sql-worker nodes                              | `""`                            |
+| `sqlWorker.extraVolumes`                          | Optionally specify extra list of additional volumes for the sql-worker pod(s)                       | `[]`                            |
+| `sqlWorker.extraVolumeMounts`                     | Optionally specify extra list of additional volumeMounts for the sql-worker container(s)            | `[]`                            |
+| `sqlWorker.sidecars`                              | Add additional sidecar containers to the sql-worker pod(s)                                          | `{}`                            |
+| `sqlWorker.initContainers`                        | Add additional init containers to the sql-worker pod(s)                                             | `{}`                            |
+
+
+### sql-worker ServiceAccount configuration
+
+| Name                                                    | Description                                          | Value   |
+| ------------------------------------------------------- | ---------------------------------------------------- | ------- |
+| `sqlWorker.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
+| `sqlWorker.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
+| `sqlWorker.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
+
+
 ### router Deployment Parameters
 
 | Name                                                | Description                                                                                      | Value                           |
