@@ -38,7 +38,7 @@ data:
   REDIS_PORT: {{ include "carto.redis.port" . }}
   REDIS_TLS_ENABLED: {{ .Values.externalRedis.tlsEnabled | quote }}
   {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
-  REDIS_TLS_CA: {{ .Values.externalRedis.tlsCA | quote }}
+  REDIS_TLS_CA: {{ include "carto.redis.configMapMountAbsolutePath" . }}
   {{- end }}
   SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
