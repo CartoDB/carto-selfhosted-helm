@@ -958,7 +958,6 @@ Return the absolute path where the Postgresql CA cert will be mounted
 {{- printf "%s/%s" (include "carto.postgresql.configMapMountDir" .) (include "carto.postgresql.configMapMountFilename" .) -}}
 {{- end -}}
 
-
 {{/*
 Return YAML for the PostgreSQL init container
 Usage:
@@ -1094,10 +1093,31 @@ Get the Redis config map name
 */}}
 {{- define "carto.redis.configMapName" -}}
 {{- if .Values.internalRedis.enabled -}}
-  {{- printf "%s-%s" (include "carto.redis.fullname" .) "tls-ca" -}}
+  {{- include "carto.redis.fullname" . -}}
 {{- else }}
-  {{- printf "%s-%s-%s" .Release.Name "externalredis" "tls-ca" -}}
+  {{- printf "%s-%s" .Release.Name "externalredis" -}}
 {{- end -}}
+{{- end -}}
+
+{{/*
+Return the directory where the Redis CA cert will  be mounted
+*/}}
+{{- define "carto.redis.configMapMountDir" -}}
+{{- print "/usr/src/certs/redis-tls-ca" -}}
+{{- end -}}
+
+{{/*
+Return the filename where the Redis CA will be mounted
+*/}}
+{{- define "carto.redis.configMapMountFilename" -}}
+{{- print "ca.crt" -}}
+{{- end -}}
+
+{{/*
+Return the absolute path where the Redis CA cert will be mounted
+*/}}
+{{- define "carto.redis.configMapMountAbsolutePath" -}}
+{{- printf "%s/%s" (include "carto.redis.configMapMountDir" .) (include "carto.redis.configMapMountFilename" .) -}}
 {{- end -}}
 
 {{/*

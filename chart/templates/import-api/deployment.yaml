@@ -191,6 +191,11 @@ spec:
               mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
               readOnly: true
             {{- end }}
+            {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+            - name: redis-tls-ca
+              mountPath: {{ include "carto.redis.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
           {{- if .Values.importApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -216,6 +221,11 @@ spec:
         - name: postgresql-ssl-ca
           configMap:
             name: {{ include "carto.postgresql.configMapName" . }}
+        {{- end }}
+        {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+        - name: redis-tls-ca
+          configMap:
+            name: {{ include "carto.redis.configMapName" . }}
         {{- end }}
         {{- if .Values.importApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraVolumes "context" $) | nindent 8 }}
