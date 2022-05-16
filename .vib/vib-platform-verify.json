@@ -42,17 +42,17 @@
           "action_id": "cypress",
           "params": {
             "resources": {
-              "url": "https://{VIB_PAT_CYPRESS_REPOSITORY}@github.com/beltran-rubo/cloud-native/archive/vib-cypress.tar.gz",
+              "url": "https://{VIB_ENV_PAT_CYPRESS_REPOSITORY}@github.com/beltran-rubo/cloud-native/archive/vib-cypress.tar.gz",
               "path": "/cloud-native-main/workspace-www"
             },
             "endpoint": "lb-carto-router-https",
             "env": {
               "CYPRESS_BASE_URL": "https://carto.vmw",
-              "RECORD_KEY": "{VIB_CYPRESS_RECORD_KEY}",
-              "CYPRESS_FIREBASE_API_KEY": "{VIB_CYPRESS_FIREBASE_API_KEY}",
-              "CYPRESS_CLIENT_SECRET": "{VIB_CYPRESS_CLIENT_SECRET}",
-              "CYPRESS_MANAGEMENT_API_CLIENT_SECRET": "{VIB_CYPRESS_MANAGEMENT_API_CLIENT_SECRET}",
-              "CYPRESS_CONNECTION_CREDENTIALS": "{VIB_CYPRESS_CONNECTION_CREDENTIALS}",
+              "RECORD_KEY": "{VIB_ENV_CYPRESS_RECORD_KEY}",
+              "CYPRESS_FIREBASE_API_KEY": "{VIB_ENV_CYPRESS_FIREBASE_API_KEY}",
+              "CYPRESS_CLIENT_SECRET": "{VIB_ENV_CYPRESS_CLIENT_SECRET}",
+              "CYPRESS_MANAGEMENT_API_CLIENT_SECRET": "{VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET}",
+              "CYPRESS_CONNECTION_CREDENTIALS": "{VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS}",
             }
           }
         }
