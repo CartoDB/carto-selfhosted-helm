@@ -47,7 +47,6 @@
             },
             "endpoint": "lb-carto-router-https",
             "env": {
-              "CYPRESS_BASE_URL": "https://carto.vmw",
               "RECORD_KEY": "{VIB_ENV_CYPRESS_RECORD_KEY}",
               "FIREBASE_API_KEY": "{VIB_ENV_CYPRESS_FIREBASE_API_KEY}",
               "CLIENT_SECRET": "{VIB_ENV_CYPRESS_CLIENT_SECRET}",
