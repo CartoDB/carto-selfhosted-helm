@@ -15,10 +15,6 @@
     },
     "verify": {
       "context": {
-        "resources": {
-          "url": "{SHA_ARCHIVE}",
-          "path": "/.vib/carto/"
-        },
         "runtime_parameters": "{CARTO_RUNTIME_PARAMETERS}",
         "target_platform": {
           "target_platform_id": "{TARGET_PLATFORM}",
@@ -34,7 +30,8 @@
           "action_id": "goss",
           "params": {
             "resources": {
-              "path": "goss/goss-accounts-www"
+              "url": "{SHA_ARCHIVE}",
+              "path": "/.vib/carto/goss/goss-accounts-www"
             },
             "remote": {
               "workload": "deploy-carto-accounts-www"
@@ -45,9 +42,18 @@
           "action_id": "cypress",
           "params": {
             "resources": {
-              "path": "cypress"
+              "url": "https://{VIB_PAT_CYPRESS_REPOSITORY}@github.com/beltran-rubo/cloud-native/archive/vib-cypress.tar.gz",
+              "path": "/cloud-native-main/workspace-www"
             },
-            "endpoint": "lb-carto-router-http"
+            "endpoint": "lb-carto-router-http",
+            "env": {
+              "CYPRESS_BASE_URL": "https://carto.vmw",
+              "RECORD_KEY": "{VIB_CYPRESS_RECORD_KEY}",
+              "CYPRESS_FIREBASE_API_KEY": "{VIB_CYPRESS_FIREBASE_API_KEY}",
+              "CYPRESS_CLIENT_SECRET": "{VIB_CYPRESS_CLIENT_SECRET}",
+              "CYPRESS_MANAGEMENT_API_CLIENT_SECRET": "{VIB_CYPRESS_MANAGEMENT_API_CLIENT_SECRET}",
+              "CYPRESS_CONNECTION_CREDENTIALS": "{VIB_CYPRESS_CONNECTION_CREDENTIALS}",
+            }
           }
         }
       ]
