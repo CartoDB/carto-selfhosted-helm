@@ -45,7 +45,7 @@
               "url": "https://{VIB_PAT_CYPRESS_REPOSITORY}@github.com/beltran-rubo/cloud-native/archive/vib-cypress.tar.gz",
               "path": "/cloud-native-main/workspace-www"
             },
-            "endpoint": "lb-carto-router-http",
+            "endpoint": "lb-carto-router-https",
             "env": {
               "CYPRESS_BASE_URL": "https://carto.vmw",
               "RECORD_KEY": "{VIB_CYPRESS_RECORD_KEY}",
