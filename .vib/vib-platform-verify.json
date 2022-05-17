@@ -15,7 +15,7 @@
     },
     "verify": {
       "context": {
-        "runtime_parameters": "{CARTO_RUNTIME_PARAMETERS}",
+        "runtime_parameters": "{CARTO_RUNTIME_PARAMETERS_STG}",
         "target_platform": {
           "target_platform_id": "{TARGET_PLATFORM}",
           "size": {
@@ -42,8 +42,8 @@
           "action_id": "cypress",
           "params": {
             "resources": {
-              "url": "https://{VIB_ENV_PAT_CYPRESS_REPOSITORY}@github.com/beltran-rubo/cloud-native/archive/vib-cypress.tar.gz",
-              "path": "/cloud-native-main/workspace-www"
+              "url": "https://s3.amazonaws.com/bitnami-autobuild-ondemand/temporary/s3temp-bitnami-20220517113455-63538/vib-cypress.tar.gz?AWSAccessKeyId=AKIAJUJS62Y5YSCL4CIA&Expires=1653046495&Signature=LPMZtQphyiqJybYppyAAaJrWr8c=",
+              "path": "workspace-www"
             },
             "endpoint": "lb-carto-router-https",
             "env": {
