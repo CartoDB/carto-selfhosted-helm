@@ -1,0 +1,48 @@
+{{- $minVersion  := .Chart.Annotations.minVersion -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-pre-install"
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded, before-hook-creation
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      name: "{{ .Release.Name }}"
+      labels:
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: scripts      
+          configMap:
+            name: "{{ .Release.Name }}-pre-install-scripts"
+      containers:
+      - name: pre-upgrade-version-check
+        terminationMessagePolicy: FallbackToLogsOnError
+        image: "alpine:latest"
+        volumeMounts: 
+          - name: scripts
+            mountPath: /opt/scripts
+        env:
+          - name: PACKAGE_VERSION
+            value: {{ .Values.cartoConfigValues.cartoVersion }}
+          - name: MINIMAL_VERSION
+            value: {{ $minVersion }}
+        command: ["sh"]
+        args: ["/opt/scripts/check-version.sh"]
+      #   args:
+      #  #   - [[ "$(echo "$MINIMAL_VERSION $PACKAGE_VERSION" |tr ' ' '\n'| sort -V| head -n1)" == $MINIMAL_VERSION ]]
+      #     - echo ${PACKAGE_VERSION} ${MINIMAL_VERSION}

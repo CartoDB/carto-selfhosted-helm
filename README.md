@@ -66,6 +66,16 @@ to configure the domain name.
 
   > Note: You can specify the '-f' flag multiple times. The priority will be given to the last (right-most) file specified. For example, if both `carto-values.yaml` and `customizations.yaml` contained a key called 'Test', the value set in `customizations.yaml` would take precedence. For this reason, please follow the order describe in the above example.
 
+  > :warning: Note: On install and update, before applying changes, a pre-hook will check that your customer package values use a version compatible with current helm chart. It it fails, it will dump the following message
+
+```bash
+Error: INSTALLATION FAILED: failed pre-install: job failed: BackoffLimitExceeded
+```
+If you see this error you can get the reason running the following command:
+
+```bash
+ kubectl logs --selector=job-name=<your_release_name>-pre-install
+```
 6. Read and follow the instructions provided by the previous command (eg: what you need to configure your DNS).
 
 ## Update

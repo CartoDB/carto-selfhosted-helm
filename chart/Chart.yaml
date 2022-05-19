@@ -29,3 +29,5 @@ name: carto
 sources:
   - https://carto.com/
 version: 1.21.8
+annotations:
+  minVersion: "2022.05.12-5"
