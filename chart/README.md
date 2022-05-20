@@ -161,7 +161,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `accountsWww.resources.requests`                         | The requested resources for the accounts-www containers                                               | `{}`                            |
 | `accountsWww.podSecurityContext.enabled`                 | Enabled accounts-www pods' Security Context                                                           | `true`                          |
 | `accountsWww.podSecurityContext.fsGroup`                 | Set accounts-www pod's Security Context fsGroup                                                       | `0`                             |
-| `accountsWww.containerSecurityContext.enabled`           | Enabled accounts-www containers' Security Context                                                     | `true`                          |
+| `accountsWww.containerSecurityContext.enabled`           | Enabled accounts-www containers' Security Context                                                     | `false`                         |
 | `accountsWww.containerSecurityContext.runAsUser`         | Set accounts-www containers' Security Context runAsUser                                               | `0`                             |
 | `accountsWww.containerSecurityContext.runAsNonRoot`      | Set accounts-www containers' Security Context runAsNonRoot                                            | `false`                         |
 | `accountsWww.configuration`                              | Configuration settings (env vars) for accounts-www                                                    | `{}`                            |
@@ -259,7 +259,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `importApi.resources.requests`                         | The requested resources for the import-api containers                                               | `{}`                            |
 | `importApi.podSecurityContext.enabled`                 | Enabled import-api pods' Security Context                                                           | `true`                          |
 | `importApi.podSecurityContext.fsGroup`                 | Set import-api pod's Security Context fsGroup                                                       | `0`                             |
-| `importApi.containerSecurityContext.enabled`           | Enabled import-api containers' Security Context                                                     | `true`                          |
+| `importApi.containerSecurityContext.enabled`           | Enabled import-api containers' Security Context                                                     | `false`                         |
 | `importApi.containerSecurityContext.runAsUser`         | Set import-api containers' Security Context runAsUser                                               | `0`                             |
 | `importApi.containerSecurityContext.runAsNonRoot`      | Set import-api containers' Security Context runAsNonRoot                                            | `false`                         |
 | `importApi.configuration`                              | Configuration settings (env vars) for import-api                                                    | `{}`                            |
@@ -334,7 +334,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `importWorker.resources.requests`                    | The requested resources for the import-worker containers                                               | `{}`                            |
 | `importWorker.podSecurityContext.enabled`            | Enabled import-worker pods' Security Context                                                           | `true`                          |
 | `importWorker.podSecurityContext.fsGroup`            | Set import-worker pod's Security Context fsGroup                                                       | `0`                             |
-| `importWorker.containerSecurityContext.enabled`      | Enabled import-worker containers' Security Context                                                     | `true`                          |
+| `importWorker.containerSecurityContext.enabled`      | Enabled import-worker containers' Security Context                                                     | `false`                         |
 | `importWorker.containerSecurityContext.runAsUser`    | Set import-worker containers' Security Context runAsUser                                               | `0`                             |
 | `importWorker.containerSecurityContext.runAsNonRoot` | Set import-worker containers' Security Context runAsNonRoot                                            | `false`                         |
 | `importWorker.configuration`                         | Configuration settings (env vars) for import-worker                                                    | `{}`                            |
@@ -416,7 +416,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `ldsApi.resources.requests`                         | The requested resources for the lds-api containers                                               | `{}`                            |
 | `ldsApi.podSecurityContext.enabled`                 | Enabled lds-api pods' Security Context                                                           | `true`                          |
 | `ldsApi.podSecurityContext.fsGroup`                 | Set lds-api pod's Security Context fsGroup                                                       | `0`                             |
-| `ldsApi.containerSecurityContext.enabled`           | Enabled lds-api containers' Security Context                                                     | `true`                          |
+| `ldsApi.containerSecurityContext.enabled`           | Enabled lds-api containers' Security Context                                                     | `false`                         |
 | `ldsApi.containerSecurityContext.runAsUser`         | Set lds-api containers' Security Context runAsUser                                               | `0`                             |
 | `ldsApi.containerSecurityContext.runAsNonRoot`      | Set lds-api containers' Security Context runAsNonRoot                                            | `false`                         |
 | `ldsApi.configuration`                              | Configuration settings (env vars) for lds-api                                                    | `{}`                            |
@@ -514,7 +514,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `mapsApi.resources.requests`                         | The requested resources for the maps-api containers                                               | `{}`                            |
 | `mapsApi.podSecurityContext.enabled`                 | Enabled maps-api pods' Security Context                                                           | `true`                          |
 | `mapsApi.podSecurityContext.fsGroup`                 | Set maps-api pod's Security Context fsGroup                                                       | `0`                             |
-| `mapsApi.containerSecurityContext.enabled`           | Enabled maps-api containers' Security Context                                                     | `true`                          |
+| `mapsApi.containerSecurityContext.enabled`           | Enabled maps-api containers' Security Context                                                     | `false`                         |
 | `mapsApi.containerSecurityContext.runAsUser`         | Set maps-api containers' Security Context runAsUser                                               | `0`                             |
 | `mapsApi.containerSecurityContext.runAsNonRoot`      | Set maps-api containers' Security Context runAsNonRoot                                            | `false`                         |
 | `mapsApi.configuration`                              | Configuration settings (env vars) for maps-api                                                    | `{}`                            |
@@ -613,7 +613,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `router.resources.requests`                         | The requested resources for the router containers                                                | `{}`                            |
 | `router.podSecurityContext.enabled`                 | Enabled router pods' Security Context                                                            | `true`                          |
 | `router.podSecurityContext.fsGroup`                 | Set router pod's Security Context fsGroup                                                        | `0`                             |
-| `router.containerSecurityContext.enabled`           | Enabled router containers' Security Context                                                      | `true`                          |
+| `router.containerSecurityContext.enabled`           | Enabled router containers' Security Context                                                      | `false`                         |
 | `router.containerSecurityContext.runAsUser`         | Set router containers' Security Context runAsUser                                                | `0`                             |
 | `router.containerSecurityContext.runAsNonRoot`      | Set router containers' Security Context runAsNonRoot                                             | `false`                         |
 | `router.configuration`                              | Configuration settings (env vars) for router                                                     | `{}`                            |
@@ -709,7 +709,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `httpCache.resources.requests`                    | The requested resources for the http-cache containers                                               | `{}`                            |
 | `httpCache.podSecurityContext.enabled`            | Enabled http-cache pods' Security Context                                                           | `true`                          |
 | `httpCache.podSecurityContext.fsGroup`            | Set http-cache pod's Security Context fsGroup                                                       | `0`                             |
-| `httpCache.containerSecurityContext.enabled`      | Enabled http-cache containers' Security Context                                                     | `true`                          |
+| `httpCache.containerSecurityContext.enabled`      | Enabled http-cache containers' Security Context                                                     | `false`                         |
 | `httpCache.containerSecurityContext.runAsUser`    | Set http-cache containers' Security Context runAsUser                                               | `0`                             |
 | `httpCache.containerSecurityContext.runAsNonRoot` | Set http-cache containers' Security Context runAsNonRoot                                            | `false`                         |
 | `httpCache.configuration`                         | Configuration settings (env vars) for http-cache                                                    | `{}`                            |
@@ -803,7 +803,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cdnInvalidatorSub.resources.requests`                    | The requested resources for the cdnInvalidatorSub containers                                                | `{}`                            |
 | `cdnInvalidatorSub.podSecurityContext.enabled`            | Enabled cdnInvalidatorSub pods' Security Context                                                            | `true`                          |
 | `cdnInvalidatorSub.podSecurityContext.fsGroup`            | Set cdnInvalidatorSub pod's Security Context fsGroup                                                        | `0`                             |
-| `cdnInvalidatorSub.containerSecurityContext.enabled`      | Enabled cdnInvalidatorSub containers' Security Context                                                      | `true`                          |
+| `cdnInvalidatorSub.containerSecurityContext.enabled`      | Enabled cdnInvalidatorSub containers' Security Context                                                      | `false`                         |
 | `cdnInvalidatorSub.containerSecurityContext.runAsUser`    | Set cdnInvalidatorSub containers' Security Context runAsUser                                                | `0`                             |
 | `cdnInvalidatorSub.containerSecurityContext.runAsNonRoot` | Set cdnInvalidatorSub containers' Security Context runAsNonRoot                                             | `false`                         |
 | `cdnInvalidatorSub.configuration`                         | Configuration settings (env vars) for cdnInvalidatorSub                                                     | `{}`                            |
@@ -902,7 +902,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceApi.resources.requests`                         | The requested resources for the workspace-api containers                                               | `{}`                            |
 | `workspaceApi.podSecurityContext.enabled`                 | Enabled workspace-api pods' Security Context                                                           | `true`                          |
 | `workspaceApi.podSecurityContext.fsGroup`                 | Set workspace-api pod's Security Context fsGroup                                                       | `0`                             |
-| `workspaceApi.containerSecurityContext.enabled`           | Enabled workspace-api containers' Security Context                                                     | `true`                          |
+| `workspaceApi.containerSecurityContext.enabled`           | Enabled workspace-api containers' Security Context                                                     | `false`                         |
 | `workspaceApi.containerSecurityContext.runAsUser`         | Set workspace-api containers' Security Context runAsUser                                               | `0`                             |
 | `workspaceApi.containerSecurityContext.runAsNonRoot`      | Set workspace-api containers' Security Context runAsNonRoot                                            | `false`                         |
 | `workspaceApi.configuration`                              | Configuration settings (env vars) for workspace-api                                                    | `{}`                            |
@@ -977,7 +977,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceSubscriber.resources.requests`                    | The requested resources for the workspace-subscriber containers                                               | `{}`                            |
 | `workspaceSubscriber.podSecurityContext.enabled`            | Enabled workspace-subscriber pods' Security Context                                                           | `true`                          |
 | `workspaceSubscriber.podSecurityContext.fsGroup`            | Set workspace-subscriber pod's Security Context fsGroup                                                       | `0`                             |
-| `workspaceSubscriber.containerSecurityContext.enabled`      | Enabled workspace-subscriber containers' Security Context                                                     | `true`                          |
+| `workspaceSubscriber.containerSecurityContext.enabled`      | Enabled workspace-subscriber containers' Security Context                                                     | `false`                         |
 | `workspaceSubscriber.containerSecurityContext.runAsUser`    | Set workspace-subscriber containers' Security Context runAsUser                                               | `0`                             |
 | `workspaceSubscriber.containerSecurityContext.runAsNonRoot` | Set workspace-subscriber containers' Security Context runAsNonRoot                                            | `false`                         |
 | `workspaceSubscriber.configuration`                         | Configuration settings (env vars) for workspace-subscriber                                                    | `{}`                            |
@@ -1059,7 +1059,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceWww.resources.requests`                         | The requested resources for the workspace-www containers                                               | `{}`                            |
 | `workspaceWww.podSecurityContext.enabled`                 | Enabled workspace-www pods' Security Context                                                           | `true`                          |
 | `workspaceWww.podSecurityContext.fsGroup`                 | Set workspace-www pod's Security Context fsGroup                                                       | `0`                             |
-| `workspaceWww.containerSecurityContext.enabled`           | Enabled workspace-www containers' Security Context                                                     | `true`                          |
+| `workspaceWww.containerSecurityContext.enabled`           | Enabled workspace-www containers' Security Context                                                     | `false`                         |
 | `workspaceWww.containerSecurityContext.runAsUser`         | Set workspace-www containers' Security Context runAsUser                                               | `0`                             |
 | `workspaceWww.containerSecurityContext.runAsNonRoot`      | Set workspace-www containers' Security Context runAsNonRoot                                            | `false`                         |
 | `workspaceWww.configuration`                              | Configuration settings (env vars) for workspace-www                                                    | `{}`                            |
@@ -1130,7 +1130,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceMigrations.args`                                  | Override default container args (useful when using custom images)    | `[]`                            |
 | `workspaceMigrations.resources.limits`                      | The resources limits for the init container                          | `{}`                            |
 | `workspaceMigrations.resources.requests`                    | The requested resources for the init container                       | `{}`                            |
-| `workspaceMigrations.containerSecurityContext.enabled`      | Enable container security context                                    | `true`                          |
+| `workspaceMigrations.containerSecurityContext.enabled`      | Enable container security context                                    | `false`                         |
 | `workspaceMigrations.containerSecurityContext.runAsUser`    | Set init container's Security Context runAsUser                      | `0`                             |
 | `workspaceMigrations.containerSecurityContext.runAsNonRoot` | Force the init container to run as non root                          | `false`                         |
 
