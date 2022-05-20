@@ -17,7 +17,7 @@ jobs:
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
-      - uses: vmware-labs/vmware-image-builder-action@main
+      - uses: vmware-labs/vmware-image-builder-action@0.2.0
 
   vib-k8s-verify: # verify in multiple target platforms
     runs-on: ubuntu-latest
@@ -35,9 +35,15 @@ jobs:
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
-      - uses: vmware-labs/vmware-image-builder-action@main
+      - uses: vmware-labs/vmware-image-builder-action@0.2.0
         with:
           pipeline: vib-platform-verify.json
         env:
           VIB_ENV_TARGET_PLATFORM: ${{ matrix.target-platform-id }}
           VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ secrets.CARTO_RUNTIME_PARAMETERS }}
+          VIB_ENV_PAT_CYPRESS_REPOSITORY: ${{ secrets.VIB_ENV_PAT_CYPRESS_REPOSITORY }}
+          VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
+          VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET: ${{ secrets.VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET }}
+          VIB_ENV_CYPRESS_FIREBASE_API_KEY: ${{ secrets.VIB_ENV_CYPRESS_FIREBASE_API_KEY }}
+          VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS: ${{ secrets.VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS }}
+          VIB_ENV_CYPRESS_CLIENT_SECRET: ${{ secrets.VIB_ENV_CYPRESS_CLIENT_SECRET }}
