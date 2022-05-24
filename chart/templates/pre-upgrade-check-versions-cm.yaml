@@ -1,0 +1,28 @@
+{{- $minVersion  := .Chart.Annotations.minVersion -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Release.Name }}-pre-install-scripts"
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": hook-succeeded, before-hook-creation, hook-fail
+data :
+  check-version.sh: |
+    #!/bin/bash
+    printf 'Checking release version\n'
+    if [[ $(echo ${MINIMAL_VERSION} ${PACKAGE_VERSION} |tr ' ' '\n'| sort -V| head -n1) == ${MINIMAL_VERSION} ]];then
+      printf 'Release version is OK\n'
+      exit 0
+    else
+      printf 'Release version is outdated, please contact support team at support-team@carto.com.\n'
+      exit 1
+    fi
+
