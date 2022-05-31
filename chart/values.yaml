@@ -312,7 +312,7 @@ accountsWww:
   ## accounts-www autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param accountsWww.autoscaling.enabled Enable autoscaling for the accounts-www containers
-  ## @param accountsWww.autoscaling.minReplicas The minimal number of containters for the accounts-www deployment
+  ## @param accountsWww.autoscaling.minReplicas The minimal number of containers for the accounts-www deployment
   ## @param accountsWww.autoscaling.maxReplicas The maximum number of containers for the accounts-www deployment
   ## @param accountsWww.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in accounts-www deployment
   ##
@@ -632,7 +632,7 @@ importApi:
   ## import-api autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param importApi.autoscaling.enabled Enable autoscaling for the import-api containers
-  ## @param importApi.autoscaling.minReplicas The minimal number of containters for the import-api deployment
+  ## @param importApi.autoscaling.minReplicas The minimal number of containers for the import-api deployment
   ## @param importApi.autoscaling.maxReplicas The maximum number of containers for the import-api deployment
   ## @param importApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in import-api deployment
   ##
@@ -1164,7 +1164,7 @@ ldsApi:
   ## lds-api autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param ldsApi.autoscaling.enabled Enable autoscaling for the lds-api containers
-  ## @param ldsApi.autoscaling.minReplicas The minimal number of containters for the workspldsace-api deployment
+  ## @param ldsApi.autoscaling.minReplicas The minimal number of containers for the workspace-api deployment
   ## @param ldsApi.autoscaling.maxReplicas The maximum number of containers for the lds-api deployment
   ## @param ldsApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in lds-api deployment
   ##
@@ -1483,7 +1483,7 @@ mapsApi:
   ## maps-api autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param mapsApi.autoscaling.enabled Enable autoscaling for the maps-api containers
-  ## @param mapsApi.autoscaling.minReplicas The minimal number of containters for the maps-api deployment
+  ## @param mapsApi.autoscaling.minReplicas The minimal number of containers for the maps-api deployment
   ## @param mapsApi.autoscaling.maxReplicas The maximum number of containers for the maps-api deployment
   ## @param mapsApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in maps-api deployment
   ##
@@ -1805,7 +1805,7 @@ router:
   ## router autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param router.autoscaling.enabled Enable autoscaling for the router containers
-  ## @param router.autoscaling.minReplicas The minimal number of containters for the router deployment
+  ## @param router.autoscaling.minReplicas The minimal number of containers for the router deployment
   ## @param router.autoscaling.maxReplicas The maximum number of containers for the router deployment
   ## @param router.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in router deployment
   ##
@@ -2747,7 +2747,7 @@ workspaceApi:
   ## workspace-api autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param workspaceApi.autoscaling.enabled Enable autoscaling for the workspace-api containers
-  ## @param workspaceApi.autoscaling.minReplicas The minimal number of containters for the workspace-api deployment
+  ## @param workspaceApi.autoscaling.minReplicas The minimal number of containers for the workspace-api deployment
   ## @param workspaceApi.autoscaling.maxReplicas The maximum number of containers for the workspace-api deployment
   ## @param workspaceApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in workspace-api deployment
   ##
@@ -3280,7 +3280,7 @@ workspaceWww:
   ## workspace-www autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param workspaceWww.autoscaling.enabled Enable autoscaling for the workspace-www containers
-  ## @param workspaceWww.autoscaling.minReplicas The minimal number of containters for the workspace-www deployment
+  ## @param workspaceWww.autoscaling.minReplicas The minimal number of containers for the workspace-www deployment
   ## @param workspaceWww.autoscaling.maxReplicas The maximum number of containers for the workspace-www deployment
   ## @param workspaceWww.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in workspace-www deployment
   ##
@@ -3604,7 +3604,7 @@ internalRedis:
 ## @param externalRedis.port Redis port number
 ## @param externalRedis.password Redis password
 ## @param externalRedis.tlsEnabled Whether or not connect to Redis via TLS
-## @param externalRedis.tlsCA CA certificate in case Redis TLS cert it's selfsigned
+## @param externalRedis.tlsCA CA certificate in case Redis TLS cert it's self signed
 ## @param externalRedis.existingSecret Name of an existing secret resource containing the Redis password in a 'redis-password' key
 ## @param externalRedis.existingSecretPasswordKey Key of the existing secret
 ##
@@ -3675,7 +3675,7 @@ internalPostgresql:
 ## @param externalPostgresql.database Database name
 ## @param externalPostgresql.port Database port number
 ## @param externalPostgresql.sslEnabled Whether or not connect to CARTO Postgresql via TLS
-## @param externalPostgresql.sslCA CA certificate in case CARTO Postgresql TLS cert it's selfsigned
+## @param externalPostgresql.sslCA CA certificate in case CARTO Postgresql TLS cert it's self signed
 ##
 externalPostgresql:
   host: localhost
