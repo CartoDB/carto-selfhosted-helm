@@ -1743,10 +1743,6 @@ sqlWorker:
   ## @param sqlWorker.replicaCount Number of sql-worker replicas to deploy
   ##
   replicaCount: 1
-  ## @param sqlWorker.containerPorts.http sqlWorker HTTP container port
-  ##
-  containerPorts:
-    http: 8002
   ## Configure extra options for sqlWorker containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param sqlWorker.livenessProbe.enabled Enable livenessProbe on sqlWorker containers
@@ -1820,7 +1816,7 @@ sqlWorker:
   ## @param sqlWorker.containerSecurityContext.runAsNonRoot Set sql-worker containers' Security Context runAsNonRoot
   ##
   containerSecurityContext:
-    enabled: true
+    enabled: false
     runAsUser: 0
     runAsNonRoot: false
 

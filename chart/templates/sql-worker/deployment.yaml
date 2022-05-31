@@ -100,7 +100,7 @@ spec:
           args:
             - -ec
             - |
-              npm run start:subscriber
+              npm run start:built:subscriber
           {{- end }}
           env:
             - name: WORKSPACE_POSTGRES_PASSWORD

@@ -582,7 +582,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `sqlWorker.image.pullPolicy`                      | sql-worker image pull policy                                                                        | `IfNotPresent`                  |
 | `sqlWorker.image.pullSecrets`                     | sql-worker image pull secrets                                                                       | `[]`                            |
 | `sqlWorker.replicaCount`                          | Number of sql-worker replicas to deploy                                                             | `1`                             |
-| `sqlWorker.containerPorts.http`                   | sqlWorker HTTP container port                                                                       | `8002`                          |
 | `sqlWorker.livenessProbe.enabled`                 | Enable livenessProbe on sqlWorker containers                                                        | `true`                          |
 | `sqlWorker.livenessProbe.initialDelaySeconds`     | Initial delay seconds for livenessProbe                                                             | `10`                            |
 | `sqlWorker.livenessProbe.periodSeconds`           | Period seconds for livenessProbe                                                                    | `30`                            |
@@ -605,7 +604,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `sqlWorker.resources.requests`                    | The requested resources for the sql-worker containers                                               | `{}`                            |
 | `sqlWorker.podSecurityContext.enabled`            | Enabled sql-worker pods' Security Context                                                           | `true`                          |
 | `sqlWorker.podSecurityContext.fsGroup`            | Set sql-worker pod's Security Context fsGroup                                                       | `0`                             |
-| `sqlWorker.containerSecurityContext.enabled`      | Enabled sql-worker containers' Security Context                                                     | `true`                          |
+| `sqlWorker.containerSecurityContext.enabled`      | Enabled sql-worker containers' Security Context                                                     | `false`                         |
 | `sqlWorker.containerSecurityContext.runAsUser`    | Set sql-worker containers' Security Context runAsUser                                               | `0`                             |
 | `sqlWorker.containerSecurityContext.runAsNonRoot` | Set sql-worker containers' Security Context runAsNonRoot                                            | `false`                         |
 | `sqlWorker.configuration`                         | Configuration settings (env vars) for sql-worker                                                    | `{}`                            |
