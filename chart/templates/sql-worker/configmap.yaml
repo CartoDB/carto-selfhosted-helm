@@ -18,7 +18,6 @@ data:
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   LOG_LEVEL: "debug"
   MAPS_API_V3_COMPONENT_NAME: "sql-worker"
-  MAPS_API_V3_PORT: "{{ .Values.sqlWorker.containerPorts.http }}"
   MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   MAPS_API_V3_RESOURCE_URL_HOST: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   MAPS_API_V3_RESOURCE_URL_TEMPLATE_NEW: 'https://${host}/api/${path}'
@@ -35,7 +34,6 @@ data:
   {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
   REDIS_TLS_CA: {{ .Values.externalRedis.tlsCA | quote }}
   {{- end }}
-  WORKSPACE_PORT: {{ .Values.workspaceApi.containerPorts.http  | quote }}
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
   WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . }}

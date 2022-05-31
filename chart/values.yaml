@@ -350,7 +350,7 @@ accountsWww:
   ## @param accountsWww.containerSecurityContext.runAsNonRoot Set accounts-www containers' Security Context runAsNonRoot
   ##
   containerSecurityContext:
-    enabled: true
+    enabled: false
     runAsUser: 0
     runAsNonRoot: false
 
@@ -670,7 +670,7 @@ importApi:
   ## @param importApi.containerSecurityContext.runAsNonRoot Set import-api containers' Security Context runAsNonRoot
   ##
   containerSecurityContext:
-    enabled: true
+    enabled: false
     runAsUser: 0
     runAsNonRoot: false
 
@@ -929,7 +929,7 @@ importWorker:
   ## @param importWorker.containerSecurityContext.runAsNonRoot Set import-worker containers' Security Context runAsNonRoot
   ##
   containerSecurityContext:
-    enabled: true
+    enabled: false
     runAsUser: 0
     runAsNonRoot: false
 
@@ -1202,7 +1202,7 @@ ldsApi:
   ## @param ldsApi.containerSecurityContext.runAsNonRoot Set lds-api containers' Security Context runAsNonRoot
   ##
   containerSecurityContext:
-    enabled: true
+    enabled: false
     runAsUser: 0
     runAsNonRoot: false
 
@@ -1521,7 +1521,7 @@ mapsApi:
   ## @param mapsApi.containerSecurityContext.runAsNonRoot Set maps-api containers' Security Context runAsNonRoot
   ##
   containerSecurityContext:
-    enabled: true
+    enabled: false
     runAsUser: 0
     runAsNonRoot: false
 
@@ -2091,7 +2091,7 @@ router:
   ## @param router.containerSecurityContext.runAsNonRoot Set router containers' Security Context runAsNonRoot
   ##
   containerSecurityContext:
-    enabled: true
+    enabled: false
     runAsUser: 0
     runAsNonRoot: false
 
@@ -2403,7 +2403,7 @@ httpCache:
   ## @param httpCache.containerSecurityContext.runAsNonRoot Set http-cache containers' Security Context runAsNonRoot
   ##
   containerSecurityContext:
-    enabled: true
+    enabled: false
     runAsUser: 0
     runAsNonRoot: false
 
@@ -2711,7 +2711,7 @@ cdnInvalidatorSub:
   ## @param cdnInvalidatorSub.containerSecurityContext.runAsNonRoot Set cdnInvalidatorSub containers' Security Context runAsNonRoot
   ##
   containerSecurityContext:
-    enabled: true
+    enabled: false
     runAsUser: 0
     runAsNonRoot: false
 
@@ -3033,7 +3033,7 @@ workspaceApi:
   ## @param workspaceApi.containerSecurityContext.runAsNonRoot Set workspace-api containers' Security Context runAsNonRoot
   ##
   containerSecurityContext:
-    enabled: true
+    enabled: false
     runAsUser: 0
     runAsNonRoot: false
 
@@ -3293,7 +3293,7 @@ workspaceSubscriber:
   ## @param workspaceSubscriber.containerSecurityContext.runAsNonRoot Set workspace-subscriber containers' Security Context runAsNonRoot
   ##
   containerSecurityContext:
-    enabled: true
+    enabled: false
     runAsUser: 0
     runAsNonRoot: false
 
@@ -3566,7 +3566,7 @@ workspaceWww:
   ## @param workspaceWww.containerSecurityContext.runAsNonRoot Set workspace-www containers' Security Context runAsNonRoot
   ##
   containerSecurityContext:
-    enabled: true
+    enabled: false
     runAsUser: 0
     runAsNonRoot: false
 
@@ -3806,7 +3806,7 @@ workspaceMigrations:
   ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
   ##
   containerSecurityContext:
-    enabled: true
+    enabled: false
     runAsUser: 0
     runAsNonRoot: false
 

@@ -26,11 +26,12 @@ data:
   REDIS_PORT: {{ include "carto.redis.port" . }}
   REDIS_TLS_ENABLED: {{ .Values.externalRedis.tlsEnabled | quote }}
   {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
-  REDIS_TLS_CA: {{ .Values.externalRedis.tlsCA | quote }}
+  REDIS_TLS_CA: {{ include "carto.redis.configMapMountAbsolutePath" . }}
   {{- end }}
   IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-import-sub"
   IMPORT_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
   LOG_LEVEL: "debug"
+  CARTO_SELFHOSTED_DEPLOYMENT: "kubernetes"
   PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE: "projects/{project_id}/topics/data-updates"
   PUBSUB_MODE: "pull"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
