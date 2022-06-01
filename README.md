@@ -68,6 +68,18 @@ to configure the domain name.
 
 6. Read and follow the instructions provided by the previous command (eg: what you need to configure your DNS).
 
+### Troubleshooting
+  
+:warning: On install and upgrade, before applying changes, a pre-hook will check that your customer package values use a version compatible with current helm chart. It it fails, it will dump the following message
+```bash
+Error: INSTALLATION FAILED: failed pre-install: job failed: BackoffLimitExceeded
+```
+If you see this error you can get the reason running the following command:
+
+```bash
+ kubectl logs --selector=job-name=<your_release_name>-pre-install
+```
+
 ## Update
 
 1. Authenticate and connect to your cluster
