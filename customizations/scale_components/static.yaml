@@ -1,13 +1,13 @@
+####################################################################
+# WARNING: we discourage adding scale configuration for any component
+#          that is not listed in this file, because it is not
+#          supported and it could impact the application stability.
+####################################################################
+
 accountsWww:
   replicaCount: 1
 
 importApi:
-  replicaCount: 1
-
-importWorker:
-  replicaCount: 1
-
-cdnInvalidatorSub:
   replicaCount: 1
 
 ldsApi:
@@ -23,9 +23,6 @@ httpCache:
   replicaCount: 1
 
 workspaceApi:
-  replicaCount: 1
-
-workspaceSubscriber:
   replicaCount: 1
 
 workspaceWww:

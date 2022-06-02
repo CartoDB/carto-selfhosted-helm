@@ -18,6 +18,7 @@ data:
   CARTO_SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   CDN_INVALIDATOR_BACKEND_ENGINE: "varnish"
   CDN_INVALIDATOR_SUBSCRIBER_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/event-bus-cdn-inval-sub"
