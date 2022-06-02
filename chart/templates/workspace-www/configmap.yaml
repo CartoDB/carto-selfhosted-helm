@@ -20,6 +20,7 @@ data:
   AUTH0_NAMESPACE: "http://app.carto.com"
   CARTO_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   CARTO_AUTH0_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
+  CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   CARTO_SELFHOSTED_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   CARTO_SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}

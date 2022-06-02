@@ -12,6 +12,7 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
+  CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   HTTP_CACHE_ENABLED: {{ .Values.appConfigValues.httpCacheEnabled | quote }}
   ROUTER_ACCOUNTS_WWW_INTERNAL_URL: {{ include "carto.accountsWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_HTTP_CACHE_INTERNAL_URL: {{ include "carto.httpCache.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
