@@ -19,8 +19,6 @@ appConfigValues:
   gcpBucketsProjectId: ""
   ## @param appConfigValues.awsS3Region If the bucket is S3, the region to be used
   awsS3Region: ""
-  ## @param appConfigValues.httpsRouterEnabled Enable https in router
-  httpsRouterEnabled: "true"
 
 ## @section CARTO config parameters
 ## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
@@ -144,12 +142,14 @@ cartoSecrets:
       name: ""
       key: ""
 
+## @param tlsCerts.httpsRouterEnabled Enable https in router. If you disable this protocol in the Carto Router component you should configure it in a higher layer like a Load Balancer
 ## @param tlsCerts.autoGenerate Generate self-signed TLS certificates
 ## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
 ## @param tlsCerts.existingSecret.certKey Key of the certificate inside the secret
 ## @param tlsCerts.existingSecret.keyKey Key of the certificate key inside the secret
 ##
 tlsCerts:
+  httpsRouterEnabled: true
   autoGenerate: true
   existingSecret:
     name: ""

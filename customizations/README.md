@@ -95,14 +95,14 @@ By default, the package generates a self-signed certificate with a validity of 3
 
 #### Disable internal HTTPS
 
-If you need to disable HTTPS in the router, [add the following lines](#how-to-apply-the-configurations) to your `customizations.yaml`:
+If you need to disable `HTTPS` in the router, [add the following lines](#how-to-apply-the-configurations) to your `customizations.yaml`:
 
 ```yaml
-appConfigValues:
-  httpsRouterEnabled: "false"
+tlsCerts:
+  httpsRouterEnabled: false
 ```
 
-> ⚠️ Remember that CARTO only works with HTTPS, so if you disable this protocol in the Carto Router component you should configure it in a higher layer like a Load Balancer (service or ingress).
+> ⚠️ Remember that CARTO only works with `HTTPS`, so if you disable this protocol in the Carto Router component you should configure it in a higher layer like a Load Balancer (service or ingress) to make the redirection from `HTTP` to `HTTPS` ⚠️
 
 To add your own certificate you need:
 
