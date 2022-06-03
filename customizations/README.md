@@ -102,7 +102,7 @@ appConfigValues:
   httpsRouterEnabled: "false"
 ```
 
-Remember that CARTO only works with HTTPS, so if you disable this protocol in the Carto Router component you should configure it in a higher layer like a loadbalancer (service or ingress).
+> ⚠️ Remember that CARTO only works with HTTPS, so if you disable this protocol in the Carto Router component you should configure it in a higher layer like a Load Balancer (service or ingress).
 
 To add your own certificate you need:
 
