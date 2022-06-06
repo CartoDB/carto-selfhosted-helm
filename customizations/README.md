@@ -89,22 +89,25 @@ TODO: Add the other providers
 
 #### Configure TLS termination in the service
 
-By default, the package generates a self-signed certificate with a validity of 365 days.
+##### Disable internal HTTPS
 
 > ⚠️ CARTO Self Hosted only works if the final client use HTTPS protocol. ⚠️
 
-#### Disable internal HTTPS
-
-If you need to disable `HTTPS` in the router, [add the following lines](#how-to-apply-the-configurations) to your `customizations.yaml`:
+If you need to disable `HTTPS` in the Carto router, [add the following lines](#how-to-apply-the-configurations) to your `customizations.yaml`:
 
 ```yaml
 tlsCerts:
-  httpsRouterEnabled: false
+  httpsEnabled: false
 ```
 
 > ⚠️ Remember that CARTO only works with `HTTPS`, so if you disable this protocol in the Carto Router component you should configure it in a higher layer like a Load Balancer (service or ingress) to make the redirection from `HTTP` to `HTTPS` ⚠️
 
-To add your own certificate you need:
+##### Use your own TLS certificate
+
+By default, the package generates a self-signed certificate with a validity of 365 days.
+
+
+If you want to add your own certificate you need:
 
 - Create a kubernetes secret with following content:
 

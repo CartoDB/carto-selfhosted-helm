@@ -26,5 +26,5 @@ data:
   ROUTER_WORKSPACE_API_INTERNAL_URL: {{ include "carto.workspaceApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_WORKSPACE_WWW_INTERNAL_URL: {{ include "carto.workspaceWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
-  ROUTER_ENABLE_HTTPS: {{ .Values.tlsCerts.httpsRouterEnabled | quote }}
+  ROUTER_ENABLE_HTTPS: {{ .Values.tlsCerts.httpsEnabled | quote }}
 {{- end }}
