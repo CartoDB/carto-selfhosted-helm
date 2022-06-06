@@ -16,6 +16,7 @@ env:
   CSP_API_TOKEN: ${{ secrets.CSP_API_TOKEN }}
   VIB_PUBLIC_URL: https://cp.bromelia.vmware.com
   CARTO_CLONE_PATH: carto-sources
+  SIGNED_URL_DURATION: 5m
 jobs:
   vib-verify: # verify in multiple target platforms
     runs-on: ubuntu-latest
@@ -32,10 +33,16 @@ jobs:
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
-      # - name: Google Cloud Auth
-      #   uses: google-github-actions/auth@v0
-      #   with:
-      #     credentials_json: ${{ secrets.CARTO_ARTIFACTS_SERVICE_ACCOUNT_BASE64 }}
+      - name: Google Cloud Auth
+        uses: google-github-actions/auth@v0
+        with:
+          # credentials_json: ${{ secrets.CARTO_ARTIFACTS_SERVICE_ACCOUNT_BASE64 }}
+          credentials_json: ${{ secrets.CARTO_ARTIFACTS_SERVICE_ACCOUNT }}
+      - name: Install Google command line
+        uses: google-github-actions/setup-gcloud@v0
+        # with:
+        #   project_id: ${{ env.ARTIFACTS_PROJECT_ID }}
+        #   version: ${{ env.GCLOUD_VERSION }}
       # - name: Retrieve secrets
       #   id: secrets
       #   uses: google-github-actions/get-secretmanager-secrets@v0
@@ -47,13 +54,14 @@ jobs:
       #     # yamllint enable
       - name: Set up yq
         uses: frenck/action-setup-yq@v1
-      - name: Retrieve Release Name
+      - name: Retrieve chart info
         id: info
         shell: bash
         run: |
           set -ex
           echo "::set-output name=carto_version::$(yq .appVersion chart/Chart.yaml)"
-      - uses: actions/checkout@v3
+      - name: Clone cloud-native
+        uses: actions/checkout@v3
         with:
           ref: '${{ steps.info.outputs.carto_version }}'
           repository: 'CartoDB/cloud-native'
@@ -62,13 +70,29 @@ jobs:
           path: '${{ env.CARTO_CLONE_PATH }}'
           persist-credentials: 'false'
       - name: Testing if works
+        id: sign
         shell: bash
         run: |
           set -ex
-          du -sh "${CARTO_CLONE_PATH}/integration-tests"
+          du -sh "${CARTO_CLONE_PATH}/workspace-www"
           cd "${CARTO_CLONE_PATH}"
           git status
 
+          tar -czf cloud-native-workspace-www.tar.gz workspace-www/
+          ls -alh cloud-native-workspace-www.tar.gz
+          gsutil -m cp cloud-native-workspace-www.tar.gz gs://mlr-testing-private/
+          set +x
+          SIGNED_URL="$(gsutil signurl --use-service-account -d ${SIGNED_URL_DURATION} gs://mlr-testing-private/cloud-native-workspace-www.tar.gz | awk -F '\t' '{print $4}' | tail -n 1)"
+          echo "::add-mask::${SIGNED_URL}"
+          set -x
+          sleep 1s
+          echo "::set-output name=workspace-www-source-url::${SIGNED_URL}"
+
+      - name: Testing if works 2
+        shell: bash
+        run: |
+          set -ex
+          echo "${{ steps.sign.outputs.workspace-www-source-url }}"
       # - uses: vmware-labs/vmware-image-builder-action@0.2.0
       #   with:
       #     pipeline: vib-platform-verify.json
