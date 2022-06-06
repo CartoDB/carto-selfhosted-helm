@@ -123,6 +123,7 @@ If you want to add your own certificate you need:
 
   ```yaml
   tlsCerts:
+    httpsEnabled: true
     autoGenerate: false
     existingSecret:
       name: "mycarto-custom-tls-certificate"
