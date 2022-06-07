@@ -55,8 +55,8 @@
           "params": {
             "timeout_minutes": 50,
             "resources": {
-              "url": "https://s3.amazonaws.com/bitnami-autobuild-ondemand/temporary/s3temp-bitnami-20220517113455-63538/vib-cypress.tar.gz?AWSAccessKeyId=AKIAJUJS62Y5YSCL4CIA&Expires=1653046495&Signature=LPMZtQphyiqJybYppyAAaJrWr8c=",
-              "path": "workspace-www"
+              "url": "{WORKSPACE_WWW_SOURCE_URL}",
+              "path": "."
             },
             "endpoint": "lb-carto-router-https",
             "env": {
