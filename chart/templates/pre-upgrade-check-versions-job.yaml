@@ -37,7 +37,7 @@ spec:
             mountPath: /opt/scripts
         env:
           - name: PACKAGE_VERSION
-            value: {{ .Values.cartoConfigValues.cartoVersion }}
+            value: {{ .Values.cartoConfigValues.customerPackageVersion }}
           - name: MINIMAL_VERSION
             value: {{ $minVersion }}
         command: ["sh"]
