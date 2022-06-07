@@ -16,7 +16,9 @@ env:
   CSP_API_TOKEN: ${{ secrets.CSP_API_TOKEN }}
   VIB_PUBLIC_URL: https://cp.bromelia.vmware.com
   CARTO_CLONE_PATH: carto-sources
-  SIGNED_URL_DURATION: 1h
+  # SIGNED_URL_DURATION: 1h
+  SIGNED_URL_DURATION: 5m
+  WORKSPACE_URL: https://carto.vmw
 jobs:
   vib-verify: # verify in multiple target platforms
     runs-on: ubuntu-latest
@@ -79,6 +81,25 @@ jobs:
           du -sh "${CARTO_CLONE_PATH}/workspace-www"
           cd "${CARTO_CLONE_PATH}/workspace-www"
           git status
+
+          ### Edit workspace-www folder
+            ## HotFix until we go against main
+          cat .env | head -n 8 > .env
+            # End HotFix
+
+          cat environments/staging.env >> .env
+
+          echo "CYPRESS_WORKSPACE_URL=${WORKSPACE_URL}" >> .env
+          echo "CYPRESS_BASE_URL=${WORKSPACE_URL}" >> .env
+          echo "CYPRESS_CI=true" >> .env
+
+            # Replace me
+          echo "CYPRESS_TENANT_ID=onp-bitnami-stag-1" >> .env
+          echo "CYPRESS_RUN_ID=vmware-mlr" >> .env
+            # End Replace me
+
+          cat .env
+
 
           tar -czf ../cloud-native-workspace-www.tar.gz .
           cd ..
