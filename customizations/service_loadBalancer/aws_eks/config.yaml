@@ -1,6 +1,7 @@
 router:
   service:
     type: LoadBalancer
+    provider: aws
     annotations:
       # https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/guide/service/nlb/
       # https://kubernetes.io/docs/concepts/services-networking/service/#ssl-support-on-aws
