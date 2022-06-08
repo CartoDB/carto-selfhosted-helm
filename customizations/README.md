@@ -483,11 +483,11 @@ appSecrets:
 
 If you need a more advanced configuration you can check the [full chart documentation](../chart/README.md) with all the available [parameters](../chart/README.md#parameters) or contact [support@carto.com](mailto:support@carto.com)
 
-## Tips for create the customization Yaml file
+## Tips for creating the customization Yaml file
 
 Here you can find some basic instructions in order to create the config yaml file for your environment:
 
-- The configuration file `customizations.yaml` will be composed with keys and their value, please do not define the same key several times, because they will be overridden between them. Each key in the yaml file would have subkeys for differents configurations, so all of them should be inside the root key. Example:
+- The configuration file `customizations.yaml` will be composed with keys and their value, please do not define the same key several times, because they will be overridden between them. Each key in the yaml file would have subkeys for different configurations, so all of them should be inside the root key. Example:
     ```yaml
     mapsApi:
       autoscaling:
