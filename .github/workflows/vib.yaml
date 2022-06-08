@@ -10,6 +10,8 @@ on: # rebuild any PRs and main branch changes
       - main
     paths-ignore:
       - '**.md'
+  ## Remove before merge
+  push:
 env:
   CSP_API_URL: https://console.cloud.vmware.com
   CSP_API_TOKEN: ${{ secrets.CSP_API_TOKEN }}
@@ -17,7 +19,8 @@ env:
 jobs:
   vib-verify: # verify in multiple target platforms
     runs-on: ubuntu-latest
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'verify') }}
+    ## Remove before merge
+    # if: ${{ contains(github.event.pull_request.labels.*.name, 'verify') }}
     strategy:
       matrix:
        include:
@@ -30,15 +33,61 @@ jobs:
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
-      - uses: vmware-labs/vmware-image-builder-action@0.2.0
-        with:
-          pipeline: vib-platform-verify.json
-        env:
-          VIB_ENV_TARGET_PLATFORM: ${{ matrix.target-platform-id }}
-          VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ secrets.CARTO_RUNTIME_PARAMETERS }}
-          VIB_ENV_PAT_CYPRESS_REPOSITORY: ${{ secrets.VIB_ENV_PAT_CYPRESS_REPOSITORY }}
-          VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
-          VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET: ${{ secrets.VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET }}
-          VIB_ENV_CYPRESS_FIREBASE_API_KEY: ${{ secrets.VIB_ENV_CYPRESS_FIREBASE_API_KEY }}
-          VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS: ${{ secrets.VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS }}
-          VIB_ENV_CYPRESS_CLIENT_SECRET: ${{ secrets.VIB_ENV_CYPRESS_CLIENT_SECRET }}
+      # - name: Google Cloud Auth
+      #   uses: google-github-actions/auth@v0
+      #   with:
+      #     # credentials_json: ${{ secrets.CARTO_ARTIFACTS_SERVICE_ACCOUNT_BASE64 }}
+      #     credentials_json: ${{ secrets.CARTO_ARTIFACTS_SERVICE_ACCOUNT }}
+      # - name: Retrieve secrets
+      #   id: secrets
+      #   uses: google-github-actions/get-secretmanager-secrets@v0
+      #   with:
+      #     ## Role required: roles/secretmanager.secretAccessor
+      #     # yamllint disable rule:line-length
+      #     secrets: |-
+      #       GITHUB_PAT:projects/carto-terraform-ci-cd/secrets/xyz
+      #     # yamllint enable
+      - name: Set up yq
+        uses: frenck/action-setup-yq@v1
+      - name: Generate Helm configs
+        id: info
+        shell: bash
+        run: |
+          set -ex
+
+          cat << EOF > manual_customizations.yaml
+          appConfigValues:
+            selfHostedDomain: "carto.vmw"
+          EOF
+
+          # yq v3: yq merge -x \
+          yq eval-all '. as $item ireduce ({}; . * $item )' \
+            customizations/service_loadBalancer/config.yaml \
+            customizations/scale_components/static.yaml \
+            customizations/resources/minimum.yaml \
+            manual_customizations.yaml \
+            > vib_helm_package.yaml
+
+          echo "::group::Helm customization generated"
+          cat vib_helm_package.yaml
+          echo "::endgroup::"
+
+          set +x
+          HELM_CUSTOMIZATION_BASE64=$(cat vib_helm_package.yaml | base64 -w 0)
+          echo "::add-mask::${HELM_CUSTOMIZATION_BASE64}"
+          sleep 1s
+          set -x
+          echo "::set-output name=helm-cutomization-base64::${HELM_CUSTOMIZATION_BASE64}"
+
+      # - uses: vmware-labs/vmware-image-builder-action@0.2.0
+      #   with:
+      #     pipeline: vib-platform-verify.json
+      #   env:
+      #     VIB_ENV_TARGET_PLATFORM: ${{ matrix.target-platform-id }}
+      #     VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ secrets.CARTO_RUNTIME_PARAMETERS }}
+      #     VIB_ENV_PAT_CYPRESS_REPOSITORY: ${{ secrets.VIB_ENV_PAT_CYPRESS_REPOSITORY }}
+      #     VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
+      #     VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET: ${{ secrets.VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET }}
+      #     VIB_ENV_CYPRESS_FIREBASE_API_KEY: ${{ secrets.VIB_ENV_CYPRESS_FIREBASE_API_KEY }}
+      #     VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS: ${{ secrets.VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS }}
+      #     VIB_ENV_CYPRESS_CLIENT_SECRET: ${{ secrets.VIB_ENV_CYPRESS_CLIENT_SECRET }}

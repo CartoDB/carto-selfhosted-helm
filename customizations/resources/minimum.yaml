@@ -1,0 +1,100 @@
+## This config isn't recommended for a real deployment
+
+accountsWww:
+  resources:
+    limits:
+      memory: "1024Mi"
+      cpu: "500m"
+    requests:
+      memory: "124Mi"
+      cpu: "100m"
+
+cdnInvalidatorSub:
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+    requests:
+      memory: "124Mi"
+      cpu: "100m"
+
+httpCache:
+  resources:
+    limits:
+      memory: "1024Mi"
+      cpu: "500m"
+    requests:
+      memory: "124Mi"
+      cpu: "100m"
+
+importApi:
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "1000m"
+    requests:
+      memory: "124Mi"
+      cpu: "100m"
+
+importWorker:
+  resources:
+    limits:
+      memory: "4096Mi"
+      cpu: "1000m"
+    requests:
+      memory: "124Mi"
+      cpu: "100m"
+
+ldsApi:
+  resources:
+    limits:
+      memory: "1024Mi"
+      cpu: "1000m"
+    requests:
+      memory: "124Mi"
+      cpu: "100m"
+
+mapsApi:
+  resources:
+    limits:
+      memory: "1024Mi"
+      cpu: "1000m"
+    requests:
+      memory: "124Mi"
+      cpu: "100m"
+
+router:
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+    requests:
+      memory: "124Mi"
+      cpu: "100m"
+
+workspaceApi:
+  resources:
+    limits:
+      memory: "1024Mi"
+      cpu: "1000m"
+    requests:
+      memory: "124Mi"
+      cpu: "100m"
+
+workspaceSubscriber:
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+    requests:
+      memory: "124Mi"
+      cpu: "100m"
+
+workspaceWww:
+  resources:
+    limits:
+      memory: "1024Mi"
+      cpu: "500m"
+    requests:
+      memory: "124Mi"
+      cpu: "100m"
