@@ -487,7 +487,7 @@ If you need a more advanced configuration you can check the [full chart document
 
 Here you can find some basic instructions in order to create the config yaml file for your environment:
 
-- The configuration file `customizations.yaml` will be composed with keys and their value, please do not define the same key several times, because they will be overridden between them. Each key in the yaml file would have subkeys for different configurations, so all of them should be inside the root key. Example:
+- The configuration file `customizations.yaml` will be composed of keys and their value, please do not define the same key several times, because they will be overridden between them. Each key in the yaml file would have subkeys for different configurations, so all of them should be inside the root key. Example:
     ```yaml
     mapsApi:
       autoscaling:
