@@ -83,9 +83,8 @@ This is the easiest way of open your CARTO Self Hosted to the world. You need to
 You can find an [example](service_loadBalancer/config.yaml). But we have prepared also a few specifics for different Kubernetes flavours:
 
 - [AWS EKS](service_loadBalancer/aws_eks/config.yaml)
-<!--
-TODO: Add the other providers
--->
+- [GCP GKE](service_loadBalancer/gcp_gke/config.yaml)
+- [AZU AKS](service_loadBalancer/azu_aks/config.yaml)
 
 #### Configure TLS termination in the service
 
