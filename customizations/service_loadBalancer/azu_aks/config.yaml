@@ -1,0 +1,6 @@
+router:
+  service:
+    type: LoadBalancer
+    annotations:
+      # https://docs.microsoft.com/en-us/azure/aks/load-balancer-standard#additional-customizations-via-kubernetes-annotations
+      service.beta.kubernetes.io/azure-load-balancer-tcp-idle-timeout: "10"
