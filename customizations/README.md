@@ -30,7 +30,7 @@ appConfigValues:
 #     value: "<google-maps-api-key>"
 #   # Other secrets, like buckets' configuration
 ```
-> Follow [these steps](#tips-for-create-the-customization-yaml-file) to create a well structured yaml file
+> Follow [these steps](#tips-for-creating-the-customization-yaml-file) to create a well structured yaml file
 
 And add the following at the end of ALL the `helm install` or `helm upgrade` command:
 
