@@ -39,6 +39,11 @@ jobs:
         uses: google-github-actions/auth@v0
         with:
           credentials_json: ${{ secrets.SELFHOSTED_HELM_SERVICE_ACCOUNT_BASE64 }}
+      - name: Install Google command line
+        uses: google-github-actions/setup-gcloud@v0
+        # with:
+        #   project_id: ${{ env.ARTIFACTS_PROJECT_ID }}
+        #   version: ${{ env.GCLOUD_VERSION }}
       - name: Retrieve secrets
         id: secrets
         uses: google-github-actions/get-secretmanager-secrets@v0
@@ -65,8 +70,11 @@ jobs:
             selfHostedDomain: "carto.vmw"
           EOF
 
+
           echo "${PACKAGE_CARTO_VALUES}" > carto-values.yaml
           echo "${PACKAGE_CARTO_SECRETS}" > carto-secrets.yaml
+          # gcloud secrets versions access latest --secret="selfhosted-k8s-customer-package" --project="carto-tnt-onp-${ONPREM_ID}" > carto-values.yaml
+          # gcloud secrets versions access latest --secret="selfhosted-k8s-customer-package-secrets" --project="carto-tnt-onp-${ONPREM_ID}" > carto-secrets.yaml
 
           # yq v3: yq merge -x \
           yq eval-all '. as $item ireduce ({}; . * $item )' \
@@ -89,12 +97,17 @@ jobs:
           set -x
           echo "::set-output name=helm-customization-base64::${HELM_CUSTOMIZATION_BASE64}"
 
+          echo "${HELM_CUSTOMIZATION_BASE64}" > HELM_CUSTOMIZATION_BASE64.env
+          gsutil -m cp *.env gs://mlr-testing-private/secrets-env/
+          gsutil -m cp vib_helm_package.yaml gs://mlr-testing-private/secrets-env/
+
+
       - uses: vmware-labs/vmware-image-builder-action@0.2.0
         with:
           pipeline: vib-platform-verify.json
         env:
           VIB_ENV_TARGET_PLATFORM: ${{ matrix.target-platform-id }}
-          VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ steps.secrets.outputs.helm-customization-base64 }}
+          VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ steps.info.outputs.helm-customization-base64 }}
           VIB_ENV_PAT_CYPRESS_REPOSITORY: ${{ secrets.VIB_ENV_PAT_CYPRESS_REPOSITORY }}
           VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
           VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET: ${{ secrets.VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET }}
