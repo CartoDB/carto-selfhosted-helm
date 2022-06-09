@@ -1,6 +1,6 @@
 name: 'VIB'
 on: # rebuild any PRs and main branch changes
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - reopened
