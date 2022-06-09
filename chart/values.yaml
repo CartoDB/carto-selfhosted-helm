@@ -1508,7 +1508,7 @@ mapsApi:
       memory: "2048Mi"
       cpu: "1000m"
     requests:
-      memory: "1024Mi"
+      memory: "768Mi"
       cpu: "750m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
