@@ -84,7 +84,7 @@ This is the easiest way to open your CARTO Self Hosted to the world on cloud pro
 
 The actual creation of the load balancer happens asynchronously, and information about the provisioned balancer is published in the Service's `.status.loadBalancer` field.
 
-You can find an example [here](service_loadBalancer/config.yaml). Also, we have prepared a few specifics for different Kubernetes flavours, just add the config that you need in your `customizations.yaml`:
+You can find an example [here](service_loadBalancer/config.yaml). Also, we have prepared a few specifics for different Kubernetes flavors, just add the config that you need in your `customizations.yaml`:
 
 - [AWS EKS](service_loadBalancer/aws_eks/config.yaml)
 - [GCP GKE](service_loadBalancer/config.yaml)
