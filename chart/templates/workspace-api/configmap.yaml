@@ -55,8 +55,8 @@ data:
   {{- end }}
   
   #Related to workspace-www REACT_APP_ACCOUNTS_URL and docker compose
-  #SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
-  #SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
+  SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   #SELFHOSTED_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   WORKSPACE_PORT: "{{ .Values.workspaceApi.containerPorts.http }}"
   WORKSPACE_PORT: {{ .Values.workspaceApi.containerPorts.http  | quote }}
