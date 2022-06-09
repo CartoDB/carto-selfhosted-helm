@@ -28,7 +28,7 @@ jobs:
          - target-platform: eks
            target-platform-id: ef54a736-5e43-4a6c-9400-b162acd8b83d
       fail-fast: false
-    name: Verify ${{ matrix.include.target-platform}}
+    name: Verify ${{ matrix.target-platform}}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -38,7 +38,7 @@ jobs:
         with:
           pipeline: vib-platform-verify.json
         env:
-          VIB_ENV_TARGET_PLATFORM: ${{ matrix.include.target-platform-id }}
+          VIB_ENV_TARGET_PLATFORM: ${{ matrix.target-platform-id }}
           VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ secrets.CARTO_RUNTIME_PARAMETERS }}
           VIB_ENV_PAT_CYPRESS_REPOSITORY: ${{ secrets.VIB_ENV_PAT_CYPRESS_REPOSITORY }}
           VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
