@@ -18,7 +18,7 @@
     },
     "verify": {
       "context": {
-        "runtime_parameters": "{CARTO_RUNTIME_PARAMETERS_STG}",
+        "runtime_parameters": "{CARTO_RUNTIME_PARAMETERS}",
         "target_platform": {
           "target_platform_id": "{VIB_ENV_TARGET_PLATFORM}",
           "size": {
