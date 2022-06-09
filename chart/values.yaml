@@ -142,12 +142,16 @@ cartoSecrets:
       name: ""
       key: ""
 
+## @section TLS parameters
+## Global TLS parameters
+## @param tlsCerts.httpsEnabled Enable https. CARTO only works with `HTTPS`, if you disable this protocol here you should configure it in a higher layer like a Load Balancer
 ## @param tlsCerts.autoGenerate Generate self-signed TLS certificates
 ## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
 ## @param tlsCerts.existingSecret.certKey Key of the certificate inside the secret
 ## @param tlsCerts.existingSecret.keyKey Key of the certificate key inside the secret
 ##
 tlsCerts:
+  httpsEnabled: true
   autoGenerate: true
   existingSecret:
     name: ""

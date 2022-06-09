@@ -30,6 +30,7 @@ appConfigValues:
 #     value: "<google-maps-api-key>"
 #   # Other secrets, like buckets' configuration
 ```
+> Follow [these steps](#tips-for-create-the-customization-yaml-file) to create a well structured yaml file
 
 And add the following at the end of ALL the `helm install` or `helm upgrade` command:
 
@@ -89,16 +90,25 @@ TODO: Add the other providers
 
 #### Configure TLS termination in the service
 
-By default, the package generates a self-signed certificate with a validity of 365 days.
+##### Disable internal HTTPS
 
 > ⚠️ CARTO Self Hosted only works if the final client use HTTPS protocol. ⚠️
 
-<!--
-#### Disable internal HTTPS
-TODO: Document and add the ability to do it
--->
+If you need to disable `HTTPS` in the Carto router, [add the following lines](#how-to-apply-the-configurations) to your `customizations.yaml`:
 
-To add your own certificate you need:
+```yaml
+tlsCerts:
+  httpsEnabled: false
+```
+
+> ⚠️ Remember that CARTO only works with `HTTPS`, so if you disable this protocol in the Carto Router component you should configure it in a higher layer like a Load Balancer (service or ingress) to make the redirection from `HTTP` to `HTTPS` ⚠️
+
+##### Use your own TLS certificate
+
+By default, the package generates a self-signed certificate with a validity of 365 days.
+
+
+If you want to add your own certificate you need:
 
 - Create a kubernetes secret with following content:
 
@@ -114,6 +124,7 @@ To add your own certificate you need:
 
   ```yaml
   tlsCerts:
+    httpsEnabled: true
     autoGenerate: false
     existingSecret:
       name: "mycarto-custom-tls-certificate"
@@ -471,3 +482,38 @@ appSecrets:
 ## Advanced configuration
 
 If you need a more advanced configuration you can check the [full chart documentation](../chart/README.md) with all the available [parameters](../chart/README.md#parameters) or contact [support@carto.com](mailto:support@carto.com)
+
+## Tips for creating the customization Yaml file
+
+Here you can find some basic instructions in order to create the config yaml file for your environment:
+
+- The configuration file `customizations.yaml` will be composed of keys and their value, please do not define the same key several times, because they will be overridden between them. Each key in the yaml file would have subkeys for different configurations, so all of them should be inside the root key. Example:
+    ```yaml
+    mapsApi:
+      autoscaling:
+        enabled: true
+        minReplicas: 2
+        maxReplicas: 3
+        targetCPUUtilizationPercentage: 75
+  ```
+
+- Check the text values of the `customizations.yaml` keys, they have to be set between quotes. Example:
+
+  ```yaml
+  appConfigValues:
+    selfHostedDomain: "my.domain.com"
+  ```
+
+  Note that integers and booleans values are set without quotes.
+
+- Once we have the config files ready, we would be able to check the values that are going to be used by the package with this command:
+
+  ```bash
+  helm template \
+  mycarto \
+  carto/carto \
+  --namespace <your_namespace> \
+  -f carto-values.yaml \
+  -f carto-secrets.yaml \
+  -f customizations.yaml
+  ```
