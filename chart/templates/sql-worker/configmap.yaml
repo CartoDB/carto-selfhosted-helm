@@ -1,0 +1,45 @@
+{{- if not .Values.sqlWorker.existingConfigMap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "carto.sqlWorker.fullname" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: sql-worker
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
+  AUTH0_NAMESPACE: "http://app.carto.com"
+  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
+  LOG_LEVEL: "debug"
+  MAPS_API_V3_COMPONENT_NAME: "sql-worker"
+  MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: {{ .Values.appConfigValues.selfHostedDomain | quote }}
+  MAPS_API_V3_RESOURCE_URL_HOST: {{ .Values.appConfigValues.selfHostedDomain | quote }}
+  MAPS_API_V3_RESOURCE_URL_TEMPLATE_NEW: 'https://${host}/api/${path}'
+  MAPS_API_V3_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  MAPS_API_V3_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-sql-worker-sub"
+  MAPS_API_V3_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
+  PUBSUB_MODE: "pull"
+  PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  REDIS_CACHE_PREFIX: "onprem"
+  REDIS_HOST: {{ include "carto.redis.host" . }}
+  REDIS_PORT: {{ include "carto.redis.port" . }}
+  REDIS_TLS_ENABLED: {{ .Values.externalRedis.tlsEnabled | quote }}
+  {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+  REDIS_TLS_CA: {{ .Values.externalRedis.tlsCA | quote }}
+  {{- end }}
+  WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
+  WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
+  WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . }}
+  WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . }}
+  WORKSPACE_POSTGRES_SSL_ENABLED: {{ .Values.externalPostgresql.sslEnabled | quote }}
+  {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA  }}
+  WORKSPACE_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
+  {{- end }}
+  WORKSPACE_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+{{- end }}

@@ -30,6 +30,7 @@ appConfigValues:
 #     value: "<google-maps-api-key>"
 #   # Other secrets, like buckets' configuration
 ```
+> Follow [these steps](#tips-for-creating-the-customization-yaml-file) to create a well structured yaml file
 
 And add the following at the end of ALL the `helm install` or `helm upgrade` command:
 
@@ -79,13 +80,17 @@ sessions before.
 
 #### Enable and configure LoadBalancer mode
 
-This is the easiest way of open your CARTO Self Hosted to the world. You need to change the `router` Service type to `LoadBalancer`.
-You can find an [example](service_loadBalancer/config.yaml). But we have prepared also a few specifics for different Kubernetes flavours:
+This is the easiest way to open your CARTO Self Hosted to the world on cloud providers which support external load balancers. You need to change the `router` Service type to `LoadBalancer`. This provides an externally-accessible IP address that sends traffic to the correct component on your cluster nodes.
+
+The actual creation of the load balancer happens asynchronously, and information about the provisioned balancer is published in the Service's `.status.loadBalancer` field.
+
+You can find an example [here](service_loadBalancer/config.yaml). Also, we have prepared a few specifics for different Kubernetes flavors, just add the config that you need in your `customizations.yaml`:
 
 - [AWS EKS](service_loadBalancer/aws_eks/config.yaml)
-<!--
-TODO: Add the other providers
--->
+- [GCP GKE](service_loadBalancer/config.yaml)
+- [AZU AKS](service_loadBalancer/azu_aks/config.yaml)
+
+> Note that with this config a [Load Balancer](https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer) resource is going to be created in your cloud provider, you can find more documentation about this kind of service [here](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer)
 
 #### Configure TLS termination in the service
 
@@ -481,3 +486,38 @@ appSecrets:
 ## Advanced configuration
 
 If you need a more advanced configuration you can check the [full chart documentation](../chart/README.md) with all the available [parameters](../chart/README.md#parameters) or contact [support@carto.com](mailto:support@carto.com)
+
+## Tips for creating the customization Yaml file
+
+Here you can find some basic instructions in order to create the config yaml file for your environment:
+
+- The configuration file `customizations.yaml` will be composed of keys and their value, please do not define the same key several times, because they will be overridden between them. Each key in the yaml file would have subkeys for different configurations, so all of them should be inside the root key. Example:
+    ```yaml
+    mapsApi:
+      autoscaling:
+        enabled: true
+        minReplicas: 2
+        maxReplicas: 3
+        targetCPUUtilizationPercentage: 75
+  ```
+
+- Check the text values of the `customizations.yaml` keys, they have to be set between quotes. Example:
+
+  ```yaml
+  appConfigValues:
+    selfHostedDomain: "my.domain.com"
+  ```
+
+  Note that integers and booleans values are set without quotes.
+
+- Once we have the config files ready, we would be able to check the values that are going to be used by the package with this command:
+
+  ```bash
+  helm template \
+  mycarto \
+  carto/carto \
+  --namespace <your_namespace> \
+  -f carto-values.yaml \
+  -f carto-secrets.yaml \
+  -f customizations.yaml
+  ```
