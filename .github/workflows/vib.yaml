@@ -57,6 +57,7 @@ jobs:
           secrets: |-
             package-carto-values:projects/carto-tnt-onp-${{ env.ONPREM_ID }}/secrets/selfhosted-k8s-customer-package
             package-carto-secrets:projects/carto-tnt-onp-${{ env.ONPREM_ID }}/secrets/selfhosted-k8s-customer-package-secrets
+            e2e-secrets:projects/carto-terraform-ci-cd/secrets/github-carto3-e2e-secrets-staging
           # GITHUB_PAT:projects/carto-terraform-ci-cd/secrets/xyz
           # yamllint enable
       - name: Set up yq
@@ -81,6 +82,8 @@ jobs:
       - name: Testing if works
         id: sign
         shell: bash
+        env:
+          E2E_SECRETS: ${{ steps.secrets.outputs.e2e-secrets }}
         run: |
           set -ex
           du -sh "${CARTO_CLONE_PATH}/workspace-www"
@@ -91,28 +94,36 @@ jobs:
             ## HotFix until we go against main
           cat .env | head -n 8 > .env.edited
           mv -f .env.edited .env
+          jq 'del(.projectId)' cypress.json > cypress.json.edited
+          mv -f cypress.json.edited cypress.json
             # End HotFix
 
           cat environments/staging.env >> .env
 
           echo "CYPRESS_WORKSPACE_URL=${WORKSPACE_URL}" >> .env
-          echo "CYPRESS_BASE_URL=${WORKSPACE_URL}" >> .env
+          # echo "CYPRESS_BASE_URL=${WORKSPACE_URL}" >> .env
           echo "CYPRESS_CI=true" >> .env
 
             # Replace me
           echo "CYPRESS_TENANT_ID=onp-bitnami-stag-1" >> .env
           echo "CYPRESS_RUN_ID=vmware-mlr" >> .env
             # End Replace me
+          
+          echo "${E2E_SECRETS}" >> .env
 
+          echo "::group::.env to use"
           cat .env
+          echo "::endgroup::"
+
+          WORKSPACE_WWW_FILE_NAME=cloud-native-workspace-www-$(date '+%s').tar.gz
 
 
-          tar -czf ../cloud-native-workspace-www.tar.gz .
+          tar -czf ../${WORKSPACE_WWW_FILE_NAME} .
           cd ..
-          ls -alh cloud-native-workspace-www.tar.gz
-          gsutil -m cp cloud-native-workspace-www.tar.gz gs://mlr-testing-private/
+          ls -alh ${WORKSPACE_WWW_FILE_NAME}
+          gsutil -m cp ${WORKSPACE_WWW_FILE_NAME} gs://mlr-testing-private/
           set +x
-          SIGNED_URL="$(gsutil signurl --use-service-account -d ${SIGNED_URL_DURATION} gs://mlr-testing-private/cloud-native-workspace-www.tar.gz | awk -F '\t' '{print $4}' | tail -n 1)"
+          SIGNED_URL="$(gsutil signurl --use-service-account -d ${SIGNED_URL_DURATION} gs://mlr-testing-private/${WORKSPACE_WWW_FILE_NAME} | awk -F '\t' '{print $4}' | tail -n 1)"
           echo "::add-mask::${SIGNED_URL}"
           set -x
           sleep 1s
@@ -154,6 +165,12 @@ jobs:
             selfHostedDomain: "carto.vmw"
           EOF
 
+          cat << EOF > tmp_overrides.yaml
+          cartoConfigValues:
+            cartoAccApiDomain: "accounts.stag.app.carto.com"
+            cartoAuth0CustomDomain: "auth.stag.carto.com"
+          EOF
+
 
           echo "${PACKAGE_CARTO_VALUES}" > carto-values.yaml
           echo "${PACKAGE_CARTO_SECRETS}" > carto-secrets.yaml
@@ -168,6 +185,7 @@ jobs:
             carto-values.yaml \
             carto-secrets.yaml \
             manual_customizations.yaml \
+            tmp_overrides.yaml \
             > vib_helm_package.yaml
 
           echo "::group::Helm customization generated"
