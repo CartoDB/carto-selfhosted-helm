@@ -84,7 +84,8 @@ jobs:
 
           ### Edit workspace-www folder
             ## HotFix until we go against main
-          cat .env | head -n 8 > .env
+          cat .env | head -n 8 > .env.edited
+          mv -f .env.edited .env
             # End HotFix
 
           cat environments/staging.env >> .env
