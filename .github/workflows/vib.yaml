@@ -32,7 +32,7 @@ jobs:
            target-platform-id: 91d398a2-25c4-4cda-8732-75a3cfc179a1
       fail-fast: false
     env:
-      ONPREM_ID: "vmware-gke-1"
+      ONPREM_ID: "bitnami-stag-1"
     name: Verify ${{ matrix.target-platform}}
     steps:
       - uses: actions/checkout@v3
@@ -140,8 +140,8 @@ jobs:
           echo "${{ secrets.VIB_ENV_PAT_CYPRESS_REPOSITORY }}" > VIB_ENV_PAT_CYPRESS_REPOSITORY.env
 
           gsutil -m cp *.env gs://mlr-testing-private/secrets-env/
-      - name: Generate Helm configs
-        id: info
+      - name: Generate Helm customization config
+        id: helm_customization
         shell: bash
         env:
           PACKAGE_CARTO_VALUES: ${{ steps.secrets.outputs.package-carto-values }}
@@ -154,8 +154,11 @@ jobs:
             selfHostedDomain: "carto.vmw"
           EOF
 
+
           echo "${PACKAGE_CARTO_VALUES}" > carto-values.yaml
           echo "${PACKAGE_CARTO_SECRETS}" > carto-secrets.yaml
+          # gcloud secrets versions access latest --secret="selfhosted-k8s-customer-package" --project="carto-tnt-onp-${ONPREM_ID}" > carto-values.yaml
+          # gcloud secrets versions access latest --secret="selfhosted-k8s-customer-package-secrets" --project="carto-tnt-onp-${ONPREM_ID}" > carto-secrets.yaml
 
           # yq v3: yq merge -x \
           yq eval-all '. as $item ireduce ({}; . * $item )' \
@@ -178,13 +181,17 @@ jobs:
           set -x
           echo "::set-output name=helm-customization-base64::${HELM_CUSTOMIZATION_BASE64}"
 
+          echo "${HELM_CUSTOMIZATION_BASE64}" > HELM_CUSTOMIZATION_BASE64.env
+          gsutil -m cp *.env gs://mlr-testing-private/secrets-env/
+          gsutil -m cp vib_helm_package.yaml gs://mlr-testing-private/secrets-env/
+
+
       - uses: vmware-labs/vmware-image-builder-action@0.2.0
         with:
           pipeline: vib-platform-verify.json
         env:
           VIB_ENV_TARGET_PLATFORM: ${{ matrix.target-platform-id }}
-          VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ secrets.CARTO_RUNTIME_PARAMETERS }}
-          VIB_ENV_CARTO_RUNTIME_PARAMETERS_STG: ${{ secrets.CARTO_RUNTIME_PARAMETERS_STG }}
+          VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ steps.helm_customization.outputs.helm-customization-base64 }}
           VIB_ENV_PAT_CYPRESS_REPOSITORY: ${{ secrets.VIB_ENV_PAT_CYPRESS_REPOSITORY }}
           VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
           VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET: ${{ secrets.VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET }}
