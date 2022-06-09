@@ -56,8 +56,8 @@ jobs:
           # yamllint enable
       - name: Set up yq
         uses: frenck/action-setup-yq@v1
-      - name: Generate Helm configs
-        id: info
+      - name: Generate Helm customization config
+        id: helm_customization
         shell: bash
         env:
           PACKAGE_CARTO_VALUES: ${{ steps.secrets.outputs.package-carto-values }}
@@ -107,7 +107,7 @@ jobs:
           pipeline: vib-platform-verify.json
         env:
           VIB_ENV_TARGET_PLATFORM: ${{ matrix.target-platform-id }}
-          VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ steps.info.outputs.helm-customization-base64 }}
+          VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ steps.helm_customization.outputs.helm-customization-base64 }}
           VIB_ENV_PAT_CYPRESS_REPOSITORY: ${{ secrets.VIB_ENV_PAT_CYPRESS_REPOSITORY }}
           VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
           VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET: ${{ secrets.VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET }}

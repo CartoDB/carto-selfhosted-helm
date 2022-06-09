@@ -3,17 +3,17 @@
 accountsWww:
   resources:
     limits:
-      memory: "1024Mi"
-      cpu: "500m"
-    requests:
       memory: "124Mi"
-      cpu: "100m"
+      cpu: "50m"
+    requests:
+      memory: "50Mi"
+      cpu: "20m"
 
 cdnInvalidatorSub:
   resources:
     limits:
       memory: "512Mi"
-      cpu: "500m"
+      cpu: "250m"
     requests:
       memory: "124Mi"
       cpu: "100m"
@@ -21,7 +21,7 @@ cdnInvalidatorSub:
 httpCache:
   resources:
     limits:
-      memory: "1024Mi"
+      memory: "248Mi"
       cpu: "500m"
     requests:
       memory: "124Mi"
@@ -57,7 +57,16 @@ ldsApi:
 mapsApi:
   resources:
     limits:
-      memory: "1024Mi"
+      memory: "2048Mi"
+      cpu: "1000m"
+    requests:
+      memory: "124Mi"
+      cpu: "100m"
+
+sqlWorker:
+  resources:
+    limits:
+      memory: "2048Mi"
       cpu: "1000m"
     requests:
       memory: "124Mi"
@@ -66,11 +75,11 @@ mapsApi:
 router:
   resources:
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: "256Mi"
+      cpu: "100m"
     requests:
       memory: "124Mi"
-      cpu: "100m"
+      cpu: "50m"
 
 workspaceApi:
   resources:
@@ -93,8 +102,8 @@ workspaceSubscriber:
 workspaceWww:
   resources:
     limits:
-      memory: "1024Mi"
-      cpu: "500m"
-    requests:
       memory: "124Mi"
-      cpu: "100m"
+      cpu: "50m"
+    requests:
+      memory: "50Mi"
+      cpu: "20m"
