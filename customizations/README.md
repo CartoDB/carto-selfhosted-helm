@@ -80,12 +80,17 @@ sessions before.
 
 #### Enable and configure LoadBalancer mode
 
-This is the easiest way of open your CARTO Self Hosted to the world. You need to change the `router` Service type to `LoadBalancer`.
-You can find an [example](service_loadBalancer/config.yaml). But we have prepared also a few specifics for different Kubernetes flavours:
+This is the easiest way to open your CARTO Self Hosted to the world on cloud providers which support external load balancers. You need to change the `router` Service type to `LoadBalancer`. This provides an externally-accessible IP address that sends traffic to the correct component on your cluster nodes.
+
+The actual creation of the load balancer happens asynchronously, and information about the provisioned balancer is published in the Service's `.status.loadBalancer` field.
+
+You can find an example [here](service_loadBalancer/config.yaml). Also, we have prepared a few specifics for different Kubernetes flavours, just add the config that you need in your `customizations.yaml`:
 
 - [AWS EKS](service_loadBalancer/aws_eks/config.yaml)
 - [GCP GKE](service_loadBalancer/config.yaml)
 - [AZU AKS](service_loadBalancer/azu_aks/config.yaml)
+
+> Note that with this config a [Load Balancer](https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer) resource is going to be created in your cloud provider, you can find more documentation about this kind of service [here](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer)
 
 #### Configure TLS termination in the service
 
