@@ -10,9 +10,6 @@
       "actions": [
         {
           "action_id": "helm-package"
-        },
-        {
-          "action_id": "helm-lint"
         }
       ]
     },
@@ -30,15 +27,6 @@
       },
       "actions": [
         {
-          "action_id": "trivy",
-          "params": {
-            "threshold": "IGNORE_ALL",
-            "vuln_type": [
-              "OS"
-            ]
-          }
-        },
-        {
           "action_id": "cypress",
           "params": {
             "timeout_minutes": 50,
@@ -48,6 +36,7 @@
             },
             "endpoint": "lb-carto-router-https",
             "env": {
+              "RECORD_KEY": "{VIB_ENV_CYPRESS_RECORD_KEY}",
               "FIREBASE_API_KEY": "{VIB_ENV_CYPRESS_FIREBASE_API_KEY}",
               "CYPRESS_CONNECTION_CREDENTIALS": "{VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS}"
             }

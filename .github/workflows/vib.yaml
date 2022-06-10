@@ -94,7 +94,8 @@ jobs:
             ## HotFix until we go against main
           cat .env | head -n 8 > .env.edited
           mv -f .env.edited .env
-          jq 'del(.projectId)' cypress.json > cypress.json.edited
+          # jq 'del(.projectId)' cypress.json > cypress.json.edited
+          jq '.projectId = "ggohpq"' cypress.json > cypress.json.edited
           mv -f cypress.json.edited cypress.json
             # End HotFix
 
@@ -110,6 +111,13 @@ jobs:
             # End Replace me
           
           echo "${E2E_SECRETS}" >> .env
+          set +x
+          CYPRESS_RECORD_KEY=$(cat .env | grep -e '^CYPRESS_RECORD_KEY=' | tail -n 1 | sed 's|^CYPRESS_RECORD_KEY=||g')
+          echo "::add-mask::${CYPRESS_RECORD_KEY}"
+          set -x
+          sleep 1s
+          echo "::set-output name=cypress-record-key::${CYPRESS_RECORD_KEY}"
+
 
           echo "::group::.env to use"
           cat .env
@@ -211,7 +219,8 @@ jobs:
           VIB_ENV_TARGET_PLATFORM: ${{ matrix.target-platform-id }}
           VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ steps.helm_customization.outputs.helm-customization-base64 }}
           VIB_ENV_PAT_CYPRESS_REPOSITORY: ${{ secrets.VIB_ENV_PAT_CYPRESS_REPOSITORY }}
-          VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
+          # VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
+          VIB_ENV_CYPRESS_RECORD_KEY:  ${{ steps.sign.outputs.cypress-record-key }}
           VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET: ${{ secrets.VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET }}
           VIB_ENV_CYPRESS_FIREBASE_API_KEY: ${{ secrets.VIB_ENV_CYPRESS_FIREBASE_API_KEY }}
           VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS: ${{ secrets.VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS }}
