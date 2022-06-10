@@ -12,29 +12,19 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  ACC_DOMAIN: {{ .Values.cartoConfigValues.cartoAccApiDomain | quote }}
-  ACC_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
-  ACC_GCP_PROJECT_REGION: {{ .Values.cartoConfigValues.cartoAccGcpProjectRegion | quote }}
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
-  CARTO3_SELFHOSTED_VOLUMES_BASE_PATH: "./"
-  CARTO_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
-  CARTO_AUTH0_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   CARTO_SELFHOSTED_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   CARTO_SELFHOSTED_CARTO_DW_LOCATION: {{ .Values.cartoConfigValues.cartoSelfhostedDwLocation | quote }}
   CARTO_SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
-  DO_ENABLED: "false"
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   LOG_LEVEL: "debug"
-  MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: {{ .Values.appConfigValues.selfHostedDomain | quote }}
-  MAPS_API_V3_RESOURCE_URL_HOST: {{ .Values.appConfigValues.selfHostedDomain | quote }}
-  PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE: "projects/{project_id}/topics/data-updates"
   PUBSUB_MODE: "pull"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   REDIS_CACHE_PREFIX: "onprem"
@@ -46,7 +36,6 @@ data:
   {{- end }}
   SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
-  SELFHOSTED_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   WORKSPACE_PORT: {{ .Values.workspaceApi.containerPorts.http  | quote }}
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
