@@ -73,9 +73,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           # ref: '${{ steps.info.outputs.carto_version }}'
-          ref: 'vib-cypress'
-          # repository: 'CartoDB/cloud-native'
-          repository: 'beltran-rubo/cloud-native'
+          # ref: 'vib-cypress'
+          ref: 'beltran-rubo-vib-cypress'
+          repository: 'CartoDB/cloud-native'
+          # repository: 'beltran-rubo/cloud-native'
           # token: '${{ steps.secrets.outputs.GITHUB_PAT }}'
           token: '${{ secrets.X_GITHUB_CARTOFANTE }}'
           path: '${{ env.CARTO_CLONE_PATH }}'
@@ -98,6 +99,7 @@ jobs:
           # jq 'del(.projectId)' cypress.json > cypress.json.edited
           jq '.projectId = "ggohpq"' cypress.json > cypress.json.edited
           mv -f cypress.json.edited cypress.json
+          rm package-lock.json
             # End HotFix
 
           cat environments/staging.env >> .env
@@ -126,7 +128,13 @@ jobs:
 
           WORKSPACE_WWW_FILE_NAME=cloud-native-workspace-www-$(date '+%s').tar.gz
 
+          ## Generate package-lock.json, required by cypress into VIB
+          npm install -g synp
+          yarn install ##### <-------------- We should find a way to delete it
+          synp --source-file ./yarn.lock
+          rm -rf node_modules/
 
+          ## Compress and sign
           tar -czf ../${WORKSPACE_WWW_FILE_NAME} .
           cd ..
           ls -alh ${WORKSPACE_WWW_FILE_NAME}
@@ -223,7 +231,7 @@ jobs:
 
       - name: Clean up orgs & Auth0 users for E2E
         if: always()
-        uses: ./${{ env.CARTO_CLONE_PATH }}/.github/actions/tests-cleaning
+        uses: ./carto-sources/.github/actions/tests-cleaning
         with:
           environment: ${{ env.ENVIRONMENT }}
           registry-service-account-base64: ${{ secrets.SELFHOSTED_HELM_SERVICE_ACCOUNT_BASE64 }}
