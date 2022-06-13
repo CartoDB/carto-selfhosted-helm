@@ -10,8 +10,6 @@ on: # rebuild any PRs and main branch changes
       - main
     paths-ignore:
       - '**.md'
-  ## Remove before merge
-  push:
 env:
   CSP_API_URL: https://console.cloud.vmware.com
   CSP_API_TOKEN: ${{ secrets.CSP_API_TOKEN }}
@@ -19,8 +17,7 @@ env:
 jobs:
   vib-verify: # verify in multiple target platforms
     runs-on: ubuntu-latest
-    ## Remove before merge
-    # if: ${{ contains(github.event.pull_request.labels.*.name, 'verify') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'verify') }}
     strategy:
       matrix:
        include:
@@ -74,6 +71,7 @@ jobs:
           echo "${PACKAGE_CARTO_SECRETS}" > carto-secrets.yaml
 
           # yq v3: yq merge -x \
+          # shellcheck disable=SC2016
           yq eval-all '. as $item ireduce ({}; . * $item )' \
             customizations/service_loadBalancer/config.yaml \
             customizations/scale_components/static.yaml \
@@ -88,7 +86,7 @@ jobs:
           echo "::endgroup::"
 
           set +x
-          HELM_CUSTOMIZATION_BASE64=$(cat vib_helm_package.yaml | base64 -w 0)
+          HELM_CUSTOMIZATION_BASE64=$(base64 -w 0 vib_helm_package.yaml)
           echo "::add-mask::${HELM_CUSTOMIZATION_BASE64}"
           sleep 1s
           set -x
