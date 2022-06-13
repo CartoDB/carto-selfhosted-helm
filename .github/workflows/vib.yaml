@@ -70,11 +70,8 @@ jobs:
             selfHostedDomain: "carto.vmw"
           EOF
 
-
           echo "${PACKAGE_CARTO_VALUES}" > carto-values.yaml
           echo "${PACKAGE_CARTO_SECRETS}" > carto-secrets.yaml
-          # gcloud secrets versions access latest --secret="selfhosted-k8s-customer-package" --project="carto-tnt-onp-${ONPREM_ID}" > carto-values.yaml
-          # gcloud secrets versions access latest --secret="selfhosted-k8s-customer-package-secrets" --project="carto-tnt-onp-${ONPREM_ID}" > carto-secrets.yaml
 
           # yq v3: yq merge -x \
           yq eval-all '. as $item ireduce ({}; . * $item )' \
@@ -96,11 +93,6 @@ jobs:
           sleep 1s
           set -x
           echo "::set-output name=helm-customization-base64::${HELM_CUSTOMIZATION_BASE64}"
-
-          echo "${HELM_CUSTOMIZATION_BASE64}" > HELM_CUSTOMIZATION_BASE64.env
-          gsutil -m cp *.env gs://mlr-testing-private/secrets-env/
-          gsutil -m cp vib_helm_package.yaml gs://mlr-testing-private/secrets-env/
-
 
       - uses: vmware-labs/vmware-image-builder-action@0.2.0
         with:
