@@ -99,15 +99,15 @@ jobs:
           # jq 'del(.projectId)' cypress.json > cypress.json.edited
           jq '.projectId = "ggohpq"' cypress.json > cypress.json.edited
           mv -f cypress.json.edited cypress.json
-            ## BASEURL WITH PROTOCOL !
-          jq '.baseUrl = "https://carto.vmw"' cypress.json > cypress.json.edited
-          mv -f cypress.json.edited cypress.json
-            ## Clean env.baseUrl to test
-          jq 'del(.env.baseUrl)' cypress.json > cypress.json.edited
-          mv -f cypress.json.edited cypress.json
-            ## Add another host...
-          jq '.hosts."https://carto.vmw" = "{{TARGET_IP}}"' cypress.json > cypress.json.edited
-          mv -f cypress.json.edited cypress.json
+          #   ## BASEURL WITH PROTOCOL !
+          # jq '.baseUrl = "https://carto.vmw"' cypress.json > cypress.json.edited
+          # mv -f cypress.json.edited cypress.json
+          #   ## Clean env.baseUrl to test
+          # jq 'del(.env.baseUrl)' cypress.json > cypress.json.edited
+          # mv -f cypress.json.edited cypress.json
+          #   ## Add another host...
+          # jq '.hosts."https://carto.vmw" = "{{TARGET_IP}}"' cypress.json > cypress.json.edited
+          # mv -f cypress.json.edited cypress.json
           rm package-lock.json
             # End HotFix
 
@@ -116,6 +116,7 @@ jobs:
           echo "CYPRESS_WORKSPACE_URL=${WORKSPACE_URL}" >> .env
           # echo "CYPRESS_BASE_URL=${WORKSPACE_URL}" >> .env
           echo "CYPRESS_CI=true" >> .env
+          echo "CYPRESS_MEMORY=1" >> .env
 
             # Replace me
           echo "CYPRESS_TENANT_ID=onp-bitnami-stag-1" >> .env
