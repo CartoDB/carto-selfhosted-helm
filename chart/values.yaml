@@ -15,8 +15,8 @@ appConfigValues:
   workspaceThumbnailsBucket: ""
   ## @param appConfigValues.workspaceThumbnailsPublic Indicate if the thumbnails could be accessed publicly
   workspaceThumbnailsPublic: "true"
-  ## @param appConfigValues.gcpBucketsProjectId If the bucket is GCP, the ProjectId to be used
-  gcpBucketsProjectId: ""
+  ## @param appConfigValues.googleCloudStorageProjectId If the bucket is GCP, the ProjectId to be used
+  googleCloudStorageProjectId: ""
   ## @param appConfigValues.awsS3Region If the bucket is S3, the region to be used
   awsS3Region: ""
 
@@ -55,12 +55,12 @@ appSecrets:
     existingSecret:
       name: ""
       key: ""
-  ## @extra appSecrets.gcpBucketsServiceAccountKey If GCP is used in self-hosted, the AccessKey Secret.
-  gcpBucketsServiceAccountKey:
-    ## @param appSecrets.gcpBucketsServiceAccountKey.value Value of the secret `AccessKey Secret` (Only required if GCP is used). One of `appSecrets.gcpBucketsServiceAccountKey.value` or `appSecrets.gcpBucketsServiceAccountKey.existingSecret` could be defined.
+  ## @extra appSecrets.googleCloudStorageServiceAccountKey If GCP is used in self-hosted, the AccessKey Secret.
+  googleCloudStorageServiceAccountKey:
+    ## @param appSecrets.googleCloudStorageServiceAccountKey.value Value of the secret `AccessKey Secret` (Only required if GCP is used). One of `appSecrets.googleCloudStorageServiceAccountKey.value` or `appSecrets.googleCloudStorageServiceAccountKey.existingSecret` could be defined.
     value: ""
-    ## @param appSecrets.gcpBucketsServiceAccountKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.gcpBucketsServiceAccountKey.existingSecret.key`. If `appSecrets.gcpBucketsServiceAccountKey.value` is defined, this value is going to be ignored and not used.
-    ## @param appSecrets.gcpBucketsServiceAccountKey.existingSecret.key Key to find in `appSecrets.gcpBucketsServiceAccountKey.existingSecret.name` where the value of `appSecrets.gcpBucketsServiceAccountKey` is found. If `appSecrets.gcpBucketsServiceAccountKey.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.googleCloudStorageServiceAccountKey.existingSecret.key`. If `appSecrets.googleCloudStorageServiceAccountKey.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.googleCloudStorageServiceAccountKey.existingSecret.key Key to find in `appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name` where the value of `appSecrets.googleCloudStorageServiceAccountKey` is found. If `appSecrets.googleCloudStorageServiceAccountKey.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""

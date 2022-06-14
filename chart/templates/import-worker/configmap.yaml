@@ -29,11 +29,11 @@ data:
   IMPORT_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
   IMPORT_BUCKET: {{ .Values.appConfigValues.importBucket | quote }}
   {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
-  {{- if .Values.appConfigValues.gcpBucketsProjectId }}
-  IMPORT_PROJECTID: {{ .Values.appConfigValues.gcpBucketsProjectId | quote }}
+  {{- if .Values.appConfigValues.googleCloudStorageProjectId }}
+  IMPORT_PROJECTID: {{ .Values.appConfigValues.googleCloudStorageProjectId | quote }}
   {{- end }}
-  {{- if ( include "carto.gcpBucketsServiceAccountKey.used" . ) }}
-  IMPORT_KEYFILENAME: {{ include "carto.gcpBucketsServiceAccountKey.secretMountAbsolutePath" . }}
+  {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
+  IMPORT_KEYFILENAME: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
   {{- end }}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}
