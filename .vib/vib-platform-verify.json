@@ -37,7 +37,7 @@
             "endpoint": "lb-carto-router-https",
             "env": {
               "CYPRESS_MEMORY": "1",
-              "MEMORY": "1",
+              "CYPRESS_CI": "true",
               "RECORD_KEY": "{VIB_ENV_CYPRESS_RECORD_KEY}",
               "FIREBASE_API_KEY": "{VIB_ENV_CYPRESS_FIREBASE_API_KEY}",
               "CYPRESS_CONNECTION_CREDENTIALS": "{VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS}"
