@@ -2387,10 +2387,10 @@ httpCache:
   ##
   resources:
     limits:
-      memory: "1024Mi"
+      memory: "2048Mi"
       cpu: "500m"
     requests:
-      memory: "768Mi"
+      memory: "1256Mi"
       cpu: "375m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
