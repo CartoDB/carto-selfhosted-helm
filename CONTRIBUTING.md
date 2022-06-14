@@ -5,11 +5,19 @@ We encourage everyone to follow them with their best judgement.
 
 ## Table of Contents
 
-* [How to Prepare a PR](#how-to-prepare-a-pr)
-  * [The Essentials of a Code Contribution](#the-essentials-of-a-code-contribution)
-  * [Creating a Pull Request](#creating-a-pull-request)
-* [Branching Strategy](#branching-strategy)
-* [Merging a Pull Request](#merging-a-pull-request)
+- [Contributing to this repository](#contributing-to-this-repository)
+  - [Table of Contents](#table-of-contents)
+  - [How to Prepare a PR](#how-to-prepare-a-pr)
+    - [The Essentials of a Code Contribution](#the-essentials-of-a-code-contribution)
+      - [Git Client Configuration](#git-client-configuration)
+      - [Making your Changes Clear and Traceable](#making-your-changes-clear-and-traceable)
+      - [Generating Documentation](#generating-documentation)
+      - [Linting chart files](#linting-chart-files)
+    - [Creating a Pull Request](#creating-a-pull-request)
+  - [Branching Strategy](#branching-strategy)
+    - [Key branches](#key-branches)
+    - [Supporting branches](#supporting-branches)
+  - [Merging a Pull Request](#merging-a-pull-request)
 
 ## How to Prepare a PR
 
@@ -50,6 +58,38 @@ Also, note that the commits will be squashed when merging the pull request, by d
 * If there are multiple commits, the message will default to the pull request title.
 
 A final caveat to be aware of is that the fast-forward strategy requires that your branch is up-to-date with the target branch, so you will have to rebase / merge the target branch into your branch before merging the pull request.
+
+#### Generating Documentation
+
+The chart documentation is auto generated with [helm-readme-generator](https://github.com/bitnami-labs/readme-generator-for-helm), you can run it locally with docker, Pull request check will fail if documentation is no updated.
+
+```bash
+# On the repository root
+docker run --rm \
+-v $(pwd)/chart:/my_helm \
+-w /my_helm \
+helm-readme-generator readme-generator \
+--readme README.md \
+--values values.yaml
+```
+
+#### Linting chart files
+We use [super- linter](https://github.com/github/super-linter) to maintain the files clean, you can run it locally with docker this way:
+
+```bash
+#Move to the root of the repository
+## To lint all files in the repo run this command (takes long)
+docker run --rm \
+-e RUN_LOCAL=true \
+-e USE_FIND_ALGORITHM=true \
+-v $(pwd):/tmp/lint \
+-w /tmp/lint ghcr.io/github/super-linter
+# To lint a single file or directory
+docker run --rm \
+-e RUN_LOCAL=true \
+-e USE_FIND_ALGORITHM=true \
+-v $(pwd)/<your_file_or_directory>:/tmp/lint/<your_file_or_directory> -w /tmp/lint/ ghcr.io/github/super-linter
+```
 
 ### Creating a Pull Request
 
