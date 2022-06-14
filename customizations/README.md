@@ -479,7 +479,6 @@ appSecrets:
       <REDACTED_JSON_SERVICE_ACCOUNT>
       }
 ```
-
 > `appSecrets.googleCloudStorageServiceAccountKey.value` should be in plain text
 
 **Option 2: Using existing secret**
@@ -528,7 +527,6 @@ appSecrets:
     value: "<REDACTED>"
 ```
 > `appSecrets.awsAccessKeyId.value` and `appSecrets.awsAccessKeySecret.value` should be in plain text
-> 
 **Option 2: Using existing secret**
 Create a secret with your awsAccessKeyId and awsSecretAccessKey
 ```bash
@@ -569,7 +567,7 @@ For the secrets, use **one** of the following options:
 
 **Option 1: Automatically create the secret**
 
-```
+```yaml
 appSecrets:
   azureStorageAccessKey:
     value: "<REDACTED>"
