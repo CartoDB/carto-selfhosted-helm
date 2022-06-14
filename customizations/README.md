@@ -458,7 +458,7 @@ It's mandatory to have credentials for those buckets, our supported credentials 
 
 ### Google Compute Storage
 
-Add the following lines to your `customizations.yaml`:
+Add the following lines to your `customizations.yaml` change the name of the buckets with your own settings:
 
 ```yaml
 appConfigValues:
@@ -504,7 +504,7 @@ appSecrets:
 
 ### AWS S3
 
-Add the following lines to your `customizations.yaml`:
+Add the following lines to your `customizations.yaml`, change the name of the buckets and the region with your own settings:
 
 ```yaml
 appConfigValues:
@@ -513,6 +513,8 @@ appConfigValues:
   workspaceImportsBucket: "carto-client-bucket"
   workspaceThumbnailsBucket: "carto-thumbnails-bucket"
   workspaceThumbnailsPublic: false
+  awsS3Region: "us-east-1"
+  
 ```
 For the secrets, use **one** of the following options:
 
@@ -553,7 +555,7 @@ appSecrets:
 ```
 ### Azure Storage
 
-Add the following lines to your `customizations.yaml`:
+Add the following lines to your `customizations.yaml` change the name of the buckets with your own settings:
 
 ```yaml
 appConfigValues:
