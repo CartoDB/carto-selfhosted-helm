@@ -1,23 +1,22 @@
+<!-- omit in toc -->
 # Contributing to this repository
 
 Thanks for taking the time to contribute! The following is a set of guidelines for contributing to our project.
 We encourage everyone to follow them with their best judgement.
-
+<!-- omit in toc -->
 ## Table of Contents
 
-- [Contributing to this repository](#contributing-to-this-repository)
-  - [Table of Contents](#table-of-contents)
-  - [How to Prepare a PR](#how-to-prepare-a-pr)
-    - [The Essentials of a Code Contribution](#the-essentials-of-a-code-contribution)
-      - [Git Client Configuration](#git-client-configuration)
-      - [Making your Changes Clear and Traceable](#making-your-changes-clear-and-traceable)
-      - [Generating Documentation](#generating-documentation)
-      - [Linting chart files](#linting-chart-files)
-    - [Creating a Pull Request](#creating-a-pull-request)
-  - [Branching Strategy](#branching-strategy)
-    - [Key branches](#key-branches)
-    - [Supporting branches](#supporting-branches)
-  - [Merging a Pull Request](#merging-a-pull-request)
+- [How to Prepare a PR](#how-to-prepare-a-pr)
+  - [The Essentials of a Code Contribution](#the-essentials-of-a-code-contribution)
+    - [Git Client Configuration](#git-client-configuration)
+    - [Making your Changes Clear and Traceable](#making-your-changes-clear-and-traceable)
+    - [Generating Documentation](#generating-documentation)
+    - [Linting chart files](#linting-chart-files)
+  - [Creating a Pull Request](#creating-a-pull-request)
+- [Branching Strategy](#branching-strategy)
+  - [Key branches](#key-branches)
+  - [Supporting branches](#supporting-branches)
+- [Merging a Pull Request](#merging-a-pull-request)
 
 ## How to Prepare a PR
 
