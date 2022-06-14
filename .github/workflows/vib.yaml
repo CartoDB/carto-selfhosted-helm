@@ -99,6 +99,15 @@ jobs:
           # jq 'del(.projectId)' cypress.json > cypress.json.edited
           jq '.projectId = "ggohpq"' cypress.json > cypress.json.edited
           mv -f cypress.json.edited cypress.json
+            ## BASEURL WITH PROTOCOL !
+          jq '.baseUrl = "https://carto.vmw"' cypress.json > cypress.json.edited
+          mv -f cypress.json.edited cypress.json
+            ## Clean env.baseUrl to test
+          jq 'del(.env.baseUrl)' cypress.json > cypress.json.edited
+          mv -f cypress.json.edited cypress.json
+            ## Add another host...
+          jq '.hosts."https://carto.vmw" = "{{TARGET_IP}}"' cypress.json > cypress.json.edited
+          mv -f cypress.json.edited cypress.json
           rm package-lock.json
             # End HotFix
 
@@ -130,7 +139,7 @@ jobs:
 
           ## Generate package-lock.json, required by cypress into VIB
           npm install -g synp
-          yarn install ##### <-------------- We should find a way to delete it
+          yarn ##### <-------------- We should find a way to delete it
           synp --source-file ./yarn.lock
           rm -rf node_modules/
 
