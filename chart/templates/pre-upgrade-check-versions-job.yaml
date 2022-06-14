@@ -25,19 +25,19 @@ spec:
     spec:
       restartPolicy: Never
       volumes:
-        - name: scripts      
+        - name: scripts
           configMap:
             name: "{{ .Release.Name }}-pre-install-scripts"
       containers:
       - name: pre-upgrade-version-check
         terminationMessagePolicy: FallbackToLogsOnError
-        image: "alpine:latest"
+        image: {{ template "carto.router.image" . }}
         volumeMounts: 
           - name: scripts
             mountPath: /opt/scripts
         env:
           - name: PACKAGE_VERSION
-            value: {{ .Values.cartoConfigValues.cartoVersion }}
+            value: {{ .Values.cartoConfigValues.customerPackageVersion }}
           - name: MINIMAL_VERSION
             value: {{ $minVersion }}
         command: ["sh"]
