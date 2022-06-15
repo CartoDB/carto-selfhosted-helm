@@ -464,6 +464,7 @@ It's mandatory to have credentials for those buckets, our supported credentials 
 ### Google Compute Storage
 
 In order to use Google Compute Storage custom buckets you need use a [custom Service account](#custom-google-cloud-platform-service-account), this is the same that you provide to CARTO Support Team before Self Hosted installation. Remember to grant proper IAM permissions to the custom buckets.
+
 Add the following lines to your `customizations.yaml` change the name of the buckets with your own settings:
 
 ```yaml
