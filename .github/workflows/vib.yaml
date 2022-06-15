@@ -202,7 +202,6 @@ jobs:
           yq eval-all '. as $item ireduce ({}; . * $item )' \
             customizations/service_loadBalancer/config.yaml \
             customizations/scale_components/static.yaml \
-            customizations/resources/minimum.yaml \
             carto-values.yaml \
             carto-secrets.yaml \
             manual_customizations.yaml \
