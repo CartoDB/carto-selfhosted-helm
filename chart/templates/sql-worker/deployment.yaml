@@ -155,11 +155,6 @@ spec:
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
-            {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
-            - name: gcp-buckets-service-account-key
-              mountPath: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountDir" . }}
-              readOnly: true
-            {{- end }}
             {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
             - name: postgresql-ssl-ca
               mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
