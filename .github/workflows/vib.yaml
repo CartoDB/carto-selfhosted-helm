@@ -29,7 +29,7 @@ jobs:
            target-platform-id: 7b13a7bb-011c-474f-ad71-8152fc321b9e
       fail-fast: false
     env:
-      ONPREM_ID: "vmware-gke-1"
+      ONPREM_ID: ${{ matrix.target-platform}}
     name: Verify ${{ matrix.target-platform}}
     steps:
       - uses: actions/checkout@v2
