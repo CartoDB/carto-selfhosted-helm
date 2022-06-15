@@ -30,4 +30,4 @@ sources:
   - https://carto.com/
 annotations:
   minVersion: "2022.05.12-5"
-version: 1.26.2
+version: 1.27.1
