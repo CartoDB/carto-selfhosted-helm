@@ -2,6 +2,7 @@
 # Table of Contents
 - [Customizations](#customizations)
   - [Production Ready](#production-ready)
+  - [Custom Google Cloud platform Service Account](#custom-google-cloud-platform-service-account)
   - [How to apply the configurations](#how-to-apply-the-configurations)
   - [Available Configurations](#available-configurations)
     - [Configure the domain of your Self Hosted](#configure-the-domain-of-your-self-hosted)
@@ -52,6 +53,10 @@ Optional configurations:
 
 - [Configure scale of the components](#components-scaling)
 - [Use your own bucket to store the data](#custom-buckets) (by default, GCP CARTO buckets are used)
+
+## Custom Google Cloud platform Service Account
+
+If you prefers using your own GCP Service Account Key, instead of the one that CARTO provides for each customer we do support it but you must  send the service account ID to CARTO support team, prior to the selfhost installation in order to grant access to the SaaS counterpart.
 
 ## How to apply the configurations
 
@@ -458,6 +463,7 @@ It's mandatory to have credentials for those buckets, our supported credentials 
 
 ### Google Compute Storage
 
+In order to use Google Compute Storage custom buckets you need use a [custom Service account](#custom-google-cloud-platform-service-account), this is the same that you provide to CARTO Support Team before Self Hosted installation. Remember to grant proper IAM permissions to the custom buckets.
 Add the following lines to your `customizations.yaml` change the name of the buckets with your own settings:
 
 ```yaml
@@ -469,44 +475,6 @@ appConfigValues:
   workspaceThumbnailsPublic: false
   googleCloudStorageProjectId: <your_project_id>
 ```
-
-To access to custom buckets in GCP you need  a service account, if you provide a custom service account for your  Self hosted installation to CARTO Support, this is the service account we use to access to buckets (cartoSecrets.defaultGoogleServiceAccount), remember to grant proper IAM permissions.
-
-Else you need to specify a Service account secret, use **one** of the following options:
-
-**Option 1: Automatically create the secret**
-
-```yaml
-appSecrets:
-  googleCloudStorageServiceAccountKey:
-    value: |
-      {
-      <REDACTED_JSON_SERVICE_ACCOUNT>
-      }
-```
-> `appSecrets.googleCloudStorageServiceAccountKey.value` should be in plain text
-
-**Option 2: Using existing secret**
-Create a secret with your json service account
-```bash
-kubectl create secret generic \                                                                      
-  [-n my-namespace] \
-  mycarto-custom-gcp-secret \
-   --from-file=gcp_sa=<PATH_TO_YOUR_JSON_SERVICE_ACCOUNT>
-```
-
-> Use the same namespace where you are installing the helm chart
-
-Add the following lines to your `customizations.yaml`:
-
-```yaml
-appSecrets:
-  googleCloudStorageServiceAccountKey:
-    existingSecret:
-      name: mycarto-custom-gcp-secret
-      key: gcp_sa
-```
-
 ### AWS S3
 
 Add the following lines to your `customizations.yaml`, change the name of the buckets and the region with your own settings:
