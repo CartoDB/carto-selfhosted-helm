@@ -166,7 +166,7 @@ Return the proper GCP Buckets Service Account Key Secret name
 */}}
 {{- define "carto.googleCloudStorageServiceAccountKey.secretName" -}}
 {{- if .Values.appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name }}
-{{- .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name -}}
+{{- .Values.cartoSecrets.googleCloudStorageServiceAccountKey.existingSecret.name -}}
 {{- else -}}
 {{- printf "%s-gcp-buckets-service-account" (include "common.names.fullname" .) -}}
 {{- end -}}
@@ -176,8 +176,8 @@ Return the proper GCP Buckets Service Account Key Secret name
 Return the proper GCP Buckets Service Account Key Secret key
 */}}
 {{- define "carto.googleCloudStorageServiceAccountKey.secretKey" -}}
-{{- if .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.key -}}
-{{- .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.key -}}
+{{- if .Values.cartoSecrets.googleCloudStorageServiceAccountKey.existingSecret.key -}}
+{{- .Values.cartoSecrets.googleCloudStorageServiceAccountKey.existingSecret.key -}}
 {{- else -}}
 {{- print "key.json" -}}
 {{- end -}}
