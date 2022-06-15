@@ -503,6 +503,7 @@ appSecrets:
     value: "<REDACTED>"
 ```
 > `appSecrets.awsAccessKeyId.value` and `appSecrets.awsAccessKeySecret.value` should be in plain text
+
 **Option 2: Using existing secret**
 Create a secret with your awsAccessKeyId and awsSecretAccessKey
 ```bash
