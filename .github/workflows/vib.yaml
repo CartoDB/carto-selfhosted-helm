@@ -112,6 +112,12 @@ jobs:
           #   ## Add another host...
           # jq '.hosts."https://carto.vmw" = "{{TARGET_IP}}"' cypress.json > cypress.json.edited
           # mv -f cypress.json.edited cypress.json
+            ## Clean env.baseUrl to test
+          jq '.env.baseUrl="https://${{ env.WORKSPACE_DOMAIN }}"' cypress.json > cypress.json.edited
+          mv -f cypress.json.edited cypress.json
+            ## Add another host...
+          jq '.hosts."https://${{ env.WORKSPACE_DOMAIN }}" = "{{TARGET_IP}}"' cypress.json > cypress.json.edited
+          mv -f cypress.json.edited cypress.json
           rm package-lock.json
             # End HotFix
 
