@@ -553,7 +553,7 @@ appSecrets:
 > `appSecrets.azureStorageAccessKey.value` should be in plain text
 
 **Option 2: Using existing secret**
-Create a secret with your azureStorageAccessKey
+Create a secret with your Azure Storage Account Key
 
 ```bash
 kubectl create secret generic \                                                                      
