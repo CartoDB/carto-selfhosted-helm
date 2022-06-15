@@ -467,11 +467,16 @@ appConfigValues:
   workspaceImportsBucket: "carto-client-bucket"
   workspaceThumbnailsBucket: "carto-thumbnails-bucket"
   workspaceThumbnailsPublic: false
+  googleCloudStorageProjectId: <your_project_id>
+```
 
-For the secrets, use **one** of the following options:
+To access to custom buckets in GCP you need  a service account, if you provide a custom service account for your  Self hosted installation to CARTO Support, this is the service account we use to access to buckets (cartoSecrets.defaultGoogleServiceAccount), remember to grant proper IAM permissions.
+
+Else you need to specify a Service account secret, use **one** of the following options:
 
 **Option 1: Automatically create the secret**
 
+```yaml
 appSecrets:
   googleCloudStorageServiceAccountKey:
     value: |
