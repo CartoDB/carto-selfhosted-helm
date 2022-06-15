@@ -15,6 +15,10 @@
     },
     "verify": {
       "context": {
+        "resources": {
+          "url": "{SHA_ARCHIVE}",
+          "path": "/.vib/carto/"
+        },
         "runtime_parameters": "{CARTO_RUNTIME_PARAMETERS}",
         "target_platform": {
           "target_platform_id": "{VIB_ENV_TARGET_PLATFORM}",
@@ -27,20 +31,13 @@
       },
       "actions": [
         {
-          "action_id": "cypress",
+          "action_id": "goss",
           "params": {
-            "timeout_minutes": 50,
             "resources": {
-              "url": "{WORKSPACE_WWW_SOURCE_URL}",
-              "path": "."
+              "path": "goss/goss-accounts-www"
             },
-            "endpoint": "lb-carto-router-https",
-            "env": {
-              "CYPRESS_MEMORY": "1",
-              "CYPRESS_CI": "true",
-              "RECORD_KEY": "{VIB_ENV_CYPRESS_RECORD_KEY}",
-              "FIREBASE_API_KEY": "{VIB_ENV_CYPRESS_FIREBASE_API_KEY}",
-              "CYPRESS_CONNECTION_CREDENTIALS": "{VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS}"
+            "remote": {
+              "workload": "deploy-carto-accounts-www"
             }
           }
         }

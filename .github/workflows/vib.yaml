@@ -19,7 +19,8 @@ env:
   CARTO_CLONE_PATH: carto-sources
   SIGNED_URL_DURATION: 1h
   # SIGNED_URL_DURATION: 5m
-  WORKSPACE_DOMAIN: carto.vmw
+  # WORKSPACE_DOMAIN: carto.vmw
+  WORKSPACE_DOMAIN: onp-vib-vmware.mlr.carto.io
 jobs:
   vib-verify: # verify in multiple target platforms
     runs-on: ubuntu-latest
