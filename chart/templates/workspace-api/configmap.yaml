@@ -61,6 +61,9 @@ data:
   {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
   WORKSPACE_IMPORTS_KEYFILENAME: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
   WORKSPACE_THUMBNAILS_KEYFILENAME: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
+  {{- else }}
+  WORKSPACE_IMPORTS_KEYFILENAME: {{ include "carto.google.secretMountAbsolutePath" . }}
+  WORKSPACE_THUMBNAILS_KEYFILENAME: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}
