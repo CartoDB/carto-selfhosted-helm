@@ -24,3 +24,4 @@ command:
     exit-status: 0
     # defaults to hash key
     exec: "sleep 4h"
+    timeout: 10000000000

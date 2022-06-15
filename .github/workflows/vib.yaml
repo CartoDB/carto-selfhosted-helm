@@ -10,8 +10,8 @@ on: # rebuild any PRs and main branch changes
       - main
     paths-ignore:
       - '**.md'
-  # Revert before merge
-  push:
+  # # Revert before merge
+  # push:
 env:
   CSP_API_URL: https://console.cloud.vmware.com
   CSP_API_TOKEN: ${{ secrets.CSP_API_TOKEN }}
@@ -29,15 +29,16 @@ jobs:
     strategy:
       matrix:
        include:
-         - target-platform: eks
-           target-platform-id: ef54a736-5e43-4a6c-9400-b162acd8b83d
+        #  - target-platform: eks
+        #    target-platform-id: ef54a736-5e43-4a6c-9400-b162acd8b83d
          - target-platform: gke
            target-platform-id: 91d398a2-25c4-4cda-8732-75a3cfc179a1
-         - target-platform: aks
-           target-platform-id: 7b13a7bb-011c-474f-ad71-8152fc321b9e
+        #  - target-platform: aks
+        #    target-platform-id: 7b13a7bb-011c-474f-ad71-8152fc321b9e
       fail-fast: false
     env:
-      ONPREM_ID: "vmware-${{ matrix.target-platform }}-1"
+      # ONPREM_ID: "vmware-${{ matrix.target-platform }}-1"
+      ONPREM_ID: "bitnami-stag-1"
       ENVIRONMENT: "staging"
     name: Verify ${{ matrix.target-platform }}
     steps:
