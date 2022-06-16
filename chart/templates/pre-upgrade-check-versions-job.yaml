@@ -48,6 +48,9 @@ spec:
             value: {{ .Values.cartoConfigValues.customerPackageVersion }}
           - name: MINIMAL_VERSION
             value: {{ $minVersion }}
+        {{- if .Values.upgradeCheck.resources }}
+        resources: {{- toYaml .Values.upgradeCheck.resources | nindent 12 }}
+        {{- end }}
         command: ["sh"]
         args: ["/opt/scripts/check-version.sh"]
 {{- end}}
