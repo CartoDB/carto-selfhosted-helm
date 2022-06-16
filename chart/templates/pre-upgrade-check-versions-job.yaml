@@ -1,3 +1,4 @@
+{{- if (.Values.upgradeCheck.enabled) }}
 {{- $minVersion  := .Chart.Annotations.minVersion -}}
 apiVersion: batch/v1
 kind: Job
@@ -28,10 +29,17 @@ spec:
         - name: scripts
           configMap:
             name: "{{ .Release.Name }}-pre-install-scripts"
+      {{- if .Values.upgradeCheck.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.upgradeCheck.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
       containers:
       - name: pre-upgrade-version-check
         terminationMessagePolicy: FallbackToLogsOnError
-        image: {{ template "carto.router.image" . }}
+        image: {{ template "carto.upgradeCheck.image" . }}
+        imagePullPolicy: {{ .Values.upgradeCheck.image.pullPolicy }}
+        {{- if .Values.upgradeCheck.containerSecurityContext.enabled }}
+        securityContext: {{- omit .Values.upgradeCheck.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+        {{- end }}
         volumeMounts: 
           - name: scripts
             mountPath: /opt/scripts
@@ -42,3 +50,4 @@ spec:
             value: {{ $minVersion }}
         command: ["sh"]
         args: ["/opt/scripts/check-version.sh"]
+{{- end}}

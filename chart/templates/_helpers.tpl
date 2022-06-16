@@ -1262,3 +1262,10 @@ Compile all warnings into a single message, and call fail.
 {{-   printf "\nVALUES VALIDATION:\n%s" $message | fail -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Return the proper Carto upgrade check image name
+*/}}
+{{- define "carto.upgradeCheck.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.upgradeCheck.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
