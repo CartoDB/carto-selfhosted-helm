@@ -21,6 +21,7 @@
       - [Setup Redis creating secrets](#setup-redis-creating-secrets)
       - [Setup Redis with automatic secret creation](#setup-redis-with-automatic-secret-creation)
       - [Configure Redis TLS](#configure-redis-tls)
+    - [Enable BigQuery Oauth connections](#enable-bigquery-oauth-connections)
   - [Components scaling](#components-scaling)
     - [Autoscaling](#autoscaling)
       - [Prerequisites](#prerequisites)
@@ -377,6 +378,45 @@ externalRedis:
     #   -----BEGIN CERTIFICATE-----
     #   ...
     #   -----END CERTIFICATE-----
+```
+
+### Enable BigQuery Oauth connections
+
+This feature allows users to create a BigQuery connection using `Sign in with Google` instead of providing a service account key. Note that connections created with Oauth cannot be shared with other organization users.
+
+#### Instructions
+
+1. Create an oauth consent screen inside the desired GCP project. URL: https://console.cloud.google.com/apis/credentials/consent?referrer=search&project={project_id}
+   - Introduce an app name and a user support email.
+   - Add an authorized domain (the one used in your email).
+   - Add another email as dev contact info (it can be the same).
+   - Add the following scopes: `./auth/userinfo.email`, `./auth/userinfo.profile` & `./auth/bigquery`.
+
+2. Create an Oauth credentials. URL: https://console.cloud.google.com/apis/credentials?project={project_id}
+   - Type: Web application.
+   - Authorized JavaScript origins: `https://<your_selfhosted_domain>`.
+   - Authorized redirect URIs: `https://<your_selfhosted_domain>/connections/bigquery/oauth`.
+   - Download the credentials file.
+
+3. In your selfhosted's env file, set the following vars with the values from the credentials file:
+```
+REACT_APP_BIGQUERY_OAUTH=true
+BIGQUERY_OAUTH2_CLIENT_ID=<value_from_credentials_web_client_id>
+BIGQUERY_OAUTH2_CLIENT_SECRET=<value_from_credentials_web_client_secret>
+```
+
+#### Custom configuration
+
+Add the following lines to you `customizations.yaml` and populate them with the credential's file corresponding values:
+```yaml
+workspaceApi:
+  extraEnvVars:
+    - name: REACT_APP_BIGQUERY_OAUTH
+      value: true
+    - name: BIGQUERY_OAUTH2_CLIENT_ID
+      value: <value_from_credentials_web_client_id>
+    - name: BIGQUERY_OAUTH2_CLIENT_SECRET
+      value: <value_from_credentials_web_client_secret>
 ```
 
 ## Components scaling
