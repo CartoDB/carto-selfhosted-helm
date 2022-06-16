@@ -400,13 +400,6 @@ This feature allows users to create a BigQuery connection using `Sign in with Go
    - Authorized redirect URIs: `https://<your_selfhosted_domain>/connections/bigquery/oauth`.
    - Download the credentials file.
 
-3. In your selfhosted's env file, set the following vars with the values from the credentials file:
-```
-REACT_APP_BIGQUERY_OAUTH=true
-BIGQUERY_OAUTH2_CLIENT_ID=<value_from_credentials_web_client_id>
-BIGQUERY_OAUTH2_CLIENT_SECRET=<value_from_credentials_web_client_secret>
-```
-
 #### Custom configuration
 
 Add the following lines to you `customizations.yaml` and populate them with the credential's file corresponding values:
