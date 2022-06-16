@@ -22,6 +22,8 @@
       - [Setup Redis with automatic secret creation](#setup-redis-with-automatic-secret-creation)
       - [Configure Redis TLS](#configure-redis-tls)
     - [Enable BigQuery Oauth connections](#enable-bigquery-oauth-connections)
+      - [Previous steps](#previous-steps)
+      - [Custom configuration](#custom-configuration)
   - [Components scaling](#components-scaling)
     - [Autoscaling](#autoscaling)
       - [Prerequisites](#prerequisites)
@@ -384,7 +386,7 @@ externalRedis:
 
 This feature allows users to create a BigQuery connection using `Sign in with Google` instead of providing a service account key. Note that connections created with Oauth cannot be shared with other organization users.
 
-#### Instructions
+#### Previous steps
 
 1. Create an oauth consent screen inside the desired GCP project. URL: https://console.cloud.google.com/apis/credentials/consent?referrer=search&project={project_id}
    - Introduce an app name and a user support email.
