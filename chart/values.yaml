@@ -3946,7 +3946,7 @@ externalPostgresql:
   sslCA: ""
 
 ## @section Upgrade Check pre hook parameters
-# @param upgradeCheck.enabled upgradeCheck will run or not
+## @param upgradeCheck.enabled upgradeCheck will run or not
 upgradeCheck:
   enabled: true
   ## upgradeCheck image

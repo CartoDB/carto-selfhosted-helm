@@ -1280,6 +1280,25 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `externalPostgresql.sslCA`                          | CA certificate in case CARTO Postgresql TLS cert it's selfsigned                                                                       | `""`              |
 
 
+### Upgrade Check pre hook parameters
+
+| Name                                                 | Description                                                          | Value                           |
+| ---------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------- |
+| `upgradeCheck.enabled`                               | upgradeCheck will run or not                                         | `true`                          |
+| `upgradeCheck.image.registry`                        | upgradeCheck image registry                                          | `gcr.io/carto-onprem-artifacts` |
+| `upgradeCheck.image.repository`                      | upgradeCheck image repository                                        | `router`                        |
+| `upgradeCheck.image.tag`                             | upgradeCheck image tag (immutable tags are recommended)              | `""`                            |
+| `upgradeCheck.image.pullPolicy`                      | upgradeCheck image pull policy                                       | `IfNotPresent`                  |
+| `upgradeCheck.image.pullSecrets`                     | upgradeCheck image pull secrets                                      | `[]`                            |
+| `upgradeCheck.resources.limits`                      | The resources limits for the Upgrade Check pre-hook containers       | `{}`                            |
+| `upgradeCheck.resources.requests`                    | The requested resources for the Upgrade Check pre-hook containers    | `{}`                            |
+| `upgradeCheck.podSecurityContext.enabled`            | Enabled Upgrade Check pre-hook pods' Security Context                | `true`                          |
+| `upgradeCheck.podSecurityContext.fsGroup`            | Set Upgrade Check pre-hook pod's Security Context fsGroup            | `0`                             |
+| `upgradeCheck.containerSecurityContext.enabled`      | Enabled Upgrade Check pre-hook containers' Security Context          | `false`                         |
+| `upgradeCheck.containerSecurityContext.runAsUser`    | Set Upgrade Check pre-hook containers' Security Context runAsUser    | `0`                             |
+| `upgradeCheck.containerSecurityContext.runAsNonRoot` | Set Upgrade Check pre-hook containers' Security Context runAsNonRoot | `false`                         |
+
+
 ## Configuration and installation details
 
 ### [Rolling VS Immutable tags](https://docs.bitnami.com/containers/how-to/understand-rolling-tags-containers/)
