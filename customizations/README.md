@@ -205,7 +205,7 @@ from the configuration, or let the chart to create the [secrets automatically](#
 > Note: `externalPostgresql.user` and `externalPostgresql.database` inside the Postgres instance are going to be created automatically during the installation process. Do not create then manually.
 
 2. Configure the package:
-   Add the following lines to you `customizations.yaml` to connect to the external Postgres:
+   Add the following lines to your `customizations.yaml` to connect to the external Postgres:
 
    ````yaml
      internalPostgresql:
@@ -232,7 +232,7 @@ from the configuration, or let the chart to create the [secrets automatically](#
 #### Setup Postgres with automatic secret creation
 
 1. Configure the package:
-   Add the following lines to you `customizations.yaml` to connect to the external Postgres:
+   Add the following lines to your `customizations.yaml` to connect to the external Postgres:
 
    ```yaml
    internalPostgresql:
@@ -318,7 +318,7 @@ kubectl create secret generic \
 
 2. Configure the package:
 
-Add the following lines to you `customizations.yaml` to connect to the external Postgres:
+Add the following lines to your `customizations.yaml` to connect to the external Postgres:
 
 ```yaml
 internalRedis:
@@ -340,7 +340,7 @@ externalRedis:
 #### Setup Redis with automatic secret creation
 
 1. Configure the package:
-   Add the following lines to you `customizations.yaml` to connect to the external Postgres:
+   Add the following lines to your `customizations.yaml` to connect to the external Postgres:
 
 ```yaml
 internalRedis:
@@ -402,7 +402,7 @@ This feature allows users to create a BigQuery connection using `Sign in with Go
 
 #### Custom configuration
 
-Add the following lines to you `customizations.yaml` and populate them with the credential's file corresponding values:
+Add the following lines to your `customizations.yaml` and populate them with the credential's file corresponding values:
 ```yaml
 workspaceApi:
   extraEnvVars:
