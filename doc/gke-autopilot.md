@@ -37,8 +37,16 @@ TODO: Add the code related to Workload Identity
 
 ## Troubleshooting
 
+- :warning: `No nodes available to schedule pods`
+
+  Ensure that the default Compute Engine service account (<PROJECT_NUMBER>-compute@developer.gserviceaccount.com) is not disabled.
+  
+  Run the following command to check that disabled field is not set to true
+  
+  `gcloud iam service-accounts describe <PROJECT_NUMBER>-compute@developer.gserviceaccount.com`
+
 <!--
-TODO: Add the code related to Troubleshooting
+TODO: Add more things related to Troubleshooting
 -->
 
 ## Terraform Examples
