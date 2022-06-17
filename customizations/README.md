@@ -78,7 +78,7 @@ appConfigValues:
 And add the following at the end of ALL the `helm install` or `helm upgrade` command:
 
 ```bash
-helm instal .. -f customizations.yaml
+helm install .. -f customizations.yaml
 ```
 
 You can also override values through the command-line to `helm`. Adding the argument: `--set key=value[,key=value]`
