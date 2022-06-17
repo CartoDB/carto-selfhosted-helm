@@ -23,6 +23,10 @@ Currently the only Kubernetes that have been tested are EKS, GKE and AKS.
 
 For setting up Kubernetes on other cloud platforms or bare-metal servers refer to the Kubernetes [getting started guide](http://kubernetes.io/docs/getting-started-guides/).
 
+##### GKE Autopilot
+
+For GKE Autopilot cluster, please see [these](doc/gke-autopilot.md) recommendations.
+
 #### Install Helm
 
 Helm is a tool for managing Kubernetes charts. Charts are packages of pre-configured Kubernetes resources.
