@@ -3798,8 +3798,12 @@ workspaceMigrations:
   ## @skip workspaceMigrations.resources.requests
   ##
   resources:
-    limits: {}
-    requests: {}
+    limits:
+      memory: "2048Mi"
+      cpu: "1"
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
   ## Init container Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ## @param workspaceMigrations.containerSecurityContext.enabled Enable container security context
