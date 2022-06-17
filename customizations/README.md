@@ -388,13 +388,13 @@ This feature allows users to create a BigQuery connection using `Sign in with Go
 
 #### Previous steps
 
-1. Create an oauth consent screen inside the desired GCP project. URL: https://console.cloud.google.com/apis/credentials/consent?referrer=search&project={project_id}
+1. Create an oauth consent screen inside the desired GCP project.
    - Introduce an app name and a user support email.
    - Add an authorized domain (the one used in your email).
    - Add another email as dev contact info (it can be the same).
    - Add the following scopes: `./auth/userinfo.email`, `./auth/userinfo.profile` & `./auth/bigquery`.
 
-2. Create an Oauth credentials. URL: https://console.cloud.google.com/apis/credentials?project={project_id}
+2. Create an Oauth credentials.
    - Type: Web application.
    - Authorized JavaScript origins: `https://<your_selfhosted_domain>`.
    - Authorized redirect URIs: `https://<your_selfhosted_domain>/connections/bigquery/oauth`.
