@@ -402,7 +402,7 @@ This feature allows users to create a BigQuery connection using `Sign in with Go
 
 #### Custom configuration
 
-Add the following lines to your `customizations.yaml` and populate them with the credential's file corresponding values:
+Follow [these guidelines](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/customizations/README.md#how-to-apply-the-configurations) to add the following lines to your `customizations.yaml` populating them with the credential's file corresponding values:
 ```yaml
 workspaceApi:
   extraEnvVars:
