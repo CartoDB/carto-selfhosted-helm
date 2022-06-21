@@ -68,11 +68,10 @@ The process of configuring Workload Identity includes using an IAM policy bindin
 - Then, allow the Kubernetes service account that is going to be created in your GKE cluster to impersonate the IAM service account by adding an IAM policy binding between the two service accounts. This binding allows the Kubernetes service account to act as the IAM service account.
 
   ```bash
-  gcloud iam service-accounts add-iam-policy-binding workload-id-iam-sa@cartodb-gcp-infra-team.iam.gserviceaccount.com \
+  gcloud iam service-accounts add-iam-policy-binding <IAM_SERVICE_ACCOUNT_EMAIL> \
   --role roles/iam.workloadIdentityUser \
-  --member "serviceAccount:cartodb-gcp-infra-team.svc.id.goog[<YOUR_KUBERNETES_NAMESPACE>/carto-workload-identity]"
+  --member "serviceAccount:<PROJECT_ID>.svc.id.goog[<KUBERNETES_NAMESPACE>/carto-workload-identity]"
   ```
-
 
 ## Troubleshooting
 
