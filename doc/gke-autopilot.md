@@ -37,7 +37,7 @@ TODO: Add the code related to Workload Identity
 
 ## Troubleshooting
 
-- :warning: `No nodes available to schedule pods`
+- :warning: `No nodes available to schedule pods` or `All cluster resources were brought up, but: only 0 nodes out of 2 have registered; cluster may be unhealthy.`
 
   Ensure that the default Compute Engine service account (<PROJECT_NUMBER>-compute@developer.gserviceaccount.com) is not disabled.
   
