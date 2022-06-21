@@ -25,6 +25,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.workspaceThumbnailsPublic`   | Indicate if the thumbnails could be accessed publicly                                      | `true`                 |
 | `appConfigValues.googleCloudStorageProjectId` | If the bucket is GCP, the ProjectId to be used                                             | `""`                   |
 | `appConfigValues.awsS3Region`                 | If the bucket is S3, the region to be used                                                 | `""`                   |
+| `appConfigValues.enableWorkloadIdentity`      | Enable the Workload Identity feature in kubernetes                                         | `false`                |
+| `appConfigValues.workloadIdentitySaEmail`     | The gcp service account email to use in Workload Identity                                  | `""`                   |
 
 
 ### CARTO config parameters
