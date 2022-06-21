@@ -28,7 +28,6 @@
     - [Enable static scaling](#enable-static-scaling)
   - [Custom Buckets](#custom-buckets)
     - [Requirements](#requirements)
-    - [Related configuration](#related-configuration)
     - [Google Cloud Storage](#google-cloud-storage)
     - [AWS S3](#aws-s3)
     - [Azure Storage](#azure-storage)
@@ -459,6 +458,8 @@ TODO: Add the code related to Terraform
 
 > There's no name constraints
 
+> :warning: Map thumbnails can be configured in two different ways: public (map thumbnails storage objects are public) or private (map thumbnails storage objects are private). In order to control it, change the value of `appConfigValues.workspaceThumbnailsPublic` (boolean). Depending on this, the bucket properties (public access) may be different.
+
 - Generate credentials to access those buckets, our supported authentication methods are:
   - GCS: Service Account Key
   - AWS: Access Key ID and Secret Access Key
@@ -466,9 +467,6 @@ TODO: Add the code related to Terraform
 
 - Grant Read/Write permissions over the buckets to the credentials mentioned above.
 
-### Related configuration
-
-- Map thumbnails can be configured in two different ways: public (map thumbnails storage objects are public) or private (map thumbnails storage objects are private). In order to control it you need to change the value of `appConfigValues.workspaceThumbnailsPublic` (see below).
 
 ### Google Cloud Storage
 
@@ -491,7 +489,7 @@ appConfigValues:
   workspaceImportsBucket: <client_bucket_name>
   workspaceThumbnailsBucket: <thumbnails_bucket_name>
   workspaceThumbnailsPublic: <false|true>
-  googleCloudStorageProjectId: <your_project_id>
+  googleCloudStorageProjectId: <gcp_project_id>
 ```
 
 ### AWS S3
