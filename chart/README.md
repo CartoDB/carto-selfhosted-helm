@@ -25,8 +25,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.workspaceThumbnailsPublic`   | Indicate if the thumbnails could be accessed publicly                                      | `true`                 |
 | `appConfigValues.googleCloudStorageProjectId` | If the bucket is GCP, the ProjectId to be used                                             | `""`                   |
 | `appConfigValues.awsS3Region`                 | If the bucket is S3, the region to be used                                                 | `""`                   |
-| `appConfigValues.enableWorkloadIdentity`      | Enable the Workload Identity feature in kubernetes                                         | `false`                |
-| `appConfigValues.workloadIdentitySaEmail`     | The gcp service account email to use in Workload Identity                                  | `""`                   |
 
 
 ### CARTO config parameters
@@ -101,6 +99,14 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `tlsCerts.existingSecret.name`    | Name of a secret containing the certificate                                                                                                   | `""`      |
 | `tlsCerts.existingSecret.certKey` | Key of the certificate inside the secret                                                                                                      | `tls.crt` |
 | `tlsCerts.existingSecret.keyKey`  | Key of the certificate key inside the secret                                                                                                  | `tls.key` |
+
+
+### Workload Identity
+
+| Name                                             | Description                                               | Value   |
+| ------------------------------------------------ | --------------------------------------------------------- | ------- |
+| `workloadIdentityConfig.enableWorkloadIdentity`  | Enable the Workload Identity feature in kubernetes        | `false` |
+| `workloadIdentityConfig.workloadIdentitySaEmail` | The gcp service account email to use in Workload Identity | `""`    |
 
 
 ### Global parameters

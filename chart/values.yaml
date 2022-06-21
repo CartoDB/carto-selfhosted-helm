@@ -19,10 +19,6 @@ appConfigValues:
   googleCloudStorageProjectId: ""
   ## @param appConfigValues.awsS3Region If the bucket is S3, the region to be used
   awsS3Region: ""
-  ## @param appConfigValues.enableWorkloadIdentity Enable the Workload Identity feature in kubernetes
-  enableWorkloadIdentity: "false"
-  ## @param appConfigValues.workloadIdentitySaEmail The gcp service account email to use in Workload Identity
-  workloadIdentitySaEmail: ""
 
 ## @section CARTO config parameters
 ## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
@@ -161,6 +157,14 @@ tlsCerts:
     name: ""
     keyKey: "tls.key"
     certKey: "tls.crt"
+
+## @section Workload Identity
+## Kubernetes workload identity feature to be enabled by the client.
+workloadIdentityConfig:
+  ## @param workloadIdentityConfig.enableWorkloadIdentity Enable the Workload Identity feature in kubernetes
+  enableWorkloadIdentity: "false"
+  ## @param workloadIdentityConfig.workloadIdentitySaEmail The gcp service account email to use in Workload Identity
+  workloadIdentitySaEmail: ""
 
 ## @section Global parameters
 ## Global Docker image parameters

@@ -40,10 +40,10 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      {{- if eq .Values.appConfigValues.enableWorkloadIdentity "false" }}
+      {{- if eq .Values.workloadIdentityConfig.enableWorkloadIdentity "false" }}
       serviceAccountName: {{ template "carto.workspaceSubscriber.serviceAccountName" . }}
       {{- end }}
-      {{- if eq .Values.appConfigValues.enableWorkloadIdentity "true" }}
+      {{- if eq .Values.workloadIdentityConfig.enableWorkloadIdentity "true" }}
       serviceAccountName: {{ .Chart.Name }}-workload-identity
       {{- end }}
       {{- include "carto.imagePullSecrets" . | nindent 6 }}
