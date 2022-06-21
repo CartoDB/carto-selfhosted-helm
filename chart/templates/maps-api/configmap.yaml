@@ -17,7 +17,9 @@ data:
   AUTH0_NAMESPACE: "http://app.carto.com"
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
+  {{- if eq .Values.appConfigValues.enableWorkloadIdentity "false" }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
+  {{- end }}
   LOG_LEVEL: "debug"
   MAPS_API_V3_PORT: "{{ .Values.mapsApi.containerPorts.http }}"
   MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: {{ .Values.appConfigValues.selfHostedDomain | quote }}
