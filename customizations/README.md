@@ -28,7 +28,8 @@
     - [Enable static scaling](#enable-static-scaling)
   - [Custom Buckets](#custom-buckets)
     - [Requirements](#requirements)
-    - [Google Compute Storage](#google-compute-storage)
+    - [Related configuration](#related-configuration)
+    - [Google Cloud Storage](#google-cloud-storage)
     - [AWS S3](#aws-s3)
     - [Azure Storage](#azure-storage)
   - [Advanced configuration](#advanced-configuration)
@@ -435,13 +436,15 @@ You can set statically set the number of pods should be running. To do it, use [
 
 ## Custom Buckets
 
-If you want to keep as much data as possible in your infrastructure you can configure CARTO Self Hosted to use your own cloud storage. Supported storage services are:
+For every CARTO Self Hosted installation, we create GCS buckets in our side as part of the required infrastructure for importing data, map thumbnails and other internal data. 
 
-- Google Compute Storage
+You can create and use your own storage buckets in any of the following supported storage providers:
+
+- Google Cloud Storage
 - AWS S3
 - Azure Storage
 
-> :warning: You can only set one provider at a time. These buckets are used as temporary storage when importing data, for map thumbnails, and other internal data.
+> :warning: You can only set one provider at a time.
 
 <!--
 TODO: Add the code related to Terraform
@@ -449,134 +452,162 @@ TODO: Add the code related to Terraform
 
 ### Requirements
 
-You need to create 3 buckets in your preferred Cloud provider
-
-- Import Bucket
-- Client Bucket
-- Thumbnails Bucket
+- You need to create 3 buckets in your preferred Cloud provider:
+  - Import Bucket
+  - Client Bucket
+  - Thumbnails Bucket
 
 > There's no name constraints
 
-It's mandatory to have credentials for those buckets, our supported credentials methods are
+- Generate credentials to access those buckets, our supported authentication methods are:
+  - GCS: Service Account Key
+  - AWS: Access Key ID and Secret Access Key
+  - Azure: Access Key
 
-- GCP: Service Account Key
-- AWS: Access Key ID and Secret Access Key
-- Azure: Storage Access Key
+- Grant Read/Write permissions over the buckets to the credentials mentioned above.
 
-> :warning: Those credentials should have permissions to interact (read/write) with the above buckets
+### Related configuration
 
-### Google Compute Storage
+- Map thumbnails can be configured in two different ways: public (map thumbnails storage objects are public) or private (map thumbnails storage objects are private). In order to control it you need to change the value of `appConfigValues.workspaceThumbnailsPublic` (see below).
 
-In order to use Google Compute Storage custom buckets you need:
-- Create and provide a [custom Service account](#custom-google-cloud-platform-service-account), this is the same that you provide to CARTO Support Team before the Self Hosted installation. Remember to grant proper IAM permissions to the custom buckets.
+### Google Cloud Storage
 
-Add the following lines to your `customizations.yaml` change the name of the buckets with your own settings:
+In order to use Google Cloud Storage custom buckets you need to:
+
+1. Create the buckets.
+   
+2. Create a [custom Service account](#custom-service-account).
+   
+3. Grant this service account with the following role (in addition to the buckets access): `roles/iam.serviceAccountTokenCreator`. 
+
+   > :warning: We don't recommend grating this role at project IAM level, but instead at the Service Account permissions level (IAM > Service Accounts > `your_service_account` > Permissions).
+
+4. Add the following lines to your `customizations.yaml` and replace the `<values>` with your own settings:
 
 ```yaml
 appConfigValues:
   storageProvider: "gcp"
-  importBucket: "carto-import-bucket"
-  workspaceImportsBucket: "carto-client-bucket"
-  workspaceThumbnailsBucket: "carto-thumbnails-bucket"
-  workspaceThumbnailsPublic: false
+  importBucket: <import_bucket_name>
+  workspaceImportsBucket: <client_bucket_name>
+  workspaceThumbnailsBucket: <thumbnails_bucket_name>
+  workspaceThumbnailsPublic: <false|true>
   googleCloudStorageProjectId: <your_project_id>
 ```
+
 ### AWS S3
 
-Add the following lines to your `customizations.yaml`, change the name of the buckets and the region with your own settings:
+In order to use AWS S3 custom buckets you need to:
+
+1. Create the buckets. If you enable `Block public access`, make sure you set `appConfigValues.workspaceThumbnailsPublic` to `false`.
+
+2. Create an IAM user and generate a programmatic key id and secret.
+   
+3. Grant this user with read/write access permissions over the buckets.
+   
+4. Add the following lines to your `customizations.yaml` and replace the `<values>` with your own settings:
 
 ```yaml
 appConfigValues:
   storageProvider: "s3"
-  importBucket: "carto-import-bucket"
-  workspaceImportsBucket: "carto-client-bucket"
-  workspaceThumbnailsBucket: "carto-thumbnails-bucket"
-  workspaceThumbnailsPublic: false
-  awsS3Region: "us-east-1"
-  
+  importBucket: <import_bucket_name>
+  workspaceImportsBucket: <client_bucket_name>
+  workspaceThumbnailsBucket: <thumbnails_bucket_name>
+  workspaceThumbnailsPublic: <false|true>
+  awsS3Region: <s3_buckets_region>
 ```
-For the secrets, use **one** of the following options:
+5. Pass your AWS credentials as secrets by using one of the options below:
 
-**Option 1: Automatically create the secret**
+   - **Option 1: Automatically create a secret:**
 
-Add the following lines to your `customizations.yaml`:
-```yaml
-appSecrets:
-  awsAccessKeyId:
-    value: "<REDACTED>"
-  awsAccessKeySecret:
-    value: "<REDACTED>"
-```
-> `appSecrets.awsAccessKeyId.value` and `appSecrets.awsAccessKeySecret.value` should be in plain text
-
-**Option 2: Using existing secret**
-Create a secret with your awsAccessKeyId and awsSecretAccessKey
-```bash
-kubectl create secret generic \                                                                      
-  [-n my-namespace] \
-  mycarto-custom-s3-secret \
-  --from-literal=awsAccessKeyId=<REDACTED> \
-  --from-literal=awsSecretAccessKey=<REDACTED>
-```
-> Use the same namespace where you are installing the helm chart
-
-Add the following lines to your `customizations.yaml`:
-
-```yaml
-appSecrets:
-  awsAccessKeyId:
-    existingSecret:
-      name: mycarto-custom-s3-secret
-      key: awsAccessKeyId
-  awsAccessKeySecret:
-    existingSecret:
-      name: mycarto-custom-s3-secret
-      key: awsSecretAccessKey
-```
+   Add the following lines to your `customizations.yaml` replacing it with your access key values:
+   ```yaml
+   appSecrets:
+     awsAccessKeyId:
+       value: "<REDACTED>"
+     awsAccessKeySecret:
+       value: "<REDACTED>"
+   ```
+   > `appSecrets.awsAccessKeyId.value` and `appSecrets.awsAccessKeySecret.value` should be in plain text
+   
+   - **Option 2: Using an existing secret:**
+   Create a secret running the command below, after replacing the `<REDACTED>` values with your key values:
+   ```bash
+   kubectl create secret generic \                                                                      
+     [-n my-namespace] \
+     mycarto-custom-s3-secret \
+     --from-literal=awsAccessKeyId=<REDACTED> \
+     --from-literal=awsSecretAccessKey=<REDACTED>
+   ```
+   > Use the same namespace where you are installing the helm chart
+   
+   Add the following lines to your `customizations.yaml`, without replacing any value:
+   
+   ```yaml
+   appSecrets:
+     awsAccessKeyId:
+       existingSecret:
+         name: mycarto-custom-s3-secret
+         key: awsAccessKeyId
+     awsAccessKeySecret:
+       existingSecret:
+         name: mycarto-custom-s3-secret
+         key: awsSecretAccessKey
+   ```
 ### Azure Storage
 
-Add the following lines to your `customizations.yaml` change the name of the buckets with your own settings:
+In order to use Azure Storage buckets (aka containers) you need to:
+
+1. Create an storage account if you don't have one already.
+
+2. Create the storage buckets. If you set the `Public Access Mode` to `private`, make sure you set `appConfigValues.workspaceThumbnailsPublic` to `false`.
+
+3. Generate an Access Key, from the storage account's Security properties.
+
+4. Add the following lines to your `customizations.yaml`  and replace the `<values>` with your own settings:
 
 ```yaml
 appConfigValues:
   storageProvider: "azure-blob"
-  importBucket: "carto-import-bucket"
-  workspaceImportsBucket: "carto-client-bucket"
-  workspaceThumbnailsBucket: "carto-thumbnails-bucket"
-  workspaceThumbnailsPublic: false
-```
-For the secrets, use **one** of the following options:
-
-**Option 1: Automatically create the secret**
-
-```yaml
-appSecrets:
-  azureStorageAccessKey:
-    value: "<REDACTED>"
+  azureStorageAccount: <storage_account_name>
+  importBucket: <import_bucket_name>
+  workspaceImportsBucket: <client_bucket_name>
+  workspaceThumbnailsBucket: <thumbnails_bucket_name>
+  workspaceThumbnailsPublic: <false|true>
 ```
 
-> `appSecrets.azureStorageAccessKey.value` should be in plain text
+1. Pass your credentials as secrets by using one of the options below:
+   
+   - **Option 1: Automatically create the secret:**
+   
+   ```yaml
+   appSecrets:
+     azureStorageAccessKey:
+       value: "<REDACTED>"
+   ```
+   
+   > `appSecrets.azureStorageAccessKey.value` should be in plain text
+   
+   - **Option 2: Using existing secret:**
+   Create a secret running the command below, after replacing the `<REDACTED>` values with your key values:
+   
+   ```bash
+   kubectl create secret generic \                                                                      
+     [-n my-namespace] \
+     mycarto-custom-azure-secret \
+     --from-literal=azureStorageAccessKey=<REDACTED> \
+   ```
+   > Use the same namespace where you are installing the helm chart
+   
+   Add the following lines to your `customizations.yaml`, without replacing any value:
+   
+   ```yaml
+   appSecrets:
+     awsAccessKeyId:
+       existingSecret:
+         name: mycarto-custom-azure-secret
+         key: azureStorageAccessKey
+   ```
 
-**Option 2: Using existing secret**
-Create a secret with your Azure Storage Account Key
-
-```bash
-kubectl create secret generic \                                                                      
-  [-n my-namespace] \
-  mycarto-custom-azure-secret \
-  --from-literal=azureStorageAccessKey=<REDACTED> \
-```
-> Use the same namespace where you are installing the helm chart
-
-Add the following lines to your `customizations.yaml`:
-
-```yaml
-appSecrets:
-  awsAccessKeyId:
-    existingSecret:
-      name: mycarto-custom-azure-secret
-      key: azureStorageAccessKey
-```
 ## Advanced configuration
 
 If you need a more advanced configuration you can check the [full chart documentation](../chart/README.md) with all the available [parameters](../chart/README.md#parameters) or contact [support@carto.com](mailto:support@carto.com)
