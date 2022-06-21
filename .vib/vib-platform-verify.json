@@ -15,10 +15,6 @@
     },
     "verify": {
       "context": {
-        "resources": {
-          "url": "{SHA_ARCHIVE}",
-          "path": "/.vib/carto/"
-        },
         "runtime_parameters": "{CARTO_RUNTIME_PARAMETERS}",
         "target_platform": {
           "target_platform_id": "{VIB_ENV_TARGET_PLATFORM}",
@@ -31,10 +27,29 @@
       },
       "actions": [
         {
+          "action_id": "cypress",
+          "params": {
+            "timeout_minutes": 50,
+            "resources": {
+              "url": "{WORKSPACE_WWW_SOURCE_URL}",
+              "path": "."
+            },
+            "endpoint": "lb-carto-router-https",
+            "env": {
+              "CI": "true",
+              "RUN_ID": "{VIB_ENV_CYPRESS_RUN_ID}",
+              "COMMIT_INFO_MESSAGE": "Executed from VIB",
+              "COMMIT_INFO_AUTHOR": "VIB from carto-selfhosted-helm repo",
+              "RECORD_KEY": "{VIB_ENV_CYPRESS_RECORD_KEY}"
+            }
+          }
+        },
+        {
           "action_id": "goss",
           "params": {
             "resources": {
-              "path": "goss/goss-accounts-www"
+              "url": "{SHA_ARCHIVE}",
+              "path": "/.vib/carto/goss/goss-accounts-www"
             },
             "remote": {
               "workload": "deploy-carto-accounts-www"
