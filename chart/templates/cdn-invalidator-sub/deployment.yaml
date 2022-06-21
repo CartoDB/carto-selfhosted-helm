@@ -40,7 +40,12 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
+      {{- if eq .Values.appConfigValues.enableWorkloadIdentity "false" }}
       serviceAccountName: {{ template "carto.cdnInvalidatorSub.serviceAccountName" . }}
+      {{- end }}
+      {{- if eq .Values.appConfigValues.enableWorkloadIdentity "true" }}
+      serviceAccountName: {{ .Chart.Name }}-workload-identity
+      {{- end }}
       {{- include "carto.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.cdnInvalidatorSub.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.hostAliases "context" $) | nindent 8 }}
