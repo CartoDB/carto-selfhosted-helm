@@ -2,7 +2,7 @@
 # Table of Contents
 - [Customizations](#customizations)
   - [Production Ready](#production-ready)
-  - [Custom Google Cloud platform Service Account](#custom-google-cloud-platform-service-account)
+  - [Custom Service Account](#custom-service-account)
   - [How to apply the configurations](#how-to-apply-the-configurations)
   - [Available Configurations](#available-configurations)
     - [Configure the domain of your Self Hosted](#configure-the-domain-of-your-self-hosted)
@@ -54,9 +54,13 @@ Optional configurations:
 - [Configure scale of the components](#components-scaling)
 - [Use your own bucket to store the data](#custom-buckets) (by default, GCP CARTO buckets are used)
 
-## Custom Google Cloud platform Service Account
+## Custom Service Account
 
-If you prefers using your own GCP Service Account Key, instead of the one that CARTO provides for each customer we do support it but you must  send the service account ID to CARTO support team, prior to the selfhost installation in order to grant access to the SaaS counterpart.
+For each CARTO self hosted installation, we create and provide a Google Cloud Platform Service Account key that the CARTO backend uses to authenticate requests to Google APIs. 
+
+If you prefer using your own GCP Service Account, please do the following prior to the Self Hosted installation:
+1. Create a dedicated Service Account for the CARTO Self Hosted.
+2. Contact CARTO support team and provide them the service account email.
 
 ## How to apply the configurations
 
@@ -463,7 +467,8 @@ It's mandatory to have credentials for those buckets, our supported credentials 
 
 ### Google Compute Storage
 
-In order to use Google Compute Storage custom buckets you need use a [custom Service account](#custom-google-cloud-platform-service-account), this is the same that you provide to CARTO Support Team before Self Hosted installation. Remember to grant proper IAM permissions to the custom buckets.
+In order to use Google Compute Storage custom buckets you need:
+- Create and provide a [custom Service account](#custom-google-cloud-platform-service-account), this is the same that you provide to CARTO Support Team before the Self Hosted installation. Remember to grant proper IAM permissions to the custom buckets.
 
 Add the following lines to your `customizations.yaml` change the name of the buckets with your own settings:
 
