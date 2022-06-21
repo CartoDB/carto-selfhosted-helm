@@ -480,6 +480,10 @@ In order to use Google Cloud Storage custom buckets you need to:
 
    > :warning: We don't recommend grating this role at project IAM level, but instead at the Service Account permissions level (IAM > Service Accounts > `your_service_account` > Permissions).
 
+   <!--
+   TODO: Add the code related to Terraform
+   -->
+
 4. Add the following lines to your `customizations.yaml` and replace the `<values>` with your own settings:
 
 ```yaml
@@ -496,7 +500,7 @@ appConfigValues:
 
 In order to use AWS S3 custom buckets you need to:
 
-1. Create the buckets. If you enable `Block public access`, make sure you set `appConfigValues.workspaceThumbnailsPublic` to `false`.
+1. Create the buckets. If you enable `Block public access` in the bucket properties, make sure you set `appConfigValues.workspaceThumbnailsPublic` to `false`.
 
 2. Create an IAM user and generate a programmatic key id and secret.
    
@@ -557,7 +561,7 @@ In order to use Azure Storage buckets (aka containers) you need to:
 
 1. Create an storage account if you don't have one already.
 
-2. Create the storage buckets. If you set the `Public Access Mode` to `private`, make sure you set `appConfigValues.workspaceThumbnailsPublic` to `false`.
+2. Create the storage buckets. If you set the `Public Access Mode` to `private` in the bucket properties, make sure you set `appConfigValues.workspaceThumbnailsPublic` to `false`.
 
 3. Generate an Access Key, from the storage account's Security properties.
 
