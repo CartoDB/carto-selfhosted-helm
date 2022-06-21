@@ -61,7 +61,7 @@ The process of configuring Workload Identity includes using an IAM policy bindin
 
   You can use this command:
 
-  `gcloud iam service-accounts create <GCP_SERVICE_ACCOUNT> --project=<GCP_PROJECT_ID>`
+  `gcloud iam service-accounts create <IAM_SERVICE_ACCOUNT_NAME> --project=<GCP_PROJECT_ID>`
 
 - Send the Service Account Email to Carto Support Team [support@carto.com](mailto:support@carto.com). We will ensure that your SA has the correct permissions roles in the Selfhosted project.
 
