@@ -70,7 +70,7 @@ The process of configuring Workload Identity includes using an IAM policy bindin
   ```bash
   gcloud iam service-accounts add-iam-policy-binding workload-id-iam-sa@cartodb-gcp-infra-team.iam.gserviceaccount.com \
   --role roles/iam.workloadIdentityUser \
-  --member "serviceAccount:cartodb-gcp-infra-team.svc.id.goog[<KUBERNETES_NAMESPACE>/]"
+  --member "serviceAccount:cartodb-gcp-infra-team.svc.id.goog[<YOUR_KUBERNETES_NAMESPACE>/carto-workload-identity]"
   ```
 
 
