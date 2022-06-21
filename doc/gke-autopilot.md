@@ -73,6 +73,14 @@ The process of configuring Workload Identity includes using an IAM policy bindin
   --member "serviceAccount:<PROJECT_ID>.svc.id.goog[<KUBERNETES_NAMESPACE>/carto-workload-identity]"
   ```
 
+- Add the following lines to your `customizations.yaml`:
+
+```yaml
+workloadIdentityConfig:
+  enableWorkloadIdentity: "true"
+  workloadIdentitySaEmail: "<IAM_SERVICE_ACCOUNT_EMAIL>"
+```
+
 ## Troubleshooting
 
 - :warning: `No nodes available to schedule pods` or `All cluster resources were brought up, but: only 0 nodes out of 2 have registered; cluster may be unhealthy.`
