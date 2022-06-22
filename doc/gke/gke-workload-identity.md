@@ -49,7 +49,8 @@ The process of configuring Workload Identity includes using an IAM policy bindin
 - Add the following lines to your `customizations.yaml`:
 
 ```yaml
-workloadIdentityConfig:
+commonBackendServiceAccount:
   enableWorkloadIdentity: "true"
-  workloadIdentitySaEmail: "<IAM_SERVICE_ACCOUNT_EMAIL>"
+  annotations:
+    iam.gke.io/gcp-service-account: "<IAM_SERVICE_ACCOUNT_EMAIL>"
 ```
