@@ -54,13 +54,16 @@ data:
   WORKSPACE_THUMBNAILS_PUBLIC: {{ .Values.appConfigValues.workspaceThumbnailsPublic | quote }}
   WORKSPACE_THUMBNAILS_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
   {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
-  {{- if .Values.appConfigValues.gcpBucketsProjectId }}
-  WORKSPACE_IMPORTS_PROJECTID: {{ .Values.appConfigValues.gcpBucketsProjectId | quote }}
-  WORKSPACE_THUMBNAILS_PROJECTID: {{ .Values.appConfigValues.gcpBucketsProjectId | quote }}
+  {{- if .Values.appConfigValues.googleCloudStorageProjectId }}
+  WORKSPACE_IMPORTS_PROJECTID: {{ .Values.appConfigValues.googleCloudStorageProjectId | quote }}
+  WORKSPACE_THUMBNAILS_PROJECTID: {{ .Values.appConfigValues.googleCloudStorageProjectId | quote }}
   {{- end }}
-  {{- if ( include "carto.gcpBucketsServiceAccountKey.used" . ) }}
-  WORKSPACE_IMPORTS_KEYFILENAME: {{ include "carto.gcpBucketsServiceAccountKey.secretMountAbsolutePath" . }}
-  WORKSPACE_THUMBNAILS_KEYFILENAME: {{ include "carto.gcpBucketsServiceAccountKey.secretMountAbsolutePath" . }}
+  {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
+  WORKSPACE_IMPORTS_KEYFILENAME: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
+  WORKSPACE_THUMBNAILS_KEYFILENAME: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
+  {{- else }}
+  WORKSPACE_IMPORTS_KEYFILENAME: {{ include "carto.google.secretMountAbsolutePath" . }}
+  WORKSPACE_THUMBNAILS_KEYFILENAME: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}

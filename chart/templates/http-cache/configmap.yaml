@@ -16,4 +16,9 @@ data:
   VARNISH_WORKSPACE_API_INTERNAL_URL: {{ include "carto.workspaceApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   VARNISH_PURGE_ALLOWED_IPS: "0.0.0.0/0"
   VARNISH_REPORT_BASIC_INFORMATION_HEADERS: "true"
+  {{- if .Values.httpCache.resources.requests }}
+  {{- if .Values.httpCache.resources.requests.memory }}
+  VARNISH_SIZE: {{ ( div ( mul ( ( .Values.httpCache.resources.requests.memory ) | replace "Mi" "" | atoi ) 75 ) 100 ) | toString | printf "%sM" | quote }}
+  {{- end }}
+  {{- end }}
 {{- end }}

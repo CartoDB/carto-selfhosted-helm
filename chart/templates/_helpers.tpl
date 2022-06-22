@@ -153,10 +153,10 @@ As a replacement for "common.images.image" that forces you to set image.tag valu
 {{- end -}}
 
 {{/*
-Return true if a `appSecrets.gcpBucketsServiceAccountKey` is specified in any way
+Return true if a `appSecrets.googleCloudStorageServiceAccountKey` is specified in any way
 */}}
-{{- define "carto.gcpBucketsServiceAccountKey.used" -}}
-{{- if or (.Values.appSecrets.gcpBucketsServiceAccountKey.existingSecret.name) (.Values.appSecrets.gcpBucketsServiceAccountKey.value) }}
+{{- define "carto.googleCloudStorageServiceAccountKey.used" -}}
+{{- if or (.Values.appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name) (.Values.appSecrets.googleCloudStorageServiceAccountKey.value) }}
 true
 {{- end -}}
 {{- end -}}
@@ -164,9 +164,9 @@ true
 {{/*
 Return the proper GCP Buckets Service Account Key Secret name
 */}}
-{{- define "carto.gcpBucketsServiceAccountKey.secretName" -}}
-{{- if .Values.appSecrets.gcpBucketsServiceAccountKey.existingSecret.name }}
-{{- .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name -}}
+{{- define "carto.googleCloudStorageServiceAccountKey.secretName" -}}
+{{- if .Values.appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name }}
+{{- .Values.cartoSecrets.googleCloudStorageServiceAccountKey.existingSecret.name -}}
 {{- else -}}
 {{- printf "%s-gcp-buckets-service-account" (include "common.names.fullname" .) -}}
 {{- end -}}
@@ -175,9 +175,9 @@ Return the proper GCP Buckets Service Account Key Secret name
 {{/*
 Return the proper GCP Buckets Service Account Key Secret key
 */}}
-{{- define "carto.gcpBucketsServiceAccountKey.secretKey" -}}
-{{- if .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.key -}}
-{{- .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.key -}}
+{{- define "carto.googleCloudStorageServiceAccountKey.secretKey" -}}
+{{- if .Values.cartoSecrets.googleCloudStorageServiceAccountKey.existingSecret.key -}}
+{{- .Values.cartoSecrets.googleCloudStorageServiceAccountKey.existingSecret.key -}}
 {{- else -}}
 {{- print "key.json" -}}
 {{- end -}}
@@ -186,22 +186,22 @@ Return the proper GCP Buckets Service Account Key Secret key
 {{/*
 Return the directory where the GCP Buckets Service Account Key Secret will  be mounted
 */}}
-{{- define "carto.gcpBucketsServiceAccountKey.secretMountDir" -}}
+{{- define "carto.googleCloudStorageServiceAccountKey.secretMountDir" -}}
 {{- print "/usr/src/certs/gcp-buckets-service-account" -}}
 {{- end -}}
 
 {{/*
 Return the filename where the GCP Buckets Service Account Key Secret will be mounted
 */}}
-{{- define "carto.gcpBucketsServiceAccountKey.secretMountFilename" -}}
+{{- define "carto.googleCloudStorageServiceAccountKey.secretMountFilename" -}}
 {{- print "key.json" -}}
 {{- end -}}
 
 {{/*
 Return the absolute path where the GCP Buckets Service Account Key Secret will be mounted
 */}}
-{{- define "carto.gcpBucketsServiceAccountKey.secretMountAbsolutePath" -}}
-{{- printf "%s/%s" (include "carto.gcpBucketsServiceAccountKey.secretMountDir" .) (include "carto.gcpBucketsServiceAccountKey.secretMountFilename" .) -}}
+{{- define "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" -}}
+{{- printf "%s/%s" (include "carto.googleCloudStorageServiceAccountKey.secretMountDir" .) (include "carto.googleCloudStorageServiceAccountKey.secretMountFilename" .) -}}
 {{- end -}}
 
 {{/*
@@ -1261,4 +1261,11 @@ Compile all warnings into a single message, and call fail.
 {{- if $message -}}
 {{-   printf "\nVALUES VALIDATION:\n%s" $message | fail -}}
 {{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto upgrade check image name
+*/}}
+{{- define "carto.upgradeCheck.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.upgradeCheck.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}

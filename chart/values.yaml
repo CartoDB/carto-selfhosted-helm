@@ -15,8 +15,8 @@ appConfigValues:
   workspaceThumbnailsBucket: ""
   ## @param appConfigValues.workspaceThumbnailsPublic Indicate if the thumbnails could be accessed publicly
   workspaceThumbnailsPublic: "true"
-  ## @param appConfigValues.gcpBucketsProjectId If the bucket is GCP, the ProjectId to be used
-  gcpBucketsProjectId: ""
+  ## @param appConfigValues.googleCloudStorageProjectId If the bucket is GCP, the ProjectId to be used
+  googleCloudStorageProjectId: ""
   ## @param appConfigValues.awsS3Region If the bucket is S3, the region to be used
   awsS3Region: ""
 
@@ -55,12 +55,12 @@ appSecrets:
     existingSecret:
       name: ""
       key: ""
-  ## @extra appSecrets.gcpBucketsServiceAccountKey If GCP is used in self-hosted, the AccessKey Secret.
-  gcpBucketsServiceAccountKey:
-    ## @param appSecrets.gcpBucketsServiceAccountKey.value Value of the secret `AccessKey Secret` (Only required if GCP is used). One of `appSecrets.gcpBucketsServiceAccountKey.value` or `appSecrets.gcpBucketsServiceAccountKey.existingSecret` could be defined.
+  ## @extra appSecrets.googleCloudStorageServiceAccountKey If GCP is used in self-hosted, the AccessKey Secret.
+  googleCloudStorageServiceAccountKey:
+    ## @param appSecrets.googleCloudStorageServiceAccountKey.value Value of the secret `AccessKey Secret` (Only required if GCP is used). One of `appSecrets.googleCloudStorageServiceAccountKey.value` or `appSecrets.googleCloudStorageServiceAccountKey.existingSecret` could be defined.
     value: ""
-    ## @param appSecrets.gcpBucketsServiceAccountKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.gcpBucketsServiceAccountKey.existingSecret.key`. If `appSecrets.gcpBucketsServiceAccountKey.value` is defined, this value is going to be ignored and not used.
-    ## @param appSecrets.gcpBucketsServiceAccountKey.existingSecret.key Key to find in `appSecrets.gcpBucketsServiceAccountKey.existingSecret.name` where the value of `appSecrets.gcpBucketsServiceAccountKey` is found. If `appSecrets.gcpBucketsServiceAccountKey.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.googleCloudStorageServiceAccountKey.existingSecret.key`. If `appSecrets.googleCloudStorageServiceAccountKey.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.googleCloudStorageServiceAccountKey.existingSecret.key Key to find in `appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name` where the value of `appSecrets.googleCloudStorageServiceAccountKey` is found. If `appSecrets.googleCloudStorageServiceAccountKey.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""
@@ -2387,10 +2387,10 @@ httpCache:
   ##
   resources:
     limits:
-      memory: "1024Mi"
+      memory: "2048Mi"
       cpu: "500m"
     requests:
-      memory: "768Mi"
+      memory: "1256Mi"
       cpu: "375m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
@@ -3944,3 +3944,66 @@ externalPostgresql:
   port: 5432
   sslEnabled: false
   sslCA: ""
+
+## @section Upgrade Check pre hook parameters
+## @param upgradeCheck.enabled upgradeCheck will run or not
+upgradeCheck:
+  enabled: true
+  ## upgradeCheck image
+  ## @param upgradeCheck.image.registry upgradeCheck image registry
+  ## @param upgradeCheck.image.repository upgradeCheck image repository
+  ## @param upgradeCheck.image.tag upgradeCheck image tag (immutable tags are recommended)
+  ## @param upgradeCheck.image.pullPolicy upgradeCheck image pull policy
+  ## @param upgradeCheck.image.pullSecrets upgradeCheck image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: router
+    ## Specify a custom image tag
+    tag: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## Upgrade Check pre-hook resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param upgradeCheck.resources.limits [object] The resources limits for the Upgrade Check pre-hook containers
+  ## @skip upgradeCheck.resources.limits
+  ## @param upgradeCheck.resources.requests [object] The requested resources for the Upgrade Check pre-hook containers
+  ## @skip upgradeCheck.resources.requests
+  ##
+  resources:
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+    requests:
+      memory: "128Mi"
+      cpu: "250m"
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param upgradeCheck.podSecurityContext.enabled Enabled Upgrade Check pre-hook pods' Security Context
+  ## @param upgradeCheck.podSecurityContext.fsGroup Set Upgrade Check pre-hook pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 0
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param upgradeCheck.containerSecurityContext.enabled Enabled Upgrade Check pre-hook containers' Security Context
+  ## @param upgradeCheck.containerSecurityContext.runAsUser Set Upgrade Check pre-hook containers' Security Context runAsUser
+  ## @param upgradeCheck.containerSecurityContext.runAsNonRoot Set Upgrade Check pre-hook containers' Security Context runAsNonRoot
+  ##
+  containerSecurityContext:
+    enabled: false
+    runAsUser: 0
+    runAsNonRoot: false
+
