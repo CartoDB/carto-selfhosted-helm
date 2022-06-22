@@ -4,8 +4,11 @@
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
       - [Setup a Kubernetes Cluster](#setup-a-kubernetes-cluster)
-        - [GKE Autopilot](#gke-autopilot)
       - [Install Helm](#install-helm)
+    - [Deployment options](#deployment-options)
+      - [GKE Autopilot](#gke-autopilot)
+      - [GKE Workload Identity](#gke-workload-identity)
+    - [Deployment customizations](#deployment-customizations)
     - [Installation Steps](#installation-steps)
     - [Troubleshooting](#troubleshooting)
   - [Update](#update)
@@ -36,15 +39,21 @@ Currently the only Kubernetes that have been tested are EKS, GKE and AKS.
 
 For setting up Kubernetes on other cloud platforms or bare-metal servers refer to the Kubernetes [getting started guide](http://kubernetes.io/docs/getting-started-guides/).
 
-##### GKE Autopilot
-
-For GKE Autopilot cluster, please see [these](doc/gke-autopilot.md) recommendations.
-
 #### Install Helm
 
 Helm is a tool for managing Kubernetes charts. Charts are packages of pre-configured Kubernetes resources.
 
 To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#install) and ensure that the `helm` binary is in the `PATH` of your shell.
+
+### Deployment options
+
+#### GKE Autopilot
+
+For GKE Autopilot cluster, please check [these](doc/gke/gke-autopilot.md) recommendations.
+
+#### GKE Workload Identity
+
+For GKE Workload Identity, please check [these](doc/gke/gke-workload-identity.md) instructions.
 
 ### Installation Steps
 
@@ -84,6 +93,10 @@ to configure the domain name.
   > Note: You can specify the '-f' flag multiple times. The priority will be given to the last (right-most) file specified. For example, if both `carto-values.yaml` and `customizations.yaml` contained a key called 'Test', the value set in `customizations.yaml` would take precedence. For this reason, please follow the order describe in the above example.
 
 6. Read and follow the instructions provided by the previous command (eg: what you need to configure your DNS).
+
+### Deployment customizations
+
+Please, read the available [customizations](customizations/README.md) options
 
 ### Troubleshooting
   
