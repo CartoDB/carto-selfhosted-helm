@@ -1,6 +1,6 @@
 # GKE Autopilot
 
-Autopilot is a new mode of operation for creating and managing Kubernetes clusters in Google Kubernetes Engine (GKE). In this mode, GKE configures and manages the underlying infrastructure, including nodes and node pools enabling users to only focus on the target workloads and pay per pod resource requests (CPU, memory, and ephemeral storage).
+Autopilot is a new mode of operation for creating and managing Kubernetes clusters in Google Kubernetes Engine (GKE). In this mode, GKE configures and manages the underlying infrastructure, including nodes and node-pools enabling users to only focus on the target workloads and pay per pod resource requests (CPU, memory, and ephemeral storage).
 
 Please review the official documentation:
 
