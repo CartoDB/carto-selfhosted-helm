@@ -39,7 +39,7 @@ The process of configuring Workload Identity includes using an IAM policy bindin
   ```bash
   gcloud iam service-accounts add-iam-policy-binding <IAM_SERVICE_ACCOUNT_EMAIL> \
   --role roles/iam.workloadIdentityUser \
-  --member "serviceAccount:<PROJECT_ID>.svc.id.goog[<KUBERNETES_NAMESPACE>/carto-workload-identity]"
+  --member "serviceAccount:<PROJECT_ID>.svc.id.goog[<KUBERNETES_NAMESPACE>/<HELM_PACKAGE_INSTALLED_NAME>-gcp-api]"
   ```
 
 - Add the following lines to your `customizations.yaml`:
