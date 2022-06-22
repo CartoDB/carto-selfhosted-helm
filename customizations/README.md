@@ -21,18 +21,18 @@
       - [Setup Redis creating secrets](#setup-redis-creating-secrets)
       - [Setup Redis with automatic secret creation](#setup-redis-with-automatic-secret-creation)
       - [Configure Redis TLS](#configure-redis-tls)
+    - [Custom Buckets](#custom-buckets)
+      - [Requirements](#requirements)
+      - [Google Cloud Storage](#google-cloud-storage)
+      - [AWS S3](#aws-s3)
+      - [Azure Storage](#azure-storage)
     - [Enable BigQuery OAuth connections](#enable-bigquery-oauth-connections)
+    - [Google Maps](#google-maps)
   - [Components scaling](#components-scaling)
     - [Autoscaling](#autoscaling)
       - [Prerequisites](#prerequisites)
       - [Enable Carto autoscaling feature](#enable-carto-autoscaling-feature)
     - [Enable static scaling](#enable-static-scaling)
-  - [Custom Buckets](#custom-buckets)
-    - [Requirements](#requirements)
-    - [Google Cloud Storage](#google-cloud-storage)
-    - [AWS S3](#aws-s3)
-    - [Azure Storage](#azure-storage)
-  - [Google Maps](#google-maps)
   - [Advanced configuration](#advanced-configuration)
   - [Tips for creating the customization Yaml file](#tips-for-creating-the-customization-yaml-file)
 
@@ -384,88 +384,7 @@ externalRedis:
     #   ...
     #   -----END CERTIFICATE-----
 ```
-
-### Enable BigQuery OAuth connections
-
-This feature allows users to create a BigQuery connection using `Sign in with Google` instead of providing a service account key.
-
-> :warning: Connections created with OAuth cannot be shared with other organization users.
-
-1. Create an OAuth consent screen inside the desired GCP project:
-   - Introduce an app name and a user support email.
-   - Add an authorized domain (the one used in your email).
-   - Add another email as dev contact info (it can be the same).
-   - Add the following scopes: `./auth/userinfo.email`, `./auth/userinfo.profile` & `./auth/bigquery`.
-
-2. Create the OAuth credentials:
-   - Type: Web application.
-   - Authorized JavaScript origins: `https://<your_selfhosted_domain>`.
-   - Authorized redirect URIs: `https://<your_selfhosted_domain>/connections/bigquery/oauth`.
-   - Download the credentials file.
-
-3. Follow [these guidelines](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/customizations/README.md#how-to-apply-the-configurations) to add the following lines to your `customizations.yaml` populating them with the credential's file corresponding values:
-```yaml
-workspaceApi:
-  extraEnvVars:
-    - name: REACT_APP_BIGQUERY_OAUTH
-      value: true
-    - name: BIGQUERY_OAUTH2_CLIENT_ID
-      value: <value_from_credentials_web_client_id>
-    - name: BIGQUERY_OAUTH2_CLIENT_SECRET
-      value: <value_from_credentials_web_client_secret>
-```
-
-## Components scaling
-
-### Autoscaling
-
-It is recommended to enable autoscaling in your installation. This will allow the cluster to adapt dynamically to the needs of the service
-and maximize the use of the resources of your cluster.
-
-This feature is based on [Kubernetes Horizontal Pod Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) functionality.
-
-#### Prerequisites
-
-To enable the autoscaling feature, you need to use a cluster that has a [Metrics Server](https://github.com/kubernetes-sigs/metrics-server#readme) deployed and configured.
-
-The Kubernetes Metrics Server collects resource metrics from the kubelets in your cluster, and exposes those metrics through the [Kubernetes API](https://kubernetes.io/docs/concepts/overview/kubernetes-api/), using an [APIService](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/) to add new kinds of resource that represent metric readings.
-
-- Verify that Metrics Server is installed and returning metrics by completing the following steps:
-
-  - Verify the installation by issuing the following command:
-
-    ```bash
-    kubectl get deploy,svc -n kube-system | egrep metrics-server
-    ```
-
-  - If Metrics Server is installed, the output is similar to the following example:
-
-    ```bash
-    deployment.extensions/metrics-server   1/1     1            1           3d4h
-    service/metrics-server   ClusterIP   198.51.100.0   <none>        443/TCP         3d4h
-    ```
-
-  - Verify that Metrics Server is returning data for pods by issuing the following command:
-
-    ```bash
-    kubectl get --raw "/apis/metrics.k8s.io/v1beta1/pods"
-    ```
-
-To learn how to deploy the Metrics Server, see the [metrics-server installation guide](https://github.com/kubernetes-sigs/metrics-server#installation).
-
-#### Enable Carto autoscaling feature
-
-You can find an autoscaling config file example in [autoscaling config](scale_components/autoscaling.yaml). Adding it with `-f customizations/scale_components/autoscaling.yaml` the `install` or `upgrade` is enough to start using the autoscaling feature.
-
-You can edit the file to set your own scaling needs by modifying the minimum and maximum values.
-
-### Enable static scaling
-
-You can set statically set the number of pods should be running. To do it, use [static scale config](scale_components/static.yaml) adding it with `-f customizations/scale_components/static.yaml` to the `install` or `upgrade` commands.
-
-> Although we recommend the autoscaling configuration, you could choose the autoscaling feature for some components and the static configuration for the others. Remember that autoscaling override the static configuration, so if one component has both configurations, autoscaling will take precedence.
-
-## Custom Buckets
+### Custom Buckets
 
 For every CARTO Self Hosted installation, we create GCS buckets in our side as part of the required infrastructure for importing data, map thumbnails and other internal data. 
 
@@ -481,7 +400,7 @@ You can create and use your own storage buckets in any of the following supporte
 TODO: Add the code related to Terraform
 -->
 
-### Requirements
+#### Requirements
 
 - You need to create 3 buckets in your preferred Cloud provider:
   - Import Bucket
@@ -511,7 +430,7 @@ TODO: Add the code related to Terraform
 
 - Grant Read/Write permissions over the buckets to the credentials mentioned above.
 
-### Google Cloud Storage
+#### Google Cloud Storage
 
 In order to use Google Cloud Storage custom buckets you need to:
 
@@ -539,7 +458,7 @@ appConfigValues:
   googleCloudStorageProjectId: <gcp_project_id>
 ```
 
-### AWS S3
+#### AWS S3
 
 In order to use AWS S3 custom buckets you need to:
 
@@ -598,7 +517,7 @@ appConfigValues:
          name: mycarto-custom-s3-secret
          key: awsSecretAccessKey
    ```
-### Azure Storage
+#### Azure Storage
 
 In order to use Azure Storage buckets (aka containers) you need to:
 
@@ -653,9 +572,89 @@ appConfigValues:
          key: azureStorageAccessKey
    ```
 
-## Google Maps
+### Enable BigQuery OAuth connections
+
+This feature allows users to create a BigQuery connection using `Sign in with Google` instead of providing a service account key.
+
+> :warning: Connections created with OAuth cannot be shared with other organization users.
+
+1. Create an OAuth consent screen inside the desired GCP project:
+   - Introduce an app name and a user support email.
+   - Add an authorized domain (the one used in your email).
+   - Add another email as dev contact info (it can be the same).
+   - Add the following scopes: `./auth/userinfo.email`, `./auth/userinfo.profile` & `./auth/bigquery`.
+
+2. Create the OAuth credentials:
+   - Type: Web application.
+   - Authorized JavaScript origins: `https://<your_selfhosted_domain>`.
+   - Authorized redirect URIs: `https://<your_selfhosted_domain>/connections/bigquery/oauth`.
+   - Download the credentials file.
+
+3. Follow [these guidelines](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/customizations/README.md#how-to-apply-the-configurations) to add the following lines to your `customizations.yaml` populating them with the credential's file corresponding values:
+```yaml
+workspaceApi:
+  extraEnvVars:
+    - name: REACT_APP_BIGQUERY_OAUTH
+      value: true
+    - name: BIGQUERY_OAUTH2_CLIENT_ID
+      value: <value_from_credentials_web_client_id>
+    - name: BIGQUERY_OAUTH2_CLIENT_SECRET
+      value: <value_from_credentials_web_client_secret>
+```
+
+### Google Maps
 
 In order to enable Google Maps basemaps inside CARTO Self Hosted (optional), you need to own a Google Maps API key and set it via `REACT_APP_GOOGLE_MAPS_API_KEY` in your customer.env file.
+
+## Components scaling
+
+### Autoscaling
+
+It is recommended to enable autoscaling in your installation. This will allow the cluster to adapt dynamically to the needs of the service
+and maximize the use of the resources of your cluster.
+
+This feature is based on [Kubernetes Horizontal Pod Autoscaling](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) functionality.
+
+#### Prerequisites
+
+To enable the autoscaling feature, you need to use a cluster that has a [Metrics Server](https://github.com/kubernetes-sigs/metrics-server#readme) deployed and configured.
+
+The Kubernetes Metrics Server collects resource metrics from the kubelets in your cluster, and exposes those metrics through the [Kubernetes API](https://kubernetes.io/docs/concepts/overview/kubernetes-api/), using an [APIService](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/apiserver-aggregation/) to add new kinds of resource that represent metric readings.
+
+- Verify that Metrics Server is installed and returning metrics by completing the following steps:
+
+  - Verify the installation by issuing the following command:
+
+    ```bash
+    kubectl get deploy,svc -n kube-system | egrep metrics-server
+    ```
+
+  - If Metrics Server is installed, the output is similar to the following example:
+
+    ```bash
+    deployment.extensions/metrics-server   1/1     1            1           3d4h
+    service/metrics-server   ClusterIP   198.51.100.0   <none>        443/TCP         3d4h
+    ```
+
+  - Verify that Metrics Server is returning data for pods by issuing the following command:
+
+    ```bash
+    kubectl get --raw "/apis/metrics.k8s.io/v1beta1/pods"
+    ```
+
+To learn how to deploy the Metrics Server, see the [metrics-server installation guide](https://github.com/kubernetes-sigs/metrics-server#installation).
+
+#### Enable Carto autoscaling feature
+
+You can find an autoscaling config file example in [autoscaling config](scale_components/autoscaling.yaml). Adding it with `-f customizations/scale_components/autoscaling.yaml` the `install` or `upgrade` is enough to start using the autoscaling feature.
+
+You can edit the file to set your own scaling needs by modifying the minimum and maximum values.
+
+### Enable static scaling
+
+You can set statically set the number of pods should be running. To do it, use [static scale config](scale_components/static.yaml) adding it with `-f customizations/scale_components/static.yaml` to the `install` or `upgrade` commands.
+
+> Although we recommend the autoscaling configuration, you could choose the autoscaling feature for some components and the static configuration for the others. Remember that autoscaling override the static configuration, so if one component has both configurations, autoscaling will take precedence.
 
 ## Advanced configuration
 
