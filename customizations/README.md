@@ -22,8 +22,6 @@
       - [Setup Redis with automatic secret creation](#setup-redis-with-automatic-secret-creation)
       - [Configure Redis TLS](#configure-redis-tls)
     - [Enable BigQuery OAuth connections](#enable-bigquery-oauth-connections)
-      - [Previous steps](#previous-steps)
-      - [Custom configuration](#custom-configuration)
   - [Components scaling](#components-scaling)
     - [Autoscaling](#autoscaling)
       - [Prerequisites](#prerequisites)
@@ -384,9 +382,9 @@ externalRedis:
 
 ### Enable BigQuery OAuth connections
 
-This feature allows users to create a BigQuery connection using `Sign in with Google` instead of providing a service account key. Note that connections created with OAuth cannot be shared with other organization users.
+This feature allows users to create a BigQuery connection using `Sign in with Google` instead of providing a service account key.
 
-#### Previous steps
+> :warning: Connections created with OAuth cannot be shared with other organization users.
 
 1. Create an OAuth consent screen inside the desired GCP project:
    - Introduce an app name and a user support email.
@@ -400,9 +398,7 @@ This feature allows users to create a BigQuery connection using `Sign in with Go
    - Authorized redirect URIs: `https://<your_selfhosted_domain>/connections/bigquery/oauth`.
    - Download the credentials file.
 
-#### Custom configuration
-
-Follow [these guidelines](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/customizations/README.md#how-to-apply-the-configurations) to add the following lines to your `customizations.yaml` populating them with the credential's file corresponding values:
+3. Follow [these guidelines](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/customizations/README.md#how-to-apply-the-configurations) to add the following lines to your `customizations.yaml` populating them with the credential's file corresponding values:
 ```yaml
 workspaceApi:
   extraEnvVars:
