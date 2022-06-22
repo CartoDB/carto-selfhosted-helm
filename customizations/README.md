@@ -21,7 +21,7 @@
       - [Setup Redis creating secrets](#setup-redis-creating-secrets)
       - [Setup Redis with automatic secret creation](#setup-redis-with-automatic-secret-creation)
       - [Configure Redis TLS](#configure-redis-tls)
-    - [Enable BigQuery Oauth connections](#enable-bigquery-oauth-connections)
+    - [Enable BigQuery OAuth connections](#enable-bigquery-oauth-connections)
       - [Previous steps](#previous-steps)
       - [Custom configuration](#custom-configuration)
   - [Components scaling](#components-scaling)
@@ -382,19 +382,19 @@ externalRedis:
     #   -----END CERTIFICATE-----
 ```
 
-### Enable BigQuery Oauth connections
+### Enable BigQuery OAuth connections
 
-This feature allows users to create a BigQuery connection using `Sign in with Google` instead of providing a service account key. Note that connections created with Oauth cannot be shared with other organization users.
+This feature allows users to create a BigQuery connection using `Sign in with Google` instead of providing a service account key. Note that connections created with OAuth cannot be shared with other organization users.
 
 #### Previous steps
 
-1. Create an oauth consent screen inside the desired GCP project:
+1. Create an OAuth consent screen inside the desired GCP project:
    - Introduce an app name and a user support email.
    - Add an authorized domain (the one used in your email).
    - Add another email as dev contact info (it can be the same).
    - Add the following scopes: `./auth/userinfo.email`, `./auth/userinfo.profile` & `./auth/bigquery`.
 
-2. Create the Oauth credentials:
+2. Create the OAuth credentials:
    - Type: Web application.
    - Authorized JavaScript origins: `https://<your_selfhosted_domain>`.
    - Authorized redirect URIs: `https://<your_selfhosted_domain>/connections/bigquery/oauth`.
