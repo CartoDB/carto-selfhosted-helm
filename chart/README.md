@@ -103,10 +103,11 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### Workload Identity
 
-| Name                                             | Description                                               | Value   |
-| ------------------------------------------------ | --------------------------------------------------------- | ------- |
-| `workloadIdentityConfig.enableWorkloadIdentity`  | Enable the Workload Identity feature in kubernetes        | `false` |
-| `workloadIdentityConfig.workloadIdentitySaEmail` | The gcp service account email to use in Workload Identity | `""`    |
+| Name                                                  | Description                                               | Value   |
+| ----------------------------------------------------- | --------------------------------------------------------- | ------- |
+| `workloadIdentityConfig.enableWorkloadIdentity`       | Enable the Workload Identity feature in kubernetes        | `false` |
+| `workloadIdentityConfig.workloadIdentitySaEmail`      | The gcp service account email to use in Workload Identity | `""`    |
+| `workloadIdentityConfig.automountServiceAccountToken` | Mount service account token in deployments                | `false` |
 
 
 ### Global parameters
@@ -323,15 +324,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `importApi.service.extraPorts`               | Extra ports to expose in import-api service (normally used with the `sidecars` value) | `[]`        |
 
 
-### import-api ServiceAccount configuration
-
-| Name                                                    | Description                                          | Value   |
-| ------------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `importApi.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `importApi.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `importApi.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
-
-
 ### import-worker Deployment Parameters
 
 | Name                                                 | Description                                                                                            | Value                           |
@@ -380,15 +372,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `importWorker.extraVolumeMounts`                     | Optionally specify extra list of additional volumeMounts for the import-worker container(s)            | `[]`                            |
 | `importWorker.sidecars`                              | Add additional sidecar containers to the import-worker pod(s)                                          | `{}`                            |
 | `importWorker.initContainers`                        | Add additional init containers to the import-worker pod(s)                                             | `{}`                            |
-
-
-### import-worker ServiceAccount configuration
-
-| Name                                                       | Description                                          | Value   |
-| ---------------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `importWorker.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `importWorker.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `importWorker.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
 
 
 ### lds-api Deployment Parameters
@@ -480,15 +463,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `ldsApi.service.extraPorts`               | Extra ports to expose in lds-api service (normally used with the `sidecars` value) | `[]`        |
 
 
-### lds-api ServiceAccount configuration
-
-| Name                                                 | Description                                          | Value   |
-| ---------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `ldsApi.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `ldsApi.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `ldsApi.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
-
-
 ### maps-api Deployment Parameters
 
 | Name                                                 | Description                                                                                       | Value                           |
@@ -578,15 +552,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `mapsApi.service.extraPorts`               | Extra ports to expose in maps-api service (normally used with the `sidecars` value) | `[]`        |
 
 
-### maps-api ServiceAccount configuration
-
-| Name                                                  | Description                                          | Value   |
-| ----------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `mapsApi.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `mapsApi.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `mapsApi.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
-
-
 ### sql-worker Deployment Parameters
 
 | Name                                              | Description                                                                                         | Value                           |
@@ -650,15 +615,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `sqlWorker.extraVolumeMounts`                     | Optionally specify extra list of additional volumeMounts for the sql-worker container(s)            | `[]`                            |
 | `sqlWorker.sidecars`                              | Add additional sidecar containers to the sql-worker pod(s)                                          | `{}`                            |
 | `sqlWorker.initContainers`                        | Add additional init containers to the sql-worker pod(s)                                             | `{}`                            |
-
-
-### sql-worker ServiceAccount configuration
-
-| Name                                                    | Description                                          | Value   |
-| ------------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `sqlWorker.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `sqlWorker.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `sqlWorker.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
 
 
 ### router Deployment Parameters
@@ -942,15 +898,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cdnInvalidatorSub.service.extraPorts`               | Extra ports to expose in cdnInvalidatorSub service (normally used with the `sidecars` value) | `[]`        |
 
 
-### cdnInvalidatorSub ServiceAccount configuration
-
-| Name                                                            | Description                                          | Value   |
-| --------------------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `cdnInvalidatorSub.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `cdnInvalidatorSub.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `cdnInvalidatorSub.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
-
-
 ### workspace-api Deployment Parameters
 
 | Name                                                      | Description                                                                                            | Value                           |
@@ -1040,15 +987,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceApi.service.extraPorts`               | Extra ports to expose in workspace-api service (normally used with the `sidecars` value) | `[]`        |
 
 
-### workspace-api ServiceAccount configuration
-
-| Name                                                       | Description                                          | Value   |
-| ---------------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `workspaceApi.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `workspaceApi.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `workspaceApi.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
-
-
 ### workspace-subscriber Deployment Parameters
 
 | Name                                                        | Description                                                                                                   | Value                           |
@@ -1097,15 +1035,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceSubscriber.extraVolumeMounts`                     | Optionally specify extra list of additional volumeMounts for the workspace-subscriber container(s)            | `[]`                            |
 | `workspaceSubscriber.sidecars`                              | Add additional sidecar containers to the workspace-subscriber pod(s)                                          | `{}`                            |
 | `workspaceSubscriber.initContainers`                        | Add additional init containers to the workspace-subscriber pod(s)                                             | `{}`                            |
-
-
-### workspace-subscriber ServiceAccount configuration
-
-| Name                                                              | Description                                          | Value   |
-| ----------------------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `workspaceSubscriber.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `workspaceSubscriber.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `workspaceSubscriber.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
 
 
 ### workspace-www Deployment Parameters

@@ -207,7 +207,7 @@ Return the absolute path where the GCP Buckets Service Account Key Secret will b
 {{/*
 Create the name of the service account to use for Carto common deployments to connect to google apis
 */}}
-{{- define "carto.commonGcpApi.serviceAccountName" -}}
+{{- define "carto.commonSA.serviceAccountName" -}}
 {{- printf "%s-gcp-api" (.Chart.Name) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
