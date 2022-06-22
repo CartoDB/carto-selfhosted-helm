@@ -390,15 +390,11 @@ For every CARTO Self Hosted installation, we create GCS buckets in our side as p
 
 You can create and use your own storage buckets in any of the following supported storage providers:
 
-- Google Cloud Storage. [Terraform code example](../examples/terraform/gcp/storage.tf).
-- AWS S3
-- Azure Storage
+- Google Cloud Storage. [Terraform code example](https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/gcp/storage.tf).
+- AWS S3.
+- Azure Storage. [Terraform code example](https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/azure/storage.tf)
 
 > :warning: You can only set one provider at a time.
-
-<!--
-TODO: Add the code related to Terraform
--->
 
 #### Requirements
 
@@ -443,10 +439,6 @@ In order to use Google Cloud Storage custom buckets you need to:
 4. Grant this service account with the following role (in addition to the buckets access): `roles/iam.serviceAccountTokenCreator`.
 
    > :warning: We don't recommend grating this role at project IAM level, but instead at the Service Account permissions level (IAM > Service Accounts > `your_service_account` > Permissions).
-
-   <!--
-   TODO: Add the code related to Terraform
-   -->
 
 5. Add the following lines to your `customizations.yaml` and replace the `<values>` with your own settings:
 
@@ -566,7 +558,7 @@ appConfigValues:
    kubectl create secret generic \                                                                      
      [-n my-namespace] \
      mycarto-custom-azure-secret \
-     --from-literal=azureStorageAccessKey=<REDACTED> \
+     --from-literal=azureStorageAccessKey=<REDACTED>
    ```
    > Use the same namespace where you are installing the helm chart
 
@@ -599,6 +591,7 @@ This feature allows users to create a BigQuery connection using `Sign in with Go
    - Download the credentials file.
 
 3. Follow [these guidelines](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/customizations/README.md#how-to-apply-the-configurations) to add the following lines to your `customizations.yaml` populating them with the credential's file corresponding values:
+
 ```yaml
 workspaceApi:
   extraEnvVars:
@@ -612,7 +605,37 @@ workspaceApi:
 
 ### Google Maps
 
-In order to enable Google Maps basemaps inside CARTO Self Hosted (optional), you need to own a Google Maps API key and set it via `REACT_APP_GOOGLE_MAPS_API_KEY` in your customer.env file.
+In order to enable Google Maps basemaps inside CARTO Self Hosted (optional), you need to own a Google Maps API key and add one of the following options to your `customizations.yaml`: 
+
+- **Option 1: Automatically create the secret:**
+
+```yaml
+appSecrets:
+  googleMapsApiKey:
+    value: "<REDACTED>"
+```
+
+> `appSecrets.googleMapsApiKey.value` should be in plain text
+
+- **Option 2: Using existing secret:**
+Create a secret running the command below, after replacing the `<REDACTED>` values with your key values:
+
+```bash
+  kubectl create secret generic \                                                                      
+  [-n my-namespace] \
+  mycarto-google-maps-api-key \
+  --from-literal=googleMapsApiKey=<REDACTED>
+```
+
+Add the following lines to your `customizations.yaml`, without replacing any value:
+
+```yaml
+  appSecrets:
+    googleMapsApiKey:
+      existingSecret:
+        name: mycarto-google-maps-api-key
+        key: googleMapsApiKey
+```
 
 ## Components scaling
 
