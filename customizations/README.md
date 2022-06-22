@@ -58,7 +58,7 @@ Optional configurations:
 
 ## Custom Service Account
 
-For each CARTO self hosted installation, we create and provide a Google Cloud Platform Service Account key that the CARTO backend uses to authenticate requests to Google APIs.
+CARTO deploys a dedicated infrastructure for every self hosted installation, including a Service Account key that is required to use some of the services deployed.
 
 If you prefer using your own GCP Service Account, please do the following prior to the Self Hosted installation:
 1. Create a dedicated Service Account for the CARTO Self Hosted.
@@ -390,7 +390,7 @@ For every CARTO Self Hosted installation, we create GCS buckets in our side as p
 
 You can create and use your own storage buckets in any of the following supported storage providers:
 
-- Google Cloud Storage
+- Google Cloud Storage. [Terraform code example](../examples/terraform/gcp/storage.tf).
 - AWS S3
 - Azure Storage
 
