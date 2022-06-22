@@ -1,3 +1,16 @@
+<!-- omit in toc -->
+# Table of Contents
+- [CARTO Self Hosted [Helm chart]](#carto-self-hosted-helm-chart)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+      - [Setup a Kubernetes Cluster](#setup-a-kubernetes-cluster)
+        - [GKE Autopilot](#gke-autopilot)
+      - [Install Helm](#install-helm)
+    - [Installation Steps](#installation-steps)
+    - [Troubleshooting](#troubleshooting)
+  - [Update](#update)
+  - [Uninstall](#uninstall)
+
 # CARTO Self Hosted [Helm chart]
 
 This repository contains the [Kubernetes Helm](https://github.com/helm/helm) chart files for CARTO Platform. Run CARTO Self Hosted in your own cloud infrastructure.
