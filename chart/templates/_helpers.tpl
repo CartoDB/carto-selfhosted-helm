@@ -1057,6 +1057,9 @@ Admin user
   {{- if .context.Values.workspaceMigrations.containerSecurityContext.enabled }}
   securityContext: {{- omit .context.Values.workspaceMigrations.containerSecurityContext "enabled" | toYaml | nindent 12 }}
   {{- end }}
+  {{- if .context.Values.workspaceMigrations.resources }}
+  resources: {{- toYaml .context.Values.workspaceMigrations.resources | nindent 12 }}
+  {{- end }}
   env:
     - name: POSTGRESQL_CLIENT_DATABASE_HOST
       value: {{ include "carto.postgresql.host" .context }}
