@@ -38,8 +38,6 @@
             "env": {
               "CI": "true",
               "RUN_ID": "{VIB_ENV_CYPRESS_RUN_ID}",
-              "COMMIT_INFO_MESSAGE": "Executed from VIB",
-              "COMMIT_INFO_AUTHOR": "VIB from carto-selfhosted-helm repo",
               "RECORD_KEY": "{VIB_ENV_CYPRESS_RECORD_KEY}"
             }
           }

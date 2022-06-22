@@ -160,15 +160,24 @@ jobs:
           cat cypress.json
           echo "::endgroup::"
 
-          WORKSPACE_WWW_FILE_NAME=cloud-native-workspace-www-$(date '+%s').tar.gz
-
           ## Generate package-lock.json, required by cypress into VIB
           npm install -g synp
           yarn ##### <-------------- We should find a way to delete it
           synp --source-file ./yarn.lock
           rm -rf node_modules/
 
+          ## Create a dummy repo to add more information to cypress
+          git init
+          git config user.name "VIB from carto-selfhosted-helm repo"
+          git config user.email johndoe@example.com
+          touch .gitignore
+          cat ../.gitignore >> .gitignore
+          git add -A
+          git commit -m "External execution: \`${{ steps.info.outputs.custom_run_id }}\`"
+
           ## Compress and sign
+          WORKSPACE_WWW_FILE_NAME=cloud-native-workspace-www-$(date '+%s').tar.gz
+
           tar -czf ../${WORKSPACE_WWW_FILE_NAME} .
           cd ..
           ls -alh ${WORKSPACE_WWW_FILE_NAME}
