@@ -15,7 +15,7 @@ data:
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
-  {{- if eq .Values.workloadIdentityConfig.enableWorkloadIdentity "false" }}
+  {{- if eq .Values.commonBackendServiceAccount.enableWorkloadIdentity "false" }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   LDS_PORT: {{ .Values.ldsApi.containerPorts.http | quote }}

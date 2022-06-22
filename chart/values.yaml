@@ -158,16 +158,19 @@ tlsCerts:
     keyKey: "tls.key"
     certKey: "tls.crt"
 
-## @section Workload Identity
-## Kubernetes workload identity feature to be enabled by the client.
-workloadIdentityConfig:
-  ## @param workloadIdentityConfig.enableWorkloadIdentity Enable the Workload Identity feature in kubernetes
+## @section common backend service account
+## Service Account to be specified for the client to be used in common backend deployments
+commonBackendServiceAccount:
+  ## @param commonBackendServiceAccount.create Specifies whether a common ServiceAccount for backend should be created
+  create: true
+  ## @param commonBackendServiceAccount.enableWorkloadIdentity Enable the Workload Identity feature in kubernetes
   enableWorkloadIdentity: "false"
-  ## @param workloadIdentityConfig.workloadIdentitySaEmail The gcp service account email to use in Workload Identity
-  workloadIdentitySaEmail: ""
-  ## @param workloadIdentityConfig.automountServiceAccountToken Mount service account token in deployments
+  ## @param commonBackendServiceAccount.automountServiceAccountToken Mount service account token in deployments
   automountServiceAccountToken: false
-
+  ## @param commonBackendServiceAccount.annotations Annotations to add to this SA
+  annotations: {}
+  ## @param commonBackendServiceAccount.name If not set and create is true, a name is generated using the common.names.fullname template
+  name: ""
 
 ## @section Global parameters
 ## Global Docker image parameters

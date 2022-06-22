@@ -101,13 +101,15 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `tlsCerts.existingSecret.keyKey`  | Key of the certificate key inside the secret                                                                                                  | `tls.key` |
 
 
-### Workload Identity
+### common backend service account
 
-| Name                                                  | Description                                               | Value   |
-| ----------------------------------------------------- | --------------------------------------------------------- | ------- |
-| `workloadIdentityConfig.enableWorkloadIdentity`       | Enable the Workload Identity feature in kubernetes        | `false` |
-| `workloadIdentityConfig.workloadIdentitySaEmail`      | The gcp service account email to use in Workload Identity | `""`    |
-| `workloadIdentityConfig.automountServiceAccountToken` | Mount service account token in deployments                | `false` |
+| Name                                                       | Description                                                                                 | Value   |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------- |
+| `commonBackendServiceAccount.create`                       | Specifies whether a common ServiceAccount for backend should be created                     | `true`  |
+| `commonBackendServiceAccount.enableWorkloadIdentity`       | Enable the Workload Identity feature in kubernetes                                          | `false` |
+| `commonBackendServiceAccount.automountServiceAccountToken` | Mount service account token in deployments                                                  | `false` |
+| `commonBackendServiceAccount.annotations`                  | Annotations to add to this SA                                                               | `{}`    |
+| `commonBackendServiceAccount.name`                         | If not set and create is true, a name is generated using the common.names.fullname template | `""`    |
 
 
 ### Global parameters
