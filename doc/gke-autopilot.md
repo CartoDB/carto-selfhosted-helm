@@ -16,7 +16,9 @@ There are some recommendations and tips to deploy Carto in a GKE Autopilot Clust
 
 For security reasons, it is advisable to create the cluster in private mode. Private clusters use nodes that do not have external IP addresses. This means that clients on the internet cannot connect to the IP addresses of the nodes.
 
-[The control plane](https://cloud.google.com/kubernetes-engine/docs/concepts/private-cluster-concept#the_control_plane_in_private_clusters) runs on a virtual machine (VM) that is in a VPC network in a Google-owned project. In private clusters, the control plane's VPC network is connected to your cluster's VPC network with [VPC Network Peering](https://cloud.google.com/vpc/docs/vpc-peering). Your VPC network contains the cluster nodes, and the Google-owned Google Cloud VPC network contains your cluster's control plane. Traffic between nodes and the control plane is routed entirely using internal IP addresses.
+[The control plane](https://cloud.google.com/kubernetes-engine/docs/concepts/private-cluster-concept#the_control_plane_in_private_clusters) runs on a virtual machine (VM) that is in a VPC network in a Google-owned project.
+
+In private clusters, the control plane's VPC network is connected to your cluster's VPC network with [VPC Network Peering](https://cloud.google.com/vpc/docs/vpc-peering). Your VPC network contains the cluster nodes, and the Google-owned Google Cloud VPC network contains your cluster's control plane. Traffic between nodes and the control plane is routed entirely using internal IP addresses.
 
 ## Networking
 

@@ -24,7 +24,7 @@ In this member name:
 
 The process of configuring Workload Identity includes using an IAM policy binding to bind the Kubernetes service account member name to an IAM service account that has the permissions your workloads need. Any Google Cloud API calls from workloads that use this Kubernetes service account are authenticated as the bound IAM service account.
 
-## How to enable Carto to use Workload Identity:
+## How to enable Carto to use Workload Identity
 
 - Create an IAM service account for your application or use an existing IAM service account instead.
 
