@@ -33,7 +33,7 @@ Another two secondary IP ranges will be created inside this subnet, one for pods
 
 ## Workload Identity
 
-For Workload Identity documentation, please see this [link](workload-identity.md)
+For Workload Identity documentation, please see this [link](gke-workload-identity.md)
 
 ## Troubleshooting
 
