@@ -440,7 +440,7 @@ In order to use Google Cloud Storage custom buckets you need to:
    
 3. Create a [custom Service account](#custom-service-account).
    
-4. Grant this service account with the following role (in addition to the buckets access): `roles/iam.serviceAccountTokenCreator`. 
+4. Grant this service account with the following role (in addition to the buckets access): `roles/iam.serviceAccountTokenCreator`.
 
    > :warning: We don't recommend grating this role at project IAM level, but instead at the Service Account permissions level (IAM > Service Accounts > `your_service_account` > Permissions).
 
@@ -468,7 +468,7 @@ In order to use AWS S3 custom buckets you need to:
 
 2. Configure the required CORS [settings](#requirements).
 
-3. Create an IAM user and generate a programmatic key id and secret.
+3. Create an IAM user and generate a programmatic key ID and secret.
    
 4. Grant this user with read/write access permissions over the buckets.
    
