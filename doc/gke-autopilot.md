@@ -63,7 +63,7 @@ The process of configuring Workload Identity includes using an IAM policy bindin
 
   `gcloud iam service-accounts create <IAM_SERVICE_ACCOUNT_NAME> --project=<GCP_PROJECT_ID>`
 
-- Send the Service Account Email to Carto Support Team [support@carto.com](mailto:support@carto.com). We will ensure that your SA has the correct permissions roles in the Selfhosted project.
+- Send the Service Account to Carto Support Team [support@carto.com](mailto:support@carto.com). We will ensure to configure your SA for the new Selfhosted environment.
 
 - Then, allow the Kubernetes service account that is going to be created in your GKE cluster to impersonate the IAM service account by adding an IAM policy binding between the two service accounts. This binding allows the Kubernetes service account to act as the IAM service account.
 
