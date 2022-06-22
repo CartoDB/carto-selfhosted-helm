@@ -22,11 +22,11 @@ In private clusters, the control plane's VPC network is connected to your cluste
 
 ## Networking
 
-As we commented above, in a private cluster the workers nodes will be created in the customer VPC, so Autopilot needs a subnet to be deployed. We could see an example of the subnet creation [here](#terraform-examples), please set a network mask big enough to deploy all services without problems, at least it should be `/20`.
+As we commented above, in a private cluster the worker nodes will be created in the customer VPC, so Autopilot needs a subnet to be deployed. We could see an example of the subnet creation [here](#terraform-examples), please set a network mask big enough to deploy all services without problems, at least it should be `/20`.
 
 Another two secondary IP ranges will be created inside this subnet, one for pods and another for kubernetes services.
 
-- Cluster default pod address range: All pods in the cluster are assigned an IP address from this range. Enter a range (in CIDR notation) within a network range, a mask, or leave this field blank to use a default range. We recommend at least a `/21` mask for pods
+- Cluster default pod address range: All pods in the cluster are assigned with an IP address from this range. Enter a range (in CIDR notation) within a network range, a mask, or leave this field blank to use a default range. We recommend at least a `/21` mask for pods
 
 - Service address range: Cluster services will be assigned an IP address from this IP address range. Enter a range (in CIDR notation) within a network range, a mask, or leave this field blank to use a default range. We recommend at least a `/24` mask for services
 
