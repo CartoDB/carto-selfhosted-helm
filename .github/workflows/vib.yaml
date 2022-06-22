@@ -93,6 +93,7 @@ jobs:
         env:
           E2E_SECRETS: ${{ steps.secrets.outputs.e2e-secrets }}
         run: |
+          # shellcheck disable=SC2002,SC2129
           set -ex
 
           ### Basic Info
@@ -127,7 +128,8 @@ jobs:
           #   # End HotFix
 
           ## Generate .env to use
-          cat environments/${{ env.ENVIRONMENT }}.env >> .env
+          # shellcheck disable=SC2002,SC2129
+          cat "environments/${{ env.ENVIRONMENT }}.env" >> .env
 
           echo "CYPRESS_WORKSPACE_URL=https://${WORKSPACE_DOMAIN}" >> .env
           echo "CYPRESS_TENANT_ID=onp-${{ env.ONPREM_ID }}" >> .env
@@ -141,10 +143,13 @@ jobs:
 
           ## Create some github action outputs based in the .env content
           set +x
-          CYPRESS_RUN_ID=$(cat .env | grep -e '^CYPRESS_RUN_ID=' | tail -n 1 | sed 's|^CYPRESS_RUN_ID=||g')
-          CYPRESS_PROJECT_ID=$(cat .env | grep -e '^CYPRESS_PROJECT_ID=' | tail -n 1 | sed 's|^CYPRESS_PROJECT_ID=||g')
+          # shellcheck disable=SC2002,SC2129
+          CYPRESS_RUN_ID="$(cat .env | grep -e '^CYPRESS_RUN_ID=' | tail -n 1 | sed 's|^CYPRESS_RUN_ID=||g')"
+          # shellcheck disable=SC2002,SC2129
+          CYPRESS_PROJECT_ID="$(cat .env | grep -e '^CYPRESS_PROJECT_ID=' | tail -n 1 | sed 's|^CYPRESS_PROJECT_ID=||g')"
           echo "::add-mask::${CYPRESS_PROJECT_ID}"
-          CYPRESS_RECORD_KEY=$(cat .env | grep -e '^CYPRESS_RECORD_KEY=' | tail -n 1 | sed 's|^CYPRESS_RECORD_KEY=||g')
+          # shellcheck disable=SC2002,SC2129
+          CYPRESS_RECORD_KEY="$(cat .env | grep -e '^CYPRESS_RECORD_KEY=' | tail -n 1 | sed 's|^CYPRESS_RECORD_KEY=||g')"
           echo "::add-mask::${CYPRESS_RECORD_KEY}"
           set -x
           sleep 1s
@@ -154,6 +159,8 @@ jobs:
 
           ## Edit cypress.json config
           jq --arg CYPRESS_PROJECT_ID "${CYPRESS_PROJECT_ID}" '.projectId = $CYPRESS_PROJECT_ID' cypress.json > cypress.json.edited
+          mv -f cypress.json.edited cypress.json
+          jq '.env.baseUrl="https://${{ env.WORKSPACE_DOMAIN }}"' cypress.json > cypress.json.edited
           mv -f cypress.json.edited cypress.json
 
           echo "::group::cypress.json to use"
@@ -178,12 +185,12 @@ jobs:
           ## Compress workspace-www, upload to gcs and generate a signed URL
           WORKSPACE_WWW_FILE_NAME=cloud-native-workspace-www-$(date '+%s').tar.gz
 
-          tar -czf ../${WORKSPACE_WWW_FILE_NAME} .
+          tar -czf "../${WORKSPACE_WWW_FILE_NAME}" .
           cd ..
-          ls -alh ${WORKSPACE_WWW_FILE_NAME}
-          gsutil -m cp ${WORKSPACE_WWW_FILE_NAME} gs://${GCP_BUCKET_TMP_FILES}/
+          ls -alh "${WORKSPACE_WWW_FILE_NAME}"
+          gsutil -m cp "${WORKSPACE_WWW_FILE_NAME}" "gs://${GCP_BUCKET_TMP_FILES}/"
           set +x
-          SIGNED_URL="$(gsutil signurl --use-service-account -d ${SIGNED_URL_DURATION} gs://${GCP_BUCKET_TMP_FILES}/${WORKSPACE_WWW_FILE_NAME} | awk -F '\t' '{print $4}' | tail -n 1)"
+          SIGNED_URL="$(gsutil signurl --use-service-account -d "${SIGNED_URL_DURATION}" "gs://${GCP_BUCKET_TMP_FILES}/${WORKSPACE_WWW_FILE_NAME}" | awk -F '\t' '{print $4}' | tail -n 1)"
           echo "::add-mask::${SIGNED_URL}"
           set -x
           sleep 1s
