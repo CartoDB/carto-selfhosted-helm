@@ -346,17 +346,21 @@ accountsWww:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 101
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param accountsWww.containerSecurityContext.enabled Enabled accounts-www containers' Security Context
   ## @param accountsWww.containerSecurityContext.runAsUser Set accounts-www containers' Security Context runAsUser
   ## @param accountsWww.containerSecurityContext.runAsNonRoot Set accounts-www containers' Security Context runAsNonRoot
+  ## @param accountsWww.containerSecurityContext.capabilities.drop removes accounts-www containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 101
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param accountsWww.configuration [object] Configuration settings (env vars) for accounts-www
   ##
@@ -666,17 +670,21 @@ importApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importApi.containerSecurityContext.enabled Enabled import-api containers' Security Context
   ## @param importApi.containerSecurityContext.runAsUser Set import-api containers' Security Context runAsUser
   ## @param importApi.containerSecurityContext.runAsNonRoot Set import-api containers' Security Context runAsNonRoot
+  ## @param importApi.containerSecurityContext.capabilities.drop removes import-api containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param importApi.configuration [object] Configuration settings (env vars) for import-api
   ##
@@ -925,17 +933,21 @@ importWorker:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importWorker.containerSecurityContext.enabled Enabled import-worker containers' Security Context
   ## @param importWorker.containerSecurityContext.runAsUser Set import-worker containers' Security Context runAsUser
   ## @param importWorker.containerSecurityContext.runAsNonRoot Set import-worker containers' Security Context runAsNonRoot
+  ## @param importWorker.containerSecurityContext.capabilities.drop removes import-worker containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param importWorker.configuration [object] Configuration settings (env vars) for import-worker
   ##
@@ -1198,17 +1210,21 @@ ldsApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param ldsApi.containerSecurityContext.enabled Enabled lds-api containers' Security Context
   ## @param ldsApi.containerSecurityContext.runAsUser Set lds-api containers' Security Context runAsUser
   ## @param ldsApi.containerSecurityContext.runAsNonRoot Set lds-api containers' Security Context runAsNonRoot
+  ## @param ldsApi.containerSecurityContext.capabilities.drop removes lds-api containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param ldsApi.configuration [object] Configuration settings (env vars) for lds-api
   ##
@@ -1517,17 +1533,21 @@ mapsApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param mapsApi.containerSecurityContext.enabled Enabled maps-api containers' Security Context
   ## @param mapsApi.containerSecurityContext.runAsUser Set maps-api containers' Security Context runAsUser
   ## @param mapsApi.containerSecurityContext.runAsNonRoot Set maps-api containers' Security Context runAsNonRoot
+  ## @param mapsApi.containerSecurityContext.capabilities.drop removes maps-api containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param mapsApi.configuration [object] Configuration settings (env vars) for maps-api
   ##
@@ -1812,17 +1832,21 @@ sqlWorker:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param sqlWorker.containerSecurityContext.enabled Enabled sql-worker containers' Security Context
   ## @param sqlWorker.containerSecurityContext.runAsUser Set sql-worker containers' Security Context runAsUser
   ## @param sqlWorker.containerSecurityContext.runAsNonRoot Set sql-worker containers' Security Context runAsNonRoot
+  ## @param sqlWorker.containerSecurityContext.capabilities.drop removes sql-worker containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param sqlWorker.configuration [object] Configuration settings (env vars) for sql-worker
   ##
@@ -2087,17 +2111,21 @@ router:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 101
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param router.containerSecurityContext.enabled Enabled router containers' Security Context
   ## @param router.containerSecurityContext.runAsUser Set router containers' Security Context runAsUser
   ## @param router.containerSecurityContext.runAsNonRoot Set router containers' Security Context runAsNonRoot
+  ## @param router.containerSecurityContext.capabilities.drop removes router containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 101
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param router.configuration [object] Configuration settings (env vars) for router
   ##
@@ -2399,17 +2427,21 @@ httpCache:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 102
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param httpCache.containerSecurityContext.enabled Enabled http-cache containers' Security Context
   ## @param httpCache.containerSecurityContext.runAsUser Set http-cache containers' Security Context runAsUser
   ## @param httpCache.containerSecurityContext.runAsNonRoot Set http-cache containers' Security Context runAsNonRoot
+  ## @param httpCache.containerSecurityContext.capabilities.drop removes http-cache containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 101
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param httpCache.configuration [object] Configuration settings (env vars) for http-cache
   ##
@@ -2707,17 +2739,21 @@ cdnInvalidatorSub:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param cdnInvalidatorSub.containerSecurityContext.enabled Enabled cdnInvalidatorSub containers' Security Context
   ## @param cdnInvalidatorSub.containerSecurityContext.runAsUser Set cdnInvalidatorSub containers' Security Context runAsUser
   ## @param cdnInvalidatorSub.containerSecurityContext.runAsNonRoot Set cdnInvalidatorSub containers' Security Context runAsNonRoot
+  ## @param cdnInvalidatorSub.containerSecurityContext.capabilities.drop removes cdnInvalidatorSub containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param cdnInvalidatorSub.configuration [object] Configuration settings (env vars) for cdnInvalidatorSub
   ##
@@ -3029,17 +3065,21 @@ workspaceApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceApi.containerSecurityContext.enabled Enabled workspace-api containers' Security Context
   ## @param workspaceApi.containerSecurityContext.runAsUser Set workspace-api containers' Security Context runAsUser
   ## @param workspaceApi.containerSecurityContext.runAsNonRoot Set workspace-api containers' Security Context runAsNonRoot
+  ## @param workspaceApi.containerSecurityContext.capabilities.drop removes workspace-api containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param workspaceApi.configuration [object] Configuration settings (env vars) for workspace-api
   ##
@@ -3289,17 +3329,21 @@ workspaceSubscriber:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceSubscriber.containerSecurityContext.enabled Enabled workspace-subscriber containers' Security Context
   ## @param workspaceSubscriber.containerSecurityContext.runAsUser Set workspace-subscriber containers' Security Context runAsUser
   ## @param workspaceSubscriber.containerSecurityContext.runAsNonRoot Set workspace-subscriber containers' Security Context runAsNonRoot
+  ## @param workspaceSubscriber.containerSecurityContext.capabilities.drop removes workspace-subscriber containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param workspaceSubscriber.configuration [object] Configuration settings (env vars) for workspace-subscriber
   ##
@@ -3562,17 +3606,21 @@ workspaceWww:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 101
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceWww.containerSecurityContext.enabled Enabled workspace-www containers' Security Context
   ## @param workspaceWww.containerSecurityContext.runAsUser Set workspace-www containers' Security Context runAsUser
   ## @param workspaceWww.containerSecurityContext.runAsNonRoot Set workspace-www containers' Security Context runAsNonRoot
+  ## @param workspaceWww.containerSecurityContext.capabilities.drop removes workspace-www containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 101
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param workspaceWww.configuration [object] Configuration settings (env vars) for workspace-www
   ##
@@ -3798,21 +3846,29 @@ workspaceMigrations:
   ## @skip workspaceMigrations.resources.requests
   ##
   resources:
-    limits: {}
-    requests: {}
+    limits:
+      memory: "2048Mi"
+      cpu: "1"
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
   ## Init container Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ## @param workspaceMigrations.containerSecurityContext.enabled Enable container security context
   ## @param workspaceMigrations.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
   ## @param workspaceMigrations.containerSecurityContext.runAsNonRoot Force the init container to run as non root
+  ## @param workspaceMigrations.containerSecurityContext.capabilities.drop removes accounts-www containers' Security Contexcapabilitiesot
   ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
   ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
   ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
 ## @section Internal Redis&trade; subchart parameters
 ## Internal Redis &trade; chart configuration
@@ -3995,15 +4051,19 @@ upgradeCheck:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param upgradeCheck.containerSecurityContext.enabled Enabled Upgrade Check pre-hook containers' Security Context
   ## @param upgradeCheck.containerSecurityContext.runAsUser Set Upgrade Check pre-hook containers' Security Context runAsUser
   ## @param upgradeCheck.containerSecurityContext.runAsNonRoot Set Upgrade Check pre-hook containers' Security Context runAsNonRoot
+  ## @param upgradeCheck.containerSecurityContext.capabilities.drop removes Upgrade Check pre-hook containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
