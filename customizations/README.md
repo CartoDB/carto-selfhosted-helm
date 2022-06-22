@@ -411,15 +411,15 @@ TODO: Add the code related to Terraform
 
 > :warning: Map thumbnails can be configured in two different ways: public (map thumbnails storage objects are public) or private (map thumbnails storage objects are private). In order to control it, change the value of `appConfigValues.workspaceThumbnailsPublic` (boolean). Depending on this, the bucket properties (public access) may be different.
 
-- Thumbnails and Import buckets require having the following CORS headers configuration:
+- CORS configuration: Thumbnails and Import buckets require having the following CORS headers.
   - Allowed origins: `*`
   - Allowed methods: `GET`, `PUT`, `POST`
   - Allowed headers (common): `Content-Type`, `Content-MD5`, `Content-Disposition`, `Cache-Control`
-    - GCS: `x-goog-content-length-range`, `x-goog-meta-filename`
-    - Azure: `Access-Control-Request-Headers`, `X-MS-Blob-Type`
+    - GCS (extra): `x-goog-content-length-range`, `x-goog-meta-filename`
+    - Azure (extra): `Access-Control-Request-Headers`, `X-MS-Blob-Type`
   - Max age: `3600`
 
-> CORS is configured at bucket level for GCS and S3, and at storage account level for Azure.
+> CORS is configured at bucket level in GCS and S3, and at storage account level in Azure.
 
 > How do I setup CORS configuration? Check the provider docs: [GCS](https://cloud.google.com/storage/docs/configuring-cors), [AWS S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/enabling-cors-examples.html), [Azure Storage](https://docs.microsoft.com/en-us/rest/api/storageservices/cross-origin-resource-sharing--cors--support-for-the-azure-storage-services#enabling-cors-for-azure-storage).
 
@@ -435,10 +435,12 @@ TODO: Add the code related to Terraform
 In order to use Google Cloud Storage custom buckets you need to:
 
 1. Create the buckets.
+
+2. Configure the required CORS [settings](#requirements).
    
-2. Create a [custom Service account](#custom-service-account).
+3. Create a [custom Service account](#custom-service-account).
    
-3. Grant this service account with the following role (in addition to the buckets access): `roles/iam.serviceAccountTokenCreator`. 
+4. Grant this service account with the following role (in addition to the buckets access): `roles/iam.serviceAccountTokenCreator`. 
 
    > :warning: We don't recommend grating this role at project IAM level, but instead at the Service Account permissions level (IAM > Service Accounts > `your_service_account` > Permissions).
 
@@ -446,7 +448,7 @@ In order to use Google Cloud Storage custom buckets you need to:
    TODO: Add the code related to Terraform
    -->
 
-4. Add the following lines to your `customizations.yaml` and replace the `<values>` with your own settings:
+5. Add the following lines to your `customizations.yaml` and replace the `<values>` with your own settings:
 
 ```yaml
 appConfigValues:
@@ -464,11 +466,13 @@ In order to use AWS S3 custom buckets you need to:
 
 1. Create the buckets. If you enable `Block public access` in the bucket properties, make sure you set `appConfigValues.workspaceThumbnailsPublic` to `false`.
 
-2. Create an IAM user and generate a programmatic key id and secret.
+2. Configure the required CORS [settings](#requirements).
+
+3. Create an IAM user and generate a programmatic key id and secret.
    
-3. Grant this user with read/write access permissions over the buckets.
+4. Grant this user with read/write access permissions over the buckets.
    
-4. Add the following lines to your `customizations.yaml` and replace the `<values>` with your own settings:
+5. Add the following lines to your `customizations.yaml` and replace the `<values>` with your own settings:
 
 ```yaml
 appConfigValues:
@@ -479,7 +483,8 @@ appConfigValues:
   workspaceThumbnailsPublic: <false|true>
   awsS3Region: <s3_buckets_region>
 ```
-5. Pass your AWS credentials as secrets by using one of the options below:
+
+6. Pass your AWS credentials as secrets by using one of the options below:
 
    - **Option 1: Automatically create a secret:**
 
@@ -523,11 +528,13 @@ In order to use Azure Storage buckets (aka containers) you need to:
 
 1. Create an storage account if you don't have one already.
 
-2. Create the storage buckets. If you set the `Public Access Mode` to `private` in the bucket properties, make sure you set `appConfigValues.workspaceThumbnailsPublic` to `false`.
+2. Configure the required CORS [settings](#requirements).
 
-3. Generate an Access Key, from the storage account's Security properties.
+3. Create the storage buckets. If you set the `Public Access Mode` to `private` in the bucket properties, make sure you set `appConfigValues.workspaceThumbnailsPublic` to `false`.
 
-4. Add the following lines to your `customizations.yaml`  and replace the `<values>` with your own settings:
+4. Generate an Access Key, from the storage account's Security properties.
+
+5. Add the following lines to your `customizations.yaml`  and replace the `<values>` with your own settings:
 
 ```yaml
 appConfigValues:
@@ -539,7 +546,7 @@ appConfigValues:
   workspaceThumbnailsPublic: <false|true>
 ```
 
-1. Pass your credentials as secrets by using one of the options below:
+6. Pass your credentials as secrets by using one of the options below:
    
    - **Option 1: Automatically create the secret:**
    
