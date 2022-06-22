@@ -32,6 +32,8 @@ The process of configuring Workload Identity includes using an IAM policy bindin
 
   `gcloud iam service-accounts create <IAM_SERVICE_ACCOUNT_NAME> --project=<GCP_PROJECT_ID>`
 
+  Also see our terraform examplefor [iam service account](https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/gcp/gke-autopilot.tf)
+
 - Send the Service Account Email to Carto Support Team [support@carto.com](mailto:support@carto.com). We will ensure that your Service Account is granted the required roles to run CARTO Self Hosted (remember you cannot change the Service Account without contacting support).
 
 - Then, allow the Kubernetes service account that is going to be created in your GKE cluster to impersonate the IAM service account by adding an IAM policy binding between the two service accounts. This binding allows the Kubernetes service account to act as the IAM service account.
@@ -41,6 +43,8 @@ The process of configuring Workload Identity includes using an IAM policy bindin
   --role roles/iam.workloadIdentityUser \
   --member "serviceAccount:<PROJECT_ID>.svc.id.goog[<KUBERNETES_NAMESPACE>/<HELM_PACKAGE_INSTALLED_NAME>-gcp-api]"
   ```
+
+  Also see our terraform example for [iam policy binding](https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/gcp/gke-autopilot.tf)
 
 - Add the following lines to your `customizations.yaml`:
 
