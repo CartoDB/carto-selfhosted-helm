@@ -409,7 +409,7 @@ TODO: Add the code related to Terraform
 
 > There's no name constraints.
 
-> :warning: Map thumbnails can be configured in two different ways: public (map thumbnails storage objects are public) or private (map thumbnails storage objects are private). In order to control it, change the value of `appConfigValues.workspaceThumbnailsPublic` (boolean). Depending on this, the bucket properties (public access) may be different.
+> :warning: Map thumbnails storage objects (.png files) can be configured to be `public` (default) or `private`. In order to change this, set `appConfigValues.workspaceThumbnailsPublic: "false"` (see the examples below). For the default configuration to work, the bucket must allow public objects/blobs.
 
 - CORS configuration: Thumbnails and Import buckets require having the following CORS headers.
   - Allowed origins: `*`
