@@ -34,12 +34,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      {{- if eq .Values.workloadIdentityConfig.enableWorkloadIdentity "false" }}
-      serviceAccountName: {{ template "carto.ldsApi.serviceAccountName" . }}
-      {{- end }}
-      {{- if eq .Values.workloadIdentityConfig.enableWorkloadIdentity "true" }}
-      serviceAccountName: {{ .Chart.Name }}-workload-identity
-      {{- end }}
+      serviceAccountName: {{ template "carto.commonGcpApi.serviceAccountName" . }}
       {{- include "carto.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.ldsApi.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.hostAliases "context" $) | nindent 8 }}

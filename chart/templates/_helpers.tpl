@@ -205,6 +205,13 @@ Return the absolute path where the GCP Buckets Service Account Key Secret will b
 {{- end -}}
 
 {{/*
+Create the name of the service account to use for Carto common deployments to connect to google apis
+*/}}
+{{- define "carto.commonGcpApi.serviceAccountName" -}}
+{{- printf "%s-gcp-api" (.Chart.Name) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto lds-api full name
 */}}
 {{- define "carto.ldsApi.fullname" -}}
@@ -240,16 +247,6 @@ Return the proper Carto lds-api Secret name
 {{- end -}}
 {{- end -}}
 
-{{/*
-Create the name of the service account to use for the lds-api deployment
-*/}}
-{{- define "carto.ldsApi.serviceAccountName" -}}
-{{- if .Values.ldsApi.serviceAccount.create -}}
-{{ default (include "carto.ldsApi.fullname" .) .Values.ldsApi.serviceAccount.name }}
-{{- else -}}
-{{ default "default" .Values.ldsApi.serviceAccount.name }}
-{{- end -}}
-{{- end -}}
 
 {{/*
 Return the proper Carto import-worker full name
@@ -284,17 +281,6 @@ Return the proper Carto import-worker Secret name
 {{- .Values.importWorker.existingSecret -}}
 {{- else -}}
 {{- include "carto.importWorker.fullname" . -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create the name of the service account to use for the import-worker deployment
-*/}}
-{{- define "carto.importWorker.serviceAccountName" -}}
-{{- if .Values.importWorker.serviceAccount.create -}}
-{{ default (include "carto.importWorker.fullname" .) .Values.importWorker.serviceAccount.name }}
-{{- else -}}
-{{ default "default" .Values.importWorker.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
 
@@ -335,17 +321,6 @@ Return the proper Carto import-api Secret name
 {{- end -}}
 
 {{/*
-Create the name of the service account to use for the import-api deployment
-*/}}
-{{- define "carto.importApi.serviceAccountName" -}}
-{{- if .Values.importApi.serviceAccount.create -}}
-{{ default (include "carto.importApi.fullname" .) .Values.importApi.serviceAccount.name }}
-{{- else -}}
-{{ default "default" .Values.importApi.serviceAccount.name }}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Return the proper Carto maps-api full name
 */}}
 {{- define "carto.mapsApi.fullname" -}}
@@ -380,18 +355,6 @@ Return the proper Carto maps-api Secret name
 {{- include "carto.mapsApi.fullname" . -}}
 {{- end -}}
 {{- end -}}
-
-{{/*
-Create the name of the service account to use for the maps-api deployment
-*/}}
-{{- define "carto.mapsApi.serviceAccountName" -}}
-{{- if .Values.mapsApi.serviceAccount.create -}}
-{{ default (include "carto.mapsApi.fullname" .) .Values.mapsApi.serviceAccount.name }}
-{{- else -}}
-{{ default "default" .Values.mapsApi.serviceAccount.name }}
-{{- end -}}
-{{- end -}}
-
 
 
 
@@ -431,16 +394,6 @@ Return the proper Carto sql-worker Secret name
 {{- end -}}
 {{- end -}}
 
-{{/*
-Create the name of the service account to use for the sql-worker deployment
-*/}}
-{{- define "carto.sqlWorker.serviceAccountName" -}}
-{{- if .Values.sqlWorker.serviceAccount.create -}}
-{{ default (include "carto.sqlWorker.fullname" .) .Values.sqlWorker.serviceAccount.name }}
-{{- else -}}
-{{ default "default" .Values.sqlWorker.serviceAccount.name }}
-{{- end -}}
-{{- end -}}
 
 
 
@@ -483,16 +436,6 @@ Return the proper Carto workspace-subscriber Secret name
 {{- end -}}
 {{- end -}}
 
-{{/*
-Create the name of the service account to use for the workspace-subscriber deployment
-*/}}
-{{- define "carto.workspaceSubscriber.serviceAccountName" -}}
-{{- if .Values.workspaceSubscriber.serviceAccount.create -}}
-{{ default (include "carto.workspaceSubscriber.fullname" .) .Values.workspaceSubscriber.serviceAccount.name }}
-{{- else -}}
-{{ default "default" .Values.workspaceSubscriber.serviceAccount.name }}
-{{- end -}}
-{{- end -}}
 
 {{/*
 Return the proper Carto workspace-api full name
@@ -530,16 +473,6 @@ Return the proper Carto workspace-api Secret name
 {{- end -}}
 {{- end -}}
 
-{{/*
-Create the name of the service account to use for the workspace-api deployment
-*/}}
-{{- define "carto.workspaceApi.serviceAccountName" -}}
-{{- if .Values.workspaceApi.serviceAccount.create -}}
-{{ default (include "carto.workspaceApi.fullname" .) .Values.workspaceApi.serviceAccount.name }}
-{{- else -}}
-{{ default "default" .Values.workspaceApi.serviceAccount.name }}
-{{- end -}}
-{{- end -}}
 
 {{/*
 In case you're using an Azure Postgres as an external database you should add two additional parameters
@@ -778,16 +711,6 @@ Return the proper Carto cdn-invalidator-sub Secret name
 {{- end -}}
 {{- end -}}
 
-{{/*
-Create the name of the service account to use for the cdn-invalidator-sub deployment
-*/}}
-{{- define "carto.cdnInvalidatorSub.serviceAccountName" -}}
-{{- if .Values.cdnInvalidatorSub.serviceAccount.create -}}
-{{ default (include "carto.cdnInvalidatorSub.fullname" .) .Values.cdnInvalidatorSub.serviceAccount.name }}
-{{- else -}}
-{{ default "default" .Values.cdnInvalidatorSub.serviceAccount.name }}
-{{- end -}}
-{{- end -}}
 
 {{/*
 Return the proper Carto workspace-db image name
