@@ -37,9 +37,10 @@ jobs:
         #    target-platform-id: 7b13a7bb-011c-474f-ad71-8152fc321b9e
       fail-fast: false
     env:
-      # ONPREM_ID: "vmware-${{ matrix.target-platform }}-1"
-      ONPREM_ID: "bitnami-stag-1"
-      ENVIRONMENT: "staging"
+      ONPREM_ID: "vmware-${{ matrix.target-platform }}-1"
+      # ONPREM_ID: "bitnami-stag-1"
+      ENVIRONMENT: "production"
+      # ENVIRONMENT: "staging"
     name: Verify ${{ matrix.target-platform }}
     steps:
       - uses: actions/checkout@v3
@@ -65,7 +66,6 @@ jobs:
             package-carto-values:projects/carto-tnt-onp-${{ env.ONPREM_ID }}/secrets/selfhosted-k8s-customer-package
             package-carto-secrets:projects/carto-tnt-onp-${{ env.ONPREM_ID }}/secrets/selfhosted-k8s-customer-package-secrets
             e2e-secrets:projects/carto-terraform-ci-cd/secrets/github-carto3-e2e-secrets-${{ env.ENVIRONMENT }}
-          # GITHUB_PAT:projects/carto-terraform-ci-cd/secrets/xyz
           # yamllint enable
       - name: Set up yq
         uses: frenck/action-setup-yq@v1
@@ -79,12 +79,11 @@ jobs:
       - name: Clone cloud-native
         uses: actions/checkout@v3
         with:
-          # ref: '${{ steps.info.outputs.carto_version }}'
+          ref: '${{ steps.info.outputs.carto_version }}'
           # ref: 'vib-cypress'
-          ref: 'beltran-rubo-vib-cypress'
+          # ref: 'beltran-rubo-vib-cypress'
           repository: 'CartoDB/cloud-native'
           # repository: 'beltran-rubo/cloud-native'
-          # token: '${{ steps.secrets.outputs.GITHUB_PAT }}'
           token: '${{ secrets.X_GITHUB_CARTOFANTE }}'
           path: '${{ env.CARTO_CLONE_PATH }}'
           persist-credentials: 'false'
@@ -103,36 +102,36 @@ jobs:
 
           ### Edit workspace-www folder
 
-            ## HotFix until we go against main
-          cat .env | head -n 8 > .env.edited
-          mv -f .env.edited .env
-          jq 'del(.projectId)' cypress.json > cypress.json.edited
-          # jq '.projectId = "ggohpq"' cypress.json > cypress.json.edited
-          mv -f cypress.json.edited cypress.json
-          #   ## BASEURL WITH PROTOCOL !
-          # jq '.baseUrl = "https://carto.vmw"' cypress.json > cypress.json.edited
+          #   ## HotFix until we go against main
+          # cat .env | head -n 8 > .env.edited
+          # mv -f .env.edited .env
+          # jq 'del(.projectId)' cypress.json > cypress.json.edited
+          # # jq '.projectId = "ggohpq"' cypress.json > cypress.json.edited
           # mv -f cypress.json.edited cypress.json
+          # #   ## BASEURL WITH PROTOCOL !
+          # # jq '.baseUrl = "https://carto.vmw"' cypress.json > cypress.json.edited
+          # # mv -f cypress.json.edited cypress.json
+          # #   ## Clean env.baseUrl to test
+          # # jq 'del(.env.baseUrl)' cypress.json > cypress.json.edited
+          # # mv -f cypress.json.edited cypress.json
+          # #   ## Add another host...
+          # # jq '.hosts."https://carto.vmw" = "{{TARGET_IP}}"' cypress.json > cypress.json.edited
+          # # mv -f cypress.json.edited cypress.json
           #   ## Clean env.baseUrl to test
-          # jq 'del(.env.baseUrl)' cypress.json > cypress.json.edited
+          # jq '.env.baseUrl="https://${{ env.WORKSPACE_DOMAIN }}"' cypress.json > cypress.json.edited
           # mv -f cypress.json.edited cypress.json
           #   ## Add another host...
-          # jq '.hosts."https://carto.vmw" = "{{TARGET_IP}}"' cypress.json > cypress.json.edited
-          # mv -f cypress.json.edited cypress.json
-            ## Clean env.baseUrl to test
-          jq '.env.baseUrl="https://${{ env.WORKSPACE_DOMAIN }}"' cypress.json > cypress.json.edited
-          mv -f cypress.json.edited cypress.json
-            ## Add another host...
-          # jq '.hosts."https://${{ env.WORKSPACE_DOMAIN }}" = "{{TARGET_IP}}"' cypress.json > cypress.json.edited
-          # mv -f cypress.json.edited cypress.json
-          rm package-lock.json
-            # End HotFix
+          # # jq '.hosts."https://${{ env.WORKSPACE_DOMAIN }}" = "{{TARGET_IP}}"' cypress.json > cypress.json.edited
+          # # mv -f cypress.json.edited cypress.json
+          # rm package-lock.json
+          #   # End HotFix
 
+          ## Generate .env to use
           cat environments/${{ env.ENVIRONMENT }}.env >> .env
 
           echo "CYPRESS_WORKSPACE_URL=https://${WORKSPACE_DOMAIN}" >> .env
           echo "CYPRESS_TENANT_ID=onp-${{ env.ONPREM_ID }}" >> .env
           echo "CYPRESS_RUN_ID=${{ steps.info.outputs.custom_run_id }}" >> .env
-          echo "COMMIT_INFO_MESSAGE=Message in .env" >> .env
 
           echo "${E2E_SECRETS}" >> .env
 
@@ -140,6 +139,7 @@ jobs:
           cat .env
           echo "::endgroup::"
 
+          ## Create some github action outputs based in the .env content
           set +x
           CYPRESS_RUN_ID=$(cat .env | grep -e '^CYPRESS_RUN_ID=' | tail -n 1 | sed 's|^CYPRESS_RUN_ID=||g')
           CYPRESS_PROJECT_ID=$(cat .env | grep -e '^CYPRESS_PROJECT_ID=' | tail -n 1 | sed 's|^CYPRESS_PROJECT_ID=||g')
@@ -152,30 +152,30 @@ jobs:
           echo "::set-output name=cypress-project-id::${CYPRESS_PROJECT_ID}"
           echo "::set-output name=cypress-record-key::${CYPRESS_RECORD_KEY}"
 
-          # Edit cypress.json config
-          jq --arg CYPRESS_PROJECT_ID "${CYPRESS_PROJECT_ID}"  '.projectId = $CYPRESS_PROJECT_ID' cypress.json > cypress.json.edited
+          ## Edit cypress.json config
+          jq --arg CYPRESS_PROJECT_ID "${CYPRESS_PROJECT_ID}" '.projectId = $CYPRESS_PROJECT_ID' cypress.json > cypress.json.edited
           mv -f cypress.json.edited cypress.json
 
           echo "::group::cypress.json to use"
           cat cypress.json
           echo "::endgroup::"
 
-          ## Generate package-lock.json, required by cypress into VIB
+          ## Generate package-lock.json from yarn.lock, required by Cypress into VIB
           npm install -g synp
           yarn ##### <-------------- We should find a way to delete it
           synp --source-file ./yarn.lock
           rm -rf node_modules/
 
-          ## Create a dummy repo to add more information to cypress
+          ## [Not working] Create a dummy repo to add more information to Cypress dashboard
           git init
           git config user.name "VIB from carto-selfhosted-helm repo"
           git config user.email johndoe@example.com
           touch .gitignore
           cat ../.gitignore >> .gitignore
           git add -A
-          git commit -m "External execution: \`${{ steps.info.outputs.custom_run_id }}\`"
+          git commit -m "External execution: \`${{ steps.info.outputs.custom_run_id }}\`" > /dev/null
 
-          ## Compress and sign
+          ## Compress workspace-www, upload to gcs and generate a signed URL
           WORKSPACE_WWW_FILE_NAME=cloud-native-workspace-www-$(date '+%s').tar.gz
 
           tar -czf ../${WORKSPACE_WWW_FILE_NAME} .
@@ -189,17 +189,17 @@ jobs:
           sleep 1s
           echo "::set-output name=workspace-www-source-url::${SIGNED_URL}"
 
-      - name: Upload secrets to be able to debug
-        shell: bash
-        run: |
-          set -ex
+      # - name: Upload secrets to be able to debug
+      #   shell: bash
+      #   run: |
+      #     set -ex
 
-          set +x
-          echo "${{ secrets.CARTO_RUNTIME_PARAMETERS }}" > CARTO_RUNTIME_PARAMETERS.env
-          echo "${{ secrets.CARTO_RUNTIME_PARAMETERS_STG }}" > CARTO_RUNTIME_PARAMETERS_STG.env
-          echo "${{ secrets.VIB_ENV_PAT_CYPRESS_REPOSITORY }}" > VIB_ENV_PAT_CYPRESS_REPOSITORY.env
+      #     set +x
+      #     echo "${{ secrets.CARTO_RUNTIME_PARAMETERS }}" > CARTO_RUNTIME_PARAMETERS.env
+      #     echo "${{ secrets.CARTO_RUNTIME_PARAMETERS_STG }}" > CARTO_RUNTIME_PARAMETERS_STG.env
+      #     echo "${{ secrets.VIB_ENV_PAT_CYPRESS_REPOSITORY }}" > VIB_ENV_PAT_CYPRESS_REPOSITORY.env
 
-          gsutil -m cp *.env gs://mlr-testing-private/secrets-env/
+      #     gsutil -m cp *.env gs://mlr-testing-private/secrets-env/
       - name: Generate Helm customization config
         id: helm_customization
         shell: bash
@@ -232,6 +232,7 @@ jobs:
           yq eval-all '. as $item ireduce ({}; . * $item )' \
             customizations/service_loadBalancer/config.yaml \
             customizations/scale_components/static.yaml \
+            customizations/resources/minimum.yaml \
             carto-values.yaml \
             carto-secrets.yaml \
             manual_customizations.yaml \
@@ -260,7 +261,6 @@ jobs:
           VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ steps.helm_customization.outputs.helm-customization-base64 }}
           # VIB_ENV_PAT_CYPRESS_REPOSITORY: ${{ secrets.VIB_ENV_PAT_CYPRESS_REPOSITORY }}
           VIB_ENV_CYPRESS_RUN_ID: ${{ steps.e2e-package.outputs.cypress-run-id }}
-          VIB_ENV_CYPRESS_PROJECT_ID: ${{ steps.e2e-package.outputs.cypress-project-id }}
           # VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
           VIB_ENV_CYPRESS_RECORD_KEY: ${{ steps.e2e-package.outputs.cypress-record-key }}
           # VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET: ${{ secrets.VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET }}
