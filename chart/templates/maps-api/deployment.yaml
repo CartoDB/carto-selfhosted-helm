@@ -119,6 +119,11 @@ spec:
             - configMapRef:
                 name: {{ template "carto.mapsApi.fullname" . }}
             {{- end }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.mapsApi.secretName" . }}
+            {{- end }}
             {{- if .Values.mapsApi.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraEnvVarsCM "context" $) }}
@@ -126,11 +131,6 @@ spec:
             {{- if .Values.mapsApi.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraEnvVarsSecret "context" $) }}
-            {{- end }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) -}}
-            {{- if $secretContent }}
-            - secretRef:
-                name: {{ include "carto.mapsApi.secretName" . }}
             {{- end }}
           {{- if .Values.mapsApi.resources }}
           resources: {{- toYaml .Values.mapsApi.resources | nindent 12 }}

@@ -196,14 +196,6 @@ spec:
             - configMapRef:
                 name: {{ template "carto.workspaceApi.fullname" . }}
             {{- end }}
-            {{- if .Values.workspaceApi.extraEnvVarsCM }}
-            - configMapRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVarsCM "context" $) }}
-            {{- end }}
-            {{- if .Values.workspaceApi.extraEnvVarsSecret }}
-            - secretRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVarsSecret "context" $) }}
-            {{- end }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"
@@ -216,6 +208,14 @@ spec:
             {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.workspaceApi.secretName" . }}
+            {{- end }}
+            {{- if .Values.workspaceApi.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.workspaceApi.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVarsSecret "context" $) }}
             {{- end }}
           {{- if .Values.workspaceApi.resources }}
           resources: {{- toYaml .Values.workspaceApi.resources | nindent 12 }}

@@ -103,7 +103,7 @@ spec:
               npm run start:built
           {{- end }}
           env:
-            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "VARNISH_PURGE_SECRET" "VARNISH_DEBUG_SECRET") "context" $ ) | nindent 12 }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "VARNISH_PURGE_SECRET") "context" $ ) | nindent 12 }}
             {{- if .Values.cdnInvalidatorSub.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -112,6 +112,11 @@ spec:
             - configMapRef:
                 name: {{ template "carto.cdnInvalidatorSub.fullname" . }}
             {{- end }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "VARNISH_PURGE_SECRET") "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.cdnInvalidatorSub.secretName" . }}
+            {{- end }}
             {{- if .Values.cdnInvalidatorSub.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraEnvVarsCM "context" $) }}
@@ -119,11 +124,6 @@ spec:
             {{- if .Values.cdnInvalidatorSub.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraEnvVarsSecret "context" $) }}
-            {{- end }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "VARNISH_PURGE_SECRET" "VARNISH_DEBUG_SECRET") "context" $ ) -}}
-            {{- if $secretContent }}
-            - secretRef:
-                name: {{ include "carto.cdnInvalidatorSub.secretName" . }}
             {{- end }}
           {{- if .Values.cdnInvalidatorSub.resources }}
           resources: {{- toYaml .Values.cdnInvalidatorSub.resources | nindent 12 }}
