@@ -616,7 +616,7 @@ workspaceApi:
 
 ### Google Maps
 
-In order to enable Google Maps basemaps inside CARTO Self Hosted, you need to own a Google Maps API key and add one of the options below to your `customizations.yaml` following [these guidelines](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/customizations/README.md#how-to-apply-the-configurations): 
+In order to enable Google Maps basemaps inside CARTO Self Hosted, you need to own a Google Maps API key and add one of the options below to your `customizations.yaml` following [these guidelines](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/customizations/README.md#how-to-apply-the-configurations):
 
 - **Option 1: Automatically create the secret:**
 
