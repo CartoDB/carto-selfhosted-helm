@@ -40,7 +40,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: {{ template "carto.sqlWorker.serviceAccountName" . }}
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
       {{- include "carto.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.sqlWorker.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.hostAliases "context" $) | nindent 8 }}
