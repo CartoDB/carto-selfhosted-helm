@@ -50,7 +50,7 @@ The process of configuring Workload Identity includes using an IAM policy bindin
 
 ```yaml
 commonBackendServiceAccount:
-  enableWorkloadIdentity: "true"
+  enableGCPWorkloadIdentity: true
   annotations:
     iam.gke.io/gcp-service-account: "<IAM_SERVICE_ACCOUNT_EMAIL>"
 ```
