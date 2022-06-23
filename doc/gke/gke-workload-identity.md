@@ -36,21 +36,25 @@ The process of configuring Workload Identity includes using an IAM policy bindin
 
 - Send the Service Account Email to Carto Support Team [support@carto.com](mailto:support@carto.com). We will ensure that your Service Account is granted the required roles to run CARTO Self Hosted (remember you cannot change the Service Account without contacting support).
 
+- Add the following lines to your `customizations.yaml`:
+
+  ```yaml
+  commonBackendServiceAccount:
+    enableGCPWorkloadIdentity: true
+    annotations:
+      iam.gke.io/gcp-service-account: "<IAM_SERVICE_ACCOUNT_EMAIL>"
+  ```
+
+- Install Carto Self Hosted Helm Chart, please see the [installations steps](../../README.md#installation-steps)
+
 - Then, allow the Kubernetes service account that is going to be created in your GKE cluster to impersonate the IAM service account by adding an IAM policy binding between the two service accounts. This binding allows the Kubernetes service account to act as the IAM service account.
 
   ```bash
   gcloud iam service-accounts add-iam-policy-binding <IAM_SERVICE_ACCOUNT_EMAIL> \
   --role roles/iam.workloadIdentityUser \
-  --member "serviceAccount:<PROJECT_ID>.svc.id.goog[<KUBERNETES_NAMESPACE>/<HELM_PACKAGE_INSTALLED_NAME>-common-backend]"
+  --member "serviceAccount:<PROJECT_ID>.svc.id.goog[<KUBERNETES_NAMESPACE>/<KUBERNETES_SERVICE_ACCOUNT>]"
   ```
 
   Also see our terraform example for [iam policy binding](https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/gcp/gke-autopilot.tf)
 
-- Add the following lines to your `customizations.yaml`:
-
-```yaml
-commonBackendServiceAccount:
-  enableGCPWorkloadIdentity: true
-  annotations:
-    iam.gke.io/gcp-service-account: "<IAM_SERVICE_ACCOUNT_EMAIL>"
-```
+> You can find the `gcloud` command with the `KUBERNETES_NAMESPACE` and `KUBERNETES_SERVICE_ACCOUNT` values in the helm output notes once you execute the `helm install`
