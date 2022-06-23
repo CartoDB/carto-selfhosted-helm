@@ -158,6 +158,20 @@ tlsCerts:
     keyKey: "tls.key"
     certKey: "tls.crt"
 
+## @section common backend service account
+## Service Account to be specified for the client to be used in common backend deployments
+commonBackendServiceAccount:
+  ## @param commonBackendServiceAccount.create Specifies whether a common ServiceAccount for backend should be created
+  create: true
+  ## @param commonBackendServiceAccount.enableGCPWorkloadIdentity Enable the Workload Identity feature in kubernetes
+  enableGCPWorkloadIdentity: false
+  ## @param commonBackendServiceAccount.automountServiceAccountToken Mount service account token in deployments
+  automountServiceAccountToken: false
+  ## @param commonBackendServiceAccount.annotations Annotations to add to this SA
+  annotations: {}
+  ## @param commonBackendServiceAccount.name If not set and create is true, a name is generated using the common.names.fullname template
+  name: ""
+
 ## @section Global parameters
 ## Global Docker image parameters
 ## Please, note that this will override the image parameters, including dependencies, configured to use the global value
@@ -858,19 +872,6 @@ importApi:
     ## @param importApi.service.extraPorts Extra ports to expose in import-api service (normally used with the `sidecars` value)
     ##
     extraPorts: []
-  ## @section import-api ServiceAccount configuration
-  ##
-  serviceAccount:
-    ## @param importApi.serviceAccount.create Specifies whether a ServiceAccount should be created
-    ##
-    create: true
-    ## @param importApi.serviceAccount.name The name of the ServiceAccount to use.
-    ## If not set and create is true, a name is generated using the common.names.fullname template
-    ##
-    name: ""
-    ## @param importApi.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
-    ##
-    automountServiceAccountToken: false
 
 ## @section import-worker Deployment Parameters
 ##
@@ -1075,19 +1076,6 @@ importWorker:
   ##    command: ['sh', '-c', 'echo "hello world"']
   ##
   initContainers: {}
-  ## @section import-worker ServiceAccount configuration
-  ##
-  serviceAccount:
-    ## @param importWorker.serviceAccount.create Specifies whether a ServiceAccount should be created
-    ##
-    create: true
-    ## @param importWorker.serviceAccount.name The name of the ServiceAccount to use.
-    ## If not set and create is true, a name is generated using the common.names.fullname template
-    ##
-    name: ""
-    ## @param importWorker.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
-    ##
-    automountServiceAccountToken: false
 
 ## @section lds-api Deployment Parameters
 ##
@@ -1398,19 +1386,6 @@ ldsApi:
     ## @param ldsApi.service.extraPorts Extra ports to expose in lds-api service (normally used with the `sidecars` value)
     ##
     extraPorts: []
-  ## @section lds-api ServiceAccount configuration
-  ##
-  serviceAccount:
-    ## @param ldsApi.serviceAccount.create Specifies whether a ServiceAccount should be created
-    ##
-    create: true
-    ## @param ldsApi.serviceAccount.name The name of the ServiceAccount to use.
-    ## If not set and create is true, a name is generated using the common.names.fullname template
-    ##
-    name: ""
-    ## @param ldsApi.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
-    ##
-    automountServiceAccountToken: false
 
 ## @section maps-api Deployment Parameters
 ##
@@ -1722,19 +1697,6 @@ mapsApi:
     ## @param mapsApi.service.extraPorts Extra ports to expose in maps-api service (normally used with the `sidecars` value)
     ##
     extraPorts: []
-  ## @section maps-api ServiceAccount configuration
-  ##
-  serviceAccount:
-    ## @param mapsApi.serviceAccount.create Specifies whether a ServiceAccount should be created
-    ##
-    create: true
-    ## @param mapsApi.serviceAccount.name The name of the ServiceAccount to use.
-    ## If not set and create is true, a name is generated using the common.names.fullname template
-    ##
-    name: ""
-    ## @param mapsApi.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
-    ##
-    automountServiceAccountToken: false
 
 ## @section sql-worker Deployment Parameters
 ##
@@ -1974,19 +1936,6 @@ sqlWorker:
   ##    command: ['sh', '-c', 'echo "hello world"']
   ##
   initContainers: {}
-  ## @section sql-worker ServiceAccount configuration
-  ##
-  serviceAccount:
-    ## @param sqlWorker.serviceAccount.create Specifies whether a ServiceAccount should be created
-    ##
-    create: true
-    ## @param sqlWorker.serviceAccount.name The name of the ServiceAccount to use.
-    ## If not set and create is true, a name is generated using the common.names.fullname template
-    ##
-    name: ""
-    ## @param sqlWorker.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
-    ##
-    automountServiceAccountToken: false
 
 ## @section router Deployment Parameters
 ##
@@ -2930,19 +2879,6 @@ cdnInvalidatorSub:
     ## @param cdnInvalidatorSub.service.extraPorts Extra ports to expose in cdnInvalidatorSub service (normally used with the `sidecars` value)
     ##
     extraPorts: []
-  ## @section cdnInvalidatorSub ServiceAccount configuration
-  ##
-  serviceAccount:
-    ## @param cdnInvalidatorSub.serviceAccount.create Specifies whether a ServiceAccount should be created
-    ##
-    create: true
-    ## @param cdnInvalidatorSub.serviceAccount.name The name of the ServiceAccount to use.
-    ## If not set and create is true, a name is generated using the common.names.fullname template
-    ##
-    name: ""
-    ## @param cdnInvalidatorSub.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
-    ##
-    automountServiceAccountToken: false
 
 ## @section workspace-api Deployment Parameters
 ##
@@ -3254,19 +3190,6 @@ workspaceApi:
     ## @param workspaceApi.service.extraPorts Extra ports to expose in workspace-api service (normally used with the `sidecars` value)
     ##
     extraPorts: []
-  ## @section workspace-api ServiceAccount configuration
-  ##
-  serviceAccount:
-    ## @param workspaceApi.serviceAccount.create Specifies whether a ServiceAccount should be created
-    ##
-    create: true
-    ## @param workspaceApi.serviceAccount.name The name of the ServiceAccount to use.
-    ## If not set and create is true, a name is generated using the common.names.fullname template
-    ##
-    name: ""
-    ## @param workspaceApi.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
-    ##
-    automountServiceAccountToken: false
 
 ## @section workspace-subscriber Deployment Parameters
 ##
@@ -3471,19 +3394,6 @@ workspaceSubscriber:
   ##    command: ['sh', '-c', 'echo "hello world"']
   ##
   initContainers: {}
-  ## @section workspace-subscriber ServiceAccount configuration
-  ##
-  serviceAccount:
-    ## @param workspaceSubscriber.serviceAccount.create Specifies whether a ServiceAccount should be created
-    ##
-    create: true
-    ## @param workspaceSubscriber.serviceAccount.name The name of the ServiceAccount to use.
-    ## If not set and create is true, a name is generated using the common.names.fullname template
-    ##
-    name: ""
-    ## @param workspaceSubscriber.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
-    ##
-    automountServiceAccountToken: false
 
 ## @section workspace-www Deployment Parameters
 ##
