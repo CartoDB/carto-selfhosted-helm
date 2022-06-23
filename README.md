@@ -127,7 +127,7 @@ In order to verify CARTO Self Hosted was correctly installed and it's functional
    SELECT * FROM <dataset_name.table_name> LIMIT 100;
    ```
 
-9.  Create a new layer from the dataset imported in step 4.
+9. Create a new layer from the dataset imported in step 4.
 
 10. Make the map public, copy the sharing url and open it in a new incognito window.
 
