@@ -128,11 +128,11 @@ host. To configure CARTO with the URL of your service:
 {{ include "carto.validateValues" . }}
 {{- end }}
 
-{{- if eq .Values.commonBackendServiceAccount.enableWorkloadIdentity "true" }}
+{{- if .Values.commonBackendServiceAccount.enableWorkloadIdentity }}
 
 3. You have enabled the workload identity feature.
 
-This is the kubernetes Service Account that you need to binding with your IAM SA in the following command or in the terraform example `https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/gcp/gke-autopilot.tf`
+This is the kubernetes Service Account that you need to binding with your IAM SA in the following command or in the terraform example `https://github.com/CartoDB/carto-selfhosted/blob/{{- include "chart.version" . }}/examples/terraform/gcp/gke-autopilot.tf`
 
 KUBERNETES_SERVICE_ACCOUNT={{ template "carto.commonSA.serviceAccountName" . }}
 

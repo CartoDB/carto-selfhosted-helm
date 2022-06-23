@@ -18,7 +18,7 @@ data:
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
-  {{- if eq .Values.commonBackendServiceAccount.enableWorkloadIdentity "false" }}
+  {{- if not .Values.commonBackendServiceAccount.enableWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   REDIS_CACHE_PREFIX: "onprem"
