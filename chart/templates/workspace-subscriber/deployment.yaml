@@ -118,10 +118,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.workspaceSubscriber.existingConfigMap }}
             - configMapRef:
-                name: {{ template "carto.workspaceSubscriber.fullname" . }}
-            {{- end }}
+                name: {{ template "carto.workspaceSubscriber.configmapName" . }}
             {{- if .Values.workspaceSubscriber.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVarsCM "context" $) }}
