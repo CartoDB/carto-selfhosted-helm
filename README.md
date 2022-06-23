@@ -27,7 +27,7 @@ If you are looking for another installation method, please refer to [carto-selfh
 ### Prerequisites
 
 - Kubernetes 1.12+
-- Helm 3.1.0
+- Helm 3.6.0
 - Configuration and license files received from CARTO
 - (Optional) PV provisioner support in the underlying infrastructure. Required only for non-production deployment without external and managed databases (Postgres and Redis).
 
