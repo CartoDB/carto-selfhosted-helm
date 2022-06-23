@@ -163,8 +163,8 @@ tlsCerts:
 commonBackendServiceAccount:
   ## @param commonBackendServiceAccount.create Specifies whether a common ServiceAccount for backend should be created
   create: true
-  ## @param commonBackendServiceAccount.enableWorkloadIdentity Enable the Workload Identity feature in kubernetes
-  enableWorkloadIdentity: false
+  ## @param commonBackendServiceAccount.enableGCPWorkloadIdentity Enable the Workload Identity feature in kubernetes
+  enableGCPWorkloadIdentity: false
   ## @param commonBackendServiceAccount.automountServiceAccountToken Mount service account token in deployments
   automountServiceAccountToken: false
   ## @param commonBackendServiceAccount.annotations Annotations to add to this SA

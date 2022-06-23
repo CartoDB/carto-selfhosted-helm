@@ -21,7 +21,7 @@ data:
   IMPORT_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   IMPORT_WORKER_PROCESSING_DIR: "/tmp/import-worker"
   LOG_LEVEL: "debug"
-  {{- if not .Values.commonBackendServiceAccount.enableWorkloadIdentity }}
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}

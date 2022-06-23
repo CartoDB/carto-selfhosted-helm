@@ -106,7 +106,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | Name                                                       | Description                                                                                 | Value   |
 | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------- |
 | `commonBackendServiceAccount.create`                       | Specifies whether a common ServiceAccount for backend should be created                     | `true`  |
-| `commonBackendServiceAccount.enableWorkloadIdentity`       | Enable the Workload Identity feature in kubernetes                                          | `false` |
+| `commonBackendServiceAccount.enableGCPWorkloadIdentity`    | Enable the Workload Identity feature in kubernetes                                          | `false` |
 | `commonBackendServiceAccount.automountServiceAccountToken` | Mount service account token in deployments                                                  | `false` |
 | `commonBackendServiceAccount.annotations`                  | Annotations to add to this SA                                                               | `{}`    |
 | `commonBackendServiceAccount.name`                         | If not set and create is true, a name is generated using the common.names.fullname template | `""`    |

@@ -128,7 +128,7 @@ host. To configure CARTO with the URL of your service:
 {{ include "carto.validateValues" . }}
 {{- end }}
 
-{{- if .Values.commonBackendServiceAccount.enableWorkloadIdentity }}
+{{- if .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
 
 3. You have enabled the workload identity feature.
 

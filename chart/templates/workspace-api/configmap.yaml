@@ -23,7 +23,7 @@ data:
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
-  {{- if not .Values.commonBackendServiceAccount.enableWorkloadIdentity }}
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   LOG_LEVEL: "debug"
@@ -64,7 +64,7 @@ data:
   WORKSPACE_IMPORTS_KEYFILENAME: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
   WORKSPACE_THUMBNAILS_KEYFILENAME: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
   {{- else }}
-  {{- if not .Values.commonBackendServiceAccount.enableWorkloadIdentity }}
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   WORKSPACE_IMPORTS_KEYFILENAME: {{ include "carto.google.secretMountAbsolutePath" . }}
   WORKSPACE_THUMBNAILS_KEYFILENAME: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
