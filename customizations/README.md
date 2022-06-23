@@ -188,7 +188,12 @@ CARTO Self Hosted requires a Postgres (version 11+) to work. This package comes 
 
 This Postgres is used to store some CARTO internal metadata.
 
-> ⚠️ This Postgres has nothing to do with the ones that the user configures and connect through CARTO workspace. ⚠️
+Here are some Terraform examples of databases created in different providers:
+- [GCP Cloud SQL](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/gcp/postgresql.tf).
+- [AWS RDS](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/aws/postgresql-rds.tf).
+- [Azure Database](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/azure/postgresql.tf).
+
+> :warning: This Postgres has nothing to do with the ones that the user configures and connect through CARTO workspace.
 
 There are alternatives on how to configure Postgres. [Set the secrets manually](#setup-postgres-creating-secrets) and point to them
 from the configuration, or let the chart to create the [secrets automatically](#setup-postgres-with-automatic-secret-creation).
@@ -302,7 +307,13 @@ externalPostgresql:
 ### Configure external Redis
 
 CARTO Self Hosted require a Redis (version 5+) to work. This Redis instance does not need persistance as it is used as a cache.
-This package comes with an internal Redis but it is not recommended for production. It does not have any logic for backups or any other monitoring.
+
+This package comes with an internal Redis but it is not recommended for production. It lacks any logic for backups or monitoring.
+
+Here are some Terraform examples of databases created in different providers:
+- [GCP Redis](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/gcp/redis.tf).
+- [AWS Redis](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/aws/redis.tf).
+- [Azure Redis](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/azure/redis.tf).
 
 In the same way as with Postgres, there are two alternatives regarding the secrets,
 [set the secrets manually](#setup-redis-creating-secrets) and point to them from the configuration,
@@ -391,8 +402,8 @@ For every CARTO Self Hosted installation, we create GCS buckets in our side as p
 You can create and use your own storage buckets in any of the following supported storage providers:
 
 - Google Cloud Storage. [Terraform code example](https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/gcp/storage.tf).
-- AWS S3.
-- Azure Storage. [Terraform code example](https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/azure/storage.tf)
+- AWS S3. [Terraform code example](https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/aws/storage.tf).
+- Azure Storage. [Terraform code example](https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/azure/storage.tf).
 
 > :warning: You can only set one provider at a time.
 
@@ -605,7 +616,7 @@ workspaceApi:
 
 ### Google Maps
 
-In order to enable Google Maps basemaps inside CARTO Self Hosted, you need to own a Google Maps API key and add one of the options below to your `customizations.yaml` following [these guidelines](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/customizations/README.md#how-to-apply-the-configurations): 
+In order to enable Google Maps basemaps inside CARTO Self Hosted, you need to own a Google Maps API key and add one of the options below to your `customizations.yaml` following [these guidelines](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/customizations/README.md#how-to-apply-the-configurations):
 
 - **Option 1: Automatically create the secret:**
 
