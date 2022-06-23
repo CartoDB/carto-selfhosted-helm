@@ -188,7 +188,12 @@ CARTO Self Hosted requires a Postgres (version 11+) to work. This package comes 
 
 This Postgres is used to store some CARTO internal metadata.
 
-> ⚠️ This Postgres has nothing to do with the ones that the user configures and connect through CARTO workspace. ⚠️
+Here are some Terraform examples of databases created in different providers:
+- [GCP Cloud SQL](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/gcp/postgresql.tf).
+- [AWS RDS](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/aws/postgresql-rds.tf).
+- [Azure Database](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/azure/postgresql.tf).
+
+> :warning: This Postgres has nothing to do with the ones that the user configures and connect through CARTO workspace.
 
 There are alternatives on how to configure Postgres. [Set the secrets manually](#setup-postgres-creating-secrets) and point to them
 from the configuration, or let the chart to create the [secrets automatically](#setup-postgres-with-automatic-secret-creation).
