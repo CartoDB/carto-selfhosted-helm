@@ -251,7 +251,6 @@ Return the proper Carto lds-api Secret name
 {{- end -}}
 {{- end -}}
 
-
 {{/*
 Return the proper Carto import-worker full name
 */}}
