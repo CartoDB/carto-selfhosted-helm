@@ -10,6 +10,7 @@
       - [GKE Workload Identity](#gke-workload-identity)
     - [Deployment customizations](#deployment-customizations)
     - [Installation Steps](#installation-steps)
+    - [Post-installation checks](#post-installation-checks)
     - [Troubleshooting](#troubleshooting)
   - [Update](#update)
   - [Uninstall](#uninstall)
@@ -55,6 +56,10 @@ For GKE Autopilot cluster, please check [these](doc/gke/gke-autopilot.md) recomm
 
 For GKE Workload Identity, please check [these](doc/gke/gke-workload-identity.md) instructions.
 
+### Deployment customizations
+
+Please, read the available [customization](customizations/README.md) options.
+
 ### Installation Steps
 
 1. Authenticate and connect to your cluster
@@ -75,8 +80,7 @@ These files are unique per Self Hosted (**they cannot be shared between multiple
   helm search repo carto -l
   ```
 
-4. Configure your deployment. Please, read the available [customizations](customizations/README.md) options. At least you will need
-to configure the domain name.
+4. Configure your deployment. Please, read the available [customizations](customizations/README.md) options. At least you will need to configure the domain name.
 
 5. Install CARTO:
 
@@ -94,11 +98,7 @@ to configure the domain name.
 
 6. Read and follow the instructions provided by the previous command (eg: what you need to configure your DNS).
 
-### Deployment customizations
-
-Please, read the available [customization](customizations/README.md) options.
-
-### Post installation checks
+### Post-installation checks
 
 In order to verify CARTO Self Hosted was correctly installed and it's functional, we recommend performing the following checks:
 
@@ -131,7 +131,7 @@ In order to verify CARTO Self Hosted was correctly installed and it's functional
 
 10. Make the map public, copy the sharing URL and open it in a new incognito window.
 
-11. Go back to the `Maps` page, and verify your map appears there and the map thumbnail represents the latest changes you made on the map.
+11. Go back to the `Maps` page, and verify your map appears there and the map thumbnail represents the latest changes you made to the map.
 
 ### Troubleshooting
   
