@@ -307,7 +307,13 @@ externalPostgresql:
 ### Configure external Redis
 
 CARTO Self Hosted require a Redis (version 5+) to work. This Redis instance does not need persistance as it is used as a cache.
-This package comes with an internal Redis but it is not recommended for production. It does not have any logic for backups or any other monitoring.
+
+This package comes with an internal Redis but it is not recommended for production. It lacks any logic for backups or monitoring.
+
+Here are some Terraform examples of databases created in different providers:
+- [GCP Redis](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/gcp/redis.tf).
+- [AWS Redis](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/aws/redis.tf).
+- [Azure Redis](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/azure/redis.tf).
 
 In the same way as with Postgres, there are two alternatives regarding the secrets,
 [set the secrets manually](#setup-redis-creating-secrets) and point to them from the configuration,
