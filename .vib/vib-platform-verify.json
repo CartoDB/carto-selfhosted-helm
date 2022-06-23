@@ -43,17 +43,6 @@
           }
         },
         {
-          "action_id": "goss",
-          "params": {
-            "resources": {
-              "path": "goss/goss-accounts-www"
-            },
-            "remote": {
-              "workload": "deploy-carto-accounts-www"
-            }
-          }
-        },
-        {
           "action_id": "cypress",
           "params": {
             "resources": {
