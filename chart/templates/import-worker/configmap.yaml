@@ -37,7 +37,9 @@ data:
   {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
   IMPORT_KEYFILENAME: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
   {{- else }}
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   IMPORT_KEYFILENAME: {{ include "carto.google.secretMountAbsolutePath" . }}
+  {{- end }}
   {{- end }}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}
