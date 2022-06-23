@@ -57,4 +57,4 @@ The process of configuring Workload Identity includes using an IAM policy bindin
 
   Also see our terraform example for [iam policy binding](https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/gcp/gke-autopilot.tf)
 
-> You can find the `gcloud` command with the `KUBERNETES_NAMESPACE` and `KUBERNETES_SERVICE_ACCOUNT` values in the helm output notes once you execute the `helm install`
+> You can find the `gcloud` command with the `KUBERNETES_NAMESPACE` and `KUBERNETES_SERVICE_ACCOUNT` values in the helm output notes once you execute the `helm install...`
