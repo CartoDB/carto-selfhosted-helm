@@ -30,9 +30,20 @@ The process of configuring Workload Identity includes using an IAM policy bindin
 
   You can use this command:
 
-  `gcloud iam service-accounts create <IAM_SERVICE_ACCOUNT_NAME> --project=<GCP_PROJECT_ID>`
+  ```bash
+  gcloud iam service-accounts create <IAM_SERVICE_ACCOUNT_NAME> --project=<GCP_PROJECT_ID>
+  ```
 
-  Also see our terraform example for [iam service account](https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/gcp/gke-autopilot.tf)
+  This SA needs the `roles/iam.serviceAccountTokenCreator` role for sign URLs, you can grant it with this command:
+
+  ```bash
+  gcloud iam service-accounts add-iam-policy-binding \
+    <IAM_SERVICE_ACCOUNT_EMAIL> \
+    --member=serviceAccount:<IAM_SERVICE_ACCOUNT_EMAIL> \
+    --role=roles/iam.serviceAccountTokenCreator
+  ```
+
+  Also see our terraform examples for [iam service accounts](https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/gcp/gke-autopilot.tf)
 
 - Send the Service Account Email to Carto Support Team [support@carto.com](mailto:support@carto.com). We will ensure that your Service Account is granted the required roles to run CARTO Self Hosted (remember you cannot change the Service Account without contacting support).
 
