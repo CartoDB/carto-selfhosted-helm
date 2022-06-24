@@ -109,6 +109,15 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
+  ## @extra cartoSecrets.jwtApiSecret The secret used to encrypt the jwt token for api components
+  jwtApiSecret:
+    value: ""
+    ## @param cartoSecrets.jwtApiSecret.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.jwtApiSecret.existingSecret.key`. If `cartoSecrets.jwtApiSecret.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.jwtApiSecret.existingSecret.key Key to find in `cartoSecrets.jwtApiSecret.existingSecret.name` where the value of `cartoSecrets.jwtApiSecret` is found. If `cartoSecrets.jwtApiSecret.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
   ## @extra cartoSecrets.varnishPurgeSecret The secret used (by the app) to exec purge request.
   varnishPurgeSecret:
     ## @param cartoSecrets.varnishPurgeSecret.value Value of the secret used (by the app) to exec purge request. One of `cartoSecrets.varnishPurgeSecret.value` or `cartoSecrets.varnishPurgeSecret.existingSecret` could be defined.
