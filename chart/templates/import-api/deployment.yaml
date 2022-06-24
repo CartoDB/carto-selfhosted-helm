@@ -34,7 +34,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.importApi.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: {{ template "carto.importApi.serviceAccountName" . }}
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
       {{- include "carto.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.importApi.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.hostAliases "context" $) | nindent 8 }}
@@ -181,9 +181,9 @@ spec:
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
-            {{- if ( include "carto.gcpBucketsServiceAccountKey.used" . ) }}
+            {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
             - name: gcp-buckets-service-account-key
-              mountPath: {{ include "carto.gcpBucketsServiceAccountKey.secretMountDir" . }}
+              mountPath: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountDir" . }}
               readOnly: true
             {{- end }}
             {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
@@ -209,13 +209,13 @@ spec:
             items:
               - key: {{ include "carto.google.secretKey" . }}
                 path: {{ include "carto.google.secretMountFilename" . }}
-        {{- if ( include "carto.gcpBucketsServiceAccountKey.used" . ) }}
+        {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
         - name: gcp-buckets-service-account-key
           secret:
-            secretName: {{ include "carto.gcpBucketsServiceAccountKey.secretName" . }}
+            secretName: {{ include "carto.googleCloudStorageServiceAccountKey.secretName" . }}
             items:
-              - key: {{ include "carto.gcpBucketsServiceAccountKey.secretKey" . }}
-                path: {{ include "carto.gcpBucketsServiceAccountKey.secretMountFilename" . }}
+              - key: {{ include "carto.googleCloudStorageServiceAccountKey.secretKey" . }}
+                path: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountFilename" . }}
         {{- end }}
         {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
         - name: postgresql-ssl-ca

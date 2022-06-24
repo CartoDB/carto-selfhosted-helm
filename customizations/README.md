@@ -1,3 +1,41 @@
+<!-- omit in toc -->
+# Table of Contents
+- [Customizations](#customizations)
+  - [Production Ready](#production-ready)
+  - [Custom Service Account](#custom-service-account)
+  - [How to apply the configurations](#how-to-apply-the-configurations)
+  - [Available Configurations](#available-configurations)
+    - [Configure the domain of your Self Hosted](#configure-the-domain-of-your-self-hosted)
+    - [Access to CARTO from outside the cluster](#access-to-carto-from-outside-the-cluster)
+      - [Requirements when exposing the service](#requirements-when-exposing-the-service)
+      - [Enable and configure LoadBalancer mode](#enable-and-configure-loadbalancer-mode)
+      - [Configure TLS termination in the service](#configure-tls-termination-in-the-service)
+        - [Disable internal HTTPS](#disable-internal-https)
+        - [Use your own TLS certificate](#use-your-own-tls-certificate)
+    - [Configure external Postgres](#configure-external-postgres)
+      - [Setup Postgres creating secrets](#setup-postgres-creating-secrets)
+      - [Setup Postgres with automatic secret creation](#setup-postgres-with-automatic-secret-creation)
+      - [Setup Azure Postgres](#setup-azure-postgres)
+      - [Configure Postgres SSL with custom CA](#configure-postgres-ssl-with-custom-ca)
+    - [Configure external Redis](#configure-external-redis)
+      - [Setup Redis creating secrets](#setup-redis-creating-secrets)
+      - [Setup Redis with automatic secret creation](#setup-redis-with-automatic-secret-creation)
+      - [Configure Redis TLS](#configure-redis-tls)
+    - [Custom Buckets](#custom-buckets)
+      - [Requirements](#requirements)
+      - [Google Cloud Storage](#google-cloud-storage)
+      - [AWS S3](#aws-s3)
+      - [Azure Storage](#azure-storage)
+    - [Enable BigQuery OAuth connections](#enable-bigquery-oauth-connections)
+    - [Google Maps](#google-maps)
+  - [Components scaling](#components-scaling)
+    - [Autoscaling](#autoscaling)
+      - [Prerequisites](#prerequisites)
+      - [Enable Carto autoscaling feature](#enable-carto-autoscaling-feature)
+    - [Enable static scaling](#enable-static-scaling)
+  - [Advanced configuration](#advanced-configuration)
+  - [Tips for creating the customization Yaml file](#tips-for-creating-the-customization-yaml-file)
+
 # Customizations
 
 This file explains how to configure CARTO Self Hosted to meet your needs. In this folder you will find also
@@ -18,6 +56,14 @@ Optional configurations:
 - [Configure scale of the components](#components-scaling)
 - [Use your own bucket to store the data](#custom-buckets) (by default, GCP CARTO buckets are used)
 
+## Custom Service Account
+
+CARTO deploys a dedicated infrastructure for every self hosted installation, including a Service Account key that is required to use some of the services deployed.
+
+If you prefer using your own GCP Service Account, please do the following prior to the Self Hosted installation:
+1. Create a dedicated Service Account for the CARTO Self Hosted.
+2. Contact CARTO support team and provide them the service account email.
+
 ## How to apply the configurations
 
 Create a dedicated [yaml](https://yaml.org/) file `customizations.yaml` for your configuration. For example, you could create a file with the next content:
@@ -30,11 +76,12 @@ appConfigValues:
 #     value: "<google-maps-api-key>"
 #   # Other secrets, like buckets' configuration
 ```
+> Follow [these steps](#tips-for-creating-the-customization-yaml-file) to create a well structured yaml file
 
 And add the following at the end of ALL the `helm install` or `helm upgrade` command:
 
 ```bash
-helm instal .. -f customizations.yaml
+helm install .. -f customizations.yaml
 ```
 
 You can also override values through the command-line to `helm`. Adding the argument: `--set key=value[,key=value]`
@@ -79,26 +126,39 @@ sessions before.
 
 #### Enable and configure LoadBalancer mode
 
-This is the easiest way of open your CARTO Self Hosted to the world. You need to change the `router` Service type to `LoadBalancer`.
-You can find an [example](service_loadBalancer/config.yaml). But we have prepared also a few specifics for different Kubernetes flavours:
+This is the easiest way to open your CARTO Self Hosted to the world on cloud providers which support external load balancers. You need to change the `router` Service type to `LoadBalancer`. This provides an externally-accessible IP address that sends traffic to the correct component on your cluster nodes.
+
+The actual creation of the load balancer happens asynchronously, and information about the provisioned balancer is published in the Service's `.status.loadBalancer` field.
+
+You can find an example [here](service_loadBalancer/config.yaml). Also, we have prepared a few specifics for different Kubernetes flavors, just add the config that you need in your `customizations.yaml`:
 
 - [AWS EKS](service_loadBalancer/aws_eks/config.yaml)
-<!--
-TODO: Add the other providers
--->
+- [GCP GKE](service_loadBalancer/config.yaml)
+- [AZU AKS](service_loadBalancer/azu_aks/config.yaml)
+
+> Note that with this config a [Load Balancer](https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer) resource is going to be created in your cloud provider, you can find more documentation about this kind of service [here](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer)
 
 #### Configure TLS termination in the service
 
-By default, the package generates a self-signed certificate with a validity of 365 days.
+##### Disable internal HTTPS
 
 > ⚠️ CARTO Self Hosted only works if the final client use HTTPS protocol. ⚠️
 
-<!--
-#### Disable internal HTTPS
-TODO: Document and add the ability to do it
--->
+If you need to disable `HTTPS` in the Carto router, [add the following lines](#how-to-apply-the-configurations) to your `customizations.yaml`:
 
-To add your own certificate you need:
+```yaml
+tlsCerts:
+  httpsEnabled: false
+```
+
+> ⚠️ Remember that CARTO only works with `HTTPS`, so if you disable this protocol in the Carto Router component you should configure it in a higher layer like a Load Balancer (service or ingress) to make the redirection from `HTTP` to `HTTPS` ⚠️
+
+##### Use your own TLS certificate
+
+By default, the package generates a self-signed certificate with a validity of 365 days.
+
+
+If you want to add your own certificate you need:
 
 - Create a kubernetes secret with following content:
 
@@ -114,6 +174,7 @@ To add your own certificate you need:
 
   ```yaml
   tlsCerts:
+    httpsEnabled: true
     autoGenerate: false
     existingSecret:
       name: "mycarto-custom-tls-certificate"
@@ -127,7 +188,12 @@ CARTO Self Hosted requires a Postgres (version 11+) to work. This package comes 
 
 This Postgres is used to store some CARTO internal metadata.
 
-> ⚠️ This Postgres has nothing to do with the ones that the user configures and connect through CARTO workspace. ⚠️
+Here are some Terraform examples of databases created in different providers:
+- [GCP Cloud SQL](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/gcp/postgresql.tf).
+- [AWS RDS](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/aws/postgresql-rds.tf).
+- [Azure Database](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/azure/postgresql.tf).
+
+> :warning: This Postgres has nothing to do with the ones that the user configures and connect through CARTO workspace.
 
 There are alternatives on how to configure Postgres. [Set the secrets manually](#setup-postgres-creating-secrets) and point to them
 from the configuration, or let the chart to create the [secrets automatically](#setup-postgres-with-automatic-secret-creation).
@@ -147,7 +213,7 @@ from the configuration, or let the chart to create the [secrets automatically](#
 > Note: `externalPostgresql.user` and `externalPostgresql.database` inside the Postgres instance are going to be created automatically during the installation process. Do not create then manually.
 
 2. Configure the package:
-   Add the following lines to you `customizations.yaml` to connect to the external Postgres:
+   Add the following lines to your `customizations.yaml` to connect to the external Postgres:
 
    ````yaml
      internalPostgresql:
@@ -174,7 +240,7 @@ from the configuration, or let the chart to create the [secrets automatically](#
 #### Setup Postgres with automatic secret creation
 
 1. Configure the package:
-   Add the following lines to you `customizations.yaml` to connect to the external Postgres:
+   Add the following lines to your `customizations.yaml` to connect to the external Postgres:
 
    ```yaml
    internalPostgresql:
@@ -241,7 +307,13 @@ externalPostgresql:
 ### Configure external Redis
 
 CARTO Self Hosted require a Redis (version 5+) to work. This Redis instance does not need persistance as it is used as a cache.
-This package comes with an internal Redis but it is not recommended for production. It does not have any logic for backups or any other monitoring.
+
+This package comes with an internal Redis but it is not recommended for production. It lacks any logic for backups or monitoring.
+
+Here are some Terraform examples of databases created in different providers:
+- [GCP Redis](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/gcp/redis.tf).
+- [AWS Redis](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/aws/redis.tf).
+- [Azure Redis](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/azure/redis.tf).
 
 In the same way as with Postgres, there are two alternatives regarding the secrets,
 [set the secrets manually](#setup-redis-creating-secrets) and point to them from the configuration,
@@ -260,7 +332,7 @@ kubectl create secret generic \
 
 2. Configure the package:
 
-Add the following lines to you `customizations.yaml` to connect to the external Postgres:
+Add the following lines to your `customizations.yaml` to connect to the external Postgres:
 
 ```yaml
 internalRedis:
@@ -282,7 +354,7 @@ externalRedis:
 #### Setup Redis with automatic secret creation
 
 1. Configure the package:
-   Add the following lines to you `customizations.yaml` to connect to the external Postgres:
+   Add the following lines to your `customizations.yaml` to connect to the external Postgres:
 
 ```yaml
 internalRedis:
@@ -322,6 +394,258 @@ externalRedis:
     #   -----BEGIN CERTIFICATE-----
     #   ...
     #   -----END CERTIFICATE-----
+```
+### Custom Buckets
+
+For every CARTO Self Hosted installation, we create GCS buckets in our side as part of the required infrastructure for importing data, map thumbnails and other internal data.
+
+You can create and use your own storage buckets in any of the following supported storage providers:
+
+- Google Cloud Storage. [Terraform code example](https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/gcp/storage.tf).
+- AWS S3. [Terraform code example](https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/aws/storage.tf).
+- Azure Storage. [Terraform code example](https://github.com/CartoDB/carto-selfhosted/blob/master/examples/terraform/azure/storage.tf).
+
+> :warning: You can only set one provider at a time.
+
+#### Requirements
+
+- You need to create 3 buckets in your preferred Cloud provider:
+  - Import Bucket
+  - Client Bucket
+  - Thumbnails Bucket
+
+> There's no name constraints.
+
+> :warning: Map thumbnails storage objects (.png files) can be configured to be `public` (default) or `private`. In order to change this, set `appConfigValues.workspaceThumbnailsPublic: "false"` (see the examples below). For the default configuration to work, the bucket must allow public objects/blobs.
+
+- CORS configuration: Thumbnails and Import buckets require having the following CORS headers.
+  - Allowed origins: `*`
+  - Allowed methods: `GET`, `PUT`, `POST`
+  - Allowed headers (common): `Content-Type`, `Content-MD5`, `Content-Disposition`, `Cache-Control`
+    - GCS (extra): `x-goog-content-length-range`, `x-goog-meta-filename`
+    - Azure (extra): `Access-Control-Request-Headers`, `X-MS-Blob-Type`
+  - Max age: `3600`
+
+> CORS is configured at bucket level in GCS and S3, and at storage account level in Azure.
+
+> How do I setup CORS configuration? Check the provider docs: [GCS](https://cloud.google.com/storage/docs/configuring-cors), [AWS S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/enabling-cors-examples.html), [Azure Storage](https://docs.microsoft.com/en-us/rest/api/storageservices/cross-origin-resource-sharing--cors--support-for-the-azure-storage-services#enabling-cors-for-azure-storage).
+
+- Generate credentials to access those buckets, our supported authentication methods are:
+  - GCS: Service Account Key
+  - AWS: Access Key ID and Secret Access Key
+  - Azure: Access Key
+
+- Grant Read/Write permissions over the buckets to the credentials mentioned above.
+
+#### Google Cloud Storage
+
+In order to use Google Cloud Storage custom buckets you need to:
+
+1. Create the buckets.
+
+2. Configure the required [CORS settings](#requirements).
+
+3. Create a [custom Service account](#custom-service-account).
+
+4. Grant this service account with the following role (in addition to the buckets access): `roles/iam.serviceAccountTokenCreator`.
+
+   > :warning: We don't recommend grating this role at project IAM level, but instead at the Service Account permissions level (IAM > Service Accounts > `your_service_account` > Permissions).
+
+5. Add the following lines to your `customizations.yaml` and replace the `<values>` with your own settings:
+
+```yaml
+appConfigValues:
+  storageProvider: "gcp"
+  importBucket: <import_bucket_name>
+  workspaceImportsBucket: <client_bucket_name>
+  workspaceThumbnailsBucket: <thumbnails_bucket_name>
+  workspaceThumbnailsPublic: <false|true>
+  googleCloudStorageProjectId: <gcp_project_id>
+```
+
+#### AWS S3
+
+In order to use AWS S3 custom buckets you need to:
+
+1. Create the buckets. If you enable `Block public access` in the bucket properties, make sure you set `appConfigValues.workspaceThumbnailsPublic` to `false`.
+
+2. Configure the required [CORS settings](#requirements).
+
+3. Create an IAM user and generate a programmatic key ID and secret.
+
+4. Grant this user with read/write access permissions over the buckets.
+
+5. Add the following lines to your `customizations.yaml` and replace the `<values>` with your own settings:
+
+```yaml
+appConfigValues:
+  storageProvider: "s3"
+  importBucket: <import_bucket_name>
+  workspaceImportsBucket: <client_bucket_name>
+  workspaceThumbnailsBucket: <thumbnails_bucket_name>
+  workspaceThumbnailsPublic: <false|true>
+  awsS3Region: <s3_buckets_region>
+```
+
+6. Pass your AWS credentials as secrets by using one of the options below:
+
+   - **Option 1: Automatically create a secret:**
+
+   Add the following lines to your `customizations.yaml` replacing it with your access key values:
+   ```yaml
+   appSecrets:
+     awsAccessKeyId:
+       value: "<REDACTED>"
+     awsAccessKeySecret:
+       value: "<REDACTED>"
+   ```
+   > `appSecrets.awsAccessKeyId.value` and `appSecrets.awsAccessKeySecret.value` should be in plain text
+
+   - **Option 2: Using an existing secret:**
+   Create a secret running the command below, after replacing the `<REDACTED>` values with your key values:
+   ```bash
+   kubectl create secret generic \                                                                      
+     [-n my-namespace] \
+     mycarto-custom-s3-secret \
+     --from-literal=awsAccessKeyId=<REDACTED> \
+     --from-literal=awsSecretAccessKey=<REDACTED>
+   ```
+   > Use the same namespace where you are installing the helm chart
+
+   Add the following lines to your `customizations.yaml`, without replacing any value:
+
+   ```yaml
+   appSecrets:
+     awsAccessKeyId:
+       existingSecret:
+         name: mycarto-custom-s3-secret
+         key: awsAccessKeyId
+     awsAccessKeySecret:
+       existingSecret:
+         name: mycarto-custom-s3-secret
+         key: awsSecretAccessKey
+   ```
+
+#### Azure Storage
+
+In order to use Azure Storage buckets (aka containers) you need to:
+
+1. Create an storage account if you don't have one already.
+
+2. Configure the required [CORS settings](#requirements).
+
+3. Create the storage buckets. If you set the `Public Access Mode` to `private` in the bucket properties, make sure you set `appConfigValues.workspaceThumbnailsPublic` to `false`.
+
+4. Generate an Access Key, from the storage account's Security properties.
+
+5. Add the following lines to your `customizations.yaml`  and replace the `<values>` with your own settings:
+
+```yaml
+appConfigValues:
+  storageProvider: "azure-blob"
+  azureStorageAccount: <storage_account_name>
+  importBucket: <import_bucket_name>
+  workspaceImportsBucket: <client_bucket_name>
+  workspaceThumbnailsBucket: <thumbnails_bucket_name>
+  workspaceThumbnailsPublic: <false|true>
+```
+
+6. Pass your credentials as secrets by using one of the options below:
+
+   - **Option 1: Automatically create the secret:**
+
+   ```yaml
+   appSecrets:
+     azureStorageAccessKey:
+       value: "<REDACTED>"
+   ```
+
+   > `appSecrets.azureStorageAccessKey.value` should be in plain text
+
+   - **Option 2: Using existing secret:**
+   Create a secret running the command below, after replacing the `<REDACTED>` values with your key values:
+
+   ```bash
+   kubectl create secret generic \                                                                      
+     [-n my-namespace] \
+     mycarto-custom-azure-secret \
+     --from-literal=azureStorageAccessKey=<REDACTED>
+   ```
+   > Use the same namespace where you are installing the helm chart
+
+   Add the following lines to your `customizations.yaml`, without replacing any value:
+
+   ```yaml
+   appSecrets:
+     awsAccessKeyId:
+       existingSecret:
+         name: mycarto-custom-azure-secret
+         key: azureStorageAccessKey
+   ```
+
+### Enable BigQuery OAuth connections
+
+This feature allows users to create a BigQuery connection using `Sign in with Google` instead of providing a service account key.
+
+> :warning: Connections created with OAuth cannot be shared with other organization users.
+
+1. Create an OAuth consent screen inside the desired GCP project:
+   - Introduce an app name and a user support email.
+   - Add an authorized domain (the one used in your email).
+   - Add another email as dev contact info (it can be the same).
+   - Add the following scopes: `./auth/userinfo.email`, `./auth/userinfo.profile` & `./auth/bigquery`.
+
+2. Create the OAuth credentials:
+   - Type: Web application.
+   - Authorized JavaScript origins: `https://<your_selfhosted_domain>`.
+   - Authorized redirect URIs: `https://<your_selfhosted_domain>/connections/bigquery/oauth`.
+   - Download the credentials file.
+
+3. Follow [these guidelines](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/customizations/README.md#how-to-apply-the-configurations) to add the following lines to your `customizations.yaml` populating them with the credential's file corresponding values:
+
+```yaml
+workspaceApi:
+  extraEnvVars:
+    - name: REACT_APP_BIGQUERY_OAUTH
+      value: true
+    - name: BIGQUERY_OAUTH2_CLIENT_ID
+      value: <value_from_credentials_web_client_id>
+    - name: BIGQUERY_OAUTH2_CLIENT_SECRET
+      value: <value_from_credentials_web_client_secret>
+```
+
+### Google Maps
+
+In order to enable Google Maps basemaps inside CARTO Self Hosted, you need to own a Google Maps API key and add one of the options below to your `customizations.yaml` following [these guidelines](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/customizations/README.md#how-to-apply-the-configurations):
+
+- **Option 1: Automatically create the secret:**
+
+```yaml
+appSecrets:
+  googleMapsApiKey:
+    value: "<REDACTED>"
+```
+
+> `appSecrets.googleMapsApiKey.value` should be in plain text
+
+- **Option 2: Using existing secret:**
+Create a secret running the command below, after replacing the `<REDACTED>` values with your key values:
+
+```bash
+  kubectl create secret generic \                                                                      
+  [-n my-namespace] \
+  mycarto-google-maps-api-key \
+  --from-literal=googleMapsApiKey=<REDACTED>
+```
+
+Add the following lines to your `customizations.yaml`, without replacing any value:
+
+```yaml
+  appSecrets:
+    googleMapsApiKey:
+      existingSecret:
+        name: mycarto-google-maps-api-key
+        key: googleMapsApiKey
 ```
 
 ## Components scaling
@@ -374,100 +698,41 @@ You can set statically set the number of pods should be running. To do it, use [
 
 > Although we recommend the autoscaling configuration, you could choose the autoscaling feature for some components and the static configuration for the others. Remember that autoscaling override the static configuration, so if one component has both configurations, autoscaling will take precedence.
 
-## Custom Buckets
-
-If you want to keep as much data as possible in your infrastructure you can configure CARTO Self Hosted to use your own cloud storage. Supported storage services are:
-
-- Google Compute Storage
-- AWS S3
-- Azure Storage
-
-> :warning: You can only set one provider at a time. These buckets are used as temporary storage when importing data, for map thumbnails, and other internal data.
-
-<!--
-TODO: Add the code related to Terraform
--->
-
-### Requirements
-
-You need to create 3 buckets in your preferred Cloud provider
-
-- Import Bucket
-- Client Bucket
-- Thumbnails Bucket
-
-> There's no name constraints
-
-It's mandatory to have credentials for those buckets, our supported credentials methods are
-
-- GCP: Service Account Key
-- AWS: Access Key ID and Secret Access Key
-- Azure: Storage Access Key
-
-> :warning: Those credentials should have permissions to interact (read/write) with the above buckets
-
-### Google Compute Storage
-
-Add the following lines to your `customizations.yaml`:
-
-```yaml
-appConfigValues:
-  storageProvider: "gcp"
-  importBucket: "carto-import-bucket"
-  workspaceImportsBucket: "carto-client-bucket"
-  workspaceThumbnailsBucket: "carto-thumbnails-bucket"
-  workspaceThumbnailsPublic: false
-
-appSecrets:
-  gcpBucketsServiceAccountKey:
-    value: |
-      {
-      <REDACTED_JSON_SERVICE_ACCOUNT>
-      }
-```
-
-> `appSecrets.gcpBucketsServiceAccountKey.value` should be in plain text
-
-### AWS S3
-
-Add the following lines to your `customizations.yaml`:
-
-```yaml
-appConfigValues:
-  storageProvider: "s3"
-  importBucket: "carto-import-bucket"
-  workspaceImportsBucket: "carto-client-bucket"
-  workspaceThumbnailsBucket: "carto-thumbnails-bucket"
-  workspaceThumbnailsPublic: false
-
-appSecrets:
-  awsAccessKeyId:
-    value: "<REDACTED>"
-  awsAccessKeySecret:
-    value: "<REDACTED>"
-```
-
-> `appSecrets.awsAccessKeyId.value` and `appSecrets.awsAccessKeySecret.value` should be in plain text
-
-### Azure Storage
-
-Add the following lines to your `customizations.yaml`:
-
-```yaml
-appConfigValues:
-  storageProvider: "azure-blob"
-  importBucket: "carto-import-bucket"
-  workspaceImportsBucket: "carto-client-bucket"
-  workspaceThumbnailsBucket: "carto-thumbnails-bucket"
-  workspaceThumbnailsPublic: false
-
-appSecrets:
-  azureStorageAccessKey:
-    value: "<REDACTED>"
-```
-
-> `appSecrets.azureStorageAccessKey.value` should be in plain text
-
 ## Advanced configuration
 
 If you need a more advanced configuration you can check the [full chart documentation](../chart/README.md) with all the available [parameters](../chart/README.md#parameters) or contact [support@carto.com](mailto:support@carto.com)
+
+## Tips for creating the customization Yaml file
+
+Here you can find some basic instructions in order to create the config yaml file for your environment:
+
+- The configuration file `customizations.yaml` will be composed of keys and their value, please do not define the same key several times, because they will be overridden between them. Each key in the yaml file would have subkeys for different configurations, so all of them should be inside the root key. Example:
+    ```yaml
+    mapsApi:
+      autoscaling:
+        enabled: true
+        minReplicas: 2
+        maxReplicas: 3
+        targetCPUUtilizationPercentage: 75
+  ```
+
+- Check the text values of the `customizations.yaml` keys, they have to be set between quotes. Example:
+
+  ```yaml
+  appConfigValues:
+    selfHostedDomain: "my.domain.com"
+  ```
+
+  Note that integers and booleans values are set without quotes.
+
+- Once we have the config files ready, we would be able to check the values that are going to be used by the package with this command:
+
+  ```bash
+  helm template \
+  mycarto \
+  carto/carto \
+  --namespace <your_namespace> \
+  -f carto-values.yaml \
+  -f carto-secrets.yaml \
+  -f customizations.yaml
+  ```

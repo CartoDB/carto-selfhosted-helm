@@ -1,6 +1,6 @@
 name: 'VIB'
 on: # rebuild any PRs and main branch changes
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - reopened
@@ -21,21 +21,87 @@ jobs:
     strategy:
       matrix:
        include:
+         - target-platform: eks
+           target-platform-id: ef54a736-5e43-4a6c-9400-b162acd8b83d
          - target-platform: gke
            target-platform-id: 91d398a2-25c4-4cda-8732-75a3cfc179a1
+         - target-platform: aks
+           target-platform-id: 7b13a7bb-011c-474f-ad71-8152fc321b9e
       fail-fast: false
-    name: Verify ${{ matrix.target-platform}}
+    env:
+      ONPREM_ID: "vmware-${{ matrix.target-platform }}-1"
+    name: Verify ${{ matrix.target-platform }}
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: ${{github.event.pull_request.head.ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Google Cloud Auth
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.SELFHOSTED_HELM_SERVICE_ACCOUNT_BASE64 }}
+      - name: Install Google command line
+        uses: google-github-actions/setup-gcloud@v0
+        # with:
+        #   project_id: ${{ env.ARTIFACTS_PROJECT_ID }}
+        #   version: ${{ env.GCLOUD_VERSION }}
+      - name: Retrieve secrets
+        id: secrets
+        uses: google-github-actions/get-secretmanager-secrets@v0
+        with:
+          ## Role required: roles/secretmanager.secretAccessor
+          # yamllint disable rule:line-length
+          secrets: |-
+            package-carto-values:projects/carto-tnt-onp-${{ env.ONPREM_ID }}/secrets/selfhosted-k8s-customer-package
+            package-carto-secrets:projects/carto-tnt-onp-${{ env.ONPREM_ID }}/secrets/selfhosted-k8s-customer-package-secrets
+          # yamllint enable
+      - name: Set up yq
+        uses: frenck/action-setup-yq@v1
+      - name: Generate Helm customization config
+        id: helm_customization
+        shell: bash
+        env:
+          PACKAGE_CARTO_VALUES: ${{ steps.secrets.outputs.package-carto-values }}
+          PACKAGE_CARTO_SECRETS: ${{ steps.secrets.outputs.package-carto-secrets }}
+        run: |
+          set -ex
+
+          cat << EOF > manual_customizations.yaml
+          appConfigValues:
+            selfHostedDomain: "carto.vmw"
+          EOF
+
+          echo "${PACKAGE_CARTO_VALUES}" > carto-values.yaml
+          echo "${PACKAGE_CARTO_SECRETS}" > carto-secrets.yaml
+
+          # yq v3: yq merge -x \
+          # shellcheck disable=SC2016
+          yq eval-all '. as $item ireduce ({}; . * $item )' \
+            customizations/service_loadBalancer/config.yaml \
+            customizations/scale_components/static.yaml \
+            customizations/resources/minimum.yaml \
+            carto-values.yaml \
+            carto-secrets.yaml \
+            manual_customizations.yaml \
+            > vib_helm_package.yaml
+
+          echo "::group::Helm customization generated"
+          cat vib_helm_package.yaml
+          echo "::endgroup::"
+
+          set +x
+          HELM_CUSTOMIZATION_BASE64=$(base64 -w 0 vib_helm_package.yaml)
+          echo "::add-mask::${HELM_CUSTOMIZATION_BASE64}"
+          sleep 1s
+          set -x
+          echo "::set-output name=helm-customization-base64::${HELM_CUSTOMIZATION_BASE64}"
+
       - uses: vmware-labs/vmware-image-builder-action@0.2.0
         with:
           pipeline: vib-platform-verify.json
         env:
           VIB_ENV_TARGET_PLATFORM: ${{ matrix.target-platform-id }}
-          VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ secrets.CARTO_RUNTIME_PARAMETERS }}
+          VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ steps.helm_customization.outputs.helm-customization-base64 }}
           VIB_ENV_PAT_CYPRESS_REPOSITORY: ${{ secrets.VIB_ENV_PAT_CYPRESS_REPOSITORY }}
           VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
           VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET: ${{ secrets.VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET }}

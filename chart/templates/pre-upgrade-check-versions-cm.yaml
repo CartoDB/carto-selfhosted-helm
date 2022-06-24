@@ -1,3 +1,4 @@
+{{- if (.Values.upgradeCheck.enabled) }}
 {{- $minVersion  := .Chart.Annotations.minVersion -}}
 apiVersion: v1
 kind: ConfigMap
@@ -26,3 +27,4 @@ data :
       exit 1
     fi
 
+{{- end}}

@@ -1,6 +1,6 @@
 # carto
 
-[The CARTO Helm chart](https://github.com/CartoDB/carto-selfhosted) deploys CARTO in a self hosted environment.
+[The CARTO Helm chart](https://github.com/CartoDB/carto-selfhosted-helm) deploys CARTO in a self hosted environment.
 
 ## Introduction
 
@@ -14,17 +14,17 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### Custom config parameters
 
-| Name                                        | Description                                                                                | Value                  |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------- |
-| `appConfigValues.selfHostedDomain`          | Domain that is going to be used to access to the CARTO self-hosted.                        | `carto-selfhosted.lan` |
-| `appConfigValues.storageProvider`           | Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob` | `gcp`                  |
-| `appConfigValues.httpCacheEnabled`          | Enable the internal httpCache                                                              | `true`                 |
-| `appConfigValues.importBucket`              | Bucket to be used to store the import files                                                | `""`                   |
-| `appConfigValues.workspaceImportsBucket`    | Bucket to be used to store metadata of the workspace                                       | `""`                   |
-| `appConfigValues.workspaceThumbnailsBucket` | Bucket to be used to store the thumbnails generated in the app                             | `""`                   |
-| `appConfigValues.workspaceThumbnailsPublic` | Indicate if the thumbnails could be accessed publicly                                      | `true`                 |
-| `appConfigValues.gcpBucketsProjectId`       | If the bucket is GCP, the ProjectId to be used                                             | `""`                   |
-| `appConfigValues.awsS3Region`               | If the bucket is S3, the region to be used                                                 | `""`                   |
+| Name                                          | Description                                                                                | Value                  |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------- |
+| `appConfigValues.selfHostedDomain`            | Domain that is going to be used to access to the CARTO self-hosted.                        | `carto-selfhosted.lan` |
+| `appConfigValues.storageProvider`             | Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob` | `gcp`                  |
+| `appConfigValues.httpCacheEnabled`            | Enable the internal httpCache                                                              | `true`                 |
+| `appConfigValues.importBucket`                | Bucket to be used to store the import files                                                | `""`                   |
+| `appConfigValues.workspaceImportsBucket`      | Bucket to be used to store metadata of the workspace                                       | `""`                   |
+| `appConfigValues.workspaceThumbnailsBucket`   | Bucket to be used to store the thumbnails generated in the app                             | `""`                   |
+| `appConfigValues.workspaceThumbnailsPublic`   | Indicate if the thumbnails could be accessed publicly                                      | `true`                 |
+| `appConfigValues.googleCloudStorageProjectId` | If the bucket is GCP, the ProjectId to be used                                             | `""`                   |
+| `appConfigValues.awsS3Region`                 | If the bucket is S3, the region to be used                                                 | `""`                   |
 
 
 ### CARTO config parameters
@@ -44,54 +44,72 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### App secret
 
-| Name                                                         | Description                                                                                                                                                                                                                                                     | Value |
-| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
-| `appSecrets.googleMapsApiKey`                                | Google maps api-key value.                                                                                                                                                                                                                                      |       |
-| `appSecrets.googleMapsApiKey.value`                          | Value of the secret `Google maps api-key`. One of `appSecrets.googleMapsApiKey.value` or `appSecrets.googleMapsApiKey.existingSecret` could be defined.                                                                                                         | `""`  |
-| `appSecrets.googleMapsApiKey.existingSecret.name`            | Name of the pre-existent secret containing the `appSecrets.googleMapsApiKey.existingSecret.key`. If `appSecrets.googleMapsApiKey.value` is defined, this value is going to be ignored and not used.                                                             | `""`  |
-| `appSecrets.googleMapsApiKey.existingSecret.key`             | Key to find in `appSecrets.googleMapsApiKey.existingSecret.name` where the value of `appSecrets.googleMapsApiKey` is found. If `appSecrets.googleMapsApiKey.value` is defined, this value is going to be ignored and not used.                                  | `""`  |
-| `appSecrets.gcpBucketsServiceAccountKey`                     | If GCP is used in self-hosted, the AccessKey Secret.                                                                                                                                                                                                            |       |
-| `appSecrets.gcpBucketsServiceAccountKey.value`               | Value of the secret `AccessKey Secret` (Only required if GCP is used). One of `appSecrets.gcpBucketsServiceAccountKey.value` or `appSecrets.gcpBucketsServiceAccountKey.existingSecret` could be defined.                                                       | `""`  |
-| `appSecrets.gcpBucketsServiceAccountKey.existingSecret.name` | Name of the pre-existent secret containing the `appSecrets.gcpBucketsServiceAccountKey.existingSecret.key`. If `appSecrets.gcpBucketsServiceAccountKey.value` is defined, this value is going to be ignored and not used.                                       | `""`  |
-| `appSecrets.gcpBucketsServiceAccountKey.existingSecret.key`  | Key to find in `appSecrets.gcpBucketsServiceAccountKey.existingSecret.name` where the value of `appSecrets.gcpBucketsServiceAccountKey` is found. If `appSecrets.gcpBucketsServiceAccountKey.value` is defined, this value is going to be ignored and not used. | `""`  |
-| `appSecrets.awsAccessKeyId`                                  | If AWS is used in self-hosted, the AccessKey Id.                                                                                                                                                                                                                |       |
-| `appSecrets.awsAccessKeyId.value`                            | Value of the secret `AccessKey Id` (Only required if AWS is used). One of `appSecrets.awsAccessKeyId.value` or `appSecrets.awsAccessKeyId.existingSecret` could be defined.                                                                                     | `""`  |
-| `appSecrets.awsAccessKeyId.existingSecret.name`              | Name of the pre-existent secret containing the `appSecrets.awsAccessKeyId.existingSecret.key`. If `appSecrets.awsAccessKeyId.value` is defined, this value is going to be ignored and not used.                                                                 | `""`  |
-| `appSecrets.awsAccessKeyId.existingSecret.key`               | Key to find in `appSecrets.awsAccessKeyId.existingSecret.name` where the value of `appSecrets.awsAccessKeyId` is found. If `appSecrets.awsAccessKeyId.value` is defined, this value is going to be ignored and not used.                                        | `""`  |
-| `appSecrets.awsAccessKeySecret`                              | If AWS is used in self-hosted, the AccessKey Secret.                                                                                                                                                                                                            |       |
-| `appSecrets.awsAccessKeySecret.value`                        | Value of the secret `AccessKey Secret` (Only required if AWS is used). One of `appSecrets.awsAccessKeySecret.value` or `appSecrets.awsAccessKeySecret.existingSecret` could be defined.                                                                         | `""`  |
-| `appSecrets.awsAccessKeySecret.existingSecret.name`          | Name of the pre-existent secret containing the `appSecrets.awsAccessKeySecret.existingSecret.key`. If `appSecrets.awsAccessKeySecret.value` is defined, this value is going to be ignored and not used.                                                         | `""`  |
-| `appSecrets.awsAccessKeySecret.existingSecret.key`           | Key to find in `appSecrets.awsAccessKeySecret.existingSecret.name` where the value of `appSecrets.awsAccessKeySecret` is found. If `appSecrets.awsAccessKeySecret.value` is defined, this value is going to be ignored and not used.                            | `""`  |
-| `appSecrets.azureStorageAccessKey`                           | If Azure is used in self-hosted, the AccessKey Secret.                                                                                                                                                                                                          |       |
-| `appSecrets.azureStorageAccessKey.value`                     | Value of the secret `AccessKey Secret` (Only required if Azure is used). One of `appSecrets.azureStorageAccessKey.value` or `appSecrets.azureStorageAccessKey.existingSecret` could be defined.                                                                 | `""`  |
-| `appSecrets.azureStorageAccessKey.existingSecret.name`       | Name of the pre-existent secret containing the `appSecrets.azureStorageAccessKey.existingSecret.key`. If `appSecrets.azureStorageAccessKey.value` is defined, this value is going to be ignored and not used.                                                   | `""`  |
-| `appSecrets.azureStorageAccessKey.existingSecret.key`        | Key to find in `appSecrets.azureStorageAccessKey.existingSecret.name` where the value of `appSecrets.azureStorageAccessKey` is found. If `appSecrets.azureStorageAccessKey.value` is defined, this value is going to be ignored and not used.                   | `""`  |
+| Name                                                                 | Description                                                                                                                                                                                                                                                                             | Value |
+| -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| `appSecrets.googleMapsApiKey`                                        | Google maps api-key value.                                                                                                                                                                                                                                                              |       |
+| `appSecrets.googleMapsApiKey.value`                                  | Value of the secret `Google maps api-key`. One of `appSecrets.googleMapsApiKey.value` or `appSecrets.googleMapsApiKey.existingSecret` could be defined.                                                                                                                                 | `""`  |
+| `appSecrets.googleMapsApiKey.existingSecret.name`                    | Name of the pre-existent secret containing the `appSecrets.googleMapsApiKey.existingSecret.key`. If `appSecrets.googleMapsApiKey.value` is defined, this value is going to be ignored and not used.                                                                                     | `""`  |
+| `appSecrets.googleMapsApiKey.existingSecret.key`                     | Key to find in `appSecrets.googleMapsApiKey.existingSecret.name` where the value of `appSecrets.googleMapsApiKey` is found. If `appSecrets.googleMapsApiKey.value` is defined, this value is going to be ignored and not used.                                                          | `""`  |
+| `appSecrets.googleCloudStorageServiceAccountKey`                     | If GCP is used in self-hosted, the AccessKey Secret.                                                                                                                                                                                                                                    |       |
+| `appSecrets.googleCloudStorageServiceAccountKey.value`               | Value of the secret `AccessKey Secret` (Only required if GCP is used). One of `appSecrets.googleCloudStorageServiceAccountKey.value` or `appSecrets.googleCloudStorageServiceAccountKey.existingSecret` could be defined.                                                               | `""`  |
+| `appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name` | Name of the pre-existent secret containing the `appSecrets.googleCloudStorageServiceAccountKey.existingSecret.key`. If `appSecrets.googleCloudStorageServiceAccountKey.value` is defined, this value is going to be ignored and not used.                                               | `""`  |
+| `appSecrets.googleCloudStorageServiceAccountKey.existingSecret.key`  | Key to find in `appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name` where the value of `appSecrets.googleCloudStorageServiceAccountKey` is found. If `appSecrets.googleCloudStorageServiceAccountKey.value` is defined, this value is going to be ignored and not used. | `""`  |
+| `appSecrets.awsAccessKeyId`                                          | If AWS is used in self-hosted, the AccessKey Id.                                                                                                                                                                                                                                        |       |
+| `appSecrets.awsAccessKeyId.value`                                    | Value of the secret `AccessKey Id` (Only required if AWS is used). One of `appSecrets.awsAccessKeyId.value` or `appSecrets.awsAccessKeyId.existingSecret` could be defined.                                                                                                             | `""`  |
+| `appSecrets.awsAccessKeyId.existingSecret.name`                      | Name of the pre-existent secret containing the `appSecrets.awsAccessKeyId.existingSecret.key`. If `appSecrets.awsAccessKeyId.value` is defined, this value is going to be ignored and not used.                                                                                         | `""`  |
+| `appSecrets.awsAccessKeyId.existingSecret.key`                       | Key to find in `appSecrets.awsAccessKeyId.existingSecret.name` where the value of `appSecrets.awsAccessKeyId` is found. If `appSecrets.awsAccessKeyId.value` is defined, this value is going to be ignored and not used.                                                                | `""`  |
+| `appSecrets.awsAccessKeySecret`                                      | If AWS is used in self-hosted, the AccessKey Secret.                                                                                                                                                                                                                                    |       |
+| `appSecrets.awsAccessKeySecret.value`                                | Value of the secret `AccessKey Secret` (Only required if AWS is used). One of `appSecrets.awsAccessKeySecret.value` or `appSecrets.awsAccessKeySecret.existingSecret` could be defined.                                                                                                 | `""`  |
+| `appSecrets.awsAccessKeySecret.existingSecret.name`                  | Name of the pre-existent secret containing the `appSecrets.awsAccessKeySecret.existingSecret.key`. If `appSecrets.awsAccessKeySecret.value` is defined, this value is going to be ignored and not used.                                                                                 | `""`  |
+| `appSecrets.awsAccessKeySecret.existingSecret.key`                   | Key to find in `appSecrets.awsAccessKeySecret.existingSecret.name` where the value of `appSecrets.awsAccessKeySecret` is found. If `appSecrets.awsAccessKeySecret.value` is defined, this value is going to be ignored and not used.                                                    | `""`  |
+| `appSecrets.azureStorageAccessKey`                                   | If Azure is used in self-hosted, the AccessKey Secret.                                                                                                                                                                                                                                  |       |
+| `appSecrets.azureStorageAccessKey.value`                             | Value of the secret `AccessKey Secret` (Only required if Azure is used). One of `appSecrets.azureStorageAccessKey.value` or `appSecrets.azureStorageAccessKey.existingSecret` could be defined.                                                                                         | `""`  |
+| `appSecrets.azureStorageAccessKey.existingSecret.name`               | Name of the pre-existent secret containing the `appSecrets.azureStorageAccessKey.existingSecret.key`. If `appSecrets.azureStorageAccessKey.value` is defined, this value is going to be ignored and not used.                                                                           | `""`  |
+| `appSecrets.azureStorageAccessKey.existingSecret.key`                | Key to find in `appSecrets.azureStorageAccessKey.existingSecret.name` where the value of `appSecrets.azureStorageAccessKey` is found. If `appSecrets.azureStorageAccessKey.value` is defined, this value is going to be ignored and not used.                                           | `""`  |
 
 
 ### CARTO secrets
 
-| Name                                                           | Description                                                                                                                                                                                                                                                           | Value     |
-| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| `cartoSecrets.encryptionSecretKey`                             | The secret used to encrypt the clients Carto connections stored in the database.                                                                                                                                                                                      |           |
-| `cartoSecrets.encryptionSecretKey.value`                       | Value of the secret used to encrypt the clients Carto connections stored in the database. One of `cartoSecrets.encryptionSecretKey.value` or `cartoSecrets.encryptionSecretKey.existingSecret` could be defined.                                                      | `""`      |
-| `cartoSecrets.encryptionSecretKey.existingSecret.name`         | Name of the pre-existent secret containing the `cartoSecrets.encryptionSecretKey.existingSecret.key`. If `cartoSecrets.encryptionSecretKey.value` is defined, this value is going to be ignored and not used.                                                         | `""`      |
-| `cartoSecrets.encryptionSecretKey.existingSecret.key`          | Key to find in `cartoSecrets.encryptionSecretKey.existingSecret.name` where the value of `cartoSecrets.encryptionSecretKey` is found. If `cartoSecrets.encryptionSecretKey.value` is defined, this value is going to be ignored and not used.                         | `""`      |
-| `cartoSecrets.varnishPurgeSecret`                              | The secret used (by the app) to exec purge request.                                                                                                                                                                                                                   |           |
-| `cartoSecrets.varnishPurgeSecret.value`                        | Value of the secret used (by the app) to exec purge request. One of `cartoSecrets.varnishPurgeSecret.value` or `cartoSecrets.varnishPurgeSecret.existingSecret` could be defined.                                                                                     | `""`      |
-| `cartoSecrets.varnishPurgeSecret.existingSecret.name`          | Name of the pre-existent secret containing the `cartoSecrets.varnishPurgeSecret.existingSecret.key`. If `cartoSecrets.varnishPurgeSecret.value` is defined, this value is going to be ignored and not used.                                                           | `""`      |
-| `cartoSecrets.varnishPurgeSecret.existingSecret.key`           | Key to find in `cartoSecrets.varnishPurgeSecret.existingSecret.name` where the value of `cartoSecrets.varnishPurgeSecret` is found. If `cartoSecrets.varnishPurgeSecret.value` is defined, this value is going to be ignored and not used.                            | `""`      |
-| `cartoSecrets.varnishDebugSecret`                              | The secret used if someone would like to debug Varnish.                                                                                                                                                                                                               |           |
-| `cartoSecrets.varnishDebugSecret.value`                        | Value of the secret used if someone would like to debug Varnish. One of `cartoSecrets.varnishDebugSecret.value` or `cartoSecrets.varnishDebugSecret.existingSecret` could be defined.                                                                                 | `""`      |
-| `cartoSecrets.varnishDebugSecret.existingSecret.name`          | Name of the pre-existent secret containing the `cartoSecrets.varnishDebugSecret.existingSecret.key`. If `cartoSecrets.varnishDebugSecret.value` is defined, this value is going to be ignored and not used.                                                           | `""`      |
-| `cartoSecrets.varnishDebugSecret.existingSecret.key`           | Key to find in `cartoSecrets.varnishDebugSecret.existingSecret.name` where the value of `cartoSecrets.varnishDebugSecret` is found. If `cartoSecrets.varnishDebugSecret.value` is defined, this value is going to be ignored and not used.                            | `""`      |
-| `cartoSecrets.defaultGoogleServiceAccount`                     | The secret used by the app to connect to google services. This couldn't be changed.                                                                                                                                                                                   |           |
-| `cartoSecrets.defaultGoogleServiceAccount.value`               | Value of the secret used by the app to connect to google services. This couldn't be changed. One of `cartoSecrets.defaultGoogleServiceAccount.value` or `cartoSecrets.defaultGoogleServiceAccount.existingSecret` could be defined.                                   | `""`      |
-| `cartoSecrets.defaultGoogleServiceAccount.existingSecret.name` | Name of the pre-existent secret containing the `cartoSecrets.defaultGoogleServiceAccount.existingSecret.key`. If `cartoSecrets.defaultGoogleServiceAccount.value` is defined, this value is going to be ignored and not used.                                         | `""`      |
-| `cartoSecrets.defaultGoogleServiceAccount.existingSecret.key`  | Key to find in `cartoSecrets.defaultGoogleServiceAccount.existingSecret.name` where the value of `cartoSecrets.defaultGoogleServiceAccount` is found. If `cartoSecrets.defaultGoogleServiceAccount.value` is defined, this value is going to be ignored and not used. | `""`      |
-| `tlsCerts.autoGenerate`                                        | Generate self-signed TLS certificates                                                                                                                                                                                                                                 | `true`    |
-| `tlsCerts.existingSecret.name`                                 | Name of a secret containing the certificate                                                                                                                                                                                                                           | `""`      |
-| `tlsCerts.existingSecret.certKey`                              | Key of the certificate inside the secret                                                                                                                                                                                                                              | `tls.crt` |
-| `tlsCerts.existingSecret.keyKey`                               | Key of the certificate key inside the secret                                                                                                                                                                                                                          | `tls.key` |
+| Name                                                           | Description                                                                                                                                                                                                                                                           | Value |
+| -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| `cartoSecrets.encryptionSecretKey`                             | The secret used to encrypt the clients Carto connections stored in the database.                                                                                                                                                                                      |       |
+| `cartoSecrets.encryptionSecretKey.value`                       | Value of the secret used to encrypt the clients Carto connections stored in the database. One of `cartoSecrets.encryptionSecretKey.value` or `cartoSecrets.encryptionSecretKey.existingSecret` could be defined.                                                      | `""`  |
+| `cartoSecrets.encryptionSecretKey.existingSecret.name`         | Name of the pre-existent secret containing the `cartoSecrets.encryptionSecretKey.existingSecret.key`. If `cartoSecrets.encryptionSecretKey.value` is defined, this value is going to be ignored and not used.                                                         | `""`  |
+| `cartoSecrets.encryptionSecretKey.existingSecret.key`          | Key to find in `cartoSecrets.encryptionSecretKey.existingSecret.name` where the value of `cartoSecrets.encryptionSecretKey` is found. If `cartoSecrets.encryptionSecretKey.value` is defined, this value is going to be ignored and not used.                         | `""`  |
+| `cartoSecrets.varnishPurgeSecret`                              | The secret used (by the app) to exec purge request.                                                                                                                                                                                                                   |       |
+| `cartoSecrets.varnishPurgeSecret.value`                        | Value of the secret used (by the app) to exec purge request. One of `cartoSecrets.varnishPurgeSecret.value` or `cartoSecrets.varnishPurgeSecret.existingSecret` could be defined.                                                                                     | `""`  |
+| `cartoSecrets.varnishPurgeSecret.existingSecret.name`          | Name of the pre-existent secret containing the `cartoSecrets.varnishPurgeSecret.existingSecret.key`. If `cartoSecrets.varnishPurgeSecret.value` is defined, this value is going to be ignored and not used.                                                           | `""`  |
+| `cartoSecrets.varnishPurgeSecret.existingSecret.key`           | Key to find in `cartoSecrets.varnishPurgeSecret.existingSecret.name` where the value of `cartoSecrets.varnishPurgeSecret` is found. If `cartoSecrets.varnishPurgeSecret.value` is defined, this value is going to be ignored and not used.                            | `""`  |
+| `cartoSecrets.varnishDebugSecret`                              | The secret used if someone would like to debug Varnish.                                                                                                                                                                                                               |       |
+| `cartoSecrets.varnishDebugSecret.value`                        | Value of the secret used if someone would like to debug Varnish. One of `cartoSecrets.varnishDebugSecret.value` or `cartoSecrets.varnishDebugSecret.existingSecret` could be defined.                                                                                 | `""`  |
+| `cartoSecrets.varnishDebugSecret.existingSecret.name`          | Name of the pre-existent secret containing the `cartoSecrets.varnishDebugSecret.existingSecret.key`. If `cartoSecrets.varnishDebugSecret.value` is defined, this value is going to be ignored and not used.                                                           | `""`  |
+| `cartoSecrets.varnishDebugSecret.existingSecret.key`           | Key to find in `cartoSecrets.varnishDebugSecret.existingSecret.name` where the value of `cartoSecrets.varnishDebugSecret` is found. If `cartoSecrets.varnishDebugSecret.value` is defined, this value is going to be ignored and not used.                            | `""`  |
+| `cartoSecrets.defaultGoogleServiceAccount`                     | The secret used by the app to connect to google services. This couldn't be changed.                                                                                                                                                                                   |       |
+| `cartoSecrets.defaultGoogleServiceAccount.value`               | Value of the secret used by the app to connect to google services. This couldn't be changed. One of `cartoSecrets.defaultGoogleServiceAccount.value` or `cartoSecrets.defaultGoogleServiceAccount.existingSecret` could be defined.                                   | `""`  |
+| `cartoSecrets.defaultGoogleServiceAccount.existingSecret.name` | Name of the pre-existent secret containing the `cartoSecrets.defaultGoogleServiceAccount.existingSecret.key`. If `cartoSecrets.defaultGoogleServiceAccount.value` is defined, this value is going to be ignored and not used.                                         | `""`  |
+| `cartoSecrets.defaultGoogleServiceAccount.existingSecret.key`  | Key to find in `cartoSecrets.defaultGoogleServiceAccount.existingSecret.name` where the value of `cartoSecrets.defaultGoogleServiceAccount` is found. If `cartoSecrets.defaultGoogleServiceAccount.value` is defined, this value is going to be ignored and not used. | `""`  |
+
+
+### TLS parameters
+
+| Name                              | Description                                                                                                                                   | Value     |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `tlsCerts.httpsEnabled`           | Enable https. CARTO only works with `HTTPS`, if you disable this protocol here you should configure it in a higher layer like a Load Balancer | `true`    |
+| `tlsCerts.autoGenerate`           | Generate self-signed TLS certificates                                                                                                         | `true`    |
+| `tlsCerts.existingSecret.name`    | Name of a secret containing the certificate                                                                                                   | `""`      |
+| `tlsCerts.existingSecret.certKey` | Key of the certificate inside the secret                                                                                                      | `tls.crt` |
+| `tlsCerts.existingSecret.keyKey`  | Key of the certificate key inside the secret                                                                                                  | `tls.key` |
+
+
+### common backend service account
+
+| Name                                                       | Description                                                                                 | Value   |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------- |
+| `commonBackendServiceAccount.create`                       | Specifies whether a common ServiceAccount for backend should be created                     | `true`  |
+| `commonBackendServiceAccount.enableGCPWorkloadIdentity`    | Enable the Workload Identity feature in kubernetes                                          | `false` |
+| `commonBackendServiceAccount.automountServiceAccountToken` | Mount service account token in deployments                                                  | `false` |
+| `commonBackendServiceAccount.annotations`                  | Annotations to add to this SA                                                               | `{}`    |
+| `commonBackendServiceAccount.name`                         | If not set and create is true, a name is generated using the common.names.fullname template | `""`    |
 
 
 ### Global parameters
@@ -160,10 +178,11 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `accountsWww.resources.limits`                           | The resources limits for the accounts-www containers                                                  | `{}`                            |
 | `accountsWww.resources.requests`                         | The requested resources for the accounts-www containers                                               | `{}`                            |
 | `accountsWww.podSecurityContext.enabled`                 | Enabled accounts-www pods' Security Context                                                           | `true`                          |
-| `accountsWww.podSecurityContext.fsGroup`                 | Set accounts-www pod's Security Context fsGroup                                                       | `0`                             |
-| `accountsWww.containerSecurityContext.enabled`           | Enabled accounts-www containers' Security Context                                                     | `false`                         |
-| `accountsWww.containerSecurityContext.runAsUser`         | Set accounts-www containers' Security Context runAsUser                                               | `0`                             |
+| `accountsWww.podSecurityContext.fsGroup`                 | Set accounts-www pod's Security Context fsGroup                                                       | `101`                           |
+| `accountsWww.containerSecurityContext.enabled`           | Enabled accounts-www containers' Security Context                                                     | `true`                          |
+| `accountsWww.containerSecurityContext.runAsUser`         | Set accounts-www containers' Security Context runAsUser                                               | `101`                           |
 | `accountsWww.containerSecurityContext.runAsNonRoot`      | Set accounts-www containers' Security Context runAsNonRoot                                            | `false`                         |
+| `accountsWww.containerSecurityContext.capabilities.drop` | removes accounts-www containers' Security Context capabilities                                        | `["all"]`                       |
 | `accountsWww.configuration`                              | Configuration settings (env vars) for accounts-www                                                    | `{}`                            |
 | `accountsWww.secretConfiguration`                        | Configuration settings (env vars) for accounts-www                                                    | `""`                            |
 | `accountsWww.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for accounts-www                     | `""`                            |
@@ -258,10 +277,11 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `importApi.resources.limits`                           | The resources limits for the import-api containers                                                  | `{}`                            |
 | `importApi.resources.requests`                         | The requested resources for the import-api containers                                               | `{}`                            |
 | `importApi.podSecurityContext.enabled`                 | Enabled import-api pods' Security Context                                                           | `true`                          |
-| `importApi.podSecurityContext.fsGroup`                 | Set import-api pod's Security Context fsGroup                                                       | `0`                             |
-| `importApi.containerSecurityContext.enabled`           | Enabled import-api containers' Security Context                                                     | `false`                         |
-| `importApi.containerSecurityContext.runAsUser`         | Set import-api containers' Security Context runAsUser                                               | `0`                             |
+| `importApi.podSecurityContext.fsGroup`                 | Set import-api pod's Security Context fsGroup                                                       | `1000`                          |
+| `importApi.containerSecurityContext.enabled`           | Enabled import-api containers' Security Context                                                     | `true`                          |
+| `importApi.containerSecurityContext.runAsUser`         | Set import-api containers' Security Context runAsUser                                               | `1000`                          |
 | `importApi.containerSecurityContext.runAsNonRoot`      | Set import-api containers' Security Context runAsNonRoot                                            | `false`                         |
+| `importApi.containerSecurityContext.capabilities.drop` | removes import-api containers' Security Context capabilities                                        | `["all"]`                       |
 | `importApi.configuration`                              | Configuration settings (env vars) for import-api                                                    | `{}`                            |
 | `importApi.secretConfiguration`                        | Configuration settings (env vars) for import-api                                                    | `""`                            |
 | `importApi.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for import-api                     | `""`                            |
@@ -308,72 +328,55 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `importApi.service.extraPorts`               | Extra ports to expose in import-api service (normally used with the `sidecars` value) | `[]`        |
 
 
-### import-api ServiceAccount configuration
-
-| Name                                                    | Description                                          | Value   |
-| ------------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `importApi.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `importApi.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `importApi.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
-
-
 ### import-worker Deployment Parameters
 
-| Name                                                 | Description                                                                                            | Value                           |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------- |
-| `importWorker.image.registry`                        | import-worker image registry                                                                           | `gcr.io/carto-onprem-artifacts` |
-| `importWorker.image.repository`                      | import-worker image repository                                                                         | `import-api`                    |
-| `importWorker.image.tag`                             | import-worker image tag (immutable tags are recommended)                                               | `""`                            |
-| `importWorker.image.pullPolicy`                      | import-worker image pull policy                                                                        | `IfNotPresent`                  |
-| `importWorker.image.pullSecrets`                     | import-worker image pull secrets                                                                       | `[]`                            |
-| `importWorker.replicaCount`                          | Number of import-worker replicas to deploy                                                             | `1`                             |
-| `importWorker.customLivenessProbe`                   | Custom livenessProbe that overrides the default one                                                    | `{}`                            |
-| `importWorker.customReadinessProbe`                  | Custom readinessProbe that overrides the default one                                                   | `{}`                            |
-| `importWorker.customStartupProbe`                    | Custom startupProbe that overrides the default one                                                     | `{}`                            |
-| `importWorker.resources.limits`                      | The resources limits for the import-worker containers                                                  | `{}`                            |
-| `importWorker.resources.requests`                    | The requested resources for the import-worker containers                                               | `{}`                            |
-| `importWorker.podSecurityContext.enabled`            | Enabled import-worker pods' Security Context                                                           | `true`                          |
-| `importWorker.podSecurityContext.fsGroup`            | Set import-worker pod's Security Context fsGroup                                                       | `0`                             |
-| `importWorker.containerSecurityContext.enabled`      | Enabled import-worker containers' Security Context                                                     | `false`                         |
-| `importWorker.containerSecurityContext.runAsUser`    | Set import-worker containers' Security Context runAsUser                                               | `0`                             |
-| `importWorker.containerSecurityContext.runAsNonRoot` | Set import-worker containers' Security Context runAsNonRoot                                            | `false`                         |
-| `importWorker.configuration`                         | Configuration settings (env vars) for import-worker                                                    | `{}`                            |
-| `importWorker.secretConfiguration`                   | Configuration settings (env vars) for import-worker                                                    | `""`                            |
-| `importWorker.existingConfigMap`                     | The name of an existing ConfigMap with your custom configuration for import-worker                     | `""`                            |
-| `importWorker.existingSecret`                        | The name of an existing ConfigMap with your custom configuration for import-worker                     | `""`                            |
-| `importWorker.command`                               | Override default container command (useful when using custom images)                                   | `[]`                            |
-| `importWorker.args`                                  | Override default container args (useful when using custom images)                                      | `[]`                            |
-| `importWorker.hostAliases`                           | import-worker pods host aliases                                                                        | `[]`                            |
-| `importWorker.podLabels`                             | Extra labels for import-worker pods                                                                    | `{}`                            |
-| `importWorker.podAnnotations`                        | Annotations for import-worker pods                                                                     | `{}`                            |
-| `importWorker.podAffinityPreset`                     | Pod affinity preset. Ignored if `importWorker.affinity` is set. Allowed values: `soft` or `hard`       | `""`                            |
-| `importWorker.podAntiAffinityPreset`                 | Pod anti-affinity preset. Ignored if `importWorker.affinity` is set. Allowed values: `soft` or `hard`  | `soft`                          |
-| `importWorker.nodeAffinityPreset.type`               | Node affinity preset type. Ignored if `importWorker.affinity` is set. Allowed values: `soft` or `hard` | `""`                            |
-| `importWorker.nodeAffinityPreset.key`                | Node label key to match. Ignored if `importWorker.affinity` is set                                     | `""`                            |
-| `importWorker.nodeAffinityPreset.values`             | Node label values to match. Ignored if `importWorker.affinity` is set                                  | `[]`                            |
-| `importWorker.affinity`                              | Affinity for import-worker pods assignment                                                             | `{}`                            |
-| `importWorker.nodeSelector`                          | Node labels for import-worker pods assignment                                                          | `{}`                            |
-| `importWorker.tolerations`                           | Tolerations for import-worker pods assignment                                                          | `[]`                            |
-| `importWorker.updateStrategy.type`                   | import-worker statefulset strategy type                                                                | `RollingUpdate`                 |
-| `importWorker.priorityClassName`                     | import-worker pods' priorityClassName                                                                  | `""`                            |
-| `importWorker.schedulerName`                         | Name of the k8s scheduler (other than default) for import-worker pods                                  | `""`                            |
-| `importWorker.lifecycleHooks`                        | for the import-worker container(s) to automate configuration before or after startup                   | `{}`                            |
-| `importWorker.extraEnvVars`                          | Array with extra environment variables to add to import-worker nodes                                   | `[]`                            |
-| `importWorker.extraEnvVarsCM`                        | Name of existing ConfigMap containing extra env vars for import-worker nodes                           | `""`                            |
-| `importWorker.extraEnvVarsSecret`                    | Name of existing Secret containing extra env vars for import-worker nodes                              | `""`                            |
-| `importWorker.extraVolumes`                          | Optionally specify extra list of additional volumes for the import-worker pod(s)                       | `[]`                            |
-| `importWorker.extraVolumeMounts`                     | Optionally specify extra list of additional volumeMounts for the import-worker container(s)            | `[]`                            |
-| `importWorker.sidecars`                              | Add additional sidecar containers to the import-worker pod(s)                                          | `{}`                            |
-| `importWorker.initContainers`                        | Add additional init containers to the import-worker pod(s)                                             | `{}`                            |
-
-
-### import-worker ServiceAccount configuration
-
-| Name                                                       | Description                                          | Value   |
-| ---------------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `importWorker.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `importWorker.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `importWorker.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
+| Name                                                      | Description                                                                                            | Value                           |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------- |
+| `importWorker.image.registry`                             | import-worker image registry                                                                           | `gcr.io/carto-onprem-artifacts` |
+| `importWorker.image.repository`                           | import-worker image repository                                                                         | `import-api`                    |
+| `importWorker.image.tag`                                  | import-worker image tag (immutable tags are recommended)                                               | `""`                            |
+| `importWorker.image.pullPolicy`                           | import-worker image pull policy                                                                        | `IfNotPresent`                  |
+| `importWorker.image.pullSecrets`                          | import-worker image pull secrets                                                                       | `[]`                            |
+| `importWorker.replicaCount`                               | Number of import-worker replicas to deploy                                                             | `1`                             |
+| `importWorker.customLivenessProbe`                        | Custom livenessProbe that overrides the default one                                                    | `{}`                            |
+| `importWorker.customReadinessProbe`                       | Custom readinessProbe that overrides the default one                                                   | `{}`                            |
+| `importWorker.customStartupProbe`                         | Custom startupProbe that overrides the default one                                                     | `{}`                            |
+| `importWorker.resources.limits`                           | The resources limits for the import-worker containers                                                  | `{}`                            |
+| `importWorker.resources.requests`                         | The requested resources for the import-worker containers                                               | `{}`                            |
+| `importWorker.podSecurityContext.enabled`                 | Enabled import-worker pods' Security Context                                                           | `true`                          |
+| `importWorker.podSecurityContext.fsGroup`                 | Set import-worker pod's Security Context fsGroup                                                       | `1000`                          |
+| `importWorker.containerSecurityContext.enabled`           | Enabled import-worker containers' Security Context                                                     | `true`                          |
+| `importWorker.containerSecurityContext.runAsUser`         | Set import-worker containers' Security Context runAsUser                                               | `1000`                          |
+| `importWorker.containerSecurityContext.runAsNonRoot`      | Set import-worker containers' Security Context runAsNonRoot                                            | `false`                         |
+| `importWorker.containerSecurityContext.capabilities.drop` | removes import-worker containers' Security Context capabilities                                        | `["all"]`                       |
+| `importWorker.configuration`                              | Configuration settings (env vars) for import-worker                                                    | `{}`                            |
+| `importWorker.secretConfiguration`                        | Configuration settings (env vars) for import-worker                                                    | `""`                            |
+| `importWorker.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for import-worker                     | `""`                            |
+| `importWorker.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for import-worker                     | `""`                            |
+| `importWorker.command`                                    | Override default container command (useful when using custom images)                                   | `[]`                            |
+| `importWorker.args`                                       | Override default container args (useful when using custom images)                                      | `[]`                            |
+| `importWorker.hostAliases`                                | import-worker pods host aliases                                                                        | `[]`                            |
+| `importWorker.podLabels`                                  | Extra labels for import-worker pods                                                                    | `{}`                            |
+| `importWorker.podAnnotations`                             | Annotations for import-worker pods                                                                     | `{}`                            |
+| `importWorker.podAffinityPreset`                          | Pod affinity preset. Ignored if `importWorker.affinity` is set. Allowed values: `soft` or `hard`       | `""`                            |
+| `importWorker.podAntiAffinityPreset`                      | Pod anti-affinity preset. Ignored if `importWorker.affinity` is set. Allowed values: `soft` or `hard`  | `soft`                          |
+| `importWorker.nodeAffinityPreset.type`                    | Node affinity preset type. Ignored if `importWorker.affinity` is set. Allowed values: `soft` or `hard` | `""`                            |
+| `importWorker.nodeAffinityPreset.key`                     | Node label key to match. Ignored if `importWorker.affinity` is set                                     | `""`                            |
+| `importWorker.nodeAffinityPreset.values`                  | Node label values to match. Ignored if `importWorker.affinity` is set                                  | `[]`                            |
+| `importWorker.affinity`                                   | Affinity for import-worker pods assignment                                                             | `{}`                            |
+| `importWorker.nodeSelector`                               | Node labels for import-worker pods assignment                                                          | `{}`                            |
+| `importWorker.tolerations`                                | Tolerations for import-worker pods assignment                                                          | `[]`                            |
+| `importWorker.updateStrategy.type`                        | import-worker statefulset strategy type                                                                | `RollingUpdate`                 |
+| `importWorker.priorityClassName`                          | import-worker pods' priorityClassName                                                                  | `""`                            |
+| `importWorker.schedulerName`                              | Name of the k8s scheduler (other than default) for import-worker pods                                  | `""`                            |
+| `importWorker.lifecycleHooks`                             | for the import-worker container(s) to automate configuration before or after startup                   | `{}`                            |
+| `importWorker.extraEnvVars`                               | Array with extra environment variables to add to import-worker nodes                                   | `[]`                            |
+| `importWorker.extraEnvVarsCM`                             | Name of existing ConfigMap containing extra env vars for import-worker nodes                           | `""`                            |
+| `importWorker.extraEnvVarsSecret`                         | Name of existing Secret containing extra env vars for import-worker nodes                              | `""`                            |
+| `importWorker.extraVolumes`                               | Optionally specify extra list of additional volumes for the import-worker pod(s)                       | `[]`                            |
+| `importWorker.extraVolumeMounts`                          | Optionally specify extra list of additional volumeMounts for the import-worker container(s)            | `[]`                            |
+| `importWorker.sidecars`                                   | Add additional sidecar containers to the import-worker pod(s)                                          | `{}`                            |
+| `importWorker.initContainers`                             | Add additional init containers to the import-worker pod(s)                                             | `{}`                            |
 
 
 ### lds-api Deployment Parameters
@@ -415,10 +418,11 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `ldsApi.resources.limits`                           | The resources limits for the lds-api containers                                                  | `{}`                            |
 | `ldsApi.resources.requests`                         | The requested resources for the lds-api containers                                               | `{}`                            |
 | `ldsApi.podSecurityContext.enabled`                 | Enabled lds-api pods' Security Context                                                           | `true`                          |
-| `ldsApi.podSecurityContext.fsGroup`                 | Set lds-api pod's Security Context fsGroup                                                       | `0`                             |
-| `ldsApi.containerSecurityContext.enabled`           | Enabled lds-api containers' Security Context                                                     | `false`                         |
-| `ldsApi.containerSecurityContext.runAsUser`         | Set lds-api containers' Security Context runAsUser                                               | `0`                             |
+| `ldsApi.podSecurityContext.fsGroup`                 | Set lds-api pod's Security Context fsGroup                                                       | `1000`                          |
+| `ldsApi.containerSecurityContext.enabled`           | Enabled lds-api containers' Security Context                                                     | `true`                          |
+| `ldsApi.containerSecurityContext.runAsUser`         | Set lds-api containers' Security Context runAsUser                                               | `1000`                          |
 | `ldsApi.containerSecurityContext.runAsNonRoot`      | Set lds-api containers' Security Context runAsNonRoot                                            | `false`                         |
+| `ldsApi.containerSecurityContext.capabilities.drop` | removes lds-api containers' Security Context capabilities                                        | `["all"]`                       |
 | `ldsApi.configuration`                              | Configuration settings (env vars) for lds-api                                                    | `{}`                            |
 | `ldsApi.secretConfiguration`                        | Configuration settings (env vars) for lds-api                                                    | `""`                            |
 | `ldsApi.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for lds-api                     | `""`                            |
@@ -465,15 +469,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `ldsApi.service.extraPorts`               | Extra ports to expose in lds-api service (normally used with the `sidecars` value) | `[]`        |
 
 
-### lds-api ServiceAccount configuration
-
-| Name                                                 | Description                                          | Value   |
-| ---------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `ldsApi.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `ldsApi.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `ldsApi.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
-
-
 ### maps-api Deployment Parameters
 
 | Name                                                 | Description                                                                                       | Value                           |
@@ -513,10 +508,11 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `mapsApi.resources.limits`                           | The resources limits for the maps-api containers                                                  | `{}`                            |
 | `mapsApi.resources.requests`                         | The requested resources for the maps-api containers                                               | `{}`                            |
 | `mapsApi.podSecurityContext.enabled`                 | Enabled maps-api pods' Security Context                                                           | `true`                          |
-| `mapsApi.podSecurityContext.fsGroup`                 | Set maps-api pod's Security Context fsGroup                                                       | `0`                             |
-| `mapsApi.containerSecurityContext.enabled`           | Enabled maps-api containers' Security Context                                                     | `false`                         |
-| `mapsApi.containerSecurityContext.runAsUser`         | Set maps-api containers' Security Context runAsUser                                               | `0`                             |
+| `mapsApi.podSecurityContext.fsGroup`                 | Set maps-api pod's Security Context fsGroup                                                       | `1000`                          |
+| `mapsApi.containerSecurityContext.enabled`           | Enabled maps-api containers' Security Context                                                     | `true`                          |
+| `mapsApi.containerSecurityContext.runAsUser`         | Set maps-api containers' Security Context runAsUser                                               | `1000`                          |
 | `mapsApi.containerSecurityContext.runAsNonRoot`      | Set maps-api containers' Security Context runAsNonRoot                                            | `false`                         |
+| `mapsApi.containerSecurityContext.capabilities.drop` | removes maps-api containers' Security Context capabilities                                        | `["all"]`                       |
 | `mapsApi.configuration`                              | Configuration settings (env vars) for maps-api                                                    | `{}`                            |
 | `mapsApi.secretConfiguration`                        | Configuration settings (env vars) for maps-api                                                    | `""`                            |
 | `mapsApi.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for maps-api                     | `""`                            |
@@ -563,13 +559,70 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `mapsApi.service.extraPorts`               | Extra ports to expose in maps-api service (normally used with the `sidecars` value) | `[]`        |
 
 
-### maps-api ServiceAccount configuration
+### sql-worker Deployment Parameters
 
-| Name                                                  | Description                                          | Value   |
-| ----------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `mapsApi.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `mapsApi.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `mapsApi.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
+| Name                                                   | Description                                                                                         | Value                           |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `sqlWorker.image.registry`                             | sql-worker image registry                                                                           | `gcr.io/carto-onprem-artifacts` |
+| `sqlWorker.image.repository`                           | sql-worker image repository                                                                         | `maps-api`                      |
+| `sqlWorker.image.tag`                                  | sql-worker image tag (immutable tags are recommended)                                               | `""`                            |
+| `sqlWorker.image.pullPolicy`                           | sql-worker image pull policy                                                                        | `IfNotPresent`                  |
+| `sqlWorker.image.pullSecrets`                          | sql-worker image pull secrets                                                                       | `[]`                            |
+| `sqlWorker.replicaCount`                               | Number of sql-worker replicas to deploy                                                             | `1`                             |
+| `sqlWorker.livenessProbe.enabled`                      | Enable livenessProbe on sqlWorker containers                                                        | `true`                          |
+| `sqlWorker.livenessProbe.initialDelaySeconds`          | Initial delay seconds for livenessProbe                                                             | `10`                            |
+| `sqlWorker.livenessProbe.periodSeconds`                | Period seconds for livenessProbe                                                                    | `30`                            |
+| `sqlWorker.livenessProbe.timeoutSeconds`               | Timeout seconds for livenessProbe                                                                   | `5`                             |
+| `sqlWorker.livenessProbe.failureThreshold`             | Failure threshold for livenessProbe                                                                 | `5`                             |
+| `sqlWorker.livenessProbe.successThreshold`             | Success threshold for livenessProbe                                                                 | `1`                             |
+| `sqlWorker.readinessProbe.enabled`                     | Enable readinessProbe on sqlWorker containers                                                       | `true`                          |
+| `sqlWorker.readinessProbe.initialDelaySeconds`         | Initial delay seconds for readinessProbe                                                            | `10`                            |
+| `sqlWorker.readinessProbe.periodSeconds`               | Period seconds for readinessProbe                                                                   | `30`                            |
+| `sqlWorker.readinessProbe.timeoutSeconds`              | Timeout seconds for readinessProbe                                                                  | `5`                             |
+| `sqlWorker.readinessProbe.failureThreshold`            | Failure threshold for readinessProbe                                                                | `5`                             |
+| `sqlWorker.readinessProbe.successThreshold`            | Success threshold for readinessProbe                                                                | `1`                             |
+| `sqlWorker.startupProbe.enabled`                       | Enable startupProbe on sqlWorker containers                                                         | `false`                         |
+| `sqlWorker.startupProbe.initialDelaySeconds`           | Initial delay seconds for startupProbe                                                              | `10`                            |
+| `sqlWorker.startupProbe.periodSeconds`                 | Period seconds for startupProbe                                                                     | `30`                            |
+| `sqlWorker.startupProbe.timeoutSeconds`                | Timeout seconds for startupProbe                                                                    | `5`                             |
+| `sqlWorker.startupProbe.failureThreshold`              | Failure threshold for startupProbe                                                                  | `5`                             |
+| `sqlWorker.startupProbe.successThreshold`              | Success threshold for startupProbe                                                                  | `1`                             |
+| `sqlWorker.resources.limits`                           | The resources limits for the sql-worker containers                                                  | `{}`                            |
+| `sqlWorker.resources.requests`                         | The requested resources for the sql-worker containers                                               | `{}`                            |
+| `sqlWorker.podSecurityContext.enabled`                 | Enabled sql-worker pods' Security Context                                                           | `true`                          |
+| `sqlWorker.podSecurityContext.fsGroup`                 | Set sql-worker pod's Security Context fsGroup                                                       | `1000`                          |
+| `sqlWorker.containerSecurityContext.enabled`           | Enabled sql-worker containers' Security Context                                                     | `true`                          |
+| `sqlWorker.containerSecurityContext.runAsUser`         | Set sql-worker containers' Security Context runAsUser                                               | `1000`                          |
+| `sqlWorker.containerSecurityContext.runAsNonRoot`      | Set sql-worker containers' Security Context runAsNonRoot                                            | `false`                         |
+| `sqlWorker.containerSecurityContext.capabilities.drop` | removes sql-worker containers' Security Context capabilities                                        | `["all"]`                       |
+| `sqlWorker.configuration`                              | Configuration settings (env vars) for sql-worker                                                    | `{}`                            |
+| `sqlWorker.secretConfiguration`                        | Configuration settings (env vars) for sql-worker                                                    | `""`                            |
+| `sqlWorker.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for sql-worker                     | `""`                            |
+| `sqlWorker.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for sql-worker                     | `""`                            |
+| `sqlWorker.command`                                    | Override default container command (useful when using custom images)                                | `[]`                            |
+| `sqlWorker.args`                                       | Override default container args (useful when using custom images)                                   | `[]`                            |
+| `sqlWorker.hostAliases`                                | sql-worker pods host aliases                                                                        | `[]`                            |
+| `sqlWorker.podLabels`                                  | Extra labels for sql-worker pods                                                                    | `{}`                            |
+| `sqlWorker.podAnnotations`                             | Annotations for sql-worker pods                                                                     | `{}`                            |
+| `sqlWorker.podAffinityPreset`                          | Pod affinity preset. Ignored if `sqlWorker.affinity` is set. Allowed values: `soft` or `hard`       | `""`                            |
+| `sqlWorker.podAntiAffinityPreset`                      | Pod anti-affinity preset. Ignored if `sqlWorker.affinity` is set. Allowed values: `soft` or `hard`  | `soft`                          |
+| `sqlWorker.nodeAffinityPreset.type`                    | Node affinity preset type. Ignored if `sqlWorker.affinity` is set. Allowed values: `soft` or `hard` | `""`                            |
+| `sqlWorker.nodeAffinityPreset.key`                     | Node label key to match. Ignored if `sqlWorker.affinity` is set                                     | `""`                            |
+| `sqlWorker.nodeAffinityPreset.values`                  | Node label values to match. Ignored if `sqlWorker.affinity` is set                                  | `[]`                            |
+| `sqlWorker.affinity`                                   | Affinity for sql-worker pods assignment                                                             | `{}`                            |
+| `sqlWorker.nodeSelector`                               | Node labels for sql-worker pods assignment                                                          | `{}`                            |
+| `sqlWorker.tolerations`                                | Tolerations for sql-worker pods assignment                                                          | `[]`                            |
+| `sqlWorker.updateStrategy.type`                        | sql-worker statefulset strategy type                                                                | `RollingUpdate`                 |
+| `sqlWorker.priorityClassName`                          | sql-worker pods' priorityClassName                                                                  | `""`                            |
+| `sqlWorker.schedulerName`                              | Name of the k8s scheduler (other than default) for sql-worker pods                                  | `""`                            |
+| `sqlWorker.lifecycleHooks`                             | for the sql-worker container(s) to automate configuration before or after startup                   | `{}`                            |
+| `sqlWorker.extraEnvVars`                               | Array with extra environment variables to add to sql-worker nodes                                   | `[]`                            |
+| `sqlWorker.extraEnvVarsCM`                             | Name of existing ConfigMap containing extra env vars for sql-worker nodes                           | `""`                            |
+| `sqlWorker.extraEnvVarsSecret`                         | Name of existing Secret containing extra env vars for sql-worker nodes                              | `""`                            |
+| `sqlWorker.extraVolumes`                               | Optionally specify extra list of additional volumes for the sql-worker pod(s)                       | `[]`                            |
+| `sqlWorker.extraVolumeMounts`                          | Optionally specify extra list of additional volumeMounts for the sql-worker container(s)            | `[]`                            |
+| `sqlWorker.sidecars`                                   | Add additional sidecar containers to the sql-worker pod(s)                                          | `{}`                            |
+| `sqlWorker.initContainers`                             | Add additional init containers to the sql-worker pod(s)                                             | `{}`                            |
 
 
 ### router Deployment Parameters
@@ -612,10 +665,11 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `router.resources.limits`                           | The resources limits for the router containers                                                   | `{}`                            |
 | `router.resources.requests`                         | The requested resources for the router containers                                                | `{}`                            |
 | `router.podSecurityContext.enabled`                 | Enabled router pods' Security Context                                                            | `true`                          |
-| `router.podSecurityContext.fsGroup`                 | Set router pod's Security Context fsGroup                                                        | `0`                             |
-| `router.containerSecurityContext.enabled`           | Enabled router containers' Security Context                                                      | `false`                         |
-| `router.containerSecurityContext.runAsUser`         | Set router containers' Security Context runAsUser                                                | `0`                             |
+| `router.podSecurityContext.fsGroup`                 | Set router pod's Security Context fsGroup                                                        | `101`                           |
+| `router.containerSecurityContext.enabled`           | Enabled router containers' Security Context                                                      | `true`                          |
+| `router.containerSecurityContext.runAsUser`         | Set router containers' Security Context runAsUser                                                | `101`                           |
 | `router.containerSecurityContext.runAsNonRoot`      | Set router containers' Security Context runAsNonRoot                                             | `false`                         |
+| `router.containerSecurityContext.capabilities.drop` | removes router containers' Security Context capabilities                                         | `["all"]`                       |
 | `router.configuration`                              | Configuration settings (env vars) for router                                                     | `{}`                            |
 | `router.secretConfiguration`                        | Configuration settings (env vars) for router                                                     | `""`                            |
 | `router.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for router                      | `""`                            |
@@ -675,71 +729,72 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### httpCache Deployment Parameters
 
-| Name                                              | Description                                                                                         | Value                           |
-| ------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `httpCache.image.registry`                        | http-cache image registry                                                                           | `gcr.io/carto-onprem-artifacts` |
-| `httpCache.image.repository`                      | http-cache image repository                                                                         | `http-cache`                    |
-| `httpCache.image.tag`                             | http-cache image tag (immutable tags are recommended)                                               | `""`                            |
-| `httpCache.image.pullPolicy`                      | http-cache image pull policy                                                                        | `IfNotPresent`                  |
-| `httpCache.image.pullSecrets`                     | http-cache image pull secrets                                                                       | `[]`                            |
-| `httpCache.replicaCount`                          | Number of http-cache replicas to deploy                                                             | `1`                             |
-| `httpCache.containerPorts.http`                   | http-cache HTTP container port                                                                      | `6081`                          |
-| `httpCache.livenessProbe.enabled`                 | Enable livenessProbe on http-cache containers                                                       | `true`                          |
-| `httpCache.livenessProbe.initialDelaySeconds`     | Initial delay seconds for livenessProbe                                                             | `10`                            |
-| `httpCache.livenessProbe.periodSeconds`           | Period seconds for livenessProbe                                                                    | `30`                            |
-| `httpCache.livenessProbe.timeoutSeconds`          | Timeout seconds for livenessProbe                                                                   | `5`                             |
-| `httpCache.livenessProbe.failureThreshold`        | Failure threshold for livenessProbe                                                                 | `5`                             |
-| `httpCache.livenessProbe.successThreshold`        | Success threshold for livenessProbe                                                                 | `1`                             |
-| `httpCache.readinessProbe.enabled`                | Enable readinessProbe on http-cache containers                                                      | `true`                          |
-| `httpCache.readinessProbe.initialDelaySeconds`    | Initial delay seconds for readinessProbe                                                            | `10`                            |
-| `httpCache.readinessProbe.periodSeconds`          | Period seconds for readinessProbe                                                                   | `30`                            |
-| `httpCache.readinessProbe.timeoutSeconds`         | Timeout seconds for readinessProbe                                                                  | `5`                             |
-| `httpCache.readinessProbe.failureThreshold`       | Failure threshold for readinessProbe                                                                | `5`                             |
-| `httpCache.readinessProbe.successThreshold`       | Success threshold for readinessProbe                                                                | `1`                             |
-| `httpCache.startupProbe.enabled`                  | Enable startupProbe on http-cache containers                                                        | `false`                         |
-| `httpCache.startupProbe.initialDelaySeconds`      | Initial delay seconds for startupProbe                                                              | `10`                            |
-| `httpCache.startupProbe.periodSeconds`            | Period seconds for startupProbe                                                                     | `30`                            |
-| `httpCache.startupProbe.timeoutSeconds`           | Timeout seconds for startupProbe                                                                    | `5`                             |
-| `httpCache.startupProbe.failureThreshold`         | Failure threshold for startupProbe                                                                  | `5`                             |
-| `httpCache.startupProbe.successThreshold`         | Success threshold for startupProbe                                                                  | `1`                             |
-| `httpCache.customLivenessProbe`                   | Custom livenessProbe that overrides the default one                                                 | `{}`                            |
-| `httpCache.customReadinessProbe`                  | Custom readinessProbe that overrides the default one                                                | `{}`                            |
-| `httpCache.customStartupProbe`                    | Custom startupProbe that overrides the default one                                                  | `{}`                            |
-| `httpCache.resources.limits`                      | The resources limits for the http-cache containers                                                  | `{}`                            |
-| `httpCache.resources.requests`                    | The requested resources for the http-cache containers                                               | `{}`                            |
-| `httpCache.podSecurityContext.enabled`            | Enabled http-cache pods' Security Context                                                           | `true`                          |
-| `httpCache.podSecurityContext.fsGroup`            | Set http-cache pod's Security Context fsGroup                                                       | `0`                             |
-| `httpCache.containerSecurityContext.enabled`      | Enabled http-cache containers' Security Context                                                     | `false`                         |
-| `httpCache.containerSecurityContext.runAsUser`    | Set http-cache containers' Security Context runAsUser                                               | `0`                             |
-| `httpCache.containerSecurityContext.runAsNonRoot` | Set http-cache containers' Security Context runAsNonRoot                                            | `false`                         |
-| `httpCache.configuration`                         | Configuration settings (env vars) for http-cache                                                    | `{}`                            |
-| `httpCache.secretConfiguration`                   | Configuration settings (env vars) for http-cache                                                    | `""`                            |
-| `httpCache.existingConfigMap`                     | The name of an existing ConfigMap with your custom configuration for http-cache                     | `""`                            |
-| `httpCache.existingSecret`                        | The name of an existing ConfigMap with your custom configuration for http-cache                     | `""`                            |
-| `httpCache.command`                               | Override default container command (useful when using custom images)                                | `[]`                            |
-| `httpCache.args`                                  | Override default container args (useful when using custom images)                                   | `[]`                            |
-| `httpCache.hostAliases`                           | http-cache pods host aliases                                                                        | `[]`                            |
-| `httpCache.podLabels`                             | Extra labels for http-cache pods                                                                    | `{}`                            |
-| `httpCache.podAnnotations`                        | Annotations for http-cache pods                                                                     | `{}`                            |
-| `httpCache.podAffinityPreset`                     | Pod affinity preset. Ignored if `httpCache.affinity` is set. Allowed values: `soft` or `hard`       | `""`                            |
-| `httpCache.podAntiAffinityPreset`                 | Pod anti-affinity preset. Ignored if `httpCache.affinity` is set. Allowed values: `soft` or `hard`  | `soft`                          |
-| `httpCache.nodeAffinityPreset.type`               | Node affinity preset type. Ignored if `httpCache.affinity` is set. Allowed values: `soft` or `hard` | `""`                            |
-| `httpCache.nodeAffinityPreset.key`                | Node label key to match. Ignored if `httpCache.affinity` is set                                     | `""`                            |
-| `httpCache.nodeAffinityPreset.values`             | Node label values to match. Ignored if `httpCache.affinity` is set                                  | `[]`                            |
-| `httpCache.affinity`                              | Affinity for http-cache pods assignment                                                             | `{}`                            |
-| `httpCache.nodeSelector`                          | Node labels for http-cache pods assignment                                                          | `{}`                            |
-| `httpCache.tolerations`                           | Tolerations for http-cache pods assignment                                                          | `[]`                            |
-| `httpCache.updateStrategy.type`                   | http-cache statefulset strategy type                                                                | `RollingUpdate`                 |
-| `httpCache.priorityClassName`                     | http-cache pods' priorityClassName                                                                  | `""`                            |
-| `httpCache.schedulerName`                         | Name of the k8s scheduler (other than default) for http-cache pods                                  | `""`                            |
-| `httpCache.lifecycleHooks`                        | for the http-cache container(s) to automate configuration before or after startup                   | `{}`                            |
-| `httpCache.extraEnvVars`                          | Array with extra environment variables to add to http-cache nodes                                   | `[]`                            |
-| `httpCache.extraEnvVarsCM`                        | Name of existing ConfigMap containing extra env vars for http-cache nodes                           | `""`                            |
-| `httpCache.extraEnvVarsSecret`                    | Name of existing Secret containing extra env vars for http-cache nodes                              | `""`                            |
-| `httpCache.extraVolumes`                          | Optionally specify extra list of additional volumes for the http-cache pod(s)                       | `[]`                            |
-| `httpCache.extraVolumeMounts`                     | Optionally specify extra list of additional volumeMounts for the http-cache container(s)            | `[]`                            |
-| `httpCache.sidecars`                              | Add additional sidecar containers to the http-cache pod(s)                                          | `{}`                            |
-| `httpCache.initContainers`                        | Add additional init containers to the http-cache pod(s)                                             | `{}`                            |
+| Name                                                   | Description                                                                                         | Value                           |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `httpCache.image.registry`                             | http-cache image registry                                                                           | `gcr.io/carto-onprem-artifacts` |
+| `httpCache.image.repository`                           | http-cache image repository                                                                         | `http-cache`                    |
+| `httpCache.image.tag`                                  | http-cache image tag (immutable tags are recommended)                                               | `""`                            |
+| `httpCache.image.pullPolicy`                           | http-cache image pull policy                                                                        | `IfNotPresent`                  |
+| `httpCache.image.pullSecrets`                          | http-cache image pull secrets                                                                       | `[]`                            |
+| `httpCache.replicaCount`                               | Number of http-cache replicas to deploy                                                             | `1`                             |
+| `httpCache.containerPorts.http`                        | http-cache HTTP container port                                                                      | `6081`                          |
+| `httpCache.livenessProbe.enabled`                      | Enable livenessProbe on http-cache containers                                                       | `true`                          |
+| `httpCache.livenessProbe.initialDelaySeconds`          | Initial delay seconds for livenessProbe                                                             | `10`                            |
+| `httpCache.livenessProbe.periodSeconds`                | Period seconds for livenessProbe                                                                    | `30`                            |
+| `httpCache.livenessProbe.timeoutSeconds`               | Timeout seconds for livenessProbe                                                                   | `5`                             |
+| `httpCache.livenessProbe.failureThreshold`             | Failure threshold for livenessProbe                                                                 | `5`                             |
+| `httpCache.livenessProbe.successThreshold`             | Success threshold for livenessProbe                                                                 | `1`                             |
+| `httpCache.readinessProbe.enabled`                     | Enable readinessProbe on http-cache containers                                                      | `true`                          |
+| `httpCache.readinessProbe.initialDelaySeconds`         | Initial delay seconds for readinessProbe                                                            | `10`                            |
+| `httpCache.readinessProbe.periodSeconds`               | Period seconds for readinessProbe                                                                   | `30`                            |
+| `httpCache.readinessProbe.timeoutSeconds`              | Timeout seconds for readinessProbe                                                                  | `5`                             |
+| `httpCache.readinessProbe.failureThreshold`            | Failure threshold for readinessProbe                                                                | `5`                             |
+| `httpCache.readinessProbe.successThreshold`            | Success threshold for readinessProbe                                                                | `1`                             |
+| `httpCache.startupProbe.enabled`                       | Enable startupProbe on http-cache containers                                                        | `false`                         |
+| `httpCache.startupProbe.initialDelaySeconds`           | Initial delay seconds for startupProbe                                                              | `10`                            |
+| `httpCache.startupProbe.periodSeconds`                 | Period seconds for startupProbe                                                                     | `30`                            |
+| `httpCache.startupProbe.timeoutSeconds`                | Timeout seconds for startupProbe                                                                    | `5`                             |
+| `httpCache.startupProbe.failureThreshold`              | Failure threshold for startupProbe                                                                  | `5`                             |
+| `httpCache.startupProbe.successThreshold`              | Success threshold for startupProbe                                                                  | `1`                             |
+| `httpCache.customLivenessProbe`                        | Custom livenessProbe that overrides the default one                                                 | `{}`                            |
+| `httpCache.customReadinessProbe`                       | Custom readinessProbe that overrides the default one                                                | `{}`                            |
+| `httpCache.customStartupProbe`                         | Custom startupProbe that overrides the default one                                                  | `{}`                            |
+| `httpCache.resources.limits`                           | The resources limits for the http-cache containers                                                  | `{}`                            |
+| `httpCache.resources.requests`                         | The requested resources for the http-cache containers                                               | `{}`                            |
+| `httpCache.podSecurityContext.enabled`                 | Enabled http-cache pods' Security Context                                                           | `true`                          |
+| `httpCache.podSecurityContext.fsGroup`                 | Set http-cache pod's Security Context fsGroup                                                       | `102`                           |
+| `httpCache.containerSecurityContext.enabled`           | Enabled http-cache containers' Security Context                                                     | `true`                          |
+| `httpCache.containerSecurityContext.runAsUser`         | Set http-cache containers' Security Context runAsUser                                               | `101`                           |
+| `httpCache.containerSecurityContext.runAsNonRoot`      | Set http-cache containers' Security Context runAsNonRoot                                            | `false`                         |
+| `httpCache.containerSecurityContext.capabilities.drop` | removes http-cache containers' Security Context capabilities                                        | `["all"]`                       |
+| `httpCache.configuration`                              | Configuration settings (env vars) for http-cache                                                    | `{}`                            |
+| `httpCache.secretConfiguration`                        | Configuration settings (env vars) for http-cache                                                    | `""`                            |
+| `httpCache.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for http-cache                     | `""`                            |
+| `httpCache.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for http-cache                     | `""`                            |
+| `httpCache.command`                                    | Override default container command (useful when using custom images)                                | `[]`                            |
+| `httpCache.args`                                       | Override default container args (useful when using custom images)                                   | `[]`                            |
+| `httpCache.hostAliases`                                | http-cache pods host aliases                                                                        | `[]`                            |
+| `httpCache.podLabels`                                  | Extra labels for http-cache pods                                                                    | `{}`                            |
+| `httpCache.podAnnotations`                             | Annotations for http-cache pods                                                                     | `{}`                            |
+| `httpCache.podAffinityPreset`                          | Pod affinity preset. Ignored if `httpCache.affinity` is set. Allowed values: `soft` or `hard`       | `""`                            |
+| `httpCache.podAntiAffinityPreset`                      | Pod anti-affinity preset. Ignored if `httpCache.affinity` is set. Allowed values: `soft` or `hard`  | `soft`                          |
+| `httpCache.nodeAffinityPreset.type`                    | Node affinity preset type. Ignored if `httpCache.affinity` is set. Allowed values: `soft` or `hard` | `""`                            |
+| `httpCache.nodeAffinityPreset.key`                     | Node label key to match. Ignored if `httpCache.affinity` is set                                     | `""`                            |
+| `httpCache.nodeAffinityPreset.values`                  | Node label values to match. Ignored if `httpCache.affinity` is set                                  | `[]`                            |
+| `httpCache.affinity`                                   | Affinity for http-cache pods assignment                                                             | `{}`                            |
+| `httpCache.nodeSelector`                               | Node labels for http-cache pods assignment                                                          | `{}`                            |
+| `httpCache.tolerations`                                | Tolerations for http-cache pods assignment                                                          | `[]`                            |
+| `httpCache.updateStrategy.type`                        | http-cache statefulset strategy type                                                                | `RollingUpdate`                 |
+| `httpCache.priorityClassName`                          | http-cache pods' priorityClassName                                                                  | `""`                            |
+| `httpCache.schedulerName`                              | Name of the k8s scheduler (other than default) for http-cache pods                                  | `""`                            |
+| `httpCache.lifecycleHooks`                             | for the http-cache container(s) to automate configuration before or after startup                   | `{}`                            |
+| `httpCache.extraEnvVars`                               | Array with extra environment variables to add to http-cache nodes                                   | `[]`                            |
+| `httpCache.extraEnvVarsCM`                             | Name of existing ConfigMap containing extra env vars for http-cache nodes                           | `""`                            |
+| `httpCache.extraEnvVarsSecret`                         | Name of existing Secret containing extra env vars for http-cache nodes                              | `""`                            |
+| `httpCache.extraVolumes`                               | Optionally specify extra list of additional volumes for the http-cache pod(s)                       | `[]`                            |
+| `httpCache.extraVolumeMounts`                          | Optionally specify extra list of additional volumeMounts for the http-cache container(s)            | `[]`                            |
+| `httpCache.sidecars`                                   | Add additional sidecar containers to the http-cache pod(s)                                          | `{}`                            |
+| `httpCache.initContainers`                             | Add additional init containers to the http-cache pod(s)                                             | `{}`                            |
 
 
 ### http-cache Service Parameters
@@ -769,71 +824,72 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### cdnInvalidatorSub Deployment Parameters
 
-| Name                                                      | Description                                                                                                 | Value                           |
-| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `cdnInvalidatorSub.image.registry`                        | cdn-invalidator-sub image registry                                                                          | `gcr.io/carto-onprem-artifacts` |
-| `cdnInvalidatorSub.image.repository`                      | cdn-invalidator-sub image repository                                                                        | `consumers/cdn-invalidator-sub` |
-| `cdnInvalidatorSub.image.tag`                             | cdn-invalidator-sub image tag (immutable tags are recommended)                                              | `""`                            |
-| `cdnInvalidatorSub.image.pullPolicy`                      | cdn-invalidator-sub image pull policy                                                                       | `IfNotPresent`                  |
-| `cdnInvalidatorSub.image.pullSecrets`                     | cdn-invalidator-sub image pull secrets                                                                      | `[]`                            |
-| `cdnInvalidatorSub.replicaCount`                          | Number of cdnInvalidatorSub replicas to deploy                                                              | `1`                             |
-| `cdnInvalidatorSub.containerPorts.http`                   | cdnInvalidatorSub HTTP container port                                                                       | `3000`                          |
-| `cdnInvalidatorSub.livenessProbe.enabled`                 | Enable livenessProbe on cdnInvalidatorSub containers                                                        | `false`                         |
-| `cdnInvalidatorSub.livenessProbe.initialDelaySeconds`     | Initial delay seconds for livenessProbe                                                                     | `10`                            |
-| `cdnInvalidatorSub.livenessProbe.periodSeconds`           | Period seconds for livenessProbe                                                                            | `30`                            |
-| `cdnInvalidatorSub.livenessProbe.timeoutSeconds`          | Timeout seconds for livenessProbe                                                                           | `5`                             |
-| `cdnInvalidatorSub.livenessProbe.failureThreshold`        | Failure threshold for livenessProbe                                                                         | `5`                             |
-| `cdnInvalidatorSub.livenessProbe.successThreshold`        | Success threshold for livenessProbe                                                                         | `1`                             |
-| `cdnInvalidatorSub.readinessProbe.enabled`                | Enable readinessProbe on cdnInvalidatorSub containers                                                       | `false`                         |
-| `cdnInvalidatorSub.readinessProbe.initialDelaySeconds`    | Initial delay seconds for readinessProbe                                                                    | `10`                            |
-| `cdnInvalidatorSub.readinessProbe.periodSeconds`          | Period seconds for readinessProbe                                                                           | `30`                            |
-| `cdnInvalidatorSub.readinessProbe.timeoutSeconds`         | Timeout seconds for readinessProbe                                                                          | `5`                             |
-| `cdnInvalidatorSub.readinessProbe.failureThreshold`       | Failure threshold for readinessProbe                                                                        | `5`                             |
-| `cdnInvalidatorSub.readinessProbe.successThreshold`       | Success threshold for readinessProbe                                                                        | `1`                             |
-| `cdnInvalidatorSub.startupProbe.enabled`                  | Enable startupProbe on cdnInvalidatorSub containers                                                         | `false`                         |
-| `cdnInvalidatorSub.startupProbe.initialDelaySeconds`      | Initial delay seconds for startupProbe                                                                      | `10`                            |
-| `cdnInvalidatorSub.startupProbe.periodSeconds`            | Period seconds for startupProbe                                                                             | `30`                            |
-| `cdnInvalidatorSub.startupProbe.timeoutSeconds`           | Timeout seconds for startupProbe                                                                            | `5`                             |
-| `cdnInvalidatorSub.startupProbe.failureThreshold`         | Failure threshold for startupProbe                                                                          | `5`                             |
-| `cdnInvalidatorSub.startupProbe.successThreshold`         | Success threshold for startupProbe                                                                          | `1`                             |
-| `cdnInvalidatorSub.customLivenessProbe`                   | Custom livenessProbe that overrides the default one                                                         | `{}`                            |
-| `cdnInvalidatorSub.customReadinessProbe`                  | Custom readinessProbe that overrides the default one                                                        | `{}`                            |
-| `cdnInvalidatorSub.customStartupProbe`                    | Custom startupProbe that overrides the default one                                                          | `{}`                            |
-| `cdnInvalidatorSub.resources.limits`                      | The resources limits for the cdnInvalidatorSub containers                                                   | `{}`                            |
-| `cdnInvalidatorSub.resources.requests`                    | The requested resources for the cdnInvalidatorSub containers                                                | `{}`                            |
-| `cdnInvalidatorSub.podSecurityContext.enabled`            | Enabled cdnInvalidatorSub pods' Security Context                                                            | `true`                          |
-| `cdnInvalidatorSub.podSecurityContext.fsGroup`            | Set cdnInvalidatorSub pod's Security Context fsGroup                                                        | `0`                             |
-| `cdnInvalidatorSub.containerSecurityContext.enabled`      | Enabled cdnInvalidatorSub containers' Security Context                                                      | `false`                         |
-| `cdnInvalidatorSub.containerSecurityContext.runAsUser`    | Set cdnInvalidatorSub containers' Security Context runAsUser                                                | `0`                             |
-| `cdnInvalidatorSub.containerSecurityContext.runAsNonRoot` | Set cdnInvalidatorSub containers' Security Context runAsNonRoot                                             | `false`                         |
-| `cdnInvalidatorSub.configuration`                         | Configuration settings (env vars) for cdnInvalidatorSub                                                     | `{}`                            |
-| `cdnInvalidatorSub.secretConfiguration`                   | Configuration settings (env vars) for cdnInvalidatorSub                                                     | `""`                            |
-| `cdnInvalidatorSub.existingConfigMap`                     | The name of an existing ConfigMap with your custom configuration for cdnInvalidatorSub                      | `""`                            |
-| `cdnInvalidatorSub.existingSecret`                        | The name of an existing ConfigMap with your custom configuration for cdnInvalidatorSub                      | `""`                            |
-| `cdnInvalidatorSub.command`                               | Override default container command (useful when using custom images)                                        | `[]`                            |
-| `cdnInvalidatorSub.args`                                  | Override default container args (useful when using custom images)                                           | `[]`                            |
-| `cdnInvalidatorSub.hostAliases`                           | cdnInvalidatorSub pods host aliases                                                                         | `[]`                            |
-| `cdnInvalidatorSub.podLabels`                             | Extra labels for cdnInvalidatorSub pods                                                                     | `{}`                            |
-| `cdnInvalidatorSub.podAnnotations`                        | Annotations for cdnInvalidatorSub pods                                                                      | `{}`                            |
-| `cdnInvalidatorSub.podAffinityPreset`                     | Pod affinity preset. Ignored if `cdnInvalidatorSub.affinity` is set. Allowed values: `soft` or `hard`       | `""`                            |
-| `cdnInvalidatorSub.podAntiAffinityPreset`                 | Pod anti-affinity preset. Ignored if `cdnInvalidatorSub.affinity` is set. Allowed values: `soft` or `hard`  | `soft`                          |
-| `cdnInvalidatorSub.nodeAffinityPreset.type`               | Node affinity preset type. Ignored if `cdnInvalidatorSub.affinity` is set. Allowed values: `soft` or `hard` | `""`                            |
-| `cdnInvalidatorSub.nodeAffinityPreset.key`                | Node label key to match. Ignored if `cdnInvalidatorSub.affinity` is set                                     | `""`                            |
-| `cdnInvalidatorSub.nodeAffinityPreset.values`             | Node label values to match. Ignored if `cdnInvalidatorSub.affinity` is set                                  | `[]`                            |
-| `cdnInvalidatorSub.affinity`                              | Affinity for cdnInvalidatorSub pods assignment                                                              | `{}`                            |
-| `cdnInvalidatorSub.nodeSelector`                          | Node labels for cdnInvalidatorSub pods assignment                                                           | `{}`                            |
-| `cdnInvalidatorSub.tolerations`                           | Tolerations for cdnInvalidatorSub pods assignment                                                           | `[]`                            |
-| `cdnInvalidatorSub.updateStrategy.type`                   | cdnInvalidatorSub statefulset strategy type                                                                 | `RollingUpdate`                 |
-| `cdnInvalidatorSub.priorityClassName`                     | cdnInvalidatorSub pods' priorityClassName                                                                   | `""`                            |
-| `cdnInvalidatorSub.schedulerName`                         | Name of the k8s scheduler (other than default) for cdnInvalidatorSub pods                                   | `""`                            |
-| `cdnInvalidatorSub.lifecycleHooks`                        | for the cdnInvalidatorSub container(s) to automate configuration before or after startup                    | `{}`                            |
-| `cdnInvalidatorSub.extraEnvVars`                          | Array with extra environment variables to add to cdnInvalidatorSub nodes                                    | `[]`                            |
-| `cdnInvalidatorSub.extraEnvVarsCM`                        | Name of existing ConfigMap containing extra env vars for cdnInvalidatorSub nodes                            | `""`                            |
-| `cdnInvalidatorSub.extraEnvVarsSecret`                    | Name of existing Secret containing extra env vars for cdnInvalidatorSub nodes                               | `""`                            |
-| `cdnInvalidatorSub.extraVolumes`                          | Optionally specify extra list of additional volumes for the cdnInvalidatorSub pod(s)                        | `[]`                            |
-| `cdnInvalidatorSub.extraVolumeMounts`                     | Optionally specify extra list of additional volumeMounts for the cdnInvalidatorSub container(s)             | `[]`                            |
-| `cdnInvalidatorSub.sidecars`                              | Add additional sidecar containers to the cdnInvalidatorSub pod(s)                                           | `{}`                            |
-| `cdnInvalidatorSub.initContainers`                        | Add additional init containers to the cdnInvalidatorSub pod(s)                                              | `{}`                            |
+| Name                                                           | Description                                                                                                 | Value                           |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `cdnInvalidatorSub.image.registry`                             | cdn-invalidator-sub image registry                                                                          | `gcr.io/carto-onprem-artifacts` |
+| `cdnInvalidatorSub.image.repository`                           | cdn-invalidator-sub image repository                                                                        | `consumers/cdn-invalidator-sub` |
+| `cdnInvalidatorSub.image.tag`                                  | cdn-invalidator-sub image tag (immutable tags are recommended)                                              | `""`                            |
+| `cdnInvalidatorSub.image.pullPolicy`                           | cdn-invalidator-sub image pull policy                                                                       | `IfNotPresent`                  |
+| `cdnInvalidatorSub.image.pullSecrets`                          | cdn-invalidator-sub image pull secrets                                                                      | `[]`                            |
+| `cdnInvalidatorSub.replicaCount`                               | Number of cdnInvalidatorSub replicas to deploy                                                              | `1`                             |
+| `cdnInvalidatorSub.containerPorts.http`                        | cdnInvalidatorSub HTTP container port                                                                       | `3000`                          |
+| `cdnInvalidatorSub.livenessProbe.enabled`                      | Enable livenessProbe on cdnInvalidatorSub containers                                                        | `false`                         |
+| `cdnInvalidatorSub.livenessProbe.initialDelaySeconds`          | Initial delay seconds for livenessProbe                                                                     | `10`                            |
+| `cdnInvalidatorSub.livenessProbe.periodSeconds`                | Period seconds for livenessProbe                                                                            | `30`                            |
+| `cdnInvalidatorSub.livenessProbe.timeoutSeconds`               | Timeout seconds for livenessProbe                                                                           | `5`                             |
+| `cdnInvalidatorSub.livenessProbe.failureThreshold`             | Failure threshold for livenessProbe                                                                         | `5`                             |
+| `cdnInvalidatorSub.livenessProbe.successThreshold`             | Success threshold for livenessProbe                                                                         | `1`                             |
+| `cdnInvalidatorSub.readinessProbe.enabled`                     | Enable readinessProbe on cdnInvalidatorSub containers                                                       | `false`                         |
+| `cdnInvalidatorSub.readinessProbe.initialDelaySeconds`         | Initial delay seconds for readinessProbe                                                                    | `10`                            |
+| `cdnInvalidatorSub.readinessProbe.periodSeconds`               | Period seconds for readinessProbe                                                                           | `30`                            |
+| `cdnInvalidatorSub.readinessProbe.timeoutSeconds`              | Timeout seconds for readinessProbe                                                                          | `5`                             |
+| `cdnInvalidatorSub.readinessProbe.failureThreshold`            | Failure threshold for readinessProbe                                                                        | `5`                             |
+| `cdnInvalidatorSub.readinessProbe.successThreshold`            | Success threshold for readinessProbe                                                                        | `1`                             |
+| `cdnInvalidatorSub.startupProbe.enabled`                       | Enable startupProbe on cdnInvalidatorSub containers                                                         | `false`                         |
+| `cdnInvalidatorSub.startupProbe.initialDelaySeconds`           | Initial delay seconds for startupProbe                                                                      | `10`                            |
+| `cdnInvalidatorSub.startupProbe.periodSeconds`                 | Period seconds for startupProbe                                                                             | `30`                            |
+| `cdnInvalidatorSub.startupProbe.timeoutSeconds`                | Timeout seconds for startupProbe                                                                            | `5`                             |
+| `cdnInvalidatorSub.startupProbe.failureThreshold`              | Failure threshold for startupProbe                                                                          | `5`                             |
+| `cdnInvalidatorSub.startupProbe.successThreshold`              | Success threshold for startupProbe                                                                          | `1`                             |
+| `cdnInvalidatorSub.customLivenessProbe`                        | Custom livenessProbe that overrides the default one                                                         | `{}`                            |
+| `cdnInvalidatorSub.customReadinessProbe`                       | Custom readinessProbe that overrides the default one                                                        | `{}`                            |
+| `cdnInvalidatorSub.customStartupProbe`                         | Custom startupProbe that overrides the default one                                                          | `{}`                            |
+| `cdnInvalidatorSub.resources.limits`                           | The resources limits for the cdnInvalidatorSub containers                                                   | `{}`                            |
+| `cdnInvalidatorSub.resources.requests`                         | The requested resources for the cdnInvalidatorSub containers                                                | `{}`                            |
+| `cdnInvalidatorSub.podSecurityContext.enabled`                 | Enabled cdnInvalidatorSub pods' Security Context                                                            | `true`                          |
+| `cdnInvalidatorSub.podSecurityContext.fsGroup`                 | Set cdnInvalidatorSub pod's Security Context fsGroup                                                        | `1000`                          |
+| `cdnInvalidatorSub.containerSecurityContext.enabled`           | Enabled cdnInvalidatorSub containers' Security Context                                                      | `true`                          |
+| `cdnInvalidatorSub.containerSecurityContext.runAsUser`         | Set cdnInvalidatorSub containers' Security Context runAsUser                                                | `1000`                          |
+| `cdnInvalidatorSub.containerSecurityContext.runAsNonRoot`      | Set cdnInvalidatorSub containers' Security Context runAsNonRoot                                             | `false`                         |
+| `cdnInvalidatorSub.containerSecurityContext.capabilities.drop` | removes cdnInvalidatorSub containers' Security Context capabilities                                         | `["all"]`                       |
+| `cdnInvalidatorSub.configuration`                              | Configuration settings (env vars) for cdnInvalidatorSub                                                     | `{}`                            |
+| `cdnInvalidatorSub.secretConfiguration`                        | Configuration settings (env vars) for cdnInvalidatorSub                                                     | `""`                            |
+| `cdnInvalidatorSub.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for cdnInvalidatorSub                      | `""`                            |
+| `cdnInvalidatorSub.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for cdnInvalidatorSub                      | `""`                            |
+| `cdnInvalidatorSub.command`                                    | Override default container command (useful when using custom images)                                        | `[]`                            |
+| `cdnInvalidatorSub.args`                                       | Override default container args (useful when using custom images)                                           | `[]`                            |
+| `cdnInvalidatorSub.hostAliases`                                | cdnInvalidatorSub pods host aliases                                                                         | `[]`                            |
+| `cdnInvalidatorSub.podLabels`                                  | Extra labels for cdnInvalidatorSub pods                                                                     | `{}`                            |
+| `cdnInvalidatorSub.podAnnotations`                             | Annotations for cdnInvalidatorSub pods                                                                      | `{}`                            |
+| `cdnInvalidatorSub.podAffinityPreset`                          | Pod affinity preset. Ignored if `cdnInvalidatorSub.affinity` is set. Allowed values: `soft` or `hard`       | `""`                            |
+| `cdnInvalidatorSub.podAntiAffinityPreset`                      | Pod anti-affinity preset. Ignored if `cdnInvalidatorSub.affinity` is set. Allowed values: `soft` or `hard`  | `soft`                          |
+| `cdnInvalidatorSub.nodeAffinityPreset.type`                    | Node affinity preset type. Ignored if `cdnInvalidatorSub.affinity` is set. Allowed values: `soft` or `hard` | `""`                            |
+| `cdnInvalidatorSub.nodeAffinityPreset.key`                     | Node label key to match. Ignored if `cdnInvalidatorSub.affinity` is set                                     | `""`                            |
+| `cdnInvalidatorSub.nodeAffinityPreset.values`                  | Node label values to match. Ignored if `cdnInvalidatorSub.affinity` is set                                  | `[]`                            |
+| `cdnInvalidatorSub.affinity`                                   | Affinity for cdnInvalidatorSub pods assignment                                                              | `{}`                            |
+| `cdnInvalidatorSub.nodeSelector`                               | Node labels for cdnInvalidatorSub pods assignment                                                           | `{}`                            |
+| `cdnInvalidatorSub.tolerations`                                | Tolerations for cdnInvalidatorSub pods assignment                                                           | `[]`                            |
+| `cdnInvalidatorSub.updateStrategy.type`                        | cdnInvalidatorSub statefulset strategy type                                                                 | `RollingUpdate`                 |
+| `cdnInvalidatorSub.priorityClassName`                          | cdnInvalidatorSub pods' priorityClassName                                                                   | `""`                            |
+| `cdnInvalidatorSub.schedulerName`                              | Name of the k8s scheduler (other than default) for cdnInvalidatorSub pods                                   | `""`                            |
+| `cdnInvalidatorSub.lifecycleHooks`                             | for the cdnInvalidatorSub container(s) to automate configuration before or after startup                    | `{}`                            |
+| `cdnInvalidatorSub.extraEnvVars`                               | Array with extra environment variables to add to cdnInvalidatorSub nodes                                    | `[]`                            |
+| `cdnInvalidatorSub.extraEnvVarsCM`                             | Name of existing ConfigMap containing extra env vars for cdnInvalidatorSub nodes                            | `""`                            |
+| `cdnInvalidatorSub.extraEnvVarsSecret`                         | Name of existing Secret containing extra env vars for cdnInvalidatorSub nodes                               | `""`                            |
+| `cdnInvalidatorSub.extraVolumes`                               | Optionally specify extra list of additional volumes for the cdnInvalidatorSub pod(s)                        | `[]`                            |
+| `cdnInvalidatorSub.extraVolumeMounts`                          | Optionally specify extra list of additional volumeMounts for the cdnInvalidatorSub container(s)             | `[]`                            |
+| `cdnInvalidatorSub.sidecars`                                   | Add additional sidecar containers to the cdnInvalidatorSub pod(s)                                           | `{}`                            |
+| `cdnInvalidatorSub.initContainers`                             | Add additional init containers to the cdnInvalidatorSub pod(s)                                              | `{}`                            |
 
 
 ### cdnInvalidatorSub Service Parameters
@@ -851,15 +907,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cdnInvalidatorSub.service.externalTrafficPolicy`    | cdnInvalidatorSub service external traffic policy                                            | `Cluster`   |
 | `cdnInvalidatorSub.service.annotations`              | Additional custom annotations for cdnInvalidatorSub service                                  | `{}`        |
 | `cdnInvalidatorSub.service.extraPorts`               | Extra ports to expose in cdnInvalidatorSub service (normally used with the `sidecars` value) | `[]`        |
-
-
-### cdnInvalidatorSub ServiceAccount configuration
-
-| Name                                                            | Description                                          | Value   |
-| --------------------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `cdnInvalidatorSub.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `cdnInvalidatorSub.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `cdnInvalidatorSub.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
 
 
 ### workspace-api Deployment Parameters
@@ -901,10 +948,11 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceApi.resources.limits`                           | The resources limits for the workspace-api containers                                                  | `{}`                            |
 | `workspaceApi.resources.requests`                         | The requested resources for the workspace-api containers                                               | `{}`                            |
 | `workspaceApi.podSecurityContext.enabled`                 | Enabled workspace-api pods' Security Context                                                           | `true`                          |
-| `workspaceApi.podSecurityContext.fsGroup`                 | Set workspace-api pod's Security Context fsGroup                                                       | `0`                             |
-| `workspaceApi.containerSecurityContext.enabled`           | Enabled workspace-api containers' Security Context                                                     | `false`                         |
-| `workspaceApi.containerSecurityContext.runAsUser`         | Set workspace-api containers' Security Context runAsUser                                               | `0`                             |
+| `workspaceApi.podSecurityContext.fsGroup`                 | Set workspace-api pod's Security Context fsGroup                                                       | `1000`                          |
+| `workspaceApi.containerSecurityContext.enabled`           | Enabled workspace-api containers' Security Context                                                     | `true`                          |
+| `workspaceApi.containerSecurityContext.runAsUser`         | Set workspace-api containers' Security Context runAsUser                                               | `1000`                          |
 | `workspaceApi.containerSecurityContext.runAsNonRoot`      | Set workspace-api containers' Security Context runAsNonRoot                                            | `false`                         |
+| `workspaceApi.containerSecurityContext.capabilities.drop` | removes workspace-api containers' Security Context capabilities                                        | `["all"]`                       |
 | `workspaceApi.configuration`                              | Configuration settings (env vars) for workspace-api                                                    | `{}`                            |
 | `workspaceApi.secretConfiguration`                        | Configuration settings (env vars) for workspace-api                                                    | `""`                            |
 | `workspaceApi.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for workspace-api                     | `""`                            |
@@ -951,72 +999,55 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceApi.service.extraPorts`               | Extra ports to expose in workspace-api service (normally used with the `sidecars` value) | `[]`        |
 
 
-### workspace-api ServiceAccount configuration
-
-| Name                                                       | Description                                          | Value   |
-| ---------------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `workspaceApi.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `workspaceApi.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `workspaceApi.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
-
-
 ### workspace-subscriber Deployment Parameters
 
-| Name                                                        | Description                                                                                                   | Value                           |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `workspaceSubscriber.image.registry`                        | workspace-subscriber image registry                                                                           | `gcr.io/carto-onprem-artifacts` |
-| `workspaceSubscriber.image.repository`                      | workspace-subscriber image repository                                                                         | `workspace-api`                 |
-| `workspaceSubscriber.image.tag`                             | workspace-subscriber image tag (immutable tags are recommended)                                               | `""`                            |
-| `workspaceSubscriber.image.pullPolicy`                      | workspace-subscriber image pull policy                                                                        | `IfNotPresent`                  |
-| `workspaceSubscriber.image.pullSecrets`                     | workspace-subscriber image pull secrets                                                                       | `[]`                            |
-| `workspaceSubscriber.replicaCount`                          | Number of workspace-subscriber replicas to deploy                                                             | `1`                             |
-| `workspaceSubscriber.customLivenessProbe`                   | Custom livenessProbe that overrides the default one                                                           | `{}`                            |
-| `workspaceSubscriber.customReadinessProbe`                  | Custom readinessProbe that overrides the default one                                                          | `{}`                            |
-| `workspaceSubscriber.customStartupProbe`                    | Custom startupProbe that overrides the default one                                                            | `{}`                            |
-| `workspaceSubscriber.resources.limits`                      | The resources limits for the workspace-subscriber containers                                                  | `{}`                            |
-| `workspaceSubscriber.resources.requests`                    | The requested resources for the workspace-subscriber containers                                               | `{}`                            |
-| `workspaceSubscriber.podSecurityContext.enabled`            | Enabled workspace-subscriber pods' Security Context                                                           | `true`                          |
-| `workspaceSubscriber.podSecurityContext.fsGroup`            | Set workspace-subscriber pod's Security Context fsGroup                                                       | `0`                             |
-| `workspaceSubscriber.containerSecurityContext.enabled`      | Enabled workspace-subscriber containers' Security Context                                                     | `false`                         |
-| `workspaceSubscriber.containerSecurityContext.runAsUser`    | Set workspace-subscriber containers' Security Context runAsUser                                               | `0`                             |
-| `workspaceSubscriber.containerSecurityContext.runAsNonRoot` | Set workspace-subscriber containers' Security Context runAsNonRoot                                            | `false`                         |
-| `workspaceSubscriber.configuration`                         | Configuration settings (env vars) for workspace-subscriber                                                    | `{}`                            |
-| `workspaceSubscriber.secretConfiguration`                   | Configuration settings (env vars) for workspace-subscriber                                                    | `""`                            |
-| `workspaceSubscriber.existingConfigMap`                     | The name of an existing ConfigMap with your custom configuration for workspace-subscriber                     | `""`                            |
-| `workspaceSubscriber.existingSecret`                        | The name of an existing ConfigMap with your custom configuration for workspace-subscriber                     | `""`                            |
-| `workspaceSubscriber.command`                               | Override default container command (useful when using custom images)                                          | `[]`                            |
-| `workspaceSubscriber.args`                                  | Override default container args (useful when using custom images)                                             | `[]`                            |
-| `workspaceSubscriber.hostAliases`                           | workspace-subscriber pods host aliases                                                                        | `[]`                            |
-| `workspaceSubscriber.podLabels`                             | Extra labels for workspace-subscriber pods                                                                    | `{}`                            |
-| `workspaceSubscriber.podAnnotations`                        | Annotations for workspace-subscriber pods                                                                     | `{}`                            |
-| `workspaceSubscriber.podAffinityPreset`                     | Pod affinity preset. Ignored if `workspaceSubscriber.affinity` is set. Allowed values: `soft` or `hard`       | `""`                            |
-| `workspaceSubscriber.podAntiAffinityPreset`                 | Pod anti-affinity preset. Ignored if `workspaceSubscriber.affinity` is set. Allowed values: `soft` or `hard`  | `soft`                          |
-| `workspaceSubscriber.nodeAffinityPreset.type`               | Node affinity preset type. Ignored if `workspaceSubscriber.affinity` is set. Allowed values: `soft` or `hard` | `""`                            |
-| `workspaceSubscriber.nodeAffinityPreset.key`                | Node label key to match. Ignored if `workspaceSubscriber.affinity` is set                                     | `""`                            |
-| `workspaceSubscriber.nodeAffinityPreset.values`             | Node label values to match. Ignored if `workspaceSubscriber.affinity` is set                                  | `[]`                            |
-| `workspaceSubscriber.affinity`                              | Affinity for workspace-subscriber pods assignment                                                             | `{}`                            |
-| `workspaceSubscriber.nodeSelector`                          | Node labels for workspace-subscriber pods assignment                                                          | `{}`                            |
-| `workspaceSubscriber.tolerations`                           | Tolerations for workspace-subscriber pods assignment                                                          | `[]`                            |
-| `workspaceSubscriber.updateStrategy.type`                   | workspace-subscriber statefulset strategy type                                                                | `RollingUpdate`                 |
-| `workspaceSubscriber.priorityClassName`                     | workspace-subscriber pods' priorityClassName                                                                  | `""`                            |
-| `workspaceSubscriber.schedulerName`                         | Name of the k8s scheduler (other than default) for workspace-subscriber pods                                  | `""`                            |
-| `workspaceSubscriber.lifecycleHooks`                        | for the workspace-subscriber container(s) to automate configuration before or after startup                   | `{}`                            |
-| `workspaceSubscriber.extraEnvVars`                          | Array with extra environment variables to add to workspace-subscriber nodes                                   | `[]`                            |
-| `workspaceSubscriber.extraEnvVarsCM`                        | Name of existing ConfigMap containing extra env vars for workspace-subscriber nodes                           | `""`                            |
-| `workspaceSubscriber.extraEnvVarsSecret`                    | Name of existing Secret containing extra env vars for workspace-subscriber nodes                              | `""`                            |
-| `workspaceSubscriber.extraVolumes`                          | Optionally specify extra list of additional volumes for the workspace-subscriber pod(s)                       | `[]`                            |
-| `workspaceSubscriber.extraVolumeMounts`                     | Optionally specify extra list of additional volumeMounts for the workspace-subscriber container(s)            | `[]`                            |
-| `workspaceSubscriber.sidecars`                              | Add additional sidecar containers to the workspace-subscriber pod(s)                                          | `{}`                            |
-| `workspaceSubscriber.initContainers`                        | Add additional init containers to the workspace-subscriber pod(s)                                             | `{}`                            |
-
-
-### workspace-subscriber ServiceAccount configuration
-
-| Name                                                              | Description                                          | Value   |
-| ----------------------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `workspaceSubscriber.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `workspaceSubscriber.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `workspaceSubscriber.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
+| Name                                                             | Description                                                                                                   | Value                           |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `workspaceSubscriber.image.registry`                             | workspace-subscriber image registry                                                                           | `gcr.io/carto-onprem-artifacts` |
+| `workspaceSubscriber.image.repository`                           | workspace-subscriber image repository                                                                         | `workspace-api`                 |
+| `workspaceSubscriber.image.tag`                                  | workspace-subscriber image tag (immutable tags are recommended)                                               | `""`                            |
+| `workspaceSubscriber.image.pullPolicy`                           | workspace-subscriber image pull policy                                                                        | `IfNotPresent`                  |
+| `workspaceSubscriber.image.pullSecrets`                          | workspace-subscriber image pull secrets                                                                       | `[]`                            |
+| `workspaceSubscriber.replicaCount`                               | Number of workspace-subscriber replicas to deploy                                                             | `1`                             |
+| `workspaceSubscriber.customLivenessProbe`                        | Custom livenessProbe that overrides the default one                                                           | `{}`                            |
+| `workspaceSubscriber.customReadinessProbe`                       | Custom readinessProbe that overrides the default one                                                          | `{}`                            |
+| `workspaceSubscriber.customStartupProbe`                         | Custom startupProbe that overrides the default one                                                            | `{}`                            |
+| `workspaceSubscriber.resources.limits`                           | The resources limits for the workspace-subscriber containers                                                  | `{}`                            |
+| `workspaceSubscriber.resources.requests`                         | The requested resources for the workspace-subscriber containers                                               | `{}`                            |
+| `workspaceSubscriber.podSecurityContext.enabled`                 | Enabled workspace-subscriber pods' Security Context                                                           | `true`                          |
+| `workspaceSubscriber.podSecurityContext.fsGroup`                 | Set workspace-subscriber pod's Security Context fsGroup                                                       | `1000`                          |
+| `workspaceSubscriber.containerSecurityContext.enabled`           | Enabled workspace-subscriber containers' Security Context                                                     | `true`                          |
+| `workspaceSubscriber.containerSecurityContext.runAsUser`         | Set workspace-subscriber containers' Security Context runAsUser                                               | `1000`                          |
+| `workspaceSubscriber.containerSecurityContext.runAsNonRoot`      | Set workspace-subscriber containers' Security Context runAsNonRoot                                            | `false`                         |
+| `workspaceSubscriber.containerSecurityContext.capabilities.drop` | removes workspace-subscriber containers' Security Context capabilities                                        | `["all"]`                       |
+| `workspaceSubscriber.configuration`                              | Configuration settings (env vars) for workspace-subscriber                                                    | `{}`                            |
+| `workspaceSubscriber.secretConfiguration`                        | Configuration settings (env vars) for workspace-subscriber                                                    | `""`                            |
+| `workspaceSubscriber.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for workspace-subscriber                     | `""`                            |
+| `workspaceSubscriber.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for workspace-subscriber                     | `""`                            |
+| `workspaceSubscriber.command`                                    | Override default container command (useful when using custom images)                                          | `[]`                            |
+| `workspaceSubscriber.args`                                       | Override default container args (useful when using custom images)                                             | `[]`                            |
+| `workspaceSubscriber.hostAliases`                                | workspace-subscriber pods host aliases                                                                        | `[]`                            |
+| `workspaceSubscriber.podLabels`                                  | Extra labels for workspace-subscriber pods                                                                    | `{}`                            |
+| `workspaceSubscriber.podAnnotations`                             | Annotations for workspace-subscriber pods                                                                     | `{}`                            |
+| `workspaceSubscriber.podAffinityPreset`                          | Pod affinity preset. Ignored if `workspaceSubscriber.affinity` is set. Allowed values: `soft` or `hard`       | `""`                            |
+| `workspaceSubscriber.podAntiAffinityPreset`                      | Pod anti-affinity preset. Ignored if `workspaceSubscriber.affinity` is set. Allowed values: `soft` or `hard`  | `soft`                          |
+| `workspaceSubscriber.nodeAffinityPreset.type`                    | Node affinity preset type. Ignored if `workspaceSubscriber.affinity` is set. Allowed values: `soft` or `hard` | `""`                            |
+| `workspaceSubscriber.nodeAffinityPreset.key`                     | Node label key to match. Ignored if `workspaceSubscriber.affinity` is set                                     | `""`                            |
+| `workspaceSubscriber.nodeAffinityPreset.values`                  | Node label values to match. Ignored if `workspaceSubscriber.affinity` is set                                  | `[]`                            |
+| `workspaceSubscriber.affinity`                                   | Affinity for workspace-subscriber pods assignment                                                             | `{}`                            |
+| `workspaceSubscriber.nodeSelector`                               | Node labels for workspace-subscriber pods assignment                                                          | `{}`                            |
+| `workspaceSubscriber.tolerations`                                | Tolerations for workspace-subscriber pods assignment                                                          | `[]`                            |
+| `workspaceSubscriber.updateStrategy.type`                        | workspace-subscriber statefulset strategy type                                                                | `RollingUpdate`                 |
+| `workspaceSubscriber.priorityClassName`                          | workspace-subscriber pods' priorityClassName                                                                  | `""`                            |
+| `workspaceSubscriber.schedulerName`                              | Name of the k8s scheduler (other than default) for workspace-subscriber pods                                  | `""`                            |
+| `workspaceSubscriber.lifecycleHooks`                             | for the workspace-subscriber container(s) to automate configuration before or after startup                   | `{}`                            |
+| `workspaceSubscriber.extraEnvVars`                               | Array with extra environment variables to add to workspace-subscriber nodes                                   | `[]`                            |
+| `workspaceSubscriber.extraEnvVarsCM`                             | Name of existing ConfigMap containing extra env vars for workspace-subscriber nodes                           | `""`                            |
+| `workspaceSubscriber.extraEnvVarsSecret`                         | Name of existing Secret containing extra env vars for workspace-subscriber nodes                              | `""`                            |
+| `workspaceSubscriber.extraVolumes`                               | Optionally specify extra list of additional volumes for the workspace-subscriber pod(s)                       | `[]`                            |
+| `workspaceSubscriber.extraVolumeMounts`                          | Optionally specify extra list of additional volumeMounts for the workspace-subscriber container(s)            | `[]`                            |
+| `workspaceSubscriber.sidecars`                                   | Add additional sidecar containers to the workspace-subscriber pod(s)                                          | `{}`                            |
+| `workspaceSubscriber.initContainers`                             | Add additional init containers to the workspace-subscriber pod(s)                                             | `{}`                            |
 
 
 ### workspace-www Deployment Parameters
@@ -1058,10 +1089,11 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceWww.resources.limits`                           | The resources limits for the workspace-www containers                                                  | `{}`                            |
 | `workspaceWww.resources.requests`                         | The requested resources for the workspace-www containers                                               | `{}`                            |
 | `workspaceWww.podSecurityContext.enabled`                 | Enabled workspace-www pods' Security Context                                                           | `true`                          |
-| `workspaceWww.podSecurityContext.fsGroup`                 | Set workspace-www pod's Security Context fsGroup                                                       | `0`                             |
-| `workspaceWww.containerSecurityContext.enabled`           | Enabled workspace-www containers' Security Context                                                     | `false`                         |
-| `workspaceWww.containerSecurityContext.runAsUser`         | Set workspace-www containers' Security Context runAsUser                                               | `0`                             |
+| `workspaceWww.podSecurityContext.fsGroup`                 | Set workspace-www pod's Security Context fsGroup                                                       | `101`                           |
+| `workspaceWww.containerSecurityContext.enabled`           | Enabled workspace-www containers' Security Context                                                     | `true`                          |
+| `workspaceWww.containerSecurityContext.runAsUser`         | Set workspace-www containers' Security Context runAsUser                                               | `101`                           |
 | `workspaceWww.containerSecurityContext.runAsNonRoot`      | Set workspace-www containers' Security Context runAsNonRoot                                            | `false`                         |
+| `workspaceWww.containerSecurityContext.capabilities.drop` | removes workspace-www containers' Security Context capabilities                                        | `["all"]`                       |
 | `workspaceWww.configuration`                              | Configuration settings (env vars) for workspace-www                                                    | `{}`                            |
 | `workspaceWww.secretConfiguration`                        | Configuration settings (env vars) for workspace-www                                                    | `""`                            |
 | `workspaceWww.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for workspace-www                     | `""`                            |
@@ -1119,20 +1151,21 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### Init Container Parameters
 
-| Name                                                        | Description                                                          | Value                           |
-| ----------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------- |
-| `workspaceMigrations.image.registry`                        | workspace-db image registry                                          | `gcr.io/carto-onprem-artifacts` |
-| `workspaceMigrations.image.repository`                      | workspace-db image repository                                        | `workspace-db`                  |
-| `workspaceMigrations.image.tag`                             | workspace-db image tag (immutable tags are recommended)              | `""`                            |
-| `workspaceMigrations.image.pullPolicy`                      | workspace-db image pull policy                                       | `IfNotPresent`                  |
-| `workspaceMigrations.image.pullSecrets`                     | workspace-db image pull secrets                                      | `[]`                            |
-| `workspaceMigrations.command`                               | Override default container command (useful when using custom images) | `[]`                            |
-| `workspaceMigrations.args`                                  | Override default container args (useful when using custom images)    | `[]`                            |
-| `workspaceMigrations.resources.limits`                      | The resources limits for the init container                          | `{}`                            |
-| `workspaceMigrations.resources.requests`                    | The requested resources for the init container                       | `{}`                            |
-| `workspaceMigrations.containerSecurityContext.enabled`      | Enable container security context                                    | `false`                         |
-| `workspaceMigrations.containerSecurityContext.runAsUser`    | Set init container's Security Context runAsUser                      | `0`                             |
-| `workspaceMigrations.containerSecurityContext.runAsNonRoot` | Force the init container to run as non root                          | `false`                         |
+| Name                                                             | Description                                                          | Value                           |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------- |
+| `workspaceMigrations.image.registry`                             | workspace-db image registry                                          | `gcr.io/carto-onprem-artifacts` |
+| `workspaceMigrations.image.repository`                           | workspace-db image repository                                        | `workspace-db`                  |
+| `workspaceMigrations.image.tag`                                  | workspace-db image tag (immutable tags are recommended)              | `""`                            |
+| `workspaceMigrations.image.pullPolicy`                           | workspace-db image pull policy                                       | `IfNotPresent`                  |
+| `workspaceMigrations.image.pullSecrets`                          | workspace-db image pull secrets                                      | `[]`                            |
+| `workspaceMigrations.command`                                    | Override default container command (useful when using custom images) | `[]`                            |
+| `workspaceMigrations.args`                                       | Override default container args (useful when using custom images)    | `[]`                            |
+| `workspaceMigrations.resources.limits`                           | The resources limits for the init container                          | `{}`                            |
+| `workspaceMigrations.resources.requests`                         | The requested resources for the init container                       | `{}`                            |
+| `workspaceMigrations.containerSecurityContext.enabled`           | Enable container security context                                    | `true`                          |
+| `workspaceMigrations.containerSecurityContext.runAsUser`         | Set init container's Security Context runAsUser                      | `1000`                          |
+| `workspaceMigrations.containerSecurityContext.runAsNonRoot`      | Force the init container to run as non root                          | `false`                         |
+| `workspaceMigrations.containerSecurityContext.capabilities.drop` | removes accounts-www containers' Security Contexcapabilitiesot       | `["all"]`                       |
 
 
 ### Internal Redis&trade; subchart parameters
@@ -1197,6 +1230,26 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `externalPostgresql.port`                           | Database port number                                                                                                                   | `5432`            |
 | `externalPostgresql.sslEnabled`                     | Whether or not connect to CARTO Postgresql via TLS                                                                                     | `false`           |
 | `externalPostgresql.sslCA`                          | CA certificate in case CARTO Postgresql TLS cert it's selfsigned                                                                       | `""`              |
+
+
+### Upgrade Check pre hook parameters
+
+| Name                                                      | Description                                                              | Value                           |
+| --------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------- |
+| `upgradeCheck.enabled`                                    | upgradeCheck will run or not                                             | `true`                          |
+| `upgradeCheck.image.registry`                             | upgradeCheck image registry                                              | `gcr.io/carto-onprem-artifacts` |
+| `upgradeCheck.image.repository`                           | upgradeCheck image repository                                            | `router`                        |
+| `upgradeCheck.image.tag`                                  | upgradeCheck image tag (immutable tags are recommended)                  | `""`                            |
+| `upgradeCheck.image.pullPolicy`                           | upgradeCheck image pull policy                                           | `IfNotPresent`                  |
+| `upgradeCheck.image.pullSecrets`                          | upgradeCheck image pull secrets                                          | `[]`                            |
+| `upgradeCheck.resources.limits`                           | The resources limits for the Upgrade Check pre-hook containers           | `{}`                            |
+| `upgradeCheck.resources.requests`                         | The requested resources for the Upgrade Check pre-hook containers        | `{}`                            |
+| `upgradeCheck.podSecurityContext.enabled`                 | Enabled Upgrade Check pre-hook pods' Security Context                    | `true`                          |
+| `upgradeCheck.podSecurityContext.fsGroup`                 | Set Upgrade Check pre-hook pod's Security Context fsGroup                | `1000`                          |
+| `upgradeCheck.containerSecurityContext.enabled`           | Enabled Upgrade Check pre-hook containers' Security Context              | `true`                          |
+| `upgradeCheck.containerSecurityContext.runAsUser`         | Set Upgrade Check pre-hook containers' Security Context runAsUser        | `1000`                          |
+| `upgradeCheck.containerSecurityContext.runAsNonRoot`      | Set Upgrade Check pre-hook containers' Security Context runAsNonRoot     | `false`                         |
+| `upgradeCheck.containerSecurityContext.capabilities.drop` | removes Upgrade Check pre-hook containers' Security Context capabilities | `["all"]`                       |
 
 
 ## Configuration and installation details

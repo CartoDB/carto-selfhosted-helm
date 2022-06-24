@@ -15,8 +15,8 @@ appConfigValues:
   workspaceThumbnailsBucket: ""
   ## @param appConfigValues.workspaceThumbnailsPublic Indicate if the thumbnails could be accessed publicly
   workspaceThumbnailsPublic: "true"
-  ## @param appConfigValues.gcpBucketsProjectId If the bucket is GCP, the ProjectId to be used
-  gcpBucketsProjectId: ""
+  ## @param appConfigValues.googleCloudStorageProjectId If the bucket is GCP, the ProjectId to be used
+  googleCloudStorageProjectId: ""
   ## @param appConfigValues.awsS3Region If the bucket is S3, the region to be used
   awsS3Region: ""
 
@@ -55,12 +55,12 @@ appSecrets:
     existingSecret:
       name: ""
       key: ""
-  ## @extra appSecrets.gcpBucketsServiceAccountKey If GCP is used in self-hosted, the AccessKey Secret.
-  gcpBucketsServiceAccountKey:
-    ## @param appSecrets.gcpBucketsServiceAccountKey.value Value of the secret `AccessKey Secret` (Only required if GCP is used). One of `appSecrets.gcpBucketsServiceAccountKey.value` or `appSecrets.gcpBucketsServiceAccountKey.existingSecret` could be defined.
+  ## @extra appSecrets.googleCloudStorageServiceAccountKey If GCP is used in self-hosted, the AccessKey Secret.
+  googleCloudStorageServiceAccountKey:
+    ## @param appSecrets.googleCloudStorageServiceAccountKey.value Value of the secret `AccessKey Secret` (Only required if GCP is used). One of `appSecrets.googleCloudStorageServiceAccountKey.value` or `appSecrets.googleCloudStorageServiceAccountKey.existingSecret` could be defined.
     value: ""
-    ## @param appSecrets.gcpBucketsServiceAccountKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.gcpBucketsServiceAccountKey.existingSecret.key`. If `appSecrets.gcpBucketsServiceAccountKey.value` is defined, this value is going to be ignored and not used.
-    ## @param appSecrets.gcpBucketsServiceAccountKey.existingSecret.key Key to find in `appSecrets.gcpBucketsServiceAccountKey.existingSecret.name` where the value of `appSecrets.gcpBucketsServiceAccountKey` is found. If `appSecrets.gcpBucketsServiceAccountKey.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.googleCloudStorageServiceAccountKey.existingSecret.key`. If `appSecrets.googleCloudStorageServiceAccountKey.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.googleCloudStorageServiceAccountKey.existingSecret.key Key to find in `appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name` where the value of `appSecrets.googleCloudStorageServiceAccountKey` is found. If `appSecrets.googleCloudStorageServiceAccountKey.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""
@@ -151,17 +151,35 @@ cartoSecrets:
       name: ""
       key: ""
 
+## @section TLS parameters
+## Global TLS parameters
+## @param tlsCerts.httpsEnabled Enable https. CARTO only works with `HTTPS`, if you disable this protocol here you should configure it in a higher layer like a Load Balancer
 ## @param tlsCerts.autoGenerate Generate self-signed TLS certificates
 ## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
 ## @param tlsCerts.existingSecret.certKey Key of the certificate inside the secret
 ## @param tlsCerts.existingSecret.keyKey Key of the certificate key inside the secret
 ##
 tlsCerts:
+  httpsEnabled: true
   autoGenerate: true
   existingSecret:
     name: ""
     keyKey: "tls.key"
     certKey: "tls.crt"
+
+## @section common backend service account
+## Service Account to be specified for the client to be used in common backend deployments
+commonBackendServiceAccount:
+  ## @param commonBackendServiceAccount.create Specifies whether a common ServiceAccount for backend should be created
+  create: true
+  ## @param commonBackendServiceAccount.enableGCPWorkloadIdentity Enable the Workload Identity feature in kubernetes
+  enableGCPWorkloadIdentity: false
+  ## @param commonBackendServiceAccount.automountServiceAccountToken Mount service account token in deployments
+  automountServiceAccountToken: false
+  ## @param commonBackendServiceAccount.annotations Annotations to add to this SA
+  annotations: {}
+  ## @param commonBackendServiceAccount.name If not set and create is true, a name is generated using the common.names.fullname template
+  name: ""
 
 ## @section Global parameters
 ## Global Docker image parameters
@@ -351,17 +369,21 @@ accountsWww:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 101
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param accountsWww.containerSecurityContext.enabled Enabled accounts-www containers' Security Context
   ## @param accountsWww.containerSecurityContext.runAsUser Set accounts-www containers' Security Context runAsUser
   ## @param accountsWww.containerSecurityContext.runAsNonRoot Set accounts-www containers' Security Context runAsNonRoot
+  ## @param accountsWww.containerSecurityContext.capabilities.drop removes accounts-www containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 101
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param accountsWww.configuration [object] Configuration settings (env vars) for accounts-www
   ##
@@ -671,17 +693,21 @@ importApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importApi.containerSecurityContext.enabled Enabled import-api containers' Security Context
   ## @param importApi.containerSecurityContext.runAsUser Set import-api containers' Security Context runAsUser
   ## @param importApi.containerSecurityContext.runAsNonRoot Set import-api containers' Security Context runAsNonRoot
+  ## @param importApi.containerSecurityContext.capabilities.drop removes import-api containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param importApi.configuration [object] Configuration settings (env vars) for import-api
   ##
@@ -855,19 +881,6 @@ importApi:
     ## @param importApi.service.extraPorts Extra ports to expose in import-api service (normally used with the `sidecars` value)
     ##
     extraPorts: []
-  ## @section import-api ServiceAccount configuration
-  ##
-  serviceAccount:
-    ## @param importApi.serviceAccount.create Specifies whether a ServiceAccount should be created
-    ##
-    create: true
-    ## @param importApi.serviceAccount.name The name of the ServiceAccount to use.
-    ## If not set and create is true, a name is generated using the common.names.fullname template
-    ##
-    name: ""
-    ## @param importApi.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
-    ##
-    automountServiceAccountToken: false
 
 ## @section import-worker Deployment Parameters
 ##
@@ -930,17 +943,21 @@ importWorker:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importWorker.containerSecurityContext.enabled Enabled import-worker containers' Security Context
   ## @param importWorker.containerSecurityContext.runAsUser Set import-worker containers' Security Context runAsUser
   ## @param importWorker.containerSecurityContext.runAsNonRoot Set import-worker containers' Security Context runAsNonRoot
+  ## @param importWorker.containerSecurityContext.capabilities.drop removes import-worker containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param importWorker.configuration [object] Configuration settings (env vars) for import-worker
   ##
@@ -1068,19 +1085,6 @@ importWorker:
   ##    command: ['sh', '-c', 'echo "hello world"']
   ##
   initContainers: {}
-  ## @section import-worker ServiceAccount configuration
-  ##
-  serviceAccount:
-    ## @param importWorker.serviceAccount.create Specifies whether a ServiceAccount should be created
-    ##
-    create: true
-    ## @param importWorker.serviceAccount.name The name of the ServiceAccount to use.
-    ## If not set and create is true, a name is generated using the common.names.fullname template
-    ##
-    name: ""
-    ## @param importWorker.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
-    ##
-    automountServiceAccountToken: false
 
 ## @section lds-api Deployment Parameters
 ##
@@ -1203,17 +1207,21 @@ ldsApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param ldsApi.containerSecurityContext.enabled Enabled lds-api containers' Security Context
   ## @param ldsApi.containerSecurityContext.runAsUser Set lds-api containers' Security Context runAsUser
   ## @param ldsApi.containerSecurityContext.runAsNonRoot Set lds-api containers' Security Context runAsNonRoot
+  ## @param ldsApi.containerSecurityContext.capabilities.drop removes lds-api containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param ldsApi.configuration [object] Configuration settings (env vars) for lds-api
   ##
@@ -1387,19 +1395,6 @@ ldsApi:
     ## @param ldsApi.service.extraPorts Extra ports to expose in lds-api service (normally used with the `sidecars` value)
     ##
     extraPorts: []
-  ## @section lds-api ServiceAccount configuration
-  ##
-  serviceAccount:
-    ## @param ldsApi.serviceAccount.create Specifies whether a ServiceAccount should be created
-    ##
-    create: true
-    ## @param ldsApi.serviceAccount.name The name of the ServiceAccount to use.
-    ## If not set and create is true, a name is generated using the common.names.fullname template
-    ##
-    name: ""
-    ## @param ldsApi.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
-    ##
-    automountServiceAccountToken: false
 
 ## @section maps-api Deployment Parameters
 ##
@@ -1510,7 +1505,7 @@ mapsApi:
   ##
   resources:
     limits:
-      memory: "1024Mi"
+      memory: "2048Mi"
       cpu: "1000m"
     requests:
       memory: "768Mi"
@@ -1522,17 +1517,21 @@ mapsApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param mapsApi.containerSecurityContext.enabled Enabled maps-api containers' Security Context
   ## @param mapsApi.containerSecurityContext.runAsUser Set maps-api containers' Security Context runAsUser
   ## @param mapsApi.containerSecurityContext.runAsNonRoot Set maps-api containers' Security Context runAsNonRoot
+  ## @param mapsApi.containerSecurityContext.capabilities.drop removes maps-api containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param mapsApi.configuration [object] Configuration settings (env vars) for maps-api
   ##
@@ -1707,19 +1706,245 @@ mapsApi:
     ## @param mapsApi.service.extraPorts Extra ports to expose in maps-api service (normally used with the `sidecars` value)
     ##
     extraPorts: []
-  ## @section maps-api ServiceAccount configuration
+
+## @section sql-worker Deployment Parameters
+##
+sqlWorker:
+  ## sql-worker image
+  ## @param sqlWorker.image.registry sql-worker image registry
+  ## @param sqlWorker.image.repository sql-worker image repository
+  ## @param sqlWorker.image.tag sql-worker image tag (immutable tags are recommended)
+  ## @param sqlWorker.image.pullPolicy sql-worker image pull policy
+  ## @param sqlWorker.image.pullSecrets sql-worker image pull secrets
   ##
-  serviceAccount:
-    ## @param mapsApi.serviceAccount.create Specifies whether a ServiceAccount should be created
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: maps-api
+    ## Specify a custom image tag
+    tag: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
     ##
-    create: true
-    ## @param mapsApi.serviceAccount.name The name of the ServiceAccount to use.
-    ## If not set and create is true, a name is generated using the common.names.fullname template
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
     ##
-    name: ""
-    ## @param mapsApi.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
+    pullSecrets: []
+  ## @param sqlWorker.replicaCount Number of sql-worker replicas to deploy
+  ##
+  replicaCount: 1
+  ## Configure extra options for sqlWorker containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param sqlWorker.livenessProbe.enabled Enable livenessProbe on sqlWorker containers
+  ## @param sqlWorker.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param sqlWorker.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param sqlWorker.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param sqlWorker.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param sqlWorker.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param sqlWorker.readinessProbe.enabled Enable readinessProbe on sqlWorker containers
+  ## @param sqlWorker.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param sqlWorker.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param sqlWorker.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param sqlWorker.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param sqlWorker.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param sqlWorker.startupProbe.enabled Enable startupProbe on sqlWorker containers
+  ## @param sqlWorker.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param sqlWorker.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param sqlWorker.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param sqlWorker.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param sqlWorker.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## sql-worker resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param sqlWorker.resources.limits [object] The resources limits for the sql-worker containers
+  ## @skip sqlWorker.resources.limits
+  ## @param sqlWorker.resources.requests [object] The requested resources for the sql-worker containers
+  ## @skip sqlWorker.resources.requests
+  ##
+  resources:
+    limits:
+      memory: "4096Mi"
+      cpu: "1000m"
+    requests:
+      memory: "3072Mi"
+      cpu: "750m"
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param sqlWorker.podSecurityContext.enabled Enabled sql-worker pods' Security Context
+  ## @param sqlWorker.podSecurityContext.fsGroup Set sql-worker pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1000
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param sqlWorker.containerSecurityContext.enabled Enabled sql-worker containers' Security Context
+  ## @param sqlWorker.containerSecurityContext.runAsUser Set sql-worker containers' Security Context runAsUser
+  ## @param sqlWorker.containerSecurityContext.runAsNonRoot Set sql-worker containers' Security Context runAsNonRoot
+  ## @param sqlWorker.containerSecurityContext.capabilities.drop removes sql-worker containers' Security Context capabilities
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
+
+  ## @param sqlWorker.configuration [object] Configuration settings (env vars) for sql-worker
+  ##
+  configuration: ""
+  ## @param sqlWorker.secretConfiguration Configuration settings (env vars) for sql-worker
+  ##
+  secretConfiguration: ""
+  ## @param sqlWorker.existingConfigMap The name of an existing ConfigMap with your custom configuration for sql-worker
+  ##
+  existingConfigMap: ""
+  ## @param sqlWorker.existingSecret The name of an existing ConfigMap with your custom configuration for sql-worker
+  ##
+  existingSecret: ""
+  ## @param sqlWorker.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param sqlWorker.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param sqlWorker.hostAliases sql-worker pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param sqlWorker.podLabels Extra labels for sql-worker pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param sqlWorker.podAnnotations Annotations for sql-worker pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param sqlWorker.podAffinityPreset Pod affinity preset. Ignored if `sqlWorker.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param sqlWorker.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `sqlWorker.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node sqlWorker.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param sqlWorker.nodeAffinityPreset.type Node affinity preset type. Ignored if `sqlWorker.affinity` is set. Allowed values: `soft` or `hard`
     ##
-    automountServiceAccountToken: false
+    type: ""
+    ## @param sqlWorker.nodeAffinityPreset.key Node label key to match. Ignored if `sqlWorker.affinity` is set
+    ##
+    key: ""
+    ## @param sqlWorker.nodeAffinityPreset.values Node label values to match. Ignored if `sqlWorker.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param sqlWorker.affinity Affinity for sql-worker pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `sqlWorker.podAffinityPreset`, `sqlWorker.podAntiAffinityPreset`, and `sqlWorker.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param sqlWorker.nodeSelector Node labels for sql-worker pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param sqlWorker.tolerations Tolerations for sql-worker pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param sqlWorker.updateStrategy.type sql-worker statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param sqlWorker.priorityClassName sql-worker pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param sqlWorker.schedulerName Name of the k8s scheduler (other than default) for sql-worker pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param sqlWorker.lifecycleHooks for the sql-worker container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param sqlWorker.extraEnvVars Array with extra environment variables to add to sql-worker nodes
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param sqlWorker.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for sql-worker nodes
+  ##
+  extraEnvVarsCM: ""
+  ## @param sqlWorker.extraEnvVarsSecret Name of existing Secret containing extra env vars for sql-worker nodes
+  ##
+  extraEnvVarsSecret: ""
+  ## @param sqlWorker.extraVolumes Optionally specify extra list of additional volumes for the sql-worker pod(s)
+  ##
+  extraVolumes: []
+  ## @param sqlWorker.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the sql-worker container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param sqlWorker.sidecars Add additional sidecar containers to the sql-worker pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param sqlWorker.initContainers Add additional init containers to the sql-worker pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
 
 ## @section router Deployment Parameters
 ##
@@ -1844,17 +2069,21 @@ router:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 101
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param router.containerSecurityContext.enabled Enabled router containers' Security Context
   ## @param router.containerSecurityContext.runAsUser Set router containers' Security Context runAsUser
   ## @param router.containerSecurityContext.runAsNonRoot Set router containers' Security Context runAsNonRoot
+  ## @param router.containerSecurityContext.capabilities.drop removes router containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 101
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param router.configuration [object] Configuration settings (env vars) for router
   ##
@@ -2144,10 +2373,10 @@ httpCache:
   ##
   resources:
     limits:
-      memory: "1024Mi"
+      memory: "2048Mi"
       cpu: "500m"
     requests:
-      memory: "768Mi"
+      memory: "1256Mi"
       cpu: "375m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
@@ -2156,17 +2385,21 @@ httpCache:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 102
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param httpCache.containerSecurityContext.enabled Enabled http-cache containers' Security Context
   ## @param httpCache.containerSecurityContext.runAsUser Set http-cache containers' Security Context runAsUser
   ## @param httpCache.containerSecurityContext.runAsNonRoot Set http-cache containers' Security Context runAsNonRoot
+  ## @param httpCache.containerSecurityContext.capabilities.drop removes http-cache containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 101
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param httpCache.configuration [object] Configuration settings (env vars) for http-cache
   ##
@@ -2464,17 +2697,21 @@ cdnInvalidatorSub:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param cdnInvalidatorSub.containerSecurityContext.enabled Enabled cdnInvalidatorSub containers' Security Context
   ## @param cdnInvalidatorSub.containerSecurityContext.runAsUser Set cdnInvalidatorSub containers' Security Context runAsUser
   ## @param cdnInvalidatorSub.containerSecurityContext.runAsNonRoot Set cdnInvalidatorSub containers' Security Context runAsNonRoot
+  ## @param cdnInvalidatorSub.containerSecurityContext.capabilities.drop removes cdnInvalidatorSub containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param cdnInvalidatorSub.configuration [object] Configuration settings (env vars) for cdnInvalidatorSub
   ##
@@ -2651,19 +2888,6 @@ cdnInvalidatorSub:
     ## @param cdnInvalidatorSub.service.extraPorts Extra ports to expose in cdnInvalidatorSub service (normally used with the `sidecars` value)
     ##
     extraPorts: []
-  ## @section cdnInvalidatorSub ServiceAccount configuration
-  ##
-  serviceAccount:
-    ## @param cdnInvalidatorSub.serviceAccount.create Specifies whether a ServiceAccount should be created
-    ##
-    create: true
-    ## @param cdnInvalidatorSub.serviceAccount.name The name of the ServiceAccount to use.
-    ## If not set and create is true, a name is generated using the common.names.fullname template
-    ##
-    name: ""
-    ## @param cdnInvalidatorSub.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
-    ##
-    automountServiceAccountToken: false
 
 ## @section workspace-api Deployment Parameters
 ##
@@ -2786,17 +3010,21 @@ workspaceApi:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceApi.containerSecurityContext.enabled Enabled workspace-api containers' Security Context
   ## @param workspaceApi.containerSecurityContext.runAsUser Set workspace-api containers' Security Context runAsUser
   ## @param workspaceApi.containerSecurityContext.runAsNonRoot Set workspace-api containers' Security Context runAsNonRoot
+  ## @param workspaceApi.containerSecurityContext.capabilities.drop removes workspace-api containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param workspaceApi.configuration [object] Configuration settings (env vars) for workspace-api
   ##
@@ -2971,19 +3199,6 @@ workspaceApi:
     ## @param workspaceApi.service.extraPorts Extra ports to expose in workspace-api service (normally used with the `sidecars` value)
     ##
     extraPorts: []
-  ## @section workspace-api ServiceAccount configuration
-  ##
-  serviceAccount:
-    ## @param workspaceApi.serviceAccount.create Specifies whether a ServiceAccount should be created
-    ##
-    create: true
-    ## @param workspaceApi.serviceAccount.name The name of the ServiceAccount to use.
-    ## If not set and create is true, a name is generated using the common.names.fullname template
-    ##
-    name: ""
-    ## @param workspaceApi.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
-    ##
-    automountServiceAccountToken: false
 
 ## @section workspace-subscriber Deployment Parameters
 ##
@@ -3046,17 +3261,21 @@ workspaceSubscriber:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 1000
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceSubscriber.containerSecurityContext.enabled Enabled workspace-subscriber containers' Security Context
   ## @param workspaceSubscriber.containerSecurityContext.runAsUser Set workspace-subscriber containers' Security Context runAsUser
   ## @param workspaceSubscriber.containerSecurityContext.runAsNonRoot Set workspace-subscriber containers' Security Context runAsNonRoot
+  ## @param workspaceSubscriber.containerSecurityContext.capabilities.drop removes workspace-subscriber containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param workspaceSubscriber.configuration [object] Configuration settings (env vars) for workspace-subscriber
   ##
@@ -3184,19 +3403,6 @@ workspaceSubscriber:
   ##    command: ['sh', '-c', 'echo "hello world"']
   ##
   initContainers: {}
-  ## @section workspace-subscriber ServiceAccount configuration
-  ##
-  serviceAccount:
-    ## @param workspaceSubscriber.serviceAccount.create Specifies whether a ServiceAccount should be created
-    ##
-    create: true
-    ## @param workspaceSubscriber.serviceAccount.name The name of the ServiceAccount to use.
-    ## If not set and create is true, a name is generated using the common.names.fullname template
-    ##
-    name: ""
-    ## @param workspaceSubscriber.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
-    ##
-    automountServiceAccountToken: false
 
 ## @section workspace-www Deployment Parameters
 ##
@@ -3319,17 +3525,21 @@ workspaceWww:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 0
+    fsGroup: 101
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceWww.containerSecurityContext.enabled Enabled workspace-www containers' Security Context
   ## @param workspaceWww.containerSecurityContext.runAsUser Set workspace-www containers' Security Context runAsUser
   ## @param workspaceWww.containerSecurityContext.runAsNonRoot Set workspace-www containers' Security Context runAsNonRoot
+  ## @param workspaceWww.containerSecurityContext.capabilities.drop removes workspace-www containers' Security Context capabilities
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 101
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
   ## @param workspaceWww.configuration [object] Configuration settings (env vars) for workspace-www
   ##
@@ -3555,21 +3765,29 @@ workspaceMigrations:
   ## @skip workspaceMigrations.resources.requests
   ##
   resources:
-    limits: {}
-    requests: {}
+    limits:
+      memory: "2048Mi"
+      cpu: "1"
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
   ## Init container Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ## @param workspaceMigrations.containerSecurityContext.enabled Enable container security context
   ## @param workspaceMigrations.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
   ## @param workspaceMigrations.containerSecurityContext.runAsNonRoot Force the init container to run as non root
+  ## @param workspaceMigrations.containerSecurityContext.capabilities.drop removes accounts-www containers' Security Contexcapabilitiesot
   ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
   ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
   ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
   ##
   containerSecurityContext:
-    enabled: false
-    runAsUser: 0
+    enabled: true
+    runAsUser: 1000
     runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
 
 ## @section Internal Redis&trade; subchart parameters
 ## Internal Redis &trade; chart configuration
@@ -3701,3 +3919,70 @@ externalPostgresql:
   port: 5432
   sslEnabled: false
   sslCA: ""
+
+## @section Upgrade Check pre hook parameters
+## @param upgradeCheck.enabled upgradeCheck will run or not
+upgradeCheck:
+  enabled: true
+  ## upgradeCheck image
+  ## @param upgradeCheck.image.registry upgradeCheck image registry
+  ## @param upgradeCheck.image.repository upgradeCheck image repository
+  ## @param upgradeCheck.image.tag upgradeCheck image tag (immutable tags are recommended)
+  ## @param upgradeCheck.image.pullPolicy upgradeCheck image pull policy
+  ## @param upgradeCheck.image.pullSecrets upgradeCheck image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: router
+    ## Specify a custom image tag
+    tag: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## Upgrade Check pre-hook resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param upgradeCheck.resources.limits [object] The resources limits for the Upgrade Check pre-hook containers
+  ## @skip upgradeCheck.resources.limits
+  ## @param upgradeCheck.resources.requests [object] The requested resources for the Upgrade Check pre-hook containers
+  ## @skip upgradeCheck.resources.requests
+  ##
+  resources:
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+    requests:
+      memory: "128Mi"
+      cpu: "250m"
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param upgradeCheck.podSecurityContext.enabled Enabled Upgrade Check pre-hook pods' Security Context
+  ## @param upgradeCheck.podSecurityContext.fsGroup Set Upgrade Check pre-hook pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1000
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param upgradeCheck.containerSecurityContext.enabled Enabled Upgrade Check pre-hook containers' Security Context
+  ## @param upgradeCheck.containerSecurityContext.runAsUser Set Upgrade Check pre-hook containers' Security Context runAsUser
+  ## @param upgradeCheck.containerSecurityContext.runAsNonRoot Set Upgrade Check pre-hook containers' Security Context runAsNonRoot
+  ## @param upgradeCheck.containerSecurityContext.capabilities.drop removes Upgrade Check pre-hook containers' Security Context capabilities
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
+

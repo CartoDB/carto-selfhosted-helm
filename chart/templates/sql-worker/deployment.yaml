@@ -1,0 +1,192 @@
+{{- if (include "carto.baseUrl" .) }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.sqlWorker.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: sql-worker
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  # In order to publish the charts in official marketplaces, it's necessary that all components are able to start with default values without errors
+  # Components which needs other configuration requirements such as client specific parameters should not boot if these values ​​are not provided
+  {{- if .Values.cartoConfigValues.selfHostedTenantId }}
+  replicas: {{ .Values.sqlWorker.replicaCount }}
+  {{- else }}
+  replicas: 0
+  {{- end }}
+  {{- if .Values.sqlWorker.updateStrategy }}
+  strategy: {{- toYaml .Values.sqlWorker.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: sql-worker
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/sql-worker/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/sql-worker/secret.yaml") . | sha256sum }}
+        {{- if .Values.sqlWorker.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: sql-worker
+        {{- if .Values.sqlWorker.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.sqlWorker.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.sqlWorker.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.sqlWorker.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.sqlWorker.podAffinityPreset "component" "sql-worker" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.sqlWorker.podAntiAffinityPreset "component" "sql-worker" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.sqlWorker.nodeAffinityPreset.type "key" .Values.sqlWorker.nodeAffinityPreset.key "values" .Values.sqlWorker.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.sqlWorker.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.sqlWorker.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.sqlWorker.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.sqlWorker.priorityClassName }}
+      priorityClassName: {{ .Values.sqlWorker.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.sqlWorker.schedulerName }}
+      schedulerName: {{ .Values.sqlWorker.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.sqlWorker.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.sqlWorker.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if not .Values.diagnosticMode.enabled }}
+      initContainers:
+        {{- if .Values.internalPostgresql.enabled }}
+        {{ include "carto.postgresql-init-container" (dict "context" $) | nindent 8 }}
+        {{- end }}
+        {{- if .Values.sqlWorker.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: sql-worker
+          image: {{ template "carto.sqlWorker.image" . }}
+          imagePullPolicy: {{ .Values.sqlWorker.image.pullPolicy }}
+          {{- if .Values.sqlWorker.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.sqlWorker.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.sqlWorker.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.sqlWorker.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.args "context" $) | nindent 12 }}
+          {{ else }}
+          args:
+            - -ec
+            - |
+              npm run start:built:subscriber
+          {{- end }}
+          env:
+            - name: WORKSPACE_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ include "carto.postgresql.secret.key" . }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+              "ENCRYPTION_SECRET_KEY"
+            ) "context" $ ) | nindent 12 }}
+            {{- if .Values.sqlWorker.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            {{- if not .Values.sqlWorker.existingConfigMap }}
+            - configMapRef:
+                name: {{ template "carto.sqlWorker.fullname" . }}
+            {{- end }}
+            {{- if .Values.sqlWorker.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.sqlWorker.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.sqlWorker.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.sqlWorker.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+              "ENCRYPTION_SECRET_KEY"
+            ) "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.sqlWorker.secretName" . }}
+            {{- end }}
+          {{- if .Values.sqlWorker.resources }}
+          resources: {{- toYaml .Values.sqlWorker.resources | nindent 12 }}
+          {{- end }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.sqlWorker.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.sqlWorker.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.sqlWorker.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.sqlWorker.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: gcp-default-service-account-key
+              mountPath: {{ include "carto.google.secretMountDir" . }}
+              readOnly: true
+            {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+            - name: postgresql-ssl-ca
+              mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+          {{- if .Values.sqlWorker.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.sqlWorker.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.sqlWorker.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: {{ include "carto.google.secretName" . }}
+            items:
+              - key: {{ include "carto.google.secretKey" . }}
+                path: {{ include "carto.google.secretMountFilename" . }}
+        {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
+        - name: gcp-buckets-service-account-key
+          secret:
+            secretName: {{ include "carto.googleCloudStorageServiceAccountKey.secretName" . }}
+            items:
+              - key: {{ include "carto.googleCloudStorageServiceAccountKey.secretKey" . }}
+                path: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountFilename" . }}
+        {{- end }}
+        {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+        - name: postgresql-ssl-ca
+          configMap:
+            name: {{ include "carto.postgresql.configMapName" . }}
+        {{- end }}
+        {{- if .Values.sqlWorker.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+{{- end }}
