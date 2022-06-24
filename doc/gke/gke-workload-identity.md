@@ -34,7 +34,7 @@ The process of configuring Workload Identity includes using an IAM policy bindin
   gcloud iam service-accounts create <IAM_SERVICE_ACCOUNT_NAME> --project=<GCP_PROJECT_ID>
   ```
 
-  This SA needs the `roles/iam.serviceAccountTokenCreator` role, you can grant it with this command:
+  This SA needs the `roles/iam.serviceAccountTokenCreator` role for sign URLs, you can grant it with this command:
 
   ```bash
   gcloud iam service-accounts add-iam-policy-binding \
