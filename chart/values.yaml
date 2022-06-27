@@ -241,14 +241,6 @@ diagnosticMode:
   args:
     - 999d
 
-## @param commonConfiguration [object] Configuration script that will be run in all Carto instances
-##
-commonConfiguration: |
-
-## @param commonSecretConfiguration [object] Sensitive configuration script that will be run in all CARTO deployments
-##
-commonSecretConfiguration: |
-
 ## @section accounts-www Deployment Parameters
 ##
 accountsWww:
@@ -385,14 +377,6 @@ accountsWww:
     capabilities:
       drop:
         - all
-
-  ## @param accountsWww.configuration [object] Configuration settings (env vars) for accounts-www
-  ##
-  configuration: |
-
-  ## @param accountsWww.secretConfiguration Configuration settings (env vars) for accounts-www
-  ##
-  secretConfiguration: ""
   ## @param accountsWww.existingConfigMap The name of an existing ConfigMap with your custom configuration for accounts-www
   ##
   existingConfigMap: ""
@@ -709,13 +693,6 @@ importApi:
     capabilities:
       drop:
         - all
-
-  ## @param importApi.configuration [object] Configuration settings (env vars) for import-api
-  ##
-  configuration: |
-  ## @param importApi.secretConfiguration Configuration settings (env vars) for import-api
-  ##
-  secretConfiguration: ""
   ## @param importApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for import-api
   ##
   existingConfigMap: ""
@@ -959,13 +936,6 @@ importWorker:
     capabilities:
       drop:
         - all
-
-  ## @param importWorker.configuration [object] Configuration settings (env vars) for import-worker
-  ##
-  configuration: ""
-  ## @param importWorker.secretConfiguration Configuration settings (env vars) for import-worker
-  ##
-  secretConfiguration: ""
   ## @param importWorker.existingConfigMap The name of an existing ConfigMap with your custom configuration for import-worker
   ##
   existingConfigMap: ""
@@ -1223,13 +1193,6 @@ ldsApi:
     capabilities:
       drop:
         - all
-
-  ## @param ldsApi.configuration [object] Configuration settings (env vars) for lds-api
-  ##
-  configuration: |
-  ## @param ldsApi.secretConfiguration Configuration settings (env vars) for lds-api
-  ##
-  secretConfiguration: ""
   ## @param ldsApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for lds-api
   ##
   existingConfigMap: ""
@@ -1533,14 +1496,6 @@ mapsApi:
     capabilities:
       drop:
         - all
-
-  ## @param mapsApi.configuration [object] Configuration settings (env vars) for maps-api
-  ##
-  configuration: |
-
-  ## @param mapsApi.secretConfiguration Configuration settings (env vars) for maps-api
-  ##
-  secretConfiguration: ""
   ## @param mapsApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for maps-api
   ##
   existingConfigMap: ""
@@ -1819,13 +1774,6 @@ sqlWorker:
     capabilities:
       drop:
         - all
-
-  ## @param sqlWorker.configuration [object] Configuration settings (env vars) for sql-worker
-  ##
-  configuration: ""
-  ## @param sqlWorker.secretConfiguration Configuration settings (env vars) for sql-worker
-  ##
-  secretConfiguration: ""
   ## @param sqlWorker.existingConfigMap The name of an existing ConfigMap with your custom configuration for sql-worker
   ##
   existingConfigMap: ""
@@ -2085,14 +2033,6 @@ router:
     capabilities:
       drop:
         - all
-
-  ## @param router.configuration [object] Configuration settings (env vars) for router
-  ##
-  configuration: |
-
-  ## @param router.secretConfiguration Configuration settings (env vars) for router
-  ##
-  secretConfiguration: ""
   ## @param router.existingConfigMap The name of an existing ConfigMap with your custom configuration for router
   ##
   existingConfigMap: ""
@@ -2401,14 +2341,6 @@ httpCache:
     capabilities:
       drop:
         - all
-
-  ## @param httpCache.configuration [object] Configuration settings (env vars) for http-cache
-  ##
-  configuration: |
-
-  ## @param httpCache.secretConfiguration Configuration settings (env vars) for http-cache
-  ##
-  secretConfiguration: ""
   ## @param httpCache.existingConfigMap The name of an existing ConfigMap with your custom configuration for http-cache
   ##
   existingConfigMap: ""
@@ -2713,14 +2645,6 @@ cdnInvalidatorSub:
     capabilities:
       drop:
         - all
-
-  ## @param cdnInvalidatorSub.configuration [object] Configuration settings (env vars) for cdnInvalidatorSub
-  ##
-  configuration: |
-
-  ## @param cdnInvalidatorSub.secretConfiguration Configuration settings (env vars) for cdnInvalidatorSub
-  ##
-  secretConfiguration: ""
   ## @param cdnInvalidatorSub.existingConfigMap The name of an existing ConfigMap with your custom configuration for cdnInvalidatorSub
   ##
   existingConfigMap: ""
@@ -3026,14 +2950,6 @@ workspaceApi:
     capabilities:
       drop:
         - all
-
-  ## @param workspaceApi.configuration [object] Configuration settings (env vars) for workspace-api
-  ##
-  configuration: |
-
-  ## @param workspaceApi.secretConfiguration Configuration settings (env vars) for workspace-api
-  ##
-  secretConfiguration: ""
   ## @param workspaceApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-api
   ##
   existingConfigMap: ""
@@ -3277,13 +3193,6 @@ workspaceSubscriber:
     capabilities:
       drop:
         - all
-
-  ## @param workspaceSubscriber.configuration [object] Configuration settings (env vars) for workspace-subscriber
-  ##
-  configuration: ""
-  ## @param workspaceSubscriber.secretConfiguration Configuration settings (env vars) for workspace-subscriber
-  ##
-  secretConfiguration: ""
   ## @param workspaceSubscriber.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-subscriber
   ##
   existingConfigMap: ""
@@ -3541,13 +3450,6 @@ workspaceWww:
     capabilities:
       drop:
         - all
-
-  ## @param workspaceWww.configuration [object] Configuration settings (env vars) for workspace-www
-  ##
-  configuration: ""
-  ## @param workspaceWww.secretConfiguration Configuration settings (env vars) for workspace-www
-  ##
-  secretConfiguration: ""
   ## @param workspaceWww.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-www
   ##
   existingConfigMap: ""

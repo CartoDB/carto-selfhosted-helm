@@ -102,10 +102,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.httpCache.existingConfigMap }}
             - configMapRef:
-                name: {{ template "carto.httpCache.fullname" . }}
-            {{- end }}
+                name: {{ template "carto.httpCache.configmapName" . }}
             {{- if .Values.httpCache.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.httpCache.extraEnvVarsCM "context" $) }}

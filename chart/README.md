@@ -127,20 +127,18 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### Common parameters
 
-| Name                        | Description                                                                             | Value           |
-| --------------------------- | --------------------------------------------------------------------------------------- | --------------- |
-| `kubeVersion`               | Override Kubernetes version                                                             | `""`            |
-| `nameOverride`              | String to partially override common.names.fullname                                      | `""`            |
-| `fullnameOverride`          | String to fully override common.names.fullname                                          | `""`            |
-| `commonLabels`              | Labels to add to all deployed objects                                                   | `{}`            |
-| `commonAnnotations`         | Annotations to add to all deployed objects                                              | `{}`            |
-| `clusterDomain`             | Kubernetes cluster domain name                                                          | `cluster.local` |
-| `extraDeploy`               | Array of extra objects to deploy with the release                                       | `[]`            |
-| `diagnosticMode.enabled`    | Enable diagnostic mode (all probes will be disabled and the command will be overridden) | `false`         |
-| `diagnosticMode.command`    | Command to override all containers in the deployment                                    | `["sleep"]`     |
-| `diagnosticMode.args`       | Args to override all containers in the deployment                                       | `["999d"]`      |
-| `commonConfiguration`       | Configuration script that will be run in all Carto instances                            | `{}`            |
-| `commonSecretConfiguration` | Sensitive configuration script that will be run in all CARTO deployments                | `{}`            |
+| Name                     | Description                                                                             | Value           |
+| ------------------------ | --------------------------------------------------------------------------------------- | --------------- |
+| `kubeVersion`            | Override Kubernetes version                                                             | `""`            |
+| `nameOverride`           | String to partially override common.names.fullname                                      | `""`            |
+| `fullnameOverride`       | String to fully override common.names.fullname                                          | `""`            |
+| `commonLabels`           | Labels to add to all deployed objects                                                   | `{}`            |
+| `commonAnnotations`      | Annotations to add to all deployed objects                                              | `{}`            |
+| `clusterDomain`          | Kubernetes cluster domain name                                                          | `cluster.local` |
+| `extraDeploy`            | Array of extra objects to deploy with the release                                       | `[]`            |
+| `diagnosticMode.enabled` | Enable diagnostic mode (all probes will be disabled and the command will be overridden) | `false`         |
+| `diagnosticMode.command` | Command to override all containers in the deployment                                    | `["sleep"]`     |
+| `diagnosticMode.args`    | Args to override all containers in the deployment                                       | `["999d"]`      |
 
 
 ### accounts-www Deployment Parameters
@@ -187,8 +185,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `accountsWww.containerSecurityContext.runAsUser`         | Set accounts-www containers' Security Context runAsUser                                               | `101`                           |
 | `accountsWww.containerSecurityContext.runAsNonRoot`      | Set accounts-www containers' Security Context runAsNonRoot                                            | `false`                         |
 | `accountsWww.containerSecurityContext.capabilities.drop` | removes accounts-www containers' Security Context capabilities                                        | `["all"]`                       |
-| `accountsWww.configuration`                              | Configuration settings (env vars) for accounts-www                                                    | `{}`                            |
-| `accountsWww.secretConfiguration`                        | Configuration settings (env vars) for accounts-www                                                    | `""`                            |
 | `accountsWww.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for accounts-www                     | `""`                            |
 | `accountsWww.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for accounts-www                     | `""`                            |
 | `accountsWww.command`                                    | Override default container command (useful when using custom images)                                  | `[]`                            |
@@ -286,8 +282,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `importApi.containerSecurityContext.runAsUser`         | Set import-api containers' Security Context runAsUser                                               | `1000`                          |
 | `importApi.containerSecurityContext.runAsNonRoot`      | Set import-api containers' Security Context runAsNonRoot                                            | `false`                         |
 | `importApi.containerSecurityContext.capabilities.drop` | removes import-api containers' Security Context capabilities                                        | `["all"]`                       |
-| `importApi.configuration`                              | Configuration settings (env vars) for import-api                                                    | `{}`                            |
-| `importApi.secretConfiguration`                        | Configuration settings (env vars) for import-api                                                    | `""`                            |
 | `importApi.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for import-api                     | `""`                            |
 | `importApi.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for import-api                     | `""`                            |
 | `importApi.command`                                    | Override default container command (useful when using custom images)                                | `[]`                            |
@@ -353,8 +347,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `importWorker.containerSecurityContext.runAsUser`         | Set import-worker containers' Security Context runAsUser                                               | `1000`                          |
 | `importWorker.containerSecurityContext.runAsNonRoot`      | Set import-worker containers' Security Context runAsNonRoot                                            | `false`                         |
 | `importWorker.containerSecurityContext.capabilities.drop` | removes import-worker containers' Security Context capabilities                                        | `["all"]`                       |
-| `importWorker.configuration`                              | Configuration settings (env vars) for import-worker                                                    | `{}`                            |
-| `importWorker.secretConfiguration`                        | Configuration settings (env vars) for import-worker                                                    | `""`                            |
 | `importWorker.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for import-worker                     | `""`                            |
 | `importWorker.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for import-worker                     | `""`                            |
 | `importWorker.command`                                    | Override default container command (useful when using custom images)                                   | `[]`                            |
@@ -427,8 +419,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `ldsApi.containerSecurityContext.runAsUser`         | Set lds-api containers' Security Context runAsUser                                               | `1000`                          |
 | `ldsApi.containerSecurityContext.runAsNonRoot`      | Set lds-api containers' Security Context runAsNonRoot                                            | `false`                         |
 | `ldsApi.containerSecurityContext.capabilities.drop` | removes lds-api containers' Security Context capabilities                                        | `["all"]`                       |
-| `ldsApi.configuration`                              | Configuration settings (env vars) for lds-api                                                    | `{}`                            |
-| `ldsApi.secretConfiguration`                        | Configuration settings (env vars) for lds-api                                                    | `""`                            |
 | `ldsApi.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for lds-api                     | `""`                            |
 | `ldsApi.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for lds-api                     | `""`                            |
 | `ldsApi.command`                                    | Override default container command (useful when using custom images)                             | `[]`                            |
@@ -517,8 +507,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `mapsApi.containerSecurityContext.runAsUser`         | Set maps-api containers' Security Context runAsUser                                               | `1000`                          |
 | `mapsApi.containerSecurityContext.runAsNonRoot`      | Set maps-api containers' Security Context runAsNonRoot                                            | `false`                         |
 | `mapsApi.containerSecurityContext.capabilities.drop` | removes maps-api containers' Security Context capabilities                                        | `["all"]`                       |
-| `mapsApi.configuration`                              | Configuration settings (env vars) for maps-api                                                    | `{}`                            |
-| `mapsApi.secretConfiguration`                        | Configuration settings (env vars) for maps-api                                                    | `""`                            |
 | `mapsApi.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for maps-api                     | `""`                            |
 | `mapsApi.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for maps-api                     | `""`                            |
 | `mapsApi.command`                                    | Override default container command (useful when using custom images)                              | `[]`                            |
@@ -599,8 +587,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `sqlWorker.containerSecurityContext.runAsUser`         | Set sql-worker containers' Security Context runAsUser                                               | `1000`                          |
 | `sqlWorker.containerSecurityContext.runAsNonRoot`      | Set sql-worker containers' Security Context runAsNonRoot                                            | `false`                         |
 | `sqlWorker.containerSecurityContext.capabilities.drop` | removes sql-worker containers' Security Context capabilities                                        | `["all"]`                       |
-| `sqlWorker.configuration`                              | Configuration settings (env vars) for sql-worker                                                    | `{}`                            |
-| `sqlWorker.secretConfiguration`                        | Configuration settings (env vars) for sql-worker                                                    | `""`                            |
 | `sqlWorker.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for sql-worker                     | `""`                            |
 | `sqlWorker.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for sql-worker                     | `""`                            |
 | `sqlWorker.command`                                    | Override default container command (useful when using custom images)                                | `[]`                            |
@@ -674,8 +660,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `router.containerSecurityContext.runAsUser`         | Set router containers' Security Context runAsUser                                                | `101`                           |
 | `router.containerSecurityContext.runAsNonRoot`      | Set router containers' Security Context runAsNonRoot                                             | `false`                         |
 | `router.containerSecurityContext.capabilities.drop` | removes router containers' Security Context capabilities                                         | `["all"]`                       |
-| `router.configuration`                              | Configuration settings (env vars) for router                                                     | `{}`                            |
-| `router.secretConfiguration`                        | Configuration settings (env vars) for router                                                     | `""`                            |
 | `router.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for router                      | `""`                            |
 | `router.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for router                      | `""`                            |
 | `router.command`                                    | Override default container command (useful when using custom images)                             | `[]`                            |
@@ -771,8 +755,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `httpCache.containerSecurityContext.runAsUser`         | Set http-cache containers' Security Context runAsUser                                               | `101`                           |
 | `httpCache.containerSecurityContext.runAsNonRoot`      | Set http-cache containers' Security Context runAsNonRoot                                            | `false`                         |
 | `httpCache.containerSecurityContext.capabilities.drop` | removes http-cache containers' Security Context capabilities                                        | `["all"]`                       |
-| `httpCache.configuration`                              | Configuration settings (env vars) for http-cache                                                    | `{}`                            |
-| `httpCache.secretConfiguration`                        | Configuration settings (env vars) for http-cache                                                    | `""`                            |
 | `httpCache.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for http-cache                     | `""`                            |
 | `httpCache.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for http-cache                     | `""`                            |
 | `httpCache.command`                                    | Override default container command (useful when using custom images)                                | `[]`                            |
@@ -866,8 +848,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cdnInvalidatorSub.containerSecurityContext.runAsUser`         | Set cdnInvalidatorSub containers' Security Context runAsUser                                                | `1000`                          |
 | `cdnInvalidatorSub.containerSecurityContext.runAsNonRoot`      | Set cdnInvalidatorSub containers' Security Context runAsNonRoot                                             | `false`                         |
 | `cdnInvalidatorSub.containerSecurityContext.capabilities.drop` | removes cdnInvalidatorSub containers' Security Context capabilities                                         | `["all"]`                       |
-| `cdnInvalidatorSub.configuration`                              | Configuration settings (env vars) for cdnInvalidatorSub                                                     | `{}`                            |
-| `cdnInvalidatorSub.secretConfiguration`                        | Configuration settings (env vars) for cdnInvalidatorSub                                                     | `""`                            |
 | `cdnInvalidatorSub.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for cdnInvalidatorSub                      | `""`                            |
 | `cdnInvalidatorSub.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for cdnInvalidatorSub                      | `""`                            |
 | `cdnInvalidatorSub.command`                                    | Override default container command (useful when using custom images)                                        | `[]`                            |
@@ -957,8 +937,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceApi.containerSecurityContext.runAsUser`         | Set workspace-api containers' Security Context runAsUser                                               | `1000`                          |
 | `workspaceApi.containerSecurityContext.runAsNonRoot`      | Set workspace-api containers' Security Context runAsNonRoot                                            | `false`                         |
 | `workspaceApi.containerSecurityContext.capabilities.drop` | removes workspace-api containers' Security Context capabilities                                        | `["all"]`                       |
-| `workspaceApi.configuration`                              | Configuration settings (env vars) for workspace-api                                                    | `{}`                            |
-| `workspaceApi.secretConfiguration`                        | Configuration settings (env vars) for workspace-api                                                    | `""`                            |
 | `workspaceApi.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for workspace-api                     | `""`                            |
 | `workspaceApi.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for workspace-api                     | `""`                            |
 | `workspaceApi.command`                                    | Override default container command (useful when using custom images)                                   | `[]`                            |
@@ -1024,8 +1002,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceSubscriber.containerSecurityContext.runAsUser`         | Set workspace-subscriber containers' Security Context runAsUser                                               | `1000`                          |
 | `workspaceSubscriber.containerSecurityContext.runAsNonRoot`      | Set workspace-subscriber containers' Security Context runAsNonRoot                                            | `false`                         |
 | `workspaceSubscriber.containerSecurityContext.capabilities.drop` | removes workspace-subscriber containers' Security Context capabilities                                        | `["all"]`                       |
-| `workspaceSubscriber.configuration`                              | Configuration settings (env vars) for workspace-subscriber                                                    | `{}`                            |
-| `workspaceSubscriber.secretConfiguration`                        | Configuration settings (env vars) for workspace-subscriber                                                    | `""`                            |
 | `workspaceSubscriber.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for workspace-subscriber                     | `""`                            |
 | `workspaceSubscriber.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for workspace-subscriber                     | `""`                            |
 | `workspaceSubscriber.command`                                    | Override default container command (useful when using custom images)                                          | `[]`                            |
@@ -1098,8 +1074,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceWww.containerSecurityContext.runAsUser`         | Set workspace-www containers' Security Context runAsUser                                               | `101`                           |
 | `workspaceWww.containerSecurityContext.runAsNonRoot`      | Set workspace-www containers' Security Context runAsNonRoot                                            | `false`                         |
 | `workspaceWww.containerSecurityContext.capabilities.drop` | removes workspace-www containers' Security Context capabilities                                        | `["all"]`                       |
-| `workspaceWww.configuration`                              | Configuration settings (env vars) for workspace-www                                                    | `{}`                            |
-| `workspaceWww.secretConfiguration`                        | Configuration settings (env vars) for workspace-www                                                    | `""`                            |
 | `workspaceWww.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for workspace-www                     | `""`                            |
 | `workspaceWww.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for workspace-www                     | `""`                            |
 | `workspaceWww.command`                                    | Override default container command (useful when using custom images)                                   | `[]`                            |

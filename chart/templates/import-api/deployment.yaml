@@ -121,10 +121,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.importApi.existingConfigMap }}
             - configMapRef:
-                name: {{ template "carto.importApi.fullname" . }}
-            {{- end }}
+                name: {{ template "carto.importApi.configmapName" . }}
             {{- if .Values.importApi.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.importApi.extraEnvVarsCM "context" $) }}

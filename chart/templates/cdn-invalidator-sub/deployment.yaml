@@ -108,10 +108,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.cdnInvalidatorSub.existingConfigMap }}
             - configMapRef:
-                name: {{ template "carto.cdnInvalidatorSub.fullname" . }}
-            {{- end }}
+                name: {{ template "carto.cdnInvalidatorSub.configmapName" . }}
             {{- if .Values.cdnInvalidatorSub.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraEnvVarsCM "context" $) }}
