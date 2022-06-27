@@ -117,6 +117,11 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "carto.ldsApi.configmapName" . }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.ldsApi.secretName" . }}
+            {{- end }}
             {{- if .Values.ldsApi.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.ldsApi.extraEnvVarsCM "context" $) }}
@@ -124,11 +129,6 @@ spec:
             {{- if .Values.ldsApi.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.ldsApi.extraEnvVarsSecret "context" $) }}
-            {{- end }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) -}}
-            {{- if $secretContent }}
-            - secretRef:
-                name: {{ include "carto.ldsApi.secretName" . }}
             {{- end }}
           {{- if .Values.ldsApi.resources }}
           resources: {{- toYaml .Values.ldsApi.resources | nindent 12 }}

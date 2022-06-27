@@ -122,14 +122,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "carto.importApi.configmapName" . }}
-            {{- if .Values.importApi.extraEnvVarsCM }}
-            - configMapRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.importApi.extraEnvVarsCM "context" $) }}
-            {{- end }}
-            {{- if .Values.importApi.extraEnvVarsSecret }}
-            - secretRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.importApi.extraEnvVarsSecret "context" $) }}
-            {{- end }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
               "IMPORT_ACCESSKEYID"
@@ -139,6 +131,14 @@ spec:
             {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.importApi.secretName" . }}
+            {{- end }}
+            {{- if .Values.importApi.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.importApi.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.importApi.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.importApi.extraEnvVarsSecret "context" $) }}
             {{- end }}
           {{- if .Values.importApi.resources }}
           resources: {{- toYaml .Values.importApi.resources | nindent 12 }}

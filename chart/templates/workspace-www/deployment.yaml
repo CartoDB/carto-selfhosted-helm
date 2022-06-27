@@ -101,6 +101,11 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "carto.workspaceWww.configmapName" . }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "REACT_APP_GOOGLE_MAPS_API_KEY") "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.workspaceWww.secretName" . }}
+            {{- end }}
             {{- if .Values.workspaceWww.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraEnvVarsCM "context" $) }}
@@ -108,11 +113,6 @@ spec:
             {{- if .Values.workspaceWww.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraEnvVarsSecret "context" $) }}
-            {{- end }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "REACT_APP_GOOGLE_MAPS_API_KEY") "context" $ ) -}}
-            {{- if $secretContent }}
-            - secretRef:
-                name: {{ include "carto.workspaceWww.secretName" . }}
             {{- end }}
           {{- if .Values.workspaceWww.resources }}
           resources: {{- toYaml .Values.workspaceWww.resources | nindent 12 }}

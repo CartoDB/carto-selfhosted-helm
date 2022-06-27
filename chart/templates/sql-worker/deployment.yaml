@@ -117,6 +117,13 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "carto.sqlWorker.configmapName" . }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+              "ENCRYPTION_SECRET_KEY"
+            ) "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.sqlWorker.secretName" . }}
+            {{- end }}
             {{- if .Values.sqlWorker.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.sqlWorker.extraEnvVarsCM "context" $) }}
@@ -124,13 +131,6 @@ spec:
             {{- if .Values.sqlWorker.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.sqlWorker.extraEnvVarsSecret "context" $) }}
-            {{- end }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
-              "ENCRYPTION_SECRET_KEY"
-            ) "context" $ ) -}}
-            {{- if $secretContent }}
-            - secretRef:
-                name: {{ include "carto.sqlWorker.secretName" . }}
             {{- end }}
           {{- if .Values.sqlWorker.resources }}
           resources: {{- toYaml .Values.sqlWorker.resources | nindent 12 }}
