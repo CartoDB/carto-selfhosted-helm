@@ -609,9 +609,9 @@ workspaceApi:
     - name: REACT_APP_BIGQUERY_OAUTH
       value: "true"
     - name: BIGQUERY_OAUTH2_CLIENT_ID
-      value: <value_from_credentials_web_client_id>
+      value: "<value_from_credentials_web_client_id>"
     - name: BIGQUERY_OAUTH2_CLIENT_SECRET
-      value: <value_from_credentials_web_client_secret>
+      value: "<value_from_credentials_web_client_secret>"
 ```
 
 ### Google Maps
