@@ -41,18 +41,6 @@
               "RECORD_KEY": "{VIB_ENV_CYPRESS_RECORD_KEY}"
             }
           }
-        },
-        {
-          "action_id": "goss",
-          "params": {
-            "resources": {
-              "url": "{SHA_ARCHIVE}",
-              "path": "/.vib/carto/goss/goss-accounts-www"
-            },
-            "remote": {
-              "workload": "deploy-carto-accounts-www"
-            }
-          }
         }
       ]
     }

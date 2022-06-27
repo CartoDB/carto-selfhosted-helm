@@ -21,7 +21,9 @@ data:
   IMPORT_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   IMPORT_WORKER_PROCESSING_DIR: "/tmp/import-worker"
   LOG_LEVEL: "debug"
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
+  {{- end }}
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
   WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . }}
@@ -39,7 +41,9 @@ data:
   {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
   IMPORT_KEYFILENAME: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
   {{- else }}
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   IMPORT_KEYFILENAME: {{ include "carto.google.secretMountAbsolutePath" . }}
+  {{- end }}
   {{- end }}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}

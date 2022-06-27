@@ -40,7 +40,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: {{ template "carto.sqlWorker.serviceAccountName" . }}
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
       {{- include "carto.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.sqlWorker.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.hostAliases "context" $) | nindent 8 }}
@@ -115,9 +115,14 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.sqlWorker.existingConfigMap }}
             - configMapRef:
-                name: {{ template "carto.sqlWorker.fullname" . }}
+                name: {{ template "carto.sqlWorker.configmapName" . }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+              "ENCRYPTION_SECRET_KEY"
+            ) "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.sqlWorker.secretName" . }}
             {{- end }}
             {{- if .Values.sqlWorker.extraEnvVarsCM }}
             - configMapRef:
@@ -126,13 +131,6 @@ spec:
             {{- if .Values.sqlWorker.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.sqlWorker.extraEnvVarsSecret "context" $) }}
-            {{- end }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
-              "ENCRYPTION_SECRET_KEY"
-            ) "context" $ ) -}}
-            {{- if $secretContent }}
-            - secretRef:
-                name: {{ include "carto.sqlWorker.secretName" . }}
             {{- end }}
           {{- if .Values.sqlWorker.resources }}
           resources: {{- toYaml .Values.sqlWorker.resources | nindent 12 }}

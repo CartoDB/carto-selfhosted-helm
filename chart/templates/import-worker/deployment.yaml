@@ -40,7 +40,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: {{ template "carto.importWorker.serviceAccountName" . }}
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
       {{- include "carto.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.importWorker.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.hostAliases "context" $) | nindent 8 }}
@@ -118,18 +118,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.importWorker.existingConfigMap }}
             - configMapRef:
-                name: {{ template "carto.importWorker.fullname" . }}
-            {{- end }}
-            {{- if .Values.importWorker.extraEnvVarsCM }}
-            - configMapRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVarsCM "context" $) }}
-            {{- end }}
-            {{- if .Values.importWorker.extraEnvVarsSecret }}
-            - secretRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVarsSecret "context" $) }}
-            {{- end }}
+                name: {{ template "carto.importWorker.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
               "IMPORT_ACCESSKEYID"
@@ -139,6 +129,14 @@ spec:
             {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.importWorker.secretName" . }}
+            {{- end }}
+            {{- if .Values.importWorker.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.importWorker.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVarsSecret "context" $) }}
             {{- end }}
           {{- if .Values.importWorker.resources }}
           resources: {{- toYaml .Values.importWorker.resources | nindent 12 }}

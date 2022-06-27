@@ -97,10 +97,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.accountsWww.existingConfigMap }}
             - configMapRef:
-                name: {{ template "carto.accountsWww.fullname" . }}
-            {{- end }}
+                name: {{ template "carto.accountsWww.configmapName" . }}
             {{- if .Values.accountsWww.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraEnvVarsCM "context" $) }}

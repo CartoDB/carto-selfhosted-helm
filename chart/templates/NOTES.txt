@@ -39,29 +39,6 @@ Access the pod you want to debug by executing
   kubectl exec --namespace {{ .Release.Namespace }} -ti <NAME OF THE POD> -- sh
 
 {{- else }}
-{{/* The CARTO team should check if this should be an error instead of a Warning */}}
-{{- if or (contains "FILL_ME" .Values.commonConfiguration) (contains "FILL_ME" .Values.commonSecretConfiguration) }}
-
-WARNING: There are values in the CARTO configuration that you did not set according to the documentation. This may cause issues in the deployment. Please review the configuration.
-
-{{- if (contains "FILL_ME" .Values.commonConfiguration) }}
-
-Found these lines in commonConfiguration:
-{{ $lines := regexFindAll ".*FILL_ME.*" .Values.commonConfiguration -1 }}
-{{- range $lines }}
-{{ . }}
-{{- end }}
-{{- end }}
-
-{{- if (contains "FILL_ME" .Values.commonSecretConfiguration) }}
-
-Found these lines in commonSecretConfiguration:
-{{ $lines := regexFindAll ".*FILL_ME.*" .Values.commonSecretConfiguration -1 }}
-{{- range $lines }}
-{{ . }}
-{{- end }}
-{{- end }}
-{{- end }}
 
 {{- $baseUrl := (include "carto.baseUrl" .) -}}
 {{- $postgresqlSecretName := include "carto.postgresql.secretName" . -}}
@@ -126,4 +103,19 @@ host. To configure CARTO with the URL of your service:
 {{- end  }}
 
 {{ include "carto.validateValues" . }}
+{{- end }}
+
+{{- if .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+
+3. You have enabled the workload identity feature.
+
+This is the kubernetes Service Account that you need to binding with your IAM SA in the following command or in the terraform example `https://github.com/CartoDB/carto-selfhosted/blob/{{- include "chart.version" . }}/examples/terraform/gcp/gke-autopilot.tf`
+
+KUBERNETES_SERVICE_ACCOUNT={{ template "carto.commonSA.serviceAccountName" . }}
+
+  gcloud iam service-accounts add-iam-policy-binding <IAM_SERVICE_ACCOUNT_EMAIL> \
+  --role roles/iam.workloadIdentityUser \
+  --member "serviceAccount:<PROJECT_ID>.svc.id.goog[{{ .Release.Namespace }}/{{ template "carto.commonSA.serviceAccountName" . }}]
+
+
 {{- end }}

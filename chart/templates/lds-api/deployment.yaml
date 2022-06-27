@@ -34,7 +34,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: {{ template "carto.ldsApi.serviceAccountName" . }}
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
       {{- include "carto.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.ldsApi.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.hostAliases "context" $) | nindent 8 }}
@@ -115,9 +115,12 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.ldsApi.existingConfigMap }}
             - configMapRef:
-                name: {{ template "carto.ldsApi.fullname" . }}
+                name: {{ template "carto.ldsApi.configmapName" . }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.ldsApi.secretName" . }}
             {{- end }}
             {{- if .Values.ldsApi.extraEnvVarsCM }}
             - configMapRef:
@@ -126,11 +129,6 @@ spec:
             {{- if .Values.ldsApi.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.ldsApi.extraEnvVarsSecret "context" $) }}
-            {{- end }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) -}}
-            {{- if $secretContent }}
-            - secretRef:
-                name: {{ include "carto.ldsApi.secretName" . }}
             {{- end }}
           {{- if .Values.ldsApi.resources }}
           resources: {{- toYaml .Values.ldsApi.resources | nindent 12 }}

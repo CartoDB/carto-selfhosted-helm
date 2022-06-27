@@ -40,7 +40,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
-      serviceAccountName: {{ template "carto.workspaceSubscriber.serviceAccountName" . }}
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
       {{- include "carto.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.workspaceSubscriber.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.hostAliases "context" $) | nindent 8 }}
@@ -118,9 +118,12 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.workspaceSubscriber.existingConfigMap }}
             - configMapRef:
-                name: {{ template "carto.workspaceSubscriber.fullname" . }}
+                name: {{ template "carto.workspaceSubscriber.configmapName" . }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.workspaceSubscriber.secretName" . }}
             {{- end }}
             {{- if .Values.workspaceSubscriber.extraEnvVarsCM }}
             - configMapRef:
@@ -129,11 +132,6 @@ spec:
             {{- if .Values.workspaceSubscriber.extraEnvVarsSecret }}
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVarsSecret "context" $) }}
-            {{- end }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) -}}
-            {{- if $secretContent }}
-            - secretRef:
-                name: {{ include "carto.workspaceSubscriber.secretName" . }}
             {{- end }}
           {{- if .Values.workspaceSubscriber.resources }}
           resources: {{- toYaml .Values.workspaceSubscriber.resources | nindent 12 }}
