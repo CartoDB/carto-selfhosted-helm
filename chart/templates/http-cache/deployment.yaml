@@ -102,10 +102,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.httpCache.existingConfigMap }}
             - configMapRef:
-                name: {{ template "carto.httpCache.fullname" . }}
-            {{- end }}
+                name: {{ template "carto.httpCache.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "VARNISH_PURGE_SECRET" "VARNISH_DEBUG_SECRET") "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:

@@ -39,29 +39,6 @@ Access the pod you want to debug by executing
   kubectl exec --namespace {{ .Release.Namespace }} -ti <NAME OF THE POD> -- sh
 
 {{- else }}
-{{/* The CARTO team should check if this should be an error instead of a Warning */}}
-{{- if or (contains "FILL_ME" .Values.commonConfiguration) (contains "FILL_ME" .Values.commonSecretConfiguration) }}
-
-WARNING: There are values in the CARTO configuration that you did not set according to the documentation. This may cause issues in the deployment. Please review the configuration.
-
-{{- if (contains "FILL_ME" .Values.commonConfiguration) }}
-
-Found these lines in commonConfiguration:
-{{ $lines := regexFindAll ".*FILL_ME.*" .Values.commonConfiguration -1 }}
-{{- range $lines }}
-{{ . }}
-{{- end }}
-{{- end }}
-
-{{- if (contains "FILL_ME" .Values.commonSecretConfiguration) }}
-
-Found these lines in commonSecretConfiguration:
-{{ $lines := regexFindAll ".*FILL_ME.*" .Values.commonSecretConfiguration -1 }}
-{{- range $lines }}
-{{ . }}
-{{- end }}
-{{- end }}
-{{- end }}
 
 {{- $baseUrl := (include "carto.baseUrl" .) -}}
 {{- $postgresqlSecretName := include "carto.postgresql.secretName" . -}}

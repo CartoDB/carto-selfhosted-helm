@@ -124,10 +124,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.workspaceApi.existingConfigMap }}
             - configMapRef:
-                name: {{ template "carto.workspaceApi.fullname" . }}
-            {{- end }}
+                name: {{ template "carto.workspaceApi.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"
@@ -192,10 +190,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.workspaceApi.existingConfigMap }}
             - configMapRef:
-                name: {{ template "carto.workspaceApi.fullname" . }}
-            {{- end }}
+                name: {{ template "carto.workspaceApi.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"

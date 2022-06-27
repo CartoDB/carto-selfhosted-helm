@@ -99,10 +99,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.workspaceWww.existingConfigMap }}
             - configMapRef:
-                name: {{ template "carto.workspaceWww.fullname" . }}
-            {{- end }}
+                name: {{ template "carto.workspaceWww.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "REACT_APP_GOOGLE_MAPS_API_KEY") "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:

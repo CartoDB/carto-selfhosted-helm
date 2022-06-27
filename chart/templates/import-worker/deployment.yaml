@@ -118,10 +118,8 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if not .Values.importWorker.existingConfigMap }}
             - configMapRef:
-                name: {{ template "carto.importWorker.fullname" . }}
-            {{- end }}
+                name: {{ template "carto.importWorker.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
               "IMPORT_ACCESSKEYID"
