@@ -37,10 +37,10 @@ jobs:
         #    target-platform-id: 7b13a7bb-011c-474f-ad71-8152fc321b9e
       fail-fast: false
     env:
-      ONPREM_ID: "vmware-${{ matrix.target-platform }}-1"
-      # ONPREM_ID: "bitnami-stag-1"
-      ENVIRONMENT: "production"
-      # ENVIRONMENT: "staging"
+      # ONPREM_ID: "vmware-${{ matrix.target-platform }}-1"
+      ONPREM_ID: "bitnami-stag-1"
+      # ENVIRONMENT: "production"
+      ENVIRONMENT: "staging"
     name: Verify ${{ matrix.target-platform }}
     steps:
       - uses: actions/checkout@v3
@@ -131,6 +131,7 @@ jobs:
           # shellcheck disable=SC2002,SC2129
           cat "environments/${{ env.ENVIRONMENT }}.env" >> .env
 
+          echo "CYPRESS_BASE_URL=https://${WORKSPACE_DOMAIN}" >> .env
           echo "CYPRESS_WORKSPACE_URL=https://${WORKSPACE_DOMAIN}" >> .env
           echo "CYPRESS_TENANT_ID=onp-${{ env.ONPREM_ID }}" >> .env
           echo "CYPRESS_RUN_ID=${{ steps.info.outputs.custom_run_id }}" >> .env
@@ -159,8 +160,6 @@ jobs:
 
           ## Edit cypress.json config
           jq --arg CYPRESS_PROJECT_ID "${CYPRESS_PROJECT_ID}" '.projectId = $CYPRESS_PROJECT_ID' cypress.json > cypress.json.edited
-          mv -f cypress.json.edited cypress.json
-          jq '.env.baseUrl="https://${{ env.WORKSPACE_DOMAIN }}"' cypress.json > cypress.json.edited
           mv -f cypress.json.edited cypress.json
 
           echo "::group::cypress.json to use"

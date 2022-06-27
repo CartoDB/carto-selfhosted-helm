@@ -34,6 +34,9 @@
               "url": "{WORKSPACE_WWW_SOURCE_URL}",
               "path": "."
             },
+            "host_aliases": [
+              "carto.vmw"
+            ],
             "endpoint": "lb-carto-router-https",
             "env": {
               "CI": "true",
