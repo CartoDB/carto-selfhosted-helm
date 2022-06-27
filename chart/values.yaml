@@ -457,17 +457,17 @@ accountsWww:
   ## @param accountsWww.lifecycleHooks for the accounts-www container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
-  ## @param accountsWww.extraEnvVars Array with extra environment variables to add to accounts-www nodes
+  ## @param accountsWww.extraEnvVars Array with extra environment variables to add to accounts-www nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
   ##   - name: FOO
   ##     value: "bar"
   ##
   extraEnvVars: []
-  ## @param accountsWww.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for accounts-www nodes
+  ## @param accountsWww.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for accounts-www nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsCM: ""
-  ## @param accountsWww.extraEnvVarsSecret Name of existing Secret containing extra env vars for accounts-www nodes
+  ## @param accountsWww.extraEnvVarsSecret Name of existing Secret containing extra env vars for accounts-www nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsSecret: ""
   ## @param accountsWww.extraVolumes Optionally specify extra list of additional volumes for the accounts-www pod(s)
@@ -773,17 +773,17 @@ importApi:
   ## @param importApi.lifecycleHooks for the import-api container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
-  ## @param importApi.extraEnvVars Array with extra environment variables to add to import-api nodes
+  ## @param importApi.extraEnvVars Array with extra environment variables to add to import-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
   ##   - name: FOO
   ##     value: "bar"
   ##
   extraEnvVars: []
-  ## @param importApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for import-api nodes
+  ## @param importApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for import-api nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsCM: ""
-  ## @param importApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for import-api nodes
+  ## @param importApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for import-api nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsSecret: ""
   ## @param importApi.extraVolumes Optionally specify extra list of additional volumes for the import-api pod(s)
@@ -1016,17 +1016,17 @@ importWorker:
   ## @param importWorker.lifecycleHooks for the import-worker container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
-  ## @param importWorker.extraEnvVars Array with extra environment variables to add to import-worker nodes
+  ## @param importWorker.extraEnvVars Array with extra environment variables to add to import-worker nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
   ##   - name: FOO
   ##     value: "bar"
   ##
   extraEnvVars: []
-  ## @param importWorker.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for import-worker nodes
+  ## @param importWorker.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for import-worker nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsCM: ""
-  ## @param importWorker.extraEnvVarsSecret Name of existing Secret containing extra env vars for import-worker nodes
+  ## @param importWorker.extraEnvVarsSecret Name of existing Secret containing extra env vars for import-worker nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsSecret: ""
   ## @param importWorker.extraVolumes Optionally specify extra list of additional volumes for the import-worker pod(s)
@@ -1273,17 +1273,17 @@ ldsApi:
   ## @param ldsApi.lifecycleHooks for the lds-api container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
-  ## @param ldsApi.extraEnvVars Array with extra environment variables to add to lds-api nodes
+  ## @param ldsApi.extraEnvVars Array with extra environment variables to add to lds-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
   ##   - name: FOO
   ##     value: "bar"
   ##
   extraEnvVars: []
-  ## @param ldsApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for lds-api nodes
+  ## @param ldsApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for lds-api nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsCM: ""
-  ## @param ldsApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for lds-api nodes
+  ## @param ldsApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for lds-api nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsSecret: ""
   ## @param ldsApi.extraVolumes Optionally specify extra list of additional volumes for the lds-api pod(s)
@@ -1576,17 +1576,17 @@ mapsApi:
   ## @param mapsApi.lifecycleHooks for the maps-api container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
-  ## @param mapsApi.extraEnvVars Array with extra environment variables to add to maps-api nodes
+  ## @param mapsApi.extraEnvVars Array with extra environment variables to add to maps-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
   ##   - name: FOO
   ##     value: "bar"
   ##
   extraEnvVars: []
-  ## @param mapsApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for maps-api nodes
+  ## @param mapsApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for maps-api nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsCM: ""
-  ## @param mapsApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for maps-api nodes
+  ## @param mapsApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for maps-api nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsSecret: ""
   ## @param mapsApi.extraVolumes Optionally specify extra list of additional volumes for the maps-api pod(s)
@@ -1854,17 +1854,17 @@ sqlWorker:
   ## @param sqlWorker.lifecycleHooks for the sql-worker container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
-  ## @param sqlWorker.extraEnvVars Array with extra environment variables to add to sql-worker nodes
+  ## @param sqlWorker.extraEnvVars Array with extra environment variables to add to sql-worker nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
   ##   - name: FOO
   ##     value: "bar"
   ##
   extraEnvVars: []
-  ## @param sqlWorker.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for sql-worker nodes
+  ## @param sqlWorker.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for sql-worker nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsCM: ""
-  ## @param sqlWorker.extraEnvVarsSecret Name of existing Secret containing extra env vars for sql-worker nodes
+  ## @param sqlWorker.extraEnvVarsSecret Name of existing Secret containing extra env vars for sql-worker nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsSecret: ""
   ## @param sqlWorker.extraVolumes Optionally specify extra list of additional volumes for the sql-worker pod(s)
@@ -2113,17 +2113,17 @@ router:
   ## @param router.lifecycleHooks for the router container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
-  ## @param router.extraEnvVars Array with extra environment variables to add to router nodes
+  ## @param router.extraEnvVars Array with extra environment variables to add to router nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
   ##   - name: FOO
   ##     value: "bar"
   ##
   extraEnvVars: []
-  ## @param router.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for router nodes
+  ## @param router.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for router nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsCM: ""
-  ## @param router.extraEnvVarsSecret Name of existing Secret containing extra env vars for router nodes
+  ## @param router.extraEnvVarsSecret Name of existing Secret containing extra env vars for router nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsSecret: ""
   ## @param router.extraVolumes Optionally specify extra list of additional volumes for the router pod(s)
@@ -2421,17 +2421,17 @@ httpCache:
   ## @param httpCache.lifecycleHooks for the http-cache container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
-  ## @param httpCache.extraEnvVars Array with extra environment variables to add to http-cache nodes
+  ## @param httpCache.extraEnvVars Array with extra environment variables to add to http-cache nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
   ##   - name: FOO
   ##     value: "bar"
   ##
   extraEnvVars: []
-  ## @param httpCache.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for http-cache nodes
+  ## @param httpCache.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for http-cache nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsCM: ""
-  ## @param httpCache.extraEnvVarsSecret Name of existing Secret containing extra env vars for http-cache nodes
+  ## @param httpCache.extraEnvVarsSecret Name of existing Secret containing extra env vars for http-cache nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsSecret: ""
   ## @param httpCache.extraVolumes Optionally specify extra list of additional volumes for the http-cache pod(s)
@@ -2725,17 +2725,17 @@ cdnInvalidatorSub:
   ## @param cdnInvalidatorSub.lifecycleHooks for the cdnInvalidatorSub container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
-  ## @param cdnInvalidatorSub.extraEnvVars Array with extra environment variables to add to cdnInvalidatorSub nodes
+  ## @param cdnInvalidatorSub.extraEnvVars Array with extra environment variables to add to cdnInvalidatorSub nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
   ##   - name: FOO
   ##     value: "bar"
   ##
   extraEnvVars: []
-  ## @param cdnInvalidatorSub.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for cdnInvalidatorSub nodes
+  ## @param cdnInvalidatorSub.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for cdnInvalidatorSub nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsCM: ""
-  ## @param cdnInvalidatorSub.extraEnvVarsSecret Name of existing Secret containing extra env vars for cdnInvalidatorSub nodes
+  ## @param cdnInvalidatorSub.extraEnvVarsSecret Name of existing Secret containing extra env vars for cdnInvalidatorSub nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsSecret: ""
   ## @param cdnInvalidatorSub.extraVolumes Optionally specify extra list of additional volumes for the cdnInvalidatorSub pod(s)
@@ -3030,17 +3030,17 @@ workspaceApi:
   ## @param workspaceApi.lifecycleHooks for the workspace-api container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
-  ## @param workspaceApi.extraEnvVars Array with extra environment variables to add to workspace-api nodes
+  ## @param workspaceApi.extraEnvVars Array with extra environment variables to add to workspace-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
   ##   - name: FOO
   ##     value: "bar"
   ##
   extraEnvVars: []
-  ## @param workspaceApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for workspace-api nodes
+  ## @param workspaceApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for workspace-api nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsCM: ""
-  ## @param workspaceApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for workspace-api nodes
+  ## @param workspaceApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for workspace-api nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsSecret: ""
   ## @param workspaceApi.extraVolumes Optionally specify extra list of additional volumes for the workspace-api pod(s)
@@ -3273,17 +3273,17 @@ workspaceSubscriber:
   ## @param workspaceSubscriber.lifecycleHooks for the workspace-subscriber container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
-  ## @param workspaceSubscriber.extraEnvVars Array with extra environment variables to add to workspace-subscriber nodes
+  ## @param workspaceSubscriber.extraEnvVars Array with extra environment variables to add to workspace-subscriber nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
   ##   - name: FOO
   ##     value: "bar"
   ##
   extraEnvVars: []
-  ## @param workspaceSubscriber.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for workspace-subscriber nodes
+  ## @param workspaceSubscriber.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for workspace-subscriber nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsCM: ""
-  ## @param workspaceSubscriber.extraEnvVarsSecret Name of existing Secret containing extra env vars for workspace-subscriber nodes
+  ## @param workspaceSubscriber.extraEnvVarsSecret Name of existing Secret containing extra env vars for workspace-subscriber nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsSecret: ""
   ## @param workspaceSubscriber.extraVolumes Optionally specify extra list of additional volumes for the workspace-subscriber pod(s)
@@ -3530,17 +3530,17 @@ workspaceWww:
   ## @param workspaceWww.lifecycleHooks for the workspace-www container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
-  ## @param workspaceWww.extraEnvVars Array with extra environment variables to add to workspace-www nodes
+  ## @param workspaceWww.extraEnvVars Array with extra environment variables to add to workspace-www nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
   ##   - name: FOO
   ##     value: "bar"
   ##
   extraEnvVars: []
-  ## @param workspaceWww.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for workspace-www nodes
+  ## @param workspaceWww.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for workspace-www nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsCM: ""
-  ## @param workspaceWww.extraEnvVarsSecret Name of existing Secret containing extra env vars for workspace-www nodes
+  ## @param workspaceWww.extraEnvVarsSecret Name of existing Secret containing extra env vars for workspace-www nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsSecret: ""
   ## @param workspaceWww.extraVolumes Optionally specify extra list of additional volumes for the workspace-www pod(s)
@@ -3888,4 +3888,3 @@ upgradeCheck:
     capabilities:
       drop:
         - all
-

@@ -120,14 +120,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "carto.mapsApi.configmapName" . }}
-            {{- if .Values.mapsApi.extraEnvVarsCM }}
-            - configMapRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraEnvVarsCM "context" $) }}
-            {{- end }}
-            {{- if .Values.mapsApi.extraEnvVarsSecret }}
-            - secretRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraEnvVarsSecret "context" $) }}
-            {{- end }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
              "ENCRYPTION_SECRET_KEY"
              "MAPS_API_V3_JWT_SECRET"
@@ -135,6 +127,14 @@ spec:
             {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.mapsApi.secretName" . }}
+            {{- end }}
+            {{- if .Values.mapsApi.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.mapsApi.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraEnvVarsSecret "context" $) }}
             {{- end }}
           {{- if .Values.mapsApi.resources }}
           resources: {{- toYaml .Values.mapsApi.resources | nindent 12 }}
