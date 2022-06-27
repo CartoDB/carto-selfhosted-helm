@@ -115,6 +115,7 @@ spec:
               {{- end }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
+              "WORKSPACE_JWT_SECRET"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"
               "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_ACCESSKEYID"
@@ -130,6 +131,7 @@ spec:
             {{- end }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
+              "WORKSPACE_JWT_SECRET"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"
               "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_ACCESSKEYID"

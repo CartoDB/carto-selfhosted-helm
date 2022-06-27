@@ -110,7 +110,10 @@ spec:
                 secretKeyRef:
                   name: {{ include "carto.redis.secretName" . }}
                   key: {{ include "carto.redis.existingsecret.key" . | quote }}
-            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) | nindent 12 }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+             "ENCRYPTION_SECRET_KEY"
+             "MAPS_API_V3_JWT_SECRET"
+             ) "context" $ ) | nindent 12 }}
             {{- if .Values.mapsApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -127,7 +130,10 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraEnvVarsSecret "context" $) }}
             {{- end }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "ENCRYPTION_SECRET_KEY") "context" $ ) -}}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+             "ENCRYPTION_SECRET_KEY"
+             "MAPS_API_V3_JWT_SECRET"
+             ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.mapsApi.secretName" . }}
