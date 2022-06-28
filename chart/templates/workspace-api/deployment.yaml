@@ -178,6 +178,7 @@ spec:
                   name: {{ include "carto.redis.secretName" . }}
                   key: {{ include "carto.redis.existingsecret.key" . | quote }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+              "BIGQUERY_OAUTH2_CLIENT_SECRET"
               "ENCRYPTION_SECRET_KEY"
               "WORKSPACE_JWT_SECRET"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"
@@ -194,6 +195,7 @@ spec:
             - configMapRef:
                 name: {{ template "carto.workspaceApi.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+              "BIGQUERY_OAUTH2_CLIENT_SECRET"
               "ENCRYPTION_SECRET_KEY"
               "WORKSPACE_JWT_SECRET"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"

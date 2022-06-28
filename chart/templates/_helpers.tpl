@@ -44,6 +44,7 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
 Association between env secret and path of the secret in values.yaml
 */}}
 {{- define "carto._utils.secretAssociation" -}}
+BIGQUERY_OAUTH2_CLIENT_SECRET: appSecrets.bigqueryOauth2ClientSecret
 ENCRYPTION_SECRET_KEY: cartoSecrets.encryptionSecretKey
 IMPORT_ACCESSKEYID: appSecrets.awsAccessKeyId
 IMPORT_JWT_SECRET: cartoSecrets.jwtApiSecret

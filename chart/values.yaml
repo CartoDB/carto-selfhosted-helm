@@ -19,6 +19,8 @@ appConfigValues:
   googleCloudStorageProjectId: ""
   ## @param appConfigValues.awsS3Region If the bucket is S3, the region to be used
   awsS3Region: ""
+  ## @param appConfigValues.bigqueryOauth2ClientId The Cliend ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key.
+  bigqueryOauth2ClientId: ""
 
 ## @section CARTO config parameters
 ## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
@@ -45,6 +47,16 @@ cartoConfigValues:
 ## @section App secret
 ## Global secrets to be edited by the client
 appSecrets:
+  ## @extra appSecrets.bigqueryOauth2ClientSecret The secret used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key.
+  bigqueryOauth2ClientSecret:
+    ## @param appSecrets.bigqueryOauth2ClientSecret.value Value of the secret used in BigQuery OAuth connections. One of `appSecrets.bigqueryOauth2ClientSecret.value` or `appSecrets.bigqueryOauth2ClientSecret.existingSecret` could be defined.
+    value: ""
+    ## @param appSecrets.bigqueryOauth2ClientSecret.existingSecret.name Name of the pre-existent secret containing the `appSecrets.bigqueryOauth2ClientSecret.existingSecret.key`. If `appSecrets.bigqueryOauth2ClientSecret.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.bigqueryOauth2ClientSecret.existingSecret.key Key to find in `appSecrets.bigqueryOauth2ClientSecret.existingSecret.name` where the value of `appSecrets.bigqueryOauth2ClientSecret` is found. If `appSecrets.bigqueryOauth2ClientSecret.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
   ## @extra appSecrets.googleMapsApiKey Google maps api-key value.
   googleMapsApiKey:
     ## @param appSecrets.googleMapsApiKey.value Value of the secret `Google maps api-key`. One of `appSecrets.googleMapsApiKey.value` or `appSecrets.googleMapsApiKey.existingSecret` could be defined.
