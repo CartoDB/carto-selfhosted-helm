@@ -71,6 +71,93 @@ jobs:
           cat << EOF > manual_customizations.yaml
           appConfigValues:
             selfHostedDomain: "carto.vmw"
+          accountsApi:
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+          accountsWww:
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+          workspaceApi:
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+          workspaceWww:  
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+          ldsApi:  
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+          router:  
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+          http_cache:  
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+          importApi:
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+          importWorker:
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+          mapsApi:
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+          sqlWorker:
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+          cdnInvalidatorSub:
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+          workspaceSubscriber:
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+          workspaceMigrations:
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+          upgradeCheck:
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+          internalPostgresql:
+            primary:
+              podSecurityContext:
+                enabled: false
+              containerSecurityContext:
+                enabled: false
+          internalRedis:
+            master:
+              podSecurityContext:
+                enabled: false
+              containerSecurityContext:
+                enabled: false
           EOF
 
           echo "${PACKAGE_CARTO_VALUES}" > carto-values.yaml
