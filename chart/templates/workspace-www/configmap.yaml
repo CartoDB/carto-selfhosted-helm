@@ -14,6 +14,8 @@ metadata:
 data:
   {{- if and (ne .Values.appConfigValues.bigqueryOauth2ClientId "") (ne .Values.appSecrets.bigqueryOauth2ClientSecret.value "") }}
   REACT_APP_BIGQUERY_OAUTH: "true"
+  {{- else }}
+  REACT_APP_BIGQUERY_OAUTH: "false"
   {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   LOG_LEVEL: "debug"
