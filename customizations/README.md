@@ -604,12 +604,8 @@ This feature allows users to create a BigQuery connection using `Sign in with Go
 3. Follow [these guidelines](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/customizations/README.md#how-to-apply-the-configurations) to add the following lines to your `customizations.yaml` populating them with the credential's file corresponding values:
 
 ```yaml
-workspaceApi:
-  extraEnvVars:
-    - name: REACT_APP_BIGQUERY_OAUTH
-      value: "true"
-    - name: BIGQUERY_OAUTH2_CLIENT_ID
-      value: "<value_from_credentials_web_client_id>"
+appConfigValues:
+  bigqueryOauth2ClientId: "<value_from_credentials_web_client_id>"
 
 appSecrets:
   bigqueryOauth2ClientSecret:

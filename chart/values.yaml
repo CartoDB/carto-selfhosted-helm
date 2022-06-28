@@ -19,6 +19,8 @@ appConfigValues:
   googleCloudStorageProjectId: ""
   ## @param appConfigValues.awsS3Region If the bucket is S3, the region to be used
   awsS3Region: ""
+  ## @param appConfigValues.bigqueryOauth2ClientId If the bucket is S3, the region to be used
+  bigqueryOauth2ClientId: ""
 
 ## @section CARTO config parameters
 ## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.

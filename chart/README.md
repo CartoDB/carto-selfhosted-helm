@@ -25,6 +25,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.workspaceThumbnailsPublic`   | Indicate if the thumbnails could be accessed publicly                                      | `true`                 |
 | `appConfigValues.googleCloudStorageProjectId` | If the bucket is GCP, the ProjectId to be used                                             | `""`                   |
 | `appConfigValues.awsS3Region`                 | If the bucket is S3, the region to be used                                                 | `""`                   |
+| `appConfigValues.bigqueryOauth2ClientId`      | If the bucket is S3, the region to be used                                                 | `""`                   |
 
 
 ### CARTO config parameters
