@@ -610,7 +610,9 @@ workspaceApi:
       value: "true"
     - name: BIGQUERY_OAUTH2_CLIENT_ID
       value: "<value_from_credentials_web_client_id>"
-    - name: BIGQUERY_OAUTH2_CLIENT_SECRET
+
+appSecrets:
+  bigqueryOauth2ClientSecret:
       value: "<value_from_credentials_web_client_secret>"
 ```
 

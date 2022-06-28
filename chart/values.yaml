@@ -45,6 +45,16 @@ cartoConfigValues:
 ## @section App secret
 ## Global secrets to be edited by the client
 appSecrets:
+  ## @extra appSecrets.bigqueryOauth2ClientSecret The secret used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key.
+  bigqueryOauth2ClientSecret:
+    ## @param appSecrets.bigqueryOauth2ClientSecret.value Value of the secret used in BigQuery OAuth connections. One of `appSecrets.bigqueryOauth2ClientSecret.value` or `appSecrets.bigqueryOauth2ClientSecret.existingSecret` could be defined.
+    value: ""
+    ## @param appSecrets.bigqueryOauth2ClientSecret.existingSecret.name Name of the pre-existent secret containing the `appSecrets.bigqueryOauth2ClientSecret.existingSecret.key`. If `appSecrets.bigqueryOauth2ClientSecret.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.bigqueryOauth2ClientSecret.existingSecret.key Key to find in `appSecrets.bigqueryOauth2ClientSecret.existingSecret.name` where the value of `appSecrets.bigqueryOauth2ClientSecret` is found. If `appSecrets.bigqueryOauth2ClientSecret.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
   ## @extra appSecrets.googleMapsApiKey Google maps api-key value.
   googleMapsApiKey:
     ## @param appSecrets.googleMapsApiKey.value Value of the secret `Google maps api-key`. One of `appSecrets.googleMapsApiKey.value` or `appSecrets.googleMapsApiKey.existingSecret` could be defined.
