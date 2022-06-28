@@ -11,7 +11,7 @@ on: # rebuild any PRs and main branch changes
     paths-ignore:
       - '**.md'
   # Revert before merge
-  push:
+  # push:
 env:
   CSP_API_URL: https://console.cloud.vmware.com
   CSP_API_TOKEN: ${{ secrets.CSP_API_TOKEN }}
@@ -28,19 +28,26 @@ jobs:
     # if: ${{ contains(github.event.pull_request.labels.*.name, 'verify') }}
     strategy:
       matrix:
-       include:
-        #  - target-platform: eks
-        #    target-platform-id: ef54a736-5e43-4a6c-9400-b162acd8b83d
-         - target-platform: gke
-           target-platform-id: 91d398a2-25c4-4cda-8732-75a3cfc179a1
-        #  - target-platform: aks
-        #    target-platform-id: 7b13a7bb-011c-474f-ad71-8152fc321b9e
+        include:
+          # - target-platform: eks
+          #   target-platform-id: ef54a736-5e43-4a6c-9400-b162acd8b83d
+          #   onprem-id: vmware-eks-1
+          - target-platform: gke
+            target-platform-id: 91d398a2-25c4-4cda-8732-75a3cfc179a1
+            # onprem-id: vmware-gke-1
+            onprem-id: bitnami-stag-1
+          # - target-platform: aks
+          #   target-platform-id: 7b13a7bb-011c-474f-ad71-8152fc321b9e
+          #   onprem-id: vmware-aks-1
       fail-fast: false
     env:
-      # ONPREM_ID: "vmware-${{ matrix.target-platform }}-1"
-      ONPREM_ID: "bitnami-stag-1"
+      ONPREM_ID: "${{ matrix.onprem-id }}"
       # ENVIRONMENT: "production"
       ENVIRONMENT: "staging"
+    concurrency:
+      # Avoid multiple jobs running with the same customer package
+      group: "onp-${{ matrix.onprem-id }}"
+      cancel-in-progress: false
     name: Verify ${{ matrix.target-platform }}
     steps:
       - uses: actions/checkout@v3
@@ -159,7 +166,13 @@ jobs:
           echo "::set-output name=cypress-record-key::${CYPRESS_RECORD_KEY}"
 
           ## Edit cypress.json config
-          jq --arg CYPRESS_PROJECT_ID "${CYPRESS_PROJECT_ID}" '.projectId = $CYPRESS_PROJECT_ID' cypress.json > cypress.json.edited
+          # jq --arg CYPRESS_PROJECT_ID "${CYPRESS_PROJECT_ID}" '.projectId = $CYPRESS_PROJECT_ID' cypress.json > cypress.json.edited
+          jq --arg CYPRESS_PROJECT_ID "a5p55t" '.projectId = $CYPRESS_PROJECT_ID' cypress.json > cypress.json.edited
+          mv -f cypress.json.edited cypress.json
+          # https://github.com/cypress-io/cypress/issues/17627
+          jq '.videoUploadOnPasses = false' cypress.json > cypress.json.edited
+          mv -f cypress.json.edited cypress.json
+          jq '.video = false' cypress.json > cypress.json.edited
           mv -f cypress.json.edited cypress.json
 
           echo "::group::cypress.json to use"
@@ -238,7 +251,6 @@ jobs:
           yq eval-all '. as $item ireduce ({}; . * $item )' \
             customizations/service_loadBalancer/config.yaml \
             customizations/scale_components/static.yaml \
-            customizations/resources/minimum.yaml \
             carto-values.yaml \
             carto-secrets.yaml \
             manual_customizations.yaml \
@@ -267,8 +279,8 @@ jobs:
           VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ steps.helm_customization.outputs.helm-customization-base64 }}
           # VIB_ENV_PAT_CYPRESS_REPOSITORY: ${{ secrets.VIB_ENV_PAT_CYPRESS_REPOSITORY }}
           VIB_ENV_CYPRESS_RUN_ID: ${{ steps.e2e-package.outputs.cypress-run-id }}
-          # VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
-          VIB_ENV_CYPRESS_RECORD_KEY: ${{ steps.e2e-package.outputs.cypress-record-key }}
+          VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
+          # VIB_ENV_CYPRESS_RECORD_KEY: ${{ steps.e2e-package.outputs.cypress-record-key }}
           # VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET: ${{ secrets.VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET }}
           # VIB_ENV_CYPRESS_FIREBASE_API_KEY: ${{ secrets.VIB_ENV_CYPRESS_FIREBASE_API_KEY }}
           # VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS: ${{ secrets.VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS }}
