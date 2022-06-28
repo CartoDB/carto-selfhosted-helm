@@ -19,7 +19,7 @@ appConfigValues:
   googleCloudStorageProjectId: ""
   ## @param appConfigValues.awsS3Region If the bucket is S3, the region to be used
   awsS3Region: ""
-  ## @param appConfigValues.bigqueryOauth2ClientId If the bucket is S3, the region to be used
+  ## @param appConfigValues.bigqueryOauth2ClientId The Cliend ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key.
   bigqueryOauth2ClientId: ""
 
 ## @section CARTO config parameters

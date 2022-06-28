@@ -14,18 +14,18 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### Custom config parameters
 
-| Name                                          | Description                                                                                | Value                  |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------- |
-| `appConfigValues.selfHostedDomain`            | Domain that is going to be used to access to the CARTO self-hosted.                        | `carto-selfhosted.lan` |
-| `appConfigValues.storageProvider`             | Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob` | `gcp`                  |
-| `appConfigValues.httpCacheEnabled`            | Enable the internal httpCache                                                              | `true`                 |
-| `appConfigValues.importBucket`                | Bucket to be used to store the import files                                                | `""`                   |
-| `appConfigValues.workspaceImportsBucket`      | Bucket to be used to store metadata of the workspace                                       | `""`                   |
-| `appConfigValues.workspaceThumbnailsBucket`   | Bucket to be used to store the thumbnails generated in the app                             | `""`                   |
-| `appConfigValues.workspaceThumbnailsPublic`   | Indicate if the thumbnails could be accessed publicly                                      | `true`                 |
-| `appConfigValues.googleCloudStorageProjectId` | If the bucket is GCP, the ProjectId to be used                                             | `""`                   |
-| `appConfigValues.awsS3Region`                 | If the bucket is S3, the region to be used                                                 | `""`                   |
-| `appConfigValues.bigqueryOauth2ClientId`      | If the bucket is S3, the region to be used                                                 | `""`                   |
+| Name                                          | Description                                                                                                            | Value                  |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| `appConfigValues.selfHostedDomain`            | Domain that is going to be used to access to the CARTO self-hosted.                                                    | `carto-selfhosted.lan` |
+| `appConfigValues.storageProvider`             | Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob`                             | `gcp`                  |
+| `appConfigValues.httpCacheEnabled`            | Enable the internal httpCache                                                                                          | `true`                 |
+| `appConfigValues.importBucket`                | Bucket to be used to store the import files                                                                            | `""`                   |
+| `appConfigValues.workspaceImportsBucket`      | Bucket to be used to store metadata of the workspace                                                                   | `""`                   |
+| `appConfigValues.workspaceThumbnailsBucket`   | Bucket to be used to store the thumbnails generated in the app                                                         | `""`                   |
+| `appConfigValues.workspaceThumbnailsPublic`   | Indicate if the thumbnails could be accessed publicly                                                                  | `true`                 |
+| `appConfigValues.googleCloudStorageProjectId` | If the bucket is GCP, the ProjectId to be used                                                                         | `""`                   |
+| `appConfigValues.awsS3Region`                 | If the bucket is S3, the region to be used                                                                             | `""`                   |
+| `appConfigValues.bigqueryOauth2ClientId`      | The Cliend ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key. | `""`                   |
 
 
 ### CARTO config parameters
