@@ -71,18 +71,19 @@ jobs:
           cat << EOF > manual_customizations.yaml
           appConfigValues:
             selfHostedDomain: "carto.vmw"
-
+          extraDeploy:
+            - |
+              apiVersion: v1
+              data:
+                .dockerconfigjson: ${{ secrets.CARTO_PRIVATE_DOCKER_CRED_BASE64 }}
+              kind: Secret
+              metadata:
+                name: secretReg
+              type: kubernetes.io/dockerconfigjson
           global:
             imagePullSecrets:
-              - github-actions-artifacts
-
-          # Router
+              - secretReg
           router:
-            # image:
-            #   registry: gcr.io/carto-artifacts 
-            #   repository: router
-            #   tag: feature_sc_238141_test_and_document_nginx_based_services_with
-            #   pullPolicy: Always
             image:
               registry: gcr.io/carto-artifacts 
               tag: rootless_openshift_containers
@@ -90,10 +91,6 @@ jobs:
               enabled: false
             containerSecurityContext:
               enabled: false
-
-            # service:
-            #   type: LoadBalancer
-
           accountsApi:
             image:
               registry: gcr.io/carto-artifacts 
@@ -102,12 +99,7 @@ jobs:
               enabled: false
             containerSecurityContext:
               enabled: false
-          # accounts-www
           accountsWww:
-            # image:
-            #   registry: gcr.io/carto-artifacts 
-            #   repository: accounts-www
-            #   tag: feature_sc_238141_test_and_document_nginx_based_services_with
             image:
               registry: gcr.io/carto-artifacts 
               tag: rootless_openshift_containers
@@ -115,8 +107,6 @@ jobs:
               enabled: false
             containerSecurityContext:
               enabled: false
-
-
           workspaceApi:
             image:
               registry: gcr.io/carto-artifacts 
@@ -125,12 +115,7 @@ jobs:
               enabled: false
             containerSecurityContext:
               enabled: false
-          # workspace-www
           workspaceWww:
-            # image:
-            #   registry: gcr.io/carto-artifacts 
-            #   repository: workspace-www
-            #   tag: feature_sc_238141_test_and_document_nginx_based_services_with
             image:
               registry: gcr.io/carto-artifacts 
               tag: rootless_openshift_containers
@@ -138,11 +123,7 @@ jobs:
               enabled: false
             containerSecurityContext:
               enabled: false
-
-
-          #lds-api
           ldsApi:
-
             extraEnvVars:
               - name: LDS_PROVIDER_HERE_API_KE
                 value: "0MLQRnJ6IYHES__aU5D502td-djwTyZSI6mcvECgzZA"
