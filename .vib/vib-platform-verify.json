@@ -24,12 +24,7 @@
         },
         "runtime_parameters": "{CARTO_RUNTIME_PARAMETERS}",
         "target_platform": {
-          "target_platform_id": "{VIB_ENV_TARGET_PLATFORM}",
-          "size": {
-            "name": "L8",
-            "worker_nodes_instance_count": 3,
-            "master_nodes_instance_count": 3
-          }
+          "target_platform_id": "{VIB_ENV_TARGET_PLATFORM}"
         }
       },
       "actions": [
