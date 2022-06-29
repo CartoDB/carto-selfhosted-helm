@@ -71,93 +71,194 @@ jobs:
           cat << EOF > manual_customizations.yaml
           appConfigValues:
             selfHostedDomain: "carto.vmw"
+
+          global:
+            imagePullSecrets:
+              - github-actions-artifacts
+
+          # Router
+          router:
+            # image:
+            #   registry: gcr.io/carto-artifacts 
+            #   repository: router
+            #   tag: feature_sc_238141_test_and_document_nginx_based_services_with
+            #   pullPolicy: Always
+            image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
+            podSecurityContext:
+              enabled: false
+            containerSecurityContext:
+              enabled: false
+
+            # service:
+            #   type: LoadBalancer
+
           accountsApi:
+            image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
             podSecurityContext:
               enabled: false
             containerSecurityContext:
               enabled: false
+          # accounts-www
           accountsWww:
+            # image:
+            #   registry: gcr.io/carto-artifacts 
+            #   repository: accounts-www
+            #   tag: feature_sc_238141_test_and_document_nginx_based_services_with
+            image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
             podSecurityContext:
               enabled: false
             containerSecurityContext:
               enabled: false
+
+
           workspaceApi:
+            image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
             podSecurityContext:
               enabled: false
             containerSecurityContext:
               enabled: false
-          workspaceWww:  
+          # workspace-www
+          workspaceWww:
+            # image:
+            #   registry: gcr.io/carto-artifacts 
+            #   repository: workspace-www
+            #   tag: feature_sc_238141_test_and_document_nginx_based_services_with
+            image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
             podSecurityContext:
               enabled: false
             containerSecurityContext:
               enabled: false
-          ldsApi:  
+
+
+          #lds-api
+          ldsApi:
+
+            extraEnvVars:
+              - name: LDS_PROVIDER_HERE_API_KE
+                value: "0MLQRnJ6IYHES__aU5D502td-djwTyZSI6mcvECgzZA"
+              - name: LDS_PROVIDER_HERE_APP_ID 
+                value: "H4m49ULLOGtYF74UNgYF"
+              - name: LDS_PROVIDER_MAPBOX_API_KEY 
+                value: "pk.eyJ1IjoiY2FydG8tYml6LW9wcyIsImEiOiJja3hhYXV6aXozeGJuMndsYTM4cm5mODFsIn0.TMYBC6dwGpEY1ga7_5N4rQ"
+              - name: LDS_PROVIDER_TOMTOM_API_KEY 
+                value: "zeirmEIkFG9xDUbJQAMeL5MX7VUL8ubI"
+              - name: LDS_PROVIDER_GOOGLE_API_KEY 
+                value: "AIzaSyDuDxBYjzV2NDRMIErN7Af1AIqzcM3wrW4"
+            image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
             podSecurityContext:
               enabled: false
             containerSecurityContext:
               enabled: false
-          router:  
+          httpCache:
+            # image:
+            #   registry: gcr.io/carto-artifacts 
+            #   repository: http-cache
+            #   tag: feature_sc_238145_test_and_document_varnish_based_services
+            #   pullPolicy: Always
+            image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
             podSecurityContext:
               enabled: false
             containerSecurityContext:
               enabled: false
-          http_cache:  
-            podSecurityContext:
-              enabled: false
-            containerSecurityContext:
-              enabled: false
+
           importApi:
+            image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
             podSecurityContext:
               enabled: false
             containerSecurityContext:
               enabled: false
           importWorker:
+            image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
             podSecurityContext:
               enabled: false
             containerSecurityContext:
               enabled: false
           mapsApi:
+            image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
             podSecurityContext:
               enabled: false
             containerSecurityContext:
               enabled: false
           sqlWorker:
+            image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
             podSecurityContext:
               enabled: false
             containerSecurityContext:
               enabled: false
           cdnInvalidatorSub:
+            image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
             podSecurityContext:
               enabled: false
             containerSecurityContext:
               enabled: false
           workspaceSubscriber:
+            image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
             podSecurityContext:
               enabled: false
             containerSecurityContext:
               enabled: false
           workspaceMigrations:
+            image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
             podSecurityContext:
               enabled: false
             containerSecurityContext:
               enabled: false
           upgradeCheck:
+            image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
             podSecurityContext:
               enabled: false
             containerSecurityContext:
               enabled: false
           internalPostgresql:
             primary:
+              image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
               podSecurityContext:
                 enabled: false
               containerSecurityContext:
                 enabled: false
           internalRedis:
             master:
+              image:
+              registry: gcr.io/carto-artifacts 
+              tag: rootless_openshift_containers
               podSecurityContext:
                 enabled: false
               containerSecurityContext:
                 enabled: false
+      
+
           EOF
 
           echo "${PACKAGE_CARTO_VALUES}" > carto-values.yaml
