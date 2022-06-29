@@ -166,14 +166,14 @@ jobs:
           echo "::set-output name=cypress-record-key::${CYPRESS_RECORD_KEY}"
 
           ## Edit cypress.json config
-          # jq --arg CYPRESS_PROJECT_ID "${CYPRESS_PROJECT_ID}" '.projectId = $CYPRESS_PROJECT_ID' cypress.json > cypress.json.edited
-          jq --arg CYPRESS_PROJECT_ID "a5p55t" '.projectId = $CYPRESS_PROJECT_ID' cypress.json > cypress.json.edited
+          # jq --arg CYPRESS_PROJECT_ID "a5p55t" '.projectId = $CYPRESS_PROJECT_ID' cypress.json > cypress.json.edited
+          jq --arg CYPRESS_PROJECT_ID "${CYPRESS_PROJECT_ID}" '.projectId = $CYPRESS_PROJECT_ID' cypress.json > cypress.json.edited
           mv -f cypress.json.edited cypress.json
           # https://github.com/cypress-io/cypress/issues/17627
-          jq '.videoUploadOnPasses = false' cypress.json > cypress.json.edited
-          mv -f cypress.json.edited cypress.json
-          jq '.video = false' cypress.json > cypress.json.edited
-          mv -f cypress.json.edited cypress.json
+          # jq '.videoUploadOnPasses = false' cypress.json > cypress.json.edited
+          # mv -f cypress.json.edited cypress.json
+          # jq '.video = false' cypress.json > cypress.json.edited
+          # mv -f cypress.json.edited cypress.json
 
           echo "::group::cypress.json to use"
           cat cypress.json
@@ -279,8 +279,8 @@ jobs:
           VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ steps.helm_customization.outputs.helm-customization-base64 }}
           # VIB_ENV_PAT_CYPRESS_REPOSITORY: ${{ secrets.VIB_ENV_PAT_CYPRESS_REPOSITORY }}
           VIB_ENV_CYPRESS_RUN_ID: ${{ steps.e2e-package.outputs.cypress-run-id }}
-          VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
-          # VIB_ENV_CYPRESS_RECORD_KEY: ${{ steps.e2e-package.outputs.cypress-record-key }}
+          # VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
+          VIB_ENV_CYPRESS_RECORD_KEY: ${{ steps.e2e-package.outputs.cypress-record-key }}
           # VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET: ${{ secrets.VIB_ENV_CYPRESS_MANAGEMENT_API_CLIENT_SECRET }}
           # VIB_ENV_CYPRESS_FIREBASE_API_KEY: ${{ secrets.VIB_ENV_CYPRESS_FIREBASE_API_KEY }}
           # VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS: ${{ secrets.VIB_ENV_CYPRESS_CONNECTION_CREDENTIALS }}
