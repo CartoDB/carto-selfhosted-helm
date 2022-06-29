@@ -116,6 +116,7 @@ spec:
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
              "BIGQUERY_OAUTH2_CLIENT_SECRET"
              "ENCRYPTION_SECRET_KEY"
+             "WORKSPACE_JWT_SECRET"
              ) "context" $ ) | nindent 12 }}
             {{- if .Values.workspaceSubscriber.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVars "context" $) | nindent 12 }}
@@ -126,6 +127,7 @@ spec:
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
              "BIGQUERY_OAUTH2_CLIENT_SECRET"
              "ENCRYPTION_SECRET_KEY"
+             "WORKSPACE_JWT_SECRET"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
