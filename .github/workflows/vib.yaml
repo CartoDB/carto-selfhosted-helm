@@ -241,24 +241,16 @@ jobs:
               enabled: false
           internalPostgresql:
             primary:
-              image:
-              registry: gcr.io/carto-artifacts 
-              tag: rootless_openshift_containers
               podSecurityContext:
                 enabled: false
               containerSecurityContext:
                 enabled: false
           internalRedis:
             master:
-              image:
-              registry: gcr.io/carto-artifacts 
-              tag: rootless_openshift_containers
               podSecurityContext:
                 enabled: false
               containerSecurityContext:
                 enabled: false
-      
-
           EOF
 
           echo "${PACKAGE_CARTO_VALUES}" > carto-values.yaml
