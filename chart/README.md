@@ -21,6 +21,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.httpCacheEnabled`            | Enable the internal httpCache                                                                                          | `true`                 |
 | `appConfigValues.importBucket`                | Bucket to be used to store the import files                                                                            | `""`                   |
 | `appConfigValues.workspaceImportsBucket`      | Bucket to be used to store metadata of the workspace                                                                   | `""`                   |
+| `appConfigValues.workspaceImportsPublic`      | Indicate if the imports could be accessed publicly                                                                     | `""`                   |
 | `appConfigValues.workspaceThumbnailsBucket`   | Bucket to be used to store the thumbnails generated in the app                                                         | `""`                   |
 | `appConfigValues.workspaceThumbnailsPublic`   | Indicate if the thumbnails could be accessed publicly                                                                  | `true`                 |
 | `appConfigValues.googleCloudStorageProjectId` | If the bucket is GCP, the ProjectId to be used                                                                         | `""`                   |
