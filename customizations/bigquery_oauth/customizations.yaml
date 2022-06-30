@@ -1,0 +1,5 @@
+appConfigValues:
+  bigqueryOauth2ClientId: "<value_from_credentials_web_client_id>"
+appSecrets:
+  bigqueryOauth2ClientSecret:
+    value: "<value_from_credentials_web_client_secret>"

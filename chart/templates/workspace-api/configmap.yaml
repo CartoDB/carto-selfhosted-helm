@@ -52,6 +52,7 @@ data:
   WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/data-updates"
   WORKSPACE_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   WORKSPACE_IMPORTS_BUCKET: {{ .Values.appConfigValues.workspaceImportsBucket | quote }}
+  WORKSPACE_IMPORTS_PUBLIC: {{ .Values.appConfigValues.workspaceImportsPublic | quote }}
   WORKSPACE_IMPORTS_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
   WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.appConfigValues.workspaceThumbnailsBucket | quote }}
   WORKSPACE_THUMBNAILS_PUBLIC: {{ .Values.appConfigValues.workspaceThumbnailsPublic | quote }}

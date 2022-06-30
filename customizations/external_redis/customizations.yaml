@@ -1,0 +1,12 @@
+internalRedis:
+  enabled: false
+externalRedis:
+  host: <Redis IP/Hostname>
+  port: "6379"
+  password: ""
+  tlsEnabled: true
+  # Only applies if your Redis TLS certificate it's self-signed
+  # tlsCA: |
+  #   -----BEGIN CERTIFICATE-----
+  #   ...
+  #   -----END CERTIFICATE-----
