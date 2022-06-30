@@ -470,7 +470,7 @@ appConfigValues:
 
 In order to use AWS S3 custom buckets you need to:
 
-1. Create the buckets. 
+1. Create the buckets.
 
    > :warning: If you enable `Block public access` in the bucket properties, then set `appConfigValues.workspaceThumbnailsPublic` and `appConfigValues.workspaceImportsPublic` to `false`.
 
