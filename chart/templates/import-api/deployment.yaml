@@ -113,6 +113,7 @@ spec:
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
               "IMPORT_ACCESSKEYID"
+              "IMPORT_JWT_SECRET"
               "IMPORT_SECRETACCESSKEY"
               "IMPORT_STORAGE_ACCESSKEY"
             ) "context" $ ) | nindent 12 }}
@@ -125,6 +126,7 @@ spec:
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
               "IMPORT_ACCESSKEYID"
+              "IMPORT_JWT_SECRET"
               "IMPORT_SECRETACCESSKEY"
               "IMPORT_STORAGE_ACCESSKEY"
             ) "context" $ ) -}}

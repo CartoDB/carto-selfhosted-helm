@@ -443,6 +443,8 @@ In order to use Google Cloud Storage custom buckets you need to:
 
 1. Create the buckets.
 
+   > :warning: If you enable `Prevent public access` in the bucket properties, then set `appConfigValues.workspaceThumbnailsPublic` and `appConfigValues.workspaceImportsPublic` to `false`.
+
 2. Configure the required [CORS settings](#requirements).
 
 3. Create a [custom Service account](#custom-service-account).
@@ -458,6 +460,7 @@ appConfigValues:
   storageProvider: "gcp"
   importBucket: <import_bucket_name>
   workspaceImportsBucket: <client_bucket_name>
+  workspaceImportsPublic: <false|true>
   workspaceThumbnailsBucket: <thumbnails_bucket_name>
   workspaceThumbnailsPublic: <false|true>
   googleCloudStorageProjectId: <gcp_project_id>
@@ -467,7 +470,9 @@ appConfigValues:
 
 In order to use AWS S3 custom buckets you need to:
 
-1. Create the buckets. If you enable `Block public access` in the bucket properties, make sure you set `appConfigValues.workspaceThumbnailsPublic` to `false`.
+1. Create the buckets.
+
+   > :warning: If you enable `Block public access` in the bucket properties, then set `appConfigValues.workspaceThumbnailsPublic` and `appConfigValues.workspaceImportsPublic` to `false`.
 
 2. Configure the required [CORS settings](#requirements).
 
@@ -482,6 +487,7 @@ appConfigValues:
   storageProvider: "s3"
   importBucket: <import_bucket_name>
   workspaceImportsBucket: <client_bucket_name>
+  workspaceImportsPublic: <false|true>
   workspaceThumbnailsBucket: <thumbnails_bucket_name>
   workspaceThumbnailsPublic: <false|true>
   awsS3Region: <s3_buckets_region>
@@ -536,6 +542,8 @@ In order to use Azure Storage buckets (aka containers) you need to:
 
 3. Create the storage buckets. If you set the `Public Access Mode` to `private` in the bucket properties, make sure you set `appConfigValues.workspaceThumbnailsPublic` to `false`.
 
+   > :warning:  If you set the `Public Access Mode` to `private` in the bucket properties, then set `appConfigValues.workspaceThumbnailsPublic` and `appConfigValues.workspaceImportsPublic` to `false`.
+
 4. Generate an Access Key, from the storage account's Security properties.
 
 5. Add the following lines to your `customizations.yaml`  and replace the `<values>` with your own settings:
@@ -546,6 +554,7 @@ appConfigValues:
   azureStorageAccount: <storage_account_name>
   importBucket: <import_bucket_name>
   workspaceImportsBucket: <client_bucket_name>
+  workspaceImportsPublic: <false|true>
   workspaceThumbnailsBucket: <thumbnails_bucket_name>
   workspaceThumbnailsPublic: <false|true>
 ```
@@ -604,13 +613,11 @@ This feature allows users to create a BigQuery connection using `Sign in with Go
 3. Follow [these guidelines](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/customizations/README.md#how-to-apply-the-configurations) to add the following lines to your `customizations.yaml` populating them with the credential's file corresponding values:
 
 ```yaml
-workspaceApi:
-  extraEnvVars:
-    - name: REACT_APP_BIGQUERY_OAUTH
-      value: "true"
-    - name: BIGQUERY_OAUTH2_CLIENT_ID
-      value: "<value_from_credentials_web_client_id>"
-    - name: BIGQUERY_OAUTH2_CLIENT_SECRET
+appConfigValues:
+  bigqueryOauth2ClientId: "<value_from_credentials_web_client_id>"
+
+appSecrets:
+  bigqueryOauth2ClientSecret:
       value: "<value_from_credentials_web_client_secret>"
 ```
 

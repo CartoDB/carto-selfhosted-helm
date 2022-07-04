@@ -44,16 +44,21 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
 Association between env secret and path of the secret in values.yaml
 */}}
 {{- define "carto._utils.secretAssociation" -}}
+BIGQUERY_OAUTH2_CLIENT_SECRET: appSecrets.bigqueryOauth2ClientSecret
 ENCRYPTION_SECRET_KEY: cartoSecrets.encryptionSecretKey
 IMPORT_ACCESSKEYID: appSecrets.awsAccessKeyId
+IMPORT_JWT_SECRET: cartoSecrets.jwtApiSecret
 IMPORT_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 IMPORT_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
+LDS_JWT_SECRET: cartoSecrets.jwtApiSecret
+MAPS_API_V3_JWT_SECRET: cartoSecrets.jwtApiSecret
 REACT_APP_GOOGLE_MAPS_API_KEY: appSecrets.googleMapsApiKey
 VARNISH_DEBUG_SECRET: cartoSecrets.varnishDebugSecret
 VARNISH_PURGE_SECRET: cartoSecrets.varnishPurgeSecret
 WORKSPACE_IMPORTS_ACCESSKEYID: appSecrets.awsAccessKeyId
 WORKSPACE_IMPORTS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 WORKSPACE_IMPORTS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
+WORKSPACE_JWT_SECRET: cartoSecrets.jwtApiSecret
 WORKSPACE_THUMBNAILS_ACCESSKEYID: appSecrets.awsAccessKeyId
 WORKSPACE_THUMBNAILS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey

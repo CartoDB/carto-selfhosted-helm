@@ -1,0 +1,16 @@
+internalPostgresql:
+  enabled: false
+externalPostgresql:
+  host: <Postgres IP/Hostname>
+  user: "workspace_admin"
+  password: ""
+  adminUser: "postgres"
+  adminPassword: ""
+  database: "workspace"
+  port: "5432"
+  sslEnabled: true
+  # Only applies if your Postgresql SSL certificate it's self-signed
+  # sslCA: |
+  #   -----BEGIN CERTIFICATE-----
+  #   ...
+  #   -----END CERTIFICATE-----

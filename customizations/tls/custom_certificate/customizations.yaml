@@ -1,0 +1,7 @@
+tlsCerts:
+  httpsEnabled: true
+  autoGenerate: false
+  existingSecret:
+    name: "mycarto-custom-tls-certificate"
+    keyKey: "tls.key"
+    certKey: "tls.crt"
