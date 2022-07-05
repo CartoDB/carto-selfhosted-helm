@@ -22,23 +22,22 @@ env:
 jobs:
   vib-verify: # verify in multiple target platforms
     runs-on: ubuntu-latest
-    # Revert before merge
-    # if: ${{ contains(github.event.pull_request.labels.*.name, 'verify') }}
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'verify') }}
     strategy:
       matrix:
-        # vib_test_file:
-        #   - vib-cypress.json
-        # platform:
-        #   - target-platform: eks
-        #     target-platform-id: ef54a736-5e43-4a6c-9400-b162acd8b83d
-        #     onprem-id: vmware-eks-1
-        #   - target-platform: gke
-        #     target-platform-id: 91d398a2-25c4-4cda-8732-75a3cfc179a1
-        #     onprem-id: vmware-gke-1
-        #     # onprem-id: bitnami-stag-1
-        #   - target-platform: aks
-        #     target-platform-id: 7b13a7bb-011c-474f-ad71-8152fc321b9e
-        #     onprem-id: vmware-aks-1
+        vib_test_file:
+          - vib-cypress.json
+        platform:
+          - target-platform: eks
+            target-platform-id: ef54a736-5e43-4a6c-9400-b162acd8b83d
+            onprem-id: vmware-eks-1
+          - target-platform: gke
+            target-platform-id: 91d398a2-25c4-4cda-8732-75a3cfc179a1
+            onprem-id: vmware-gke-1
+            # onprem-id: bitnami-stag-1
+          - target-platform: aks
+            target-platform-id: 7b13a7bb-011c-474f-ad71-8152fc321b9e
+            onprem-id: vmware-aks-1
         include:
           - vib_test_file: vib-platform-verify.json
             platform:
