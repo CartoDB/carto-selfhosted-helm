@@ -26,7 +26,9 @@ jobs:
     # if: ${{ contains(github.event.pull_request.labels.*.name, 'verify') }}
     strategy:
       matrix:
-        include:
+        vib_test_file:
+          - vib-cypress.json
+        platform:
           - target-platform: eks
             target-platform-id: ef54a736-5e43-4a6c-9400-b162acd8b83d
             onprem-id: vmware-eks-1
@@ -37,16 +39,22 @@ jobs:
           - target-platform: aks
             target-platform-id: 7b13a7bb-011c-474f-ad71-8152fc321b9e
             onprem-id: vmware-aks-1
+        include:
+          - vib_test_file: vib-platform-verify.json
+            platform:
+              target-platform: gke
+              target-platform-id: 91d398a2-25c4-4cda-8732-75a3cfc179a1
+              onprem-id: vmware-gke-1
       fail-fast: false
     env:
-      ONPREM_ID: "${{ matrix.onprem-id }}"
+      ONPREM_ID: "${{ matrix.platform.onprem-id }}"
       # ENVIRONMENT: "production"
       ENVIRONMENT: "staging"
     concurrency:
       # Avoid multiple jobs running with the same customer package
-      group: "onp-${{ matrix.onprem-id }}"
+      group: "onp-${{ matrix.platform.onprem-id }}"
       cancel-in-progress: false
-    name: Verify ${{ matrix.target-platform }}
+    name: "Verify ${{ matrix.platform.target-platform }}: ${{ matrix.vib_test_file }}"
     steps:
       - uses: actions/checkout@v3
         with:
@@ -80,7 +88,7 @@ jobs:
         run: |
           set -ex
           echo "::set-output name=carto_version::$(yq .appVersion chart/Chart.yaml)"
-          echo "::set-output name=custom_run_id::${{ github.repository }}:${{ github.run_id }}[${{ github.run_attempt }}](${{ matrix.target-platform }}_onp-${{ matrix.onprem-id }})"
+          echo "::set-output name=custom_run_id::${{ github.repository }}:${{ github.run_id }}[${{ github.run_attempt }}](${{ matrix.platform.target-platform }}_onp-${{ matrix.platform.onprem-id }})"
       - name: Clone cloud-native
         uses: actions/checkout@v3
         with:
@@ -218,11 +226,11 @@ jobs:
       - name: Run validation in VIB platform
         uses: vmware-labs/vmware-image-builder-action@0.3.11
         with:
-          pipeline: vib-cypress.json
+          pipeline: ${{ matrix.vib_test_file }}
           ## Currently disable by debug pourposes
           only-upload-on-failure: false
         env:
-          VIB_ENV_TARGET_PLATFORM: ${{ matrix.target-platform-id }}
+          VIB_ENV_TARGET_PLATFORM: ${{ matrix.platform.target-platform-id }}
           VIB_ENV_CARTO_RUNTIME_PARAMETERS: ${{ steps.helm_customization.outputs.helm-customization-base64 }}
           VIB_ENV_CYPRESS_RUN_ID: ${{ steps.e2e-package.outputs.cypress-run-id }}
           # VIB_ENV_CYPRESS_RECORD_KEY: ${{ secrets.VIB_ENV_CYPRESS_RECORD_KEY }}
