@@ -1,3 +1,11 @@
+## 2022.7.5-1 (July 05, 2022)
+IMPROVEMENTS
++ Bugs Fixing and minor improvements
+
+## 2022.7.5 (July 05, 2022)
+IMPROVEMENTS
++ Bugs Fixing and minor improvements
+
 ## 2022.7.4 (July 04, 2022)
 IMPROVEMENTS
 + Support for H3 and Quadbin data sources in APIs and Builder
