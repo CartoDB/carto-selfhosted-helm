@@ -10,9 +10,6 @@
       "actions": [
         {
           "action_id": "helm-package"
-        },
-        {
-          "action_id": "helm-lint"
         }
       ]
     },
@@ -23,30 +20,28 @@
           "target_platform_id": "{VIB_ENV_TARGET_PLATFORM}",
           "size": {
             "name": "L8",
-            "worker_nodes_instance_count": 2,
+            "worker_nodes_instance_count": 3,
             "master_nodes_instance_count": 1
           }
         }
       },
       "actions": [
         {
-          "action_id": "trivy",
+          "action_id": "cypress",
           "params": {
-            "threshold": "IGNORE_ALL",
-            "vuln_type": [
-              "OS"
-            ]
-          }
-        },
-        {
-          "action_id": "goss",
-          "params": {
+            "timeout_minutes": 50,
             "resources": {
-              "url": "{SHA_ARCHIVE}",
-              "path": "/.vib/carto/goss/goss-accounts-www"
+              "url": "{WORKSPACE_WWW_SOURCE_URL}",
+              "path": "."
             },
-            "remote": {
-              "workload": "deploy-carto-accounts-www"
+            "host_aliases": [
+              "carto.vmw"
+            ],
+            "endpoint": "lb-carto-router-https",
+            "env": {
+              "CI": "true",
+              "RUN_ID": "{VIB_ENV_CYPRESS_RUN_ID}",
+              "RECORD_KEY": "{VIB_ENV_CYPRESS_RECORD_KEY}"
             }
           }
         }

@@ -216,9 +216,9 @@ jobs:
           echo "::set-output name=helm-customization-base64::${HELM_CUSTOMIZATION_BASE64}"
 
       - name: Run validation in VIB platform
-        uses: vmware-labs/vmware-image-builder-action@0.3.5
+        uses: vmware-labs/vmware-image-builder-action@0.3.11
         with:
-          pipeline: vib-platform-verify.json
+          pipeline: vib-cypress.json
           ## Currently disable by debug pourposes
           only-upload-on-failure: false
         env:
