@@ -181,5 +181,3 @@ If you were using the internal Postgres, to delete the data you need:
 # ⚠️ This is going to delete the data of the postgres inside the cluster ⚠️
 kubectl delete pvc data-mycarto-postgresql-0
 ```
-
-> In case you are running a local Postgres database (which is not recommended for Production environments), take into account that removing the docker volumes will delete the database information and your CARTO Self Hosted users information with it.
