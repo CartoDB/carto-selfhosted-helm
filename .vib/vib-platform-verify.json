@@ -24,24 +24,10 @@
         },
         "runtime_parameters": "{CARTO_RUNTIME_PARAMETERS}",
         "target_platform": {
-          "target_platform_id": "{VIB_ENV_TARGET_PLATFORM}",
-          "size": {
-            "name": "L8",
-            "worker_nodes_instance_count": 2,
-            "master_nodes_instance_count": 1
-          }
+          "target_platform_id": "{VIB_ENV_TARGET_PLATFORM}"
         }
       },
       "actions": [
-        {
-          "action_id": "trivy",
-          "params": {
-            "threshold": "IGNORE_ALL",
-            "vuln_type": [
-              "OS"
-            ]
-          }
-        },
         {
           "action_id": "cypress",
           "params": {
