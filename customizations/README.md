@@ -447,24 +447,56 @@ In order to use Google Cloud Storage custom buckets you need to:
 
 2. Configure the required [CORS settings](#requirements).
 
-3. Create a [custom Service account](#custom-service-account).
+3. Add the following lines to your `customizations.yaml` and replace the `<values>` with your own settings:
 
-4. Grant this service account with the following role (in addition to the buckets access): `roles/iam.serviceAccountTokenCreator`.
+    ```yaml
+    appConfigValues:
+      storageProvider: "gcp"
+      importBucket: <import_bucket_name>
+      workspaceImportsBucket: <client_bucket_name>
+      workspaceImportsPublic: <false|true>
+      workspaceThumbnailsBucket: <thumbnails_bucket_name>
+      workspaceThumbnailsPublic: <false|true>
+      googleCloudStorageProjectId: <gcp_project_id>
+    ```
 
-   > :warning: We don't recommend grating this role at project IAM level, but instead at the Service Account permissions level (IAM > Service Accounts > `your_service_account` > Permissions).
+4. Select a Service Account to use. You can use a [custom Service account for all things](#custom-service-account),  the Service account provided by Carto in your package or create a dedicated Service account only for this buckets.
 
-5. Add the following lines to your `customizations.yaml` and replace the `<values>` with your own settings:
+   > :warning: Make sure that the selected service account had  `roles/iam.serviceAccountTokenCreator` role in the GCP project that created it. We don't recommend grating this role at project IAM level, but instead at the Service Account permissions level (IAM > Service Accounts > `your_service_account` > Permissions).
 
-```yaml
-appConfigValues:
-  storageProvider: "gcp"
-  importBucket: <import_bucket_name>
-  workspaceImportsBucket: <client_bucket_name>
-  workspaceImportsPublic: <false|true>
-  workspaceThumbnailsBucket: <thumbnails_bucket_name>
-  workspaceThumbnailsPublic: <false|true>
-  googleCloudStorageProjectId: <gcp_project_id>
-```
+5. Grant the selected Service Account with the role `roles/storage.admin` to the buckets created.
+
+6. Pass your GCP credentials as secrets **(if required)**. This is only required if you are going to use a Service Account different from the default one (defined in `cartoSecrets.defaultGoogleServiceAccount`) and you aren't using Workload Identity.
+    - **Option 1: Automatically create the secret:**
+
+      ```yaml
+      appSecrets:
+        googleCloudStorageServiceAccountKey:
+          value: |
+            <REDACTED>
+      ```
+
+      > `appSecrets.googleCloudStorageServiceAccountKey.value` should be in plain text, preserving the multiline and correctly tabulated.
+
+    - **Option 2: Using existing secret:**
+      Create a secret running the command below, after replacing the `<PATH_TO_YOUR_SECRET.json>` value with the path to the file of the Service Account:
+
+      ```bash
+      kubectl create secret generic \
+        [-n my-namespace] \
+        mycarto-google-storage-service-account \
+        --from-file=key=<PATH_TO_YOUR_SECRET.json>
+      ```
+
+      Add the following lines to your `customizations.yaml`, without replacing any value:
+
+      ```yaml
+      appSecrets:
+        googleCloudStorageServiceAccountKey:
+          existingSecret:
+            name: mycarto-google-storage-service-account
+            key: key
+      ```
 
 #### AWS S3
 
