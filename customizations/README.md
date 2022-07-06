@@ -460,13 +460,16 @@ In order to use Google Cloud Storage custom buckets you need to:
       googleCloudStorageProjectId: <gcp_project_id>
     ```
 
-4. Select a Service Account to use. You can use a [custom Service account for all things](#custom-service-account),  the Service account provided by Carto in your package or create a dedicated Service account only for this buckets.
+4. Select a **Service Account** that will be used by the application to interact with the buckets. There are three options:
+    - using a [custom Service Account](#custom-service-account), that will be used not only for the buckets, but for the services deployed by CARTO as well. If you are using Workload Identity, that's your option.
+    - using a dedicated Service Account **only for the buckets**
 
-   > :warning: Make sure that the selected service account had  `roles/iam.serviceAccountTokenCreator` role in the GCP project that created it. We don't recommend grating this role at project IAM level, but instead at the Service Account permissions level (IAM > Service Accounts > `your_service_account` > Permissions).
+5. Grant the selected Service Account with the role `roles/iam.serviceAccountTokenCreator` in the GCP project where it was created.
+    > :warning: We don't recommend grating this role at project IAM level, but instead at the Service Account permissions level (IAM > Service Accounts > `your_service_account` > Permissions).
 
-5. Grant the selected Service Account with the role `roles/storage.admin` to the buckets created.
+6. Grant the selected Service Account with the role `roles/storage.admin` to the buckets created.
 
-6. Pass your GCP credentials as secrets **(if required)**. This is only required if you are going to use a Service Account different from the default one (defined in `cartoSecrets.defaultGoogleServiceAccount`) and you aren't using Workload Identity.
+7. [OPTIONAL] Pass your GCP credentials as secrets: **This is only required if you are going to use a dedicated Service Account only for the buckets** (option 4.2).
     - **Option 1: Automatically create the secret:**
 
       ```yaml
