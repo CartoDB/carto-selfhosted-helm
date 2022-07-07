@@ -465,7 +465,7 @@ In order to use Google Cloud Storage custom buckets you need to:
     - using a dedicated Service Account **only for the buckets**
 
 5. Grant the selected Service Account with the role `roles/iam.serviceAccountTokenCreator` in the GCP project where it was created.
-    > :warning: We don't recommend grating this role at project IAM level, but instead at the Service Account permissions level (IAM > Service Accounts > `your_service_account` > Permissions).
+    > :warning: We don't recommend granting this role at project IAM level, but instead at the Service Account permissions level (IAM > Service Accounts > `your_service_account` > Permissions).
 
 6. Grant the selected Service Account with the role `roles/storage.admin` to the buckets created.
 
