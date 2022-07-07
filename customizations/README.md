@@ -332,7 +332,7 @@ kubectl create secret generic \
 
 2. Configure the package:
 
-Add the following lines to your `customizations.yaml` to connect to the external Postgres:
+Add the following lines to your `customizations.yaml` to connect to the external Redis:
 
 ```yaml
 internalRedis:
@@ -354,7 +354,7 @@ externalRedis:
 #### Setup Redis with automatic secret creation
 
 1. Configure the package:
-   Add the following lines to your `customizations.yaml` to connect to the external Postgres:
+   Add the following lines to your `customizations.yaml` to connect to the external Redis:
 
 ```yaml
 internalRedis:
