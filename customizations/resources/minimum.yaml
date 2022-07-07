@@ -1,4 +1,8 @@
+#####################
 ## This config isn't recommended for a real deployment
+#####################
+## Please, keep in mind that:
+##   - Resource requests are based in the minimal amount of resources required to start each component
 
 accountsWww:
   resources:
