@@ -21,6 +21,8 @@ data:
   IMPORT_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   IMPORT_WORKER_PROCESSING_DIR: "/tmp/import-worker"
   LOG_LEVEL: "debug"
+  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
+  PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
