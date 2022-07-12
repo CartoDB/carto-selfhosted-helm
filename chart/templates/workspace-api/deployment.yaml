@@ -76,6 +76,9 @@ spec:
           {{- if .Values.workspaceMigrations.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.workspaceMigrations.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
+          {{- if .Values.workspaceMigrations.resources }}
+          resources: {{- toYaml .Values.workspaceMigrations.resources | nindent 12 }}
+          {{- end }}
           {{- if .Values.workspaceMigrations.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceMigrations.command "context" $) | nindent 12 }}
           {{- else }}
