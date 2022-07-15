@@ -145,7 +145,7 @@ Ingress exposes HTTP and HTTPS routes from outside the cluster to services withi
 
 Depending of the ingress controller used, a variety of configurations can be made, here you have an example using [GKE Ingress controller](https://cloud.google.com/kubernetes-engine/docs/concepts/ingress) with [TLS offloading](https://en.wikipedia.org/wiki/TLS_termination_proxy)
 
-- [GKE Ingress config](ingress/gke/config.yaml) 
+- [GKE Ingress config](ingress/gke/config.yaml)
 
 #### Configure TLS termination in the service
 
