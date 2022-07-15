@@ -26,7 +26,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.workspaceThumbnailsPublic`   | Indicate if the thumbnails could be accessed publicly                                                                  | `true`                 |
 | `appConfigValues.googleCloudStorageProjectId` | If the bucket is GCP, the ProjectId to be used                                                                         | `""`                   |
 | `appConfigValues.awsS3Region`                 | If the bucket is S3, the region to be used                                                                             | `""`                   |
-| `appConfigValues.bigqueryOauth2ClientId`      | The Cliend ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key. | `""`                   |
+| `appConfigValues.bigqueryOauth2ClientId`      | The Client ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key. | `""`                   |
 
 
 ### CARTO config parameters
@@ -696,20 +696,31 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### router Service Parameters
 
-| Name                                      | Description                                                                       | Value       |
-| ----------------------------------------- | --------------------------------------------------------------------------------- | ----------- |
-| `router.service.type`                     | router service type                                                               | `ClusterIP` |
-| `router.service.ports.http`               | router service HTTP port                                                          | `80`        |
-| `router.service.ports.https`              | router service HTTPS port                                                         | `443`       |
-| `router.service.nodePorts.http`           | Node port for HTTP                                                                | `""`        |
-| `router.service.nodePorts.https`          | Node port for HTTPS                                                               | `""`        |
-| `router.service.clusterIP`                | router service Cluster IP                                                         | `""`        |
-| `router.service.loadBalancerIP`           | router service Load Balancer IP                                                   | `""`        |
-| `router.service.labelSelectorsOverride`   | Selector for router service                                                       | `{}`        |
-| `router.service.loadBalancerSourceRanges` | router service Load Balancer sources                                              | `[]`        |
-| `router.service.externalTrafficPolicy`    | router service external traffic policy                                            | `Cluster`   |
-| `router.service.annotations`              | Additional custom annotations for router service                                  | `{}`        |
-| `router.service.extraPorts`               | Extra ports to expose in router service (normally used with the `sidecars` value) | `[]`        |
+| Name                                      | Description                                                                                                                      | Value                    |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `router.service.type`                     | router service type                                                                                                              | `ClusterIP`              |
+| `router.service.ports.http`               | router service HTTP port                                                                                                         | `80`                     |
+| `router.service.ports.https`              | router service HTTPS port                                                                                                        | `443`                    |
+| `router.service.nodePorts.http`           | Node port for HTTP                                                                                                               | `""`                     |
+| `router.service.nodePorts.https`          | Node port for HTTPS                                                                                                              | `""`                     |
+| `router.service.clusterIP`                | router service Cluster IP                                                                                                        | `""`                     |
+| `router.service.loadBalancerIP`           | router service Load Balancer IP                                                                                                  | `""`                     |
+| `router.service.labelSelectorsOverride`   | Selector for router service                                                                                                      | `{}`                     |
+| `router.service.loadBalancerSourceRanges` | router service Load Balancer sources                                                                                             | `[]`                     |
+| `router.service.externalTrafficPolicy`    | router service external traffic policy                                                                                           | `Cluster`                |
+| `router.service.annotations`              | Additional custom annotations for router service                                                                                 | `{}`                     |
+| `router.service.extraPorts`               | Extra ports to expose in router service (normally used with the `sidecars` value)                                                | `[]`                     |
+| `router.ingress.enabled`                  | Enable ingress controller resource                                                                                               | `false`                  |
+| `router.ingress.pathType`                 | Ingress Path type                                                                                                                | `ImplementationSpecific` |
+| `router.ingress.apiVersion`               | Override API Version (automatically detected if not set)                                                                         | `""`                     |
+| `router.ingress.ingressClassName`         | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)                                                    | `""`                     |
+| `router.ingress.path`                     | The Path to CARTO. You may need to set this to '/*' in order to use this                                                         | `/*`                     |
+| `router.ingress.annotations`              | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. | `{}`                     |
+| `router.ingress.tls`                      | Enable TLS configuration for the hostname defined at ingress.hostname parameter                                                  | `false`                  |
+| `router.ingress.extraHosts`               | The list of additional hostnames to be covered with this ingress record.                                                         | `[]`                     |
+| `router.ingress.extraPaths`               | Any additional arbitrary paths that may need to be added to the ingress under the main host.                                     | `[]`                     |
+| `router.ingress.extraTls`                 | The tls configuration for additional hostnames to be covered with this ingress record.                                           | `[]`                     |
+| `router.ingress.extraRules`               | Additional rules to be covered with this ingress record                                                                          | `[]`                     |
 
 
 ### router ServiceAccount configuration

@@ -9,6 +9,7 @@
     - [Access to CARTO from outside the cluster](#access-to-carto-from-outside-the-cluster)
       - [Requirements when exposing the service](#requirements-when-exposing-the-service)
       - [Enable and configure LoadBalancer mode](#enable-and-configure-loadbalancer-mode)
+      - [Expose your application with an Ingress](#expose-your-application-with-an-ingress)
       - [Configure TLS termination in the service](#configure-tls-termination-in-the-service)
         - [Disable internal HTTPS](#disable-internal-https)
         - [Use your own TLS certificate](#use-your-own-tls-certificate)
@@ -137,6 +138,14 @@ You can find an example [here](service_loadBalancer/config.yaml). Also, we have 
 - [AZU AKS](service_loadBalancer/azu_aks/config.yaml)
 
 > Note that with this config a [Load Balancer](https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer) resource is going to be created in your cloud provider, you can find more documentation about this kind of service [here](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer)
+
+#### Expose your application with an Ingress
+
+Ingress exposes HTTP and HTTPS routes from outside the cluster to services within the cluster. Traffic routing is controlled by rules defined on the Ingress resource, you can find more documentation [here](https://kubernetes.io/docs/concepts/services-networking/ingress/).
+
+Depending of the ingress controller used, a variety of configurations can be made, here you have an example using [GKE Ingress controller](https://cloud.google.com/kubernetes-engine/docs/concepts/ingress) with [TLS offloading](https://en.wikipedia.org/wiki/TLS_termination_proxy)
+
+- [GKE Ingress config](ingress/gke/config.yaml) 
 
 #### Configure TLS termination in the service
 

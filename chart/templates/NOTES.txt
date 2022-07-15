@@ -58,7 +58,16 @@ host. To configure CARTO with the URL of your service:
 {{- else }}
 
 1. Get the CARTO URL by running:
-{{- if eq .Values.router.service.type "ClusterIP" }}
+{{-  if .Values.router.ingress.enabled }}
+
+  NOTE: It may take a few minutes for the Ingress IP to be available.
+
+  export CARTO_HOST_IP=$(kubectl get ingress --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} -o jsonpath='{.status..ingress..ip}')
+
+  export CARTO_HOST_CNAME=$(kubectl get ingress --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} -o jsonpath='{.spec..host}')
+
+
+{{- else if eq .Values.router.service.type "ClusterIP" }}
 {{- $port := default 80 .Values.router.service.ports.http | toString }}
 {{- $port_https := default 443 .Values.router.service.ports.https | toString }}
   {{/* TODO: We should check that HTTPS should be enabled ! */}}
@@ -71,6 +80,9 @@ host. To configure CARTO with the URL of your service:
   If the previous command fails regarding port permissions, try the next ones:
   export CARTO_KUBECONFIG=$([[ ! -z "$KUBECONFIG" ]] && echo "$KUBECONFIG" || echo "$HOME/.kube/config")
   sudo -E kubectl --kubeconfig=${CARTO_KUBECONFIG} port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }} {{ $port_https }}:{{ $port_https }}
+-+
+
+
 
 {{- else if eq .Values.router.service.type "NodePort" }}
 
