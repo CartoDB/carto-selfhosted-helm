@@ -234,7 +234,6 @@ from the configuration, or let the chart to create the [secrets automatically](#
        #   -----BEGIN CERTIFICATE-----
        #   ...
        #   -----END CERTIFICATE-----
-     ```
    ````
 
 #### Setup Postgres with automatic secret creation
@@ -638,22 +637,22 @@ appSecrets:
 - **Option 2: Using existing secret:**
 Create a secret running the command below, after replacing the `<REDACTED>` values with your key values:
 
-```bash
+  ```bash
   kubectl create secret generic \                                                                      
   [-n my-namespace] \
   mycarto-google-maps-api-key \
   --from-literal=googleMapsApiKey=<REDACTED>
-```
+  ```
 
 Add the following lines to your `customizations.yaml`, without replacing any value:
 
-```yaml
+  ```yaml
   appSecrets:
     googleMapsApiKey:
       existingSecret:
         name: mycarto-google-maps-api-key
         key: googleMapsApiKey
-```
+  ```
 
 ## Components scaling
 
