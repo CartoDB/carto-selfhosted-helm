@@ -236,9 +236,8 @@ extraDeploy:
 
 **Useful links**
 
-- https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs#caa
-- https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#creating_an_ingress_with_a_google-managed_certificate
-- https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs#caa
+- [google-managed-certs](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs#caa)
+- [creating_an_ingress_with_a_google-managed_certificate](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#creating_an_ingress_with_a_google-managed_certificate)
 
 #### Configure TLS termination in the service
 
