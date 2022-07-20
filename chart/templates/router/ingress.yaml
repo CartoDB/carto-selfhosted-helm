@@ -46,9 +46,6 @@ spec:
     {{- if .Values.router.ingress.extraRules }}
     {{- include "common.tplvalues.render" (dict "value" .Values.router.ingress.extraRules "context" $) | nindent 4 }}
     {{- end }}
-    {{- if .Values.router.ingress.extraRules }}
-    {{- include "common.tplvalues.render" (dict "value" .Values.router.ingress.extraRules "context" $) | nindent 4 }}
-    {{- end }}
   {{- if or .Values.router.ingress.tls .Values.router.ingress.extraTls }}
   tls:
      {{- if .Values.router.ingress.tls }}

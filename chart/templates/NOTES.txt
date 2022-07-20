@@ -1,20 +1,16 @@
 {{/* vim: set filetype=mustache: */}}
 CHART NAME: {{ .Chart.Name }}
 CHART VERSION: {{ .Chart.Version }}
+CHART URL: https://github.com/CartoDB/carto-selfhosted-helm/
 APP VERSION: {{ .Chart.AppVersion }}
 
-{{/* TODO: We should provide some type of link to the repo to redirect the people that only uses helm to the official documentation */}}
-
 {{- if  or (.Values.internalPostgresql.enabled) (.Values.internalRedis.enabled) }}
-                                                   
-                                                   
+
  +-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
  |N||O||T| |F||O||R| |P||R||O||D||U||C||T||I||O||N|
  +-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
-                                                   
-                                                   
 
-WARNING: You are using a non production installation, please see External Postgres and External Redis steps in documentation guide to enable Production Mode.
+WARNING: You are using a non-production installation, please follow the production mode guide in the documentation. You can find the link below
 
 {{- end }}
 
@@ -44,16 +40,16 @@ Access the pod you want to debug by executing
 {{- $postgresqlSecretName := include "carto.postgresql.secretName" . -}}
 {{- $redisSecretName := include "carto.redis.secretName" . -}}
 {{- if not $baseUrl }}
-###############################################################################
-### ERROR: You did not provide an on premises URL in your 'helm install' call ###
-###############################################################################
+#################################################################################
+### ERROR: You did not provide a self-hosted URL in your 'helm install' call ###
+#################################################################################
 
 This deployment will be incomplete until you configure CARTO with a resolvable
 host. To configure CARTO with the URL of your service:
 
 1. Edit the config field `appConfigValues.selfHostedDomain`
 
-2. Complete your CARTO deployment reading the `Update` section of the documentation.
+2. Complete your CARTO deployment by reading the `Update` section of the documentation.
 
 {{- else }}
 
