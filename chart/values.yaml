@@ -21,7 +21,7 @@ appConfigValues:
   googleCloudStorageProjectId: ""
   ## @param appConfigValues.awsS3Region If the bucket is S3, the region to be used
   awsS3Region: ""
-  ## @param appConfigValues.bigqueryOauth2ClientId The Cliend ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key.
+  ## @param appConfigValues.bigqueryOauth2ClientId The Client ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key.
   bigqueryOauth2ClientId: ""
 
 ## @section CARTO config parameters
@@ -39,7 +39,7 @@ cartoConfigValues:
   cartoAuth0CustomDomain: ""
   ## @param cartoConfigValues.cartoSelfhostedDwLocation Location of the Carto Data Warehouse.
   cartoSelfhostedDwLocation: ""
-  ## @param cartoConfigValues.selfHostedGcpProjectId GCP project id used in the installation.
+  ## @param cartoConfigValues.selfHostedGcpProjectId GCP project ID used in the installation.
   selfHostedGcpProjectId: ""
   ## @param cartoConfigValues.selfHostedTenantId Carto internal tenantId used in the installation.
   selfHostedTenantId: ""
@@ -79,7 +79,7 @@ appSecrets:
     existingSecret:
       name: ""
       key: ""
-  ## @extra appSecrets.awsAccessKeyId If AWS is used in self-hosted, the AccessKey Id.
+  ## @extra appSecrets.awsAccessKeyId If AWS is used in self-hosted, the AccessKey ID.
   awsAccessKeyId:
     ## @param appSecrets.awsAccessKeyId.value Value of the secret `AccessKey Id` (Only required if AWS is used). One of `appSecrets.awsAccessKeyId.value` or `appSecrets.awsAccessKeyId.existingSecret` could be defined.
     value: ""
@@ -123,9 +123,9 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
-  ## @extra cartoSecrets.jwtApiSecret The secret used to encrypt the jwt token for api components
+  ## @extra cartoSecrets.jwtApiSecret The secret used to encrypt the jwt token for API components
   jwtApiSecret:
-    ## @param cartoSecrets.jwtApiSecret.value Value of the secret used to encrypt the jwt token for api components. One of `cartoSecrets.jwtApiSecret.value` or `cartoSecrets.jwtApiSecret.existingSecret` could be defined.
+    ## @param cartoSecrets.jwtApiSecret.value Value of the secret used to encrypt the jwt token for API components. One of `cartoSecrets.jwtApiSecret.value` or `cartoSecrets.jwtApiSecret.existingSecret` could be defined.
     value: ""
     ## @param cartoSecrets.jwtApiSecret.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.jwtApiSecret.existingSecret.key`. If `cartoSecrets.jwtApiSecret.value` is defined, this value is going to be ignored and not used.
     ## @param cartoSecrets.jwtApiSecret.existingSecret.key Key to find in `cartoSecrets.jwtApiSecret.existingSecret.name` where the value of `cartoSecrets.jwtApiSecret` is found. If `cartoSecrets.jwtApiSecret.value` is defined, this value is going to be ignored and not used.
@@ -423,17 +423,17 @@ accountsWww:
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAntiAffinityPreset: soft
-  ## Node accountsWww.affinity preset
+  ## Node.js accountsWww.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
   nodeAffinityPreset:
-    ## @param accountsWww.nodeAffinityPreset.type Node affinity preset type. Ignored if `accountsWww.affinity` is set. Allowed values: `soft` or `hard`
+    ## @param accountsWww.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `accountsWww.affinity` is set. Allowed values: `soft` or `hard`
     ##
     type: ""
-    ## @param accountsWww.nodeAffinityPreset.key Node label key to match. Ignored if `accountsWww.affinity` is set
+    ## @param accountsWww.nodeAffinityPreset.key Node.js label key to match. Ignored if `accountsWww.affinity` is set
     ##
     key: ""
-    ## @param accountsWww.nodeAffinityPreset.values Node label values to match. Ignored if `accountsWww.affinity` is set
+    ## @param accountsWww.nodeAffinityPreset.values Node.js label values to match. Ignored if `accountsWww.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
@@ -445,7 +445,7 @@ accountsWww:
   ## NOTE: `accountsWww.podAffinityPreset`, `accountsWww.podAntiAffinityPreset`, and `accountsWww.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param accountsWww.nodeSelector Node labels for accounts-www pods assignment
+  ## @param accountsWww.nodeSelector Node.js labels for accounts-www pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
@@ -522,8 +522,8 @@ accountsWww:
     ##
     ports:
       http: 80
-    ## Node ports to expose
-    ## @param accountsWww.service.nodePorts.http Node port for HTTP
+    ## Node.js ports to expose
+    ## @param accountsWww.service.nodePorts.http Node.js port for HTTP
     ## NOTE: choose port between <30000-32767>
     ##
     nodePorts:
@@ -739,17 +739,17 @@ importApi:
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAntiAffinityPreset: soft
-  ## Node importApi.affinity preset
+  ## Node.js importApi.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
   nodeAffinityPreset:
-    ## @param importApi.nodeAffinityPreset.type Node affinity preset type. Ignored if `importApi.affinity` is set. Allowed values: `soft` or `hard`
+    ## @param importApi.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `importApi.affinity` is set. Allowed values: `soft` or `hard`
     ##
     type: ""
-    ## @param importApi.nodeAffinityPreset.key Node label key to match. Ignored if `importApi.affinity` is set
+    ## @param importApi.nodeAffinityPreset.key Node.js label key to match. Ignored if `importApi.affinity` is set
     ##
     key: ""
-    ## @param importApi.nodeAffinityPreset.values Node label values to match. Ignored if `importApi.affinity` is set
+    ## @param importApi.nodeAffinityPreset.values Node.js label values to match. Ignored if `importApi.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
@@ -761,7 +761,7 @@ importApi:
   ## NOTE: `importApi.podAffinityPreset`, `importApi.podAntiAffinityPreset`, and `importApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param importApi.nodeSelector Node labels for import-api pods assignment
+  ## @param importApi.nodeSelector Node.js labels for import-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
@@ -838,8 +838,8 @@ importApi:
     ##
     ports:
       http: 80
-    ## Node ports to expose
-    ## @param importApi.service.nodePorts.http Node port for HTTP
+    ## Node.js ports to expose
+    ## @param importApi.service.nodePorts.http Node.js port for HTTP
     ## NOTE: choose port between <30000-32767>
     ##
     nodePorts:
@@ -982,17 +982,17 @@ importWorker:
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAntiAffinityPreset: soft
-  ## Node importWorker.affinity preset
+  ## Node.js importWorker.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
   nodeAffinityPreset:
-    ## @param importWorker.nodeAffinityPreset.type Node affinity preset type. Ignored if `importWorker.affinity` is set. Allowed values: `soft` or `hard`
+    ## @param importWorker.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `importWorker.affinity` is set. Allowed values: `soft` or `hard`
     ##
     type: ""
-    ## @param importWorker.nodeAffinityPreset.key Node label key to match. Ignored if `importWorker.affinity` is set
+    ## @param importWorker.nodeAffinityPreset.key Node.js label key to match. Ignored if `importWorker.affinity` is set
     ##
     key: ""
-    ## @param importWorker.nodeAffinityPreset.values Node label values to match. Ignored if `importWorker.affinity` is set
+    ## @param importWorker.nodeAffinityPreset.values Node.js label values to match. Ignored if `importWorker.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
@@ -1004,7 +1004,7 @@ importWorker:
   ## NOTE: `importWorker.podAffinityPreset`, `importWorker.podAntiAffinityPreset`, and `importWorker.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param importWorker.nodeSelector Node labels for import-worker pods assignment
+  ## @param importWorker.nodeSelector Node.js labels for import-worker pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
@@ -1239,17 +1239,17 @@ ldsApi:
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAntiAffinityPreset: soft
-  ## Node ldsApi.affinity preset
+  ## Node.js ldsApi.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
   nodeAffinityPreset:
-    ## @param ldsApi.nodeAffinityPreset.type Node affinity preset type. Ignored if `ldsApi.affinity` is set. Allowed values: `soft` or `hard`
+    ## @param ldsApi.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `ldsApi.affinity` is set. Allowed values: `soft` or `hard`
     ##
     type: ""
-    ## @param ldsApi.nodeAffinityPreset.key Node label key to match. Ignored if `ldsApi.affinity` is set
+    ## @param ldsApi.nodeAffinityPreset.key Node.js label key to match. Ignored if `ldsApi.affinity` is set
     ##
     key: ""
-    ## @param ldsApi.nodeAffinityPreset.values Node label values to match. Ignored if `ldsApi.affinity` is set
+    ## @param ldsApi.nodeAffinityPreset.values Node.js label values to match. Ignored if `ldsApi.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
@@ -1261,7 +1261,7 @@ ldsApi:
   ## NOTE: `ldsApi.podAffinityPreset`, `ldsApi.podAntiAffinityPreset`, and `ldsApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param ldsApi.nodeSelector Node labels for lds-api pods assignment
+  ## @param ldsApi.nodeSelector Node.js labels for lds-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
@@ -1338,8 +1338,8 @@ ldsApi:
     ##
     ports:
       http: 80
-    ## Node ports to expose
-    ## @param ldsApi.service.nodePorts.http Node port for HTTP
+    ## Node.js ports to expose
+    ## @param ldsApi.service.nodePorts.http Node.js port for HTTP
     ## NOTE: choose port between <30000-32767>
     ##
     nodePorts:
@@ -1542,17 +1542,17 @@ mapsApi:
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAntiAffinityPreset: soft
-  ## Node mapsApi.affinity preset
+  ## Node.js mapsApi.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
   nodeAffinityPreset:
-    ## @param mapsApi.nodeAffinityPreset.type Node affinity preset type. Ignored if `mapsApi.affinity` is set. Allowed values: `soft` or `hard`
+    ## @param mapsApi.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `mapsApi.affinity` is set. Allowed values: `soft` or `hard`
     ##
     type: ""
-    ## @param mapsApi.nodeAffinityPreset.key Node label key to match. Ignored if `mapsApi.affinity` is set
+    ## @param mapsApi.nodeAffinityPreset.key Node.js label key to match. Ignored if `mapsApi.affinity` is set
     ##
     key: ""
-    ## @param mapsApi.nodeAffinityPreset.values Node label values to match. Ignored if `mapsApi.affinity` is set
+    ## @param mapsApi.nodeAffinityPreset.values Node.js label values to match. Ignored if `mapsApi.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
@@ -1564,7 +1564,7 @@ mapsApi:
   ## NOTE: `mapsApi.podAffinityPreset`, `mapsApi.podAntiAffinityPreset`, and `mapsApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param mapsApi.nodeSelector Node labels for maps-api pods assignment
+  ## @param mapsApi.nodeSelector Node.js labels for maps-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
@@ -1641,8 +1641,8 @@ mapsApi:
     ##
     ports:
       http: 80
-    ## Node ports to expose
-    ## @param mapsApi.service.nodePorts.http Node port for HTTP
+    ## Node.js ports to expose
+    ## @param mapsApi.service.nodePorts.http Node.js port for HTTP
     ## NOTE: choose port between <30000-32767>
     ##
     nodePorts:
@@ -1820,17 +1820,17 @@ sqlWorker:
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAntiAffinityPreset: soft
-  ## Node sqlWorker.affinity preset
+  ## Node.js sqlWorker.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
   nodeAffinityPreset:
-    ## @param sqlWorker.nodeAffinityPreset.type Node affinity preset type. Ignored if `sqlWorker.affinity` is set. Allowed values: `soft` or `hard`
+    ## @param sqlWorker.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `sqlWorker.affinity` is set. Allowed values: `soft` or `hard`
     ##
     type: ""
-    ## @param sqlWorker.nodeAffinityPreset.key Node label key to match. Ignored if `sqlWorker.affinity` is set
+    ## @param sqlWorker.nodeAffinityPreset.key Node.js label key to match. Ignored if `sqlWorker.affinity` is set
     ##
     key: ""
-    ## @param sqlWorker.nodeAffinityPreset.values Node label values to match. Ignored if `sqlWorker.affinity` is set
+    ## @param sqlWorker.nodeAffinityPreset.values Node.js label values to match. Ignored if `sqlWorker.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
@@ -1842,7 +1842,7 @@ sqlWorker:
   ## NOTE: `sqlWorker.podAffinityPreset`, `sqlWorker.podAntiAffinityPreset`, and `sqlWorker.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param sqlWorker.nodeSelector Node labels for sql-worker pods assignment
+  ## @param sqlWorker.nodeSelector Node.js labels for sql-worker pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
@@ -2079,17 +2079,17 @@ router:
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAntiAffinityPreset: soft
-  ## Node router.affinity preset
+  ## Node.js router.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
   nodeAffinityPreset:
-    ## @param router.nodeAffinityPreset.type Node affinity preset type. Ignored if `router.affinity` is set. Allowed values: `soft` or `hard`
+    ## @param router.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `router.affinity` is set. Allowed values: `soft` or `hard`
     ##
     type: ""
-    ## @param router.nodeAffinityPreset.key Node label key to match. Ignored if `router.affinity` is set
+    ## @param router.nodeAffinityPreset.key Node.js label key to match. Ignored if `router.affinity` is set
     ##
     key: ""
-    ## @param router.nodeAffinityPreset.values Node label values to match. Ignored if `router.affinity` is set
+    ## @param router.nodeAffinityPreset.values Node.js label values to match. Ignored if `router.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
@@ -2101,7 +2101,7 @@ router:
   ## NOTE: `router.podAffinityPreset`, `router.podAntiAffinityPreset`, and `router.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param router.nodeSelector Node labels for router pods assignment
+  ## @param router.nodeSelector Node.js labels for router pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
@@ -2167,6 +2167,7 @@ router:
   ##    command: ['sh', '-c', 'echo "hello world"']
   ##
   initContainers: {}
+
   ## @section router Service Parameters
   ##
   ##
@@ -2180,9 +2181,9 @@ router:
     ports:
       http: 80
       https: 443
-    ## Node ports to expose
-    ## @param router.service.nodePorts.http Node port for HTTP
-    ## @param router.service.nodePorts.https Node port for HTTPS
+    ## Node.js ports to expose
+    ## @param router.service.nodePorts.http Node.js port for HTTP
+    ## @param router.service.nodePorts.https Node.js port for HTTPS
     ## NOTE: choose port between <30000-32767>
     ##
     nodePorts:
@@ -2217,6 +2218,82 @@ router:
     ## @param router.service.extraPorts Extra ports to expose in router service (normally used with the `sidecars` value)
     ##
     extraPorts: []
+  ## Configure the ingress resource that allows you to access the
+  ## Carto installation. Set up the URL
+  ## ref: https://kubernetes.io/docs/user-guide/ingress/
+  ##
+  ingress:
+    ## @param router.ingress.enabled Enable ingress controller resource
+    ##
+    enabled: false
+
+    ## @param router.ingress.pathType Ingress Path type
+    ##
+    pathType: ImplementationSpecific
+    ## @param router.ingress.apiVersion Override API Version (automatically detected if not set)
+    ##
+    apiVersion: ""
+    ## @param router.ingress.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
+    ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
+    ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
+    ##
+    ingressClassName: ""
+    ## @param router.ingress.path The Path to CARTO. You may need to set this to '/*' in order to use this
+    ## with ALB ingress controllers.
+    ##
+    path: /*
+    ## @param router.ingress.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+    ## For a full list of possible ingress annotations, please see
+    ## ref: https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md
+    ## Use this parameter to set the required annotations for cert-manager, see
+    ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+    ##
+    ## e.g:
+    ## annotations:
+    ##   kubernetes.io/ingress.class: nginx
+    ##   cert-manager.io/cluster-issuer: cluster-issuer-name
+    ##
+    annotations: {}
+    ## @param router.ingress.tls Enable TLS configuration for the hostname defined at ingress.hostname parameter
+    ## TLS certificates will be retrieved from a TLS secret with name: {{- printf "%s-tls" .Values.ingress.hostname }}
+    ## You can use the ingress.secrets parameter to create this TLS secret or relay on cert-manager to create it
+    ##
+    tls: false
+    ## @param router.ingress.extraHosts The list of additional hostnames to be covered with this ingress record.
+    ## Most likely the hostname above will be enough, but in the event more hosts are needed, this is an array
+    ## extraHosts:
+    ## - name: example.local
+    ##   path: /
+    extraHosts: []
+    ## @param router.ingress.extraPaths Any additional arbitrary paths that may need to be added to the ingress under the main host.
+    ## For example: The ALB ingress controller requires a special rule for handling SSL redirection.
+    ## extraPaths:
+    ## - path: /*
+    ##   backend:
+    ##     serviceName: ssl-redirect
+    ##     servicePort: use-annotation
+    extraPaths: []
+    ## @param router.ingress.extraTls The tls configuration for additional hostnames to be covered with this ingress record.
+    ## see: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+    ## extraTls:
+    ## - hosts:
+    ##     - example.local
+    ##   secretName: example.local-tls
+    extraTls: []
+    ## @param router.ingress.extraRules Additional rules to be covered with this ingress record
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules
+    ## e.g:
+    ## extraRules:
+    ## - host: example.local
+    ##     http:
+    ##       path: /
+    ##       backend:
+    ##         service:
+    ##           name: example-svc
+    ##           port:
+    ##             name: http
+    ##
+    extraRules: []
   ## @section router ServiceAccount configuration
   ##
   serviceAccount:
@@ -2387,17 +2464,17 @@ httpCache:
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAntiAffinityPreset: soft
-  ## Node httpCache.affinity preset
+  ## Node.js httpCache.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
   nodeAffinityPreset:
-    ## @param httpCache.nodeAffinityPreset.type Node affinity preset type. Ignored if `httpCache.affinity` is set. Allowed values: `soft` or `hard`
+    ## @param httpCache.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `httpCache.affinity` is set. Allowed values: `soft` or `hard`
     ##
     type: ""
-    ## @param httpCache.nodeAffinityPreset.key Node label key to match. Ignored if `httpCache.affinity` is set
+    ## @param httpCache.nodeAffinityPreset.key Node.js label key to match. Ignored if `httpCache.affinity` is set
     ##
     key: ""
-    ## @param httpCache.nodeAffinityPreset.values Node label values to match. Ignored if `httpCache.affinity` is set
+    ## @param httpCache.nodeAffinityPreset.values Node.js label values to match. Ignored if `httpCache.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
@@ -2409,7 +2486,7 @@ httpCache:
   ## NOTE: `httpCache.podAffinityPreset`, `httpCache.podAntiAffinityPreset`, and `httpCache.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param httpCache.nodeSelector Node labels for http-cache pods assignment
+  ## @param httpCache.nodeSelector Node.js labels for http-cache pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
@@ -2486,8 +2563,8 @@ httpCache:
     ##
     ports:
       http: 80
-    ## Node ports to expose
-    ## @param httpCache.service.nodePorts.http Node port for HTTP
+    ## Node.js ports to expose
+    ## @param httpCache.service.nodePorts.http Node.js port for HTTP
     ## NOTE: choose port between <30000-32767>
     ##
     nodePorts:
@@ -2691,17 +2768,17 @@ cdnInvalidatorSub:
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAntiAffinityPreset: soft
-  ## Node cdnInvalidatorSub.affinity preset
+  ## Node.js cdnInvalidatorSub.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
   nodeAffinityPreset:
-    ## @param cdnInvalidatorSub.nodeAffinityPreset.type Node affinity preset type. Ignored if `cdnInvalidatorSub.affinity` is set. Allowed values: `soft` or `hard`
+    ## @param cdnInvalidatorSub.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `cdnInvalidatorSub.affinity` is set. Allowed values: `soft` or `hard`
     ##
     type: ""
-    ## @param cdnInvalidatorSub.nodeAffinityPreset.key Node label key to match. Ignored if `cdnInvalidatorSub.affinity` is set
+    ## @param cdnInvalidatorSub.nodeAffinityPreset.key Node.js label key to match. Ignored if `cdnInvalidatorSub.affinity` is set
     ##
     key: ""
-    ## @param cdnInvalidatorSub.nodeAffinityPreset.values Node label values to match. Ignored if `cdnInvalidatorSub.affinity` is set
+    ## @param cdnInvalidatorSub.nodeAffinityPreset.values Node.js label values to match. Ignored if `cdnInvalidatorSub.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
@@ -2713,7 +2790,7 @@ cdnInvalidatorSub:
   ## NOTE: `cdnInvalidatorSub.podAffinityPreset`, `cdnInvalidatorSub.podAntiAffinityPreset`, and `cdnInvalidatorSub.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param cdnInvalidatorSub.nodeSelector Node labels for cdnInvalidatorSub pods assignment
+  ## @param cdnInvalidatorSub.nodeSelector Node.js labels for cdnInvalidatorSub pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
@@ -2790,9 +2867,9 @@ cdnInvalidatorSub:
     ##
     ports:
       http: 80
-    ## Node ports to expose
-    ## @param cdnInvalidatorSub.service.nodePorts.http Node port for HTTP
-    ## @param cdnInvalidatorSub.service.nodePorts.https Node port for HTTPS
+    ## Node.js ports to expose
+    ## @param cdnInvalidatorSub.service.nodePorts.http Node.js port for HTTP
+    ## @param cdnInvalidatorSub.service.nodePorts.https Node.js port for HTTPS
     ## NOTE: choose port between <30000-32767>
     ##
     nodePorts:
@@ -2996,17 +3073,17 @@ workspaceApi:
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAntiAffinityPreset: soft
-  ## Node workspaceApi.affinity preset
+  ## Node.js workspaceApi.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
   nodeAffinityPreset:
-    ## @param workspaceApi.nodeAffinityPreset.type Node affinity preset type. Ignored if `workspaceApi.affinity` is set. Allowed values: `soft` or `hard`
+    ## @param workspaceApi.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `workspaceApi.affinity` is set. Allowed values: `soft` or `hard`
     ##
     type: ""
-    ## @param workspaceApi.nodeAffinityPreset.key Node label key to match. Ignored if `workspaceApi.affinity` is set
+    ## @param workspaceApi.nodeAffinityPreset.key Node.js label key to match. Ignored if `workspaceApi.affinity` is set
     ##
     key: ""
-    ## @param workspaceApi.nodeAffinityPreset.values Node label values to match. Ignored if `workspaceApi.affinity` is set
+    ## @param workspaceApi.nodeAffinityPreset.values Node.js label values to match. Ignored if `workspaceApi.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
@@ -3018,7 +3095,7 @@ workspaceApi:
   ## NOTE: `workspaceApi.podAffinityPreset`, `workspaceApi.podAntiAffinityPreset`, and `workspaceApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param workspaceApi.nodeSelector Node labels for workspace-api pods assignment
+  ## @param workspaceApi.nodeSelector Node.js labels for workspace-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
@@ -3095,8 +3172,8 @@ workspaceApi:
     ##
     ports:
       http: 80
-    ## Node ports to expose
-    ## @param workspaceApi.service.nodePorts.http Node port for HTTP
+    ## Node.js ports to expose
+    ## @param workspaceApi.service.nodePorts.http Node.js port for HTTP
     ## NOTE: choose port between <30000-32767>
     ##
     nodePorts:
@@ -3239,17 +3316,17 @@ workspaceSubscriber:
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAntiAffinityPreset: soft
-  ## Node workspaceSubscriber.affinity preset
+  ## Node.js workspaceSubscriber.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
   nodeAffinityPreset:
-    ## @param workspaceSubscriber.nodeAffinityPreset.type Node affinity preset type. Ignored if `workspaceSubscriber.affinity` is set. Allowed values: `soft` or `hard`
+    ## @param workspaceSubscriber.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `workspaceSubscriber.affinity` is set. Allowed values: `soft` or `hard`
     ##
     type: ""
-    ## @param workspaceSubscriber.nodeAffinityPreset.key Node label key to match. Ignored if `workspaceSubscriber.affinity` is set
+    ## @param workspaceSubscriber.nodeAffinityPreset.key Node.js label key to match. Ignored if `workspaceSubscriber.affinity` is set
     ##
     key: ""
-    ## @param workspaceSubscriber.nodeAffinityPreset.values Node label values to match. Ignored if `workspaceSubscriber.affinity` is set
+    ## @param workspaceSubscriber.nodeAffinityPreset.values Node.js label values to match. Ignored if `workspaceSubscriber.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
@@ -3261,7 +3338,7 @@ workspaceSubscriber:
   ## NOTE: `workspaceSubscriber.podAffinityPreset`, `workspaceSubscriber.podAntiAffinityPreset`, and `workspaceSubscriber.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param workspaceSubscriber.nodeSelector Node labels for workspace-subscriber pods assignment
+  ## @param workspaceSubscriber.nodeSelector Node.js labels for workspace-subscriber pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
@@ -3496,17 +3573,17 @@ workspaceWww:
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAntiAffinityPreset: soft
-  ## Node workspaceWww.affinity preset
+  ## Node.js workspaceWww.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
   nodeAffinityPreset:
-    ## @param workspaceWww.nodeAffinityPreset.type Node affinity preset type. Ignored if `workspaceWww.affinity` is set. Allowed values: `soft` or `hard`
+    ## @param workspaceWww.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `workspaceWww.affinity` is set. Allowed values: `soft` or `hard`
     ##
     type: ""
-    ## @param workspaceWww.nodeAffinityPreset.key Node label key to match. Ignored if `workspaceWww.affinity` is set
+    ## @param workspaceWww.nodeAffinityPreset.key Node.js label key to match. Ignored if `workspaceWww.affinity` is set
     ##
     key: ""
-    ## @param workspaceWww.nodeAffinityPreset.values Node label values to match. Ignored if `workspaceWww.affinity` is set
+    ## @param workspaceWww.nodeAffinityPreset.values Node.js label values to match. Ignored if `workspaceWww.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
@@ -3518,7 +3595,7 @@ workspaceWww:
   ## NOTE: `workspaceWww.podAffinityPreset`, `workspaceWww.podAntiAffinityPreset`, and `workspaceWww.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param workspaceWww.nodeSelector Node labels for workspace-www pods assignment
+  ## @param workspaceWww.nodeSelector Node.js labels for workspace-www pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
@@ -3595,8 +3672,8 @@ workspaceWww:
     ##
     ports:
       http: 80
-    ## Node ports to expose
-    ## @param workspaceWww.service.nodePorts.http Node port for HTTP
+    ## Node.js ports to expose
+    ## @param workspaceWww.service.nodePorts.http Node.js port for HTTP
     ## NOTE: choose port between <30000-32767>
     ##
     nodePorts:

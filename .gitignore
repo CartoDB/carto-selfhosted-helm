@@ -4,7 +4,7 @@
 .DS_Store
 **/*key.json
 **/k8s-google-serviceaccount-secret.yaml
-**/carto-secrets.yaml*
-**/carto-values.yaml*
+**/*carto-secrets.yaml*
+**/*carto-values.yaml*
 **/customer.env
-**/customization.yaml
+**/*customization.yaml*

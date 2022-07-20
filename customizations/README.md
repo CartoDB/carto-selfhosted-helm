@@ -1,5 +1,7 @@
 <!-- omit in toc -->
+
 # Table of Contents
+
 - [Customizations](#customizations)
   - [Production Ready](#production-ready)
   - [Custom Service Account](#custom-service-account)
@@ -9,6 +11,8 @@
     - [Access to CARTO from outside the cluster](#access-to-carto-from-outside-the-cluster)
       - [Requirements when exposing the service](#requirements-when-exposing-the-service)
       - [Enable and configure LoadBalancer mode](#enable-and-configure-loadbalancer-mode)
+      - [Expose your application with an Ingress](#expose-your-application-with-an-ingress)
+        - [Use Google Managed Certificates for Ingress](#use-googles-managed-certificates-for-ingress)
       - [Configure TLS termination in the service](#configure-tls-termination-in-the-service)
         - [Disable internal HTTPS](#disable-internal-https)
         - [Use your own TLS certificate](#use-your-own-tls-certificate)
@@ -61,6 +65,7 @@ Optional configurations:
 CARTO deploys a dedicated infrastructure for every self hosted installation, including a Service Account key that is required to use some of the services deployed.
 
 If you prefer using your own GCP Service Account, please do the following prior to the Self Hosted installation:
+
 1. Create a dedicated Service Account for the CARTO Self Hosted.
 2. Contact CARTO support team and provide them the service account email.
 
@@ -76,6 +81,7 @@ appConfigValues:
 #     value: "<google-maps-api-key>"
 #   # Other secrets, like buckets' configuration
 ```
+
 > Follow [these steps](#tips-for-creating-the-customization-yaml-file) to create a well structured yaml file
 
 And add the following at the end of ALL the `helm install` or `helm upgrade` command:
@@ -107,7 +113,7 @@ Don't forget to upgrade your chart after the change.
 
 ### Access to CARTO from outside the cluster
 
-The entry point to the CARTO Self Hosted is through the `router` Service. By default it is configured in `ClusterIP` mode. That means it's
+The entry point to the CARTO Self Hosted is through the `router` Service. By default, it is configured in `ClusterIP` mode. That means it's
 only usable from inside the cluster. If you want to connect to your deployment with this mode, you need to use
 [kubectl port-forward](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/).
 But this only makes it accessible to your machine.
@@ -138,6 +144,101 @@ You can find an example [here](service_loadBalancer/config.yaml). Also, we have 
 
 > Note that with this config a [Load Balancer](https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer) resource is going to be created in your cloud provider, you can find more documentation about this kind of service [here](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer)
 
+#### Expose your application with an Ingress
+
+Ingress exposes HTTP and HTTPS routes from outside the cluster to services within the cluster. Traffic routing is controlled by rules defined on the Ingress resource, you can find more documentation [here](https://kubernetes.io/docs/concepts/services-networking/ingress/).
+
+Depending on the Ingress controller used, a variety of configurations can be made, here you have an example using [GKE Ingress controller](https://cloud.google.com/kubernetes-engine/docs/concepts/ingress) with [TLS offloading](https://en.wikipedia.org/wiki/TLS_termination_proxy)
+
+- [GKE Ingress example config for CARTO](ingress/gke/config.yaml)
+
+##### Use Google's managed certificates for Ingress
+
+You can configure your Ingress controller to use [Google Managed Certificates](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs) on the load balancer side.
+
+**Prerequisites**
+
+- You must own the domain for the Ingress (the one defined at `appConfigValues.selfHostedDomain`)
+- You must have created your own [Reserved static external IP address](https://cloud.google.com/compute/docs/ip-addresses/reserve-static-external-ip-address)
+- You must create an A DNS record that relates your domain to the just created static external IP address
+- Check also [this requirements](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#prerequisites)
+
+:point_right: You can easily create a static external IP address with
+
+```bash
+gcloud compute addresses create my_carto_ip --global
+```
+
+**Steps**
+
+Having as base configuration the [GKE Ingress config](ingress/gke/config.yaml) file, add the next configuration to your `customization.yaml` file
+
+> :warning: The `my_carto_ip` defined in the `kubernetes.io/ingress.global-static-ip-name` annotation is the name of your Reserved static external IP address previously created
+
+```diff
++ appConfigValues:
++   selfHostedDomain: "mmoreno.carto.io"
++
+tlsCerts:
+  httpsEnabled: false
+
+router:
+  ingress:
+    enabled: true
+-    tls: true
++   annotations:
++     kubernetes.io/ingress.class: "gce"
++     kubernetes.io/ingress.global-static-ip-name: "my_carto_ip"
++     networking.gke.io/managed-certificates: "carto-google-managed-cert"
+      networking.gke.io/v1beta1.FrontendConfig: "carto-ingress-frontend-config"
+
+  service:
+    annotations:
+      cloud.google.com/backend-config: '{"default": "carto-service-backend-config"}'
+extraDeploy:
+  - |
+    apiVersion: cloud.google.com/v1
+    kind: BackendConfig
+    ...
+    ---
+    apiVersion: networking.gke.io/v1beta1
+    kind: FrontendConfig
+    ...
++   ---
++   ## In case you want to use Google Managed Certificate for Ingress you will
++   ## need to deploy the ManagedCertified object
++   ## https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#setting_up_a_google-managed_certificate
++   apiVersion: networking.gke.io/v1
++   kind: ManagedCertificate
++   metadata:
++     name: carto-google-managed-cert
++     labels: {{- include "common.labels.standard" . | nindent 4 }}
++       app.kubernetes.io/component: carto
++       {{- if .Values.commonLabels }}
++       {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
++       {{- end }}
++     annotations:
++       {{- if .Values.commonAnnotations }}
++       {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
++       {{- end }}
++     namespace: {{ .Release.Namespace | quote }}
++   spec:
++     domains:
++       - {{ .Values.appConfigValues.selfHostedDomain }}
+```
+
+> :warning: Google certificate provisioning can take several minutes, so be patient
+
+**Related configuration**
+
+- [Configure the domain of your Self Hosted](#configure-the-domain-of-your-self-hosted)
+- [Use your own TLS certificate](#use-your-own-tls-certificate)
+
+**Useful links**
+
+- [google-managed-certs](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs#caa)
+- [creating_an_ingress_with_a_google-managed_certificate](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#creating_an_ingress_with_a_google-managed_certificate)
+
 #### Configure TLS termination in the service
 
 ##### Disable internal HTTPS
@@ -157,15 +258,12 @@ tlsCerts:
 
 By default, the package generates a self-signed certificate with a validity of 365 days.
 
-
 If you want to add your own certificate you need:
 
 - Create a kubernetes secret with following content:
 
   ```bash
   kubectl create secret tls \
-    -n <namespace> \
-    mycarto-custom-tls-certificate \
     --cert=path/to/cert/file \
     --key=path/to/key/file
   ```
@@ -189,6 +287,7 @@ CARTO Self Hosted requires a Postgres (version 11+) to work. This package comes 
 This Postgres is used to store some CARTO internal metadata.
 
 Here are some Terraform examples of databases created in different providers:
+
 - [GCP Cloud SQL](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/gcp/postgresql.tf).
 - [AWS RDS](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/aws/postgresql-rds.tf).
 - [Azure Database](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/azure/postgresql.tf).
@@ -216,24 +315,25 @@ from the configuration, or let the chart to create the [secrets automatically](#
    Add the following lines to your `customizations.yaml` to connect to the external Postgres:
 
    ````yaml
-   internalPostgresql:
-     # Disable the internal Postgres
-     enabled: false
-   externalPostgresql:
-     host: <Postgres IP/Hostname>
-     user: "workspace_admin"
-     adminUser: "postgres"
-     existingSecret: "mycarto-custom-postgres-secret"
-     existingSecretPasswordKey: "carto-password"
-     existingSecretAdminPasswordKey: "admin-password"
-     database: "workspace"
-     port: "5432"
-     sslEnabled: true
-     # Only applies if your Postgresql SSL certificate it's self-signed
-     # sslCA: |
-     #   -----BEGIN CERTIFICATE-----
-     #   ...
-     #   -----END CERTIFICATE-----
+     internalPostgresql:
+       # Disable the internal Postgres
+       enabled: false
+     externalPostgresql:
+       host: <Postgres IP/Hostname>
+       user: "workspace_admin"
+       adminUser: "postgres"
+       existingSecret: "mycarto-custom-postgres-secret"
+       existingSecretPasswordKey: "carto-password"
+       existingSecretAdminPasswordKey: "admin-password"
+       database: "workspace"
+       port: "5432"
+       sslEnabled: true
+       # Only applies if your Postgresql SSL certificate it's self-signed
+       # sslCA: |
+       #   -----BEGIN CERTIFICATE-----
+       #   ...
+       #   -----END CERTIFICATE-----
+     ```
    ````
 
 #### Setup Postgres with automatic secret creation
@@ -310,6 +410,7 @@ CARTO Self Hosted require a Redis (version 5+) to work. This Redis instance does
 This package comes with an internal Redis but it is not recommended for production. It lacks any logic for backups or monitoring.
 
 Here are some Terraform examples of databases created in different providers:
+
 - [GCP Redis](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/gcp/redis.tf).
 - [AWS Redis](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/aws/redis.tf).
 - [Azure Redis](https://github.com/CartoDB/carto-selfhosted/tree/master/examples/terraform/azure/redis.tf).
@@ -394,6 +495,7 @@ externalRedis:
     #   ...
     #   -----END CERTIFICATE-----
 ```
+
 ### Custom Buckets
 
 For every CARTO Self Hosted installation, we create GCS buckets in our side as part of the required infrastructure for importing data, map thumbnails and other internal data.
@@ -430,6 +532,7 @@ You can create and use your own storage buckets in any of the following supporte
 > How do I setup CORS configuration? Check the provider docs: [GCS](https://cloud.google.com/storage/docs/configuring-cors), [AWS S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/enabling-cors-examples.html), [Azure Storage](https://docs.microsoft.com/en-us/rest/api/storageservices/cross-origin-resource-sharing--cors--support-for-the-azure-storage-services#enabling-cors-for-azure-storage).
 
 - Generate credentials to access those buckets, our supported authentication methods are:
+
   - GCS: Service Account Key
   - AWS: Access Key ID and Secret Access Key
   - Azure: Access Key
@@ -448,57 +551,60 @@ In order to use Google Cloud Storage custom buckets you need to:
 
 3. Add the following lines to your `customizations.yaml` and replace the `<values>` with your own settings:
 
-    ```yaml
-    appConfigValues:
-      storageProvider: "gcp"
-      importBucket: <import_bucket_name>
-      workspaceImportsBucket: <client_bucket_name>
-      workspaceImportsPublic: <false|true>
-      workspaceThumbnailsBucket: <thumbnails_bucket_name>
-      workspaceThumbnailsPublic: <false|true>
-      googleCloudStorageProjectId: <gcp_project_id>
-    ```
+   ```yaml
+   appConfigValues:
+     storageProvider: "gcp"
+     importBucket: <import_bucket_name>
+     workspaceImportsBucket: <client_bucket_name>
+     workspaceImportsPublic: <false|true>
+     workspaceThumbnailsBucket: <thumbnails_bucket_name>
+     workspaceThumbnailsPublic: <false|true>
+     googleCloudStorageProjectId: <gcp_project_id>
+   ```
 
 4. Select a **Service Account** that will be used by the application to interact with the buckets. There are three options:
-    - using a [custom Service Account](#custom-service-account), that will be used not only for the buckets, but for the services deployed by CARTO as well. If you are using Workload Identity, that's your option.
-    - using a dedicated Service Account **only for the buckets**
+
+   - using a [custom Service Account](#custom-service-account), that will be used not only for the buckets, but for the services deployed by CARTO as well. If you are using Workload Identity, that's your option.
+   - using a dedicated Service Account **only for the buckets**
 
 5. Grant the selected Service Account with the role `roles/iam.serviceAccountTokenCreator` in the GCP project where it was created.
-    > :warning: We don't recommend granting this role at project IAM level, but instead at the Service Account permissions level (IAM > Service Accounts > `your_service_account` > Permissions).
+
+   > :warning: We don't recommend granting this role at project IAM level, but instead at the Service Account permissions level (IAM > Service Accounts > `your_service_account` > Permissions).
 
 6. Grant the selected Service Account with the role `roles/storage.admin` to the buckets created.
 
 7. [OPTIONAL] Pass your GCP credentials as secrets: **This is only required if you are going to use a dedicated Service Account only for the buckets** (option 4.2).
-    - **Option 1: Automatically create the secret:**
 
-      ```yaml
-      appSecrets:
-        googleCloudStorageServiceAccountKey:
-          value: |
-            <REDACTED>
-      ```
+   - **Option 1: Automatically create the secret:**
 
-      > `appSecrets.googleCloudStorageServiceAccountKey.value` should be in plain text, preserving the multiline and correctly tabulated.
+     ```yaml
+     appSecrets:
+       googleCloudStorageServiceAccountKey:
+         value: |
+           <REDACTED>
+     ```
 
-    - **Option 2: Using existing secret:**
-      Create a secret running the command below, after replacing the `<PATH_TO_YOUR_SECRET.json>` value with the path to the file of the Service Account:
+     > `appSecrets.googleCloudStorageServiceAccountKey.value` should be in plain text, preserving the multiline and correctly tabulated.
 
-      ```bash
-      kubectl create secret generic \
-        [-n my-namespace] \
-        mycarto-google-storage-service-account \
-        --from-file=key=<PATH_TO_YOUR_SECRET.json>
-      ```
+   - **Option 2: Using existing secret:**
+     Create a secret running the command below, after replacing the `<PATH_TO_YOUR_SECRET.json>` value with the path to the file of the Service Account:
 
-      Add the following lines to your `customizations.yaml`, without replacing any value:
+     ```bash
+     kubectl create secret generic \
+       [-n my-namespace] \
+       mycarto-google-storage-service-account \
+       --from-file=key=<PATH_TO_YOUR_SECRET.json>
+     ```
 
-      ```yaml
-      appSecrets:
-        googleCloudStorageServiceAccountKey:
-          existingSecret:
-            name: mycarto-google-storage-service-account
-            key: key
-      ```
+     Add the following lines to your `customizations.yaml`, without replacing any value:
+
+     ```yaml
+     appSecrets:
+       googleCloudStorageServiceAccountKey:
+         existingSecret:
+           name: mycarto-google-storage-service-account
+           key: key
+     ```
 
 #### AWS S3
 
@@ -532,6 +638,7 @@ appConfigValues:
    - **Option 1: Automatically create a secret:**
 
    Add the following lines to your `customizations.yaml` replacing it with your access key values:
+
    ```yaml
    appSecrets:
      awsAccessKeyId:
@@ -539,17 +646,20 @@ appConfigValues:
      awsAccessKeySecret:
        value: "<REDACTED>"
    ```
+
    > `appSecrets.awsAccessKeyId.value` and `appSecrets.awsAccessKeySecret.value` should be in plain text
 
    - **Option 2: Using an existing secret:**
-   Create a secret running the command below, after replacing the `<REDACTED>` values with your key values:
+     Create a secret running the command below, after replacing the `<REDACTED>` values with your key values:
+
    ```bash
-   kubectl create secret generic \                                                                      
+   kubectl create secret generic \
      [-n my-namespace] \
      mycarto-custom-s3-secret \
      --from-literal=awsAccessKeyId=<REDACTED> \
      --from-literal=awsSecretAccessKey=<REDACTED>
    ```
+
    > Use the same namespace where you are installing the helm chart
 
    Add the following lines to your `customizations.yaml`, without replacing any value:
@@ -576,11 +686,11 @@ In order to use Azure Storage buckets (aka containers) you need to:
 
 3. Create the storage buckets. If you set the `Public Access Mode` to `private` in the bucket properties, make sure you set `appConfigValues.workspaceThumbnailsPublic` to `false`.
 
-   > :warning:  If you set the `Public Access Mode` to `private` in the bucket properties, then set `appConfigValues.workspaceThumbnailsPublic` and `appConfigValues.workspaceImportsPublic` to `false`.
+   > :warning: If you set the `Public Access Mode` to `private` in the bucket properties, then set `appConfigValues.workspaceThumbnailsPublic` and `appConfigValues.workspaceImportsPublic` to `false`.
 
 4. Generate an Access Key, from the storage account's Security properties.
 
-5. Add the following lines to your `customizations.yaml`  and replace the `<values>` with your own settings:
+5. Add the following lines to your `customizations.yaml` and replace the `<values>` with your own settings:
 
 ```yaml
 appConfigValues:
@@ -606,14 +716,15 @@ appConfigValues:
    > `appSecrets.azureStorageAccessKey.value` should be in plain text
 
    - **Option 2: Using existing secret:**
-   Create a secret running the command below, after replacing the `<REDACTED>` values with your key values:
+     Create a secret running the command below, after replacing the `<REDACTED>` values with your key values:
 
    ```bash
-   kubectl create secret generic \                                                                      
+   kubectl create secret generic \
      [-n my-namespace] \
      mycarto-custom-azure-secret \
      --from-literal=azureStorageAccessKey=<REDACTED>
    ```
+
    > Use the same namespace where you are installing the helm chart
 
    Add the following lines to your `customizations.yaml`, without replacing any value:
@@ -633,12 +744,14 @@ This feature allows users to create a BigQuery connection using `Sign in with Go
 > :warning: Connections created with OAuth cannot be shared with other organization users.
 
 1. Create an OAuth consent screen inside the desired GCP project:
+
    - Introduce an app name and a user support email.
    - Add an authorized domain (the one used in your email).
    - Add another email as dev contact info (it can be the same).
    - Add the following scopes: `./auth/userinfo.email`, `./auth/userinfo.profile` & `./auth/bigquery`.
 
 2. Create the OAuth credentials:
+
    - Type: Web application.
    - Authorized JavaScript origins: `https://<your_selfhosted_domain>`.
    - Authorized redirect URIs: `https://<your_selfhosted_domain>/connections/bigquery/oauth`.
@@ -652,7 +765,7 @@ appConfigValues:
 
 appSecrets:
   bigqueryOauth2ClientSecret:
-      value: "<value_from_credentials_web_client_secret>"
+    value: "<value_from_credentials_web_client_secret>"
 ```
 
 ### Google Maps
@@ -670,24 +783,24 @@ appSecrets:
 > `appSecrets.googleMapsApiKey.value` should be in plain text
 
 - **Option 2: Using existing secret:**
-Create a secret running the command below, after replacing the `<REDACTED>` values with your key values:
+  Create a secret running the command below, after replacing the `<REDACTED>` values with your key values:
 
-  ```bash
-  kubectl create secret generic \                                                                      
+```bash
+  kubectl create secret generic \
   [-n my-namespace] \
   mycarto-google-maps-api-key \
   --from-literal=googleMapsApiKey=<REDACTED>
-  ```
+```
 
-  Add the following lines to your `customizations.yaml`, without replacing any value:
+Add the following lines to your `customizations.yaml`, without replacing any value:
 
-  ```yaml
-  appSecrets:
-    googleMapsApiKey:
-      existingSecret:
-        name: mycarto-google-maps-api-key
-        key: googleMapsApiKey
-  ```
+```yaml
+appSecrets:
+  googleMapsApiKey:
+    existingSecret:
+      name: mycarto-google-maps-api-key
+      key: googleMapsApiKey
+```
 
 ## Components scaling
 
@@ -748,13 +861,14 @@ If you need a more advanced configuration you can check the [full chart document
 Here you can find some basic instructions in order to create the config yaml file for your environment:
 
 - The configuration file `customizations.yaml` will be composed of keys and their value, please do not define the same key several times, because they will be overridden between them. Each key in the yaml file would have subkeys for different configurations, so all of them should be inside the root key. Example:
-    ```yaml
-    mapsApi:
-      autoscaling:
-        enabled: true
-        minReplicas: 2
-        maxReplicas: 3
-        targetCPUUtilizationPercentage: 75
+
+  ```yaml
+  mapsApi:
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 75
   ```
 
 - Check the text values of the `customizations.yaml` keys, they have to be set between quotes. Example:

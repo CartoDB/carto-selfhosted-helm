@@ -1,0 +1,75 @@
+## The Ingress will use the custom TLS certificate you have configured via
+## https://github.com/CartoDB/carto-selfhosted-helm/tree/main/customizations#use-your-own-tls-certificate
+tlsCerts:
+  httpsEnabled: false
+
+router:
+  ingress:
+    enabled: true
+    tls: true
+
+    annotations:
+      ## https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-features#associating_frontendconfig_with_your_ingress
+      networking.gke.io/v1beta1.FrontendConfig: "carto-ingress-frontend-config"
+      ## If you want a permanent IP address that stays the same across deleting your
+      ## Ingress and creating a new one, you must reserve a global static external
+      ## IP address.
+      ## https://cloud.google.com/kubernetes-engine/docs/concepts/ingress-xlb#static_ip_addresses_for_https_load_balancers
+      ## Run the command below and uncomment the annotations:
+      ##
+      ##  $ gcloud compute addresses create my_carto_ip --global
+      ##
+      ## Uncomment to use your custom global static external IP address
+      # kubernetes.io/ingress.global-static-ip-name: "my_carto_ip"
+
+  service:
+    annotations:
+      ## Same BackendConfig for all Service ports
+      ## https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-features#same_backendconfig_for_all_service_ports
+      cloud.google.com/backend-config: '{"default": "carto-service-backend-config"}'
+
+## Extra Kubernetes objects used to further configure the Google LoadBalancer
+## associated to the Ingress object
+extraDeploy:
+  - |
+    ## BackendConfig object is used to configure Ingress features related to the
+    ## backends
+    ## CARTO needs to extend the timeout of the connections to 600 seconds
+    ## https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-features#timeout
+    apiVersion: cloud.google.com/v1
+    kind: BackendConfig
+    metadata:
+      name: carto-ingress-backend-config
+      labels: {{- include "common.labels.standard" . | nindent 4 }}
+        app.kubernetes.io/component: carto
+        {{- if .Values.commonLabels }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+        {{- end }}
+      annotations:
+        {{- if .Values.commonAnnotations }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+        {{- end }}
+      namespace: {{ .Release.Namespace | quote }}
+    spec:
+      timeoutSec: 600
+    ---
+    ## FrontendConfig object is used to configure downstream Ingress features
+    ## Redirect port 80 to 443 automatically
+    ## https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-features#https_redirect
+    apiVersion: networking.gke.io/v1beta1
+    kind: FrontendConfig
+    metadata:
+      name: my-frontend-config
+      labels: {{- include "common.labels.standard" . | nindent 4 }}
+        app.kubernetes.io/component: carto
+        {{- if .Values.commonLabels }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+        {{- end }}
+      annotations:
+        {{- if .Values.commonAnnotations }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+        {{- end }}
+      namespace: {{ .Release.Namespace | quote }}
+    spec:
+      redirectToHttps:
+        enabled: true
