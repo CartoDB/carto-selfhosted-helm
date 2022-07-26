@@ -27,6 +27,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.googleCloudStorageProjectId` | If the bucket is GCP, the ProjectId to be used                                                                         | `""`                   |
 | `appConfigValues.awsS3Region`                 | If the bucket is S3, the region to be used                                                                             | `""`                   |
 | `appConfigValues.bigqueryOauth2ClientId`      | The Client ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key. | `""`                   |
+| `appConfigValues.b64EncodeSecrets`            | Indicate if secret values should be base64 encoded.                                                                    | `true`                 |
 
 
 ### CARTO config parameters
