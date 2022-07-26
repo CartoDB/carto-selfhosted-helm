@@ -7,13 +7,13 @@ force:
 wording:
   patch:
     - update
-    - initial
+    - feat
+    - doc
+    - bump
+    - revert
   minor:
     - change
-    - improve
     - fix
+    - refactor
   major:
     - breaking
-  release:
-    - release-candidate
-    - add-rc
