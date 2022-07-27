@@ -2,6 +2,7 @@
 
 # Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Customizations](#customizations)
   - [Production Ready](#production-ready)
   - [Custom Service Account](#custom-service-account)
@@ -12,7 +13,7 @@
       - [Requirements when exposing the service](#requirements-when-exposing-the-service)
       - [Enable and configure LoadBalancer mode](#enable-and-configure-loadbalancer-mode)
       - [Expose your application with an Ingress](#expose-your-application-with-an-ingress)
-        - [Use Google Managed Certificates for Ingress](#use-googles-managed-certificates-for-ingress)
+        - [Use Google's managed certificates for Ingress](#use-googles-managed-certificates-for-ingress)
       - [Configure TLS termination in the service](#configure-tls-termination-in-the-service)
         - [Disable internal HTTPS](#disable-internal-https)
         - [Use your own TLS certificate](#use-your-own-tls-certificate)
@@ -20,6 +21,7 @@
       - [Setup Postgres creating secrets](#setup-postgres-creating-secrets)
       - [Setup Postgres with automatic secret creation](#setup-postgres-with-automatic-secret-creation)
       - [Setup Azure Postgres](#setup-azure-postgres)
+      - [Setup Google Cloud SQL for Postgres with Cloud SQL Auth Proxy](#setup-google-cloud-sql-for-postgres-with-cloud-sql-auth-proxy)
       - [Configure Postgres SSL with custom CA](#configure-postgres-ssl-with-custom-ca)
     - [Configure external Redis](#configure-external-redis)
       - [Setup Redis creating secrets](#setup-redis-creating-secrets)
@@ -53,7 +55,7 @@ There are several things to prepare to make it production ready:
 1. [Configure the domain](#configure-the-domain-of-your-self-hosted) that will be used.
 2. [Expose service](#access-to-carto-from-outside-the-cluster) to be accessed from outside the cluster.
    - [Configure TLS termination](#configure-tls-termination-in-the-service)
-3. [Use external Databases](#use-external-databases). Our recommendation is to use managed DBs with backups and so on.
+3. [Use external Databases](#configure-external-postgres). Our recommendation is to use managed DBs with backups and so on.
 
 Optional configurations:
 
@@ -380,6 +382,191 @@ externalPostgresql:
   internalAdminUser: "postgres"
   ...
 ```
+
+#### Setup Google Cloud SQL for Postgres with Cloud SQL Auth Proxy
+
+The [Cloud SQL Auth Proxy] ([https://](https://cloud.google.com/sql/docs/postgres/sql-proxy) provides secure access to your instances without a need for Authorized networks, configuring SSL or public ip.
+
+Cloud SQL Auth Proxy will run in your cluster as a deployment with a Cluster IP service. You need a [service account](https://cloud.google.com/sql/docs/postgres/connect-admin-proxy#create-service-account) with one of the following roles:
+
+* Cloud SQL > Cloud SQL Client
+* Cloud SQL > Cloud SQL Editor
+* Cloud SQL > Cloud SQL Admin
+
+You need to provide this Service Account as a secret:
+
+```bash
+kubectl create secret generic carto-cloudsql-proxy-sa-key --from-file=service_account.json=key.json
+```
+
+Then you need the connection name of your instance.
+
+```bash
+gcloud sql instances describe [INSTANCE_NAME] | grep connectionName
+```
+
+Add the config below to your customizations.yaml file using this connection name as `<CONNECTION_NAME>`
+
+```yaml
+#####
+# Configure External Postgresql with CloudSQL Auth Proxy
+#
+# In this example we create:
+#  * A deployment with configured CloudSQL Auth Proxy
+#  * A ClusterIP service to serve CloudSQL Auth Proxy
+#  * External Postgresql configuration for tha chart 
+#      - https://github.com/CartoDB/carto-selfhosted-helm/tree/main/customizations#setup-postgres-creating-secrets
+#
+
+internalPostgresql:
+  # Disable the internal Postgres
+  enabled: false
+externalPostgresql:
+  # this is the service name configured below
+  host: carto-cloudsql-proxy
+  # database user Will be created by Workspace Migrations
+  user: "workspace_admin"
+  #Admin user, postgres as default in cloud SQL
+  adminUser: "postgres"
+  #Secret Name that storage database credentials
+  existingSecret: "cloudsql-secret"
+    #Secret key with user password 
+  existingSecretPasswordKey: "carto-password"
+  #Secret key with admin password
+  existingSecretAdminPasswordKey: "admin-password"
+  # Database name, will be created by Workspace Migrations
+  database: "workspace"
+  port: "5432"
+  sslEnabled: false #not needed because traffic is internal and the connection is encripted from the Cloud sql proxy
+
+# Run configured cloud sql proxy as deployment and expose intenrally on 5432 port
+# REMEMBER to create the secret for your service account with Cloud SQL Client role
+#    i.e kubectl create secret generic carto-cloudsql-proxy-sa-key --from-file=service_account.json=mykey.json
+#  and change <CONNECTION_NAME> in the pod commands (below)
+
+extraDeploy:
+  - |
+    apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+    kind: Deployment
+    metadata:
+      name: carto-cloudsql-proxy
+      labels: {{- include "common.labels.standard" . | nindent 4 }}
+        app.kubernetes.io/component: cloudsql-proxy
+        {{- if .Values.commonLabels }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+        {{- end }}
+      annotations:
+        {{- if .Values.commonAnnotations }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+        {{- end }}
+      namespace: {{ .Release.Namespace | quote }}
+    spec:
+      replicas: 1
+      strategy:
+        type: RollingUpdate
+      selector:
+        matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+          app.kubernetes.io/component: carto-cloudsql-proxy
+      template:
+        metadata:
+          annotations:
+          labels: {{- include "common.labels.standard" . | nindent 8 }}
+            app.kubernetes.io/component: carto-cloudsql-proxy
+        spec:
+          {{- include "carto.imagePullSecrets" . | nindent 6 }}
+          securityContext:
+            fsGroup: 65532
+            supplementalGroups: [2345]
+          containers:
+            - name: carto-cloudsql-proxy
+              image: gcr.io/cloudsql-docker/gce-proxy:1.27.1-alpine
+              imagePullPolicy: IfNotPresent
+              securityContext:
+                runAsUser: 65532
+                runAsGroup: 65532
+                runAsNonRoot: false
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+              resources:
+                limits:
+                  memory: "512Mi"
+                  cpu: "350m"
+                requests:
+                  memory: "124Mi"
+                  cpu: "100m"
+              ports:
+                - name: postgresql
+                  containerPort: 5432
+              readinessProbe:
+                tcpSocket:
+                  port: 5432
+                initialDelaySeconds: 5
+                periodSeconds: 10
+              livenessProbe:
+                tcpSocket:
+                  port: 5432
+                initialDelaySeconds: 15
+                periodSeconds: 20
+              volumeMounts:
+                # GCP Service Account with Cloud SQL Client role 
+                - name: carto-cloudsql-proxy-sa-key
+                  mountPath: "/secrets"
+                  readOnly: true
+              command:
+                - "/cloud_sql_proxy"
+
+                # If connecting from a VPC-native GKE cluster, you can use the
+                # following flag to have the proxy connect over private IP
+                - "-ip_address_types=PRIVATE"
+
+                # By default, the proxy will write all logs to stderr. In some
+                # environments, anything printed to stderr is consider an error. To
+                # disable this behavior and write all logs to stdout (except errors
+                # which will still go to stderr), use:
+                - "-log_debug_stdout"
+
+                # Replace <CONNECTION_NAME> with your CloudSQL connection name
+                - "-instances=<CONNECTION_NAME>=tcp:0.0.0.0:5432"
+
+                # This flag specifies where the service account key can be found
+                # This volume ions mounted below with an existing secret
+                - "-credential_file=/secrets/service_account.json"
+          volumes:
+          - name: carto-cloudsql-proxy-sa-key
+            # This secret should be created
+            # i.e kubectl create secret generic carto-cloudsql-proxy-sa-key --from-file=service_account.json=mykey.json
+            secret:
+              secretName: carto-cloudsql-proxy-sa-key
+              optional: false
+    ---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: carto-cloudsql-proxy
+      namespace: {{ .Release.Namespace | quote }}
+      labels: {{- include "common.labels.standard" . | nindent 4 }}
+        app.kubernetes.io/component: carto-cloudsql-proxy
+        {{- if .Values.commonLabels }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+        {{- end }}
+      annotations:
+        {{- if .Values.commonAnnotations }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+        {{- end }}
+    spec:
+      type: ClusterIP
+      ports:
+      - port: 5432
+        targetPort: postgresql
+        protocol: TCP
+        name: postgresql
+      selector:
+        {{- include "common.labels.matchLabels" . | nindent 4 }}
+        app.kubernetes.io/component: carto-cloudsql-proxy
+```
+
+
 
 #### Configure Postgres SSL with custom CA
 
