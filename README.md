@@ -82,7 +82,7 @@ These files are unique per Self Hosted (**they cannot be shared between multiple
 
 4. Configure your deployment. Please, read the available [customizations](customizations/README.md) options. At least you will need to configure the domain name.
 
-5. Install CARTO , remember to change change `[your_release_name]` and run:
+5. Install CARTO:
 
   ```bash
   helm install \
@@ -155,7 +155,7 @@ If you see this error you can get the reason running the following command:
   helm repo update
   ```
 
-3. to update CARTO change `[your_release_name]` and run
+3. to update CARTO
 
   ```bash
   helm upgrade \
@@ -169,7 +169,7 @@ If you see this error you can get the reason running the following command:
 
 ## Uninstall
 
-To remove CARTO change `[your_release_name]` and run:
+To remove CARTO:
 
 ```bash
 helm uninstall [your_release_name] --wait
