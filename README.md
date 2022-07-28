@@ -86,7 +86,7 @@ These files are unique per Self Hosted (**they cannot be shared between multiple
 
   ```bash
   helm install \
-    mycarto \
+    [your_release_name] \
     carto/carto \
     --namespace <your_namespace> \
     -f carto-values.yaml \
@@ -155,11 +155,11 @@ If you see this error you can get the reason running the following command:
   helm repo update
   ```
 
-3. Update CARTO
+3. to update CARTO
 
   ```bash
   helm upgrade \
-    mycarto \
+    [your_release_name] \
     carto/carto \
     --namespace <your_namespace> \
     -f carto-values.yaml \
@@ -169,15 +169,15 @@ If you see this error you can get the reason running the following command:
 
 ## Uninstall
 
-To remove CARTO from your cluster you need to run:
+To remove CARTO:
 
 ```bash
-helm uninstall mycarto --wait
+helm uninstall [your_release_name] --wait
 ```
 
-If you were using the internal Postgres, to delete the data you need:
+If you were using the internal Postgres, to delete the data you need to remove the Persistent Volume Claim (pvc):
 
 ```bash
 # ⚠️ This is going to delete the data of the postgres inside the cluster ⚠️
-kubectl delete pvc data-mycarto-postgresql-0
+kubectl delete pvc data-[your_release_name]-postgresql-0
 ```
