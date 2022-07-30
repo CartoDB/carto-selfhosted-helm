@@ -56,6 +56,8 @@ The process of configuring Workload Identity includes using an IAM policy bindin
       iam.gke.io/gcp-service-account: "<IAM_SERVICE_ACCOUNT_EMAIL>"
   ```
 
+> :warning: The chart gives the possibility of disable commonBackendServiceAccount account creation with `commonBackendServiceAccount.create: false` but this is not compatible with  `enableGCPWorkloadIdentity: true`
+
 - Install Carto Self Hosted Helm Chart, please see the [installations steps](../../README.md#installation-steps)
 
 - Then, allow the Kubernetes service account that is going to be created in your GKE cluster to impersonate the IAM service account by adding an IAM policy binding between the two service accounts. This binding allows the Kubernetes service account to act as the IAM service account.
