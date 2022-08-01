@@ -26,7 +26,7 @@ router:
     annotations:
       ## Same BackendConfig for all Service ports
       ## https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-features#same_backendconfig_for_all_service_ports
-      cloud.google.com/backend-config: '{"default": "carto-service-backend-config"}'
+      cloud.google.com/backend-config: '{"default": "carto-ingress-backend-config"}'
 
 ## Extra Kubernetes objects used to further configure the Google LoadBalancer
 ## associated to the Ingress object

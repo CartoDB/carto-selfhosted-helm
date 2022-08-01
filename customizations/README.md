@@ -196,7 +196,7 @@ router:
 
   service:
     annotations:
-      cloud.google.com/backend-config: '{"default": "carto-service-backend-config"}'
+      cloud.google.com/backend-config: '{"default": "carto-ingress-backend-config"}'
 extraDeploy:
   - |
     apiVersion: cloud.google.com/v1
