@@ -179,7 +179,7 @@ Having as base configuration the [GKE Ingress config](ingress/gke/config.yaml) f
 
 ```diff
 + appConfigValues:
-+   selfHostedDomain: "mmoreno.carto.io"
++   selfHostedDomain: "<your-carto-domain-name"
 +
 tlsCerts:
   httpsEnabled: false
@@ -196,7 +196,7 @@ router:
 
   service:
     annotations:
-      cloud.google.com/backend-config: '{"default": "carto-ingress-backend-config"}'
+      cloud.google.com/backend-config: '{"default": "carto-service-backend-config"}'
 extraDeploy:
   - |
     apiVersion: cloud.google.com/v1
