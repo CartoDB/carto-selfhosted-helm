@@ -41,6 +41,11 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
 {{- end -}}
 
 {{/*
+Define b64EncodeSecrets variable from the outersope to be used in another context
+*/}}
+{{- $b64EncodeSecrets := .Values.appConfigValues.b64EncodeSecrets -}}
+
+{{/*
 Association between env secret and path of the secret in values.yaml
 */}}
 {{- define "carto._utils.secretAssociation" -}}
@@ -84,7 +89,11 @@ Generate secret file content for a variable if a existingSecret.name is not prov
 {{ get $mapSecrets $key }}({{ $key }})={{ $secretValue }}:{{ $secretExistingName }}:{{ $secretExistingKey }}:
 */}}
 {{- if not $secretExistingName }}
+{{- if $.b64EncodeSecrets }}
 {{ $var }}: {{ $secretValue | b64enc | quote }}  # {{ $key }}.value
+{{- else }}
+{{ $var }}: {{ $secretValue | quote }}  # {{ $key }}.value
+{{- end }}
 {{- end }}
 {{- end -}}
 
