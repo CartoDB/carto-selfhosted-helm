@@ -179,7 +179,7 @@ Having as base configuration the [GKE Ingress config](ingress/gke/config.yaml) f
 
 ```diff
 + appConfigValues:
-+   selfHostedDomain: "mmoreno.carto.io"
++   selfHostedDomain: "<your-carto-domain-name>"
 +
 tlsCerts:
   httpsEnabled: false

@@ -39,7 +39,7 @@ extraDeploy:
     apiVersion: cloud.google.com/v1
     kind: BackendConfig
     metadata:
-      name: carto-ingress-backend-config
+      name: carto-service-backend-config
       labels: {{- include "common.labels.standard" . | nindent 4 }}
         app.kubernetes.io/component: carto
         {{- if .Values.commonLabels }}
