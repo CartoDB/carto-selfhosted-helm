@@ -316,7 +316,7 @@ from the configuration, or let the chart to create the [secrets automatically](#
 2. Configure the package:
    Add the following lines to your `customizations.yaml` to connect to the external Postgres:
 
-   ````yaml
+   ```yaml
      internalPostgresql:
        # Disable the internal Postgres
        enabled: false
@@ -335,8 +335,7 @@ from the configuration, or let the chart to create the [secrets automatically](#
        #   -----BEGIN CERTIFICATE-----
        #   ...
        #   -----END CERTIFICATE-----
-     ```
-   ````
+   ```
 
 #### Setup Postgres with automatic secret creation
 
