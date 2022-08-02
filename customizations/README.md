@@ -39,6 +39,7 @@
       - [Prerequisites](#prerequisites)
       - [Enable Carto autoscaling feature](#enable-carto-autoscaling-feature)
     - [Enable static scaling](#enable-static-scaling)
+  - [High Availability](#high-availability)
   - [Advanced configuration](#advanced-configuration)
   - [Tips for creating the customization Yaml file](#tips-for-creating-the-customization-yaml-file)
 
@@ -414,7 +415,7 @@ Add the config below to your customizations.yaml file using this connection name
 # In this example we create:
 #  * A deployment with configured CloudSQL Auth Proxy
 #  * A ClusterIP service to serve CloudSQL Auth Proxy
-#  * External Postgresql configuration for tha chart 
+#  * External Postgresql configuration for the chart 
 #      - https://github.com/CartoDB/carto-selfhosted-helm/tree/main/customizations#setup-postgres-creating-secrets
 #
 
@@ -1038,6 +1039,12 @@ You can edit the file to set your own scaling needs by modifying the minimum and
 You can set statically set the number of pods should be running. To do it, use [static scale config](scale_components/static.yaml) adding it with `-f customizations/scale_components/static.yaml` to the `install` or `upgrade` commands.
 
 > Although we recommend the autoscaling configuration, you could choose the autoscaling feature for some components and the static configuration for the others. Remember that autoscaling override the static configuration, so if one component has both configurations, autoscaling will take precedence.
+
+## High Availability
+
+In some cases, you may want to ensure some critical services have replicas deployed across different worker nodes in order to provide high availability in case of node failure. You can achieve this by applying the [high availability config](high_availability/customizations.yaml) alongside with static scaling or autoscaling features.
+
+> The configuration example provided above only prevents that two replicas of the same service are deployed in the same node. It's required either static scaling or autoscaling config in order to deploy multiple replicas of a service.
 
 ## Advanced configuration
 
