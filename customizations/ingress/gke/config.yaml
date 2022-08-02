@@ -59,7 +59,7 @@ extraDeploy:
     apiVersion: networking.gke.io/v1beta1
     kind: FrontendConfig
     metadata:
-      name: my-frontend-config
+      name: carto-ingress-frontend-config
       labels: {{- include "common.labels.standard" . | nindent 4 }}
         app.kubernetes.io/component: carto
         {{- if .Values.commonLabels }}
