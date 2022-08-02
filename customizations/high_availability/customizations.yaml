@@ -1,0 +1,108 @@
+# This configuration prevents Kubernetes to allocate
+# two pods of the same service in the same worker node.
+# You should also configure static scaling or autoscaling feature.
+
+accountsWww:
+  #replicaCount: 1
+  #autoscaling:
+  #  enabled: true
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: "app.kubernetes.io/component"
+                operator: In
+                values:
+                  - accounts-www
+          topologyKey: "kubernetes.io/hostname"
+
+importApi:
+  #replicaCount: 1
+  #autoscaling:
+  #  enabled: true
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: "app.kubernetes.io/component"
+                operator: In
+                values:
+                  - import-api
+          topologyKey: "kubernetes.io/hostname"
+
+ldsApi:
+  #replicaCount: 1
+  #autoscaling:
+  #  enabled: true
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: "app.kubernetes.io/component"
+                operator: In
+                values:
+                  - lds-api
+          topologyKey: "kubernetes.io/hostname"
+
+mapsApi:
+  #replicaCount: 1
+  #autoscaling:
+  #  enabled: true
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: "app.kubernetes.io/component"
+                operator: In
+                values:
+                  - maps-api
+          topologyKey: "kubernetes.io/hostname"
+
+router:
+  #replicaCount: 1
+  #autoscaling:
+  #  enabled: true
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: "app.kubernetes.io/component"
+                operator: In
+                values:
+                  - router
+          topologyKey: "kubernetes.io/hostname"
+
+workspaceApi:
+  #replicaCount: 1
+  #autoscaling:
+  #  enabled: true
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: "app.kubernetes.io/component"
+                operator: In
+                values:
+                  - workspace-api
+          topologyKey: "kubernetes.io/hostname"
+
+workspaceWww:
+  #replicaCount: 1
+  #autoscaling:
+  #  enabled: true
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: "app.kubernetes.io/component"
+                operator: In
+                values:
+                  - workspace-www
+          topologyKey: "kubernetes.io/hostname"
