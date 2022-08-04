@@ -30,4 +30,5 @@ data:
   REACT_APP_PUBLIC_MAP_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api/v3/maps/public"
   REACT_APP_WORKSPACE_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/workspace-api"
   REACT_APP_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
+  WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.appConfigValues.workspaceThumbnailsBucket | quote }}
 {{- end }}
