@@ -1472,7 +1472,7 @@ mapsApi:
   autoscaling:
     enabled: false
     minReplicas: 2
-    maxReplicas: 3
+    maxReplicas: 6
     targetCPUUtilizationPercentage: 75
   ## maps-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
@@ -3003,7 +3003,7 @@ workspaceApi:
   autoscaling:
     enabled: false
     minReplicas: 2
-    maxReplicas: 3
+    maxReplicas: 6
     targetCPUUtilizationPercentage: 75
   ## workspace-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
