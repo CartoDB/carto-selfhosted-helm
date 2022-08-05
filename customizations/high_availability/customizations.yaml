@@ -1,6 +1,6 @@
-# This configuration prevents Kubernetes to allocate
-# two pods of the same service in the same worker node.
-# You should also configure static scaling or autoscaling feature.
+# This affinity config requests Kubernetes to allocate
+# the service replicas across different worker nodes.
+# You should also enable static scaling or autoscaling.
 
 accountsWww:
   #replicaCount: 1
@@ -8,14 +8,16 @@ accountsWww:
   #  enabled: true
   affinity:
     podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-              - key: "app.kubernetes.io/component"
-                operator: In
-                values:
-                  - accounts-www
-          topologyKey: "kubernetes.io/hostname"
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: "app.kubernetes.io/component"
+                  operator: In
+                  values:
+                    - accounts-www
+            topologyKey: "kubernetes.io/hostname"
 
 importApi:
   #replicaCount: 1
@@ -23,14 +25,16 @@ importApi:
   #  enabled: true
   affinity:
     podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-              - key: "app.kubernetes.io/component"
-                operator: In
-                values:
-                  - import-api
-          topologyKey: "kubernetes.io/hostname"
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: "app.kubernetes.io/component"
+                  operator: In
+                  values:
+                    - import-api
+            topologyKey: "kubernetes.io/hostname"
 
 ldsApi:
   #replicaCount: 1
@@ -38,14 +42,16 @@ ldsApi:
   #  enabled: true
   affinity:
     podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-              - key: "app.kubernetes.io/component"
-                operator: In
-                values:
-                  - lds-api
-          topologyKey: "kubernetes.io/hostname"
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: "app.kubernetes.io/component"
+                  operator: In
+                  values:
+                    - lds-api
+            topologyKey: "kubernetes.io/hostname"
 
 mapsApi:
   #replicaCount: 1
@@ -53,14 +59,16 @@ mapsApi:
   #  enabled: true
   affinity:
     podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-              - key: "app.kubernetes.io/component"
-                operator: In
-                values:
-                  - maps-api
-          topologyKey: "kubernetes.io/hostname"
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: "app.kubernetes.io/component"
+                  operator: In
+                  values:
+                    - maps-api
+            topologyKey: "kubernetes.io/hostname"
 
 router:
   #replicaCount: 1
@@ -68,14 +76,16 @@ router:
   #  enabled: true
   affinity:
     podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-              - key: "app.kubernetes.io/component"
-                operator: In
-                values:
-                  - router
-          topologyKey: "kubernetes.io/hostname"
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: "app.kubernetes.io/component"
+                  operator: In
+                  values:
+                    - router
+            topologyKey: "kubernetes.io/hostname"
 
 workspaceApi:
   #replicaCount: 1
@@ -83,14 +93,16 @@ workspaceApi:
   #  enabled: true
   affinity:
     podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-              - key: "app.kubernetes.io/component"
-                operator: In
-                values:
-                  - workspace-api
-          topologyKey: "kubernetes.io/hostname"
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: "app.kubernetes.io/component"
+                  operator: In
+                  values:
+                    - workspace-api
+            topologyKey: "kubernetes.io/hostname"
 
 workspaceWww:
   #replicaCount: 1
@@ -98,11 +110,13 @@ workspaceWww:
   #  enabled: true
   affinity:
     podAntiAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchExpressions:
-              - key: "app.kubernetes.io/component"
-                operator: In
-                values:
-                  - workspace-www
-          topologyKey: "kubernetes.io/hostname"
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: "app.kubernetes.io/component"
+                  operator: In
+                  values:
+                    - workspace-www
+            topologyKey: "kubernetes.io/hostname"
