@@ -317,27 +317,26 @@ from the configuration, or let the chart to create the [secrets automatically](#
 2. Configure the package:
    Add the following lines to your `customizations.yaml` to connect to the external Postgres:
 
-   ````yaml
-     internalPostgresql:
-       # Disable the internal Postgres
-       enabled: false
-     externalPostgresql:
-       host: <Postgres IP/Hostname>
-       user: "workspace_admin"
-       adminUser: "postgres"
-       existingSecret: "mycarto-custom-postgres-secret"
-       existingSecretPasswordKey: "carto-password"
-       existingSecretAdminPasswordKey: "admin-password"
-       database: "workspace"
-       port: "5432"
-       sslEnabled: true
-       # Only applies if your Postgresql SSL certificate it's self-signed
-       # sslCA: |
-       #   -----BEGIN CERTIFICATE-----
-       #   ...
-       #   -----END CERTIFICATE-----
-     ```
-   ````
+   ```yaml
+   internalPostgresql:
+     # Disable the internal Postgres
+     enabled: false
+   externalPostgresql:
+     host: <Postgres IP/Hostname>
+     user: "workspace_admin"
+     adminUser: "postgres"
+     existingSecret: "mycarto-custom-postgres-secret"
+     existingSecretPasswordKey: "carto-password"
+     existingSecretAdminPasswordKey: "admin-password"
+     database: "workspace"
+     port: "5432"
+     sslEnabled: true
+     # Only applies if your Postgresql SSL certificate it's self-signed
+     # sslCA: |
+     #   -----BEGIN CERTIFICATE-----
+     #   ...
+     #   -----END CERTIFICATE-----
+   ```
 
 #### Setup Postgres with automatic secret creation
 
