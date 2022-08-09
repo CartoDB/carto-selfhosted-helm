@@ -9,6 +9,8 @@ router:
     tls: true
 
     annotations:
+      ## https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/
+      kubernetes.io/ingress.class: "gce"
       ## https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-features#associating_frontendconfig_with_your_ingress
       networking.gke.io/v1beta1.FrontendConfig: "carto-ingress-frontend-config"
       ## If you want a permanent IP address that stays the same across deleting your
