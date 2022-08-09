@@ -41,7 +41,7 @@
     - [Enable static scaling](#enable-static-scaling)
   - [Advanced configuration](#advanced-configuration)
   - [Tips for creating the customization Yaml file](#tips-for-creating-the-customization-yaml-file)
-  - [Troubleshooting](troubleshooting)
+  - [Troubleshooting](#troubleshooting)
 
 # Customizations
 
