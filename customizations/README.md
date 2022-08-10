@@ -155,15 +155,15 @@ Depending on the Ingress controller used, a variety of configurations can be mad
 
 We recommend two ways to configure your Ingress:
 
-- Using your custom TLS certificate: [GKE Ingress example config for CARTO with custom certificates](ingress/gke/custom_cert_config.yaml)
+- **Using your custom TLS certificate:** [GKE Ingress example config for CARTO with custom certificates](ingress/gke/custom_cert_config.yaml)
 
-  > Note that you need to create the TLS secret certificate in your kubernetes cluster, you could use the following command to create it
+  > :point_right: Note that you need to create the TLS secret certificate in your kubernetes cluster, you could use the following command to create it
 
   ```bash
   kubectl create secret tls -n <namespace> carto-tls-cert --cert=cert.crt --key=cert.key
   ```
 
-- GCP Managed TLS Certificates: [GKE Ingress example config for CARTO with GCP Managed Certificates](ingress/gke/gcp_managed_config.yaml)
+- **GCP Managed SSL Certificates:** [GKE Ingress example config for CARTO with GCP Managed Certificates](ingress/gke/gcp_managed_cert_config.yaml)
 
   You can configure your Ingress controller to use [Google Managed Certificates](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs) on the load balancer side.
 
