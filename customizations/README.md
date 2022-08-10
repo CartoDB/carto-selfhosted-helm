@@ -41,6 +41,7 @@
     - [Enable static scaling](#enable-static-scaling)
   - [Advanced configuration](#advanced-configuration)
   - [Tips for creating the customization Yaml file](#tips-for-creating-the-customization-yaml-file)
+  - [Troubleshooting](#troubleshooting)
 
 # Customizations
 
@@ -154,6 +155,12 @@ Depending on the Ingress controller used, a variety of configurations can be mad
 
 - [GKE Ingress example config for CARTO](ingress/gke/config.yaml)
 
+  The Ingress will use the custom TLS certificate you have configured via https://github.com/CartoDB/carto-selfhosted-helm/tree/main/customizations#use-your-own-tls-certificate
+
+  > :warning: The certificate and LB can take several minutes to be configured, so be patient
+
+  Please see our [troubleshooting](#troubleshooting) section if you have problems with your ingress resource.
+
 ##### Use Google's managed certificates for Ingress
 
 You can configure your Ingress controller to use [Google Managed Certificates](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs) on the load balancer side.
@@ -265,7 +272,7 @@ If you want to add your own certificate you need:
 - Create a kubernetes secret with following content:
 
   ```bash
-  kubectl create secret tls \
+  kubectl create secret tls -n <namespace> <certificate name> \
     --cert=path/to/cert/file \
     --key=path/to/key/file
   ```
@@ -1077,3 +1084,36 @@ Here you can find some basic instructions in order to create the config yaml fil
   -f carto-secrets.yaml \
   -f customizations.yaml
   ```
+
+## Troubleshooting
+
+### Ingress
+
+The ingress creation can take several minutes, once finished you should see this status:
+
+
+```bash
+kubectl get ingress -n <namespace>
+kubectl describe ingress <name>
+```
+
+```bash
+Events:
+  Type     Reason     Age                  From                     Message
+  ----     ------     ----                 ----                     -------
+  Normal   Sync       9m35s                loadbalancer-controller  UrlMap "k8s2-um-carto-router-zzud3" created
+  Normal   Sync       9m29s                loadbalancer-controller  TargetProxy "k8s2-tp-carto-router-zzud3" created
+  Normal   Sync       9m19s                loadbalancer-controller  ForwardingRule "k8s2-fr-carto-router-zzud3" created
+  Normal   Sync       9m11s                loadbalancer-controller  TargetProxy "k8s2-ts--carto-router-zzud3" created
+  Normal   Sync       9m1s                 loadbalancer-controller  ForwardingRule "k8s2-fs-carto-router-zzud3" created
+  Normal   IPChanged  9m1s                 loadbalancer-controller  IP is now 34.149.xxx.xx
+```
+A common error could be that the certificate creation for the Load Balancer in GCP will be in a failed status, you could execute these commands to debug into:
+
+```bash
+$ kubectl get ingress carto-router -n <namespace>
+$ kubectl describe ingress carto-router -n <namespace>
+$ export SSL_CERT_ID=$(kubectl get ingress carto-router -n <namespace> -o jsonpath='{.metadata.annotations.ingress\.kubernetes\.io/ssl-cert}')
+$ gcloud --project <project> compute ssl-certificates list
+$ gcloud --project <project> compute ssl-certificates describe ${SSL_CERT_ID}
+```
