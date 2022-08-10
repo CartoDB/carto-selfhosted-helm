@@ -170,7 +170,7 @@ We recommend two ways to configure your Ingress:
   > :warning: The certificate and LB can take several minutes to be configured, so be patient
 
   **Prerequisites**
-  
+
   - You must own the domain for the Ingress (the one defined at `appConfigValues.selfHostedDomain`)
   - You must have created your own [Reserved static external IP address](https://cloud.google.com/compute/docs/ip-addresses/reserve-static-external-ip-address)
   - You must create an A DNS record that relates your domain to the just created static external IP address
