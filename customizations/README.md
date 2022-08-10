@@ -153,100 +153,43 @@ Ingress exposes HTTP and HTTPS routes from outside the cluster to services withi
 
 Depending on the Ingress controller used, a variety of configurations can be made, here you have an example using [GKE Ingress controller](https://cloud.google.com/kubernetes-engine/docs/concepts/ingress) with [TLS offloading](https://en.wikipedia.org/wiki/TLS_termination_proxy)
 
-- [GKE Ingress example config for CARTO](ingress/gke/config.yaml)
+We recommend two ways to configure your Ingress:
 
-  The Ingress will use the custom TLS certificate you have configured via https://github.com/CartoDB/carto-selfhosted-helm/tree/main/customizations#use-your-own-tls-certificate
+- Using your custom TLS certificate: [GKE Ingress example config for CARTO with custom certificates](ingress/gke/custom_cert_config.yaml)
+
+  > Note that you need to create the TLS secret certificate in your kubernetes cluster, you could use the following command to create it
+
+  ```bash
+  kubectl create secret tls -n <namespace> carto-tls-cert --cert=cert.crt --key=cert.key
+  ```
+
+- GCP Managed TLS Certificates: [GKE Ingress example config for CARTO with GCP Managed Certificates](ingress/gke/gcp_managed_config.yaml)
+
+  You can configure your Ingress controller to use [Google Managed Certificates](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs) on the load balancer side.
 
   > :warning: The certificate and LB can take several minutes to be configured, so be patient
 
-  Please see our [troubleshooting](#troubleshooting) section if you have problems with your ingress resource.
+  **Prerequisites**
+  
+  - You must own the domain for the Ingress (the one defined at `appConfigValues.selfHostedDomain`)
+  - You must have created your own [Reserved static external IP address](https://cloud.google.com/compute/docs/ip-addresses/reserve-static-external-ip-address)
+  - You must create an A DNS record that relates your domain to the just created static external IP address
+  - Check also [this requirements](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#prerequisites)
+  
+  :point_right: You can easily create a static external IP address with
+  
+  ```bash
+  gcloud compute addresses create my_carto_ip --global
+  ```
+  
+  **Useful links**
+  
+  - [google-managed-certs](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs#caa)
+  - [creating_an_ingress_with_a_google-managed_certificate](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#creating_an_ingress_with_a_google-managed_certificate)
 
-##### Use Google's managed certificates for Ingress
+**Troubleshooting**
 
-You can configure your Ingress controller to use [Google Managed Certificates](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs) on the load balancer side.
-
-**Prerequisites**
-
-- You must own the domain for the Ingress (the one defined at `appConfigValues.selfHostedDomain`)
-- You must have created your own [Reserved static external IP address](https://cloud.google.com/compute/docs/ip-addresses/reserve-static-external-ip-address)
-- You must create an A DNS record that relates your domain to the just created static external IP address
-- Check also [this requirements](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#prerequisites)
-
-:point_right: You can easily create a static external IP address with
-
-```bash
-gcloud compute addresses create my_carto_ip --global
-```
-
-**Steps**
-
-Having as base configuration the [GKE Ingress config](ingress/gke/config.yaml) file, add the next configuration to your `customization.yaml` file
-
-> :warning: The `my_carto_ip` defined in the `kubernetes.io/ingress.global-static-ip-name` annotation is the name of your Reserved static external IP address previously created
-
-```diff
-+ appConfigValues:
-+   selfHostedDomain: "<your-carto-domain-name>"
-+
-tlsCerts:
-  httpsEnabled: false
-
-router:
-  ingress:
-    enabled: true
--    tls: true
-+   annotations:
-+     kubernetes.io/ingress.class: "gce"
-+     kubernetes.io/ingress.global-static-ip-name: "my_carto_ip"
-+     networking.gke.io/managed-certificates: "carto-google-managed-cert"
-      networking.gke.io/v1beta1.FrontendConfig: "carto-ingress-frontend-config"
-
-  service:
-    annotations:
-      cloud.google.com/backend-config: '{"default": "carto-service-backend-config"}'
-extraDeploy:
-  - |
-    apiVersion: cloud.google.com/v1
-    kind: BackendConfig
-    ...
-    ---
-    apiVersion: networking.gke.io/v1beta1
-    kind: FrontendConfig
-    ...
-+   ---
-+   ## In case you want to use Google Managed Certificate for Ingress you will
-+   ## need to deploy the ManagedCertified object
-+   ## https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#setting_up_a_google-managed_certificate
-+   apiVersion: networking.gke.io/v1
-+   kind: ManagedCertificate
-+   metadata:
-+     name: carto-google-managed-cert
-+     labels: {{- include "common.labels.standard" . | nindent 4 }}
-+       app.kubernetes.io/component: carto
-+       {{- if .Values.commonLabels }}
-+       {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
-+       {{- end }}
-+     annotations:
-+       {{- if .Values.commonAnnotations }}
-+       {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
-+       {{- end }}
-+     namespace: {{ .Release.Namespace | quote }}
-+   spec:
-+     domains:
-+       - {{ .Values.appConfigValues.selfHostedDomain }}
-```
-
-> :warning: Google certificate provisioning can take several minutes, so be patient
-
-**Related configuration**
-
-- [Configure the domain of your Self Hosted](#configure-the-domain-of-your-self-hosted)
-- [Use your own TLS certificate](#use-your-own-tls-certificate)
-
-**Useful links**
-
-- [google-managed-certs](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs#caa)
-- [creating_an_ingress_with_a_google-managed_certificate](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#creating_an_ingress_with_a_google-managed_certificate)
+Please see our [troubleshooting](#troubleshooting) section if you have problems with your ingress resource.
 
 #### Configure TLS termination in the service
 
