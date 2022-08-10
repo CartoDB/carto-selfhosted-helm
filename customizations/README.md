@@ -1108,7 +1108,7 @@ Events:
   Normal   Sync       9m1s                 loadbalancer-controller  ForwardingRule "k8s2-fs-carto-router-zzud3" created
   Normal   IPChanged  9m1s                 loadbalancer-controller  IP is now 34.149.xxx.xx
 ```
-A common error is that the certificate creation in GCP for the load balancer is in a failed status, you could execute these commands to debug into:
+A common error could be that the certificate creation for the Load Balancer in GCP will be in a failed status, you could execute these commands to debug into:
 
 ```bash
 $ kubectl get ingress carto-router -n <namespace>
