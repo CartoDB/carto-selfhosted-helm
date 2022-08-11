@@ -10,9 +10,9 @@
   - [Available Configurations](#available-configurations)
     - [Configure the domain of your Self Hosted](#configure-the-domain-of-your-self-hosted)
     - [Access to CARTO from outside the cluster](#access-to-carto-from-outside-the-cluster)
-      - [Enable and configure LoadBalancer mode](#using-the-loadBalancer-mode-in-the-carto-router-service)
-      - [Expose your application with an Ingress and custom certificates](#expose-your-application-with-an-ingress-and-your-own-tls-certificates)
-      - [Expose Carto with Ingress and GCP SSL Managed Certificates](#expose-carto-with-ingress-and-gcp-ssl-managed-certificates)
+      - [Expose CARTO with the Carto Router service in LoadBalancer mode](#expose-carto-with-the-carto-router-service-in-loadbalancer-mode)
+      - [Expose CARTO with Ingress and custom certificates](#expose-carto-with-ingress-and-custom-certificates)
+      - [Expose CARTO with Ingress and GCP SSL Managed Certificates](#expose-carto-with-ingress-and-gcp-ssl-managed-certificates)
     - [Configure TLS termination in the service](#configure-tls-termination-in-the-service)
       - [Disable internal HTTPS](#disable-internal-https)
       - [Use your own TLS certificate](#use-your-own-tls-certificate)
@@ -120,7 +120,7 @@ But this only makes it accessible to your machine.
 
 **Requirements when exposing the service:**
 
-- CARTO only works with HTTPS. TLS termination can be in the application (and configure it in the helm chart) or in a load balancer prior to the application.
+- CARTO only works with HTTPS. TLS termination can be done in the CARTO application level (Router service), or in a load balancer that gets the request before sending it back to the application.
 - The connection timeout of all incoming connections must be at least `605` seconds.
 - Configure a domain pointing to the exposed service.
 
@@ -132,18 +132,18 @@ But this only makes it accessible to your machine.
 
   The actual creation of the load balancer happens asynchronously, and information about the provisioned balancer is published in the Service's `.status.loadBalancer` field.
 
-- Expose your Carto Application with an `Ingress`
+- Expose your Carto Application with an `Ingress` (**This is currently supported only for GKE**).
 
   Ingress exposes HTTP and HTTPS routes from outside the cluster to services within the cluster. Traffic routing is controlled by rules defined on the Ingress resource, you can find more documentation [here](https://kubernetes.io/docs/concepts/services-networking/ingress/).
 
-  Within this option, you could choose use your own TLS certificates or use GCP SSL Managed Certificates.
+  Within this option you could either use your own TLS certificates, or GCP SSL Managed Certificates.
 
   **Useful links**
 
   - [google-managed-certs](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs#caa)
   - [creating_an_ingress_with_a_google-managed_certificate](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#creating_an_ingress_with_a_google-managed_certificate)
 
-#### Using the `LoadBalancer` mode in the Carto Router service
+#### Expose CARTO with the Carto Router service in `LoadBalancer` mode
 
 You can find an example [here](service_loadBalancer/config.yaml). Also, we have prepared a few specifics for different Kubernetes flavors, just add the config that you need in your `customizations.yaml`:
 
@@ -153,7 +153,7 @@ You can find an example [here](service_loadBalancer/config.yaml). Also, we have 
 
 > Note that with this config a [Load Balancer](https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer) resource is going to be created in your cloud provider, you can find more documentation about this kind of service [here](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer)
 
-#### Expose your application with an Ingress and your own TLS certificates
+#### Expose CARTO with Ingress and your own TLS certificates
 
 - [GKE Ingress example config for CARTO with custom certificates](ingress/gke/custom_cert_config.yaml)
 
@@ -163,7 +163,7 @@ You can find an example [here](service_loadBalancer/config.yaml). Also, we have 
   kubectl create secret tls -n <namespace> carto-tls-cert --cert=cert.crt --key=cert.key
   ```
 
-#### Expose Carto with Ingress and GCP SSL Managed Certificates
+#### Expose CARTO with Ingress and GCP SSL Managed Certificates
 
 - [GKE Ingress example config for CARTO with GCP Managed Certificates](ingress/gke/gcp_managed_cert_config.yaml)
 
