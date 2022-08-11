@@ -10,10 +10,10 @@
   - [Available Configurations](#available-configurations)
     - [Configure the domain of your Self Hosted](#configure-the-domain-of-your-self-hosted)
     - [Access to CARTO from outside the cluster](#access-to-carto-from-outside-the-cluster)
-      - [Expose CARTO with the Carto Router service in LoadBalancer mode](#expose-carto-with-the-carto-router-service-in-loadbalancer-mode)
+      - [Expose CARTO with the CARTO Router service in LoadBalancer mode](#expose-carto-with-the-carto-router-service-in-loadbalancer-mode)
       - [Expose CARTO with Ingress and your own tls certificates](#expose-carto-with-ingress-and-your-own-tls-certificates)
       - [Expose CARTO with Ingress and GCP SSL Managed Certificates](#expose-carto-with-ingress-and-gcp-ssl-managed-certificates)
-    - [Configure TLS termination in the service](#configure-tls-termination-in-the-service)
+    - [Configure TLS termination in the CARTO router service](#configure-tls-termination-in-the-carto-router-service)
       - [Disable internal HTTPS](#disable-internal-https)
       - [Use your own TLS certificate](#use-your-own-tls-certificate)
     - [Configure external Postgres](#configure-external-postgres)
@@ -188,7 +188,9 @@ You can find an example [here](service_loadBalancer/config.yaml). Also, we have 
 
 Please see our [troubleshooting](#troubleshooting) section if you have problems with your ingress resource.
 
-### Configure TLS termination in the service
+### Configure TLS termination in the CARTO router service
+
+ > :point_right: Do not use this configuration if you are exposing CARTO services with an Ingress
 
 #### Disable internal HTTPS
 
