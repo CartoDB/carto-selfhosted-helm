@@ -11,7 +11,7 @@
     - [Configure the domain of your Self Hosted](#configure-the-domain-of-your-self-hosted)
     - [Access to CARTO from outside the cluster](#access-to-carto-from-outside-the-cluster)
       - [Expose CARTO with the Carto Router service in LoadBalancer mode](#expose-carto-with-the-carto-router-service-in-loadbalancer-mode)
-      - [Expose CARTO with Ingress and custom certificates](#expose-carto-with-ingress-and-custom-certificates)
+      - [Expose CARTO with Ingress and your own tls certificates](#expose-carto-with-ingress-and-your-own-tls-certificates)
       - [Expose CARTO with Ingress and GCP SSL Managed Certificates](#expose-carto-with-ingress-and-gcp-ssl-managed-certificates)
     - [Configure TLS termination in the service](#configure-tls-termination-in-the-service)
       - [Disable internal HTTPS](#disable-internal-https)
