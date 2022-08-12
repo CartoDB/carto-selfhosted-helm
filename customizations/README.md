@@ -1075,12 +1075,13 @@ Here you can find some basic instructions in order to create the config yaml fil
     Response: {"error":"unable to verify the first certificate","status":500,"code":"UNABLE_TO_VERIFY_LEAF_SIGNATURE"}
   ```
 
-  This error means that your cert has not the certificate chain complete. Probably your cert has been signed by a intermediate CA, and this issuer needs to be added to your cert. In this case, you have to recreate your kubernetes tls secret certificate again with all the issuers and recreate the installation with `helm delete` and `helm install`. Please see the[uninstall steps](https://github.com/CartoDB/carto-selfhosted-helm#update)
+  This error means that your cert has not the certificate chain complete. Probably your cert has been signed by a intermediate CA, and this issuer needs to be added to your cert. In this case, you have to recreate your kubernetes tls secret certificate again with all the issuers and recreate the installation with `helm delete` and `helm install`. Please see the [uninstall steps](https://github.com/CartoDB/carto-selfhosted-helm#update)
 
   These steps could be useful for you:
 
-  ```bash
   1. Get the PEM or CRT file and split the certificate chain in multiple files
+
+  ```bash
   $ cat carto.example.crt | \
     awk 'split_after == 1 {n++;split_after=0} \
     /-----END CERTIFICATE-----/ {split_after=1} \
@@ -1089,9 +1090,11 @@ Here you can find some basic instructions in order to create the config yaml fil
   $ ls -ltr cert_chain*
   cert_chain1.crt
   cert_chain.crt
+  ```
 
   2. Get who is the signer / issuer of each of the certificate chain certs
 
+  ```bash
   $ for CERT in $(ls cert_chain*.crt); do echo -e "------------------------\n";openssl x509 -in ${CERT} -noout -text | egrep "Issuer:|Subject:"; echo -e "------------------------\n";  done
   
   ------------------------
@@ -1105,25 +1108,31 @@ Here you can find some basic instructions in order to create the config yaml fil
           Issuer: C = GB, ST = Greater Manchester, L = Salford, O = Sectigo Limited, CN = Sectigo RSA Domain Validation Secure Server CA
           Subject: CN = *.carto.solutions
   ------------------------
+  ```
 
   3. Identify the issuer that is missing in your Ingress certificate file.
 
   4. Include the missing certificate in the chain and validate it with the certificate key: usually it should go to the bottom of the file.
   - **NOTE**: this certificates use to come with the bundle sent when the certificate was renewed. In this example the missing certificate is the `USERTrust`
 
+  ```bash
   $ cat carto.example.crt USERTrustRSAAAACA.crt > carto.example.new.crt
+  ```
 
   5. Verify the md5
 
+  ```bash
   $ openssl x509 -noout -modulus -in carto.example.new.crt | openssl md5                                                                                                (stdin)= b50XXXf569
   $ openssl rsa -noout -modulus -in carto.example.key | openssl md5                                                                                                (stdin)= b50XXXf569
+  ```
 
   6. Create your new certificate in a kubernetes tls secret
   
+  ```bash
   $ kubectl create secret tls -n <namespace> carto-example-new --cert=carto.example.new.crt --key=carto.example.key
+  ```
 
   7. Reinstall your environment
 
   [uninstall steps](https://github.com/CartoDB/carto-selfhosted-helm#update)
   [install steps](https://github.com/CartoDB/carto-selfhosted-helm#installation-steps)
-  ```
