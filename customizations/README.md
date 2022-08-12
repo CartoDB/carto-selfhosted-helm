@@ -1123,20 +1123,20 @@ Here you can find some basic instructions in order to create the config yaml fil
     $ cat carto.example.crt USERTrustRSAAAACA.crt > carto.example.new.crt
     ```
 
-  5. Verify the md5
+  - Verify the md5
 
     ```bash
     $ openssl x509 -noout -modulus -in carto.example.new.crt | openssl md5
     $ openssl rsa -noout -modulus -in carto.example.key | openssl md5
     ```
 
-  6. Create your new certificate in a kubernetes tls secret
+  - Create your new certificate in a kubernetes tls secret
   
     ```bash
     $ kubectl create secret tls -n <namespace> carto-example-new --cert=carto.example.new.crt --key=carto.example.key
     ```
 
-  7. Reinstall your environment
+  - Reinstall your environment
 
       [uninstall steps](https://github.com/CartoDB/carto-selfhosted-helm#update)
 
