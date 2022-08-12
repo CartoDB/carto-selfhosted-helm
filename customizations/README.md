@@ -1086,7 +1086,8 @@ Here you can find some basic instructions in order to create the config yaml fil
     awk 'split_after == 1 {n++;split_after=0} \
     /-----END CERTIFICATE-----/ {split_after=1} \
     {print > "cert_chain" n ".crt"}'
-  ​
+  ```
+  ```bash
   $ ls -ltr cert_chain*
   cert_chain1.crt
   cert_chain.crt
@@ -1096,7 +1097,9 @@ Here you can find some basic instructions in order to create the config yaml fil
 
   ```bash
   $ for CERT in $(ls cert_chain*.crt); do echo -e "------------------------\n";openssl x509 -in ${CERT} -noout -text | egrep "Issuer:|Subject:"; echo -e "------------------------\n";  done
-  
+  ```
+
+  ```yaml
   ------------------------
   
           Issuer: C = US, ST = New Jersey, L = Jersey City, O = The USERTRUST Network, CN = USERTrust RSA Certification Authority
@@ -1122,8 +1125,8 @@ Here you can find some basic instructions in order to create the config yaml fil
   5. Verify the md5
 
   ```bash
-  $ openssl x509 -noout -modulus -in carto.example.new.crt | openssl md5                                                                                                (stdin)= b50XXXf569
-  $ openssl rsa -noout -modulus -in carto.example.key | openssl md5                                                                                                (stdin)= b50XXXf569
+  $ openssl x509 -noout -modulus -in carto.example.new.crt | openssl md5
+  $ openssl rsa -noout -modulus -in carto.example.key | openssl md5
   ```
 
   6. Create your new certificate in a kubernetes tls secret
