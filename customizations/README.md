@@ -1053,7 +1053,7 @@ Here you can find some basic instructions in order to create the config yaml fil
     Normal   IPChanged  9m1s                 loadbalancer-controller  IP is now 34.149.xxx.xx
   ```
 
-- A common error could be that the certificate creation for the Load Balancer in GCP will be in a failed status, you could execute these commands to debug into:
+- A common error could be that the certificate creation for the Load Balancer in GCP will be in a failed status, you could execute these commands to debug it:
 
   ```bash
     kubectl get ingress carto-router -n <namespace>
@@ -1107,7 +1107,7 @@ Here you can find some basic instructions in order to create the config yaml fil
     ------------------------
     
             Issuer: C = GB, ST = Greater Manchester, L = Salford, O = Sectigo Limited, CN = Sectigo RSA Domain Validation Secure Server CA
-            Subject: CN = *.carto.solutions
+            Subject: CN = *.carto.example
     ------------------------
     ```
 
@@ -1127,6 +1127,7 @@ Here you can find some basic instructions in order to create the config yaml fil
     openssl x509 -noout -modulus -in carto.example.new.crt | openssl md5
     openssl rsa -noout -modulus -in carto.example.key | openssl md5
     ```
+     **NOTE**: If both `modulus md5` does not match (the output of both commands should be exactly the same), the certificate that you have updated won't be valid. From here, you need to iterate with the certificate update operation (previous step), until both `modulus md5` match.
 
   - Create your new certificate in a kubernetes tls secret
   
