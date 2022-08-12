@@ -1,7 +1,13 @@
-## The Ingress will use the custom TLS certificate you have configured via
-## https://github.com/CartoDB/carto-selfhosted-helm/tree/main/customizations#use-your-own-tls-certificate
+## The Ingress will use your custom TLS certificate
+## You can create the tls secret with your cert with the following command
+## kubectl create secret tls -n <namespace> carto-tls-cert --cert=cert.crt --key=cert.key
 tlsCerts:
   httpsEnabled: false
+  autoGenerate: false 
+  existingSecret:
+    name: "carto-tls-cert"
+    keyKey: "tls.key"
+    certKey: "tls.crt"
 
 router:
   ingress:

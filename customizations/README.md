@@ -10,13 +10,12 @@
   - [Available Configurations](#available-configurations)
     - [Configure the domain of your Self Hosted](#configure-the-domain-of-your-self-hosted)
     - [Access to CARTO from outside the cluster](#access-to-carto-from-outside-the-cluster)
-      - [Requirements when exposing the service](#requirements-when-exposing-the-service)
-      - [Enable and configure LoadBalancer mode](#enable-and-configure-loadbalancer-mode)
-      - [Expose your application with an Ingress](#expose-your-application-with-an-ingress)
-        - [Use Google's managed certificates for Ingress](#use-googles-managed-certificates-for-ingress)
-      - [Configure TLS termination in the service](#configure-tls-termination-in-the-service)
-        - [Disable internal HTTPS](#disable-internal-https)
-        - [Use your own TLS certificate](#use-your-own-tls-certificate)
+      - [Expose CARTO with the CARTO Router service in LoadBalancer mode](#expose-carto-with-the-carto-router-service-in-loadbalancer-mode)
+      - [Expose CARTO with Ingress and your own tls certificates](#expose-carto-with-ingress-and-your-own-tls-certificates)
+      - [Expose CARTO with Ingress and GCP SSL Managed Certificates](#expose-carto-with-ingress-and-gcp-ssl-managed-certificates)
+    - [Configure TLS termination in the CARTO router service](#configure-tls-termination-in-the-carto-router-service)
+      - [Disable internal HTTPS](#disable-internal-https)
+      - [Use your own TLS certificate](#use-your-own-tls-certificate)
     - [Configure external Postgres](#configure-external-postgres)
       - [Setup Postgres creating secrets](#setup-postgres-creating-secrets)
       - [Setup Postgres with automatic secret creation](#setup-postgres-with-automatic-secret-creation)
@@ -111,33 +110,40 @@ To do this you need to [add the following customization](#how-to-apply-the-confi
 appConfigValues:
   selfHostedDomain: "my.domain.com"
 ```
-
 Don't forget to upgrade your chart after the change.
 
 ### Access to CARTO from outside the cluster
 
-The entry point to the CARTO Self Hosted is through the `router` Service. By default, it is configured in `ClusterIP` mode. That means it's
-only usable from inside the cluster. If you want to connect to your deployment with this mode, you need to use
+The entry point to the CARTO Self Hosted is through the `router` Service. By default, it is configured in `ClusterIP` mode. That means it's only usable from inside the cluster. If you want to connect to your deployment with this mode, you need to use
 [kubectl port-forward](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/).
 But this only makes it accessible to your machine.
 
-In order to make it accessible from the outside of the Kubernetes network, the [easiest way](#enable-and-configure-loadbalancer-mode)
-is to use the `LoadBalancer` mode.
+**Requirements when exposing the service:**
 
-Probably you would need to [configure the HTTPS/TLS](#configure-tls-termination-in-the-service) if you are not terminating the TLS
-sessions before.
-
-#### Requirements when exposing the service
-
-- CARTO only works with HTTPS. TLS termination can be in the application (and configure it in the helm chart) or in a load balancer prior to the application.
+- CARTO only works with HTTPS. TLS termination can be done in the CARTO application level (Router service), or in a load balancer that gets the request before sending it back to the application.
 - The connection timeout of all incoming connections must be at least `605` seconds.
 - Configure a domain pointing to the exposed service.
 
-#### Enable and configure LoadBalancer mode
+**We recommend two ways to make your Carto application accessible from outside the Kubernetes network:**
 
-This is the easiest way to open your CARTO Self Hosted to the world on cloud providers which support external load balancers. You need to change the `router` Service type to `LoadBalancer`. This provides an externally-accessible IP address that sends traffic to the correct component on your cluster nodes.
+- `LoadBalancer` mode in Carto Router Service
 
-The actual creation of the load balancer happens asynchronously, and information about the provisioned balancer is published in the Service's `.status.loadBalancer` field.
+  This is the easiest way to open your CARTO Self Hosted to the world on cloud providers which support external load balancers. You need to change the `router` Service type to `LoadBalancer`. This provides an externally-accessible IP address that sends traffic to the correct component on your cluster nodes.
+
+  The actual creation of the load balancer happens asynchronously, and information about the provisioned balancer is published in the Service's `.status.loadBalancer` field.
+
+- Expose your Carto Application with an `Ingress` (**This is currently supported only for GKE**).
+
+  Ingress exposes HTTP and HTTPS routes from outside the cluster to services within the cluster. Traffic routing is controlled by rules defined on the Ingress resource, you can find more documentation [here](https://kubernetes.io/docs/concepts/services-networking/ingress/).
+
+  Within this option you could either use your own TLS certificates, or GCP SSL Managed Certificates.
+
+  **Useful links**
+
+  - [google-managed-certs](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs#caa)
+  - [creating_an_ingress_with_a_google-managed_certificate](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#creating_an_ingress_with_a_google-managed_certificate)
+
+#### Expose CARTO with the Carto Router service in `LoadBalancer` mode
 
 You can find an example [here](service_loadBalancer/config.yaml). Also, we have prepared a few specifics for different Kubernetes flavors, just add the config that you need in your `customizations.yaml`:
 
@@ -147,110 +153,46 @@ You can find an example [here](service_loadBalancer/config.yaml). Also, we have 
 
 > Note that with this config a [Load Balancer](https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer) resource is going to be created in your cloud provider, you can find more documentation about this kind of service [here](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer)
 
-#### Expose your application with an Ingress
+#### Expose CARTO with Ingress and your own TLS certificates
 
-Ingress exposes HTTP and HTTPS routes from outside the cluster to services within the cluster. Traffic routing is controlled by rules defined on the Ingress resource, you can find more documentation [here](https://kubernetes.io/docs/concepts/services-networking/ingress/).
+- [GKE Ingress example config for CARTO with custom certificates](ingress/gke/custom_cert_config.yaml)
 
-Depending on the Ingress controller used, a variety of configurations can be made, here you have an example using [GKE Ingress controller](https://cloud.google.com/kubernetes-engine/docs/concepts/ingress) with [TLS offloading](https://en.wikipedia.org/wiki/TLS_termination_proxy)
+  > :point_right: Note that you need to create the TLS secret certificate in your kubernetes cluster, you could use the following command to create it
 
-- [GKE Ingress example config for CARTO](ingress/gke/config.yaml)
+  ```bash
+  kubectl create secret tls -n <namespace> carto-tls-cert --cert=cert.crt --key=cert.key
+  ```
 
-  The Ingress will use the custom TLS certificate you have configured via https://github.com/CartoDB/carto-selfhosted-helm/tree/main/customizations#use-your-own-tls-certificate
+#### Expose CARTO with Ingress and GCP SSL Managed Certificates
+
+- [GKE Ingress example config for CARTO with GCP Managed Certificates](ingress/gke/gcp_managed_cert_config.yaml)
+
+  You can configure your Ingress controller to use [Google Managed Certificates](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs) on the load balancer side.
 
   > :warning: The certificate and LB can take several minutes to be configured, so be patient
 
-  Please see our [troubleshooting](#troubleshooting) section if you have problems with your ingress resource.
+  **Prerequisites**
 
-##### Use Google's managed certificates for Ingress
+  - You must own the domain for the Ingress (the one defined at `appConfigValues.selfHostedDomain`)
+  - You must have created your own [Reserved static external IP address](https://cloud.google.com/compute/docs/ip-addresses/reserve-static-external-ip-address)
+  - You must create an A DNS record that relates your domain to the just created static external IP address
+  - Check also [this requirements](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#prerequisites)
+  
+  :point_right: You can easily create a static external IP address with
+  
+  ```bash
+  gcloud compute addresses create my_carto_ip --global
+  ```
 
-You can configure your Ingress controller to use [Google Managed Certificates](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs) on the load balancer side.
+**Troubleshooting**
 
-**Prerequisites**
+Please see our [troubleshooting](#troubleshooting) section if you have problems with your ingress resource.
 
-- You must own the domain for the Ingress (the one defined at `appConfigValues.selfHostedDomain`)
-- You must have created your own [Reserved static external IP address](https://cloud.google.com/compute/docs/ip-addresses/reserve-static-external-ip-address)
-- You must create an A DNS record that relates your domain to the just created static external IP address
-- Check also [this requirements](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#prerequisites)
+### Configure TLS termination in the CARTO router service
 
-:point_right: You can easily create a static external IP address with
+ > :point_right: Do not use this configuration if you are exposing CARTO services with an Ingress
 
-```bash
-gcloud compute addresses create my_carto_ip --global
-```
-
-**Steps**
-
-Having as base configuration the [GKE Ingress config](ingress/gke/config.yaml) file, add the next configuration to your `customization.yaml` file
-
-> :warning: The `my_carto_ip` defined in the `kubernetes.io/ingress.global-static-ip-name` annotation is the name of your Reserved static external IP address previously created
-
-```diff
-+ appConfigValues:
-+   selfHostedDomain: "<your-carto-domain-name>"
-+
-tlsCerts:
-  httpsEnabled: false
-
-router:
-  ingress:
-    enabled: true
--    tls: true
-+   annotations:
-+     kubernetes.io/ingress.class: "gce"
-+     kubernetes.io/ingress.global-static-ip-name: "my_carto_ip"
-+     networking.gke.io/managed-certificates: "carto-google-managed-cert"
-      networking.gke.io/v1beta1.FrontendConfig: "carto-ingress-frontend-config"
-
-  service:
-    annotations:
-      cloud.google.com/backend-config: '{"default": "carto-service-backend-config"}'
-extraDeploy:
-  - |
-    apiVersion: cloud.google.com/v1
-    kind: BackendConfig
-    ...
-    ---
-    apiVersion: networking.gke.io/v1beta1
-    kind: FrontendConfig
-    ...
-+   ---
-+   ## In case you want to use Google Managed Certificate for Ingress you will
-+   ## need to deploy the ManagedCertified object
-+   ## https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#setting_up_a_google-managed_certificate
-+   apiVersion: networking.gke.io/v1
-+   kind: ManagedCertificate
-+   metadata:
-+     name: carto-google-managed-cert
-+     labels: {{- include "common.labels.standard" . | nindent 4 }}
-+       app.kubernetes.io/component: carto
-+       {{- if .Values.commonLabels }}
-+       {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
-+       {{- end }}
-+     annotations:
-+       {{- if .Values.commonAnnotations }}
-+       {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
-+       {{- end }}
-+     namespace: {{ .Release.Namespace | quote }}
-+   spec:
-+     domains:
-+       - {{ .Values.appConfigValues.selfHostedDomain }}
-```
-
-> :warning: Google certificate provisioning can take several minutes, so be patient
-
-**Related configuration**
-
-- [Configure the domain of your Self Hosted](#configure-the-domain-of-your-self-hosted)
-- [Use your own TLS certificate](#use-your-own-tls-certificate)
-
-**Useful links**
-
-- [google-managed-certs](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs#caa)
-- [creating_an_ingress_with_a_google-managed_certificate](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#creating_an_ingress_with_a_google-managed_certificate)
-
-#### Configure TLS termination in the service
-
-##### Disable internal HTTPS
+#### Disable internal HTTPS
 
 > ⚠️ CARTO Self Hosted only works if the final client use HTTPS protocol. ⚠️
 
@@ -263,7 +205,7 @@ tlsCerts:
 
 > ⚠️ Remember that CARTO only works with `HTTPS`, so if you disable this protocol in the Carto Router component you should configure it in a higher layer like a Load Balancer (service or ingress) to make the redirection from `HTTP` to `HTTPS` ⚠️
 
-##### Use your own TLS certificate
+#### Use your own TLS certificate
 
 By default, the package generates a self-signed certificate with a validity of 365 days.
 
