@@ -1056,11 +1056,11 @@ Here you can find some basic instructions in order to create the config yaml fil
 - A common error could be that the certificate creation for the Load Balancer in GCP will be in a failed status, you could execute these commands to debug into:
 
   ```bash
-  $ kubectl get ingress carto-router -n <namespace>
-  $ kubectl describe ingress carto-router -n <namespace>
-  $ export SSL_CERT_ID=$(kubectl get ingress carto-router -n <namespace> -o jsonpath='{.metadata.annotations.ingress\.kubernetes\.io/ssl-cert}')
-  $ gcloud --project <project> compute ssl-certificates list
-  $ gcloud --project <project> compute ssl-certificates describe ${SSL_CERT_ID}
+    kubectl get ingress carto-router -n <namespace>
+    kubectl describe ingress carto-router -n <namespace>
+    export SSL_CERT_ID=$(kubectl get ingress carto-router -n <namespace> -o jsonpath='{.metadata.annotations.ingress\.kubernetes\.io/ssl-cert}')
+    gcloud --project <project> compute ssl-certificates list
+    gcloud --project <project> compute ssl-certificates describe ${SSL_CERT_ID}
   ```
 
 - `500 Code Error`
@@ -1082,13 +1082,13 @@ Here you can find some basic instructions in order to create the config yaml fil
   - Get the PEM or CRT file and split the certificate chain in multiple files
 
     ```bash
-    $ cat carto.example.crt | \
+    cat carto.example.crt | \
       awk 'split_after == 1 {n++;split_after=0} \
       /-----END CERTIFICATE-----/ {split_after=1} \
       {print > "cert_chain" n ".crt"}'
     ```
     ```bash
-    $ ls -ltr cert_chain*
+    ls -ltr cert_chain*
     cert_chain1.crt
     cert_chain.crt
     ```
@@ -1096,7 +1096,7 @@ Here you can find some basic instructions in order to create the config yaml fil
   - Get who is the signer / issuer of each of the certificate chain certs
 
     ```bash
-    $ for CERT in $(ls cert_chain*.crt); do echo -e "------------------------\n";openssl x509 -in ${CERT} -noout -text | egrep "Issuer:|Subject:"; echo -e "------------------------\n";  done
+    for CERT in $(ls cert_chain*.crt); do echo -e "------------------------\n";openssl x509 -in ${CERT} -noout -text | egrep "Issuer:|Subject:"; echo -e "------------------------\n";  done
     ```
 
     ```yaml
@@ -1120,20 +1120,20 @@ Here you can find some basic instructions in order to create the config yaml fil
     **NOTE**: this certificates use to come with the bundle sent when the certificate was renewed. In this example the missing certificate is the `USERTrust`
 
     ```bash
-    $ cat carto.example.crt USERTrustRSAAAACA.crt > carto.example.new.crt
+    cat carto.example.crt USERTrustRSAAAACA.crt > carto.example.new.crt
     ```
 
   - Verify the md5
 
     ```bash
-    $ openssl x509 -noout -modulus -in carto.example.new.crt | openssl md5
-    $ openssl rsa -noout -modulus -in carto.example.key | openssl md5
+    openssl x509 -noout -modulus -in carto.example.new.crt | openssl md5
+    openssl rsa -noout -modulus -in carto.example.key | openssl md5
     ```
 
   - Create your new certificate in a kubernetes tls secret
   
     ```bash
-    $ kubectl create secret tls -n <namespace> carto-example-new --cert=carto.example.new.crt --key=carto.example.key
+    kubectl create secret tls -n <namespace> carto-example-new --cert=carto.example.new.crt --key=carto.example.key
     ```
 
   - Reinstall your environment
