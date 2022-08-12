@@ -1090,10 +1090,6 @@ Here you can find some basic instructions in order to create the config yaml fil
     ```bash
     ls -ltr cert_chain*
     ```
-    ```yaml
-    cert_chain1.crt
-    cert_chain.crt
-    ```
 
   - Get who is the signer / issuer of each of the certificate chain certs
 
