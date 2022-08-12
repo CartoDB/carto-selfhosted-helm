@@ -352,7 +352,7 @@ accountsWww:
   ##
   autoscaling:
     enabled: false
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
   ## accounts-www resource requests and limits
@@ -668,7 +668,7 @@ importApi:
   ##
   autoscaling:
     enabled: false
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
   ## import-api resource requests and limits
@@ -1168,7 +1168,7 @@ ldsApi:
   ##
   autoscaling:
     enabled: false
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
   ## lds-api resource requests and limits
@@ -2008,7 +2008,7 @@ router:
   ##
   autoscaling:
     enabled: false
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
   ## router resource requests and limits
@@ -3502,7 +3502,7 @@ workspaceWww:
   ##
   autoscaling:
     enabled: false
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
   ## workspace-www resource requests and limits
