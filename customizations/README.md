@@ -1138,5 +1138,6 @@ Here you can find some basic instructions in order to create the config yaml fil
 
   7. Reinstall your environment
 
-    [uninstall steps](https://github.com/CartoDB/carto-selfhosted-helm#update)
-    [install steps](https://github.com/CartoDB/carto-selfhosted-helm#installation-steps)
+      [uninstall steps](https://github.com/CartoDB/carto-selfhosted-helm#update)
+
+      [install steps](https://github.com/CartoDB/carto-selfhosted-helm#installation-steps)
