@@ -163,6 +163,8 @@ You can find an example [here](service_loadBalancer/config.yaml). Also, we have 
   kubectl create secret tls -n <namespace> carto-tls-cert --cert=cert.crt --key=cert.key
   ```
 
+  > :warning: The certificate created in the kubernetes tls secret should also have the chain certificates complete. If your certificate has been signed by a intermediate CA, this issuer has to be included in your ingress certificate.
+
 #### Expose CARTO with Ingress and GCP SSL Managed Certificates
 
 - [GKE Ingress example config for CARTO with GCP Managed Certificates](ingress/gke/gcp_managed_cert_config.yaml)
@@ -1031,31 +1033,110 @@ Here you can find some basic instructions in order to create the config yaml fil
 
 ### Ingress
 
-The ingress creation can take several minutes, once finished you should see this status:
+- The ingress creation can take several minutes, once finished you should see this status:
 
 
-```bash
-kubectl get ingress -n <namespace>
-kubectl describe ingress <name>
-```
+  ```bash
+  kubectl get ingress -n <namespace>
+  kubectl describe ingress <name>
+  ```
+  
+  ```bash
+  Events:
+    Type     Reason     Age                  From                     Message
+    ----     ------     ----                 ----                     -------
+    Normal   Sync       9m35s                loadbalancer-controller  UrlMap "k8s2-um-carto-router-zzud3" created
+    Normal   Sync       9m29s                loadbalancer-controller  TargetProxy "k8s2-tp-carto-router-zzud3" created
+    Normal   Sync       9m19s                loadbalancer-controller  ForwardingRule "k8s2-fr-carto-router-zzud3" created
+    Normal   Sync       9m11s                loadbalancer-controller  TargetProxy "k8s2-ts--carto-router-zzud3" created
+    Normal   Sync       9m1s                 loadbalancer-controller  ForwardingRule "k8s2-fs-carto-router-zzud3" created
+    Normal   IPChanged  9m1s                 loadbalancer-controller  IP is now 34.149.xxx.xx
+  ```
 
-```bash
-Events:
-  Type     Reason     Age                  From                     Message
-  ----     ------     ----                 ----                     -------
-  Normal   Sync       9m35s                loadbalancer-controller  UrlMap "k8s2-um-carto-router-zzud3" created
-  Normal   Sync       9m29s                loadbalancer-controller  TargetProxy "k8s2-tp-carto-router-zzud3" created
-  Normal   Sync       9m19s                loadbalancer-controller  ForwardingRule "k8s2-fr-carto-router-zzud3" created
-  Normal   Sync       9m11s                loadbalancer-controller  TargetProxy "k8s2-ts--carto-router-zzud3" created
-  Normal   Sync       9m1s                 loadbalancer-controller  ForwardingRule "k8s2-fs-carto-router-zzud3" created
-  Normal   IPChanged  9m1s                 loadbalancer-controller  IP is now 34.149.xxx.xx
-```
-A common error could be that the certificate creation for the Load Balancer in GCP will be in a failed status, you could execute these commands to debug into:
+- A common error could be that the certificate creation for the Load Balancer in GCP will be in a failed status, you could execute these commands to debug it:
 
-```bash
-$ kubectl get ingress carto-router -n <namespace>
-$ kubectl describe ingress carto-router -n <namespace>
-$ export SSL_CERT_ID=$(kubectl get ingress carto-router -n <namespace> -o jsonpath='{.metadata.annotations.ingress\.kubernetes\.io/ssl-cert}')
-$ gcloud --project <project> compute ssl-certificates list
-$ gcloud --project <project> compute ssl-certificates describe ${SSL_CERT_ID}
-```
+  ```bash
+    kubectl get ingress carto-router -n <namespace>
+    kubectl describe ingress carto-router -n <namespace>
+    export SSL_CERT_ID=$(kubectl get ingress carto-router -n <namespace> -o jsonpath='{.metadata.annotations.ingress\.kubernetes\.io/ssl-cert}')
+    gcloud --project <project> compute ssl-certificates list
+    gcloud --project <project> compute ssl-certificates describe ${SSL_CERT_ID}
+  ```
+
+- `500 Code Error`
+
+  You have configured your Ingress with your own certificate and you are seeing this error:
+
+  ```bash
+    Request URL: https://carto.example.com/workspace-api/accounts/ac_XXXXX/check
+    Request Method: GET
+    Status Code: 500 
+  
+    Response: {"error":"unable to verify the first certificate","status":500,"code":"UNABLE_TO_VERIFY_LEAF_SIGNATURE"}
+  ```
+
+  This error means that your cert has not the certificate chain complete. Probably your cert has been signed by a intermediate CA, and this issuer needs to be added to your cert. In this case, you have to recreate your kubernetes tls secret certificate again with all the issuers and recreate the installation with `helm delete` and `helm install`. Please see the [uninstall steps](https://github.com/CartoDB/carto-selfhosted-helm#update)
+
+  These steps could be useful for you:
+
+  - Get the PEM or CRT file and split the certificate chain in multiple files
+
+    ```bash
+    cat carto.example.crt | \
+      awk 'split_after == 1 {n++;split_after=0} \
+      /-----END CERTIFICATE-----/ {split_after=1} \
+      {print > "cert_chain" n ".crt"}'
+    ```
+    ```bash
+    ls -ltr cert_chain*
+    ```
+
+  - Get who is the signer / issuer of each of the certificate chain certs
+
+    ```bash
+    for CERT in $(ls cert_chain*.crt); do echo -e "------------------------\n";openssl x509 -in ${CERT} -noout -text | egrep "Issuer:|Subject:"; echo -e "------------------------\n";  done
+    ```
+
+    ```yaml
+    ------------------------
+    
+            Issuer: C = US, ST = New Jersey, L = Jersey City, O = The USERTRUST Network, CN = USERTrust RSA Certification Authority
+            Subject: C = GB, ST = Greater Manchester, L = Salford, O = Sectigo Limited, CN = Sectigo RSA Domain Validation Secure Server CA
+    ------------------------
+    
+    ------------------------
+    
+            Issuer: C = GB, ST = Greater Manchester, L = Salford, O = Sectigo Limited, CN = Sectigo RSA Domain Validation Secure Server CA
+            Subject: CN = *.carto.example
+    ------------------------
+    ```
+
+  - Identify the issuer that is missing in your Ingress certificate file.
+
+  - Include the missing certificate in the chain and validate it with the certificate key. Usually it should go to the bottom of the file.
+
+    **NOTE**: this certificates use to come with the bundle sent when the certificate was renewed. In this example the missing certificate is the `USERTrust`
+
+    ```bash
+    cat carto.example.crt USERTrustRSAAAACA.crt > carto.example.new.crt
+    ```
+
+  - Verify the md5
+
+    ```bash
+    openssl x509 -noout -modulus -in carto.example.new.crt | openssl md5
+    openssl rsa -noout -modulus -in carto.example.key | openssl md5
+    ```
+     **NOTE**: If both `modulus md5` does not match (the output of both commands should be exactly the same), the certificate that you have updated won't be valid. From here, you need to iterate with the certificate update operation (previous step), until both `modulus md5` match.
+
+  - Create your new certificate in a kubernetes tls secret
+  
+    ```bash
+    kubectl create secret tls -n <namespace> carto-example-new --cert=carto.example.new.crt --key=carto.example.key
+    ```
+
+  - Reinstall your environment
+
+      [uninstall steps](https://github.com/CartoDB/carto-selfhosted-helm#update)
+
+      [install steps](https://github.com/CartoDB/carto-selfhosted-helm#installation-steps)
