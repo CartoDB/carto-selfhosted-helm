@@ -1,9 +1,12 @@
-# This affinity config requests Kubernetes to allocate
-# the service replicas across different worker nodes.
-# You should also enable static scaling or autoscaling.
+############################################################################
+# INFO: This affinity config requests Kubernetes to allocate
+#       the service replicas across different worker nodes.
+#       You should also enable static scaling (replicaCount) or autoscaling
+#       for these services.
+############################################################################
 
 accountsWww:
-  #replicaCount: 1
+  #replicaCount: 2
   #autoscaling:
   #  enabled: true
   affinity:
@@ -20,7 +23,7 @@ accountsWww:
             topologyKey: "kubernetes.io/hostname"
 
 importApi:
-  #replicaCount: 1
+  #replicaCount: 2
   #autoscaling:
   #  enabled: true
   affinity:
@@ -37,7 +40,7 @@ importApi:
             topologyKey: "kubernetes.io/hostname"
 
 ldsApi:
-  #replicaCount: 1
+  #replicaCount: 2
   #autoscaling:
   #  enabled: true
   affinity:
@@ -54,7 +57,7 @@ ldsApi:
             topologyKey: "kubernetes.io/hostname"
 
 mapsApi:
-  #replicaCount: 1
+  #replicaCount: 2
   #autoscaling:
   #  enabled: true
   affinity:
@@ -71,7 +74,7 @@ mapsApi:
             topologyKey: "kubernetes.io/hostname"
 
 router:
-  #replicaCount: 1
+  #replicaCount: 2
   #autoscaling:
   #  enabled: true
   affinity:
@@ -88,7 +91,7 @@ router:
             topologyKey: "kubernetes.io/hostname"
 
 workspaceApi:
-  #replicaCount: 1
+  #replicaCount: 2
   #autoscaling:
   #  enabled: true
   affinity:
@@ -105,7 +108,7 @@ workspaceApi:
             topologyKey: "kubernetes.io/hostname"
 
 workspaceWww:
-  #replicaCount: 1
+  #replicaCount: 2
   #autoscaling:
   #  enabled: true
   affinity:
