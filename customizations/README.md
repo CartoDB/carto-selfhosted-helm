@@ -1079,63 +1079,64 @@ Here you can find some basic instructions in order to create the config yaml fil
 
   These steps could be useful for you:
 
-  1. Get the PEM or CRT file and split the certificate chain in multiple files
+  - Get the PEM or CRT file and split the certificate chain in multiple files
 
-  ```bash
-  $ cat carto.example.crt | \
-    awk 'split_after == 1 {n++;split_after=0} \
-    /-----END CERTIFICATE-----/ {split_after=1} \
-    {print > "cert_chain" n ".crt"}'
-  ```
-  ```bash
-  $ ls -ltr cert_chain*
-  cert_chain1.crt
-  cert_chain.crt
-  ```
+    ```bash
+    $ cat carto.example.crt | \
+      awk 'split_after == 1 {n++;split_after=0} \
+      /-----END CERTIFICATE-----/ {split_after=1} \
+      {print > "cert_chain" n ".crt"}'
+    ```
+    ```bash
+    $ ls -ltr cert_chain*
+    cert_chain1.crt
+    cert_chain.crt
+    ```
 
-  2. Get who is the signer / issuer of each of the certificate chain certs
+  - Get who is the signer / issuer of each of the certificate chain certs
 
-  ```bash
-  $ for CERT in $(ls cert_chain*.crt); do echo -e "------------------------\n";openssl x509 -in ${CERT} -noout -text | egrep "Issuer:|Subject:"; echo -e "------------------------\n";  done
-  ```
+    ```bash
+    $ for CERT in $(ls cert_chain*.crt); do echo -e "------------------------\n";openssl x509 -in ${CERT} -noout -text | egrep "Issuer:|Subject:"; echo -e "------------------------\n";  done
+    ```
 
-  ```yaml
-  ------------------------
-  
-          Issuer: C = US, ST = New Jersey, L = Jersey City, O = The USERTRUST Network, CN = USERTrust RSA Certification Authority
-          Subject: C = GB, ST = Greater Manchester, L = Salford, O = Sectigo Limited, CN = Sectigo RSA Domain Validation Secure Server CA
-  ------------------------
-  
-  ------------------------
-  
-          Issuer: C = GB, ST = Greater Manchester, L = Salford, O = Sectigo Limited, CN = Sectigo RSA Domain Validation Secure Server CA
-          Subject: CN = *.carto.solutions
-  ------------------------
-  ```
+    ```yaml
+    ------------------------
+    
+            Issuer: C = US, ST = New Jersey, L = Jersey City, O = The USERTRUST Network, CN = USERTrust RSA Certification Authority
+            Subject: C = GB, ST = Greater Manchester, L = Salford, O = Sectigo Limited, CN = Sectigo RSA Domain Validation Secure Server CA
+    ------------------------
+    
+    ------------------------
+    
+            Issuer: C = GB, ST = Greater Manchester, L = Salford, O = Sectigo Limited, CN = Sectigo RSA Domain Validation Secure Server CA
+            Subject: CN = *.carto.solutions
+    ------------------------
+    ```
 
-  3. Identify the issuer that is missing in your Ingress certificate file.
+  - Identify the issuer that is missing in your Ingress certificate file.
 
-  4. Include the missing certificate in the chain and validate it with the certificate key: usually it should go to the bottom of the file.
-  - **NOTE**: this certificates use to come with the bundle sent when the certificate was renewed. In this example the missing certificate is the `USERTrust`
+  - Include the missing certificate in the chain and validate it with the certificate key. Usually it should go to the bottom of the file.
 
-  ```bash
-  $ cat carto.example.crt USERTrustRSAAAACA.crt > carto.example.new.crt
-  ```
+    **NOTE**: this certificates use to come with the bundle sent when the certificate was renewed. In this example the missing certificate is the `USERTrust`
+
+    ```bash
+    $ cat carto.example.crt USERTrustRSAAAACA.crt > carto.example.new.crt
+    ```
 
   5. Verify the md5
 
-  ```bash
-  $ openssl x509 -noout -modulus -in carto.example.new.crt | openssl md5
-  $ openssl rsa -noout -modulus -in carto.example.key | openssl md5
-  ```
+    ```bash
+    $ openssl x509 -noout -modulus -in carto.example.new.crt | openssl md5
+    $ openssl rsa -noout -modulus -in carto.example.key | openssl md5
+    ```
 
   6. Create your new certificate in a kubernetes tls secret
   
-  ```bash
-  $ kubectl create secret tls -n <namespace> carto-example-new --cert=carto.example.new.crt --key=carto.example.key
-  ```
+    ```bash
+    $ kubectl create secret tls -n <namespace> carto-example-new --cert=carto.example.new.crt --key=carto.example.key
+    ```
 
   7. Reinstall your environment
 
-  [uninstall steps](https://github.com/CartoDB/carto-selfhosted-helm#update)
-  [install steps](https://github.com/CartoDB/carto-selfhosted-helm#installation-steps)
+    [uninstall steps](https://github.com/CartoDB/carto-selfhosted-helm#update)
+    [install steps](https://github.com/CartoDB/carto-selfhosted-helm#installation-steps)
