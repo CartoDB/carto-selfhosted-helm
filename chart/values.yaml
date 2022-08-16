@@ -354,7 +354,7 @@ accountsWww:
   ##
   autoscaling:
     enabled: false
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
   ## accounts-www resource requests and limits
@@ -370,7 +370,7 @@ accountsWww:
       cpu: "500m"
     requests:
       memory: "768Mi"
-      cpu: "375m"
+      cpu: "200m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param accountsWww.podSecurityContext.enabled Enabled accounts-www pods' Security Context
@@ -670,7 +670,7 @@ importApi:
   ##
   autoscaling:
     enabled: false
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
   ## import-api resource requests and limits
@@ -686,7 +686,7 @@ importApi:
       cpu: "1000m"
     requests:
       memory: "372Mi"
-      cpu: "750m"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importApi.podSecurityContext.enabled Enabled import-api pods' Security Context
@@ -929,7 +929,7 @@ importWorker:
       cpu: "1000m"
     requests:
       memory: "3072Mi"
-      cpu: "750m"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importWorker.podSecurityContext.enabled Enabled import-worker pods' Security Context
@@ -1170,7 +1170,7 @@ ldsApi:
   ##
   autoscaling:
     enabled: false
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
   ## lds-api resource requests and limits
@@ -1186,7 +1186,7 @@ ldsApi:
       cpu: "1000m"
     requests:
       memory: "768Mi"
-      cpu: "750m"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param ldsApi.podSecurityContext.enabled Enabled lds-api pods' Security Context
@@ -1474,7 +1474,7 @@ mapsApi:
   autoscaling:
     enabled: false
     minReplicas: 2
-    maxReplicas: 3
+    maxReplicas: 6
     targetCPUUtilizationPercentage: 75
   ## maps-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
@@ -1489,7 +1489,7 @@ mapsApi:
       cpu: "1000m"
     requests:
       memory: "768Mi"
-      cpu: "750m"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param mapsApi.podSecurityContext.enabled Enabled maps-api pods' Security Context
@@ -1767,7 +1767,7 @@ sqlWorker:
       cpu: "1000m"
     requests:
       memory: "3072Mi"
-      cpu: "750m"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param sqlWorker.podSecurityContext.enabled Enabled sql-worker pods' Security Context
@@ -2010,7 +2010,7 @@ router:
   ##
   autoscaling:
     enabled: false
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
   ## router resource requests and limits
@@ -2026,7 +2026,7 @@ router:
       cpu: "500m"
     requests:
       memory: "372Mi"
-      cpu: "350m"
+      cpu: "200m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param router.podSecurityContext.enabled Enabled router pods' Security Context
@@ -2411,7 +2411,7 @@ httpCache:
       cpu: "500m"
     requests:
       memory: "1256Mi"
-      cpu: "375m"
+      cpu: "200m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param httpCache.podSecurityContext.enabled Enabled http-cache pods' Security Context
@@ -2715,7 +2715,7 @@ cdnInvalidatorSub:
       cpu: "500m"
     requests:
       memory: "372Mi"
-      cpu: "350m"
+      cpu: "200m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param cdnInvalidatorSub.podSecurityContext.enabled Enabled cdnInvalidatorSub pods' Security Context
@@ -3005,7 +3005,7 @@ workspaceApi:
   autoscaling:
     enabled: false
     minReplicas: 2
-    maxReplicas: 3
+    maxReplicas: 6
     targetCPUUtilizationPercentage: 75
   ## workspace-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
@@ -3020,7 +3020,7 @@ workspaceApi:
       cpu: "1000m"
     requests:
       memory: "768Mi"
-      cpu: "750m"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceApi.podSecurityContext.enabled Enabled workspace-api pods' Security Context
@@ -3263,7 +3263,7 @@ workspaceSubscriber:
       cpu: "500m"
     requests:
       memory: "372Mi"
-      cpu: "350m"
+      cpu: "200m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceSubscriber.podSecurityContext.enabled Enabled workspace-subscriber pods' Security Context
@@ -3504,7 +3504,7 @@ workspaceWww:
   ##
   autoscaling:
     enabled: false
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
   ## workspace-www resource requests and limits
@@ -3520,7 +3520,7 @@ workspaceWww:
       cpu: "500m"
     requests:
       memory: "768Mi"
-      cpu: "350m"
+      cpu: "200m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceWww.podSecurityContext.enabled Enabled workspace-www pods' Security Context
