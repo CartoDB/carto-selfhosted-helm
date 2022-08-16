@@ -635,7 +635,7 @@ externalRedis:
 
 ### Custom Buckets
 
-For every CARTO Self Hosted installation, we create GCS buckets in our side as part of the required infrastructure for importing data, map thumbnails and other internal data.
+For every CARTO Self Hosted installation, we create GCS buckets in our side as part of the required infrastructure for importing data, map thumbnails, custom markers and other internal data.
 
 You can create and use your own storage buckets in any of the following supported storage providers:
 
@@ -696,8 +696,11 @@ In order to use Google Cloud Storage custom buckets you need to:
      workspaceImportsPublic: <false|true>
      workspaceThumbnailsBucket: <thumbnails_bucket_name>
      workspaceThumbnailsPublic: <false|true>
+     thumbnailsBucketExternalURL: <public or authenticated external bucket URL>
      googleCloudStorageProjectId: <gcp_project_id>
    ```
+
+   > Note that thumbnailsBucketExternalURL could be https://storage.googleapis.com/<thumbnails_bucket_name>/ for public access or https://storage.cloud.google.com/<thumbnails_bucket_name>/ for authenticated access.
 
 4. Select a **Service Account** that will be used by the application to interact with the buckets. There are three options:
 
@@ -767,8 +770,11 @@ appConfigValues:
   workspaceImportsPublic: <false|true>
   workspaceThumbnailsBucket: <thumbnails_bucket_name>
   workspaceThumbnailsPublic: <false|true>
+  thumbnailsBucketExternalURL: <external bucket URL>
   awsS3Region: <s3_buckets_region>
 ```
+
+> Note that thumbnailsBucketExternalURL should be https://<thumbnails_bucket_name>.s3.amazonaws.com/
 
 6. Pass your AWS credentials as secrets by using one of the options below:
 
@@ -837,8 +843,10 @@ appConfigValues:
   workspaceImportsBucket: <client_bucket_name>
   workspaceImportsPublic: <false|true>
   workspaceThumbnailsBucket: <thumbnails_bucket_name>
+  thumbnailsBucketExternalURL: <external bucket URL>
   workspaceThumbnailsPublic: <false|true>
 ```
+  > Note that thumbnailsBucketExternalURL should be https://<azure_resource_group>.blob.core.windows.net/<thumbnails_bucket_name>/
 
 6. Pass your credentials as secrets by using one of the options below:
 
