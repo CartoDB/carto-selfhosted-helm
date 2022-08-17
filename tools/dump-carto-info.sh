@@ -55,33 +55,42 @@ helm list -n "${NAMESPACE}" > ${DUMP_FOLDER}/helm-release.out
 
 echo "Downloading pods..."
 kubectl get pods -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/pods.out
+kubectl describe pods -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/pods.out
 
 echo "Downloading services..."
 kubectl get svc -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/services.out
+kubectl describe svc -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/services.out
 
 echo "Downloading endpoints..."
 kubectl get endpoints -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/endpoints.out
+kubectl describe endpoints -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/endpoints.out
 
 echo "Downloading deployments..."
 kubectl get deployments -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/deployments.out
+kubectl describe deployments -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/deployments.out
 
 echo "Downloading ingress..."
-INGRESS_NAME=$(kubectl get ingress -n "${NAMESPACE}" -o jsonpath='{.items[0].metadata.name}' -l app.kubernetes.io/instance="${HELM_RELEASE}")
-kubectl describe ingress ${INGRESS_NAME} -n "${NAMESPACE}" > ${DUMP_FOLDER}/ingress.out
+kubectl get ingress -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/ingress.out
+kubectl describe ingress -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/ingress.out
 
 echo "Downloading BackendConfigs..."
-BACKENDCONFIG_NAME=$(kubectl get backendconfigs -n "${NAMESPACE}" -o jsonpath='{.items[0].metadata.name}' -l app.kubernetes.io/instance="${HELM_RELEASE}")
-kubectl describe backendconfigs ${BACKENDCONFIG_NAME} -n "${NAMESPACE}" > ${DUMP_FOLDER}/backendconfigs.out
+kubectl get backendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/backendconfigs.out
+kubectl describe backendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/backendconfigs.out
 
 echo "Downloading FrontEndConfig..."
-FRONTENDCONFIG_NAME=$(kubectl get frontendconfigs -n "${NAMESPACE}" -o jsonpath='{.items[0].metadata.name}' -l app.kubernetes.io/instance="${HELM_RELEASE}")
-kubectl describe frontendconfigs ${FRONTENDCONFIG_NAME} -n "${NAMESPACE}" > ${DUMP_FOLDER}/frontendconfigs.out
+kubectl get frontendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/frontendconfigs.out
+kubectl describe frontendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/frontendconfigs.out
 
 echo "Downloading events..."
 kubectl get event -n "${NAMESPACE}" > ${DUMP_FOLDER}/events.out
 
+echo "Downloading pvc..."
+kubectl get pvc -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/pvc.out
+kubectl describe pvc -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/pvc.out
+
 echo "Downloading secrets info without passwords..."
-kubectl describe secrets -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/secrets.out
+kubectl get secrets -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/secrets.out
+kubectl describe secrets -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/secrets.out
 
 echo "Creating tar file..."
 tar -czvf ${DUMP_FOLDER}.tar.gz ${DUMP_FOLDER}
