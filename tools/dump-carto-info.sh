@@ -82,3 +82,6 @@ kubectl get event -n "${NAMESPACE}" > ${DUMP_FOLDER}/events.out
 
 echo "Downloading secrets info without passwords..."
 kubectl describe secrets -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/secrets.out
+
+echo "Creating tar file..."
+tar -czvf ${DUMP_FOLDER}.tar.gz ${DUMP_FOLDER}
