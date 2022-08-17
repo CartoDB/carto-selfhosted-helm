@@ -39,6 +39,7 @@
       - [Enable Carto autoscaling feature](#enable-carto-autoscaling-feature)
     - [Enable static scaling](#enable-static-scaling)
   - [High Availability](#high-availability)
+  - [Capacity planning](#capacity-planning)
   - [Advanced configuration](#advanced-configuration)
   - [Tips for creating the customization Yaml file](#tips-for-creating-the-customization-yaml-file)
   - [Troubleshooting](#troubleshooting)
@@ -1009,6 +1010,14 @@ In some cases, you may want to ensure **some critical services have replicas dep
 - [Standard HA](high_availability/standard): configuration for an HA deployment
 - [Standard HA with upgrades](high_availability/standard_with_upgrades): configuration for an HA deployment, taking into account application upgrades.
 - [High traffic HA](high_availability/high_traffic): configuration for an HA deployment in high traffic environments.
+
+## Capacity planning
+
+Aligned with the [high availability configurations](high_availability), please check the required cluster resources for each of the configurations:
+
+- [Standard HA](high_availability/standard/README.md#capacity-planning)
+- [Standard HA with upgrades](high_availability/standard_with_upgrades/README.md#capacity-planning)
+- [High traffic HA](high_availability/high_traffic/README.md#capacity-planning)
 
 ## Advanced configuration
 

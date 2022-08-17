@@ -29,7 +29,7 @@ mapsApi:
   autoscaling:
     enabled: true
     minReplicas: 2
-    maxReplicas: 3
+    maxReplicas: 6
     #targetCPUUtilizationPercentage: 75
 
 router:
@@ -43,7 +43,7 @@ workspaceApi:
   autoscaling:
     enabled: true
     minReplicas: 2
-    maxReplicas: 3
+    maxReplicas: 6
     #targetCPUUtilizationPercentage: 75
 
 workspaceWww:
