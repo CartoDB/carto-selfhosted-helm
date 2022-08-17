@@ -3,6 +3,7 @@
 ### Requirements
 
 - NodePool with at least 2 nodes
+- NodePool with at least `26gb RAM` and `15 CPUs` for workloads, in order to avoid evictions if the minimal number of replicas approaches to the limits
 
 ### Setup
 
