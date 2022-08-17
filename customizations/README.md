@@ -1007,8 +1007,8 @@ In some cases, you may want to ensure **some critical services have replicas dep
 > In order to provide high availability accross regions/zones, it's recommended to deploy each worker node in a different cloud provider regions/zones.
 
 - [Standard HA](high_availability/standard): configuration for an HA deployment
-- [Standard HA with upgrades](high_availability/standard): configuration for an HA deployment, taking into account application upgrades.
-- [High traffic HA](high_availability/standard): configuration for an HA deployment in high traffic environments.
+- [Standard HA with upgrades](high_availability/standard_with_upgrades): configuration for an HA deployment, taking into account application upgrades.
+- [High traffic HA](high_availability/high_traffic): configuration for an HA deployment in high traffic environments.
 
 ## Advanced configuration
 

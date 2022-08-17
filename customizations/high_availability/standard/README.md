@@ -6,7 +6,7 @@
 
 ### Setup
 
-- A replica of each component will be placed in a differente node ensuring application high availability if a node goes down.
+- A replica of each component will be placed in a different node, ensuring application high availability if a node goes down.
 
 ### Application upgrades
 

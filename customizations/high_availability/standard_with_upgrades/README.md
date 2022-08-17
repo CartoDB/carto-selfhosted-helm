@@ -1,4 +1,4 @@
-## High Availability configuration: High traffic
+## High Availability configuration: Standard with upgrades
 
 ### Requirements
 
@@ -11,8 +11,3 @@
 ### Application upgrades
 
 - A third replica will be triggered for the upgrade operation, ensuring that the other two replicas remain up and running.
-- For components with more than 3 replicas, one of the replicas will be replaced during the upgrade.
-
-### High traffic
-
-- The CARTO components getting most of the requests will scale up to `maxReplicas` in order to cope with the traffic load, under high traffic conditions.
