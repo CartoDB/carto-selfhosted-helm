@@ -1000,9 +1000,15 @@ You can set statically set the number of pods should be running. To do it, use [
 
 ## High Availability
 
-In some cases, you may want to ensure some critical services have replicas deployed across different worker nodes in order to provide high availability against a node failure. You can achieve this by applying the [high availability config](high_availability/customizations.yaml). Note that you should enable static scaling or autoscaling for this setup to work as expected.
+In some cases, you may want to ensure **some critical services have replicas deployed across different worker nodes** in order to provide high availability against a node failure. You can achieve this by applying one of the [high availability configurations](high_availability) that we recommend. 
+
+> Note that you should enable static scaling or autoscaling for this setup to work as expected.
 
 > In order to provide high availability accross regions/zones, it's recommended to deploy each worker node in a different cloud provider regions/zones.
+
+- [Standard HA](high_availability/standard): configuration for an HA deployment
+- [Standard HA with upgrades](high_availability/standard): configuration for an HA deployment, taking into account application upgrades.
+- [High traffic HA](high_availability/standard): configuration for an HA deployment in high traffic environments.
 
 ## Advanced configuration
 

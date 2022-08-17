@@ -1,0 +1,26 @@
+####################################################################
+# WARNING: We discourage adding scale configuration for any component
+#          that is not listed in this file, because it is not
+#          supported and it could impact the application stability.
+####################################################################
+
+accountsWww:
+  replicaCount: 2
+
+importApi:
+  replicaCount: 2
+
+ldsApi:
+  replicaCount: 2
+
+mapsApi:
+  replicaCount: 2
+
+router:
+  replicaCount: 2
+
+workspaceApi:
+  replicaCount: 2
+
+workspaceWww:
+  replicaCount: 2
