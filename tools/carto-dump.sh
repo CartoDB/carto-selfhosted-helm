@@ -130,11 +130,11 @@ _dump_extra_checks () {
 
 	echo "Checking Api health..."
 	{ echo "Checking Workspace API: "; kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
-	  -- curl http://carto-workspace-api; } >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log
+	  -- curl http://carto-workspace-api 2>>"${DUMP_FOLDER}"/error.log; } >> "${DUMP_FOLDER}"/health_checks.out
 	{ echo "Checking Maps API: "; kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
-	  -- curl http://carto-maps-api; } >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log
+	  -- curl http://carto-maps-api 2>>"${DUMP_FOLDER}"/error.log; } >> "${DUMP_FOLDER}"/health_checks.out
 	{ echo "Checking Import API: "; kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
-	  -- curl http://carto-import-api; } >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log
+	  -- curl http://carto-import-api 2>>"${DUMP_FOLDER}"/error.log; } >> "${DUMP_FOLDER}"/health_checks.out
 }
 
 _check_gke () {
