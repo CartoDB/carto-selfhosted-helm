@@ -59,51 +59,51 @@ DUMP_FOLDER="${HELM_RELEASE}-${NAMESPACE}_$(date "+%Y.%m.%d-%H.%M.%S")"
 mkdir -p ${DUMP_FOLDER}/pod
 
 echo "Downloading helm release info..."
-helm list -n "${NAMESPACE}" > ${DUMP_FOLDER}/helm-release.out
+helm list -n "${NAMESPACE}" > ${DUMP_FOLDER}/helm-release.out 2>>${DUMP_FOLDER}/error.log
 
 echo "Downloading pods..."
-kubectl get pods -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/pods.out 2>/dev/null
-kubectl describe pods -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/pods.out 2>/dev/null
+kubectl get pods -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/pods.out 2>>${DUMP_FOLDER}/error.log
+kubectl describe pods -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/pods.out 2>>${DUMP_FOLDER}/error.log
 for POD in $(kubectl get pods -n "${NAMESPACE}" -o name -l app.kubernetes.io/instance="${HELM_RELEASE}"); \
-  do kubectl logs ${POD} -n "${NAMESPACE}" > ${DUMP_FOLDER}/${POD}.log; done 2>/dev/null
+  do kubectl logs ${POD} -n "${NAMESPACE}" > ${DUMP_FOLDER}/${POD}.log 2>>${DUMP_FOLDER}/error.log; done 
 
 echo "Downloading services..."
-kubectl get svc -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/services.out 2>/dev/null
-kubectl describe svc -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/services.out 2>/dev/null
+kubectl get svc -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/services.out 2>>${DUMP_FOLDER}/error.log
+kubectl describe svc -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/services.out 2>>${DUMP_FOLDER}/error.log
 
 echo "Downloading endpoints..."
-kubectl get endpoints -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/endpoints.out 2>/dev/null
-kubectl describe endpoints -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/endpoints.out 2>/dev/null
+kubectl get endpoints -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/endpoints.out 2>>${DUMP_FOLDER}/error.log
+kubectl describe endpoints -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/endpoints.out 2>>${DUMP_FOLDER}/error.log
 
 echo "Downloading deployments..."
-kubectl get deployments -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/deployments.out 2>/dev/null
-kubectl describe deployments -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/deployments.out 2>/dev/null
+kubectl get deployments -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/deployments.out 2>>${DUMP_FOLDER}/error.log
+kubectl describe deployments -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/deployments.out 2>>${DUMP_FOLDER}/error.log
 
 echo "Downloading ingress..."
-kubectl get ingress -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/ingress.out 2>/dev/null
-kubectl describe ingress -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/ingress.out 2>/dev/null
+kubectl get ingress -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/ingress.out 2>>${DUMP_FOLDER}/error.log
+kubectl describe ingress -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/ingress.out 2>>${DUMP_FOLDER}/error.log
 
 echo "Downloading BackendConfigs..."
-kubectl get backendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/backendconfigs.out 2>/dev/null
-kubectl describe backendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/backendconfigs.out 2>/dev/null
+kubectl get backendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/backendconfigs.out 2>>${DUMP_FOLDER}/error.log
+kubectl describe backendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/backendconfigs.out 2>>${DUMP_FOLDER}/error.log
 
 echo "Downloading FrontEndConfig..."
-kubectl get frontendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/frontendconfigs.out 2>/dev/null
-kubectl describe frontendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/frontendconfigs.out 2>/dev/null
+kubectl get frontendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/frontendconfigs.out 2>>${DUMP_FOLDER}/error.log
+kubectl describe frontendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/frontendconfigs.out 2>>${DUMP_FOLDER}/error.log
 
 echo "Downloading events..."
-kubectl get event -n "${NAMESPACE}" > ${DUMP_FOLDER}/events.out 2>/dev/null
+kubectl get event -n "${NAMESPACE}" > ${DUMP_FOLDER}/events.out 2>>${DUMP_FOLDER}/error.log
 
 echo "Downloading pvc..."
-kubectl get pvc -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/pvc.out 2>/dev/null
-kubectl describe pvc -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/pvc.out 2>/dev/null
+kubectl get pvc -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/pvc.out 2>>${DUMP_FOLDER}/error.log
+kubectl describe pvc -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/pvc.out 2>>${DUMP_FOLDER}/error.log
 
 echo "Downloading secrets info without passwords..."
-kubectl get secrets -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/secrets.out 2>/dev/null
-kubectl describe secrets -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/secrets.out 2>/dev/null
+kubectl get secrets -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/secrets.out 2>>${DUMP_FOLDER}/error.log
+kubectl describe secrets -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/secrets.out 2>>${DUMP_FOLDER}/error.log
 
 echo "Creating tar file..."
-tar -czvf ${DUMP_FOLDER}.tar.gz ${DUMP_FOLDER} 2>/dev/null
+tar -czvf ${DUMP_FOLDER}.tar.gz ${DUMP_FOLDER} 2>>${DUMP_FOLDER}/error.log
 
 }
 
