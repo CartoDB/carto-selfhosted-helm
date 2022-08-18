@@ -39,6 +39,7 @@
       - [Enable Carto autoscaling feature](#enable-carto-autoscaling-feature)
     - [Enable static scaling](#enable-static-scaling)
   - [High Availability](#high-availability)
+  - [Capacity planning](#capacity-planning)
   - [Advanced configuration](#advanced-configuration)
   - [Tips for creating the customization Yaml file](#tips-for-creating-the-customization-yaml-file)
   - [Troubleshooting](#troubleshooting)
@@ -1000,9 +1001,23 @@ You can set statically set the number of pods should be running. To do it, use [
 
 ## High Availability
 
-In some cases, you may want to ensure some critical services have replicas deployed across different worker nodes in order to provide high availability against a node failure. You can achieve this by applying the [high availability config](high_availability/customizations.yaml). Note that you should enable static scaling or autoscaling for this setup to work as expected.
+In some cases, you may want to ensure **some critical services have replicas deployed across different worker nodes** in order to provide high availability against a node failure. You can achieve this by applying one of the [high availability configurations](high_availability) that we recommend. 
 
-> In order to provide high availability accross regions/zones, it's recommended to deploy each worker node in a different cloud provider regions/zones.
+> Note that you should enable static scaling or autoscaling for this setup to work as expected.
+
+> In order to provide high availability across regions/zones, it's recommended to deploy each worker node in a different cloud provider regions/zones.
+
+- [Standard HA](high_availability/standard): configuration for an HA deployment
+- [Standard HA with upgrades](high_availability/standard_with_upgrades): configuration for an HA deployment, taking into account application upgrades.
+- [High traffic HA](high_availability/high_traffic): configuration for an HA deployment in high traffic environments.
+
+## Capacity planning
+
+Aligned with the [high availability configurations](high_availability), please check the required cluster resources for each of the configurations:
+
+- [Standard HA](high_availability/standard/README.md#capacity-planning)
+- [Standard HA with upgrades](high_availability/standard_with_upgrades/README.md#capacity-planning)
+- [High traffic HA](high_availability/high_traffic/README.md#capacity-planning)
 
 ## Advanced configuration
 
