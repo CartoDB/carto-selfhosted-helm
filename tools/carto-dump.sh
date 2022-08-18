@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #  CARTO 3 Self hosted dump kubernetes info
 #
@@ -30,7 +30,7 @@ _print_help() {
 
 _main() {
 	ARGS=("$@")
-
+    # <!-- markdownlint-disable-next-line SC3030 -->
 	for index in "${!ARGS[@]}"; do
 		case "${ARGS[index]}" in
 		"--namespace")
@@ -63,11 +63,11 @@ _main() {
 
 	_dump_info
 
-	if [ "${EXTRA_CHECKS}" == "true" ]; then
+	if [ "${EXTRA_CHECKS}" = "true" ]; then
 	  _dump_extra_checks
 	fi
 
-	if [ "${ENGINE}" == "gke" ] && [ "${GCP_PROJECT}" != "" ]; then
+	if [ "${ENGINE}" = "gke" ] && [ "${GCP_PROJECT}" != "" ]; then
 	  _check_gke
 	fi
 
