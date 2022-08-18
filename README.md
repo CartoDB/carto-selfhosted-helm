@@ -145,6 +145,10 @@ If you see this error you can get the reason running the following command:
  kubectl logs --selector=job-name=<your_release_name>-pre-install
 ```
 
+#### Diagnostic Bundle
+
+If you need to open a support ticket, please execute our [Carto dump tool](tools/carto-dump.sh) to obtain all the necessary checks and attach it to the ticket
+
 ## Update
 
 1. Authenticate and connect to your cluster
