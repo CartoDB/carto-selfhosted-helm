@@ -56,7 +56,7 @@ _dump_info
 _dump_info (){
 
 DUMP_FOLDER="${HELM_RELEASE}-${NAMESPACE}_$(date "+%Y.%m.%d-%H.%M.%S")"
-mkdir -p ${DUMP_FOLDER}/logs
+mkdir -p ${DUMP_FOLDER}/pod
 
 echo "Downloading helm release info..."
 helm list -n "${NAMESPACE}" > ${DUMP_FOLDER}/helm-release.out
@@ -64,10 +64,8 @@ helm list -n "${NAMESPACE}" > ${DUMP_FOLDER}/helm-release.out
 echo "Downloading pods..."
 kubectl get pods -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/pods.out 2>/dev/null
 kubectl describe pods -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/pods.out 2>/dev/null
-for POD in $(kubectl get pods -n "${NAMESPACE}" --no-headers -l app.kubernetes.io/instance="${HELM_RELEASE}" | awk '{print $1}'); \
-  do kubectl logs $POD -n "${NAMESPACE}" > ${DUMP_FOLDER}/logs/${POD}.log; done 2>/dev/null
-
-kubectl logs pods -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/pods.log 2>/dev/null
+for POD in $(kubectl get pods -n "${NAMESPACE}" -o name -l app.kubernetes.io/instance="${HELM_RELEASE}"); \
+  do kubectl logs ${POD} -n "${NAMESPACE}" > ${DUMP_FOLDER}/${POD}.log; done 2>/dev/null
 
 echo "Downloading services..."
 kubectl get svc -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/services.out 2>/dev/null
