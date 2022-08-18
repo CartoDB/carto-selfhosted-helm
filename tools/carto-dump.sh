@@ -86,7 +86,7 @@ _dump_info (){
 	kubectl get pods -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/pods.out 2>>"${DUMP_FOLDER}"/error.log
 	kubectl describe pods -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> "${DUMP_FOLDER}"/pods.out 2>>"${DUMP_FOLDER}"/error.log
 	for POD in $(kubectl get pods -n "${NAMESPACE}" -o name -l app.kubernetes.io/instance="${HELM_RELEASE}"); \
-	  do kubectl logs ${POD} -n "${NAMESPACE}" > "${DUMP_FOLDER}"/"${POD}".log 2>>"${DUMP_FOLDER}"/error.log; done 
+	  do kubectl logs "${POD}" -n "${NAMESPACE}" > "${DUMP_FOLDER}"/"${POD}".log 2>>"${DUMP_FOLDER}"/error.log; done 
 
 	echo "Downloading services..."
 	kubectl get svc -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/services.out 2>>"${DUMP_FOLDER}"/error.log
@@ -129,13 +129,13 @@ _dump_extra_checks () {
 	kubectl cluster-info dump --namespaces="${NAMESPACE}" > "${DUMP_FOLDER}"/cluster_info.out 2>>"${DUMP_FOLDER}"/error.log
 
 	echo "Checking Api health..."
-	echo "Checking Workspace API -> " >> "${DUMP_FOLDER}"/health_checks.out
+	echo "Checking Workspace API: " >> "${DUMP_FOLDER}"/health_checks.out
 	kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
 	  -- curl http://carto-workspace-api >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log
-	echo "Checking Maps API -> " >> "${DUMP_FOLDER}"/health_checks.out
+	echo "Checking Maps API: " >> "${DUMP_FOLDER}"/health_checks.out
 	kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
 	  -- curl http://carto-maps-api >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log
-	echo "Checking Import API -> " >> "${DUMP_FOLDER}"/health_checks.out
+	echo "Checking Import API: " >> "${DUMP_FOLDER}"/health_checks.out
 	kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
 	  -- curl http://carto-import-api >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log
 }
