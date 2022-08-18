@@ -147,7 +147,7 @@ If you see this error you can get the reason running the following command:
 
 #### Diagnostic Bundle
 
-If you need to open a support ticket, please execute our [Carto dump tool](tools/README.md) to obtain all the necessary checks and attach it to the ticket
+If you need to open a support ticket, please execute our [Carto dump tool](tools/) to obtain all the necessary checks and attach it to the ticket
 
 ## Update
 
