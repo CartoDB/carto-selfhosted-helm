@@ -3,7 +3,7 @@
 #  CARTO 3 Self hosted dump kubernetes info
 #
 # Usage:
-#   dump_carto_info.sh --n <namespace> --release <helm_release>
+#   dump_carto_info.sh --n <namespace> --release <helm_release> --engine <engine> [--extra]
 #
 
 _bad_arguments() {
@@ -14,14 +14,16 @@ _bad_arguments() {
 
 _print_help() {
 	cat <<-EOF
-		usage: bash carto-dump.sh [-h] --namespace NAMESPACE --release HELM_RELEASE [--extra]
+		usage: bash carto-dump.sh [-h] --namespace NAMESPACE --release HELM_RELEASE --engine ENGINE [--gcp-project] [--extra] 
 
 		mandatory arguments:
 			--namespace NAMESPACE                                                    e.g. carto
 			--release   HELM_RELEASE                                                 e.g. carto
+			--engine    ENGINE                                                       specify your kubernetes cluster engine, e.g. gke, aks, eks or custom
 
 		optional arguments:
 			--extra                                                                  download all cluster info, this option need to run containers in your kubernetes cluster to obtain extra checks
+			--gcp-project                                                            in case of GKE engine, specify your GCP project in which Kubernetes is deployed
 			-h, --help                                                               show this help message and exit
 	EOF
 }
@@ -37,6 +39,12 @@ _main() {
 		"--release")
 			HELM_RELEASE="${ARGS[index + 1]}"
 			;;
+		"--engine")
+			ENGINE="${ARGS[index + 1]}"
+			;;
+		"--gcp-project")
+		    GCP_PROJECT="${ARGS[index + 1]}"
+			;;
 		"--extra")
 		    EXTRA_CHECKS="true"
 			;;
@@ -48,7 +56,8 @@ _main() {
 
 	# Check all mandatories args are passed by
 	if [ -z "${NAMESPACE}" ] ||
-		[ -z "${HELM_RELEASE}" ]; then
+		[ -z "${HELM_RELEASE}" ] ||
+		[ -z "${ENGINE}" ]; then
 		_bad_arguments
 	fi
 
@@ -56,6 +65,10 @@ _main() {
 
 	if [ "${EXTRA_CHECKS}" == "true" ]; then
 	  _dump_extra_checks
+	fi
+
+	if [ "${ENGINE}" == "gke" ] && [ "${GCP_PROJECT}" != "" ]; then
+	  _check_gke
 	fi
 
 	echo "Creating tar file..."
@@ -125,6 +138,13 @@ _dump_extra_checks () {
 	echo "Checking Import API -> " >> ${DUMP_FOLDER}/health_checks.out
 	kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
 	  -- curl http://carto-import-api >> ${DUMP_FOLDER}/health_checks.out 2>>${DUMP_FOLDER}/error.log
+}
+
+_check_gke () {
+	echo "Check Ingress cert..."
+	SSL_CERT_ID=$(kubectl get ingress ${HELM_RELEASE}-router -n "${NAMESPACE}" \
+	  -o jsonpath='{.metadata.annotations.ingress\.kubernetes\.io/ssl-cert}' 2>>${DUMP_FOLDER}/error.log)
+    gcloud --project "${GCP_PROJECT}" compute ssl-certificates describe ${SSL_CERT_ID} >> ${DUMP_FOLDER}/ingress-ssl-cert.out 2>>${DUMP_FOLDER}/error.log
 }
 
 _main "$@"
