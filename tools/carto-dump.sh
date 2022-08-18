@@ -72,79 +72,79 @@ _main() {
 	fi
 
 	echo "Creating tar file..."
-	tar -czvf ${DUMP_FOLDER}.tar.gz ${DUMP_FOLDER} 2>>${DUMP_FOLDER}/error.log
+	tar -czvf "${DUMP_FOLDER}".tar.gz "${DUMP_FOLDER}" 2>>"${DUMP_FOLDER}"/error.log
 }
 
 _dump_info (){
 	DUMP_FOLDER="${HELM_RELEASE}-${NAMESPACE}_$(date "+%Y.%m.%d-%H.%M.%S")"
-	mkdir -p ${DUMP_FOLDER}/pod
+	mkdir -p "${DUMP_FOLDER}"/pod
 
 	echo "Downloading helm release info..."
-	helm list -n "${NAMESPACE}" > ${DUMP_FOLDER}/helm_release.out 2>>${DUMP_FOLDER}/error.log
+	helm list -n "${NAMESPACE}" > "${DUMP_FOLDER}"/helm_release.out 2>>"${DUMP_FOLDER}"/error.log
 
 	echo "Downloading pods..."
-	kubectl get pods -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/pods.out 2>>${DUMP_FOLDER}/error.log
-	kubectl describe pods -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/pods.out 2>>${DUMP_FOLDER}/error.log
+	kubectl get pods -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/pods.out 2>>"${DUMP_FOLDER}"/error.log
+	kubectl describe pods -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> "${DUMP_FOLDER}"/pods.out 2>>"${DUMP_FOLDER}"/error.log
 	for POD in $(kubectl get pods -n "${NAMESPACE}" -o name -l app.kubernetes.io/instance="${HELM_RELEASE}"); \
-	  do kubectl logs ${POD} -n "${NAMESPACE}" > ${DUMP_FOLDER}/${POD}.log 2>>${DUMP_FOLDER}/error.log; done 
+	  do kubectl logs ${POD} -n "${NAMESPACE}" > "${DUMP_FOLDER}"/${POD}.log 2>>"${DUMP_FOLDER}"/error.log; done 
 
 	echo "Downloading services..."
-	kubectl get svc -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/services.out 2>>${DUMP_FOLDER}/error.log
-	kubectl describe svc -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/services.out 2>>${DUMP_FOLDER}/error.log
+	kubectl get svc -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/services.out 2>>"${DUMP_FOLDER}"/error.log
+	kubectl describe svc -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> "${DUMP_FOLDER}"/services.out 2>>"${DUMP_FOLDER}"/error.log
 
 	echo "Downloading endpoints..."
-	kubectl get endpoints -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/endpoints.out 2>>${DUMP_FOLDER}/error.log
-	kubectl describe endpoints -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/endpoints.out 2>>${DUMP_FOLDER}/error.log
+	kubectl get endpoints -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/endpoints.out 2>>"${DUMP_FOLDER}"/error.log
+	kubectl describe endpoints -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> "${DUMP_FOLDER}"/endpoints.out 2>>"${DUMP_FOLDER}"/error.log
 
 	echo "Downloading deployments..."
-	kubectl get deployments -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/deployments.out 2>>${DUMP_FOLDER}/error.log
-	kubectl describe deployments -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/deployments.out 2>>${DUMP_FOLDER}/error.log
+	kubectl get deployments -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/deployments.out 2>>"${DUMP_FOLDER}"/error.log
+	kubectl describe deployments -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> "${DUMP_FOLDER}"/deployments.out 2>>"${DUMP_FOLDER}"/error.log
 
 	echo "Downloading ingress..."
-	kubectl get ingress -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/ingress.out 2>>${DUMP_FOLDER}/error.log
-	kubectl describe ingress -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/ingress.out 2>>${DUMP_FOLDER}/error.log
+	kubectl get ingress -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/ingress.out 2>>"${DUMP_FOLDER}"/error.log
+	kubectl describe ingress -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> "${DUMP_FOLDER}"/ingress.out 2>>"${DUMP_FOLDER}"/error.log
 
 	echo "Downloading BackendConfigs..."
-	kubectl get backendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/backendconfigs.out 2>>${DUMP_FOLDER}/error.log
-	kubectl describe backendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/backendconfigs.out 2>>${DUMP_FOLDER}/error.log
+	kubectl get backendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/backendconfigs.out 2>>"${DUMP_FOLDER}"/error.log
+	kubectl describe backendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> "${DUMP_FOLDER}"/backendconfigs.out 2>>"${DUMP_FOLDER}"/error.log
 
 	echo "Downloading FrontEndConfig..."
-	kubectl get frontendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/frontendconfigs.out 2>>${DUMP_FOLDER}/error.log
-	kubectl describe frontendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/frontendconfigs.out 2>>${DUMP_FOLDER}/error.log
+	kubectl get frontendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/frontendconfigs.out 2>>"${DUMP_FOLDER}"/error.log
+	kubectl describe frontendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> "${DUMP_FOLDER}"/frontendconfigs.out 2>>"${DUMP_FOLDER}"/error.log
 
 	echo "Downloading events..."
-	kubectl get event -n "${NAMESPACE}" > ${DUMP_FOLDER}/events.out 2>>${DUMP_FOLDER}/error.log
+	kubectl get event -n "${NAMESPACE}" > "${DUMP_FOLDER}"/events.out 2>>"${DUMP_FOLDER}"/error.log
 
 	echo "Downloading pvc..."
-	kubectl get pvc -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/pvc.out 2>>${DUMP_FOLDER}/error.log
-	kubectl describe pvc -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/pvc.out 2>>${DUMP_FOLDER}/error.log
+	kubectl get pvc -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/pvc.out 2>>"${DUMP_FOLDER}"/error.log
+	kubectl describe pvc -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> "${DUMP_FOLDER}"/pvc.out 2>>"${DUMP_FOLDER}"/error.log
 
 	echo "Downloading secrets info without passwords..."
-	kubectl get secrets -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > ${DUMP_FOLDER}/secrets.out 2>>${DUMP_FOLDER}/error.log
-	kubectl describe secrets -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> ${DUMP_FOLDER}/secrets.out 2>>${DUMP_FOLDER}/error.log
+	kubectl get secrets -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/secrets.out 2>>"${DUMP_FOLDER}"/error.log
+	kubectl describe secrets -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> "${DUMP_FOLDER}"/secrets.out 2>>"${DUMP_FOLDER}"/error.log
 }
 
 _dump_extra_checks () {
 	echo "Downloading cluster info..."
-	kubectl cluster-info dump --namespaces="${NAMESPACE}" > ${DUMP_FOLDER}/cluster_info.out 2>>${DUMP_FOLDER}/error.log
+	kubectl cluster-info dump --namespaces="${NAMESPACE}" > "${DUMP_FOLDER}"/cluster_info.out 2>>"${DUMP_FOLDER}"/error.log
 
 	echo "Checking Api health..."
-	echo "Checking Workspace API -> " >> ${DUMP_FOLDER}/health_checks.out
+	echo "Checking Workspace API -> " >> "${DUMP_FOLDER}"/health_checks.out
 	kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
-	  -- curl http://carto-workspace-api >> ${DUMP_FOLDER}/health_checks.out 2>>${DUMP_FOLDER}/error.log
-	echo "Checking Maps API -> " >> ${DUMP_FOLDER}/health_checks.out
+	  -- curl http://carto-workspace-api >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log
+	echo "Checking Maps API -> " >> "${DUMP_FOLDER}"/health_checks.out
 	kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
-	  -- curl http://carto-maps-api >> ${DUMP_FOLDER}/health_checks.out 2>>${DUMP_FOLDER}/error.log
-	echo "Checking Import API -> " >> ${DUMP_FOLDER}/health_checks.out
+	  -- curl http://carto-maps-api >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log
+	echo "Checking Import API -> " >> "${DUMP_FOLDER}"/health_checks.out
 	kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
-	  -- curl http://carto-import-api >> ${DUMP_FOLDER}/health_checks.out 2>>${DUMP_FOLDER}/error.log
+	  -- curl http://carto-import-api >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log
 }
 
 _check_gke () {
 	echo "Check Ingress cert..."
 	SSL_CERT_ID=$(kubectl get ingress ${HELM_RELEASE}-router -n "${NAMESPACE}" \
-	  -o jsonpath='{.metadata.annotations.ingress\.kubernetes\.io/ssl-cert}' 2>>${DUMP_FOLDER}/error.log)
-    gcloud --project "${GCP_PROJECT}" compute ssl-certificates describe ${SSL_CERT_ID} >> ${DUMP_FOLDER}/ingress-ssl-cert.out 2>>${DUMP_FOLDER}/error.log
+	  -o jsonpath='{.metadata.annotations.ingress\.kubernetes\.io/ssl-cert}' 2>>"${DUMP_FOLDER}"/error.log)
+    gcloud --project "${GCP_PROJECT}" compute ssl-certificates describe ${SSL_CERT_ID} >> "${DUMP_FOLDER}"/ingress-ssl-cert.out 2>>"${DUMP_FOLDER}"/error.log
 }
 
 _main "$@"
