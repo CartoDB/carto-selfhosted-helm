@@ -6,15 +6,15 @@
 #   dump_carto_info.sh --n <namespace> --release <helm_release>
 #
 
-bad_arguments() {
+_bad_arguments() {
 	echo "Missing or bad arguments"
-	print_help
+	_print_help
 	exit 1
 }
 
-print_help() {
+_print_help() {
 	cat <<-EOF
-		usage: bash dump-carto-info.sh [-h] --namespace NAMESPACE --release HELM_RELEASE
+		usage: bash carto-dump.sh [-h] --namespace NAMESPACE --release HELM_RELEASE
 
 		mandatory arguments:
 			--namespace NAMESPACE                                                    e.g. carto
@@ -24,6 +24,8 @@ print_help() {
 			-h, --help                                                               show this help message and exit
 	EOF
 }
+
+_main() {
 
 ARGS=("$@")
 
@@ -36,7 +38,7 @@ for index in "${!ARGS[@]}"; do
 		HELM_RELEASE="${ARGS[index + 1]}"
 		;;
 	"--*")
-		bad_arguments
+		_bad_arguments
 		;;
 	esac
 done
@@ -44,8 +46,14 @@ done
 # Check all mandatories args are passed by
 if [ -z "${NAMESPACE}" ] ||
 	[ -z "${HELM_RELEASE}" ]; then
-	bad_arguments
+	_bad_arguments
 fi
+
+_dump_info
+
+}
+
+_dump_info (){
 
 DUMP_FOLDER="${HELM_RELEASE}-${NAMESPACE}_$(date "+%Y.%m.%d-%H.%M.%S")"
 mkdir -p ${DUMP_FOLDER}/logs
@@ -98,3 +106,7 @@ kubectl describe secrets -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM
 
 echo "Creating tar file..."
 tar -czvf ${DUMP_FOLDER}.tar.gz ${DUMP_FOLDER} 2>/dev/null
+
+}
+
+_main "$@"
