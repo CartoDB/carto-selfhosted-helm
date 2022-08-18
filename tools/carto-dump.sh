@@ -129,15 +129,12 @@ _dump_extra_checks () {
 	kubectl cluster-info dump --namespaces="${NAMESPACE}" > "${DUMP_FOLDER}"/cluster_info.out 2>>"${DUMP_FOLDER}"/error.log
 
 	echo "Checking Api health..."
-	echo "Checking Workspace API: " >> "${DUMP_FOLDER}"/health_checks.out
-	kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
-	  -- curl http://carto-workspace-api >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log
-	echo "Checking Maps API: " >> "${DUMP_FOLDER}"/health_checks.out
-	kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
-	  -- curl http://carto-maps-api >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log
-	echo "Checking Import API: " >> "${DUMP_FOLDER}"/health_checks.out
-	kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
-	  -- curl http://carto-import-api >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log
+	{ echo "Checking Workspace API: "; kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
+	  -- curl http://carto-workspace-api; } >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log
+	{ echo "Checking Maps API: "; kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
+	  -- curl http://carto-maps-api; } >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log
+	{ echo "Checking Import API: "; kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
+	  -- curl http://carto-import-api; } >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log
 }
 
 _check_gke () {
