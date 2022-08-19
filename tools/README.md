@@ -16,7 +16,8 @@ usage: bash carto-dump.sh [-h] --namespace NAMESPACE --release HELM_RELEASE --en
 mandatory arguments:
 	--namespace NAMESPACE                                                    e.g. carto
 	--release   HELM_RELEASE                                                 e.g. mycarto
-	--engine    ENGINE                                                       specify your kubernetes cluster engine, e.g. gke, aks, eks or custo
+	--engine    ENGINE                                                       specify your kubernetes cluster engine, e.g. gke, aks, eks or custom
+
 optional arguments:
 	--extra                                                                  download all cluster info, this option need to run containers in your kubernetes cluster to obtain extra checks
 	--gcp-project                                                            in case of GKE engine, specify your GCP project in which Kubernetes is deployed
@@ -36,4 +37,3 @@ optional arguments:
   :warning: Note that we need to deploy some containers in the Carto namespace to check the conectivity and health checks.
 
   Example: `bash carto-dump.sh --namespace carto --release carto --engine gke --extra`
-```
