@@ -14,7 +14,8 @@ _bad_arguments() {
 
 _print_help() {
 	cat <<-EOF
-		usage: bash carto-dump.sh [-h] --namespace NAMESPACE --release HELM_RELEASE --engine ENGINE [--gcp-project] [--extra] 
+
+		usage: bash $0 [-h] --namespace NAMESPACE --release HELM_RELEASE --engine ENGINE [--gcp-project] [--extra] 
 
 		mandatory arguments:
 			--namespace NAMESPACE                                                    e.g. carto
@@ -25,6 +26,7 @@ _print_help() {
 			--extra                                                                  download all cluster info, this option need to run containers in your kubernetes cluster to obtain extra checks
 			--gcp-project                                                            in case of GKE engine, specify your GCP project in which Kubernetes is deployed
 			-h, --help                                                               show this help message and exit
+
 	EOF
 }
 
