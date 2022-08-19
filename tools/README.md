@@ -1,8 +1,15 @@
-# Carto Dump
+# Carto Support Tool
 
 ## Purpose
 
 This tool is a bash script developed with the aim of collecting all the necessary information about your Carto Self Hosted deployment when opening a ticket to our support team. Attaching this information to the ticket will greatly speed up the troubleshooting process.
+**NOTE**: this tool is not gathering any senstive information, like secrets content.
+
+## Requirements
+
+- Before executing the script from your terminal, ensure that `kubectl` commands are working on your cluster. For instance, `kubectl --namespace carto get pods`.
+- If you are using `GKE`, please make sure that your terminal has access to `gloud` commands (`gcloud auth login`) and you've set the `--gcp-project` flag in the `carto-support-tool.sh`. This way, we will collect information about the deployment of google managed services like LoadBalancer, certificates ... etc.
+- It is **recommended** to run it using the `--extra` flag, because it will help CARTO Support team to provide a better diagnostic.
 
 ## How to execute Carto Dump
 
@@ -24,15 +31,15 @@ optional arguments:
 	-h, --help                                                               show this help message and exit
 ```
 
-- Default diagnostic: It will download the basic information about your Carto environment and Kubernetes cluster (pods, deployments, services, endpoints, ingress, backend and frontend configs, events, pvc and secrets info without sensitive data).
+- **Default diagnostic**: It will download the basic information about your Carto environment and Kubernetes cluster (pods, deployments, services, endpoints, ingress, backend and frontend configs, events, pvc and secrets info without sensitive data).
 
   Example: `bash carto-dump.sh --namespace carto --release carto --engine gke`
 
-- Default with GCP Ingress Check: It will check also the certificate installed in the Ingress resource.
+- **Default with GCP Ingress Check**: It will check also the certificate installed in the Ingress resource.
 
   Example: `bash carto-dump.sh --namespace carto --release carto --engine gke --gcp-project example-project`
 
-- Advanced diagnostic: It will review also the Carto API health checks, postgresql and redis conectivity and generate a cluster-info dump. 
+- **Advanced diagnostic**: It will review also the Carto API health checks, postgresql and redis conectivity and generate a cluster-info dump. 
 
   :warning: Note that we need to deploy some containers in the Carto namespace to check the conectivity and health checks.
 
