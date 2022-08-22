@@ -1,0 +1,55 @@
+####################################################################
+# WARNING: we discourage adding scale configuration for any component
+#          that is not listed in this file, because it is not
+#          supported and it could impact the application stability.
+####################################################################
+
+accountsWww:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 3
+    #targetCPUUtilizationPercentage: 75
+
+importApi:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 3
+    #targetCPUUtilizationPercentage: 75
+
+ldsApi:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 3
+    #targetCPUUtilizationPercentage: 75
+
+mapsApi:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    #targetCPUUtilizationPercentage: 75
+
+router:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 3
+    #targetCPUUtilizationPercentage: 75
+
+workspaceApi:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    #targetCPUUtilizationPercentage: 75
+
+workspaceWww:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 3
+    #targetCPUUtilizationPercentage: 75
+
