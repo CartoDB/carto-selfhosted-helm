@@ -135,15 +135,21 @@ _dump_info (){
 _dump_extra_checks () {
 	echo "Downloading cluster info..."
 	kubectl cluster-info dump --namespaces="${NAMESPACE}" > "${DUMP_FOLDER}"/cluster_info.out 2>>"${DUMP_FOLDER}"/error.log
-
 	echo "Checking Api health..."
-	{ echo "Checking Workspace API: "; kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
-	  -- curl http://"${CARTO_COMMON_FULLNAME}"-workspace-api/health -H "Carto-Monitoring: true" 2>>"${DUMP_FOLDER}"/error.log; } >> "${DUMP_FOLDER}"/health_checks.out
-	{ echo "Checking Maps API: "; kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
-	  -- curl http://"${CARTO_COMMON_FULLNAME}"-maps-api/health -H "Carto-Monitoring: true" 2>>"${DUMP_FOLDER}"/error.log; } >> "${DUMP_FOLDER}"/health_checks.out
-	{ echo "Checking Import API: "; kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
-	  -- curl http://"${CARTO_COMMON_FULLNAME}"-import-api/health -H "Carto-Monitoring: true" 2>>"${DUMP_FOLDER}"/error.log; } >> "${DUMP_FOLDER}"/health_checks.out
+
+	{
+		echo "Checking Workspace API: "
+		kubectl run "${HELM_RELEASE}"-check-workspace-api --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
+	    -- curl http://"${CARTO_COMMON_FULLNAME}"-workspace-api/health -H "Carto-Monitoring: true"
+		echo "Checking Maps API: "
+		kubectl run "${HELM_RELEASE}"-check-maps-api --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
+	    -- curl http://"${CARTO_COMMON_FULLNAME}"-maps-api/health -H "Carto-Monitoring: true"
+		echo "Checking Import API: "
+		kubectl run "${HELM_RELEASE}"-check-import-api --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
+	    -- curl http://"${CARTO_COMMON_FULLNAME}"-import-api/health -H "Carto-Monitoring: true"
+	} >> "${DUMP_FOLDER}"/health_checks.out 2>>"${DUMP_FOLDER}"/error.log;
 }
+
 
 _check_gke () {
 	echo "Check Ingress cert..."
