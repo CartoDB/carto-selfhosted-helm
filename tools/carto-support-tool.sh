@@ -94,7 +94,7 @@ _dump_info (){
 	kubectl get pods -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/pods.out 2>>"${DUMP_FOLDER}"/error.log
 	kubectl describe pods -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> "${DUMP_FOLDER}"/pods.out 2>>"${DUMP_FOLDER}"/error.log
 	for POD in $(kubectl get pods -n "${NAMESPACE}" -o name -l app.kubernetes.io/instance="${HELM_RELEASE}"); \
-	  do kubectl logs "${POD}" -n "${NAMESPACE}" > "${DUMP_FOLDER}"/"${POD}".log 2>>"${DUMP_FOLDER}"/error.log; done 
+	  do kubectl logs "${POD}" --all-containers -n "${NAMESPACE}" > "${DUMP_FOLDER}"/"${POD}".log 2>>"${DUMP_FOLDER}"/error.log; done
 
 	echo "Downloading services..."
 	kubectl get svc -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/services.out 2>>"${DUMP_FOLDER}"/error.log
@@ -153,7 +153,8 @@ _dump_extra_checks () {
 
 _check_gke () {
 	echo "Check Ingress cert..."
-	SSL_CERT_ID=$(kubectl get ingress "${HELM_RELEASE}"-router -n "${NAMESPACE}" \
+	INGRESS_NAME=$(kubectl get ingress -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" -o jsonpath='{.items[0].metadata.name}')
+	SSL_CERT_ID=$(kubectl get ingress ${INGRESS_NAME} -n "${NAMESPACE}" \
 	  -o jsonpath='{.metadata.annotations.ingress\.kubernetes\.io/ssl-cert}' 2>>"${DUMP_FOLDER}"/error.log)
     gcloud --project "${GCP_PROJECT}" compute ssl-certificates describe "${SSL_CERT_ID}" >> "${DUMP_FOLDER}"/ingress-ssl-cert.out 2>>"${DUMP_FOLDER}"/error.log
 }
