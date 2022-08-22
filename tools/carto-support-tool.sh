@@ -120,6 +120,7 @@ _dump_info (){
 	kubectl get frontendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/frontendconfigs.out 2>>"${DUMP_FOLDER}"/error.log
 	kubectl describe frontendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> "${DUMP_FOLDER}"/frontendconfigs.out 2>>"${DUMP_FOLDER}"/error.log
 
+        # NOTE: k8s events are only kept for one hour by default, so it is desirable to run the carto-support-tool right after testing the installation
 	echo "Downloading events..."
 	kubectl get event -n "${NAMESPACE}" > "${DUMP_FOLDER}"/events.out 2>>"${DUMP_FOLDER}"/error.log
 
