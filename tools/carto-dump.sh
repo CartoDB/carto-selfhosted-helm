@@ -54,6 +54,12 @@ _main() {
 		esac
 	done
 
+	# Check the common.names.fullname, we obtain this from https://github.com/bitnami/charts/blob/master/bitnami/common/templates/_names.tpl#L16-L32
+	if [[ "${HELM_RELEASE}" == *"carto"* ]]; then
+		CARTO_COMMON_FULLNAME="${HELM_RELEASE}"
+	else CARTO_COMMON_FULLNAME="${HELM_RELEASE}"-carto
+	fi
+
 	# Check all mandatories args are passed by
 	if [ -z "${NAMESPACE}" ] ||
 		[ -z "${HELM_RELEASE}" ] ||
@@ -130,11 +136,11 @@ _dump_extra_checks () {
 
 	echo "Checking Api health..."
 	{ echo "Checking Workspace API: "; kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
-	  -- curl http://carto-workspace-api 2>>"${DUMP_FOLDER}"/error.log; } >> "${DUMP_FOLDER}"/health_checks.out
+	  -- curl http://"${CARTO_COMMON_FULLNAME}"-workspace-api/health -H "Carto-Monitoring: true" 2>>"${DUMP_FOLDER}"/error.log; } >> "${DUMP_FOLDER}"/health_checks.out
 	{ echo "Checking Maps API: "; kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
-	  -- curl http://carto-maps-api 2>>"${DUMP_FOLDER}"/error.log; } >> "${DUMP_FOLDER}"/health_checks.out
+	  -- curl http://"${CARTO_COMMON_FULLNAME}"-maps-api/health -H "Carto-Monitoring: true" 2>>"${DUMP_FOLDER}"/error.log; } >> "${DUMP_FOLDER}"/health_checks.out
 	{ echo "Checking Import API: "; kubectl run "${HELM_RELEASE}"-healthcheck --image=curlimages/curl -n "${NAMESPACE}" --rm -i --tty --restart='Never' \
-	  -- curl http://carto-import-api 2>>"${DUMP_FOLDER}"/error.log; } >> "${DUMP_FOLDER}"/health_checks.out
+	  -- curl http://"${CARTO_COMMON_FULLNAME}"-import-api/health -H "Carto-Monitoring: true" 2>>"${DUMP_FOLDER}"/error.log; } >> "${DUMP_FOLDER}"/health_checks.out
 }
 
 _check_gke () {
