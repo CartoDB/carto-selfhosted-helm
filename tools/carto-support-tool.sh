@@ -147,7 +147,8 @@ _dump_extra_checks () {
 
 _check_gke () {
 	echo "Check Ingress cert..."
-	SSL_CERT_ID=$(kubectl get ingress "${HELM_RELEASE}"-router -n "${NAMESPACE}" \
+	INGRESS_NAME=$(kubectl get ingress -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" -o jsonpath='{.items[0].metadata.name}')
+	SSL_CERT_ID=$(kubectl get ingress ${INGRESS_NAME} -n "${NAMESPACE}" \
 	  -o jsonpath='{.metadata.annotations.ingress\.kubernetes\.io/ssl-cert}' 2>>"${DUMP_FOLDER}"/error.log)
     gcloud --project "${GCP_PROJECT}" compute ssl-certificates describe "${SSL_CERT_ID}" >> "${DUMP_FOLDER}"/ingress-ssl-cert.out 2>>"${DUMP_FOLDER}"/error.log
 }
