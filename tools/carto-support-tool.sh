@@ -94,7 +94,7 @@ _dump_info (){
 	kubectl get pods -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/pods.out 2>>"${DUMP_FOLDER}"/error.log
 	kubectl describe pods -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> "${DUMP_FOLDER}"/pods.out 2>>"${DUMP_FOLDER}"/error.log
 	for POD in $(kubectl get pods -n "${NAMESPACE}" -o name -l app.kubernetes.io/instance="${HELM_RELEASE}"); \
-	  do kubectl logs "${POD}" -n "${NAMESPACE}" > "${DUMP_FOLDER}"/"${POD}".log 2>>"${DUMP_FOLDER}"/error.log; done 
+	  do kubectl logs "${POD}" --all-containers -n "${NAMESPACE}" > "${DUMP_FOLDER}"/"${POD}".log 2>>"${DUMP_FOLDER}"/error.log; done
 
 	echo "Downloading services..."
 	kubectl get svc -n "${NAMESPACE}" -o wide -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/services.out 2>>"${DUMP_FOLDER}"/error.log
