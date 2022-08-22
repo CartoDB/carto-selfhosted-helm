@@ -21,14 +21,14 @@ mycarto         carto           2               2022-08-18 11:39:24.844957262 +0
 
 usage: bash carto-support-tool.sh [-h] --namespace NAMESPACE --release HELM_RELEASE --engine ENGINE [--gcp-project] [--extra]
 mandatory arguments:
-	--namespace NAMESPACE                                                    e.g. carto
-	--release   HELM_RELEASE                                                 e.g. mycarto
-	--engine    ENGINE                                                       specify your kubernetes cluster engine, e.g. gke, aks, eks or custom
+    --namespace NAMESPACE                                                    e.g. carto
+    --release   HELM_RELEASE                                                 e.g. mycarto
+    --engine    ENGINE                                                       specify your kubernetes cluster engine, e.g. gke, aks, eks or custom
 
 optional arguments:
-	--extra                                                                  download all cluster info, this option need to run containers in your kubernetes cluster to obtain extra checks
-	--gcp-project                                                            in case of GKE engine, specify your GCP project in which Kubernetes is deployed
-	-h, --help                                                               show this help message and exit
+    --extra                                                                  download all cluster info, this option need to run containers in your kubernetes cluster to obtain extra checks
+    --gcp-project                                                            in case of GKE engine, specify your GCP project in which Kubernetes is deployed
+    -h, --help                                                               show this help message and exit
 ```
 
 - **Default diagnostic**: It will download the basic information about your Carto environment and Kubernetes cluster (pods, deployments, services, endpoints, ingress, backend and frontend configs, events, pvc and secrets info without sensitive data).
@@ -39,7 +39,7 @@ optional arguments:
 
   Example: `bash carto-support-tool.sh --namespace carto --release carto --engine gke --gcp-project example-project`
 
-- **Advanced diagnostic**: It will review also the Carto API health checks, postgresql and redis conectivity and generate a cluster-info dump. 
+- **Advanced diagnostic**: It will review also the Carto API health checks, postgresql and redis conectivity and generate a cluster-info dump.
 
   :warning: Note that we need to deploy some containers in the Carto namespace to check the conectivity and health checks.
 
