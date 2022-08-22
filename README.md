@@ -134,6 +134,8 @@ In order to verify CARTO Self Hosted was correctly installed and it's functional
 11. Go back to the `Maps` page, and verify your map appears there and the map thumbnail represents the latest changes you made to the map.
 
 ### Troubleshooting
+
+[Troubleshooting section](customizations/README.md#troubleshooting)
   
 :warning: On install and upgrade, before applying changes, a pre-hook will check that your customer package values use a version compatible with current helm chart. It it fails, it will dump the following message
 ```bash
@@ -144,6 +146,10 @@ If you see this error you can get the reason running the following command:
 ```bash
  kubectl logs --selector=job-name=<your_release_name>-pre-install
 ```
+
+#### Diagnosis tool
+
+If you need to open a support ticket, please execute our [carto-support-tool](tools/) to obtain all the necessary information and attach it to the ticket.
 
 ## Update
 
