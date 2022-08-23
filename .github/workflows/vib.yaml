@@ -85,7 +85,8 @@ jobs:
       - name: Clone cloud-native
         uses: actions/checkout@v3
         with:
-          ref: '${{ steps.info.outputs.carto_version }}'
+          # ref: '${{ steps.info.outputs.carto_version }}'
+          ref: '2db69bbe2bc6371aa244c3c6fffce4e31c5389f3'
           repository: 'CartoDB/cloud-native'
           token: '${{ secrets.X_GITHUB_CARTOFANTE }}'
           path: '${{ env.CARTO_CLONE_PATH }}'
