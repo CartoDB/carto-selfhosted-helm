@@ -33,6 +33,7 @@ MD036: false # Emphasis used instead of a heading
 MD028: false # Allow no-blanks-blockquote Blank line inside blockquote
 MD041: false # Allow start file with h2 title in Changelog
 
+
 #################
 # Rules by tags #
 #################
