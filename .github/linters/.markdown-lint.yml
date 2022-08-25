@@ -37,4 +37,3 @@ MD041: false # Allow start file with h2 title in Changelog
 # Rules by tags #
 #################
 blank_lines: false # Error on blank lines
-jscpd: false
