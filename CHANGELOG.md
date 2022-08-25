@@ -1,3 +1,4 @@
+<!-- markdownlint-disable -->
 ## 2022.8.19-2 (August 19, 2022)
 IMPROVEMENTS
 + Bugs Fixing and minor improvements
