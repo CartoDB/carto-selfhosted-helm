@@ -27,6 +27,13 @@ router:
       ## Same BackendConfig for all Service ports
       ## https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-features#same_backendconfig_for_all_service_ports
       cloud.google.com/backend-config: '{"default": "carto-service-backend-config"}'
+      ## https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing if your 
+      ## installation do not match with the configuration below:
+      ## For Services created in GKE clusters 1.17.6-gke.7 and up
+      ##  * Using VPC-native clusters
+      ##  * Not using a Shared VPC
+      ##  * Not using GKE Network Policy
+      # cloud.google.com/neg: '{"ingress": true}'
 
 ## Extra Kubernetes objects used to further configure the Google LoadBalancer
 ## associated to the Ingress object
