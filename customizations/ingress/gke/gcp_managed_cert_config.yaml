@@ -33,7 +33,8 @@ router:
       ##  * Using VPC-native clusters
       ##  * Not using a Shared VPC
       ##  * Not using GKE Network Policy
-      # cloud.google.com/neg: '{"ingress": true}'
+      ## If it is not your case, uncomment the line below
+      #cloud.google.com/neg: '{"ingress": true}'
 
 ## Extra Kubernetes objects used to further configure the Google LoadBalancer
 ## associated to the Ingress object
