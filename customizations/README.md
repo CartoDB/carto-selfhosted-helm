@@ -10,8 +10,8 @@
   - [Available Configurations](#available-configurations)
     - [Configure the domain of your Self Hosted](#configure-the-domain-of-your-self-hosted)
     - [Access to CARTO from outside the cluster](#access-to-carto-from-outside-the-cluster)
-      - [Expose CARTO with the CARTO Router service in LoadBalancer mode](#expose-carto-with-the-carto-router-service-in-loadbalancer-mode)
-      - [Expose CARTO with Ingress and your own tls certificates](#expose-carto-with-ingress-and-your-own-tls-certificates)
+      - [Expose CARTO with the Carto Router service in `LoadBalancer` mode](#expose-carto-with-the-carto-router-service-in-loadbalancer-mode)
+      - [Expose CARTO with Ingress and your own TLS certificates](#expose-carto-with-ingress-and-your-own-tls-certificates)
       - [Expose CARTO with Ingress and GCP SSL Managed Certificates](#expose-carto-with-ingress-and-gcp-ssl-managed-certificates)
     - [Configure TLS termination in the CARTO router service](#configure-tls-termination-in-the-carto-router-service)
       - [Disable internal HTTPS](#disable-internal-https)
@@ -43,6 +43,8 @@
   - [Advanced configuration](#advanced-configuration)
   - [Tips for creating the customization Yaml file](#tips-for-creating-the-customization-yaml-file)
   - [Troubleshooting](#troubleshooting)
+    - [Diagnosis tool](#diagnosis-tool)
+    - [Ingress](#ingress)
 
 # Customizations
 
@@ -139,6 +141,9 @@ But this only makes it accessible to your machine.
   Ingress exposes HTTP and HTTPS routes from outside the cluster to services within the cluster. Traffic routing is controlled by rules defined on the Ingress resource, you can find more documentation [here](https://kubernetes.io/docs/concepts/services-networking/ingress/).
 
   Within this option you could either use your own TLS certificates, or GCP SSL Managed Certificates.
+
+  > :warning: if you are running a GKE cluster 1.17.6-gke.7 version or lower, please check [Cluster IP configuration](#troubleshooting)
+
 
   **Useful links**
 
@@ -1174,3 +1179,28 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
       [uninstall steps](https://github.com/CartoDB/carto-selfhosted-helm#update)
 
       [install steps](https://github.com/CartoDB/carto-selfhosted-helm#installation-steps)
+- Message ` type "ClusterIP", expected "NodePort" or "LoadBalancer"`
+  
+  This message is related to how is configured your cluster. To use ClusterIP the service needs to point to a NEG. This can be done using `cloud.google.com/neg: '{"ingress": true}'`annotation in router service. Container-native load balancing is enabled by default for Services when all of the following conditions are true:
+
+  - For Services created in GKE clusters 1.17.6-gke.7 and up
+  - Using VPC-native clusters
+  - Not using a Shared VPC
+  - Not using GKE Network Policy
+  If this is not your case you must add it in your customization.yaml file. in the example in this repository this value is commented, if you are using it just uncomment it and reinstall.
+
+  ```yaml
+  service:
+    annotations:
+      ## Same BackendConfig for all Service ports
+      ## https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-features#same_backendconfig_for_all_service_ports
+      cloud.google.com/backend-config: '{"default": "carto-service-backend-config"}'
+      ## https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing if your 
+      ## installation do not match with the configuration below:
+      ## For Services created in GKE clusters 1.17.6-gke.7 and up
+      ##  * Using VPC-native clusters
+      ##  * Not using a Shared VPC
+      ##  * Not using GKE Network Policy
+      ## If it is not your case, uncomment the line below
+      cloud.google.com/neg: '{"ingress": true}'
+  ```
