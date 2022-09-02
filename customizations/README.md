@@ -142,6 +142,9 @@ But this only makes it accessible to your machine.
 
   Within this option you could either use your own TLS certificates, or GCP SSL Managed Certificates.
 
+  > :warning: if you are running a GKE cluster 1.17.6-gke.7 version or lower, please check [Cluster IP configuration](#troubleshooting)
+
+
   **Useful links**
 
   - [google-managed-certs](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs#caa)
