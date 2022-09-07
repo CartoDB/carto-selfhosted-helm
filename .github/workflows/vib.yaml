@@ -219,7 +219,7 @@ jobs:
           echo "::set-output name=helm-customization-base64::${HELM_CUSTOMIZATION_BASE64}"
 
       - name: Run validation in VIB platform
-        uses: vmware-labs/vmware-image-builder-action@0.3.11
+        uses: vmware-labs/vmware-image-builder-action@0.4.0
         with:
           pipeline: ${{ matrix.vib_test_file }}
           ## Currently disable by debug pourposes
