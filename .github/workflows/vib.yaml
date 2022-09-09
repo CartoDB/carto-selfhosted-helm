@@ -28,16 +28,16 @@ jobs:
         vib_test_file:
           - vib-platform-verify.json
         platform:
-          - target-platform: eks
-            target-platform-id: ef54a736-5e43-4a6c-9400-b162acd8b83d
-            onprem-id: vmware-eks-1
+          # - target-platform: eks
+          #   target-platform-id: ef54a736-5e43-4a6c-9400-b162acd8b83d
+          #   onprem-id: vmware-eks-1
           - target-platform: gke
             target-platform-id: 91d398a2-25c4-4cda-8732-75a3cfc179a1
             onprem-id: vmware-gke-1
             # onprem-id: bitnami-stag-1
-          - target-platform: aks
-            target-platform-id: 7b13a7bb-011c-474f-ad71-8152fc321b9e
-            onprem-id: vmware-aks-1
+          # - target-platform: aks
+          #   target-platform-id: 7b13a7bb-011c-474f-ad71-8152fc321b9e
+          #   onprem-id: vmware-aks-1
       fail-fast: false
       max-parallel: 1
     env:
@@ -219,7 +219,7 @@ jobs:
           echo "::set-output name=helm-customization-base64::${HELM_CUSTOMIZATION_BASE64}"
 
       - name: Run validation in VIB platform
-        uses: vmware-labs/vmware-image-builder-action@0.4.0
+        uses: vmware-labs/vmware-image-builder-action@0.3.11
         with:
           pipeline: ${{ matrix.vib_test_file }}
           ## Currently disable by debug pourposes
