@@ -39,18 +39,6 @@
           }
         },
         {
-          "action_id": "goss",
-          "params": {
-            "resources": {
-              "url": "{SHA_ARCHIVE}",
-              "path": "/.vib/carto/goss/goss-accounts-www"
-            },
-            "remote": {
-              "workload": "deploy-carto-accounts-www"
-            }
-          }
-        },
-        {
           "action_id": "cypress",
           "params": {
             "timeout_minutes": 50,
