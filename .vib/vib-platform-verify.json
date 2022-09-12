@@ -29,24 +29,12 @@
         }
       },
       "actions": [
-
         {
-          "action_id": "cypress",
+          "action_id": "trivy",
           "params": {
-            "timeout_minutes": 50,
-            "resources": {
-              "url": "{WORKSPACE_WWW_SOURCE_URL}",
-              "path": "."
-            },
-            "host_aliases": [
-              "carto.vmw"
-            ],
-            "endpoint": "lb-carto-router-https",
-            "env": {
-              "CI": "true",
-              "RUN_ID": "{VIB_ENV_CYPRESS_RUN_ID}",
-              "RECORD_KEY": "{VIB_ENV_CYPRESS_RECORD_KEY}"
-            }
+            "vuln_type": [
+              "OS"
+            ]
           }
         }
       ]
