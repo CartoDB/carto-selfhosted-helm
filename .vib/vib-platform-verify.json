@@ -23,7 +23,7 @@
           "target_platform_id": "{VIB_ENV_TARGET_PLATFORM}",
           "size": {
             "name": "M8",
-            "worker_nodes_instance_count": 3,
+            "worker_nodes_instance_count": 1,
             "master_nodes_instance_count": 1
           }
         }
