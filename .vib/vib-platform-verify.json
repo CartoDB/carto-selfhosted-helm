@@ -27,17 +27,7 @@
             "master_nodes_instance_count": 1
           }
         }
-      },
-      "actions": [
-        {
-          "action_id": "trivy",
-          "params": {
-            "vuln_type": [
-              "OS"
-            ]
-          }
-        }
-      ]
+      }
     }
   }
 }
