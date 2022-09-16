@@ -7,8 +7,8 @@
 accountsWww:
   resources:
     limits:
-      memory: "124Mi"
-      cpu: "50m"
+      memory: "512Mi"
+      cpu: "500m"
     requests:
       memory: "50Mi"
       cpu: "20m"
@@ -17,7 +17,7 @@ cdnInvalidatorSub:
   resources:
     limits:
       memory: "512Mi"
-      cpu: "250m"
+      cpu: "500m"
     requests:
       memory: "124Mi"
       cpu: "100m"
@@ -25,7 +25,7 @@ cdnInvalidatorSub:
 httpCache:
   resources:
     limits:
-      memory: "248Mi"
+      memory: "512Mi"
       cpu: "500m"
     requests:
       memory: "124Mi"
@@ -34,8 +34,8 @@ httpCache:
 importApi:
   resources:
     limits:
-      memory: "512Mi"
-      cpu: "1000m"
+      memory: "1024Mi"
+      cpu: "1500m"
     requests:
       memory: "124Mi"
       cpu: "100m"
@@ -44,7 +44,7 @@ importWorker:
   resources:
     limits:
       memory: "4096Mi"
-      cpu: "1000m"
+      cpu: "1500m"
     requests:
       memory: "124Mi"
       cpu: "100m"
@@ -62,7 +62,7 @@ mapsApi:
   resources:
     limits:
       memory: "2048Mi"
-      cpu: "1000m"
+      cpu: "1500m"
     requests:
       memory: "124Mi"
       cpu: "100m"
@@ -71,7 +71,7 @@ sqlWorker:
   resources:
     limits:
       memory: "2048Mi"
-      cpu: "1000m"
+      cpu: "1500m"
     requests:
       memory: "124Mi"
       cpu: "100m"
@@ -79,8 +79,8 @@ sqlWorker:
 router:
   resources:
     limits:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: "512Mi"
+      cpu: "500m"
     requests:
       memory: "124Mi"
       cpu: "50m"
@@ -106,8 +106,8 @@ workspaceSubscriber:
 workspaceWww:
   resources:
     limits:
-      memory: "124Mi"
-      cpu: "50m"
+      memory: "512Mi"
+      cpu: "500m"
     requests:
       memory: "50Mi"
       cpu: "20m"

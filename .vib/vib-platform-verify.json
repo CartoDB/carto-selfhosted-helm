@@ -22,34 +22,13 @@
         "target_platform": {
           "target_platform_id": "{VIB_ENV_TARGET_PLATFORM}",
           "size": {
-            "name": "M4",
-            "worker_nodes_instance_count": 2,
+            "name": "M8",
+            "worker_nodes_instance_count": 1,
             "master_nodes_instance_count": 1
           }
         }
       },
       "actions": [
-        {
-          "action_id": "trivy",
-          "params": {
-            "threshold": "IGNORE_ALL",
-            "vuln_type": [
-              "OS"
-            ]
-          }
-        },
-        {
-          "action_id": "goss",
-          "params": {
-            "resources": {
-              "url": "{SHA_ARCHIVE}",
-              "path": "/.vib/carto/goss/goss-accounts-www"
-            },
-            "remote": {
-              "workload": "deploy-carto-accounts-www"
-            }
-          }
-        },
         {
           "action_id": "cypress",
           "params": {
