@@ -171,6 +171,8 @@ You can find an example [here](service_loadBalancer/config.yaml). Also, we have 
   ```
 
   > :warning: The certificate created in the kubernetes tls secret should also have the chain certificates complete. If your certificate has been signed by a intermediate CA, this issuer has to be included in your ingress certificate.
+  
+  We only support distribute your own certificates by kubernetes secret, **not with `gcloud compute ssl-certificates`**
 
 #### Expose CARTO with Ingress and GCP SSL Managed Certificates
 
