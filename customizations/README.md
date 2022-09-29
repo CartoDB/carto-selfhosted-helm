@@ -27,7 +27,7 @@
       - [Setup Redis with automatic secret creation](#setup-redis-with-automatic-secret-creation)
       - [Configure Redis TLS](#configure-redis-tls)
     - [Custom Buckets](#custom-buckets)
-      - [Requirements](#requirements)
+      - [General Requirements](#general-requirements)
         - [Google Cloud Storage](#google-cloud-storage)
         - [AWS S3](#aws-s3)
         - [Azure Storage](#azure-storage)
