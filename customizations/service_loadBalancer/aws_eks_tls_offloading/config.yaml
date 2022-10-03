@@ -19,3 +19,6 @@ router:
       service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
       # change Connection idle timeout ot 605
       service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "605"
+  ports:
+    httpsTargetPort: http
+
