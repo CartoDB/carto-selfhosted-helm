@@ -1,4 +1,6 @@
-## 2022.9.28 (September 28, 2022)
+## 2022.10.7 (October 07, 2022)
+
+IMPROVEMENTS
 
 + Improvements to caching strategy
 + Improvements to point data tiles
@@ -8,6 +10,9 @@
 + Spatial index tiles in binary format by default
 + Support for Databricks SQL Warehouses connections
 + Updated base Docker images with security fixes
++ Use a connection pool for Postgres
++ K8: TLS offload in AWS LoadBalancer
++ Create tileset options: Spatial Index and aggragations
 + Other bugs fixes and minor improvements
 
 ## 2022.9.2 (September 02, 2022)
