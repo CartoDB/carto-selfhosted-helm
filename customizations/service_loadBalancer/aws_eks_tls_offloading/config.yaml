@@ -1,0 +1,24 @@
+tlsCerts:
+  httpsEnabled: false # So the router talks in http
+router:
+  service:
+    type: LoadBalancer
+    annotations:
+     # Note that the backend (router) talks over HTTP.
+      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+
+      ############ IMPORT YOUR CERTIFICATE ###############
+      # Store your own certificate in AWS ACM with
+      # $ aws acm import-certificate --certificate fileb://tls.crt --private-key fileb://tls.key --certificate-chain fileb://chain.crt
+      # DOCUMENTATION https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html
+      ####################################################
+
+      # Fill in with the ARN of your certificate.
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:<REGION>:<AWS_ACCOUNTS>:certificate/<CERTIFICATE_ID>
+      # Only run SSL on the port named "https" below.
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+      # change Connection idle timeout ot 605
+      service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "605"
+  ports:
+    httpsTargetPort: http
+

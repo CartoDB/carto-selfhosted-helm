@@ -2178,11 +2178,16 @@ router:
     ##
     type: ClusterIP
     ## @param router.service.ports.http router service HTTP port
+    ## @param router.service.ports.httpTargetPort router service HTTP Target port
     ## @param router.service.ports.https router service HTTPS port
+    ## @param router.service.ports.httpsTargetPort router service HTTPS Target port
     ##
     ports:
       http: 80
+      httpTargetPort: "http"
       https: 443
+      httpsTargetPort: "https"
+
     ## Node.js ports to expose
     ## @param router.service.nodePorts.http Node.js port for HTTP
     ## @param router.service.nodePorts.https Node.js port for HTTPS

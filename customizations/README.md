@@ -124,7 +124,7 @@ But this only makes it accessible to your machine.
 
 **Requirements when exposing the service:**
 
-- CARTO only works with HTTPS. TLS termination can be done in the CARTO application level (Router service), or in a load balancer that gets the request before sending it back to the application.
+- CARTO only works with HTTPS. TLS termination can be done in the CARTO application level (Router component), or in a load balancer that gets the request before sending it back to the application.
 - The connection timeout of all incoming connections must be at least `605` seconds.
 - Configure a domain pointing to the exposed service.
 
@@ -155,6 +155,7 @@ But this only makes it accessible to your machine.
 You can find an example [here](service_loadBalancer/config.yaml). Also, we have prepared a few specifics for different Kubernetes flavors, just add the config that you need in your `customizations.yaml`:
 
 - [AWS EKS](service_loadBalancer/aws_eks/config.yaml)
+- [AWS EKS](service_loadBalancer/aws_eks_tls_offloading/config.yaml) Note you need to [import your certificate in AWS ACM](https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html)
 - [GCP GKE](service_loadBalancer/config.yaml)
 - [AZU AKS](service_loadBalancer/azu_aks/config.yaml)
 
