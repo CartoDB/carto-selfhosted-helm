@@ -1246,4 +1246,4 @@ REVISION	UPDATED                 	STATUS         	CHART             	APP VERSION
 28      	Fri Sep 30 15:07:06 2022	pending-upgrade	carto-1.42.10-beta	2022.9.28  	Preparing upgrade
 29      	Tue Oct  4 10:58:22 2022	deployed       	carto-1.42.10-beta	2022.9.28  	Rollback to 27
 ``` 
-Now you can upgrade as usual (edited) 
+Now you can run the upgrade operation again
