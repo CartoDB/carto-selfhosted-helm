@@ -1207,7 +1207,7 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
   ```
 ### Helm upgrade fails: another operation (install/upgrade/rollback) is in progress
 
-If you face a problem like this below when updatings your release:
+If you face a problem like the one below while you are updating your CARTO selfhosted installation```
 ```bash
 helm upgrade my-release carto/carto --namespace my namespace -f carto-values.yaml -f carto-secrets.yaml -f customizations.yml 
 Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
