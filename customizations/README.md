@@ -45,6 +45,7 @@
   - [Troubleshooting](#troubleshooting)
     - [Diagnosis tool](#diagnosis-tool)
     - [Ingress](#ingress)
+    - [Helm upgrade fails: another operation (install/upgrade/rollback) is in progress](#helm-upgrade-fails-another-operation-installupgraderollback-is-in-progress)
 
 # Customizations
 
@@ -1204,7 +1205,7 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
       ## If it is not your case, uncomment the line below
       cloud.google.com/neg: '{"ingress": true}'
   ```
-### Helm upgrade fails
+### Helm upgrade fails: another operation (install/upgrade/rollback) is in progress
 
 If you face a problem like this below when updatings your release:
 ```bash
