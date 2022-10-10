@@ -684,6 +684,43 @@ Create the name of the service account to use for the http-cache deployment
 {{- end -}}
 
 {{/*
+Return the proper Carto notifier full name
+*/}}
+{{- define "carto.notifier.fullname" -}}
+{{- printf "%s-notifier" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto notifier image name
+*/}}
+{{- define "carto.notifier.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.notifier.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto notifier ConfigMap name
+*/}}
+{{- define "carto.notifier.configmapName" -}}
+{{- if .Values.notifier.existingConfigMap -}}
+{{- .Values.notifier.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.notifier.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the notifier deployment
+*/}}
+{{- define "carto.notifier.serviceAccountName" -}}
+{{- if .Values.notifier.serviceAccount.create -}}
+{{ default (include "carto.notifier.fullname" .) .Values.notifier.serviceAccount.name }}
+{{- else -}}
+{{ default "default" .Values.notifier.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+
+{{/*
 Return the proper Carto cdn-invalidator-sub full name
 */}}
 {{- define "carto.cdnInvalidatorSub.fullname" -}}

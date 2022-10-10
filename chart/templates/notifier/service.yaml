@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "carto.notifier.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: notifier
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.notifier.service.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.notifier.service.annotations "context" $) | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.notifier.service.type }}
+  {{- if and .Values.notifier.service.clusterIP (eq .Values.notifier.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.notifier.service.clusterIP }}
+  {{- end }}
+  {{- if and .Values.notifier.service.externalTrafficPolicy (ne .Values.notifier.service.type "ClusterIP") }}
+  externalTrafficPolicy: {{ .Values.notifier.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- if and .Values.notifier.service.loadBalancerIP (eq .Values.notifier.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.notifier.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq .Values.notifier.service.type "LoadBalancer") .Values.notifier.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml .Values.notifier.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.notifier.service.ports.http }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if and (or (eq .Values.notifier.service.type "NodePort") (eq .Values.notifier.service.type "LoadBalancer")) .Values.notifier.service.nodePorts.http }}
+      nodePort: {{ .Values.notifier.service.nodePorts.http }}
+      {{- else if eq .Values.notifier.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- if .Values.notifier.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.notifier.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  selector:
+    {{- if .Values.notifier.service.labelSelectorsOverride }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.notifier.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- else }}
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: notifier
+    {{- end }}
