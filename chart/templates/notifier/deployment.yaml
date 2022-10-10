@@ -1,4 +1,4 @@
-{{- if and (include "carto.baseUrl" .) (eq .Values.appConfigValues.notifierEnabled "true") }}
+{{- if (include "carto.baseUrl" .) }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
@@ -24,7 +24,6 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/notifier/configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/notifier/secret.yaml") . | sha256sum }}
         {{- if .Values.notifier.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.notifier.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
@@ -64,9 +63,6 @@ spec:
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
-        {{- if .Values.internalPostgresql.enabled }}
-        {{ include "carto.postgresql-init-container" (dict "context" $) | nindent 8 }}
-        {{- end }}
         {{- if .Values.notifier.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.notifier.initContainers "context" $) | nindent 8 }}
         {{- end }}
@@ -82,19 +78,11 @@ spec:
           command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
           {{- else if .Values.notifier.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.notifier.command "context" $) | nindent 12 }}
-          {{- else }}
-          command:
-            - /bin/sh
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
           {{- else if .Values.notifier.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.notifier.args "context" $) | nindent 12 }}
-          {{ else }}
-          args:
-            - -ec
-            - |
-              /entrypoint.sh
           {{- end }}
           env:
             {{- if .Values.notifier.extraEnvVars }}
@@ -117,6 +105,8 @@ spec:
           ports:
             - name: http
               containerPort: {{ .Values.notifier.containerPorts.http }}
+            - name: internal
+              containerPort: {{ .Values.notifier.containerPorts.internal }}
           {{- if not .Values.diagnosticMode.enabled }}
           {{- if .Values.notifier.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.notifier.livenessProbe "enabled") "context" $) | nindent 12 }}

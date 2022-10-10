@@ -39,6 +39,15 @@ spec:
       {{- else if eq .Values.notifier.service.type "ClusterIP" }}
       nodePort: null
       {{- end }}
+    - port: {{ .Values.notifier.service.ports.internal }}
+      targetPort: internal
+      protocol: TCP
+      name: internal
+      {{- if and (or (eq .Values.notifier.service.type "NodePort") (eq .Values.notifier.service.type "LoadBalancer")) .Values.notifier.service.nodePorts.internal }}
+      nodePort: {{ .Values.notifier.service.nodePorts.internal }}
+      {{- else if eq .Values.notifier.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
     {{- if .Values.notifier.service.extraPorts }}
     {{- include "common.tplvalues.render" (dict "value" .Values.notifier.service.extraPorts "context" $) | nindent 4 }}
     {{- end }}

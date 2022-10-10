@@ -2653,7 +2653,8 @@ notifier:
   ## @param notifier.containerPorts.http notifier HTTP container port
   ##
   containerPorts:
-    http: 6081
+    http: 7999
+    internal: 5561
   ## Configure extra options for notifier containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param notifier.livenessProbe.enabled Enable livenessProbe on notifier containers
@@ -2873,12 +2874,14 @@ notifier:
     ##
     ports:
       http: 80
+      internal: 5561
     ## Node.js ports to expose
     ## @param notifier.service.nodePorts.http Node.js port for HTTP
     ## NOTE: choose port between <30000-32767>
     ##
     nodePorts:
       http: ""
+      internal: ""
     ## @param notifier.service.clusterIP notifier service Cluster IP
     ## e.g.:
     ## clusterIP: None
