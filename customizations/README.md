@@ -1213,7 +1213,7 @@ helm upgrade my-release carto/carto --namespace my namespace -f carto-values.yam
 Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
 ```
 
-Probably an upgrade was killed non gracefully, the fix is to rollback to a previous deployment:
+Probably an upgrade operation wasn't killed gracefully. The fix is to rollback to a previous deployment:
 
 ```bash
 helm history my-release                                                                                                                               
