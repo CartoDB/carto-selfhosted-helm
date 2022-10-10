@@ -828,6 +828,102 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `httpCache.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
 
 
+### notifier Deployment Parameters
+
+| Name                                                  | Description                                                                                                              | Value                           |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------- |
+| `notifier.image.registry`                             | notifier image registry                                                                                                  | `gcr.io/carto-onprem-artifacts` |
+| `notifier.image.repository`                           | notifier image repository                                                                                                | `notifier`                      |
+| `notifier.image.tag`                                  | notifier image tag (immutable tags are recommended)                                                                      | `""`                            |
+| `notifier.image.pullPolicy`                           | notifier image pull policy                                                                                               | `IfNotPresent`                  |
+| `notifier.image.pullSecrets`                          | notifier image pull secrets                                                                                              | `[]`                            |
+| `notifier.replicaCount`                               | Number of notifier replicas to deploy                                                                                    | `1`                             |
+| `notifier.containerPorts.http`                        | notifier HTTP container port                                                                                             | `7999`                          |
+| `notifier.containerPorts.internal`                    | notifier internal container port                                                                                         | `5561`                          |
+| `notifier.livenessProbe.enabled`                      | Enable livenessProbe on notifier containers                                                                              | `true`                          |
+| `notifier.livenessProbe.initialDelaySeconds`          | Initial delay seconds for livenessProbe                                                                                  | `10`                            |
+| `notifier.livenessProbe.periodSeconds`                | Period seconds for livenessProbe                                                                                         | `30`                            |
+| `notifier.livenessProbe.timeoutSeconds`               | Timeout seconds for livenessProbe                                                                                        | `5`                             |
+| `notifier.livenessProbe.failureThreshold`             | Failure threshold for livenessProbe                                                                                      | `5`                             |
+| `notifier.livenessProbe.successThreshold`             | Success threshold for livenessProbe                                                                                      | `1`                             |
+| `notifier.readinessProbe.enabled`                     | Enable readinessProbe on notifier containers                                                                             | `true`                          |
+| `notifier.readinessProbe.initialDelaySeconds`         | Initial delay seconds for readinessProbe                                                                                 | `10`                            |
+| `notifier.readinessProbe.periodSeconds`               | Period seconds for readinessProbe                                                                                        | `30`                            |
+| `notifier.readinessProbe.timeoutSeconds`              | Timeout seconds for readinessProbe                                                                                       | `5`                             |
+| `notifier.readinessProbe.failureThreshold`            | Failure threshold for readinessProbe                                                                                     | `5`                             |
+| `notifier.readinessProbe.successThreshold`            | Success threshold for readinessProbe                                                                                     | `1`                             |
+| `notifier.startupProbe.enabled`                       | Enable startupProbe on notifier containers                                                                               | `false`                         |
+| `notifier.startupProbe.initialDelaySeconds`           | Initial delay seconds for startupProbe                                                                                   | `10`                            |
+| `notifier.startupProbe.periodSeconds`                 | Period seconds for startupProbe                                                                                          | `30`                            |
+| `notifier.startupProbe.timeoutSeconds`                | Timeout seconds for startupProbe                                                                                         | `5`                             |
+| `notifier.startupProbe.failureThreshold`              | Failure threshold for startupProbe                                                                                       | `5`                             |
+| `notifier.startupProbe.successThreshold`              | Success threshold for startupProbe                                                                                       | `1`                             |
+| `notifier.customLivenessProbe`                        | Custom livenessProbe that overrides the default one                                                                      | `{}`                            |
+| `notifier.customReadinessProbe`                       | Custom readinessProbe that overrides the default one                                                                     | `{}`                            |
+| `notifier.customStartupProbe`                         | Custom startupProbe that overrides the default one                                                                       | `{}`                            |
+| `notifier.resources.limits`                           | The resources limits for the notifier containers                                                                         | `{}`                            |
+| `notifier.resources.requests`                         | The requested resources for the notifier containers                                                                      | `{}`                            |
+| `notifier.podSecurityContext.enabled`                 | Enabled notifier pods' Security Context                                                                                  | `true`                          |
+| `notifier.podSecurityContext.fsGroup`                 | Set notifier pod's Security Context fsGroup                                                                              | `102`                           |
+| `notifier.containerSecurityContext.enabled`           | Enabled notifier containers' Security Context                                                                            | `true`                          |
+| `notifier.containerSecurityContext.runAsUser`         | Set notifier containers' Security Context runAsUser                                                                      | `101`                           |
+| `notifier.containerSecurityContext.runAsNonRoot`      | Set notifier containers' Security Context runAsNonRoot                                                                   | `false`                         |
+| `notifier.containerSecurityContext.capabilities.drop` | removes notifier containers' Security Context capabilities                                                               | `["all"]`                       |
+| `notifier.existingConfigMap`                          | The name of an existing ConfigMap with your custom configuration for notifier                                            | `""`                            |
+| `notifier.existingSecret`                             | The name of an existing ConfigMap with your custom configuration for notifier                                            | `""`                            |
+| `notifier.command`                                    | Override default container command (useful when using custom images)                                                     | `[]`                            |
+| `notifier.args`                                       | Override default container args (useful when using custom images)                                                        | `[]`                            |
+| `notifier.hostAliases`                                | notifier pods host aliases                                                                                               | `[]`                            |
+| `notifier.podLabels`                                  | Extra labels for notifier pods                                                                                           | `{}`                            |
+| `notifier.podAnnotations`                             | Annotations for notifier pods                                                                                            | `{}`                            |
+| `notifier.podAffinityPreset`                          | Pod affinity preset. Ignored if `notifier.affinity` is set. Allowed values: `soft` or `hard`                             | `""`                            |
+| `notifier.podAntiAffinityPreset`                      | Pod anti-affinity preset. Ignored if `notifier.affinity` is set. Allowed values: `soft` or `hard`                        | `soft`                          |
+| `notifier.nodeAffinityPreset.type`                    | Node affinity preset type. Ignored if `notifier.affinity` is set. Allowed values: `soft` or `hard`                       | `""`                            |
+| `notifier.nodeAffinityPreset.key`                     | Node label key to match. Ignored if `notifier.affinity` is set                                                           | `""`                            |
+| `notifier.nodeAffinityPreset.values`                  | Node label values to match. Ignored if `notifier.affinity` is set                                                        | `[]`                            |
+| `notifier.affinity`                                   | Affinity for notifier pods assignment                                                                                    | `{}`                            |
+| `notifier.nodeSelector`                               | Node labels for notifier pods assignment                                                                                 | `{}`                            |
+| `notifier.tolerations`                                | Tolerations for notifier pods assignment                                                                                 | `[]`                            |
+| `notifier.updateStrategy.type`                        | notifier deployment strategy type                                                                                        | `Recreate`                      |
+| `notifier.priorityClassName`                          | notifier pods' priorityClassName                                                                                         | `""`                            |
+| `notifier.schedulerName`                              | Name of the k8s scheduler (other than default) for notifier pods                                                         | `""`                            |
+| `notifier.lifecycleHooks`                             | for the notifier container(s) to automate configuration before or after startup                                          | `{}`                            |
+| `notifier.extraEnvVars`                               | Array with extra environment variables to add to notifier nodes ([More info](#additional-environment-variables))         | `[]`                            |
+| `notifier.extraEnvVarsCM`                             | Name of existing ConfigMap containing extra env vars for notifier nodes ([More info](#additional-environment-variables)) | `""`                            |
+| `notifier.extraEnvVarsSecret`                         | Name of existing Secret containing extra env vars for notifier nodes ([More info](#additional-environment-variables))    | `""`                            |
+| `notifier.extraVolumes`                               | Optionally specify extra list of additional volumes for the notifier pod(s)                                              | `[]`                            |
+| `notifier.extraVolumeMounts`                          | Optionally specify extra list of additional volumeMounts for the notifier container(s)                                   | `[]`                            |
+| `notifier.sidecars`                                   | Add additional sidecar containers to the notifier pod(s)                                                                 | `{}`                            |
+| `notifier.initContainers`                             | Add additional init containers to the notifier pod(s)                                                                    | `{}`                            |
+
+
+### notifier Service Parameters
+
+| Name                                        | Description                                                                         | Value       |
+| ------------------------------------------- | ----------------------------------------------------------------------------------- | ----------- |
+| `notifier.service.type`                     | notifier service type                                                               | `ClusterIP` |
+| `notifier.service.ports.http`               | notifier service HTTP port                                                          | `80`        |
+| `notifier.service.ports.internal`           | notifier service internal port                                                      | `5561`      |
+| `notifier.service.nodePorts.http`           | Port for HTTP                                                                       | `""`        |
+| `notifier.service.nodePorts.internal`       | Port for internal connections                                                       | `""`        |
+| `notifier.service.clusterIP`                | notifier service Cluster IP                                                         | `""`        |
+| `notifier.service.loadBalancerIP`           | notifier service Load Balancer IP                                                   | `""`        |
+| `notifier.service.labelSelectorsOverride`   | Selector for notifier service                                                       | `{}`        |
+| `notifier.service.loadBalancerSourceRanges` | notifier service Load Balancer sources                                              | `[]`        |
+| `notifier.service.externalTrafficPolicy`    | notifier service external traffic policy                                            | `Cluster`   |
+| `notifier.service.annotations`              | Additional custom annotations for notifier service                                  | `{}`        |
+| `notifier.service.extraPorts`               | Extra ports to expose in notifier service (normally used with the `sidecars` value) | `[]`        |
+
+
+### notifier ServiceAccount configuration
+
+| Name                                                   | Description                                          | Value   |
+| ------------------------------------------------------ | ---------------------------------------------------- | ------- |
+| `notifier.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
+| `notifier.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
+| `notifier.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
+
+
 ### cdnInvalidatorSub Deployment Parameters
 
 | Name                                                           | Description                                                                                                                       | Value                           |

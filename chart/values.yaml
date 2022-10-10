@@ -2651,6 +2651,7 @@ notifier:
   ##
   replicaCount: 1
   ## @param notifier.containerPorts.http notifier HTTP container port
+  ## @param notifier.containerPorts.internal notifier internal container port
   ##
   containerPorts:
     http: 7999
@@ -2776,17 +2777,17 @@ notifier:
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAntiAffinityPreset: soft
-  ## Node.js notifier.affinity preset
+  ## Node notifier.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
   nodeAffinityPreset:
-    ## @param notifier.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `notifier.affinity` is set. Allowed values: `soft` or `hard`
+    ## @param notifier.nodeAffinityPreset.type Node affinity preset type. Ignored if `notifier.affinity` is set. Allowed values: `soft` or `hard`
     ##
     type: ""
-    ## @param notifier.nodeAffinityPreset.key Node.js label key to match. Ignored if `notifier.affinity` is set
+    ## @param notifier.nodeAffinityPreset.key Node label key to match. Ignored if `notifier.affinity` is set
     ##
     key: ""
-    ## @param notifier.nodeAffinityPreset.values Node.js label values to match. Ignored if `notifier.affinity` is set
+    ## @param notifier.nodeAffinityPreset.values Node label values to match. Ignored if `notifier.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
@@ -2798,7 +2799,7 @@ notifier:
   ## NOTE: `notifier.podAffinityPreset`, `notifier.podAntiAffinityPreset`, and `notifier.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param notifier.nodeSelector Node.js labels for notifier pods assignment
+  ## @param notifier.nodeSelector Node labels for notifier pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
@@ -2871,12 +2872,14 @@ notifier:
     ##
     type: ClusterIP
     ## @param notifier.service.ports.http notifier service HTTP port
+    ## @param notifier.service.ports.internal notifier service internal port
     ##
     ports:
       http: 80
       internal: 5561
-    ## Node.js ports to expose
-    ## @param notifier.service.nodePorts.http Node.js port for HTTP
+    ## Ports to expose
+    ## @param notifier.service.nodePorts.http Port for HTTP
+    ## @param notifier.service.nodePorts.internal Port for internal connections
     ## NOTE: choose port between <30000-32767>
     ##
     nodePorts:
