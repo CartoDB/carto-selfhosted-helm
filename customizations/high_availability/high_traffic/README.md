@@ -31,8 +31,9 @@ mapsApi              |  true     |  2048Mi         |  1000m       |  768Mi      
 sqlWorker            |  false    |  4096Mi         |  1000m       |  3072Mi           |  350m          |                  |                  |
 router               |  true     |  512Mi          |  500m        |  372Mi            |  200m          |  2               |  3               |  75
 httpCache            |  false    |  2048Mi         |  500m        |  1256Mi           |  200m          |                  |                  |
+notifier             |  false    |  512Mi          |  500m        |  256Mi            |  200m          |                  |                  |
 cdnInvalidatorSub    |  false    |  512Mi          |  500m        |  372Mi            |  200m          |                  |                  |
 workspaceApi         |  true     |  1024Mi         |  1000m       |  768Mi            |  350m          |  2               |  6               |  75
 workspaceSubscriber  |  false    |  512Mi          |  500m        |  372Mi            |  200m          |                  |                  |
 workspaceWww         |  true     |  1024Mi         |  500m        |  768Mi            |  200m          |  2               |  3               |  75
-**TOTAL**                |  41984Mi  |  26000m         |  26504Mi     |  9400m            |                |                  |                  |
+**TOTAL**            |           |  42496Mi        |  26500m      |  26760Mi          |  9600m         |                  |                  |

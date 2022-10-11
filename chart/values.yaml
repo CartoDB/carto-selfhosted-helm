@@ -2722,7 +2722,7 @@ notifier:
       cpu: "500m"
     requests:
       memory: "256Mi"
-      cpu: "250m"
+      cpu: "200m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param notifier.podSecurityContext.enabled Enabled notifier pods' Security Context
