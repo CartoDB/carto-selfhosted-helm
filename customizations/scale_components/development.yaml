@@ -14,13 +14,13 @@ ldsApi:
   replicaCount: 1
 
 mapsApi:
-  replicaCount: 2
+  replicaCount: 1
 
 router:
   replicaCount: 1
 
 workspaceApi:
-  replicaCount: 2
+  replicaCount: 1
 
 workspaceWww:
   replicaCount: 1
