@@ -260,7 +260,7 @@ Return the proper Carto lds-api Secret name
 Return lds-api node options
 */}}
 {{- define "carto.ldsApi.nodeOptions" -}}
-{{- printf "--max-old-space-size=%d" (div (mul (trimSuffix "Mi" .Values.ldsApi.resources.limits.memory) .Values.cartoConfigValues.defaultNodeMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d" (div (mul (trimSuffix "Mi" .Values.ldsApi.resources.limits.memory) .Values.ldsApi.nodeMaxOldSpacePercentage) 100) | quote -}}
 {{- end -}}
 
 {{/*

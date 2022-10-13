@@ -47,8 +47,6 @@ cartoConfigValues:
   selfHostedTenantId: ""
   ## @param cartoConfigValues.launchDarklyClientSideId LaunchDarkly ClientSideId (by www) used to enable/disable features.
   launchDarklyClientSideId: ""
-  ## @param cartoConfigValues.defaultNodeMaxOldSpacePercentage Default memory percentage for max-old-space-size node option
-  defaultNodeMaxOldSpacePercentage: 75
 ## @section App secret
 ## Global secrets to be edited by the client
 appSecrets:
@@ -1109,6 +1107,9 @@ ldsApi:
   ##
   containerPorts:
     http: 8004
+  ## @param ldsApi.nodeMaxOldSpacePercentage Memory percentage for node max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeMaxOldSpacePercentage: 75
   ## Configure extra options for lds-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param ldsApi.livenessProbe.enabled Enable livenessProbe on lds-api containers
@@ -1176,10 +1177,12 @@ ldsApi:
     targetCPUUtilizationPercentage: 75
   ## lds-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param ldsApi.resources.limits [object] The resources limits for the lds-api containers
-  ## @skip ldsApi.resources.limits
-  ## @param ldsApi.resources.requests [object] The requested resources for the lds-api containers
-  ## @skip ldsApi.resources.requests
+  ## @skip ldsApi.resources.limits [object] The resources limits for the lds-api containers
+  ## @param ldsApi.resources.limits.memory Container memory limits in MiB
+  ## @param ldsApi.resources.limits.cpu Container cpu limits in cpu cores
+  ## @skip ldsApi.resources.requests [object] The requested resources for the lds-api containers
+  ## @param ldsApi.resources.requests.memory Container memory requests in MiB
+  ## @param ldsApi.resources.requests.cpu Container cpu requests in cpu cores
   ##
   resources:
     limits:
