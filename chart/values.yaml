@@ -1406,7 +1406,7 @@ mapsApi:
     pullSecrets: []
   ## @param mapsApi.replicaCount Number of maps-api replicas to deploy
   ##
-  replicaCount: 1
+  replicaCount: 2
   ## @param mapsApi.containerPorts.http maps-api HTTP container port
   ##
   containerPorts:
@@ -2942,7 +2942,7 @@ workspaceApi:
     pullSecrets: []
   ## @param workspaceApi.replicaCount Number of workspace-api replicas to deploy
   ##
-  replicaCount: 1
+  replicaCount: 2
   ## @param workspaceApi.containerPorts.http workspace-api HTTP container port
   ##
   containerPorts:
