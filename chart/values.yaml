@@ -1179,10 +1179,10 @@ ldsApi:
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @skip ldsApi.resources.limits [object] The resources limits for the lds-api containers
   ## @param ldsApi.resources.limits.memory Container memory limits in MiB
-  ## @param ldsApi.resources.limits.cpu Container cpu limits in cpu cores
+  ## @param ldsApi.resources.limits.cpu Container cpu limits in milliCPU cores
   ## @skip ldsApi.resources.requests [object] The requested resources for the lds-api containers
   ## @param ldsApi.resources.requests.memory Container memory requests in MiB
-  ## @param ldsApi.resources.requests.cpu Container cpu requests in cpu cores
+  ## @param ldsApi.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
