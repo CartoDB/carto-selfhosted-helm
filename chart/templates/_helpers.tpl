@@ -257,6 +257,13 @@ Return the proper Carto lds-api Secret name
 {{- end -}}
 
 {{/*
+Return lds-api node options
+*/}}
+{{- define "carto.ldsApi.nodeOptions" -}}
+{{- printf "--max-old-space-size=%d" (div (mul (trimSuffix "Mi" .Values.ldsApi.resources.limits.memory) .Values.cartoConfigValues.defaultNodeMaxOldSpacePercentage) 100) | quote -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto import-worker full name
 */}}
 {{- define "carto.importWorker.fullname" -}}

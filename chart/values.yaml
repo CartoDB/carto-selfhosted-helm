@@ -47,7 +47,8 @@ cartoConfigValues:
   selfHostedTenantId: ""
   ## @param cartoConfigValues.launchDarklyClientSideId LaunchDarkly ClientSideId (by www) used to enable/disable features.
   launchDarklyClientSideId: ""
-
+  ## @param cartoConfigValues.defaultNodeMaxOldSpacePercentage Default memory percentage for max-old-space-size node option
+  defaultNodeMaxOldSpacePercentage: 75
 ## @section App secret
 ## Global secrets to be edited by the client
 appSecrets:
