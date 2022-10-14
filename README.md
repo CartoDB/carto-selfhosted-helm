@@ -21,6 +21,9 @@ This repository contains the [Kubernetes Helm](https://github.com/helm/helm) cha
 
 To be able to run CARTO Self Hosted you need to have a license. [Contact CARTO](https://carto.com/request-live-demo/) to get one.
 
+Running CARTO in your Kubernetes cluster is easy as long as you know how to manage Kubernetes. If you do not have K8's experience inside the
+organization, we recommend you to use the [SaaS version](https://carto.com).
+
 If you are looking for another installation method, please refer to [carto-selfhosted repository](https://github.com/CartoDB/carto-selfhosted).
 
 ## Installation
