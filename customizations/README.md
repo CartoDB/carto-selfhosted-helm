@@ -114,6 +114,7 @@ To do this you need to [add the following customization](#how-to-apply-the-confi
 appConfigValues:
   selfHostedDomain: "my.domain.com"
 ```
+
 Don't forget to upgrade your chart after the change.
 
 ### Access to CARTO from outside the cluster
@@ -143,7 +144,6 @@ But this only makes it accessible to your machine.
   Within this option you could either use your own TLS certificates, or GCP SSL Managed Certificates.
 
   > :warning: if you are running a GKE cluster 1.17.6-gke.7 version or lower, please check [Cluster IP configuration](#troubleshooting)
-
 
   **Useful links**
 
@@ -187,9 +187,9 @@ You can find an example [here](service_loadBalancer/config.yaml). Also, we have 
   - You must have created your own [Reserved static external IP address](https://cloud.google.com/compute/docs/ip-addresses/reserve-static-external-ip-address)
   - You must create an A DNS record that relates your domain to the just created static external IP address
   - Check also [this requirements](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#prerequisites)
-  
+
   :point_right: You can easily create a static external IP address with
-  
+
   ```bash
   gcloud compute addresses create my_carto_ip --global
   ```
@@ -200,7 +200,7 @@ Please see our [troubleshooting](#troubleshooting) section if you have problems 
 
 ### Configure TLS termination in the CARTO router service
 
- > :point_right: Do not use this configuration if you are exposing CARTO services with an Ingress
+> :point_right: Do not use this configuration if you are exposing CARTO services with an Ingress
 
 #### Disable internal HTTPS
 
@@ -347,9 +347,9 @@ The [Cloud SQL Auth Proxy] ([https://](https://cloud.google.com/sql/docs/postgre
 
 Cloud SQL Auth Proxy will run in your cluster as a deployment with a Cluster IP service. You need a [service account](https://cloud.google.com/sql/docs/postgres/connect-admin-proxy#create-service-account) with one of the following roles:
 
-* Cloud SQL > Cloud SQL Client
-* Cloud SQL > Cloud SQL Editor
-* Cloud SQL > Cloud SQL Admin
+- Cloud SQL > Cloud SQL Client
+- Cloud SQL > Cloud SQL Editor
+- Cloud SQL > Cloud SQL Admin
 
 You need to provide this Service Account as a secret:
 
@@ -372,7 +372,7 @@ Add the config below to your customizations.yaml file using this connection name
 # In this example we create:
 #  * A deployment with configured CloudSQL Auth Proxy
 #  * A ClusterIP service to serve CloudSQL Auth Proxy
-#  * External Postgresql configuration for the chart 
+#  * External Postgresql configuration for the chart
 #      - https://github.com/CartoDB/carto-selfhosted-helm/tree/main/customizations#setup-postgres-creating-secrets
 #
 
@@ -387,8 +387,9 @@ externalPostgresql:
   #Admin user, postgres as default in cloud SQL
   adminUser: "postgres"
   #Secret Name that storage database credentials
-  existingSecret: "cloudsql-secret"
-    #Secret key with user password 
+  existingSecret:
+    "cloudsql-secret"
+    #Secret key with user password
   existingSecretPasswordKey: "carto-password"
   #Secret key with admin password
   existingSecretAdminPasswordKey: "admin-password"
@@ -467,7 +468,7 @@ extraDeploy:
                 initialDelaySeconds: 15
                 periodSeconds: 20
               volumeMounts:
-                # GCP Service Account with Cloud SQL Client role 
+                # GCP Service Account with Cloud SQL Client role
                 - name: carto-cloudsql-proxy-sa-key
                   mountPath: "/secrets"
                   readOnly: true
@@ -523,8 +524,6 @@ extraDeploy:
         {{- include "common.labels.matchLabels" . | nindent 4 }}
         app.kubernetes.io/component: carto-cloudsql-proxy
 ```
-
-
 
 #### Configure Postgres SSL with custom CA
 
@@ -854,7 +853,8 @@ appConfigValues:
   thumbnailsBucketExternalURL: <external bucket URL>
   workspaceThumbnailsPublic: <false|true>
 ```
-  > Note that thumbnailsBucketExternalURL should be https://<azure_resource_group>.blob.core.windows.net/<thumbnails_bucket_name>/
+
+> Note that thumbnailsBucketExternalURL should be https://<azure_resource_group>.blob.core.windows.net/<thumbnails_bucket_name>/
 
 6. Pass your credentials as secrets by using one of the options below:
 
@@ -1001,13 +1001,13 @@ You can edit the file to set your own scaling needs by modifying the minimum and
 
 ### Enable static scaling
 
-You can set statically set the number of pods should be running. To do it, use [static scale config](scale_components/static.yaml) adding it with `-f customizations/scale_components/static.yaml` to the `install` or `upgrade` commands.
+You can set statically set the number of pods should be running. To do it, use [static scale config](scale_components/development.yaml) adding it with `-f customizations/scale_components/development.yaml` to the `install` or `upgrade` commands.
 
 > Although we recommend the autoscaling configuration, you could choose the autoscaling feature for some components and the static configuration for the others. Remember that autoscaling override the static configuration, so if one component has both configurations, autoscaling will take precedence.
 
 ## High Availability
 
-In some cases, you may want to ensure **some critical services have replicas deployed across different worker nodes** in order to provide high availability against a node failure. You can achieve this by applying one of the [high availability configurations](high_availability) that we recommend. 
+In some cases, you may want to ensure **some critical services have replicas deployed across different worker nodes** in order to provide high availability against a node failure. You can achieve this by applying one of the [high availability configurations](high_availability) that we recommend.
 
 > Note that you should enable static scaling or autoscaling for this setup to work as expected.
 
@@ -1075,12 +1075,11 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
 
 - The ingress creation can take several minutes, once finished you should see this status:
 
-
   ```bash
   kubectl get ingress -n <namespace>
   kubectl describe ingress <name>
   ```
-  
+
   ```bash
   Events:
     Type     Reason     Age                  From                     Message
@@ -1110,8 +1109,8 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
   ```bash
     Request URL: https://carto.example.com/workspace-api/accounts/ac_XXXXX/check
     Request Method: GET
-    Status Code: 500 
-  
+    Status Code: 500
+
     Response: {"error":"unable to verify the first certificate","status":500,"code":"UNABLE_TO_VERIFY_LEAF_SIGNATURE"}
   ```
 
@@ -1127,6 +1126,7 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
       /-----END CERTIFICATE-----/ {split_after=1} \
       {print > "cert_chain" n ".crt"}'
     ```
+
     ```bash
     ls -ltr cert_chain*
     ```
@@ -1139,13 +1139,13 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
 
     ```yaml
     ------------------------
-    
+
             Issuer: C = US, ST = New Jersey, L = Jersey City, O = The USERTRUST Network, CN = USERTrust RSA Certification Authority
             Subject: C = GB, ST = Greater Manchester, L = Salford, O = Sectigo Limited, CN = Sectigo RSA Domain Validation Secure Server CA
     ------------------------
-    
+
     ------------------------
-    
+
             Issuer: C = GB, ST = Greater Manchester, L = Salford, O = Sectigo Limited, CN = Sectigo RSA Domain Validation Secure Server CA
             Subject: CN = *.carto.example
     ------------------------
@@ -1167,28 +1167,30 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
     openssl x509 -noout -modulus -in carto.example.new.crt | openssl md5
     openssl rsa -noout -modulus -in carto.example.key | openssl md5
     ```
-     **NOTE**: If both `modulus md5` does not match (the output of both commands should be exactly the same), the certificate that you have updated won't be valid. From here, you need to iterate with the certificate update operation (previous step), until both `modulus md5` match.
+
+    **NOTE**: If both `modulus md5` does not match (the output of both commands should be exactly the same), the certificate that you have updated won't be valid. From here, you need to iterate with the certificate update operation (previous step), until both `modulus md5` match.
 
   - Create your new certificate in a kubernetes tls secret
-  
+
     ```bash
     kubectl create secret tls -n <namespace> carto-example-new --cert=carto.example.new.crt --key=carto.example.key
     ```
 
   - Reinstall your environment
 
-      [uninstall steps](https://github.com/CartoDB/carto-selfhosted-helm#update)
+    [uninstall steps](https://github.com/CartoDB/carto-selfhosted-helm#update)
 
-      [install steps](https://github.com/CartoDB/carto-selfhosted-helm#installation-steps)
+    [install steps](https://github.com/CartoDB/carto-selfhosted-helm#installation-steps)
+
 - Message ` type "ClusterIP", expected "NodePort" or "LoadBalancer"`
-  
+
   This message is related to how is configured your cluster. To use ClusterIP the service needs to point to a NEG. This can be done using `cloud.google.com/neg: '{"ingress": true}'`annotation in router service. Container-native load balancing is enabled by default for Services when all of the following conditions are true:
 
   - For Services created in GKE clusters 1.17.6-gke.7 and up
   - Using VPC-native clusters
   - Not using a Shared VPC
   - Not using GKE Network Policy
-  If this is not your case you must add it in your customization.yaml file. in the example in this repository this value is commented, if you are using it just uncomment it and reinstall.
+    If this is not your case you must add it in your customization.yaml file. in the example in this repository this value is commented, if you are using it just uncomment it and reinstall.
 
   ```yaml
   service:
@@ -1196,7 +1198,7 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
       ## Same BackendConfig for all Service ports
       ## https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-features#same_backendconfig_for_all_service_ports
       cloud.google.com/backend-config: '{"default": "carto-service-backend-config"}'
-      ## https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing if your 
+      ## https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing if your
       ## installation do not match with the configuration below:
       ## For Services created in GKE clusters 1.17.6-gke.7 and up
       ##  * Using VPC-native clusters
