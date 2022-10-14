@@ -22,6 +22,7 @@ data:
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   LDS_PORT: {{ .Values.ldsApi.containerPorts.http | quote }}
   LOG_LEVEL: "debug"
+  NODE_OPTIONS: {{ template "carto.ldsApi.nodeOptions" . }}
   REDIS_CACHE_PREFIX: "onprem"
   REDIS_HOST: {{ include "carto.redis.host" . }}
   REDIS_PORT: {{ include "carto.redis.port" . }}

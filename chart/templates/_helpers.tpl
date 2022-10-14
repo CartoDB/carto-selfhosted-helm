@@ -257,6 +257,13 @@ Return the proper Carto lds-api Secret name
 {{- end -}}
 
 {{/*
+Return Carto lds-api node options
+*/}}
+{{- define "carto.ldsApi.nodeOptions" -}}
+{{- printf "--max-old-space-size=%d" (div (mul (trimSuffix "Mi" .Values.ldsApi.resources.limits.memory) .Values.ldsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto import-worker full name
 */}}
 {{- define "carto.importWorker.fullname" -}}
@@ -290,6 +297,13 @@ Return the proper Carto import-worker Secret name
 {{- else -}}
 {{- include "carto.importWorker.fullname" . -}}
 {{- end -}}
+{{- end -}}
+
+{{/*
+Return Carto import-worker node options
+*/}}
+{{- define "carto.importWorker.nodeOptions" -}}
+{{- printf "--max-old-space-size=%d" (div (mul (trimSuffix "Mi" .Values.importWorker.resources.limits.memory) .Values.importWorker.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- end -}}
 
 {{/*
@@ -329,6 +343,13 @@ Return the proper Carto import-api Secret name
 {{- end -}}
 
 {{/*
+Return Carto import-api node options
+*/}}
+{{- define "carto.importApi.nodeOptions" -}}
+{{- printf "--max-old-space-size=%d" (div (mul (trimSuffix "Mi" .Values.importApi.resources.limits.memory) .Values.importApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto maps-api full name
 */}}
 {{- define "carto.mapsApi.fullname" -}}
@@ -364,7 +385,12 @@ Return the proper Carto maps-api Secret name
 {{- end -}}
 {{- end -}}
 
-
+{{/*
+Return Carto maps-api node options
+*/}}
+{{- define "carto.mapsApi.nodeOptions" -}}
+{{- printf "--max-old-space-size=%d" (div (mul (trimSuffix "Mi" .Values.mapsApi.resources.limits.memory) .Values.mapsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- end -}}
 
 {{/*
 Return the proper Carto sql-worker full name
@@ -402,11 +428,12 @@ Return the proper Carto sql-worker Secret name
 {{- end -}}
 {{- end -}}
 
-
-
-
-
-
+{{/*
+Return Carto sql-worker node options
+*/}}
+{{- define "carto.sqlWorker.nodeOptions" -}}
+{{- printf "--max-old-space-size=%d" (div (mul (trimSuffix "Mi" .Values.sqlWorker.resources.limits.memory) .Values.sqlWorker.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- end -}}
 
 {{/*
 Return the proper Carto workspace-subscriber full name
@@ -444,6 +471,12 @@ Return the proper Carto workspace-subscriber Secret name
 {{- end -}}
 {{- end -}}
 
+{{/*
+Return Carto workspace-subscriber node options
+*/}}
+{{- define "carto.workspaceSubscriber.nodeOptions" -}}
+{{- printf "--max-old-space-size=%d" (div (mul (trimSuffix "Mi" .Values.workspaceSubscriber.resources.limits.memory) .Values.workspaceSubscriber.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- end -}}
 
 {{/*
 Return the proper Carto workspace-api full name
@@ -481,6 +514,12 @@ Return the proper Carto workspace-api Secret name
 {{- end -}}
 {{- end -}}
 
+{{/*
+Return Carto workspace-api node options
+*/}}
+{{- define "carto.workspaceApi.nodeOptions" -}}
+{{- printf "--max-old-space-size=%d" (div (mul (trimSuffix "Mi" .Values.workspaceApi.resources.limits.memory) .Values.workspaceApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- end -}}
 
 {{/*
 In case you're using an Azure Postgres as an external database you should add two additional parameters
@@ -719,6 +758,12 @@ Return the proper Carto cdn-invalidator-sub Secret name
 {{- end -}}
 {{- end -}}
 
+{{/*
+Return Carto cdn-invalidator-sub node options
+*/}}
+{{- define "carto.cdnInvalidatorSub.nodeOptions" -}}
+{{- printf "--max-old-space-size=%d" (div (mul (trimSuffix "Mi" .Values.cdnInvalidatorSub.resources.limits.memory) .Values.cdnInvalidatorSub.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- end -}}
 
 {{/*
 Return the proper Carto workspace-db image name

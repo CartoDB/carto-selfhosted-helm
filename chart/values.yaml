@@ -47,7 +47,6 @@ cartoConfigValues:
   selfHostedTenantId: ""
   ## @param cartoConfigValues.launchDarklyClientSideId LaunchDarkly ClientSideId (by www) used to enable/disable features.
   launchDarklyClientSideId: ""
-
 ## @section App secret
 ## Global secrets to be edited by the client
 appSecrets:
@@ -359,10 +358,12 @@ accountsWww:
     targetCPUUtilizationPercentage: 75
   ## accounts-www resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param accountsWww.resources.limits [object] The resources limits for the accounts-www containers
-  ## @skip accountsWww.resources.limits
-  ## @param accountsWww.resources.requests [object] The requested resources for the accounts-www containers
-  ## @skip accountsWww.resources.requests
+  ## @skip accountsWww.resources.limits [object] The resources limits for the accounts-www containers
+  ## @param accountsWww.resources.limits.memory Container memory limits in MiB
+  ## @param accountsWww.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip accountsWww.resources.requests [object] The requested resources for the accounts-www containers
+  ## @param accountsWww.resources.requests.memory Container memory requests in MiB
+  ## @param accountsWww.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -608,6 +609,9 @@ importApi:
   ##
   containerPorts:
     http: 8003
+  ## @param importApi.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeProcessMaxOldSpacePercentage: 75
   ## Configure extra options for import-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param importApi.livenessProbe.enabled Enable livenessProbe on import-api containers
@@ -675,10 +679,12 @@ importApi:
     targetCPUUtilizationPercentage: 75
   ## import-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param importApi.resources.limits [object] The resources limits for the import-api containers
-  ## @skip importApi.resources.limits
-  ## @param importApi.resources.requests [object] The requested resources for the import-api containers
-  ## @skip importApi.resources.requests
+  ## @skip importApi.resources.limits [object] The resources limits for the import-api containers
+  ## @param importApi.resources.limits.memory Container memory limits in MiB
+  ## @param importApi.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip importApi.resources.requests [object] The requested resources for the import-api containers
+  ## @param importApi.resources.requests.memory Container memory requests in MiB
+  ## @param importApi.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -916,12 +922,17 @@ importWorker:
   ## @param importWorker.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
+  ## @param importWorker.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeProcessMaxOldSpacePercentage: 75
   ## import-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param importWorker.resources.limits [object] The resources limits for the import-worker containers
-  ## @skip importWorker.resources.limits
-  ## @param importWorker.resources.requests [object] The requested resources for the import-worker containers
-  ## @skip importWorker.resources.requests
+  ## @skip importWorker.resources.limits [object] The resources limits for the import-worker containers
+  ## @param importWorker.resources.limits.memory Container memory limits in MiB
+  ## @param importWorker.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip importWorker.resources.requests [object] The requested resources for the import-worker containers
+  ## @param importWorker.resources.requests.memory Container memory requests in MiB
+  ## @param importWorker.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -1108,6 +1119,9 @@ ldsApi:
   ##
   containerPorts:
     http: 8004
+  ## @param ldsApi.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeProcessMaxOldSpacePercentage: 75
   ## Configure extra options for lds-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param ldsApi.livenessProbe.enabled Enable livenessProbe on lds-api containers
@@ -1175,10 +1189,12 @@ ldsApi:
     targetCPUUtilizationPercentage: 75
   ## lds-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param ldsApi.resources.limits [object] The resources limits for the lds-api containers
-  ## @skip ldsApi.resources.limits
-  ## @param ldsApi.resources.requests [object] The requested resources for the lds-api containers
-  ## @skip ldsApi.resources.requests
+  ## @skip ldsApi.resources.limits [object] The resources limits for the lds-api containers
+  ## @param ldsApi.resources.limits.memory Container memory limits in MiB
+  ## @param ldsApi.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip ldsApi.resources.requests [object] The requested resources for the lds-api containers
+  ## @param ldsApi.resources.requests.memory Container memory requests in MiB
+  ## @param ldsApi.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -1411,6 +1427,9 @@ mapsApi:
   ##
   containerPorts:
     http: 8002
+  ## @param mapsApi.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeProcessMaxOldSpacePercentage: 75
   ## Configure extra options for maps-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param mapsApi.livenessProbe.enabled Enable livenessProbe on maps-api containers
@@ -1478,10 +1497,12 @@ mapsApi:
     targetCPUUtilizationPercentage: 75
   ## maps-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param mapsApi.resources.limits [object] The resources limits for the maps-api containers
-  ## @skip mapsApi.resources.limits
-  ## @param mapsApi.resources.requests [object] The requested resources for the maps-api containers
-  ## @skip mapsApi.resources.requests
+  ## @skip mapsApi.resources.limits [object] The resources limits for the maps-api containers
+  ## @param mapsApi.resources.limits.memory Container memory limits in MiB
+  ## @param mapsApi.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip mapsApi.resources.requests [object] The requested resources for the maps-api containers
+  ## @param mapsApi.resources.requests.memory Container memory requests in MiB
+  ## @param mapsApi.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -1710,6 +1731,9 @@ sqlWorker:
   ## @param sqlWorker.replicaCount Number of sql-worker replicas to deploy
   ##
   replicaCount: 1
+  ## @param sqlWorker.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeProcessMaxOldSpacePercentage: 75
   ## Configure extra options for sqlWorker containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param sqlWorker.livenessProbe.enabled Enable livenessProbe on sqlWorker containers
@@ -1756,10 +1780,12 @@ sqlWorker:
     failureThreshold: 5
   ## sql-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param sqlWorker.resources.limits [object] The resources limits for the sql-worker containers
-  ## @skip sqlWorker.resources.limits
-  ## @param sqlWorker.resources.requests [object] The requested resources for the sql-worker containers
-  ## @skip sqlWorker.resources.requests
+  ## @skip sqlWorker.resources.limits [object] The resources limits for the sql-worker containers
+  ## @param sqlWorker.resources.limits.memory Container memory limits in MiB
+  ## @param sqlWorker.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip sqlWorker.resources.requests [object] The requested resources for the sql-worker containers
+  ## @param sqlWorker.resources.requests.memory Container memory requests in MiB
+  ## @param sqlWorker.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -2015,10 +2041,12 @@ router:
     targetCPUUtilizationPercentage: 75
   ## router resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param router.resources.limits [object] The resources limits for the router containers
-  ## @skip router.resources.limits
-  ## @param router.resources.requests [object] The requested resources for the router containers
-  ## @skip router.resources.requests
+  ## @skip router.resources.limits [object] The resources limits for the router containers
+  ## @param router.resources.limits.memory Container memory limits in MiB
+  ## @param router.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip router.resources.requests [object] The requested resources for the router containers
+  ## @param router.resources.requests.memory Container memory requests in MiB
+  ## @param router.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -2405,10 +2433,12 @@ httpCache:
   customStartupProbe: {}
   ## http-cache resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param httpCache.resources.limits [object] The resources limits for the http-cache containers
-  ## @skip httpCache.resources.limits
-  ## @param httpCache.resources.requests [object] The requested resources for the http-cache containers
-  ## @skip httpCache.resources.requests
+  ## @skip httpCache.resources.limits [object] The resources limits for the http-cache containers
+  ## @param httpCache.resources.limits.memory Container memory limits in MiB
+  ## @param httpCache.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip httpCache.resources.requests [object] The requested resources for the http-cache containers
+  ## @param httpCache.resources.requests.memory Container memory requests in MiB
+  ## @param httpCache.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -2654,6 +2684,9 @@ cdnInvalidatorSub:
   ##
   containerPorts:
     http: 3000
+  ## @param cdnInvalidatorSub.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeProcessMaxOldSpacePercentage: 75
   ## Configure extra options for cdnInvalidatorSub containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param cdnInvalidatorSub.livenessProbe.enabled Enable livenessProbe on cdnInvalidatorSub containers
@@ -2709,10 +2742,12 @@ cdnInvalidatorSub:
   customStartupProbe: {}
   ## cdnInvalidatorSub resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param cdnInvalidatorSub.resources.limits [object] The resources limits for the cdnInvalidatorSub containers
-  ## @skip cdnInvalidatorSub.resources.limits
-  ## @param cdnInvalidatorSub.resources.requests [object] The requested resources for the cdnInvalidatorSub containers
-  ## @skip cdnInvalidatorSub.resources.requests
+  ## @skip cdnInvalidatorSub.resources.limits [object] The resources limits for the cdn-invalidator-sub containers
+  ## @param cdnInvalidatorSub.resources.limits.memory Container memory limits in MiB
+  ## @param cdnInvalidatorSub.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip cdnInvalidatorSub.resources.requests [object] The requested resources for the cdn-invalidator-sub containers
+  ## @param cdnInvalidatorSub.resources.requests.memory Container memory requests in MiB
+  ## @param cdnInvalidatorSub.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -2947,6 +2982,9 @@ workspaceApi:
   ##
   containerPorts:
     http: 8001
+  ## @param workspaceApi.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeProcessMaxOldSpacePercentage: 75
   ## Configure extra options for workspace-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param workspaceApi.livenessProbe.enabled Enable livenessProbe on workspace-api containers
@@ -3014,10 +3052,12 @@ workspaceApi:
     targetCPUUtilizationPercentage: 75
   ## workspace-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceApi.resources.limits [object] The resources limits for the workspace-api containers
-  ## @skip workspaceApi.resources.limits
-  ## @param workspaceApi.resources.requests [object] The requested resources for the workspace-api containers
-  ## @skip workspaceApi.resources.requests
+  ## @skip workspaceApi.resources.limits [object] The resources limits for the workspace-api containers
+  ## @param workspaceApi.resources.limits.memory Container memory limits in MiB
+  ## @param workspaceApi.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip workspaceApi.resources.requests [object] The requested resources for the workspace-api containers
+  ## @param workspaceApi.resources.requests.memory Container memory requests in MiB
+  ## @param workspaceApi.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -3246,6 +3286,9 @@ workspaceSubscriber:
   ## @param workspaceSubscriber.replicaCount Number of workspace-subscriber replicas to deploy
   ##
   replicaCount: 1
+  ## @param workspaceSubscriber.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeProcessMaxOldSpacePercentage: 75
   ## @param workspaceSubscriber.customLivenessProbe Custom livenessProbe that overrides the default one
   ##
   customLivenessProbe: {}
@@ -3257,10 +3300,12 @@ workspaceSubscriber:
   customStartupProbe: {}
   ## workspace-subscriber resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceSubscriber.resources.limits [object] The resources limits for the workspace-subscriber containers
-  ## @skip workspaceSubscriber.resources.limits
-  ## @param workspaceSubscriber.resources.requests [object] The requested resources for the workspace-subscriber containers
-  ## @skip workspaceSubscriber.resources.requests
+  ## @skip workspaceSubscriber.resources.limits [object] The resources limits for the workspace-subscriber containers
+  ## @param workspaceSubscriber.resources.limits.memory Container memory limits in MiB
+  ## @param workspaceSubscriber.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip workspaceSubscriber.resources.requests [object] The requested resources for the workspace-subscriber containers
+  ## @param workspaceSubscriber.resources.requests.memory Container memory requests in MiB
+  ## @param workspaceSubscriber.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -3514,10 +3559,12 @@ workspaceWww:
     targetCPUUtilizationPercentage: 75
   ## workspace-www resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceWww.resources.limits [object] The resources limits for the workspace-www containers
-  ## @skip workspaceWww.resources.limits
-  ## @param workspaceWww.resources.requests [object] The requested resources for the workspace-www containers
-  ## @skip workspaceWww.resources.requests
+  ## @skip workspaceWww.resources.limits [object] The resources limits for the workspace-www containers
+  ## @param workspaceWww.resources.limits.memory Container memory limits in MiB
+  ## @param workspaceWww.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip workspaceWww.resources.requests [object] The requested resources for the workspace-www containers
+  ## @param workspaceWww.resources.requests.memory Container memory requests in MiB
+  ## @param workspaceWww.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -3760,10 +3807,12 @@ workspaceMigrations:
   args: []
   ## Init container's resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceMigrations.resources.limits [object] The resources limits for the init container
-  ## @skip workspaceMigrations.resources.limits
-  ## @param workspaceMigrations.resources.requests [object] The requested resources for the init container
-  ## @skip workspaceMigrations.resources.requests
+  ## @skip workspaceMigrations.resources.limits [object] The resources limits for the workspace-migrations containers
+  ## @param workspaceMigrations.resources.limits.memory Container memory limits in MiB
+  ## @param workspaceMigrations.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip workspaceMigrations.resources.requests [object] The requested resources for the workspace-migrations containers
+  ## @param workspaceMigrations.resources.requests.memory Container memory requests in MiB
+  ## @param workspaceMigrations.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -3777,7 +3826,7 @@ workspaceMigrations:
   ## @param workspaceMigrations.containerSecurityContext.enabled Enable container security context
   ## @param workspaceMigrations.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
   ## @param workspaceMigrations.containerSecurityContext.runAsNonRoot Force the init container to run as non root
-  ## @param workspaceMigrations.containerSecurityContext.capabilities.drop removes accounts-www containers' Security Contexcapabilitiesot
+  ## @param workspaceMigrations.containerSecurityContext.capabilities.drop removes workspace-migrations containers' Security Contexcapabilitiesot
   ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
   ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
   ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
@@ -3952,10 +4001,12 @@ upgradeCheck:
     pullSecrets: []
   ## Upgrade Check pre-hook resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param upgradeCheck.resources.limits [object] The resources limits for the Upgrade Check pre-hook containers
-  ## @skip upgradeCheck.resources.limits
-  ## @param upgradeCheck.resources.requests [object] The requested resources for the Upgrade Check pre-hook containers
-  ## @skip upgradeCheck.resources.requests
+  ## @skip upgradeCheck.resources.limits [object] The resources limits for the upgrade-check containers
+  ## @param upgradeCheck.resources.limits.memory Container memory limits in MiB
+  ## @param upgradeCheck.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip upgradeCheck.resources.requests [object] The requested resources for the upgrade-check containers
+  ## @param upgradeCheck.resources.requests.memory Container memory requests in MiB
+  ## @param upgradeCheck.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:

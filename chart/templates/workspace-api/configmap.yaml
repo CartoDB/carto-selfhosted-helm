@@ -28,6 +28,7 @@ data:
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   LOG_LEVEL: "debug"
+  NODE_OPTIONS: {{ template "carto.workspaceApi.nodeOptions" . }}
   PUBSUB_MODE: "pull"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   REDIS_CACHE_PREFIX: "onprem"
