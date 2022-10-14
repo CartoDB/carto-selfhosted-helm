@@ -7,6 +7,8 @@ appConfigValues:
   storageProvider: "gcp"
   ## @param appConfigValues.httpCacheEnabled Enable the internal httpCache
   httpCacheEnabled: "true"
+  ## @param appConfigValues.importAwsRoleArn ARN Role to be used to import files from the bucket
+  importAwsRoleArn: ""
   ## @param appConfigValues.importBucket Bucket to be used to store the import files
   importBucket: ""
   ## @param appConfigValues.workspaceImportsBucket Bucket to be used to store metadata of the workspace
@@ -107,6 +109,26 @@ appSecrets:
     value: ""
     ## @param appSecrets.azureStorageAccessKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.azureStorageAccessKey.existingSecret.key`. If `appSecrets.azureStorageAccessKey.value` is defined, this value is going to be ignored and not used.
     ## @param appSecrets.azureStorageAccessKey.existingSecret.key Key to find in `appSecrets.azureStorageAccessKey.existingSecret.name` where the value of `appSecrets.azureStorageAccessKey` is found. If `appSecrets.azureStorageAccessKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra appSecrets.importAwsAccessKeyId The AccessKey Id to be used for import files from a bucket.
+  importAwsAccessKeyId:
+    ## @param appSecrets.importAwsAccessKeyId.value Value of the secret `IMPORT_AWS_ACCESS_KEY_ID`
+    value: ""
+    ## @param appSecrets.importAwsAccessKeyId.existingSecret.name Name of the pre-existent secret containing the `appSecrets.importAwsAccessKeyId.existingSecret.key`. If `appSecrets.importAwsAccessKeyId.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.importAwsAccessKeyId.existingSecret.key Key to find in `appSecrets.importAwsAccessKeyId.existingSecret.name` where the value of `appSecrets.importAwsAccessKeyId` is found. If `appSecrets.importAwsAccessKeyId.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra appSecrets.importAwsSecretAccessKey the AccessKey Secret to be used for import files from a bucket
+  importAwsSecretAccessKey:
+    ## @param appSecrets.importAwsSecretAccessKey.value Value of the secret `IMPORT_AWS_SECRET_ACCESS_KEY`
+    value: ""
+    ## @param appSecrets.importAwsSecretAccessKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.importAwsSecretAccessKey.existingSecret.key`. If `appSecrets.importAwsSecretAccessKey.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.importAwsSecretAccessKey.existingSecret.key Key to find in `appSecrets.importAwsSecretAccessKey.existingSecret.name` where the value of `appSecrets.importAwsSecretAccessKey` is found. If `appSecrets.importAwsSecretAccessKey.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""
