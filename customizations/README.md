@@ -45,6 +45,7 @@
   - [Troubleshooting](#troubleshooting)
     - [Diagnosis tool](#diagnosis-tool)
     - [Ingress](#ingress)
+    - [Helm upgrade fails: another operation (install/upgrade/rollback) is in progress](#helm-upgrade-fails-another-operation-installupgraderollback-is-in-progress)
 
 # Customizations
 
@@ -1207,3 +1208,45 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
       ## If it is not your case, uncomment the line below
       cloud.google.com/neg: '{"ingress": true}'
   ```
+### Helm upgrade fails: another operation (install/upgrade/rollback) is in progress
+
+If you face a problem like the one below while you are updating your CARTO selfhosted installation```
+```bash
+helm upgrade my-release carto/carto --namespace my namespace -f carto-values.yaml -f carto-secrets.yaml -f customizations.yml 
+Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
+```
+
+Probably an upgrade operation wasn't killed gracefully. The fix is to rollback to a previous deployment:
+
+```bash
+helm history my-release                                                                                                                               
+
+REVISION	UPDATED                 	STATUS         	CHART             	APP VERSION	DESCRIPTION
+19      	Fri Aug 26 11:10:20 2022	superseded     	carto-1.40.6-beta 	2022.8.19-2	Upgrade complete
+20      	Fri Sep 16 12:00:57 2022	superseded     	carto-1.42.1-beta 	2022.9.16  	Upgrade complete
+21      	Mon Sep 19 16:46:46 2022	superseded     	carto-1.42.3-beta 	2022.9.19  	Upgrade complete
+22      	Wed Sep 21 11:05:32 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
+23      	Wed Sep 21 11:16:34 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
+24      	Wed Sep 21 16:26:33 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
+25      	Wed Sep 28 15:28:53 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
+26      	Fri Sep 30 14:14:29 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
+27      	Fri Sep 30 14:37:41 2022	deployed       	carto-1.42.10-beta	2022.9.28  	Upgrade complete
+28      	Fri Sep 30 15:07:06 2022	pending-upgrade	carto-1.42.10-beta	2022.9.28  	Preparing upgrade
+helm rollback my-release 27                                                                                                                                              
+Rollback was a success! Happy Helming!
+
+helm history my-release   
+
+REVISION	UPDATED                 	STATUS         	CHART             	APP VERSION	DESCRIPTION
+20      	Fri Sep 16 12:00:57 2022	superseded     	carto-1.42.1-beta 	2022.9.16  	Upgrade complete
+21      	Mon Sep 19 16:46:46 2022	superseded     	carto-1.42.3-beta 	2022.9.19  	Upgrade complete
+22      	Wed Sep 21 11:05:32 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
+23      	Wed Sep 21 11:16:34 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
+24      	Wed Sep 21 16:26:33 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
+25      	Wed Sep 28 15:28:53 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
+26      	Fri Sep 30 14:14:29 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
+27      	Fri Sep 30 14:37:41 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
+28      	Fri Sep 30 15:07:06 2022	pending-upgrade	carto-1.42.10-beta	2022.9.28  	Preparing upgrade
+29      	Tue Oct  4 10:58:22 2022	deployed       	carto-1.42.10-beta	2022.9.28  	Rollback to 27
+``` 
+Now you can run the upgrade operation again
