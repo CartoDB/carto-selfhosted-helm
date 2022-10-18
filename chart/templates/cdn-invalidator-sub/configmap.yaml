@@ -21,6 +21,5 @@ data:
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
-  NODE_OPTIONS: {{ template "carto.cdnInvalidatorSub.nodeOptions" . }}
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
 {{- end }}

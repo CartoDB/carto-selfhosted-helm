@@ -609,9 +609,6 @@ importApi:
   ##
   containerPorts:
     http: 8003
-  ## @param importApi.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
-  ##
-  nodeProcessMaxOldSpacePercentage: 75
   ## Configure extra options for import-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param importApi.livenessProbe.enabled Enable livenessProbe on import-api containers
@@ -922,9 +919,6 @@ importWorker:
   ## @param importWorker.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
-  ## @param importWorker.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
-  ##
-  nodeProcessMaxOldSpacePercentage: 75
   ## import-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @skip importWorker.resources.limits [object] The resources limits for the import-worker containers
@@ -1119,9 +1113,6 @@ ldsApi:
   ##
   containerPorts:
     http: 8004
-  ## @param ldsApi.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
-  ##
-  nodeProcessMaxOldSpacePercentage: 75
   ## Configure extra options for lds-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param ldsApi.livenessProbe.enabled Enable livenessProbe on lds-api containers
@@ -1427,9 +1418,6 @@ mapsApi:
   ##
   containerPorts:
     http: 8002
-  ## @param mapsApi.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
-  ##
-  nodeProcessMaxOldSpacePercentage: 75
   ## Configure extra options for maps-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param mapsApi.livenessProbe.enabled Enable livenessProbe on maps-api containers
@@ -1731,9 +1719,6 @@ sqlWorker:
   ## @param sqlWorker.replicaCount Number of sql-worker replicas to deploy
   ##
   replicaCount: 1
-  ## @param sqlWorker.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
-  ##
-  nodeProcessMaxOldSpacePercentage: 75
   ## Configure extra options for sqlWorker containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param sqlWorker.livenessProbe.enabled Enable livenessProbe on sqlWorker containers
@@ -2684,9 +2669,6 @@ cdnInvalidatorSub:
   ##
   containerPorts:
     http: 3000
-  ## @param cdnInvalidatorSub.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
-  ##
-  nodeProcessMaxOldSpacePercentage: 75
   ## Configure extra options for cdnInvalidatorSub containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param cdnInvalidatorSub.livenessProbe.enabled Enable livenessProbe on cdnInvalidatorSub containers
@@ -2982,9 +2964,6 @@ workspaceApi:
   ##
   containerPorts:
     http: 8001
-  ## @param workspaceApi.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
-  ##
-  nodeProcessMaxOldSpacePercentage: 75
   ## Configure extra options for workspace-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param workspaceApi.livenessProbe.enabled Enable livenessProbe on workspace-api containers
@@ -3286,9 +3265,6 @@ workspaceSubscriber:
   ## @param workspaceSubscriber.replicaCount Number of workspace-subscriber replicas to deploy
   ##
   replicaCount: 1
-  ## @param workspaceSubscriber.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
-  ##
-  nodeProcessMaxOldSpacePercentage: 75
   ## @param workspaceSubscriber.customLivenessProbe Custom livenessProbe that overrides the default one
   ##
   customLivenessProbe: {}
