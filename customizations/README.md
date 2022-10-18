@@ -642,7 +642,7 @@ externalRedis:
 
 ### Custom Buckets
 
-For every CARTO Self Hosted installation, we create GCS buckets on our side as part of the required infrastructure for importing data, map thumbnails and customization assets (custom logos and markers), custom markers and other internal data.
+For every CARTO Self Hosted installation, we create GCS buckets on our side as part of the required infrastructure for importing data, map thumbnails and customization assets (custom logos and markers).
 
 You can create and use your own storage buckets in any of the following supported storage providers:
 
