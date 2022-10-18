@@ -29,7 +29,6 @@ data:
   {{- end }}
   IMPORT_AWS_ROLE_ARN: {{ .Values.appConfigValues.importAwsRoleArn | quote }}
   LOG_LEVEL: "debug"
-  NODE_OPTIONS: {{ template "carto.workspaceApi.nodeOptions" . }}
   PUBSUB_MODE: "pull"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   REDIS_CACHE_PREFIX: "onprem"
