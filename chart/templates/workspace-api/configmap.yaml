@@ -27,6 +27,7 @@ data:
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
+  IMPORT_AWS_ROLE_ARN: {{ .Values.appConfigValues.importAwsRoleArn | quote }}
   LOG_LEVEL: "debug"
   NODE_OPTIONS: {{ template "carto.workspaceApi.nodeOptions" . }}
   PUBSUB_MODE: "pull"

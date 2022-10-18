@@ -118,6 +118,8 @@ spec:
               {{- end }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
+              "IMPORT_AWS_ACCESS_KEY_ID"
+              "IMPORT_AWS_SECRET_ACCESS_KEY"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"
               "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_ACCESSKEYID"
@@ -131,6 +133,8 @@ spec:
                 name: {{ template "carto.workspaceApi.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
+              "IMPORT_AWS_ACCESS_KEY_ID"
+              "IMPORT_AWS_SECRET_ACCESS_KEY"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"
               "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_ACCESSKEYID"
