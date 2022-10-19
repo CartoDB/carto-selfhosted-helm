@@ -47,6 +47,8 @@ Association between env secret and path of the secret in values.yaml
 BIGQUERY_OAUTH2_CLIENT_SECRET: appSecrets.bigqueryOauth2ClientSecret
 ENCRYPTION_SECRET_KEY: cartoSecrets.encryptionSecretKey
 IMPORT_ACCESSKEYID: appSecrets.awsAccessKeyId
+IMPORT_AWS_ACCESS_KEY_ID: appSecrets.importAwsAccessKeyId
+IMPORT_AWS_SECRET_ACCESS_KEY: appSecrets.importAwsSecretAccessKey
 IMPORT_JWT_SECRET: cartoSecrets.jwtApiSecret
 IMPORT_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 IMPORT_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
