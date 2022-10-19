@@ -1,0 +1,8 @@
+appConfigValues:
+  importAwsRoleArn: "<your_aws_user_arn>"
+
+appSecrets:
+  importAwsAccessKeyId:
+    value: "<your_aws_user_access_key_id>"
+  importAwsSecretAccessKey:
+    value: "<your_aws_user_access_key_secret>"
