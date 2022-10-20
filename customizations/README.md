@@ -1029,7 +1029,7 @@ Aligned with the [high availability configurations](high_availability), please c
 
 ## Redshift imports
 
-> :warning: Redshift imports is currently a feature flag and it's disabled by default. Please, contact support if you are interested on using it.
+> :warning: This is currently a feature flag and it's disabled by default. Please, contact support if you are interested on using it.
 
 CARTO selfhosted supports importing data to a Redshift cluster or serverless. Follow these instructions to setup your Redshift integration:
 
