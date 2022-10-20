@@ -112,6 +112,8 @@ spec:
                   key: {{ include "carto.redis.existingsecret.key" . | quote }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
+              "IMPORT_AWS_ACCESS_KEY_ID"
+              "IMPORT_AWS_SECRET_ACCESS_KEY"
               "IMPORT_ACCESSKEYID"
               "IMPORT_JWT_SECRET"
               "IMPORT_SECRETACCESSKEY"
@@ -125,6 +127,8 @@ spec:
                 name: {{ template "carto.importApi.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
+              "IMPORT_AWS_ACCESS_KEY_ID"
+              "IMPORT_AWS_SECRET_ACCESS_KEY"
               "IMPORT_ACCESSKEYID"
               "IMPORT_JWT_SECRET"
               "IMPORT_SECRETACCESSKEY"
