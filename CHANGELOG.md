@@ -11,9 +11,12 @@ IMPROVEMENTS
 + Updated base Docker images with security fixes
 + Use a connection pool for Postgres
 + K8: TLS offload in AWS LoadBalancer
-+ K8: Increase min instances of workspace-api and maps-api
 + Create tileset options: Spatial Index and aggragations
++ Stability fixes
 + Other bugs fixes and minor improvements
+
+CHANGES
++ K8: Increase min instances of workspace-api, maps-api and import-api to two
 
 ## 2022.9.2 (September 02, 2022)
 IMPROVEMENTS
