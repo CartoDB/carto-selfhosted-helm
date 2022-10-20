@@ -7,6 +7,8 @@ appConfigValues:
   storageProvider: "gcp"
   ## @param appConfigValues.httpCacheEnabled Enable the internal httpCache
   httpCacheEnabled: "true"
+  ## @param appConfigValues.importAwsRoleArn ARN Role to be used to import files from the bucket
+  importAwsRoleArn: ""
   ## @param appConfigValues.importBucket Bucket to be used to store the import files
   importBucket: ""
   ## @param appConfigValues.workspaceImportsBucket Bucket to be used to store metadata of the workspace
@@ -47,7 +49,6 @@ cartoConfigValues:
   selfHostedTenantId: ""
   ## @param cartoConfigValues.launchDarklyClientSideId LaunchDarkly ClientSideId (by www) used to enable/disable features.
   launchDarklyClientSideId: ""
-
 ## @section App secret
 ## Global secrets to be edited by the client
 appSecrets:
@@ -107,6 +108,26 @@ appSecrets:
     value: ""
     ## @param appSecrets.azureStorageAccessKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.azureStorageAccessKey.existingSecret.key`. If `appSecrets.azureStorageAccessKey.value` is defined, this value is going to be ignored and not used.
     ## @param appSecrets.azureStorageAccessKey.existingSecret.key Key to find in `appSecrets.azureStorageAccessKey.existingSecret.name` where the value of `appSecrets.azureStorageAccessKey` is found. If `appSecrets.azureStorageAccessKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra appSecrets.importAwsAccessKeyId The AccessKey Id to be used for import files from a bucket.
+  importAwsAccessKeyId:
+    ## @param appSecrets.importAwsAccessKeyId.value Value of the secret `IMPORT_AWS_ACCESS_KEY_ID`
+    value: ""
+    ## @param appSecrets.importAwsAccessKeyId.existingSecret.name Name of the pre-existent secret containing the `appSecrets.importAwsAccessKeyId.existingSecret.key`. If `appSecrets.importAwsAccessKeyId.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.importAwsAccessKeyId.existingSecret.key Key to find in `appSecrets.importAwsAccessKeyId.existingSecret.name` where the value of `appSecrets.importAwsAccessKeyId` is found. If `appSecrets.importAwsAccessKeyId.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra appSecrets.importAwsSecretAccessKey the AccessKey Secret to be used for import files from a bucket
+  importAwsSecretAccessKey:
+    ## @param appSecrets.importAwsSecretAccessKey.value Value of the secret `IMPORT_AWS_SECRET_ACCESS_KEY`
+    value: ""
+    ## @param appSecrets.importAwsSecretAccessKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.importAwsSecretAccessKey.existingSecret.key`. If `appSecrets.importAwsSecretAccessKey.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.importAwsSecretAccessKey.existingSecret.key Key to find in `appSecrets.importAwsSecretAccessKey.existingSecret.name` where the value of `appSecrets.importAwsSecretAccessKey` is found. If `appSecrets.importAwsSecretAccessKey.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""
@@ -359,10 +380,12 @@ accountsWww:
     targetCPUUtilizationPercentage: 75
   ## accounts-www resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param accountsWww.resources.limits [object] The resources limits for the accounts-www containers
-  ## @skip accountsWww.resources.limits
-  ## @param accountsWww.resources.requests [object] The requested resources for the accounts-www containers
-  ## @skip accountsWww.resources.requests
+  ## @skip accountsWww.resources.limits [object] The resources limits for the accounts-www containers
+  ## @param accountsWww.resources.limits.memory Container memory limits in MiB
+  ## @param accountsWww.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip accountsWww.resources.requests [object] The requested resources for the accounts-www containers
+  ## @param accountsWww.resources.requests.memory Container memory requests in MiB
+  ## @param accountsWww.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -670,15 +693,17 @@ importApi:
   ##
   autoscaling:
     enabled: false
-    minReplicas: 1
+    minReplicas: 2
     maxReplicas: 2
     targetCPUUtilizationPercentage: 75
   ## import-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param importApi.resources.limits [object] The resources limits for the import-api containers
-  ## @skip importApi.resources.limits
-  ## @param importApi.resources.requests [object] The requested resources for the import-api containers
-  ## @skip importApi.resources.requests
+  ## @skip importApi.resources.limits [object] The resources limits for the import-api containers
+  ## @param importApi.resources.limits.memory Container memory limits in MiB
+  ## @param importApi.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip importApi.resources.requests [object] The requested resources for the import-api containers
+  ## @param importApi.resources.requests.memory Container memory requests in MiB
+  ## @param importApi.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -918,10 +943,12 @@ importWorker:
   customStartupProbe: {}
   ## import-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param importWorker.resources.limits [object] The resources limits for the import-worker containers
-  ## @skip importWorker.resources.limits
-  ## @param importWorker.resources.requests [object] The requested resources for the import-worker containers
-  ## @skip importWorker.resources.requests
+  ## @skip importWorker.resources.limits [object] The resources limits for the import-worker containers
+  ## @param importWorker.resources.limits.memory Container memory limits in MiB
+  ## @param importWorker.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip importWorker.resources.requests [object] The requested resources for the import-worker containers
+  ## @param importWorker.resources.requests.memory Container memory requests in MiB
+  ## @param importWorker.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -1175,10 +1202,12 @@ ldsApi:
     targetCPUUtilizationPercentage: 75
   ## lds-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param ldsApi.resources.limits [object] The resources limits for the lds-api containers
-  ## @skip ldsApi.resources.limits
-  ## @param ldsApi.resources.requests [object] The requested resources for the lds-api containers
-  ## @skip ldsApi.resources.requests
+  ## @skip ldsApi.resources.limits [object] The resources limits for the lds-api containers
+  ## @param ldsApi.resources.limits.memory Container memory limits in MiB
+  ## @param ldsApi.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip ldsApi.resources.requests [object] The requested resources for the lds-api containers
+  ## @param ldsApi.resources.requests.memory Container memory requests in MiB
+  ## @param ldsApi.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -1406,7 +1435,7 @@ mapsApi:
     pullSecrets: []
   ## @param mapsApi.replicaCount Number of maps-api replicas to deploy
   ##
-  replicaCount: 1
+  replicaCount: 2
   ## @param mapsApi.containerPorts.http maps-api HTTP container port
   ##
   containerPorts:
@@ -1478,10 +1507,12 @@ mapsApi:
     targetCPUUtilizationPercentage: 75
   ## maps-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param mapsApi.resources.limits [object] The resources limits for the maps-api containers
-  ## @skip mapsApi.resources.limits
-  ## @param mapsApi.resources.requests [object] The requested resources for the maps-api containers
-  ## @skip mapsApi.resources.requests
+  ## @skip mapsApi.resources.limits [object] The resources limits for the maps-api containers
+  ## @param mapsApi.resources.limits.memory Container memory limits in MiB
+  ## @param mapsApi.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip mapsApi.resources.requests [object] The requested resources for the maps-api containers
+  ## @param mapsApi.resources.requests.memory Container memory requests in MiB
+  ## @param mapsApi.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -1756,10 +1787,12 @@ sqlWorker:
     failureThreshold: 5
   ## sql-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param sqlWorker.resources.limits [object] The resources limits for the sql-worker containers
-  ## @skip sqlWorker.resources.limits
-  ## @param sqlWorker.resources.requests [object] The requested resources for the sql-worker containers
-  ## @skip sqlWorker.resources.requests
+  ## @skip sqlWorker.resources.limits [object] The resources limits for the sql-worker containers
+  ## @param sqlWorker.resources.limits.memory Container memory limits in MiB
+  ## @param sqlWorker.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip sqlWorker.resources.requests [object] The requested resources for the sql-worker containers
+  ## @param sqlWorker.resources.requests.memory Container memory requests in MiB
+  ## @param sqlWorker.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -2015,10 +2048,12 @@ router:
     targetCPUUtilizationPercentage: 75
   ## router resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param router.resources.limits [object] The resources limits for the router containers
-  ## @skip router.resources.limits
-  ## @param router.resources.requests [object] The requested resources for the router containers
-  ## @skip router.resources.requests
+  ## @skip router.resources.limits [object] The resources limits for the router containers
+  ## @param router.resources.limits.memory Container memory limits in MiB
+  ## @param router.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip router.resources.requests [object] The requested resources for the router containers
+  ## @param router.resources.requests.memory Container memory requests in MiB
+  ## @param router.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -2405,10 +2440,12 @@ httpCache:
   customStartupProbe: {}
   ## http-cache resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param httpCache.resources.limits [object] The resources limits for the http-cache containers
-  ## @skip httpCache.resources.limits
-  ## @param httpCache.resources.requests [object] The requested resources for the http-cache containers
-  ## @skip httpCache.resources.requests
+  ## @skip httpCache.resources.limits [object] The resources limits for the http-cache containers
+  ## @param httpCache.resources.limits.memory Container memory limits in MiB
+  ## @param httpCache.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip httpCache.resources.requests [object] The requested resources for the http-cache containers
+  ## @param httpCache.resources.requests.memory Container memory requests in MiB
+  ## @param httpCache.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -3019,10 +3056,12 @@ cdnInvalidatorSub:
   customStartupProbe: {}
   ## cdnInvalidatorSub resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param cdnInvalidatorSub.resources.limits [object] The resources limits for the cdnInvalidatorSub containers
-  ## @skip cdnInvalidatorSub.resources.limits
-  ## @param cdnInvalidatorSub.resources.requests [object] The requested resources for the cdnInvalidatorSub containers
-  ## @skip cdnInvalidatorSub.resources.requests
+  ## @skip cdnInvalidatorSub.resources.limits [object] The resources limits for the cdn-invalidator-sub containers
+  ## @param cdnInvalidatorSub.resources.limits.memory Container memory limits in MiB
+  ## @param cdnInvalidatorSub.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip cdnInvalidatorSub.resources.requests [object] The requested resources for the cdn-invalidator-sub containers
+  ## @param cdnInvalidatorSub.resources.requests.memory Container memory requests in MiB
+  ## @param cdnInvalidatorSub.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -3252,7 +3291,7 @@ workspaceApi:
     pullSecrets: []
   ## @param workspaceApi.replicaCount Number of workspace-api replicas to deploy
   ##
-  replicaCount: 1
+  replicaCount: 2
   ## @param workspaceApi.containerPorts.http workspace-api HTTP container port
   ##
   containerPorts:
@@ -3324,10 +3363,12 @@ workspaceApi:
     targetCPUUtilizationPercentage: 75
   ## workspace-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceApi.resources.limits [object] The resources limits for the workspace-api containers
-  ## @skip workspaceApi.resources.limits
-  ## @param workspaceApi.resources.requests [object] The requested resources for the workspace-api containers
-  ## @skip workspaceApi.resources.requests
+  ## @skip workspaceApi.resources.limits [object] The resources limits for the workspace-api containers
+  ## @param workspaceApi.resources.limits.memory Container memory limits in MiB
+  ## @param workspaceApi.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip workspaceApi.resources.requests [object] The requested resources for the workspace-api containers
+  ## @param workspaceApi.resources.requests.memory Container memory requests in MiB
+  ## @param workspaceApi.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -3567,10 +3608,12 @@ workspaceSubscriber:
   customStartupProbe: {}
   ## workspace-subscriber resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceSubscriber.resources.limits [object] The resources limits for the workspace-subscriber containers
-  ## @skip workspaceSubscriber.resources.limits
-  ## @param workspaceSubscriber.resources.requests [object] The requested resources for the workspace-subscriber containers
-  ## @skip workspaceSubscriber.resources.requests
+  ## @skip workspaceSubscriber.resources.limits [object] The resources limits for the workspace-subscriber containers
+  ## @param workspaceSubscriber.resources.limits.memory Container memory limits in MiB
+  ## @param workspaceSubscriber.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip workspaceSubscriber.resources.requests [object] The requested resources for the workspace-subscriber containers
+  ## @param workspaceSubscriber.resources.requests.memory Container memory requests in MiB
+  ## @param workspaceSubscriber.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -3824,10 +3867,12 @@ workspaceWww:
     targetCPUUtilizationPercentage: 75
   ## workspace-www resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceWww.resources.limits [object] The resources limits for the workspace-www containers
-  ## @skip workspaceWww.resources.limits
-  ## @param workspaceWww.resources.requests [object] The requested resources for the workspace-www containers
-  ## @skip workspaceWww.resources.requests
+  ## @skip workspaceWww.resources.limits [object] The resources limits for the workspace-www containers
+  ## @param workspaceWww.resources.limits.memory Container memory limits in MiB
+  ## @param workspaceWww.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip workspaceWww.resources.requests [object] The requested resources for the workspace-www containers
+  ## @param workspaceWww.resources.requests.memory Container memory requests in MiB
+  ## @param workspaceWww.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -4070,10 +4115,12 @@ workspaceMigrations:
   args: []
   ## Init container's resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param workspaceMigrations.resources.limits [object] The resources limits for the init container
-  ## @skip workspaceMigrations.resources.limits
-  ## @param workspaceMigrations.resources.requests [object] The requested resources for the init container
-  ## @skip workspaceMigrations.resources.requests
+  ## @skip workspaceMigrations.resources.limits [object] The resources limits for the workspace-migrations containers
+  ## @param workspaceMigrations.resources.limits.memory Container memory limits in MiB
+  ## @param workspaceMigrations.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip workspaceMigrations.resources.requests [object] The requested resources for the workspace-migrations containers
+  ## @param workspaceMigrations.resources.requests.memory Container memory requests in MiB
+  ## @param workspaceMigrations.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -4087,7 +4134,7 @@ workspaceMigrations:
   ## @param workspaceMigrations.containerSecurityContext.enabled Enable container security context
   ## @param workspaceMigrations.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
   ## @param workspaceMigrations.containerSecurityContext.runAsNonRoot Force the init container to run as non root
-  ## @param workspaceMigrations.containerSecurityContext.capabilities.drop removes accounts-www containers' Security Contexcapabilitiesot
+  ## @param workspaceMigrations.containerSecurityContext.capabilities.drop removes workspace-migrations containers' Security Contexcapabilitiesot
   ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
   ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
   ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
@@ -4262,10 +4309,12 @@ upgradeCheck:
     pullSecrets: []
   ## Upgrade Check pre-hook resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param upgradeCheck.resources.limits [object] The resources limits for the Upgrade Check pre-hook containers
-  ## @skip upgradeCheck.resources.limits
-  ## @param upgradeCheck.resources.requests [object] The requested resources for the Upgrade Check pre-hook containers
-  ## @skip upgradeCheck.resources.requests
+  ## @skip upgradeCheck.resources.limits [object] The resources limits for the upgrade-check containers
+  ## @param upgradeCheck.resources.limits.memory Container memory limits in MiB
+  ## @param upgradeCheck.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @skip upgradeCheck.resources.requests [object] The requested resources for the upgrade-check containers
+  ## @param upgradeCheck.resources.requests.memory Container memory requests in MiB
+  ## @param upgradeCheck.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:

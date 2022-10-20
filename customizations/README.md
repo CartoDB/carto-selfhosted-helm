@@ -27,7 +27,7 @@
       - [Setup Redis with automatic secret creation](#setup-redis-with-automatic-secret-creation)
       - [Configure Redis TLS](#configure-redis-tls)
     - [Custom Buckets](#custom-buckets)
-      - [Requirements](#requirements)
+      - [General Requirements](#general-requirements)
       - [Google Cloud Storage](#google-cloud-storage)
       - [AWS S3](#aws-s3)
       - [Azure Storage](#azure-storage)
@@ -40,11 +40,13 @@
     - [Enable static scaling](#enable-static-scaling)
   - [High Availability](#high-availability)
   - [Capacity planning](#capacity-planning)
+  - [Redshift imports](#redshift-imports)
   - [Advanced configuration](#advanced-configuration)
   - [Tips for creating the customization Yaml file](#tips-for-creating-the-customization-yaml-file)
   - [Troubleshooting](#troubleshooting)
     - [Diagnosis tool](#diagnosis-tool)
     - [Ingress](#ingress)
+    - [Helm upgrade fails: another operation (install/upgrade/rollback) is in progress](#helm-upgrade-fails-another-operation-installupgraderollback-is-in-progress)
 
 # Customizations
 
@@ -114,6 +116,7 @@ To do this you need to [add the following customization](#how-to-apply-the-confi
 appConfigValues:
   selfHostedDomain: "my.domain.com"
 ```
+
 Don't forget to upgrade your chart after the change.
 
 ### Access to CARTO from outside the cluster
@@ -143,7 +146,6 @@ But this only makes it accessible to your machine.
   Within this option you could either use your own TLS certificates, or GCP SSL Managed Certificates.
 
   > :warning: if you are running a GKE cluster 1.17.6-gke.7 version or lower, please check [Cluster IP configuration](#troubleshooting)
-
 
   **Useful links**
 
@@ -187,9 +189,9 @@ You can find an example [here](service_loadBalancer/config.yaml). Also, we have 
   - You must have created your own [Reserved static external IP address](https://cloud.google.com/compute/docs/ip-addresses/reserve-static-external-ip-address)
   - You must create an A DNS record that relates your domain to the just created static external IP address
   - Check also [this requirements](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#prerequisites)
-  
+
   :point_right: You can easily create a static external IP address with
-  
+
   ```bash
   gcloud compute addresses create my_carto_ip --global
   ```
@@ -200,7 +202,7 @@ Please see our [troubleshooting](#troubleshooting) section if you have problems 
 
 ### Configure TLS termination in the CARTO router service
 
- > :point_right: Do not use this configuration if you are exposing CARTO services with an Ingress
+> :point_right: Do not use this configuration if you are exposing CARTO services with an Ingress
 
 #### Disable internal HTTPS
 
@@ -347,9 +349,9 @@ The [Cloud SQL Auth Proxy] ([https://](https://cloud.google.com/sql/docs/postgre
 
 Cloud SQL Auth Proxy will run in your cluster as a deployment with a Cluster IP service. You need a [service account](https://cloud.google.com/sql/docs/postgres/connect-admin-proxy#create-service-account) with one of the following roles:
 
-* Cloud SQL > Cloud SQL Client
-* Cloud SQL > Cloud SQL Editor
-* Cloud SQL > Cloud SQL Admin
+- Cloud SQL > Cloud SQL Client
+- Cloud SQL > Cloud SQL Editor
+- Cloud SQL > Cloud SQL Admin
 
 You need to provide this Service Account as a secret:
 
@@ -372,7 +374,7 @@ Add the config below to your customizations.yaml file using this connection name
 # In this example we create:
 #  * A deployment with configured CloudSQL Auth Proxy
 #  * A ClusterIP service to serve CloudSQL Auth Proxy
-#  * External Postgresql configuration for the chart 
+#  * External Postgresql configuration for the chart
 #      - https://github.com/CartoDB/carto-selfhosted-helm/tree/main/customizations#setup-postgres-creating-secrets
 #
 
@@ -387,8 +389,9 @@ externalPostgresql:
   #Admin user, postgres as default in cloud SQL
   adminUser: "postgres"
   #Secret Name that storage database credentials
-  existingSecret: "cloudsql-secret"
-    #Secret key with user password 
+  existingSecret:
+    "cloudsql-secret"
+    #Secret key with user password
   existingSecretPasswordKey: "carto-password"
   #Secret key with admin password
   existingSecretAdminPasswordKey: "admin-password"
@@ -467,7 +470,7 @@ extraDeploy:
                 initialDelaySeconds: 15
                 periodSeconds: 20
               volumeMounts:
-                # GCP Service Account with Cloud SQL Client role 
+                # GCP Service Account with Cloud SQL Client role
                 - name: carto-cloudsql-proxy-sa-key
                   mountPath: "/secrets"
                   readOnly: true
@@ -523,8 +526,6 @@ extraDeploy:
         {{- include "common.labels.matchLabels" . | nindent 4 }}
         app.kubernetes.io/component: carto-cloudsql-proxy
 ```
-
-
 
 #### Configure Postgres SSL with custom CA
 
@@ -643,7 +644,7 @@ externalRedis:
 
 ### Custom Buckets
 
-For every CARTO Self Hosted installation, we create GCS buckets in our side as part of the required infrastructure for importing data, map thumbnails, custom markers and other internal data.
+For every CARTO Self Hosted installation, we create GCS buckets on our side as part of the required infrastructure for importing data, map thumbnails and customization assets (custom logos and markers).
 
 You can create and use your own storage buckets in any of the following supported storage providers:
 
@@ -653,16 +654,16 @@ You can create and use your own storage buckets in any of the following supporte
 
 > :warning: You can only set one provider at a time.
 
-#### Requirements
+#### General Requirements
 
 - You need to create 3 buckets in your preferred Cloud provider:
   - Import Bucket
   - Client Bucket
-  - Thumbnails Bucket
+  - Thumbnails Bucket. ℹ️**NOTE:** This bucket needs to be public for some features to work correctly. Custom branding logo and custom images for markers won't work properly unless this bucket is public ℹ️
 
 > There's no name constraints.
 
-> :warning: Map thumbnails storage objects (.png files) can be configured to be `public` (default) or `private`. In order to change this, set `appConfigValues.workspaceThumbnailsPublic: "false"` (see the examples below). For the default configuration to work, the bucket must allow public objects/blobs.
+> :warning: Map thumbnails storage objects (.png files) can be configured to be `public` (default) or `private`. In order to change this, set `appConfigValues.workspaceThumbnailsPublic: "false"` (see the examples below). For the default configuration to work, the bucket must allow public objects/blobs. Remember that customization assets, like logos or custom markers will only work if the bucket is public.
 
 - CORS configuration: Thumbnails and Import buckets require having the following CORS headers.
   - Allowed origins: `*`
@@ -854,7 +855,8 @@ appConfigValues:
   thumbnailsBucketExternalURL: <external bucket URL>
   workspaceThumbnailsPublic: <false|true>
 ```
-  > Note that thumbnailsBucketExternalURL should be https://<azure_resource_group>.blob.core.windows.net/<thumbnails_bucket_name>/
+
+> Note that thumbnailsBucketExternalURL should be https://<azure_resource_group>.blob.core.windows.net/<thumbnails_bucket_name>/
 
 6. Pass your credentials as secrets by using one of the options below:
 
@@ -1001,13 +1003,13 @@ You can edit the file to set your own scaling needs by modifying the minimum and
 
 ### Enable static scaling
 
-You can set statically set the number of pods should be running. To do it, use [static scale config](scale_components/static.yaml) adding it with `-f customizations/scale_components/static.yaml` to the `install` or `upgrade` commands.
+You can set statically set the number of pods should be running. To do it, use [static scale config](scale_components/development.yaml) adding it with `-f customizations/scale_components/development.yaml` to the `install` or `upgrade` commands.
 
 > Although we recommend the autoscaling configuration, you could choose the autoscaling feature for some components and the static configuration for the others. Remember that autoscaling override the static configuration, so if one component has both configurations, autoscaling will take precedence.
 
 ## High Availability
 
-In some cases, you may want to ensure **some critical services have replicas deployed across different worker nodes** in order to provide high availability against a node failure. You can achieve this by applying one of the [high availability configurations](high_availability) that we recommend. 
+In some cases, you may want to ensure **some critical services have replicas deployed across different worker nodes** in order to provide high availability against a node failure. You can achieve this by applying one of the [high availability configurations](high_availability) that we recommend.
 
 > Note that you should enable static scaling or autoscaling for this setup to work as expected.
 
@@ -1024,6 +1026,81 @@ Aligned with the [high availability configurations](high_availability), please c
 - [Standard HA](high_availability/standard/README.md#capacity-planning)
 - [Standard HA with upgrades](high_availability/standard_with_upgrades/README.md#capacity-planning)
 - [High traffic HA](high_availability/high_traffic/README.md#capacity-planning)
+
+## Redshift imports
+
+> :warning: This is currently a feature flag and it's disabled by default. Please, contact support if you are interested on using it.
+
+CARTO selfhosted supports importing data to a Redshift cluster or serverless. Follow these instructions to setup your Redshift integration:
+
+> :warning: This requires access to an AWS account and an existing accessible Redshift endpoint.
+
+1. Create an AWS IAM user with programmatic access. Take note of the user's aren, key id and key secret.
+
+2. Create an AWS S3 Bucket.
+
+3. Create an AWS IAM role with the following settings:
+   1. Trusted entity type: `Custom trust policy`.
+   2. Custom trust policy: Make sure to replace `<your_aws_user_arn>`.
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+         {
+             "Effect": "Allow",
+             "Principal": {
+                 "AWS": "<your_aws_user_arn>"
+             },
+             "Action": [
+                 "sts:AssumeRole",
+                 "sts:TagSession"
+             ]
+         }
+     ]
+   }
+   ```
+   3. Add permissions: Create a new permissions policy, replacing `<your_aws_s3_bucket_name>`.
+   ```json
+   {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Effect": "Allow",
+              "Action": "s3:ListBucket",
+              "Resource": "arn:aws:s3:::<your_aws_s3_bucket_name>"
+          },
+          {
+              "Effect": "Allow",
+              "Action": "s3:*Object",
+              "Resource": "arn:aws:s3:::<your_aws_s3_bucket_name>/*"
+          }
+      ]
+   }
+   ```
+
+4. Add the following lines to your `customizations.yaml` file:
+```yaml
+appConfigValues:
+  importAwsRoleArn: "<your_aws_user_arn>"
+
+appSecrets:
+  importAwsAccessKeyId:
+    value: "<your_aws_user_access_key_id>"
+  importAwsSecretAccessKey:
+    value: "<your_aws_user_access_key_secret>"
+```
+
+5. Perform a `helm upgrade` before continuing with the following steps.
+
+6. Log into your CARTO selfhosted, go to `Data Explorer > Connections > Add new connection` and create a new Redshift connection.
+
+7. Then go to `Settings > Advanced > Integrations > Redshift > New`, introduce your S3 Bucket name and region and copy the policy generated.
+
+8. From the AWS console, go to your `S3 > Bucket > Permissions > Bucket policy` and paste the policy obtained in the previous step in the policy editor.
+
+9. Go back to the CARTO Selfhosted (Redshift integration page) and check the `I have already added the S3 bucket policy` box and click on the `Validate and save button`.
+
+10. Go to `Data Exporer > Import data > Redshift connection` and you should be able to import a local dataset to Redshift.
 
 ## Advanced configuration
 
@@ -1075,12 +1152,11 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
 
 - The ingress creation can take several minutes, once finished you should see this status:
 
-
   ```bash
   kubectl get ingress -n <namespace>
   kubectl describe ingress <name>
   ```
-  
+
   ```bash
   Events:
     Type     Reason     Age                  From                     Message
@@ -1110,8 +1186,8 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
   ```bash
     Request URL: https://carto.example.com/workspace-api/accounts/ac_XXXXX/check
     Request Method: GET
-    Status Code: 500 
-  
+    Status Code: 500
+
     Response: {"error":"unable to verify the first certificate","status":500,"code":"UNABLE_TO_VERIFY_LEAF_SIGNATURE"}
   ```
 
@@ -1127,6 +1203,7 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
       /-----END CERTIFICATE-----/ {split_after=1} \
       {print > "cert_chain" n ".crt"}'
     ```
+
     ```bash
     ls -ltr cert_chain*
     ```
@@ -1139,13 +1216,13 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
 
     ```yaml
     ------------------------
-    
+
             Issuer: C = US, ST = New Jersey, L = Jersey City, O = The USERTRUST Network, CN = USERTrust RSA Certification Authority
             Subject: C = GB, ST = Greater Manchester, L = Salford, O = Sectigo Limited, CN = Sectigo RSA Domain Validation Secure Server CA
     ------------------------
-    
+
     ------------------------
-    
+
             Issuer: C = GB, ST = Greater Manchester, L = Salford, O = Sectigo Limited, CN = Sectigo RSA Domain Validation Secure Server CA
             Subject: CN = *.carto.example
     ------------------------
@@ -1167,28 +1244,30 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
     openssl x509 -noout -modulus -in carto.example.new.crt | openssl md5
     openssl rsa -noout -modulus -in carto.example.key | openssl md5
     ```
-     **NOTE**: If both `modulus md5` does not match (the output of both commands should be exactly the same), the certificate that you have updated won't be valid. From here, you need to iterate with the certificate update operation (previous step), until both `modulus md5` match.
+
+    **NOTE**: If both `modulus md5` does not match (the output of both commands should be exactly the same), the certificate that you have updated won't be valid. From here, you need to iterate with the certificate update operation (previous step), until both `modulus md5` match.
 
   - Create your new certificate in a kubernetes tls secret
-  
+
     ```bash
     kubectl create secret tls -n <namespace> carto-example-new --cert=carto.example.new.crt --key=carto.example.key
     ```
 
   - Reinstall your environment
 
-      [uninstall steps](https://github.com/CartoDB/carto-selfhosted-helm#update)
+    [uninstall steps](https://github.com/CartoDB/carto-selfhosted-helm#update)
 
-      [install steps](https://github.com/CartoDB/carto-selfhosted-helm#installation-steps)
+    [install steps](https://github.com/CartoDB/carto-selfhosted-helm#installation-steps)
+
 - Message ` type "ClusterIP", expected "NodePort" or "LoadBalancer"`
-  
+
   This message is related to how is configured your cluster. To use ClusterIP the service needs to point to a NEG. This can be done using `cloud.google.com/neg: '{"ingress": true}'`annotation in router service. Container-native load balancing is enabled by default for Services when all of the following conditions are true:
 
   - For Services created in GKE clusters 1.17.6-gke.7 and up
   - Using VPC-native clusters
   - Not using a Shared VPC
   - Not using GKE Network Policy
-  If this is not your case you must add it in your customization.yaml file. in the example in this repository this value is commented, if you are using it just uncomment it and reinstall.
+    If this is not your case you must add it in your customization.yaml file. in the example in this repository this value is commented, if you are using it just uncomment it and reinstall.
 
   ```yaml
   service:
@@ -1196,7 +1275,7 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
       ## Same BackendConfig for all Service ports
       ## https://cloud.google.com/kubernetes-engine/docs/how-to/ingress-features#same_backendconfig_for_all_service_ports
       cloud.google.com/backend-config: '{"default": "carto-service-backend-config"}'
-      ## https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing if your 
+      ## https://cloud.google.com/kubernetes-engine/docs/how-to/container-native-load-balancing if your
       ## installation do not match with the configuration below:
       ## For Services created in GKE clusters 1.17.6-gke.7 and up
       ##  * Using VPC-native clusters
@@ -1205,3 +1284,45 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
       ## If it is not your case, uncomment the line below
       cloud.google.com/neg: '{"ingress": true}'
   ```
+### Helm upgrade fails: another operation (install/upgrade/rollback) is in progress
+
+If you face a problem like the one below while you are updating your CARTO selfhosted installation```
+```bash
+helm upgrade my-release carto/carto --namespace my namespace -f carto-values.yaml -f carto-secrets.yaml -f customizations.yml 
+Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
+```
+
+Probably an upgrade operation wasn't killed gracefully. The fix is to rollback to a previous deployment:
+
+```bash
+helm history my-release                                                                                                                               
+
+REVISION	UPDATED                 	STATUS         	CHART             	APP VERSION	DESCRIPTION
+19      	Fri Aug 26 11:10:20 2022	superseded     	carto-1.40.6-beta 	2022.8.19-2	Upgrade complete
+20      	Fri Sep 16 12:00:57 2022	superseded     	carto-1.42.1-beta 	2022.9.16  	Upgrade complete
+21      	Mon Sep 19 16:46:46 2022	superseded     	carto-1.42.3-beta 	2022.9.19  	Upgrade complete
+22      	Wed Sep 21 11:05:32 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
+23      	Wed Sep 21 11:16:34 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
+24      	Wed Sep 21 16:26:33 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
+25      	Wed Sep 28 15:28:53 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
+26      	Fri Sep 30 14:14:29 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
+27      	Fri Sep 30 14:37:41 2022	deployed       	carto-1.42.10-beta	2022.9.28  	Upgrade complete
+28      	Fri Sep 30 15:07:06 2022	pending-upgrade	carto-1.42.10-beta	2022.9.28  	Preparing upgrade
+helm rollback my-release 27                                                                                                                                              
+Rollback was a success! Happy Helming!
+
+helm history my-release   
+
+REVISION	UPDATED                 	STATUS         	CHART             	APP VERSION	DESCRIPTION
+20      	Fri Sep 16 12:00:57 2022	superseded     	carto-1.42.1-beta 	2022.9.16  	Upgrade complete
+21      	Mon Sep 19 16:46:46 2022	superseded     	carto-1.42.3-beta 	2022.9.19  	Upgrade complete
+22      	Wed Sep 21 11:05:32 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
+23      	Wed Sep 21 11:16:34 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
+24      	Wed Sep 21 16:26:33 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
+25      	Wed Sep 28 15:28:53 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
+26      	Fri Sep 30 14:14:29 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
+27      	Fri Sep 30 14:37:41 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
+28      	Fri Sep 30 15:07:06 2022	pending-upgrade	carto-1.42.10-beta	2022.9.28  	Preparing upgrade
+29      	Tue Oct  4 10:58:22 2022	deployed       	carto-1.42.10-beta	2022.9.28  	Rollback to 27
+``` 
+Now you can run the upgrade operation again

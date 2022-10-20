@@ -47,6 +47,8 @@ Association between env secret and path of the secret in values.yaml
 BIGQUERY_OAUTH2_CLIENT_SECRET: appSecrets.bigqueryOauth2ClientSecret
 ENCRYPTION_SECRET_KEY: cartoSecrets.encryptionSecretKey
 IMPORT_ACCESSKEYID: appSecrets.awsAccessKeyId
+IMPORT_AWS_ACCESS_KEY_ID: appSecrets.importAwsAccessKeyId
+IMPORT_AWS_SECRET_ACCESS_KEY: appSecrets.importAwsSecretAccessKey
 IMPORT_JWT_SECRET: cartoSecrets.jwtApiSecret
 IMPORT_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 IMPORT_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
@@ -364,8 +366,6 @@ Return the proper Carto maps-api Secret name
 {{- end -}}
 {{- end -}}
 
-
-
 {{/*
 Return the proper Carto sql-worker full name
 */}}
@@ -401,12 +401,6 @@ Return the proper Carto sql-worker Secret name
 {{- include "carto.sqlWorker.fullname" . -}}
 {{- end -}}
 {{- end -}}
-
-
-
-
-
-
 
 {{/*
 Return the proper Carto workspace-subscriber full name
@@ -444,7 +438,6 @@ Return the proper Carto workspace-subscriber Secret name
 {{- end -}}
 {{- end -}}
 
-
 {{/*
 Return the proper Carto workspace-api full name
 */}}
@@ -480,7 +473,6 @@ Return the proper Carto workspace-api Secret name
 {{- include "carto.workspaceApi.fullname" . -}}
 {{- end -}}
 {{- end -}}
-
 
 {{/*
 In case you're using an Azure Postgres as an external database you should add two additional parameters
@@ -755,7 +747,6 @@ Return the proper Carto cdn-invalidator-sub Secret name
 {{- include "carto.cdnInvalidatorSub.fullname" . -}}
 {{- end -}}
 {{- end -}}
-
 
 {{/*
 Return the proper Carto workspace-db image name
