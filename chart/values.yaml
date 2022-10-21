@@ -713,10 +713,10 @@ importApi:
   ##
   resources:
     limits:
-      memory: "512Mi"
+      memory: "1024Mi"
       cpu: "1000m"
     requests:
-      memory: "372Mi"
+      memory: "768Mi"
       cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
@@ -2791,10 +2791,10 @@ cdnInvalidatorSub:
   ##
   resources:
     limits:
-      memory: "512Mi"
+      memory: "1024Mi"
       cpu: "500m"
     requests:
-      memory: "372Mi"
+      memory: "768Mi"
       cpu: "200m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
@@ -3352,10 +3352,10 @@ workspaceSubscriber:
   ##
   resources:
     limits:
-      memory: "512Mi"
+      memory: "1024Mi"
       cpu: "500m"
     requests:
-      memory: "372Mi"
+      memory: "768Mi"
       cpu: "200m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
