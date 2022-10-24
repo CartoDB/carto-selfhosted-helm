@@ -30,6 +30,7 @@ data:
   REACT_APP_LAUNCH_DARKLY_CLIENT_SIDE_ID: {{ .Values.cartoConfigValues.launchDarklyClientSideId | quote }}
   REACT_APP_PUBLIC_MAP_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api/v3/maps/public"
   REACT_APP_WORKSPACE_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/workspace-api"
+  REACT_APP_NOTIFIER_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/notifier"
   REACT_APP_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
   THUMBNAILS_BUCKET_EXTERNAL_URL: {{ .Values.appConfigValues.thumbnailsBucketExternalURL | quote }}
 {{- end }}

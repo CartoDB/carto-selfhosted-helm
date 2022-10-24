@@ -31,6 +31,15 @@ httpCache:
       memory: "124Mi"
       cpu: "100m"
 
+notifier:
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "200m"
+    requests:
+      memory: "124Mi"
+      cpu: "100m"
+
 importApi:
   resources:
     limits:

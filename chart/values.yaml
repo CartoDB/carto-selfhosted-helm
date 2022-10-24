@@ -2656,6 +2656,316 @@ httpCache:
     ##
     automountServiceAccountToken: false
 
+## @section notifier Deployment Parameters
+##
+notifier:
+  ## notifier image
+  ## @param notifier.image.registry notifier image registry
+  ## @param notifier.image.repository notifier image repository
+  ## @param notifier.image.tag notifier image tag (immutable tags are recommended)
+  ## @param notifier.image.pullPolicy notifier image pull policy
+  ## @param notifier.image.pullSecrets notifier image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: notifier
+    ## Specify a custom image tag
+    tag: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param notifier.replicaCount Number of notifier replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param notifier.containerPorts.http notifier HTTP container port
+  ## @param notifier.containerPorts.internal notifier internal container port
+  ##
+  containerPorts:
+    http: 7999
+    internal: 5561
+  ## Configure extra options for notifier containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param notifier.livenessProbe.enabled Enable livenessProbe on notifier containers
+  ## @param notifier.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param notifier.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param notifier.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param notifier.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param notifier.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param notifier.readinessProbe.enabled Enable readinessProbe on notifier containers
+  ## @param notifier.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param notifier.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param notifier.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param notifier.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param notifier.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param notifier.startupProbe.enabled Enable startupProbe on notifier containers
+  ## @param notifier.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param notifier.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param notifier.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param notifier.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param notifier.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param notifier.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param notifier.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param notifier.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## notifier resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param notifier.resources.limits [object] The resources limits for the notifier containers
+  ## @skip notifier.resources.limits
+  ## @param notifier.resources.requests [object] The requested resources for the notifier containers
+  ## @skip notifier.resources.requests
+  ##
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+    requests:
+      memory: "256Mi"
+      cpu: "200m"
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param notifier.podSecurityContext.enabled Enabled notifier pods' Security Context
+  ## @param notifier.podSecurityContext.fsGroup Set notifier pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 102
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param notifier.containerSecurityContext.enabled Enabled notifier containers' Security Context
+  ## @param notifier.containerSecurityContext.runAsUser Set notifier containers' Security Context runAsUser
+  ## @param notifier.containerSecurityContext.runAsNonRoot Set notifier containers' Security Context runAsNonRoot
+  ## @param notifier.containerSecurityContext.capabilities.drop removes notifier containers' Security Context capabilities
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 101
+    runAsNonRoot: false
+    capabilities:
+      drop:
+        - all
+  ## @param notifier.existingConfigMap The name of an existing ConfigMap with your custom configuration for notifier
+  ##
+  existingConfigMap: ""
+  ## @param notifier.existingSecret The name of an existing ConfigMap with your custom configuration for notifier
+  ##
+  existingSecret: ""
+  ## @param notifier.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param notifier.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param notifier.hostAliases notifier pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param notifier.podLabels Extra labels for notifier pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param notifier.podAnnotations Annotations for notifier pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param notifier.podAffinityPreset Pod affinity preset. Ignored if `notifier.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param notifier.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `notifier.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node notifier.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param notifier.nodeAffinityPreset.type Node affinity preset type. Ignored if `notifier.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param notifier.nodeAffinityPreset.key Node label key to match. Ignored if `notifier.affinity` is set
+    ##
+    key: ""
+    ## @param notifier.nodeAffinityPreset.values Node label values to match. Ignored if `notifier.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param notifier.affinity Affinity for notifier pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `notifier.podAffinityPreset`, `notifier.podAntiAffinityPreset`, and `notifier.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param notifier.nodeSelector Node labels for notifier pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param notifier.tolerations Tolerations for notifier pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param notifier.updateStrategy.type notifier deployment strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ##
+    type: Recreate
+  ## @param notifier.priorityClassName notifier pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param notifier.schedulerName Name of the k8s scheduler (other than default) for notifier pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param notifier.lifecycleHooks for the notifier container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param notifier.extraEnvVars Array with extra environment variables to add to notifier nodes ([More info](#additional-environment-variables))
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param notifier.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for notifier nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsCM: ""
+  ## @param notifier.extraEnvVarsSecret Name of existing Secret containing extra env vars for notifier nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsSecret: ""
+  ## @param notifier.extraVolumes Optionally specify extra list of additional volumes for the notifier pod(s)
+  ##
+  extraVolumes: []
+  ## @param notifier.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the notifier container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param notifier.sidecars Add additional sidecar containers to the notifier pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param notifier.initContainers Add additional init containers to the notifier pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section notifier Service Parameters
+  ##
+  ##
+  service:
+    ## @param notifier.service.type notifier service type
+    ##
+    type: ClusterIP
+    ## @param notifier.service.ports.http notifier service HTTP port
+    ## @param notifier.service.ports.internal notifier service internal port
+    ##
+    ports:
+      http: 80
+      internal: 5561
+    ## Ports to expose
+    ## @param notifier.service.nodePorts.http Port for HTTP
+    ## @param notifier.service.nodePorts.internal Port for internal connections
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+      internal: ""
+    ## @param notifier.service.clusterIP notifier service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param notifier.service.loadBalancerIP notifier service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param notifier.service.labelSelectorsOverride Selector for notifier service
+    ##
+    labelSelectorsOverride: {}
+    ## @param notifier.service.loadBalancerSourceRanges notifier service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param notifier.service.externalTrafficPolicy notifier service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param notifier.service.annotations Additional custom annotations for notifier service
+    ##
+    annotations: {}
+    ## @param notifier.service.extraPorts Extra ports to expose in notifier service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+  ## @section notifier ServiceAccount configuration
+  ##
+  serviceAccount:
+    ## @param notifier.serviceAccount.create Specifies whether a ServiceAccount should be created
+    ##
+    create: true
+    ## @param notifier.serviceAccount.name The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the common.names.fullname template
+    ##
+    name: ""
+    ## @param notifier.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
+    ##
+    automountServiceAccountToken: false
+
+
 ## @section cdnInvalidatorSub Deployment Parameters
 ##
 cdnInvalidatorSub:
