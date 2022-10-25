@@ -3027,7 +3027,7 @@ workspaceApi:
   nodeProcessMaxOldSpacePercentage: 75
   ## @param workspaceApi.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
-  defaultNodeProcessMaxOldSpace: 768
+  defaultNodeProcessMaxOldSpace: 1020
   ## Configure extra options for workspace-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param workspaceApi.livenessProbe.enabled Enable livenessProbe on workspace-api containers
