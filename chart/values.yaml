@@ -1770,7 +1770,7 @@ sqlWorker:
   nodeProcessMaxOldSpacePercentage: 75
   ## @param sqlWorker.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
-  defaultNodeProcessMaxOldSpace: 3072
+  defaultNodeProcessMaxOldSpace: 1536
   ## Configure extra options for sqlWorker containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param sqlWorker.livenessProbe.enabled Enable livenessProbe on sqlWorker containers
@@ -1826,10 +1826,10 @@ sqlWorker:
   ##
   resources:
     limits:
-      memory: "4096Mi"
+      memory: "2048Mi"
       cpu: "1000m"
     requests:
-      memory: "3072Mi"
+      memory: "1024Mi"
       cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
