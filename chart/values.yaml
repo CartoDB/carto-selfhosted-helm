@@ -636,7 +636,7 @@ importApi:
   nodeProcessMaxOldSpacePercentage: 75
   ## @param importApi.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
-  defaultNodeProcessMaxOldSpace: 384
+  defaultNodeProcessMaxOldSpace: 768
   ## Configure extra options for import-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param importApi.livenessProbe.enabled Enable livenessProbe on import-api containers
@@ -949,10 +949,10 @@ importWorker:
   customStartupProbe: {}
   ## @param importWorker.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
-  nodeProcessMaxOldSpacePercentage: 75
+  nodeProcessMaxOldSpacePercentage: 50
   ## @param importWorker.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
-  defaultNodeProcessMaxOldSpace: 3072
+  defaultNodeProcessMaxOldSpace: 2048
   ## import-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @skip importWorker.resources.limits [object] The resources limits for the import-worker containers
@@ -2726,7 +2726,7 @@ cdnInvalidatorSub:
   nodeProcessMaxOldSpacePercentage: 75
   ## @param cdnInvalidatorSub.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
-  defaultNodeProcessMaxOldSpace: 384
+  defaultNodeProcessMaxOldSpace: 768
   ## Configure extra options for cdnInvalidatorSub containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param cdnInvalidatorSub.livenessProbe.enabled Enable livenessProbe on cdnInvalidatorSub containers
@@ -3329,11 +3329,14 @@ workspaceSubscriber:
   ## @param workspaceSubscriber.replicaCount Number of workspace-subscriber replicas to deploy
   ##
   replicaCount: 1
-  ## @param workspaceSubscriber.customLivenessProbe Custom livenessProbe that overrides the default one
+  ## @param workspaceSubscriber.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
+  nodeProcessMaxOldSpacePercentage: 75
   ## @param workspaceSubscriber.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
-  defaultNodeProcessMaxOldSpace: 384
+  defaultNodeProcessMaxOldSpace: 768
+  ## @param workspaceSubscriber.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
   customLivenessProbe: {}
   ## @param workspaceSubscriber.customReadinessProbe Custom readinessProbe that overrides the default one
   ##
