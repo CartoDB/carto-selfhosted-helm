@@ -1541,7 +1541,7 @@ mapsApi:
   resources:
     limits:
       memory: "2048Mi"
-      cpu: "1000m"
+      cpu: "2000m"
     requests:
       memory: "768Mi"
       cpu: "350m"
@@ -3104,7 +3104,7 @@ workspaceApi:
   ##
   resources:
     limits:
-      memory: "1024Mi"
+      memory: "1360Mi"
       cpu: "1000m"
     requests:
       memory: "768Mi"
