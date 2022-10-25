@@ -1463,7 +1463,7 @@ mapsApi:
   nodeProcessMaxOldSpacePercentage: 75
   ## @param mapsApi.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
-  defaultNodeProcessMaxOldSpace: 1536
+  defaultNodeProcessMaxOldSpace: 1875
   ## Configure extra options for maps-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param mapsApi.livenessProbe.enabled Enable livenessProbe on maps-api containers
