@@ -33,6 +33,7 @@ If you are looking for another installation method, please refer to [carto-selfh
 - Kubernetes 1.12+
 - Helm 3.6.0
 - Configuration and license files received from CARTO
+- Internet HTTP/HTTPS access from the cluster to the [whitelisted domains list](doc/whitelisted_domains).
 - (Optional) PV provisioner support in the underlying infrastructure. Required only for non-production deployment without external and managed databases (Postgres and Redis).
 
 <!--
