@@ -21,6 +21,7 @@ data:
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
+  NPM_CONFIG_UPDATE_NOTIFIER: "false"
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}

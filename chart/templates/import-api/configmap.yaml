@@ -55,4 +55,5 @@ data:
   {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
   IMPORT_STORAGE_ACCOUNT: {{ .Values.appConfigValues.azureStorageAccount | quote }}
   {{- end }}
+  NPM_CONFIG_UPDATE_NOTIFIER: "false"
 {{- end }}

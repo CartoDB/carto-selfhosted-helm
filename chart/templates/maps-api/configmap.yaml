@@ -45,4 +45,5 @@ data:
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA  }}
   WORKSPACE_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
   {{- end }}
+  NPM_CONFIG_UPDATE_NOTIFIER: "false"
 {{- end }}

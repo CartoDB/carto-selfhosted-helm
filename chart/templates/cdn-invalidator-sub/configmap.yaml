@@ -22,4 +22,5 @@ data:
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  NPM_CONFIG_UPDATE_NOTIFIER: "false"
 {{- end }}

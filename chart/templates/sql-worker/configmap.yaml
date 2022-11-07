@@ -45,4 +45,5 @@ data:
   WORKSPACE_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
   {{- end }}
   WORKSPACE_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  NPM_CONFIG_UPDATE_NOTIFIER: "false"
 {{- end }}
