@@ -49,11 +49,11 @@ optional arguments:
 
 ## Download customer package tool
 
-### Purpose
+### Description
 
 This tool can be used to download a newer version of the Carto selfhosted customer package, allowing customers to update an existing installation to the Carto selfhosted latest release without having to contact support to provide the files.
 
-### Requirements
+### Pre-requisites
 
 - Customer package files (`carto-values.yaml` and `carto-secrets.yaml`) used for the existing installation.
 - Linux machine with bash terminal.
