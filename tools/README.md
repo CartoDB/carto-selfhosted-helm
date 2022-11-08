@@ -62,7 +62,7 @@ This tool can be used to download a newer version of the Carto selfhosted custom
 
 1. Run the script passing the following arguments:
    - `-d | --dir` Directory containing the existing `carto-values.yaml` and `carto-secrets.yaml` files.
-   - `-s | --selfhosted-mode` Carto selfhosted installation mode.
+   - `-s | --selfhosted-mode` Carto selfhosted installation mode. Use `k8s`.
 
    ```
    $ ./carto-download-customer-package.sh -d /tmp/carto -s k8s
