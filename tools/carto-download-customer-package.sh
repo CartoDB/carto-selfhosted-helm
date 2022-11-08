@@ -41,11 +41,9 @@ function usage()
    optional arguments:
      -h, --help             Show this help message and exit
      -d, --dir              Folder path where both <carto-values.yaml> and <carto-secrets.yaml> are located (k8s)
-                            or where both <.env> and <carto-service-account.json> are located (docker). 
+                            or where both <customer.env> and <key.json> are located (docker). 
                             Default is current directory.
      -s, --selfhosted-mode  Selfhosted-mode for the customer package: k8s, or docker. Default is k8s.
-                            Note: if docker is used, the carto-service-account.json file must be in the same 
-                            directory of the script.
 
 EOF
 }
@@ -87,8 +85,8 @@ done
 # main block
 # ==================================================
 # docker
-CARTO_ENV="${FILE_DIR}/.env"
-CARTO_SA="${FILE_DIR}/carto-service-account.json"
+CARTO_ENV="${FILE_DIR}/customer.env"
+CARTO_SA="${FILE_DIR}/key.json"
 # k8s
 CARTO_VALUES="${FILE_DIR}/carto-values.yaml"
 CARTO_SECRETS="${FILE_DIR}/carto-secrets.yaml"
@@ -115,7 +113,7 @@ if [ "${SELFHOSTED_MODE}" = "docker" ]; then
   check_input_files "${CARTO_SA}"
 fi
 
-# Get information from YAML files (k8s) or .env file (docker)
+# Get information from YAML files (k8s) or customer.env file (docker)
 if [ "${SELFHOSTED_MODE}" = "k8s" ]; then
   yq ".cartoSecrets.defaultGoogleServiceAccount.value" < "${CARTO_SECRETS}" | \
     grep -v "^$" > "${CARTO_SERVICE_ACCOUNT_FILE}"
