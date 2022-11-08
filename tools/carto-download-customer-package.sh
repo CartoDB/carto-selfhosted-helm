@@ -60,7 +60,7 @@ PROGNAME="$(basename "$0")"
 OPTS=$(getopt -o "hd:s" --long "help,dir,selfhosted-mode" -n "$PROGNAME" -- "$@")
 
 # Check getopt errors
-# shellcheck disable=SC2166
+# shellcheck disable=SC2166,SC2181
 if [ $? -ne 0 ] ; then
   echo -e "[ERROR]: please check input arguments."
   usage
