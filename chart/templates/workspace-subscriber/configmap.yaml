@@ -32,7 +32,6 @@ data:
   REDIS_TLS_CA: {{ include "carto.redis.configMapMountAbsolutePath" . }}
   {{- end }}
   LOG_LEVEL: "debug"
-  CARTO_SELFHOSTED_DEPLOYMENT: "kubernetes"
   PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE: "projects/{project_id}/topics/data-updates"
   PUBSUB_MODE: "pull"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
