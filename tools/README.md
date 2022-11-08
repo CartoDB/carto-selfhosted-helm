@@ -44,3 +44,32 @@ optional arguments:
   :warning: Note that we need to deploy some containers in the Carto namespace to check the conectivity and health checks.
 
   Example: `bash carto-support-tool.sh --namespace carto --release carto --engine gke --extra`
+
+
+# Download customer package tool
+
+## Purpose
+
+This tool can be used to download a newer version of the Carto selfhosted customer package, allowing customers to update an existing installation to the Carto selfhosted latest release without having to contact support to provide the files.
+
+## Requirements
+
+- Customer package files used for the existing installation.
+- Linux machine with bash terminal.
+- Packages installed: `yq`, `jq` and `gcloud`.
+
+## How to download the latest customer package
+
+1. Run the script passing the following arguments:
+   - `-d | --dir` Directory containing the existing `carto-values.yaml` and `carto-secrets.yaml` files.
+   - `-s | --selfhosted-mode` Carto selfhosted installation mode.
+
+   ```
+   $ ./carto-download-customer-package.sh -d /tmp/carto -s k8s
+   Activated service account credentials for: [serv-onp-xxx@carto-tnt-onp-xxx.iam.gserviceaccount.com]
+   Copying gs://carto-tnt-onp-xxx-client-storage/customer-package/carto-selfhosted-k8s-customer-package-xxx-2022-10-18.zip...
+   / [1 files][  3.5 KiB/  3.5 KiB]                                                
+   Operation completed over 1 objects/3.5 KiB.                                      
+   ```
+
+2. Unzip your customer package files and use them to update your Carto selfhosted installation.

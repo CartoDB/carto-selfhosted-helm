@@ -15,7 +15,7 @@ CUSTOMER_PACKAGE_FOLDER="customer-package"
 function check_deps()
 {
   for DEP in ${DEPENDENCIES}; do
-    command -v ${DEP} 2&>1 > /dev/null || \
+    command -v "${DEP}" 2&>1 > /dev/null || \
       { echo -e "\n[ERROR]: missing dependency <${DEP}>. Please, install it.\n"; exit 1;}
   done
 }
@@ -50,7 +50,7 @@ EOF
 # ==================================================
 # Verify input
 # ==================================================
-PROGNAME=$(basename $0)
+PROGNAME="$(basename "$0")"
 
 # use getopt and store the output into $OPTS
 # note the use of -o for the short options, --long for the long name options
@@ -95,42 +95,41 @@ check_input_files "${CARTO_VALUES}"
 check_input_files "${CARTO_SECRETS}"
 
 # Validate selfhosted mode
-if [ "$(echo ${SELFHOSTED_MODE} | egrep "docker|k8s")" == "" ]; then
+if [ "$(echo "${SELFHOSTED_MODE}" | grep -E "docker|k8s")" == "" ]; then
   echo -e "\n[ERROR]: available selfhosted modes: k8s or docker\n"
   usage
   exit 1
 fi
 
 # Get information from YAML files
-cat ${CARTO_SECRETS} | \
-  yq ".cartoSecrets.defaultGoogleServiceAccount.value" | \
+yq ".cartoSecrets.defaultGoogleServiceAccount.value" < "${CARTO_VALUES}" | \
   grep -v "^$" > ${CARTO_SERVICE_ACCOUNT_FILE}
-CLIENT_STORAGE_BUCKET=$(cat ${CARTO_VALUES} | yq -r ".appConfigValues.workspaceImportsBucket")
-TENANT_ID=$(cat ${CARTO_VALUES} | yq -r ".cartoConfigValues.selfHostedTenantId")
-CLIENT_ID=${TENANT_ID/#onp-} # Remove onp- prefix
-SELFHOSTED_VERSION_CURRENT=$(cat ${CARTO_VALUES} | yq -r ".cartoConfigValues.customerPackageVersion")
+CLIENT_STORAGE_BUCKET=$(yq -r ".appConfigValues.workspaceImportsBucket" < "${CARTO_VALUES}")
+TENANT_ID=$(yq -r ".cartoConfigValues.selfHostedTenantId" < "${CARTO_VALUES}")
+CLIENT_ID="${TENANT_ID/#onp-}" # Remove onp- prefix
+SELFHOSTED_VERSION_CURRENT=$(yq -r ".cartoConfigValues.customerPackageVersion" < "${CARTO_VALUES}")
 
 # Get information from JSON service account file
-CARTO_SERVICE_ACCOUNT_EMAIL=$(cat ${CARTO_SERVICE_ACCOUNT_FILE} | jq -r ".client_email")
-CARTO_GCP_PROJECT=$(cat ${CARTO_SERVICE_ACCOUNT_FILE}| jq -r ".project_id")
+CARTO_SERVICE_ACCOUNT_EMAIL=$(jq -r ".client_email" < "${CARTO_SERVICE_ACCOUNT_FILE}")
+CARTO_GCP_PROJECT=$(jq -r ".project_id" < "${CARTO_SERVICE_ACCOUNT_FILE}")
 
 # Download the latest customer package
-gcloud auth activate-service-account ${CARTO_SERVICE_ACCOUNT_EMAIL} \
-  --key-file=${CARTO_SERVICE_ACCOUNT_FILE} \
-  --project=${CARTO_GCP_PROJECT}
+gcloud auth activate-service-account "${CARTO_SERVICE_ACCOUNT_EMAIL}" \
+  --key-file="${CARTO_SERVICE_ACCOUNT_FILE}" \
+  --project="${CARTO_GCP_PROJECT}"
 
 # Get latest customer package version
-CUSTOMER_PACKAGE_FILE_LATEST=$(gsutil ls gs://${CLIENT_STORAGE_BUCKET}/${CUSTOMER_PACKAGE_FOLDER}/${CUSTOMER_PACKAGE_NAME_PREFIX}-${CLIENT_ID}-*-*-*.zip)
-SELFHOSTED_VERSION_LATEST=$(echo ${CUSTOMER_PACKAGE_FILE_LATEST} | grep -Eo "[0-9]+-[0-9]+-[0-9]+")
+CUSTOMER_PACKAGE_FILE_LATEST=$(gsutil ls "gs://${CLIENT_STORAGE_BUCKET}/${CUSTOMER_PACKAGE_FOLDER}/${CUSTOMER_PACKAGE_NAME_PREFIX}-${CLIENT_ID}-*-*-*.zip")
+SELFHOSTED_VERSION_LATEST=$(echo "${CUSTOMER_PACKAGE_FILE_LATEST}" | grep -Eo "[0-9]+-[0-9]+-[0-9]+")
 
 # Download package
 gsutil cp \
-  gs://${CLIENT_STORAGE_BUCKET}/${CUSTOMER_PACKAGE_FOLDER}/${CUSTOMER_PACKAGE_NAME_PREFIX}-${CLIENT_ID}-${SELFHOSTED_VERSION_LATEST}.zip .
+  "gs://${CLIENT_STORAGE_BUCKET}/${CUSTOMER_PACKAGE_FOLDER}/${CUSTOMER_PACKAGE_NAME_PREFIX}-${CLIENT_ID}-${SELFHOSTED_VERSION_LATEST}.zip" .
 
 # Print message
 echo -e "\n##############################################################"
 echo -e "Current selfhosted version in [carto-values.yaml]: ${SELFHOSTED_VERSION_CURRENT}"
 echo -e "Latest selfhosted version downloaded: ${SELFHOSTED_VERSION_LATEST}"
-echo -e "Downloaded file: $(basename ${CUSTOMER_PACKAGE_FILE_LATEST})"
+echo -e "Downloaded file: $(basename "${CUSTOMER_PACKAGE_FILE_LATEST}")"
 echo -e "Downloaded from: ${CUSTOMER_PACKAGE_FILE_LATEST}"
 echo -e "##############################################################\n"

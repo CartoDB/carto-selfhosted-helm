@@ -164,7 +164,9 @@ If you need to open a support ticket, please execute our [carto-support-tool](to
   helm repo update
   ```
 
-3. Update CARTO
+3. Download the latest customer package (containing `carto-values.yaml` and `carto-secrets.yaml` files) using [this tool](tools/carto-download-customer-package.sh).
+
+4. Update CARTO
 
   ```bash
   helm upgrade \
