@@ -54,7 +54,7 @@ This tool can be used to download a newer version of the Carto selfhosted custom
 
 ## Requirements
 
-- Customer package files used for the existing installation.
+- Customer package files (`carto-values.yaml` and `carto-secrets.yaml`) used for the existing installation.
 - Linux machine with bash terminal.
 - Packages installed: `yq`, `jq` and `gcloud`.
 
