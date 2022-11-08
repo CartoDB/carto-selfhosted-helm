@@ -36,16 +36,19 @@ function usage()
 {
   cat <<EOF
 
-   Usage: $PROGNAME --dir dir_path
+   Usage: $PROGNAME [--dir] [dir_path] [--selfhosted-mode] [k8s|docker]
 
    optional arguments:
-     -h, --help             show this help message and exit
-     -d, --dir              folder path where both <carto-values.yaml> and <carto-secrets.yaml> are located
-     -s, --selfhosted-mode  selfhosted-mode for the customer package: k8s, or docker
+     -h, --help             Show this help message and exit
+     -d, --dir              Folder path where both <carto-values.yaml> and <carto-secrets.yaml> are located (k8s)
+                            or where both <.env> and <carto-service-account.json> are located (docker). 
+                            Default is current directory.
+     -s, --selfhosted-mode  Selfhosted-mode for the customer package: k8s, or docker. Default is k8s.
+                            Note: if docker is used, the carto-service-account.json file must be in the same 
+                            directory of the script.
 
 EOF
 }
-
 
 # ==================================================
 # Verify input
@@ -69,10 +72,11 @@ fi
 
 eval set -- "$OPTS"
 
+# Remove trailing slash from --dir argument
 while true; do
   case "$1" in
     -h | --help ) usage; exit; ;;
-    -d | --dir) FILE_DIR="$2"; shift 2 ;;
+    -d | --dir) FILE_DIR="${2%/}"; shift 2 ;;
     -s | --selfhosted-mode) SELFHOSTED_MODE="$3"; shift 2 ;;
     -- ) shift ;;
     * ) break ;;
@@ -82,17 +86,17 @@ done
 # ==================================================
 # main block
 # ==================================================
-
+# docker
+CARTO_ENV="${FILE_DIR}/.env"
+CARTO_SA="${FILE_DIR}/carto-service-account.json"
+# k8s
 CARTO_VALUES="${FILE_DIR}/carto-values.yaml"
 CARTO_SECRETS="${FILE_DIR}/carto-secrets.yaml"
+# global
 CUSTOMER_PACKAGE_NAME_PREFIX="carto-selfhosted-${SELFHOSTED_MODE}-customer-package"
 
 # Check dependencies
 check_deps
-
-# Check that required files exist
-check_input_files "${CARTO_VALUES}"
-check_input_files "${CARTO_SECRETS}"
 
 # Validate selfhosted mode
 if [ "$(echo "${SELFHOSTED_MODE}" | grep -E "docker|k8s")" == "" ]; then
@@ -101,13 +105,34 @@ if [ "$(echo "${SELFHOSTED_MODE}" | grep -E "docker|k8s")" == "" ]; then
   exit 1
 fi
 
-# Get information from YAML files
-yq ".cartoSecrets.defaultGoogleServiceAccount.value" < "${CARTO_VALUES}" | \
-  grep -v "^$" > ${CARTO_SERVICE_ACCOUNT_FILE}
-CLIENT_STORAGE_BUCKET=$(yq -r ".appConfigValues.workspaceImportsBucket" < "${CARTO_VALUES}")
-TENANT_ID=$(yq -r ".cartoConfigValues.selfHostedTenantId" < "${CARTO_VALUES}")
-CLIENT_ID="${TENANT_ID/#onp-}" # Remove onp- prefix
-SELFHOSTED_VERSION_CURRENT=$(yq -r ".cartoConfigValues.customerPackageVersion" < "${CARTO_VALUES}")
+# Check that required files exist
+if [ "${SELFHOSTED_MODE}" = "k8s" ]; then
+  check_input_files "${CARTO_VALUES}"
+  check_input_files "${CARTO_SECRETS}"
+fi
+if [ "${SELFHOSTED_MODE}" = "docker" ]; then
+  check_input_files "${CARTO_ENV}"
+  check_input_files "${CARTO_SA}"
+fi
+
+# Get information from YAML files (k8s) or .env file (docker)
+if [ "${SELFHOSTED_MODE}" = "k8s" ]; then
+  yq ".cartoSecrets.defaultGoogleServiceAccount.value" < "${CARTO_SECRETS}" | \
+    grep -v "^$" > "${CARTO_SERVICE_ACCOUNT_FILE}"
+  CLIENT_STORAGE_BUCKET=$(yq -r ".appConfigValues.workspaceImportsBucket" < "${CARTO_VALUES}")
+  TENANT_ID=$(yq -r ".cartoConfigValues.selfHostedTenantId" < "${CARTO_VALUES}")
+  CLIENT_ID="${TENANT_ID/#onp-}" # Remove onp- prefix
+  SELFHOSTED_VERSION_CURRENT=$(yq -r ".cartoConfigValues.customerPackageVersion" < "${CARTO_VALUES}") 
+fi
+
+if [ "${SELFHOSTED_MODE}" = "docker" ]; then
+  source "${CARTO_ENV}"
+  cp "${CARTO_SA}" "${CARTO_SERVICE_ACCOUNT_FILE}"
+  CLIENT_STORAGE_BUCKET="${WORKSPACE_IMPORTS_BUCKET}"
+  TENANT_ID="${SELFHOSTED_TENANT_ID}"
+  CLIENT_ID="${TENANT_ID/#onp-}" # Remove onp- prefix
+  SELFHOSTED_VERSION_CURRENT="${CARTO_SELFHOSTED_CUSTOMER_PACKAGE_VERSION}"
+fi
 
 # Get information from JSON service account file
 CARTO_SERVICE_ACCOUNT_EMAIL=$(jq -r ".client_email" < "${CARTO_SERVICE_ACCOUNT_FILE}")
