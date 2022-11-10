@@ -23,7 +23,10 @@ data :
       printf 'Release version is OK\n'
       exit 0
     else
-      printf 'Release version is outdated, please contact support team at support-team@carto.com.\n'
+      printf '
+        Release version is outdated, please follow the instructions to download a new version of your customer package.
+        Instructions: https://github.com/CartoDB/carto-selfhosted-helm/tree/main/tools#download-customer-package-tool
+        '
       exit 1
     fi
 
