@@ -661,7 +661,7 @@ You can create and use your own storage buckets in any of the following supporte
   - Client Bucket
   - Thumbnails Bucket. 
   
- > :warning: Map thumbnails storage objects (.png files) can be configured to be `public` (default) or `private`. In order to change this, set `appConfigValues.workspaceThumbnailsPublic: "false"`. For the default configuration to work, the bucket must allow public objects/blobs. Some features, such as branding and custom markers, won't work unless the bucket is public. However, there's a workaround to avoid making the whole bucket public, which require allowing public objects, allowing ACLs (or non-uniform permissions) and disabling server-side encryption.
+ > :warning: Map thumbnails storage objects (.png files) can be configured to be `public` (default) or `private`. In order to change this, set `appConfigValues.workspaceThumbnailsPublic: "false"`. For the default configuration to work, the bucket must allow public objects/blobs. Some features, such as branding and custom markers, won't work unless the bucket is public. However, there's a workaround to avoid making the whole bucket public, which requires allowing public objects, allowing ACLs (or non-uniform permissions) and disabling server-side encryption.
 
 > There're no name constraints.
 
