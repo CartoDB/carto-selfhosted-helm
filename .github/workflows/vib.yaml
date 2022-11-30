@@ -104,6 +104,9 @@ jobs:
           git status
 
           ### Edit workspace-www folder
+          
+          ## Edit package.json to avoid private-packages
+          sed '/\@cartodb\/workflows\-engine/d' -i package.json
 
           ## Generate .env to use
           # shellcheck disable=SC2002,SC2129
