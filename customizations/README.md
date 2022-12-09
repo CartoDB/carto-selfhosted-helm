@@ -1049,7 +1049,7 @@ CARTO selfhosted supports importing data to a Redshift cluster or serverless. Fo
 
 1. Create an AWS IAM user with programmatic access. Take note of the user's aren, key id and key secret.
 
-2. Create an AWS S3 Bucket.
+2. Create an AWS S3 Bucket. ACLs should be allowed.
 
 3. Create an AWS IAM role with the following settings:
    1. Trusted entity type: `Custom trust policy`.
