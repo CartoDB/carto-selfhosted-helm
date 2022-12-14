@@ -766,7 +766,7 @@ In order to use AWS S3 custom buckets you need to:
 
 3. Create an IAM user and generate a programmatic key ID and secret.
 
-4. Grant this user with read/write access permissions over the buckets.
+4. Grant this user with read/write access permissions over the buckets. If server-side encryption is enabled, the user must be granted with permissions over the KMS key used.
 
 5. Add the following lines to your `customizations.yaml` and replace the `<values>` with your own settings:
 
@@ -1047,9 +1047,11 @@ CARTO selfhosted supports importing data to a Redshift cluster or serverless. Fo
 
 > :warning: This requires access to an AWS account and an existing accessible Redshift endpoint.
 
-1. Create an AWS IAM user with programmatic access. Take note of the user's aren, key id and key secret.
+1. Create an AWS IAM user with programmatic access. Take note of the user's arn, key id and key secret.
 
-2. Create an AWS S3 Bucket. ACLs should be allowed.
+2. Create an AWS S3 Bucket:
+   - ACLs should be allowed.
+   - If server-side encryption is enabled, the user must be granted with permissions over the KMS key used.
 
 3. Create an AWS IAM role with the following settings:
    1. Trusted entity type: `Custom trust policy`.
