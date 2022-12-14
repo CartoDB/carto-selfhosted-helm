@@ -110,6 +110,7 @@ spec:
                   key: {{ include "carto.postgresql.secret.key" . }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
+              "MAPS_API_V3_JWT_SECRET"
             ) "context" $ ) | nindent 12 }}
             {{- if .Values.sqlWorker.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.extraEnvVars "context" $) | nindent 12 }}
@@ -119,6 +120,7 @@ spec:
                 name: {{ template "carto.sqlWorker.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
+              "MAPS_API_V3_JWT_SECRET"
             ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
