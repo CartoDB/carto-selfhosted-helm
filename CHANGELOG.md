@@ -1,6 +1,29 @@
+## 2022.12.14 (December 14, 2022)
+
++ Category aggregation for Spatial Indexes layers
++ Aggregation resolution selector for Spatial Indexes layers https://docs.carto.com/whats-new/resolution-selector-category-aggregation-spatial-index-layers/
++ Bugs Fixing and minor improvements
++ Show LDS quota consumption https://docs.carto.com/whats-new/2022-added-quotas-in-settings-section/
++ Map collaboration on builder (added new component (notifier))
++ Show owner's email in Map & Connection cards
++ Google basemaps improvements
++ Dynamic aggregation of point layers
++ Logarithmic scales in Builder https://docs.carto.com/whats-new/logarithmic-scales-in-builder/
+
+FIXES
++ Fix dynamic tiling and columns with lower case letters in Snowflake 
++ Stability
++ Memory usage of containers
++ Critical security fixes (SQL injection)
++ Postgres connection pool handling
+
+NEW COMPONENT
++ Notifier. A new component is added. Please take into account the extra capacity needed
+
 ## 2022.10.18 (October 18, 2022)
 IMPROVEMENTS
-+ New and improved login and signup
+
++ New and improved login and signup https://docs.carto.com/whats-new/new-login-signup-redesign/
 + Improvements to caching strategy
 + Improvements to point data tiles
 + Added unique ID property selector for widgets on tiled sources
@@ -11,12 +34,9 @@ IMPROVEMENTS
 + Updated base Docker images with security fixes
 + Use a connection pool for Postgres
 + K8: TLS offload in AWS LoadBalancer
++ K8: Increase min instances of workspace-api and maps-api
 + Create tileset options: Spatial Index and aggragations
-+ Stability fixes
 + Other bugs fixes and minor improvements
-
-CHANGES
-+ K8: Increase min instances of workspace-api, maps-api and import-api to two
 
 ## 2022.9.2 (September 02, 2022)
 IMPROVEMENTS
