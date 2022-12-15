@@ -7,7 +7,6 @@
 + Map collaboration on builder (added new component (notifier))
 + Show owner's email in Map & Connection cards
 + Google basemaps improvements
-+ Automatic Analytics Toolbox installation for Snowflake  https://docs.carto.com/whats-new/analytics-toolbox-sf-installation-ui/
 + Dynamic aggregation of point layers
 + Logarithmit scales in Builder https://docs.carto.com/whats-new/logarithmic-scales-in-builder/
 
@@ -17,6 +16,9 @@ FIXES
 + Memory usage of containers
 + Critical security fixes (SQL injection)
 + Postgres connection pool handling
+
+NEW COMPONENT
++ Notifier. A new component is added. Please take into account the extra capacity needed
 
 ## 2022.10.18 (October 18, 2022)
 IMPROVEMENTS
