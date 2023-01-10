@@ -144,19 +144,10 @@ Generate the secret def to be used in pods definitions
 As a replacement for "common.images.image" that forces you to set image.tag value
 */}}
 {{- define "carto.images.image" -}}
-{{- $registryName := .imageRoot.registry -}}
+{{- $registryName := (coalesce .imageRoot.registry .global.imageRegistry) | toString -}}
 {{- $repositoryName := .imageRoot.repository -}}
-{{- $tag := (coalesce .imageRoot.tag .Chart.AppVersion) | toString -}}
-{{- if .global }}
-    {{- if .global.imageRegistry }}
-     {{- $registryName = .global.imageRegistry -}}
-    {{- end -}}
-{{- end -}}
-{{- if $registryName }}
+{{- $tag := (coalesce .imageRoot.tag .global.imageTag .Chart.AppVersion) | toString -}}
 {{- printf "%s/%s:%s" $registryName $repositoryName $tag -}}
-{{- else -}}
-{{- printf "%s:%s" $repositoryName $tag -}}
-{{- end -}}
 {{- end -}}
 
 {{/*
