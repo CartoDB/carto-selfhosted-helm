@@ -31,6 +31,8 @@ appConfigValues:
 ## @section CARTO config parameters
 ## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
 cartoConfigValues:
+  ## @param cartoConfigValues.enableErrorResponseStackTrace Enable stack traces in the container responses
+  enableErrorResponseStackTrace: "false"
   ## @param cartoConfigValues.cartoAccApiDomain Domain of the Account API of Carto.
   cartoAccApiDomain: ""
   ## @param cartoConfigValues.cartoAccGcpProjectId GCP project ID of the Carto Accounts.

@@ -21,6 +21,7 @@ data:
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   LOG_LEVEL: "debug"
+  MAPS_API_V3_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
   MAPS_API_V3_PORT: "{{ .Values.mapsApi.containerPorts.http }}"
   MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   MAPS_API_V3_RESOURCE_URL_HOST: {{ .Values.appConfigValues.selfHostedDomain | quote }}

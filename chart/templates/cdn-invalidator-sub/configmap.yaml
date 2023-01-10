@@ -14,6 +14,7 @@ metadata:
 data:
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   CDN_INVALIDATOR_BACKEND_ENGINE: "varnish"
+  CDN_INVALIDATOR_SUBSCRIBER_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
   CDN_INVALIDATOR_SUBSCRIBER_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/event-bus-cdn-inval-sub"
   CDN_INVALIDATOR_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   CDN_INVALIDATOR_VARNISH_PURGE_BASE_URL: "http://{{ include "carto.httpCache.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"

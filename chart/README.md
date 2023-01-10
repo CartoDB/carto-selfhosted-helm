@@ -33,17 +33,18 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### CARTO config parameters
 
-| Name                                          | Description                                                         | Value |
-| --------------------------------------------- | ------------------------------------------------------------------- | ----- |
-| `cartoConfigValues.cartoAccApiDomain`         | Domain of the Account API of Carto.                                 | `""`  |
-| `cartoConfigValues.cartoAccGcpProjectId`      | GCP project ID of the Carto Accounts.                               | `""`  |
-| `cartoConfigValues.cartoAccGcpProjectRegion`  | GCP project region of the Carto Accounts.                           | `""`  |
-| `cartoConfigValues.cartoAuth0ClientId`        | Client ID of Auth0.                                                 | `""`  |
-| `cartoConfigValues.cartoAuth0CustomDomain`    | Custom Domain of Auth0.                                             | `""`  |
-| `cartoConfigValues.cartoSelfhostedDwLocation` | Location of the Carto Data Warehouse.                               | `""`  |
-| `cartoConfigValues.selfHostedGcpProjectId`    | GCP project ID used in the installation.                            | `""`  |
-| `cartoConfigValues.selfHostedTenantId`        | Carto internal tenantId used in the installation.                   | `""`  |
-| `cartoConfigValues.launchDarklyClientSideId`  | LaunchDarkly ClientSideId (by www) used to enable/disable features. | `""`  |
+| Name                                              | Description                                                         | Value   |
+| ------------------------------------------------- | ------------------------------------------------------------------- | ------- |
+| `cartoConfigValues.enableErrorResponseStackTrace` | Enable stack traces in the container responses                      | `false` |
+| `cartoConfigValues.cartoAccApiDomain`             | Domain of the Account API of Carto.                                 | `""`    |
+| `cartoConfigValues.cartoAccGcpProjectId`          | GCP project ID of the Carto Accounts.                               | `""`    |
+| `cartoConfigValues.cartoAccGcpProjectRegion`      | GCP project region of the Carto Accounts.                           | `""`    |
+| `cartoConfigValues.cartoAuth0ClientId`            | Client ID of Auth0.                                                 | `""`    |
+| `cartoConfigValues.cartoAuth0CustomDomain`        | Custom Domain of Auth0.                                             | `""`    |
+| `cartoConfigValues.cartoSelfhostedDwLocation`     | Location of the Carto Data Warehouse.                               | `""`    |
+| `cartoConfigValues.selfHostedGcpProjectId`        | GCP project ID used in the installation.                            | `""`    |
+| `cartoConfigValues.selfHostedTenantId`            | Carto internal tenantId used in the installation.                   | `""`    |
+| `cartoConfigValues.launchDarklyClientSideId`      | LaunchDarkly ClientSideId (by www) used to enable/disable features. | `""`    |
 
 
 ### App secret
