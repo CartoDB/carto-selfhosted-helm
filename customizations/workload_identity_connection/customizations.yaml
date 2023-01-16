@@ -1,0 +1,53 @@
+commonBackendServiceAccount:
+  enableGCPWorkloadIdentity: true
+  annotations:
+    iam.gke.io/gcp-service-account: "<workload_identity_service_account_email>"
+
+workspaceApi:
+  extraEnvVars:
+    - name: WORKSPACE_SYNC_DATA_ENABLED
+      value: "true"
+    - name: WORKSPACE_WORKLOAD_IDENTITY_BILLING_PROJECT
+      value: <gke_cluster_project_id>
+    - name: WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL
+      value: <workload_identity_service_account_email>
+    - name: WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP
+      value: <bigquery_project.dataset_id>
+    - name: WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID
+      value: <carto_user_id>
+workspaceSubscriber:
+  extraEnvVars:
+    - name: WORKSPACE_SYNC_DATA_ENABLED
+      value: "true"
+    - name: WORKSPACE_WORKLOAD_IDENTITY_BILLING_PROJECT
+      value: <gke_cluster_project_id>
+    - name: WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL
+      value: <workload_identity_service_account_email>
+    - name: WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP
+      value: <bigquery_project.dataset_id>
+    - name: WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID
+      value: <carto_user_id>
+importApi:
+  extraEnvVars:
+    - name: WORKSPACE_SYNC_DATA_ENABLED
+      value: "true"
+    - name: WORKSPACE_WORKLOAD_IDENTITY_BILLING_PROJECT
+      value: <gke_cluster_project_id>
+    - name: WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL
+      value: <workload_identity_service_account_email>
+    - name: WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP
+      value: <bigquery_project.dataset_id>
+    - name: WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID
+      value: <carto_user_id>
+importWorker:
+  extraEnvVars:
+    - name: WORKSPACE_SYNC_DATA_ENABLED
+      value: "true"
+    - name: WORKSPACE_WORKLOAD_IDENTITY_BILLING_PROJECT
+      value: <gke_cluster_project_id>
+    - name: WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL
+      value: <workload_identity_service_account_email>
+    - name: WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP
+      value: <bigquery_project.dataset_id>
+    - name: WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID
+      value: <carto_user_id>

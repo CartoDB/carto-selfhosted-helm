@@ -42,6 +42,8 @@
   - [High Availability](#high-availability)
   - [Capacity planning](#capacity-planning)
   - [Redshift imports](#redshift-imports)
+  - [Workload identity connection](#workload-identity-connection)
+    - [Configuration](#configuration)
   - [Advanced configuration](#advanced-configuration)
   - [Tips for creating the customization Yaml file](#tips-for-creating-the-customization-yaml-file)
   - [Troubleshooting](#troubleshooting)
@@ -1115,6 +1117,45 @@ appSecrets:
 9. Go back to the CARTO Selfhosted (Redshift integration page) and check the `I have already added the S3 bucket policy` box and click on the `Validate and save button`.
 
 10. Go to `Data Exporer > Import data > Redshift connection` and you should be able to import a local dataset to Redshift.
+
+## Workload identity connection
+
+CARTO self-hosted running on a GKE cluster (Google Cloud Platform) can take advantage of the [Workload Identity](https://cloud.google.com/kubernetes-engine/docs/concepts/workload-identity) feature to create a connection between the self-hosted and BigQuery without any user action.
+
+> :warning: This feature is only available for Carto self-hosted Helm installations running on GKE.
+
+### Configuration
+
+1. Copy the [customizations.yaml](../customizations/workload_identity_connection/customizations.yaml) example.
+
+2. Edit the `customizations.yaml` file with the appropiate values:
+   - `WORKSPACE_SYNC_DATA_ENABLED`: 
+   - `WORKSPACE_WORKLOAD_IDENTITY_BILLING_PROJECT`: GCP project to be charged with the BigQuery costs.
+   - `WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL`: Service account email configured for Workload Identity.
+   - `WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP`: 
+   - `WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID`:
+
+3. Grant your Workload Identity service account with BigQuery access to the desired BogQuery project or dataset.
+
+4. Grant your service account with the following role `roles/iam.workloadIdentityUser`:
+   ```bash
+   gcloud iam service-accounts add-iam-policy-binding \
+   <workload_identity_service_account_email> \
+   --role roles/iam.workloadIdentityUser \
+   --member "serviceAccount:<gke_cluster_project_id>.svc.id.goog[<namespace>/carto-common-backend]" \
+   --project <gke_cluster_project_id>
+   ```
+
+   Example:
+   ```bash
+   gcloud iam service-accounts add-iam-policy-binding \
+   workload-identity-iam-sa@carto-gcp-project-123.iam.gserviceaccount.com \
+   --role roles/iam.workloadIdentityUser \
+   --member "serviceAccount:carto-gcp-project-123.svc.id.goog[carto-self-hosted/carto-common-backend]" \
+   --project cartodb-gcp-infra-team
+   ```
+
+5. Run a Helm install/upgrade including the `customizations.yaml` file mentioned above.
 
 ## Advanced configuration
 
