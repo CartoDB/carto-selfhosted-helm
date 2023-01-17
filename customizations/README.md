@@ -1128,14 +1128,14 @@ CARTO self-hosted running on a GKE cluster (Google Cloud Platform) can take adva
 
 1. Copy the [customizations.yaml](../customizations/workload_identity_connection/customizations.yaml) example.
 
-2. Edit the `customizations.yaml` file with the appropiate values:
-   - `WORKSPACE_SYNC_DATA_ENABLED`: 
+2. Set the `customizations.yaml` environment variables with the appropiate values:
+   - `WORKSPACE_SYNC_DATA_ENABLED`: Always `"true"`.
    - `WORKSPACE_WORKLOAD_IDENTITY_BILLING_PROJECT`: GCP project to be charged with the BigQuery costs.
    - `WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL`: Service account email configured for Workload Identity.
-   - `WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP`: 
-   - `WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID`:
+   - `WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP`: BigQuery dataset where temporary tables used by the Workflows feature will be stored (i.e. `"my_google_gcp_project.my_dataset_temp"`). The service account needs RW permissions on it.
+   - `WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID`: Id of the Carto user who will be the owner of the connection (i.e. `"auth0|3idsj230990sj4wsddd10"`). This can be obtained by accessing the `/me` endpoint once the user has logged in.
 
-3. Grant your Workload Identity service account with BigQuery access to the desired BogQuery project or dataset.
+3. Grant your Workload Identity service account with BigQuery RW access to your Datawarehouse dataset or project. Also grant with BigQuery RW access to the dataset where the Workflows temporary tables will be stored, which can be the same or a different one.
 
 4. Grant your service account with the following role `roles/iam.workloadIdentityUser`:
    ```bash
