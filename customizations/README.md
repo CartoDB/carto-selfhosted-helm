@@ -42,7 +42,7 @@
   - [High Availability](#high-availability)
   - [Capacity planning](#capacity-planning)
   - [Redshift imports](#redshift-imports)
-  - [Workload identity connection](#workload-identity-connection)
+  - [Workload Identity connection](#workload-identity-connection)
     - [Configuration](#configuration)
   - [Advanced configuration](#advanced-configuration)
   - [Tips for creating the customization Yaml file](#tips-for-creating-the-customization-yaml-file)
@@ -1118,7 +1118,7 @@ appSecrets:
 
 10. Go to `Data Exporer > Import data > Redshift connection` and you should be able to import a local dataset to Redshift.
 
-## Workload identity connection
+## Workload Identity connection
 
 CARTO self-hosted running on a GKE cluster (Google Cloud Platform) can take advantage of the [Workload Identity](https://cloud.google.com/kubernetes-engine/docs/concepts/workload-identity) feature to create a connection between the self-hosted and BigQuery without any user action.
 
@@ -1126,16 +1126,15 @@ CARTO self-hosted running on a GKE cluster (Google Cloud Platform) can take adva
 
 ### Configuration
 
-1. Copy the [customizations.yaml](../customizations/workload_identity_connection/customizations.yaml) example.
+1. Copy the [customizations.yaml](../customizations/workload_identity_connection/customizations.yaml) from the examples.
 
 2. Set the `customizations.yaml` environment variables with the appropiate values:
-   - `WORKSPACE_SYNC_DATA_ENABLED`: Always `"true"`.
    - `WORKSPACE_WORKLOAD_IDENTITY_BILLING_PROJECT`: GCP project to be charged with the BigQuery costs.
    - `WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL`: Service account email configured for Workload Identity.
    - `WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP`: BigQuery dataset where temporary tables used by the Workflows feature will be stored (i.e. `"my_google_gcp_project.my_dataset_temp"`). The service account needs RW permissions on it.
    - `WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID`: Id of the Carto user who will be the owner of the connection (i.e. `"auth0|3idsj230990sj4wsddd10"`). This can be obtained by accessing the `/me` endpoint once the user has logged in.
 
-3. Grant your Workload Identity service account with BigQuery RW access to your Datawarehouse dataset or project. Also grant with BigQuery RW access to the dataset where the Workflows temporary tables will be stored, which can be the same or a different one.
+3. Grant your Workload Identity service account with BigQuery RW access to your Datawarehouse dataset or project. Also grant with BigQuery RW access to the dataset where the Workflows temporary tables will be stored, which can be the same one or a different one.
 
 4. Grant your service account with the following role `roles/iam.workloadIdentityUser`:
    ```bash
