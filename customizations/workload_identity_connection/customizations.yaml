@@ -11,8 +11,6 @@ workspaceApi:
       value: <gke_cluster_project_id>
     - name: WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL
       value: <workload_identity_service_account_email>
-    - name: WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP
-      value: <bigquery_project.dataset_id>
     - name: WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID
       value: <carto_user_id>
 workspaceSubscriber:
@@ -23,7 +21,5 @@ workspaceSubscriber:
       value: <gke_cluster_project_id>
     - name: WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL
       value: <workload_identity_service_account_email>
-    - name: WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP
-      value: <bigquery_project.dataset_id>
     - name: WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID
       value: <carto_user_id>
