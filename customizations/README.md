@@ -1053,7 +1053,7 @@ CARTO selfhosted supports importing data to a Redshift cluster or serverless. Fo
 
 2. Create an AWS S3 Bucket:
    - ACLs should be allowed.
-   - If server-side encryption is enabled, the user must be granted with permissions over the KMS key used.
+   - If server-side encryption is enabled, the user must be granted with permissions over the KMS key following the [AWS documentation](https://repost.aws/knowledge-center/s3-bucket-access-default-encryption).
 
 3. Create an AWS IAM role with the following settings:
    1. Trusted entity type: `Custom trust policy`.
