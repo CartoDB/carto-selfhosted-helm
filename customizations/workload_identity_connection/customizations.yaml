@@ -7,6 +7,8 @@ workspaceApi:
   extraEnvVars:
     - name: WORKSPACE_SYNC_DATA_ENABLED
       value: "true"
+    - name: WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP
+      value: <bq_project_id>.<dataset>
     - name: WORKSPACE_WORKLOAD_IDENTITY_BILLING_PROJECT
       value: <gke_cluster_project_id>
     - name: WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL
@@ -17,6 +19,8 @@ workspaceSubscriber:
   extraEnvVars:
     - name: WORKSPACE_SYNC_DATA_ENABLED
       value: "true"
+    - name: WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP
+      value: <bq_project_id>.<dataset>
     - name: WORKSPACE_WORKLOAD_IDENTITY_BILLING_PROJECT
       value: <gke_cluster_project_id>
     - name: WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL
