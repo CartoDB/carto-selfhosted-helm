@@ -1134,7 +1134,12 @@ CARTO self-hosted running on a GKE cluster (Google Cloud Platform) can take adva
 4. - `WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP`: BigQuery dataset id used for storing temporary tables (i.e. `my_gcp_project.my_dataset`). Needed for compatibility with upcoming features.
    - `WORKSPACE_WORKLOAD_IDENTITY_BILLING_PROJECT`: GCP project to be charged with the BigQuery costs.
    - `WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL`: Service account email configured for Workload Identity.
-   - `WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID`: Id of the Carto user who will be the owner of the connection (i.e. `"auth0|3idsj230990sj4wsddd10"`). This can be obtained by accessing the `/me` endpoint once the user has logged in.
+   - `WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID`: Id of the Carto user who will be the owner of the connection (i.e. `"auth0|3idsj230990sj4wsddd10"`). This can be obtained by running the following `curl` command:
+     ```bash
+     curl -s 'https://accounts.app.carto.com/users/me' \
+       -H 'Authorization: Bearer <your_carto_jwt_token>' \
+       | jq '.user_id'
+     ```
 
 5. Grant your Workload Identity service account with BigQuery RW access to your Datawarehouse dataset or project.
 
