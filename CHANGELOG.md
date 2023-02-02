@@ -30,7 +30,7 @@ IMPROVEMENTS
 + Google basemaps improvements
 
 FIXES
-+ Fix dynamic tiling and columns with lower case letters in Snowflake 
++ Fix dynamic tiling and columns with lower case letters in Snowflake
 + Container stability. Some containers were dying with unhandled exceptions.
 + Reduce memory usage of containers
 + Critical security fixes (SQL injection)
@@ -42,7 +42,7 @@ NEW COMPONENT:
 ## 2022.10.18 (October 18, 2022)
 IMPROVEMENTS
 
-+ New and improved login and signup https://docs.carto.com/whats-new/new-login-signup-redesign/
++ [New and improved login and signup](https://docs.carto.com/whats-new/new-login-signup-redesign/)
 + Improvements to caching strategy
 + Improvements to point data tiles
 + Added unique ID property selector for widgets on tiled sources
