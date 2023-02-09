@@ -111,6 +111,7 @@ spec:
                   name: {{ include "carto.redis.secretName" . }}
                   key: {{ include "carto.redis.existingsecret.key" . | quote }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+             "BIGQUERY_OAUTH2_CLIENT_SECRET"
              "ENCRYPTION_SECRET_KEY"
              "MAPS_API_V3_JWT_SECRET"
              ) "context" $ ) | nindent 12 }}
@@ -121,6 +122,7 @@ spec:
             - configMapRef:
                 name: {{ template "carto.mapsApi.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+             "BIGQUERY_OAUTH2_CLIENT_SECRET"
              "ENCRYPTION_SECRET_KEY"
              "MAPS_API_V3_JWT_SECRET"
              ) "context" $ ) -}}
