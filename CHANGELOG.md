@@ -1,5 +1,17 @@
-## 2023.1.3 (January 03, 2023)
+## 2023.2.2 (February 02, 2023)
+
+NEW
++ [Dynamic aggregation of point layers into Quadbin grids](https://docs.carto.com/whats-new/q1-2023#dynamic-aggregation-of-point-layers-into-quadbin-grids)
++ [Search, list view and breadcrumbs when browsing your data in Builder and Workspace](https://docs.carto.com/whats-new/q1-2023#search-list-view-and-breadcrumbs-when-browsing-your-data-in-builder-and-workspace)
++ [New space for private data available for every user in the CARTO Data Warehouse](https://docs.carto.com/whats-new/q1-2023#new-space-for-private-data-available-for-every-user-in-the-carto-data-warehouse)
++ [Multiple editor users working on the same map](https://docs.carto.com/whats-new#multiple-editor-users-working-on-the-same-map)
++ [Builder SQL Analyses available for PostgreSQL connections](https://docs.carto.com/whats-new/q4-2022#builder-sql-analyses-available-for-postgresql-connections)
++ Auto provision workload identity connection [Docs](https://github.com/CartoDB/carto-selfhosted-helm/tree/main/customizations#workload-identity-bigquery-connection)
+
 IMPROVEMENTS
++ Bugs Fixing and minor improvements
++ Redshift connection pool handling
++ Tileset instantiation cached for 1 year by default
 + [Additional options to configure the creation of isolines in the Analytics Toolbox](https://docs.carto.com/whats-new/additional-options-isolines/)
 + [Importing geospatial files into PostgreSQL databases through CARTO Workspace](https://docs.carto.com/whats-new/imports-postgresql/)
 + [Improvements for Google BigQuery connections: re-connect and billing project](https://docs.carto.com/whats-new/fixes-for-bigquery-connections/)
@@ -18,7 +30,7 @@ IMPROVEMENTS
 + Google basemaps improvements
 
 FIXES
-+ Fix dynamic tiling and columns with lower case letters in Snowflake 
++ Fix dynamic tiling and columns with lower case letters in Snowflake
 + Container stability. Some containers were dying with unhandled exceptions.
 + Reduce memory usage of containers
 + Critical security fixes (SQL injection)
@@ -26,10 +38,11 @@ FIXES
 
 NEW COMPONENT:
 + Notifier. The compose file adds a new container to the installation
+
 ## 2022.10.18 (October 18, 2022)
 IMPROVEMENTS
 
-+ New and improved login and signup https://docs.carto.com/whats-new/new-login-signup-redesign/
++ [New and improved login and signup](https://docs.carto.com/whats-new/new-login-signup-redesign/)
 + Improvements to caching strategy
 + Improvements to point data tiles
 + Added unique ID property selector for widgets on tiled sources
