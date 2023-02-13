@@ -1122,7 +1122,7 @@ appSecrets:
 
 CARTO self-hosted running on a GKE cluster (Google Cloud Platform) can take advantage of [GKE Workload Identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity) feature to create a connection between the self-hosted and BigQuery without any user action.
 
-> :warning: This feature is only available for Carto self-hosted Helm version `2023.1.17` running on a GKE cluster.
+> :warning: This feature is only available for Carto self-hosted Helm version `1.43.12 / 2023.2.2` running on a GKE cluster.
 
 ### Configuration
 
