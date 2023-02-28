@@ -44,6 +44,7 @@
   - [Redshift imports](#redshift-imports)
   - [Workload Identity BigQuery connection](#workload-identity-bigquery-connection)
     - [Configuration](#configuration)
+  - [TrackJS](#trackjs)
   - [Advanced configuration](#advanced-configuration)
   - [Tips for creating the customization Yaml file](#tips-for-creating-the-customization-yaml-file)
   - [Troubleshooting](#troubleshooting)
@@ -1162,6 +1163,22 @@ CARTO self-hosted running on a GKE cluster (Google Cloud Platform) can take adva
    --role roles/iam.workloadIdentityUser \
    --member "serviceAccount:<gke_cluster_project_id>.svc.id.goog[<namespace>/carto-common-backend]" \
    --project <gke_cluster_project_id>
+   ```
+
+### TrackJS
+
+- TrackJS is enabled by default in the www components, but you can disable it with this variables:
+
+   ```bash
+   accountsWww:
+     extraEnvVars:
+       - name: REACT_APP_ACCOUNTS_WWW_ENABLE_TRACKJS
+         value: false
+
+   workspaceWww:
+     extraEnvVars:
+       - name: REACT_APP_WORKSPACE_WWW_ENABLE_TRACKJS
+         value: false
    ```
 
 ## Advanced configuration
