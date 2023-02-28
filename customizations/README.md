@@ -1167,7 +1167,7 @@ CARTO self-hosted running on a GKE cluster (Google Cloud Platform) can take adva
 
 ### TrackJS
 
-- TrackJS is enabled by default in the www components, but you can disable it with this variables:
+- TrackJS is enabled by default in the www components, but you can disable it with these variables:
 
    ```bash
    accountsWww:
