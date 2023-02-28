@@ -44,7 +44,7 @@
   - [Redshift imports](#redshift-imports)
   - [Workload Identity BigQuery connection](#workload-identity-bigquery-connection)
     - [Configuration](#configuration)
-  - [Enabling/Disabling TrackJS](#enabling/disabling-trackjs)
+  - [Enabling/Disabling TrackJS](#enabling-disabling-trackjs)
   - [Advanced configuration](#advanced-configuration)
   - [Tips for creating the customization Yaml file](#tips-for-creating-the-customization-yaml-file)
   - [Troubleshooting](#troubleshooting)
@@ -1165,7 +1165,7 @@ CARTO self-hosted running on a GKE cluster (Google Cloud Platform) can take adva
    --project <gke_cluster_project_id>
    ```
 
-### Enabling/Disabling TrackJS
+### Enabling-Disabling TrackJS
 
 - TrackJS is enabled by default in the www components, but you can disable it with these variables:
 
