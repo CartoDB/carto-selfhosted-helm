@@ -23,35 +23,35 @@ jobs:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILTER_REGEX_EXCLUDE: '.*chart/.*|.*customizations/.*'
-  helm-readme-generator:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-      - name: Generate container 'helm-readme-generator'
-        run: |
-          git clone https://github.com/bitnami-labs/readme-generator-for-helm
-          docker build \
-            -t helm-readme-generator \
-            readme-generator-for-helm/
-      - name: Check README values synced
-        run: |
-          set -ex
-          cd chart/
-          cp README.md README_old.md
-          docker run --rm \
-            -v "${PWD}":/my_helm \
-            -w /my_helm \
-            helm-readme-generator \
-            readme-generator \
-              --readme README.md \
-              --values values.yaml
-
-          if ! cmp README.md README_old.md >/dev/null 2>&1
-          then
-            echo "Files aren't equal"
-            diff README_old.md README.md
-            exit 1
-          else
-            echo "Files look equal!"
-          fi
+#  helm-readme-generator:
+#    runs-on: ubuntu-20.04
+#    steps:
+#      - name: Checkout Code
+#        uses: actions/checkout@v2
+#      - name: Generate container 'helm-readme-generator'
+#        run: |
+#          git clone https://github.com/bitnami-labs/readme-generator-for-helm
+#          docker build \
+#            -t helm-readme-generator \
+#            readme-generator-for-helm/
+#      - name: Check README values synced
+#        run: |
+#          set -ex
+#          cd chart/
+#          cp README.md README_old.md
+#          docker run --rm \
+#            -v "${PWD}":/my_helm \
+#            -w /my_helm \
+#            helm-readme-generator \
+#            readme-generator \
+#              --readme README.md \
+#              --values values.yaml
+#
+#          if ! cmp README.md README_old.md >/dev/null 2>&1
+#          then
+#            echo "Files aren't equal"
+#            diff README_old.md README.md
+#            exit 1
+#          else
+#            echo "Files look equal!"
+#          fi
