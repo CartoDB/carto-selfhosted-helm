@@ -94,14 +94,14 @@ spec:
               /docker-entrypoint.sh nginx -g "daemon off;"
           {{- end }}
           env:
-            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "REACT_APP_GOOGLE_MAPS_API_KEY") "context" $ ) | nindent 12 }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "GOOGLE_MAPS_API_KEY") "context" $ ) | nindent 12 }}
             {{- if .Values.workspaceWww.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ template "carto.workspaceWww.configmapName" . }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "REACT_APP_GOOGLE_MAPS_API_KEY") "context" $ ) -}}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "GOOGLE_MAPS_API_KEY") "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.workspaceWww.secretName" . }}

@@ -54,7 +54,7 @@ IMPORT_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 IMPORT_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
 LDS_JWT_SECRET: cartoSecrets.jwtApiSecret
 MAPS_API_V3_JWT_SECRET: cartoSecrets.jwtApiSecret
-REACT_APP_GOOGLE_MAPS_API_KEY: appSecrets.googleMapsApiKey
+GOOGLE_MAPS_API_KEY: appSecrets.googleMapsApiKey
 VARNISH_DEBUG_SECRET: cartoSecrets.varnishDebugSecret
 VARNISH_PURGE_SECRET: cartoSecrets.varnishPurgeSecret
 WORKSPACE_IMPORTS_ACCESSKEYID: appSecrets.awsAccessKeyId
