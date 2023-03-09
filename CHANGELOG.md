@@ -6,6 +6,7 @@ NEW
 + [New space for private data available for every user in the CARTO Data Warehouse](https://docs.carto.com/whats-new/q1-2023#new-space-for-private-data-available-for-every-user-in-the-carto-data-warehouse)
 + [Multiple editor users working on the same map](https://docs.carto.com/whats-new#multiple-editor-users-working-on-the-same-map)
 + [Builder SQL Analyses available for PostgreSQL connections](https://docs.carto.com/whats-new/q4-2022#builder-sql-analyses-available-for-postgresql-connections)
++ ##
 + Auto provision workload identity connection [Docs](https://github.com/CartoDB/carto-selfhosted-helm/tree/main/customizations#workload-identity-bigquery-connection)
 
 IMPROVEMENTS
