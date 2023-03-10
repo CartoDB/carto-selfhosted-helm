@@ -71,7 +71,7 @@ spec:
         {{- end }}
       {{- end }}
       containers:
-        - name: router
+        - name: router-http
           image: {{ template "carto.router.image" . }}
           imagePullPolicy: {{ .Values.router.image.pullPolicy }}
           {{- if .Values.router.containerSecurityContext.enabled }}
@@ -155,6 +155,84 @@ spec:
           {{- if .Values.router.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.router.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
+        - name: router-metrics
+          image: {{ template "carto.routerMetrics.image" . }}
+          imagePullPolicy: {{ .Values.routerMetrics.image.pullPolicy }}
+          {{- if .Values.routerMetrics.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.routerMetrics.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.routerMetrics.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.routerMetrics.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.args "context" $) | nindent 12 }}
+          {{ else }}
+          args:
+            - -ec
+            - |
+              /docker-entrypoint.sh logstash
+          {{- end }}
+          env:
+            {{- if .Values.routerMetrics.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "carto.router.configmapName" . }}
+            {{- if .Values.routerMetrics.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.routerMetrics.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.routerMetrics.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.routerMetrics.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.routerMetrics.resources }}
+          resources: {{- toYaml .Values.routerMetrics.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.routerMetrics.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.routerMetrics.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.routerMetrics.livenessProbe "enabled") "context" $) | nindent 12 }}
+            tcpSocket:
+              port: http
+          {{- else if .Values.routerMetrics.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.routerMetrics.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.routerMetrics.readinessProbe "enabled") "context" $) | nindent 12 }}
+            tcpSocket:
+              port: http
+          {{- else if .Values.routerMetrics.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.routerMetrics.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.routerMetrics.startupProbe "enabled") "context" $) | nindent 12 }}
+            tcpSocket:
+              port: http
+          {{- else if .Values.routerMetrics.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.routerMetrics.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: gcp-default-service-account-key
+              mountPath: {{ include "carto.google.secretMountDir" . }}
+              readOnly: true
+          {{- if .Values.routerMetrics.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
         {{- if .Values.router.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.router.sidecars "context" $) | nindent 8 }}
         {{- end }}
@@ -162,6 +240,12 @@ spec:
         - name: tls-secret
           secret:
             secretName: {{ include "carto.tlsCerts.secretName" . }}
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: {{ include "carto.google.secretName" . }}
+            items:
+              - key: {{ include "carto.google.secretKey" . }}
+                path: {{ include "carto.google.secretMountFilename" . }}
         {{- if .Values.router.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.router.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
