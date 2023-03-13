@@ -4442,9 +4442,9 @@ routerMetrics:
   resources:
     limits:
       memory: "1024Mi"
-      cpu: "500m"
+      cpu: "100m"
     requests:
-      memory: "128Mi"
+      memory: "512Mi"
       cpu: "250m"
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
