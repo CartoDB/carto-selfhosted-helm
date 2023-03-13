@@ -4442,7 +4442,7 @@ routerMetrics:
   resources:
     limits:
       memory: "1024Mi"
-      cpu: "100m"
+      cpu: "1000m"
     requests:
       memory: "512Mi"
       cpu: "250m"
