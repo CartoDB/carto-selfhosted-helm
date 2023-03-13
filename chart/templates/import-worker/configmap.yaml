@@ -31,7 +31,7 @@ data:
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA  }}
   WORKSPACE_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
   {{- end }}
-  IMPORT_AWS_ROLE_ARN: {{ .Values.appConfigValues.importAwsRoleArn | quote }}
+  IMPORT_AWS_CUSTOM_BUCKET_ROLE_ARN: {{ .Values.appConfigValues.importAwsRoleArn | quote }}
   IMPORT_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
   IMPORT_BUCKET: {{ .Values.appConfigValues.importBucket | quote }}
   {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
