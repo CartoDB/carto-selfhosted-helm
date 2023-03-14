@@ -32,4 +32,5 @@ data:
   ROUTER_METRICS_PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   ROUTER_METRICS_PUBSUB_TOPIC: "data-updates"
   ROUTER_METRICS_HOST: "localhost"
+  ROUTER_METRICS_PUBSUB_SUBSCRIPTION_FILTER: "aggregated-selfhosted-metrics"
 {{- end }}
