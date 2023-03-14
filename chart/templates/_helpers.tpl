@@ -673,6 +673,13 @@ Return the proper Carto router image name
 {{- end -}}
 
 {{/*
+Return the proper Carto router-metrics image name
+*/}}
+{{- define "carto.routerMetrics.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.routerMetrics.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto router ConfigMap name
 */}}
 {{- define "carto.router.configmapName" -}}
