@@ -52,6 +52,7 @@ IMPORT_AWS_SECRET_ACCESS_KEY: appSecrets.importAwsSecretAccessKey
 IMPORT_JWT_SECRET: cartoSecrets.jwtApiSecret
 IMPORT_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 IMPORT_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
+LAUNCHDARKLY_SDK_KEY: cartoSecrets.launchDarklySdkKey
 LDS_JWT_SECRET: cartoSecrets.jwtApiSecret
 MAPS_API_V3_JWT_SECRET: cartoSecrets.jwtApiSecret
 GOOGLE_MAPS_API_KEY: appSecrets.googleMapsApiKey
@@ -670,13 +671,6 @@ Return the proper Carto router image name
 */}}
 {{- define "carto.router.image" -}}
 {{- include "carto.images.image" (dict "imageRoot" .Values.router.image "global" .Values.global "Chart" .Chart) -}}
-{{- end -}}
-
-{{/*
-Return the proper Carto router-metrics image name
-*/}}
-{{- define "carto.routerMetrics.image" -}}
-{{- include "carto.images.image" (dict "imageRoot" .Values.routerMetrics.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{/*

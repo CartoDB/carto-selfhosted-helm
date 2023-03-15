@@ -158,6 +158,16 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
+  ## @extra cartoSecrets.launchDarklySdkKey The secret used to enable or disable some feature flags.
+  launchDarklySdkKey:
+    ## @param cartoSecrets.launchDarklySdkKey.value Value of the secret used to enable or disable some feature flags. One of `cartoSecrets.launchDarklySdkKey.value` or `cartoSecrets.launchDarklySdkKey.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.launchDarklySdkKey.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.launchDarklySdkKey.existingSecret.key`. If `cartoSecrets.launchDarklySdkKey.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.launchDarklySdkKey.existingSecret.key Key to find in `cartoSecrets.launchDarklySdkKey.existingSecret.name` where the value of `cartoSecrets.launchDarklySdkKey` is found. If `cartoSecrets.launchDarklySdkKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
   ## @extra cartoSecrets.varnishPurgeSecret The secret used (by the app) to exec purge request.
   varnishPurgeSecret:
     ## @param cartoSecrets.varnishPurgeSecret.value Value of the secret used (by the app) to exec purge request. One of `cartoSecrets.varnishPurgeSecret.value` or `cartoSecrets.varnishPurgeSecret.existingSecret` could be defined.
@@ -1988,7 +1998,7 @@ router:
   ##
   image:
     registry: gcr.io/carto-onprem-artifacts
-    repository: router/router-http
+    repository: router
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -2996,7 +3006,6 @@ notifier:
     ## @param notifier.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
     ##
     automountServiceAccountToken: false
-
 
 ## @section cdnInvalidatorSub Deployment Parameters
 ##
@@ -4341,7 +4350,7 @@ upgradeCheck:
   ##
   image:
     registry: gcr.io/carto-onprem-artifacts
-    repository: router/router-http
+    repository: router
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -4395,126 +4404,3 @@ upgradeCheck:
     capabilities:
       drop:
         - all
-
-## @section router-metrics parameters
-routerMetrics:
-## @section routerMetrics container parametres
-  ## routerMetrics image
-  ## @param routerMetrics.image.registry routerMetrics image registry
-  ## @param routerMetrics.image.repository routerMetrics image repository
-  ## @param routerMetrics.image.tag routerMetrics image tag (immutable tags are recommended)
-  ## @param routerMetrics.image.pullPolicy routerMetrics image pull policy
-  ## @param routerMetrics.image.pullSecrets routerMetrics image pull secrets
-  ##
-  image:
-    registry: gcr.io/carto-onprem-artifacts
-    repository: router/router-metrics
-    ## Specify a custom image tag
-    tag: ""
-    ## Specify a imagePullPolicy
-    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
-    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
-    ##
-    pullPolicy: IfNotPresent
-    ## Optionally specify an array of imagePullSecrets.
-    ## Secrets must be manually created in the namespace.
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-    ## e.g:
-    ## pullSecrets:
-    ##   - myRegistryKeySecretName
-    ##
-    pullSecrets: []
-  ## @param routerMetrics.command Override default container command (useful when using custom images)
-  ##
-  command: []
-  ## @param routerMetrics.args Override default container args (useful when using custom images)
-  ##
-  args: []
-  ## Upgrade Check pre-hook resource requests and limits
-  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip routerMetrics.resources.limits [object] The resources limits for the router-metrics containers
-  ## @param routerMetrics.resources.limits.memory Container memory limits in MiB
-  ## @param routerMetrics.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip routerMetrics.resources.requests [object] The requested resources for the router-metrics containers
-  ## @param routerMetrics.resources.requests.memory Container memory requests in MiB
-  ## @param routerMetrics.resources.requests.cpu Container cpu requests in milliCPU cores
-  ##
-  resources:
-    limits:
-      memory: "1Gi"
-      cpu: "500m"
-    requests:
-      memory: "1Gi"
-      cpu: "250m"
-  ## Configure Container Security Context
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-  ## @param routerMetrics.containerSecurityContext.enabled Enabled router-metrics containers' Security Context
-  ## @param routerMetrics.containerSecurityContext.runAsUser Set router-metrics containers' Security Context runAsUser
-  ## @param routerMetrics.containerSecurityContext.runAsNonRoot Set router-metrics containers' Security Context runAsNonRoot
-  ## @param routerMetrics.containerSecurityContext.capabilities.drop removes router-metrics containers' Security Context capabilities
-  ##
-  containerSecurityContext:
-    enabled: true
-    runAsUser: 1000
-    runAsNonRoot: false
-    capabilities:
-      drop:
-        - all
-  ## @param routerMetrics.containerPorts.http routerMetrics HTTP container port
-  ## @param routerMetrics.containerPorts.https routerMetrics HTTPS container port
-  ##
-  containerPorts:
-    http: 5447
-  ## Configure extra options for routerMetrics containers' liveness and readiness probes
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-  ## @param routerMetrics.livenessProbe.enabled Enable livenessProbe on router containers
-  ## @param routerMetrics.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
-  ## @param routerMetrics.livenessProbe.periodSeconds Period seconds for livenessProbe
-  ## @param routerMetrics.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
-  ## @param routerMetrics.livenessProbe.failureThreshold Failure threshold for livenessProbe
-  ## @param routerMetrics.livenessProbe.successThreshold Success threshold for livenessProbe
-  ##
-  livenessProbe:
-    enabled: false
-    initialDelaySeconds: 10
-    periodSeconds: 30
-    timeoutSeconds: 5
-    successThreshold: 1
-    failureThreshold: 5
-  ## @param routerMetrics.readinessProbe.enabled Enable readinessProbe on router containers
-  ## @param routerMetrics.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
-  ## @param routerMetrics.readinessProbe.periodSeconds Period seconds for readinessProbe
-  ## @param routerMetrics.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
-  ## @param routerMetrics.readinessProbe.failureThreshold Failure threshold for readinessProbe
-  ## @param routerMetrics.readinessProbe.successThreshold Success threshold for readinessProbe
-  ##
-  readinessProbe:
-    enabled: false
-    initialDelaySeconds: 10
-    periodSeconds: 30
-    timeoutSeconds: 5
-    successThreshold: 1
-    failureThreshold: 5
-  ## @param routerMetrics.startupProbe.enabled Enable startupProbe on router containers
-  ## @param routerMetrics.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
-  ## @param routerMetrics.startupProbe.periodSeconds Period seconds for startupProbe
-  ## @param routerMetrics.startupProbe.timeoutSeconds Timeout seconds for startupProbe
-  ## @param routerMetrics.startupProbe.failureThreshold Failure threshold for startupProbe
-  ## @param routerMetrics.startupProbe.successThreshold Success threshold for startupProbe
-  ##
-  startupProbe:
-    enabled: false
-    initialDelaySeconds: 10
-    periodSeconds: 30
-    timeoutSeconds: 5
-    successThreshold: 1
-    failureThreshold: 5
-  ## @param routerMetrics.customLivenessProbe Custom livenessProbe that overrides the default one
-  ##
-  customLivenessProbe: {}
-  ## @param routerMetrics.customReadinessProbe Custom readinessProbe that overrides the default one
-  ##
-  customReadinessProbe: {}
-  ## @param routerMetrics.customStartupProbe Custom startupProbe that overrides the default one
-  ##
-  customStartupProbe: {}
