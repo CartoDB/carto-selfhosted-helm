@@ -158,6 +158,16 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
+  ## @extra cartoSecrets.launchDarklySdkKey The secret used to enable or disable feature flags.
+  launchDarklySdkKey:
+    ## @param cartoSecrets.launchDarklySdkKey.value Value of the secret used to enable or disable feature flags. One of `cartoSecrets.launchDarklySdkKey.value` or `cartoSecrets.launchDarklySdkKey.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.launchDarklySdkKey.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.launchDarklySdkKey.existingSecret.key`. If `cartoSecrets.launchDarklySdkKey.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.launchDarklySdkKey.existingSecret.key Key to find in `cartoSecrets.launchDarklySdkKey.existingSecret.name` where the value of `cartoSecrets.launchDarklySdkKey` is found. If `cartoSecrets.launchDarklySdkKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
   ## @extra cartoSecrets.varnishPurgeSecret The secret used (by the app) to exec purge request.
   varnishPurgeSecret:
     ## @param cartoSecrets.varnishPurgeSecret.value Value of the secret used (by the app) to exec purge request. One of `cartoSecrets.varnishPurgeSecret.value` or `cartoSecrets.varnishPurgeSecret.existingSecret` could be defined.
@@ -2997,7 +3007,6 @@ notifier:
     ##
     automountServiceAccountToken: false
 
-
 ## @section cdnInvalidatorSub Deployment Parameters
 ##
 cdnInvalidatorSub:
@@ -4398,7 +4407,7 @@ upgradeCheck:
 
 ## @section router-metrics parameters
 routerMetrics:
-## @section routerMetrics container parametres
+  ## @section routerMetrics container parametres
   ## routerMetrics image
   ## @param routerMetrics.image.registry routerMetrics image registry
   ## @param routerMetrics.image.repository routerMetrics image repository
