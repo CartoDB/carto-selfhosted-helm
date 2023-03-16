@@ -23,11 +23,11 @@ importWorker         |  false  |  4096Mi         |  1000m       |  3072Mi       
 ldsApi               |  true   |  1024Mi         |  1000m       |  768Mi            |  350m          |  2               |  2               |  75
 mapsApi              |  true   |  2048Mi         |  1000m       |  768Mi            |  350m          |  2               |  2               |  75
 sqlWorker            |  false  |  4096Mi         |  1000m       |  3072Mi           |  350m          |                  |                  |
-router               |  true   |  512Mi          |  500m        |  372Mi            |  200m          |  2               |  2               |  75
+router               |  true   |  1536Mi          |  1000m        |  1396Mi            |  450m          |  2               |  2               |  75
 httpCache            |  false  |  2048Mi         |  500m        |  1256Mi           |  200m          |                  |                  |
 notifier             |  false  |  512Mi          |  500m        |  256Mi            |  200m          |                  |                  |
 cdnInvalidatorSub    |  false  |  512Mi          |  500m        |  372Mi            |  200m          |                  |                  |
 workspaceApi         |  true   |  1024Mi         |  1000m       |  768Mi            |  350m          |  2               |  2               |  75
 workspaceSubscriber  |  false  |  512Mi          |  500m        |  372Mi            |  200m          |                  |                  |
 workspaceWww         |  true   |  1024Mi         |  500m        |  768Mi            |  200m          |  2               |  2               |  75
-**TOTAL**            |         |  26112Mi        |  15000m      |  17568Mi          |  5500m         |                  |                  |
+**TOTAL**            |         |  28160Mi        |  16000m      |  19616Mi          |  6000m         |                  |                  |

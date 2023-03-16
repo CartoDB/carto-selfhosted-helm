@@ -120,3 +120,12 @@ workspaceWww:
     requests:
       memory: "50Mi"
       cpu: "20m"
+
+routerMetrics:
+  resources:
+    limits:
+      memory: "1024Mi"
+      cpu: "500m"
+    requests:
+      memory: "1024Mi"
+      cpu: "50m"
