@@ -2,7 +2,7 @@ name: Release - Automerge
 on:
   pull_request:
     branches:
-      - master
+      - main
     paths:
       - "chart/Chart.yaml"
 
