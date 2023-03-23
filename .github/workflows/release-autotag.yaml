@@ -20,8 +20,8 @@ jobs:
         shell: bash
         run: |
           set -eu
-        echo "carto-release-version=$(yq .appVersion chart/Chart.yaml)" >> ${GITHUB_OUTPUT}
-        echo "chart-release-version=$(yq .version chart/Chart.yaml)" >> ${GITHUB_OUTPUT}
+          echo "carto-release-version=$(yq .appVersion chart/Chart.yaml)" >> ${GITHUB_OUTPUT}
+          echo "chart-release-version=$(yq .version chart/Chart.yaml)" >> ${GITHUB_OUTPUT}
 
       - uses: ncipollo/release-action@v1
         with:
@@ -30,4 +30,4 @@ jobs:
           name: ${{ steps.info.outputs.chart-release-version }}
           tag: ${{ steps.info.outputs.chart-release-version }}
           prerelease: true
-          body: “Release notes for this version are available at https://docs.carto.com/get-help/deployment-options/self-hosted/release-notes#${{ steps.info.outputs.carto-release-version }}”
+          body: "Release notes for this version are available at https://docs.carto.com/get-help/deployment-options/self-hosted/release-notes#${{ steps.info.outputs.carto-release-version }}"
