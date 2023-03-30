@@ -4436,7 +4436,7 @@ routerMetrics:
   ## @param routerMetrics.defaultJvmProcessMaxMemoryAllocation Default value for JVM max memory allocation
   ##
   defaultJvmProcessMaxMemoryAllocation: 1024
-  ## Upgrade Check pre-hook resource requests and limits
+  ## routerMetrics resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @skip routerMetrics.resources.limits [object] The resources limits for the router-metrics containers
   ## @param routerMetrics.resources.limits.memory Container memory limits in MiB
