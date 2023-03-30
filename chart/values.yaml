@@ -4476,8 +4476,8 @@ routerMetrics:
   ## @param routerMetrics.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
   ## @param routerMetrics.livenessProbe.periodSeconds Period seconds for livenessProbe
   ## @param routerMetrics.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
-  ## @param routerMetrics.livenessProbe.failureThreshold Failure threshold for livenessProbe
   ## @param routerMetrics.livenessProbe.successThreshold Success threshold for livenessProbe
+  ## @param routerMetrics.livenessProbe.failureThreshold Failure threshold for livenessProbe
   ##
   livenessProbe:
     enabled: false
@@ -4490,8 +4490,8 @@ routerMetrics:
   ## @param routerMetrics.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
   ## @param routerMetrics.readinessProbe.periodSeconds Period seconds for readinessProbe
   ## @param routerMetrics.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
-  ## @param routerMetrics.readinessProbe.failureThreshold Failure threshold for readinessProbe
   ## @param routerMetrics.readinessProbe.successThreshold Success threshold for readinessProbe
+  ## @param routerMetrics.readinessProbe.failureThreshold Failure threshold for readinessProbe
   ##
   readinessProbe:
     enabled: false
@@ -4504,8 +4504,8 @@ routerMetrics:
   ## @param routerMetrics.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
   ## @param routerMetrics.startupProbe.periodSeconds Period seconds for startupProbe
   ## @param routerMetrics.startupProbe.timeoutSeconds Timeout seconds for startupProbe
-  ## @param routerMetrics.startupProbe.failureThreshold Failure threshold for startupProbe
   ## @param routerMetrics.startupProbe.successThreshold Success threshold for startupProbe
+  ## @param routerMetrics.startupProbe.failureThreshold Failure threshold for startupProbe
   ##
   startupProbe:
     enabled: false

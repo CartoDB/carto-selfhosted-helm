@@ -1426,20 +1426,20 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `routerMetrics.livenessProbe.initialDelaySeconds`          | Initial delay seconds for livenessProbe                                    | `10`                            |
 | `routerMetrics.livenessProbe.periodSeconds`                | Period seconds for livenessProbe                                           | `30`                            |
 | `routerMetrics.livenessProbe.timeoutSeconds`               | Timeout seconds for livenessProbe                                          | `5`                             |
-| `routerMetrics.livenessProbe.failureThreshold`             | Failure threshold for livenessProbe                                        | `5`                             |
 | `routerMetrics.livenessProbe.successThreshold`             | Success threshold for livenessProbe                                        | `1`                             |
+| `routerMetrics.livenessProbe.failureThreshold`             | Failure threshold for livenessProbe                                        | `5`                             |
 | `routerMetrics.readinessProbe.enabled`                     | Enable readinessProbe on router containers                                 | `false`                         |
 | `routerMetrics.readinessProbe.initialDelaySeconds`         | Initial delay seconds for readinessProbe                                   | `10`                            |
 | `routerMetrics.readinessProbe.periodSeconds`               | Period seconds for readinessProbe                                          | `30`                            |
 | `routerMetrics.readinessProbe.timeoutSeconds`              | Timeout seconds for readinessProbe                                         | `5`                             |
-| `routerMetrics.readinessProbe.failureThreshold`            | Failure threshold for readinessProbe                                       | `5`                             |
 | `routerMetrics.readinessProbe.successThreshold`            | Success threshold for readinessProbe                                       | `1`                             |
+| `routerMetrics.readinessProbe.failureThreshold`            | Failure threshold for readinessProbe                                       | `5`                             |
 | `routerMetrics.startupProbe.enabled`                       | Enable startupProbe on router containers                                   | `false`                         |
 | `routerMetrics.startupProbe.initialDelaySeconds`           | Initial delay seconds for startupProbe                                     | `10`                            |
 | `routerMetrics.startupProbe.periodSeconds`                 | Period seconds for startupProbe                                            | `30`                            |
 | `routerMetrics.startupProbe.timeoutSeconds`                | Timeout seconds for startupProbe                                           | `5`                             |
-| `routerMetrics.startupProbe.failureThreshold`              | Failure threshold for startupProbe                                         | `5`                             |
 | `routerMetrics.startupProbe.successThreshold`              | Success threshold for startupProbe                                         | `1`                             |
+| `routerMetrics.startupProbe.failureThreshold`              | Failure threshold for startupProbe                                         | `5`                             |
 | `routerMetrics.customLivenessProbe`                        | Custom livenessProbe that overrides the default one                        | `{}`                            |
 | `routerMetrics.customReadinessProbe`                       | Custom readinessProbe that overrides the default one                       | `{}`                            |
 | `routerMetrics.customStartupProbe`                         | Custom startupProbe that overrides the default one                         | `{}`                            |
