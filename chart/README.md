@@ -659,7 +659,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | Name                                                | Description                                                                                                            | Value                           |
 | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
 | `router.image.registry`                             | router image registry                                                                                                  | `gcr.io/carto-onprem-artifacts` |
-| `router.image.repository`                           | router image repository                                                                                                | `router`                        |
+| `router.image.repository`                           | router image repository                                                                                                | `router/router-http`            |
 | `router.image.tag`                                  | router image tag (immutable tags are recommended)                                                                      | `""`                            |
 | `router.image.pullPolicy`                           | router image pull policy                                                                                               | `IfNotPresent`                  |
 | `router.image.pullSecrets`                          | router image pull secrets                                                                                              | `[]`                            |
@@ -1384,7 +1384,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | --------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------- |
 | `upgradeCheck.enabled`                                    | upgradeCheck will run or not                                             | `true`                          |
 | `upgradeCheck.image.registry`                             | upgradeCheck image registry                                              | `gcr.io/carto-onprem-artifacts` |
-| `upgradeCheck.image.repository`                           | upgradeCheck image repository                                            | `router`                        |
+| `upgradeCheck.image.repository`                           | upgradeCheck image repository                                            | `router/router-http`            |
 | `upgradeCheck.image.tag`                                  | upgradeCheck image tag (immutable tags are recommended)                  | `""`                            |
 | `upgradeCheck.image.pullPolicy`                           | upgradeCheck image pull policy                                           | `IfNotPresent`                  |
 | `upgradeCheck.image.pullSecrets`                          | upgradeCheck image pull secrets                                          | `[]`                            |
@@ -1398,6 +1398,51 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `upgradeCheck.containerSecurityContext.runAsUser`         | Set Upgrade Check pre-hook containers' Security Context runAsUser        | `1000`                          |
 | `upgradeCheck.containerSecurityContext.runAsNonRoot`      | Set Upgrade Check pre-hook containers' Security Context runAsNonRoot     | `false`                         |
 | `upgradeCheck.containerSecurityContext.capabilities.drop` | removes Upgrade Check pre-hook containers' Security Context capabilities | `["all"]`                       |
+
+
+### routerMetrics container parametres
+
+| Name                                                       | Description                                                                | Value                           |
+| ---------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------- |
+| `routerMetrics.image.registry`                             | routerMetrics image registry                                               | `gcr.io/carto-onprem-artifacts` |
+| `routerMetrics.image.repository`                           | routerMetrics image repository                                             | `router/router-metrics`         |
+| `routerMetrics.image.tag`                                  | routerMetrics image tag (immutable tags are recommended)                   | `""`                            |
+| `routerMetrics.image.pullPolicy`                           | routerMetrics image pull policy                                            | `IfNotPresent`                  |
+| `routerMetrics.image.pullSecrets`                          | routerMetrics image pull secrets                                           | `[]`                            |
+| `routerMetrics.command`                                    | Override default container command (useful when using custom images)       | `[]`                            |
+| `routerMetrics.args`                                       | Override default container args (useful when using custom images)          | `[]`                            |
+| `routerMetrics.jvmProcessMaxMemoryAllocationPercentage`    | Percentage for JVM max memory allocation inside the container memory limit | `70`                            |
+| `routerMetrics.defaultJvmProcessMaxMemoryAllocation`       | Default value for JVM max memory allocation                                | `1024`                          |
+| `routerMetrics.resources.limits.memory`                    | Container memory limits in MiB                                             | `1464Mi`                        |
+| `routerMetrics.resources.limits.cpu`                       | Container cpu limits in milliCPU cores                                     | `500m`                          |
+| `routerMetrics.resources.requests.memory`                  | Container memory requests in MiB                                           | `512Mi`                         |
+| `routerMetrics.resources.requests.cpu`                     | Container cpu requests in milliCPU cores                                   | `250m`                          |
+| `routerMetrics.containerSecurityContext.enabled`           | Enabled router-metrics containers' Security Context                        | `true`                          |
+| `routerMetrics.containerSecurityContext.runAsUser`         | Set router-metrics containers' Security Context runAsUser                  | `1000`                          |
+| `routerMetrics.containerSecurityContext.runAsNonRoot`      | Set router-metrics containers' Security Context runAsNonRoot               | `false`                         |
+| `routerMetrics.containerSecurityContext.capabilities.drop` | removes router-metrics containers' Security Context capabilities           | `["all"]`                       |
+| `routerMetrics.containerPorts.http`                        | routerMetrics HTTP container port                                          | `5447`                          |
+| `routerMetrics.livenessProbe.enabled`                      | Enable livenessProbe on router containers                                  | `false`                         |
+| `routerMetrics.livenessProbe.initialDelaySeconds`          | Initial delay seconds for livenessProbe                                    | `10`                            |
+| `routerMetrics.livenessProbe.periodSeconds`                | Period seconds for livenessProbe                                           | `30`                            |
+| `routerMetrics.livenessProbe.timeoutSeconds`               | Timeout seconds for livenessProbe                                          | `5`                             |
+| `routerMetrics.livenessProbe.successThreshold`             | Success threshold for livenessProbe                                        | `1`                             |
+| `routerMetrics.livenessProbe.failureThreshold`             | Failure threshold for livenessProbe                                        | `5`                             |
+| `routerMetrics.readinessProbe.enabled`                     | Enable readinessProbe on router containers                                 | `false`                         |
+| `routerMetrics.readinessProbe.initialDelaySeconds`         | Initial delay seconds for readinessProbe                                   | `10`                            |
+| `routerMetrics.readinessProbe.periodSeconds`               | Period seconds for readinessProbe                                          | `30`                            |
+| `routerMetrics.readinessProbe.timeoutSeconds`              | Timeout seconds for readinessProbe                                         | `5`                             |
+| `routerMetrics.readinessProbe.successThreshold`            | Success threshold for readinessProbe                                       | `1`                             |
+| `routerMetrics.readinessProbe.failureThreshold`            | Failure threshold for readinessProbe                                       | `5`                             |
+| `routerMetrics.startupProbe.enabled`                       | Enable startupProbe on router containers                                   | `false`                         |
+| `routerMetrics.startupProbe.initialDelaySeconds`           | Initial delay seconds for startupProbe                                     | `10`                            |
+| `routerMetrics.startupProbe.periodSeconds`                 | Period seconds for startupProbe                                            | `30`                            |
+| `routerMetrics.startupProbe.timeoutSeconds`                | Timeout seconds for startupProbe                                           | `5`                             |
+| `routerMetrics.startupProbe.successThreshold`              | Success threshold for startupProbe                                         | `1`                             |
+| `routerMetrics.startupProbe.failureThreshold`              | Failure threshold for startupProbe                                         | `5`                             |
+| `routerMetrics.customLivenessProbe`                        | Custom livenessProbe that overrides the default one                        | `{}`                            |
+| `routerMetrics.customReadinessProbe`                       | Custom readinessProbe that overrides the default one                       | `{}`                            |
+| `routerMetrics.customStartupProbe`                         | Custom startupProbe that overrides the default one                         | `{}`                            |
 
 
 ## Configuration and installation details

@@ -16,6 +16,7 @@ data:
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   HTTP_CACHE_ENABLED: {{ .Values.appConfigValues.httpCacheEnabled | quote }}
+  LS_JAVA_OPTS: {{ template "carto.routerMetrics.jvmOptions" . }}
   ROUTER_ACCOUNTS_WWW_INTERNAL_URL: {{ include "carto.accountsWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_HTTP_CACHE_INTERNAL_URL: {{ include "carto.httpCache.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_NOTIFIER_INTERNAL_URL: {{ include "carto.notifier.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}

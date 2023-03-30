@@ -4430,7 +4430,13 @@ routerMetrics:
   ## @param routerMetrics.args Override default container args (useful when using custom images)
   ##
   args: []
-  ## Upgrade Check pre-hook resource requests and limits
+  ## @param routerMetrics.jvmProcessMaxMemoryAllocationPercentage Percentage for JVM max memory allocation inside the container memory limit
+  ##
+  jvmProcessMaxMemoryAllocationPercentage: 70
+  ## @param routerMetrics.defaultJvmProcessMaxMemoryAllocation Default value for JVM max memory allocation
+  ##
+  defaultJvmProcessMaxMemoryAllocation: 1024
+  ## routerMetrics resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @skip routerMetrics.resources.limits [object] The resources limits for the router-metrics containers
   ## @param routerMetrics.resources.limits.memory Container memory limits in MiB
@@ -4441,10 +4447,10 @@ routerMetrics:
   ##
   resources:
     limits:
-      memory: "1Gi"
+      memory: "1464Mi"
       cpu: "500m"
     requests:
-      memory: "1Gi"
+      memory: "512Mi"
       cpu: "250m"
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
@@ -4461,7 +4467,6 @@ routerMetrics:
       drop:
         - all
   ## @param routerMetrics.containerPorts.http routerMetrics HTTP container port
-  ## @param routerMetrics.containerPorts.https routerMetrics HTTPS container port
   ##
   containerPorts:
     http: 5447
@@ -4471,8 +4476,8 @@ routerMetrics:
   ## @param routerMetrics.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
   ## @param routerMetrics.livenessProbe.periodSeconds Period seconds for livenessProbe
   ## @param routerMetrics.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
-  ## @param routerMetrics.livenessProbe.failureThreshold Failure threshold for livenessProbe
   ## @param routerMetrics.livenessProbe.successThreshold Success threshold for livenessProbe
+  ## @param routerMetrics.livenessProbe.failureThreshold Failure threshold for livenessProbe
   ##
   livenessProbe:
     enabled: false
@@ -4485,8 +4490,8 @@ routerMetrics:
   ## @param routerMetrics.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
   ## @param routerMetrics.readinessProbe.periodSeconds Period seconds for readinessProbe
   ## @param routerMetrics.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
-  ## @param routerMetrics.readinessProbe.failureThreshold Failure threshold for readinessProbe
   ## @param routerMetrics.readinessProbe.successThreshold Success threshold for readinessProbe
+  ## @param routerMetrics.readinessProbe.failureThreshold Failure threshold for readinessProbe
   ##
   readinessProbe:
     enabled: false
@@ -4499,8 +4504,8 @@ routerMetrics:
   ## @param routerMetrics.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
   ## @param routerMetrics.startupProbe.periodSeconds Period seconds for startupProbe
   ## @param routerMetrics.startupProbe.timeoutSeconds Timeout seconds for startupProbe
-  ## @param routerMetrics.startupProbe.failureThreshold Failure threshold for startupProbe
   ## @param routerMetrics.startupProbe.successThreshold Success threshold for startupProbe
+  ## @param routerMetrics.startupProbe.failureThreshold Failure threshold for startupProbe
   ##
   startupProbe:
     enabled: false
