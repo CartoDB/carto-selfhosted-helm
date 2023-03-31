@@ -43,7 +43,7 @@ jobs:
       - name: Get final release tag
         id: tag
         env:
-          RELEASE_VERSION: ${{ steps.info.outputs.release-version }}
+          RELEASE_VERSION: ${{ steps.info.outputs.carto-release-version }}
         run: echo "release-tag=$(echo ${RELEASE_VERSION} | sed 's/-rc.*//')" >> ${GITHUB_OUTPUT}
 
       - uses: ncipollo/release-action@v1
