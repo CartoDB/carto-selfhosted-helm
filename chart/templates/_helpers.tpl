@@ -680,6 +680,17 @@ Return the proper Carto router-metrics image name
 {{- end -}}
 
 {{/*
+Return Carto router-metrics jvm options
+*/}}
+{{- define "carto.routerMetrics.jvmOptions" -}}
+{{- if eq (.Values.routerMetrics.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "-Xms%sm -Xmx%dm" (.Values.routerMetrics.resources.requests.memory | toString | regexFind "[0-9.]+") (div (mul (.Values.routerMetrics.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.routerMetrics.jvmProcessMaxMemoryAllocationPercentage) 100) | quote -}}
+{{- else -}}
+{{- printf "-Xms%sm -Xmx%sm" (.Values.routerMetrics.resources.requests.memory | toString | regexFind "[0-9.]+") (.Values.routerMetrics.defaultJvmProcessMaxMemoryAllocation | toString) | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto router ConfigMap name
 */}}
 {{- define "carto.router.configmapName" -}}
