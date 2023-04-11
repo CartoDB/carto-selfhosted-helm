@@ -4,7 +4,7 @@ apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
   name: {{ template "carto.workspaceWww.fullname" . }}-pdb
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ .Release.Namespace | quote }}
   labels:
 spec:
 {{- if .Values.workspaceWww.podDisruptionBudget.minAvailable }}
