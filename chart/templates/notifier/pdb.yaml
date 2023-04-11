@@ -1,0 +1,19 @@
+{{- if and .Values.notifier.podDisruptionBudget.enabled}}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "carto.notifier.fullname" . }}-pdb
+  namespace: {{ .Release.Namespace }}
+  labels:
+spec:
+{{- if .Values.notifier.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.notifier.podDisruptionBudget.minAvailable }}
+{{- end }}
+{{- if .Values.notifier.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.notifier.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "carto.notifier.fullname" . }}
+{{- end }}

@@ -1,0 +1,19 @@
+{{- if and .Values.workspaceSubscriber.podDisruptionBudget.enabled}}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "carto.workspaceSubscriber.fullname" . }}-pdb
+  namespace: {{ .Release.Namespace }}
+  labels:
+spec:
+{{- if .Values.workspaceSubscriber.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.workspaceSubscriber.podDisruptionBudget.minAvailable }}
+{{- end }}
+{{- if .Values.workspaceSubscriber.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.workspaceSubscriber.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "carto.workspaceSubscriber.fullname" . }}
+{{- end }}

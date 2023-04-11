@@ -1,0 +1,19 @@
+{{- if and .Values.httpCache.podDisruptionBudget.enabled}}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "carto.httpCache.fullname" . }}-pdb
+  namespace: {{ .Release.Namespace }}
+  labels:
+spec:
+{{- if .Values.httpCache.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.httpCache.podDisruptionBudget.minAvailable }}
+{{- end }}
+{{- if .Values.httpCache.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.httpCache.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "carto.httpCache.fullname" . }}
+{{- end }}

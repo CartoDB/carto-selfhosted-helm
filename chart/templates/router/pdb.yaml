@@ -1,0 +1,19 @@
+{{- if and .Values.router.podDisruptionBudget.enabled}}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "carto.router.fullname" . }}-pdb
+  namespace: {{ .Release.Namespace }}
+  labels:
+spec:
+{{- if .Values.router.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.router.podDisruptionBudget.minAvailable }}
+{{- end }}
+{{- if .Values.router.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.router.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "carto.router.fullname" . }}
+{{- end }}

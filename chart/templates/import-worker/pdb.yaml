@@ -1,0 +1,19 @@
+{{- if and .Values.importWorker.podDisruptionBudget.enabled}}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "carto.importWorker.fullname" . }}-pdb
+  namespace: {{ .Release.Namespace }}
+  labels:
+spec:
+{{- if .Values.importWorker.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.importWorker.podDisruptionBudget.minAvailable }}
+{{- end }}
+{{- if .Values.importWorker.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.importWorker.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "carto.importWorker.fullname" . }}
+{{- end }}

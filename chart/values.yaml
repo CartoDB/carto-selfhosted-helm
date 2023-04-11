@@ -418,6 +418,11 @@ accountsWww:
     capabilities:
       drop:
         - all
+  ## @param httpCache.podDisruptionBudget defines disruption budget for accounts-www
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param accountsWww.existingConfigMap The name of an existing ConfigMap with your custom configuration for accounts-www
   ##
   existingConfigMap: ""
@@ -742,6 +747,11 @@ importApi:
     capabilities:
       drop:
         - all
+  ## @param httpCache.podDisruptionBudget defines disruption budget for import-api
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param importApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for import-api
   ##
   existingConfigMap: ""
@@ -993,6 +1003,11 @@ importWorker:
     capabilities:
       drop:
         - all
+  ## @param httpCache.podDisruptionBudget defines disruption budget for import-worker
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param importWorker.existingConfigMap The name of an existing ConfigMap with your custom configuration for import-worker
   ##
   existingConfigMap: ""
@@ -1258,6 +1273,11 @@ ldsApi:
     capabilities:
       drop:
         - all
+  ## @param httpCache.podDisruptionBudget defines disruption budget for lds-api
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param ldsApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for lds-api
   ##
   existingConfigMap: ""
@@ -1569,6 +1589,11 @@ mapsApi:
     capabilities:
       drop:
         - all
+  ## @param httpCache.podDisruptionBudget defines disruption budget for maps-api
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param mapsApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for maps-api
   ##
   existingConfigMap: ""
@@ -1855,6 +1880,11 @@ sqlWorker:
     capabilities:
       drop:
         - all
+  ## @param httpCache.podDisruptionBudget defines disruption budget for sql-worker
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param sqlWorker.existingConfigMap The name of an existing ConfigMap with your custom configuration for sql-worker
   ##
   existingConfigMap: ""
@@ -2116,6 +2146,11 @@ router:
     capabilities:
       drop:
         - all
+  ## @param httpCache.podDisruptionBudget defines disruption budget for router
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param router.existingConfigMap The name of an existing ConfigMap with your custom configuration for router
   ##
   existingConfigMap: ""
@@ -2508,6 +2543,11 @@ httpCache:
     capabilities:
       drop:
         - all
+  ## @param httpCache.podDisruptionBudget defines disruption budget for http-cache
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param httpCache.existingConfigMap The name of an existing ConfigMap with your custom configuration for http-cache
   ##
   existingConfigMap: ""
@@ -2814,6 +2854,11 @@ notifier:
     capabilities:
       drop:
         - all
+  ## @param httpCache.podDisruptionBudget defines disruption budget for notifier
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param notifier.existingConfigMap The name of an existing ConfigMap with your custom configuration for notifier
   ##
   existingConfigMap: ""
@@ -2997,7 +3042,6 @@ notifier:
     ##
     automountServiceAccountToken: false
 
-
 ## @section cdnInvalidatorSub Deployment Parameters
 ##
 cdnInvalidatorSub:
@@ -3130,6 +3174,11 @@ cdnInvalidatorSub:
     capabilities:
       drop:
         - all
+  ## @param httpCache.podDisruptionBudget defines disruption budget for cdn-invalidator-sub
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param cdnInvalidatorSub.existingConfigMap The name of an existing ConfigMap with your custom configuration for cdnInvalidatorSub
   ##
   existingConfigMap: ""
@@ -3443,6 +3492,11 @@ workspaceApi:
     capabilities:
       drop:
         - all
+  ## @param httpCache.podDisruptionBudget defines disruption budget for workspace-api
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param workspaceApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-api
   ##
   existingConfigMap: ""
@@ -3694,6 +3748,11 @@ workspaceSubscriber:
     capabilities:
       drop:
         - all
+  ## @param httpCache.podDisruptionBudget defines disruption budget for workspace-subscriber
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param workspaceSubscriber.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-subscriber
   ##
   existingConfigMap: ""
@@ -3953,6 +4012,11 @@ workspaceWww:
     capabilities:
       drop:
         - all
+  ## @param httpCache.podDisruptionBudget defines disruption budget for workspace-www
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param workspaceWww.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-www
   ##
   existingConfigMap: ""
@@ -4398,7 +4462,7 @@ upgradeCheck:
 
 ## @section router-metrics parameters
 routerMetrics:
-## @section routerMetrics container parametres
+  ## @section routerMetrics container parametres
   ## routerMetrics image
   ## @param routerMetrics.image.registry routerMetrics image registry
   ## @param routerMetrics.image.repository routerMetrics image repository
@@ -4466,6 +4530,11 @@ routerMetrics:
     capabilities:
       drop:
         - all
+  ## @param httpCache.podDisruptionBudget defines disruption budget for router-metrics
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param routerMetrics.containerPorts.http routerMetrics HTTP container port
   ##
   containerPorts:

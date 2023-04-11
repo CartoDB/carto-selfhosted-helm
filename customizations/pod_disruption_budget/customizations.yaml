@@ -1,0 +1,83 @@
+################################################################################
+# WARNING: setting up a very restrictive disruption budget may prevent
+#          your nodes from being upgraded or may affect other maintenance tasks.
+#          https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+################################################################################
+
+accountsWww:
+  podDisruptionBudget:
+    enabled: false
+    #maxUnavailable: 0
+    #minAvailable: 1
+
+importApi:
+  podDisruptionBudget:
+    enabled: false
+    #maxUnavailable: 0
+    #minAvailable: 1
+
+importWorker:
+  podDisruptionBudget:
+    enabled: false
+    #maxUnavailable: 0
+    #minAvailable: 1
+
+ldsApi:
+  podDisruptionBudget:
+    enabled: false
+    #maxUnavailable: 0
+    #minAvailable: 1
+
+mapsApi:
+  podDisruptionBudget:
+    enabled: false
+    #maxUnavailable: 0
+    #minAvailable: 1
+
+sqlWorker:
+  podDisruptionBudget:
+    enabled: false
+    #maxUnavailable: 0
+    #minAvailable: 1
+
+notifier:
+  podDisruptionBudget:
+    enabled: false
+    #maxUnavailable: 0
+    #minAvailable: 1
+
+router:
+  podDisruptionBudget:
+    enabled: false
+    #maxUnavailable: 0
+    #minAvailable: 1
+
+httpCache:
+  podDisruptionBudget:
+    enabled: false
+    #maxUnavailable: 0
+    #minAvailable: 1
+
+workspaceApi:
+  podDisruptionBudget:
+    enabled: false
+    #maxUnavailable: 0
+    #minAvailable: 1
+
+workspaceSubscriber:
+  podDisruptionBudget:
+    enabled: false
+    #maxUnavailable: 0
+    #minAvailable: 1
+
+workspaceWww:
+  podDisruptionBudget:
+    enabled: false
+    #maxUnavailable: 0
+    #minAvailable: 1
+
+cdnInvalidatorSub:
+  podDisruptionBudget:
+    enabled: false
+    #maxUnavailable: 0
+    #minAvailable: 1
