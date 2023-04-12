@@ -67,6 +67,9 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.initContainers "context" $) | nindent 8 }}
         {{- end }}
       {{- end }}
+      {{- if .Values.accountsWww.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.accountsWww.terminationGracePeriodSeconds }}
+      {{- end }}
       containers:
         - name: accounts-www
           image: {{ template "carto.accountsWww.image" . }}
@@ -141,9 +144,6 @@ spec:
           {{- end }}
           {{- if .Values.accountsWww.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.lifecycleHooks "context" $) | nindent 12 }}
-          {{- end }}
-          {{- if .Values.accountsWww.terminationGracePeriodSeconds }}
-          terminationGracePeriodSeconds: {{ .Values.accountsWww.terminationGracePeriodSeconds }}
           {{- end }}
           volumeMounts:
           {{- if .Values.accountsWww.extraVolumeMounts }}

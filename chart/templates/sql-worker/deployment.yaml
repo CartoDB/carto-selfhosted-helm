@@ -77,6 +77,9 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.initContainers "context" $) | nindent 8 }}
         {{- end }}
       {{- end }}
+      {{- if .Values.sqlWorker.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.sqlWorker.terminationGracePeriodSeconds }}
+      {{- end }}
       containers:
         - name: sql-worker
           image: {{ template "carto.sqlWorker.image" . }}
@@ -150,9 +153,6 @@ spec:
           {{- end }}
           {{- if .Values.sqlWorker.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.lifecycleHooks "context" $) | nindent 12 }}
-          {{- end }}
-          {{- if .Values.sqlWorker.terminationGracePeriodSeconds }}
-          terminationGracePeriodSeconds: {{ .Values.sqlWorker.terminationGracePeriodSeconds }}
           {{- end }}
           volumeMounts:
             - name: gcp-default-service-account-key

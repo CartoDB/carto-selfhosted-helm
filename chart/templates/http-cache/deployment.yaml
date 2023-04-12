@@ -71,6 +71,9 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.initContainers "context" $) | nindent 8 }}
         {{- end }}
       {{- end }}
+      {{- if .Values.httpCache.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.httpCache.terminationGracePeriodSeconds }}
+      {{- end }}
       containers:
         - name: http-cache
           image: {{ template "carto.httpCache.image" . }}
@@ -148,9 +151,6 @@ spec:
           {{- end }}
           {{- if .Values.httpCache.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.lifecycleHooks "context" $) | nindent 12 }}
-          {{- end }}
-          {{- if .Values.httpCache.terminationGracePeriodSeconds }}
-          terminationGracePeriodSeconds: {{ .Values.httpCache.terminationGracePeriodSeconds }}
           {{- end }}
           volumeMounts:
           {{- if .Values.httpCache.extraVolumeMounts }}

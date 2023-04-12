@@ -67,6 +67,9 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.notifier.initContainers "context" $) | nindent 8 }}
         {{- end }}
       {{- end }}
+      {{- if .Values.notifier.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.notifier.terminationGracePeriodSeconds }}
+      {{- end }}
       containers:
         - name: notifier
           image: {{ template "carto.notifier.image" . }}
@@ -132,9 +135,6 @@ spec:
           {{- end }}
           {{- if .Values.notifier.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.notifier.lifecycleHooks "context" $) | nindent 12 }}
-          {{- end }}
-          {{- if .Values.notifier.terminationGracePeriodSeconds }}
-          terminationGracePeriodSeconds: {{ .Values.notifier.terminationGracePeriodSeconds }}
           {{- end }}
           volumeMounts:
           {{- if .Values.notifier.extraVolumeMounts }}

@@ -77,6 +77,9 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.initContainers "context" $) | nindent 8 }}
         {{- end }}
       {{- end }}
+      {{- if .Values.importWorker.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.importWorker.terminationGracePeriodSeconds }}
+      {{- end }}
       containers:
         - name: import-worker
           image: {{ template "carto.importWorker.image" . }}
@@ -160,9 +163,6 @@ spec:
           {{- end }}
           {{- if .Values.importWorker.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.lifecycleHooks "context" $) | nindent 12 }}
-          {{- end }}
-          {{- if .Values.importWorker.terminationGracePeriodSeconds }}
-          terminationGracePeriodSeconds: {{ .Values.importWorker.terminationGracePeriodSeconds }}
           {{- end }}
           volumeMounts:
             - name: gcp-default-service-account-key

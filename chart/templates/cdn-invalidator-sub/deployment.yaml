@@ -77,6 +77,9 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.initContainers "context" $) | nindent 8 }}
         {{- end }}
       {{- end }}
+      {{- if .Values.cdnInvalidatorSub.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.cdnInvalidatorSub.terminationGracePeriodSeconds }}
+      {{- end }}
       containers:
         - name: cdn-invalidator-sub
           image: {{ template "carto.cdnInvalidatorSub.image" . }}
@@ -157,9 +160,6 @@ spec:
           {{- end }}
           {{- if .Values.cdnInvalidatorSub.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.lifecycleHooks "context" $) | nindent 12 }}
-          {{- end }}
-          {{- if .Values.cdnInvalidatorSub.terminationGracePeriodSeconds }}
-          terminationGracePeriodSeconds: {{ .Values.cdnInvalidatorSub.terminationGracePeriodSeconds }}
           {{- end }}
           volumeMounts:
             - name: gcp-default-service-account-key

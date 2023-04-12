@@ -4504,9 +4504,6 @@ routerMetrics:
     capabilities:
       drop:
         - all
-  ## @param routerMetrics.terminationGracePeriodSeconds Time to wait before force killing the container
-  ##
-  terminationGracePeriodSeconds: 60
   ## @param routerMetrics.containerPorts.http routerMetrics HTTP container port
   ##
   containerPorts:
