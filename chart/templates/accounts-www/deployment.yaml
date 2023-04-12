@@ -142,6 +142,9 @@ spec:
           {{- if .Values.accountsWww.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
+          {{- if .Values.accountsWww.terminationGracePeriodSeconds }}
+          terminationGracePeriodSeconds: {{ .Values.accountsWww.terminationGracePeriodSeconds }}
+          {{- end }}
           volumeMounts:
           {{- if .Values.accountsWww.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraVolumeMounts "context" $) | nindent 12 }}

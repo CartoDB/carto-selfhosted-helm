@@ -158,6 +158,9 @@ spec:
           {{- if .Values.workspaceSubscriber.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
+          {{- if .Values.workspaceSubscriber.terminationGracePeriodSeconds }}
+          terminationGracePeriodSeconds: {{ .Values.workspaceSubscriber.terminationGracePeriodSeconds }}
+          {{- end }}
           volumeMounts:
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}

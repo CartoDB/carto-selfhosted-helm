@@ -149,6 +149,9 @@ spec:
           {{- if .Values.httpCache.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
+          {{- if .Values.httpCache.terminationGracePeriodSeconds }}
+          terminationGracePeriodSeconds: {{ .Values.httpCache.terminationGracePeriodSeconds }}
+          {{- end }}
           volumeMounts:
           {{- if .Values.httpCache.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.extraVolumeMounts "context" $) | nindent 12 }}

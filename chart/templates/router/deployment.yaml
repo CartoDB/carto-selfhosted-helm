@@ -145,6 +145,9 @@ spec:
           {{- if .Values.router.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.router.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
+          {{- if .Values.router.terminationGracePeriodSeconds }}
+          terminationGracePeriodSeconds: {{ .Values.router.terminationGracePeriodSeconds }}
+          {{- end }}
           volumeMounts:
             - name: tls-secret
               mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
@@ -225,6 +228,9 @@ spec:
           {{- end }}
           {{- if .Values.routerMetrics.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.router.terminationGracePeriodSeconds }}
+          terminationGracePeriodSeconds: {{ .Values.router.terminationGracePeriodSeconds }}
           {{- end }}
           volumeMounts:
             - name: gcp-default-service-account-key

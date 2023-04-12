@@ -171,6 +171,9 @@ spec:
           {{- if .Values.ldsApi.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
+          {{- if .Values.ldsApi.terminationGracePeriodSeconds }}
+          terminationGracePeriodSeconds: {{ .Values.ldsApi.terminationGracePeriodSeconds }}
+          {{- end }}
           volumeMounts:
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}

@@ -418,6 +418,10 @@ accountsWww:
     capabilities:
       drop:
         - all
+  ## @param accountsWww.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 60
+
   ## @param accountsWww.existingConfigMap The name of an existing ConfigMap with your custom configuration for accounts-www
   ##
   existingConfigMap: ""
@@ -742,6 +746,9 @@ importApi:
     capabilities:
       drop:
         - all
+  ## @param importApi.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
   ## @param importApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for import-api
   ##
   existingConfigMap: ""
@@ -993,6 +1000,9 @@ importWorker:
     capabilities:
       drop:
         - all
+  ## @param importWorker.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
   ## @param importWorker.existingConfigMap The name of an existing ConfigMap with your custom configuration for import-worker
   ##
   existingConfigMap: ""
@@ -1258,6 +1268,9 @@ ldsApi:
     capabilities:
       drop:
         - all
+  ## @param ldsApi.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 60
   ## @param ldsApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for lds-api
   ##
   existingConfigMap: ""
@@ -1569,6 +1582,9 @@ mapsApi:
     capabilities:
       drop:
         - all
+  ## @param mapsApi.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 600
   ## @param mapsApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for maps-api
   ##
   existingConfigMap: ""
@@ -1855,6 +1871,9 @@ sqlWorker:
     capabilities:
       drop:
         - all
+  ## @param sqlWorker.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
   ## @param sqlWorker.existingConfigMap The name of an existing ConfigMap with your custom configuration for sql-worker
   ##
   existingConfigMap: ""
@@ -2116,6 +2135,9 @@ router:
     capabilities:
       drop:
         - all
+  ## @param router.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 600
   ## @param router.existingConfigMap The name of an existing ConfigMap with your custom configuration for router
   ##
   existingConfigMap: ""
@@ -2508,6 +2530,9 @@ httpCache:
     capabilities:
       drop:
         - all
+  ## @param httpCache.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 600
   ## @param httpCache.existingConfigMap The name of an existing ConfigMap with your custom configuration for http-cache
   ##
   existingConfigMap: ""
@@ -2814,6 +2839,9 @@ notifier:
     capabilities:
       drop:
         - all
+  ## @param notifier.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 60
   ## @param notifier.existingConfigMap The name of an existing ConfigMap with your custom configuration for notifier
   ##
   existingConfigMap: ""
@@ -2997,7 +3025,6 @@ notifier:
     ##
     automountServiceAccountToken: false
 
-
 ## @section cdnInvalidatorSub Deployment Parameters
 ##
 cdnInvalidatorSub:
@@ -3130,6 +3157,9 @@ cdnInvalidatorSub:
     capabilities:
       drop:
         - all
+  ## @param cdnInvalidatorSub.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
   ## @param cdnInvalidatorSub.existingConfigMap The name of an existing ConfigMap with your custom configuration for cdnInvalidatorSub
   ##
   existingConfigMap: ""
@@ -3443,6 +3473,9 @@ workspaceApi:
     capabilities:
       drop:
         - all
+  ## @param workspaceApi.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
   ## @param workspaceApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-api
   ##
   existingConfigMap: ""
@@ -3694,6 +3727,9 @@ workspaceSubscriber:
     capabilities:
       drop:
         - all
+  ## @param workspaceSubscriber.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
   ## @param workspaceSubscriber.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-subscriber
   ##
   existingConfigMap: ""
@@ -3953,6 +3989,9 @@ workspaceWww:
     capabilities:
       drop:
         - all
+  ## @param workspaceWww.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 60
   ## @param workspaceWww.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-www
   ##
   existingConfigMap: ""
@@ -4398,7 +4437,7 @@ upgradeCheck:
 
 ## @section router-metrics parameters
 routerMetrics:
-## @section routerMetrics container parametres
+  ## @section routerMetrics container parametres
   ## routerMetrics image
   ## @param routerMetrics.image.registry routerMetrics image registry
   ## @param routerMetrics.image.repository routerMetrics image repository
@@ -4466,6 +4505,9 @@ routerMetrics:
     capabilities:
       drop:
         - all
+  ## @param routerMetrics.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 60
   ## @param routerMetrics.containerPorts.http routerMetrics HTTP container port
   ##
   containerPorts:
