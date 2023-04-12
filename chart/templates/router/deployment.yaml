@@ -229,8 +229,8 @@ spec:
           {{- if .Values.routerMetrics.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.router.terminationGracePeriodSeconds }}
-          terminationGracePeriodSeconds: {{ .Values.router.terminationGracePeriodSeconds }}
+          {{- if .Values.routerMetrics.terminationGracePeriodSeconds }}
+          terminationGracePeriodSeconds: {{ .Values.routerMetrics.terminationGracePeriodSeconds }}
           {{- end }}
           volumeMounts:
             - name: gcp-default-service-account-key

@@ -4437,7 +4437,6 @@ upgradeCheck:
 
 ## @section router-metrics parameters
 routerMetrics:
-  ## @section routerMetrics container parametres
   ## routerMetrics image
   ## @param routerMetrics.image.registry routerMetrics image registry
   ## @param routerMetrics.image.repository routerMetrics image repository
