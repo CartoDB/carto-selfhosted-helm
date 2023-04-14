@@ -1,0 +1,19 @@
+{{- if and .Values.mapsApi.podDisruptionBudget.enabled}}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "carto.mapsApi.fullname" . }}-pdb
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+spec:
+{{- if .Values.mapsApi.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.mapsApi.podDisruptionBudget.minAvailable }}
+{{- end }}
+{{- if .Values.mapsApi.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.mapsApi.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "carto.mapsApi.fullname" . }}
+{{- end }}

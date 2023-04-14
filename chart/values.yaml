@@ -418,10 +418,14 @@ accountsWww:
     capabilities:
       drop:
         - all
+  ## @param accountsWww.podDisruptionBudget defines disruption budget for accounts-www
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param accountsWww.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 60
-
   ## @param accountsWww.existingConfigMap The name of an existing ConfigMap with your custom configuration for accounts-www
   ##
   existingConfigMap: ""
@@ -746,6 +750,11 @@ importApi:
     capabilities:
       drop:
         - all
+  ## @param importApi.podDisruptionBudget defines disruption budget for import-api
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param importApi.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 300
@@ -1000,6 +1009,11 @@ importWorker:
     capabilities:
       drop:
         - all
+  ## @param importWorker.podDisruptionBudget defines disruption budget for import-worker
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param importWorker.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 3600
@@ -1268,6 +1282,11 @@ ldsApi:
     capabilities:
       drop:
         - all
+  ## @param ldsApi.podDisruptionBudget defines disruption budget for lds-api
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param ldsApi.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 60
@@ -1582,6 +1601,11 @@ mapsApi:
     capabilities:
       drop:
         - all
+  ## @param mapsApi.podDisruptionBudget defines disruption budget for maps-api
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param mapsApi.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 600
@@ -1871,6 +1895,11 @@ sqlWorker:
     capabilities:
       drop:
         - all
+  ## @param sqlWorker.podDisruptionBudget defines disruption budget for sql-worker
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param sqlWorker.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 300
@@ -2135,6 +2164,11 @@ router:
     capabilities:
       drop:
         - all
+  ## @param router.podDisruptionBudget defines disruption budget for router
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param router.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 600
@@ -2530,6 +2564,11 @@ httpCache:
     capabilities:
       drop:
         - all
+  ## @param httpCache.podDisruptionBudget defines disruption budget for http-cache
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param httpCache.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 600
@@ -2839,6 +2878,11 @@ notifier:
     capabilities:
       drop:
         - all
+  ## @param notifier.podDisruptionBudget defines disruption budget for notifier
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param notifier.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 60
@@ -3157,6 +3201,11 @@ cdnInvalidatorSub:
     capabilities:
       drop:
         - all
+  ## @param cdnInvalidatorSub.podDisruptionBudget defines disruption budget for cdn-invalidator-sub
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param cdnInvalidatorSub.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 300
@@ -3473,6 +3522,11 @@ workspaceApi:
     capabilities:
       drop:
         - all
+  ## @param workspaceApi.podDisruptionBudget defines disruption budget for workspace-api
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param workspaceApi.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 300
@@ -3727,6 +3781,11 @@ workspaceSubscriber:
     capabilities:
       drop:
         - all
+  ## @param workspaceSubscriber.podDisruptionBudget defines disruption budget for workspace-subscriber
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param workspaceSubscriber.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 300
@@ -3989,6 +4048,11 @@ workspaceWww:
     capabilities:
       drop:
         - all
+  ## @param workspaceWww.podDisruptionBudget defines disruption budget for workspace-www
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param workspaceWww.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 60
@@ -4437,6 +4501,7 @@ upgradeCheck:
 
 ## @section router-metrics parameters
 routerMetrics:
+  ## @section routerMetrics container parametres
   ## routerMetrics image
   ## @param routerMetrics.image.registry routerMetrics image registry
   ## @param routerMetrics.image.repository routerMetrics image repository
@@ -4504,6 +4569,11 @@ routerMetrics:
     capabilities:
       drop:
         - all
+  ## @param routerMetrics.podDisruptionBudget defines disruption budget for router-metrics
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
   ## @param routerMetrics.containerPorts.http routerMetrics HTTP container port
   ##
   containerPorts:

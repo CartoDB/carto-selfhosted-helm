@@ -1,0 +1,19 @@
+{{- if and .Values.ldsApi.podDisruptionBudget.enabled}}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "carto.ldsApi.fullname" . }}-pdb
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+spec:
+{{- if .Values.ldsApi.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.ldsApi.podDisruptionBudget.minAvailable }}
+{{- end }}
+{{- if .Values.ldsApi.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.ldsApi.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "carto.ldsApi.fullname" . }}
+{{- end }}

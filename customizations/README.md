@@ -41,10 +41,11 @@
     - [Enable static scaling](#enable-static-scaling)
   - [High Availability](#high-availability)
   - [Capacity planning](#capacity-planning)
+  - [Pod Disruption Budget](#pod-disruption-budget)
   - [Redshift imports](#redshift-imports)
   - [Workload Identity BigQuery connection](#workload-identity-bigquery-connection)
     - [Configuration](#configuration)
-  - [Enabling/Disabling TrackJS](#enabling-disabling-trackjs)
+    - [Enabling-Disabling TrackJS](#enabling-disabling-trackjs)
   - [Advanced configuration](#advanced-configuration)
   - [Tips for creating the customization Yaml file](#tips-for-creating-the-customization-yaml-file)
   - [Troubleshooting](#troubleshooting)
@@ -1041,6 +1042,14 @@ Aligned with the [high availability configurations](high_availability), please c
 - [Standard HA](high_availability/standard/README.md#capacity-planning)
 - [Standard HA with upgrades](high_availability/standard_with_upgrades/README.md#capacity-planning)
 - [High traffic HA](high_availability/high_traffic/README.md#capacity-planning)
+
+## Pod Disruption Budget
+
+Along with the HA configurations, we can use `podDisruptionBudget` Kubernetes feature to define the budget of voluntary disruption by making the cluster aware of a minimum threshold in terms of available pods that the cluster needs to guarantee in order to ensure a baseline availability or performance.
+
+This should be applied carefully using [this customization file](pod_disruption_budget/customizations.yaml) to enable it for any of the deployments in the file.
+
+You can either define a `maxUnavailable` or `minAvailable` parameters by entering integers or percentages. We recommend to [read the docs](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) before applying it.
 
 ## Redshift imports
 

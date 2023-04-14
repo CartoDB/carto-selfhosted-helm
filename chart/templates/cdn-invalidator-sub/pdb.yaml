@@ -1,0 +1,19 @@
+{{- if and .Values.cdnInvalidatorSub.podDisruptionBudget.enabled}}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "carto.cdnInvalidatorSub.fullname" . }}-pdb
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+spec:
+{{- if .Values.cdnInvalidatorSub.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.cdnInvalidatorSub.podDisruptionBudget.minAvailable }}
+{{- end }}
+{{- if .Values.cdnInvalidatorSub.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.cdnInvalidatorSub.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "carto.cdnInvalidatorSub.fullname" . }}
+{{- end }}
