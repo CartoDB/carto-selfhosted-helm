@@ -1002,7 +1002,7 @@ importWorker:
         - all
   ## @param importWorker.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
-  terminationGracePeriodSeconds: 300
+  terminationGracePeriodSeconds: 3600
   ## @param importWorker.existingConfigMap The name of an existing ConfigMap with your custom configuration for import-worker
   ##
   existingConfigMap: ""
