@@ -1045,7 +1045,7 @@ Aligned with the [high availability configurations](high_availability), please c
 
 ## Pod Disruption Budget
 
-Along with the HA configurations, we can use `podDisruptionBudget` Kubernetes feature to define the budget of voluntary disruption by letting the cluster aware of a minimum threshold in terms of available pods that the cluster needs to guarantee in order to ensure a baseline availability or performance.
+Along with the HA configurations, we can use `podDisruptionBudget` Kubernetes feature to define the budget of voluntary disruption by making the cluster aware of a minimum threshold in terms of available pods that the cluster needs to guarantee in order to ensure a baseline availability or performance.
 
 This should be applied carefully using [this customization file](pod_disruption_budget/customizations.yaml) to enable it for any of the deployments in the file.
 
