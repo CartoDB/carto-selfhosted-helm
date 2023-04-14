@@ -4,6 +4,12 @@
 #          https://kubernetes.io/docs/tasks/run-application/configure-pdb/
 ################################################################################
 
+httpCache:
+  podDisruptionBudget:
+    enabled: true
+    maxUnavailable: 0
+    #minAvailable: 1
+
 accountsWww:
   podDisruptionBudget:
     enabled: false
@@ -47,12 +53,6 @@ notifier:
     #minAvailable: 1
 
 router:
-  podDisruptionBudget:
-    enabled: false
-    #maxUnavailable: 0
-    #minAvailable: 1
-
-httpCache:
   podDisruptionBudget:
     enabled: false
     #maxUnavailable: 0
