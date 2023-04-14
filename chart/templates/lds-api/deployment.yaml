@@ -74,6 +74,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.initContainers "context" $) | nindent 8 }}
         {{- end }}
       {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.ldsApi.terminationGracePeriodSeconds }}
       containers:
         - name: lds-api
           image: {{ template "carto.ldsApi.image" . }}
