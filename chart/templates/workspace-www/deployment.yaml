@@ -68,9 +68,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.initContainers "context" $) | nindent 8 }}
         {{- end }}
       {{- end }}
-      {{- if .Values.workspaceWww.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.workspaceWww.terminationGracePeriodSeconds }}
-      {{- end }}
       containers:
         - name: workspace-www
           image: {{ template "carto.workspaceWww.image" . }}

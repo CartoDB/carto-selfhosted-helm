@@ -148,9 +148,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.initContainers "context" $) | nindent 8 }}
         {{- end }}
       {{- end }}
-      {{- if .Values.workspaceApi.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.workspaceApi.terminationGracePeriodSeconds }}
-      {{- end }}
       containers:
         - name: workspace-api
           image: {{ template "carto.workspaceApi.image" . }}

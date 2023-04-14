@@ -70,9 +70,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.router.initContainers "context" $) | nindent 8 }}
         {{- end }}
       {{- end }}
-      {{- if .Values.router.terminationGracePeriodSeconds }}
       terminationGracePeriodSeconds: {{ .Values.router.terminationGracePeriodSeconds }}
-      {{- end }}
       containers:
         - name: router-http
           image: {{ template "carto.router.image" . }}
