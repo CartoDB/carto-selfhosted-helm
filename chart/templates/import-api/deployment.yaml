@@ -74,6 +74,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.importApi.initContainers "context" $) | nindent 8 }}
         {{- end }}
       {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.importApi.terminationGracePeriodSeconds }}
       containers:
         - name: import-api
           image: {{ template "carto.importApi.image" . }}

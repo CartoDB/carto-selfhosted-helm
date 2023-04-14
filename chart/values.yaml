@@ -423,6 +423,9 @@ accountsWww:
   ##
   podDisruptionBudget:
     enabled: false
+  ## @param accountsWww.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 60
   ## @param accountsWww.existingConfigMap The name of an existing ConfigMap with your custom configuration for accounts-www
   ##
   existingConfigMap: ""
@@ -752,6 +755,9 @@ importApi:
   ##
   podDisruptionBudget:
     enabled: false
+  ## @param importApi.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
   ## @param importApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for import-api
   ##
   existingConfigMap: ""
@@ -1008,6 +1014,9 @@ importWorker:
   ##
   podDisruptionBudget:
     enabled: false
+  ## @param importWorker.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 3600
   ## @param importWorker.existingConfigMap The name of an existing ConfigMap with your custom configuration for import-worker
   ##
   existingConfigMap: ""
@@ -1278,6 +1287,9 @@ ldsApi:
   ##
   podDisruptionBudget:
     enabled: false
+  ## @param ldsApi.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 60
   ## @param ldsApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for lds-api
   ##
   existingConfigMap: ""
@@ -1594,6 +1606,9 @@ mapsApi:
   ##
   podDisruptionBudget:
     enabled: false
+  ## @param mapsApi.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 600
   ## @param mapsApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for maps-api
   ##
   existingConfigMap: ""
@@ -1885,6 +1900,9 @@ sqlWorker:
   ##
   podDisruptionBudget:
     enabled: false
+  ## @param sqlWorker.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
   ## @param sqlWorker.existingConfigMap The name of an existing ConfigMap with your custom configuration for sql-worker
   ##
   existingConfigMap: ""
@@ -2151,6 +2169,9 @@ router:
   ##
   podDisruptionBudget:
     enabled: false
+  ## @param router.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 600
   ## @param router.existingConfigMap The name of an existing ConfigMap with your custom configuration for router
   ##
   existingConfigMap: ""
@@ -2548,6 +2569,9 @@ httpCache:
   ##
   podDisruptionBudget:
     enabled: false
+  ## @param httpCache.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 600
   ## @param httpCache.existingConfigMap The name of an existing ConfigMap with your custom configuration for http-cache
   ##
   existingConfigMap: ""
@@ -2859,6 +2883,9 @@ notifier:
   ##
   podDisruptionBudget:
     enabled: false
+  ## @param notifier.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 60
   ## @param notifier.existingConfigMap The name of an existing ConfigMap with your custom configuration for notifier
   ##
   existingConfigMap: ""
@@ -3179,6 +3206,9 @@ cdnInvalidatorSub:
   ##
   podDisruptionBudget:
     enabled: false
+  ## @param cdnInvalidatorSub.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
   ## @param cdnInvalidatorSub.existingConfigMap The name of an existing ConfigMap with your custom configuration for cdnInvalidatorSub
   ##
   existingConfigMap: ""
@@ -3497,6 +3527,9 @@ workspaceApi:
   ##
   podDisruptionBudget:
     enabled: false
+  ## @param workspaceApi.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
   ## @param workspaceApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-api
   ##
   existingConfigMap: ""
@@ -3753,6 +3786,9 @@ workspaceSubscriber:
   ##
   podDisruptionBudget:
     enabled: false
+  ## @param workspaceSubscriber.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
   ## @param workspaceSubscriber.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-subscriber
   ##
   existingConfigMap: ""
@@ -4017,6 +4053,9 @@ workspaceWww:
   ##
   podDisruptionBudget:
     enabled: false
+  ## @param workspaceWww.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 60
   ## @param workspaceWww.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-www
   ##
   existingConfigMap: ""
