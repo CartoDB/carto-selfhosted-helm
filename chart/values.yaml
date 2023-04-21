@@ -837,7 +837,8 @@ importApi:
   schedulerName: ""
   ## @param importApi.lifecycleHooks for the import-api container(s) to automate configuration before or after startup
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    { preStop: { exec: { command: ["/bin/sh", "-c", "/app/terminate.sh"] } } }
   ## @param importApi.extraEnvVars Array with extra environment variables to add to import-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -1096,7 +1097,8 @@ importWorker:
   schedulerName: ""
   ## @param importWorker.lifecycleHooks for the import-worker container(s) to automate configuration before or after startup
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    { preStop: { exec: { command: ["/bin/sh", "-c", "/app/terminate.sh"] } } }
   ## @param importWorker.extraEnvVars Array with extra environment variables to add to import-worker nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -1369,7 +1371,8 @@ ldsApi:
   schedulerName: ""
   ## @param ldsApi.lifecycleHooks for the lds-api container(s) to automate configuration before or after startup
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    { preStop: { exec: { command: ["/bin/sh", "-c", "/app/terminate.sh"] } } }
   ## @param ldsApi.extraEnvVars Array with extra environment variables to add to lds-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -1688,7 +1691,8 @@ mapsApi:
   schedulerName: ""
   ## @param mapsApi.lifecycleHooks for the maps-api container(s) to automate configuration before or after startup
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    { preStop: { exec: { command: ["/bin/sh", "-c", "/app/terminate.sh"] } } }
   ## @param mapsApi.extraEnvVars Array with extra environment variables to add to maps-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -1982,7 +1986,8 @@ sqlWorker:
   schedulerName: ""
   ## @param sqlWorker.lifecycleHooks for the sql-worker container(s) to automate configuration before or after startup
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    { preStop: { exec: { command: ["/bin/sh", "-c", "/app/terminate.sh"] } } }
   ## @param sqlWorker.extraEnvVars Array with extra environment variables to add to sql-worker nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -2251,7 +2256,8 @@ router:
   schedulerName: ""
   ## @param router.lifecycleHooks for the router container(s) to automate configuration before or after startup
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    { preStop: { exec: { command: ["/bin/sh", "-c", "/app/terminate.sh"] } } }
   ## @param router.extraEnvVars Array with extra environment variables to add to router nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -2651,7 +2657,8 @@ httpCache:
   schedulerName: ""
   ## @param httpCache.lifecycleHooks for the http-cache container(s) to automate configuration before or after startup
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    { preStop: { exec: { command: ["/bin/sh", "-c", "/app/terminate.sh"] } } }
   ## @param httpCache.extraEnvVars Array with extra environment variables to add to http-cache nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -3609,7 +3616,8 @@ workspaceApi:
   schedulerName: ""
   ## @param workspaceApi.lifecycleHooks for the workspace-api container(s) to automate configuration before or after startup
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    { preStop: { exec: { command: ["/bin/sh", "-c", "/app/terminate.sh"] } } }
   ## @param workspaceApi.extraEnvVars Array with extra environment variables to add to workspace-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
