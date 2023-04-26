@@ -6,7 +6,6 @@
     - [Installation Steps](#installation-steps)
     - [Post-installation checks](#post-installation-checks)
     - [Troubleshooting](#troubleshooting)
-    - [](#)
   - [Update](#update)
   - [Uninstall](#uninstall)
   - [Best Practices for Disaster Recovery](#best-practices-for-disaster-recovery)
@@ -149,8 +148,6 @@ If you see this error you can get the reason running the following command:
 ```bash
  kubectl logs --selector=job-name=<your_release_name>-pre-install
 ```
-
-###
 
 #### Diagnosis tool
 
