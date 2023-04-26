@@ -1,19 +1,18 @@
-<!-- omit in toc -->
-# Table of Contents
 - [CARTO Self Hosted [Helm chart]](#carto-self-hosted-helm-chart)
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
-      - [Setup a Kubernetes Cluster](#setup-a-kubernetes-cluster)
-      - [Install Helm](#install-helm)
     - [Deployment options](#deployment-options)
-      - [GKE Autopilot](#gke-autopilot)
-      - [GKE Workload Identity](#gke-workload-identity)
     - [Deployment customizations](#deployment-customizations)
     - [Installation Steps](#installation-steps)
     - [Post-installation checks](#post-installation-checks)
     - [Troubleshooting](#troubleshooting)
+    - [](#)
   - [Update](#update)
   - [Uninstall](#uninstall)
+  - [Best Practices for Disaster Recovery](#best-practices-for-disaster-recovery)
+    - [General recommendations](#general-recommendations)
+    - [Database failure](#database-failure)
+    - [Kubernetes outage](#kubernetes-outage)
 
 # CARTO Self Hosted [Helm chart]
 
@@ -151,6 +150,8 @@ If you see this error you can get the reason running the following command:
  kubectl logs --selector=job-name=<your_release_name>-pre-install
 ```
 
+###
+
 #### Diagnosis tool
 
 If you need to open a support ticket, please execute our [carto-support-tool](tools/) to obtain all the necessary information and attach it to the ticket.
@@ -193,3 +194,46 @@ If you were using the internal Postgres, to delete the data you need:
 # ⚠️ This is going to delete the data of the postgres inside the cluster ⚠️
 kubectl delete pvc data-mycarto-postgresql-0
 ```
+
+## Best Practices for Disaster Recovery
+
+### General recommendations
+
+Maintain an up-to-date copy of all _values files_ passed to the CARTO Helm Chart installation, we strongly recommend using a VSC (GitHub, BitBucket, etc) for this purpose. These values files contain at least
+
++ The `carto-secrets.yaml` file provided by CARTO
++ The `carto-values.yaml` file provided by CARTO
++ All the different `customizations.yaml` files used to customize the CARTO stack.
+
+### Database failure
+
+Maintain an up-to-date copy of all database objects required by the CARTO stack, including
+
++ The database admin user (along with its credentials)
++ The CARTO database user (together with his credentials)
++ The CARTO database schema
+
+If you do a backup restore to a new database, remember to update your customization files with (if necessary)
+
++ The database connection string (host and port)
++ The database admin credentials (username and password)
++ The TLS configuration, you may need to update the SSL CA certificate
+
+Redis state is not critical for the proper operation of the CARTO stack, so no backup is required
+
+### Kubernetes outage
+
+#### Cluster Replacement
+
++ In the case of a full cluster replacement, make sure that the new cluster meets the same resource requirements as the previous one, otherwise, some components required by the CARTO stack may not start up. 
++ If you applied any custom networking configuration in order to make the CARTO stack work remember to apply it in the new cluster if necessary.
++ Remember that CARTO stack Docker images are hosted publicly, your new cluster must be able to download those images from the Internet
+
+#### Kubernetes objects
+
+As a rule of thumb, you should keep a backup of all Secrets created outside the CARTO Helm Chart but referenced in it via the `.existingSecret` property, which you can find in the various customizations of the Chart, for example,
+
++ The external database credentials defined in `externalPostgresql.existingSecret
++ The custom TLS certificate for the external domain, defined at `tlsCerts.existingSecret`
+
+No additional Kubernetes Object backup is required
