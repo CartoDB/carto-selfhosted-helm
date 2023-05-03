@@ -51,6 +51,7 @@ cartoConfigValues:
   selfHostedTenantId: ""
   ## @param cartoConfigValues.launchDarklyClientSideId LaunchDarkly ClientSideId (by www) used to enable/disable features.
   launchDarklyClientSideId: ""
+
 ## @section App secret
 ## Global secrets to be edited by the client
 appSecrets:
@@ -4429,6 +4430,20 @@ externalPostgresql:
   database: workspace
   port: 5432
   sslEnabled: false
+  sslCA: ""
+
+## @section External proxy configuration
+## Configuration for an external proxy provided by the client. Only HTTP and HTTPS proxies are supported
+externalProxy:
+  ## @param externalProxy.host Proxy host
+  host:
+  ## @param externalProxy.port Proxy port
+  port:
+  ## @param externalProxy.type Proxy type. Only HTTP and HTTPS proxies are supported
+  type: ""
+  ## @param externalProxy.sslRejectUnauthorized Wheter or not verify the HTTPS proxy SSL certificate
+  sslRejectUnauthorized: true
+  ## @param externalProxy.sslCA CA for the proxy SSL certificate in case is self-signed or signed by a not well-known CA
   sslCA: ""
 
 ## @section Upgrade Check pre hook parameters
