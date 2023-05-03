@@ -419,7 +419,7 @@ accountsWww:
     capabilities:
       drop:
         - all
-  ## @param accountsWww.podDisruptionBudget defines disruption budget for accounts-www
+  ## @param accountsWww.podDisruptionBudget.enabled defines disruption budget for accounts-www
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -751,7 +751,7 @@ importApi:
     capabilities:
       drop:
         - all
-  ## @param importApi.podDisruptionBudget defines disruption budget for import-api
+  ## @param importApi.podDisruptionBudget.enabled defines disruption budget for import-api
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -1010,7 +1010,7 @@ importWorker:
     capabilities:
       drop:
         - all
-  ## @param importWorker.podDisruptionBudget defines disruption budget for import-worker
+  ## @param importWorker.podDisruptionBudget.enabled defines disruption budget for import-worker
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -1283,7 +1283,7 @@ ldsApi:
     capabilities:
       drop:
         - all
-  ## @param ldsApi.podDisruptionBudget defines disruption budget for lds-api
+  ## @param ldsApi.podDisruptionBudget.enabled defines disruption budget for lds-api
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -1602,7 +1602,7 @@ mapsApi:
     capabilities:
       drop:
         - all
-  ## @param mapsApi.podDisruptionBudget defines disruption budget for maps-api
+  ## @param mapsApi.podDisruptionBudget.enabled defines disruption budget for maps-api
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -1896,7 +1896,7 @@ sqlWorker:
     capabilities:
       drop:
         - all
-  ## @param sqlWorker.podDisruptionBudget defines disruption budget for sql-worker
+  ## @param sqlWorker.podDisruptionBudget.enabled defines disruption budget for sql-worker
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -2165,7 +2165,7 @@ router:
     capabilities:
       drop:
         - all
-  ## @param router.podDisruptionBudget defines disruption budget for router
+  ## @param router.podDisruptionBudget.enabled defines disruption budget for router
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -2565,7 +2565,7 @@ httpCache:
     capabilities:
       drop:
         - all
-  ## @param httpCache.podDisruptionBudget defines disruption budget for http-cache
+  ## @param httpCache.podDisruptionBudget.enabled defines disruption budget for http-cache
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -2879,7 +2879,7 @@ notifier:
     capabilities:
       drop:
         - all
-  ## @param notifier.podDisruptionBudget defines disruption budget for notifier
+  ## @param notifier.podDisruptionBudget.enabled defines disruption budget for notifier
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -3202,7 +3202,7 @@ cdnInvalidatorSub:
     capabilities:
       drop:
         - all
-  ## @param cdnInvalidatorSub.podDisruptionBudget defines disruption budget for cdn-invalidator-sub
+  ## @param cdnInvalidatorSub.podDisruptionBudget.enabled defines disruption budget for cdn-invalidator-sub
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -3523,7 +3523,7 @@ workspaceApi:
     capabilities:
       drop:
         - all
-  ## @param workspaceApi.podDisruptionBudget defines disruption budget for workspace-api
+  ## @param workspaceApi.podDisruptionBudget.enabled defines disruption budget for workspace-api
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -3782,7 +3782,7 @@ workspaceSubscriber:
     capabilities:
       drop:
         - all
-  ## @param workspaceSubscriber.podDisruptionBudget defines disruption budget for workspace-subscriber
+  ## @param workspaceSubscriber.podDisruptionBudget.enabled defines disruption budget for workspace-subscriber
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -4049,7 +4049,7 @@ workspaceWww:
     capabilities:
       drop:
         - all
-  ## @param workspaceWww.podDisruptionBudget defines disruption budget for workspace-www
+  ## @param workspaceWww.podDisruptionBudget.enabled defines disruption budget for workspace-www
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -4584,7 +4584,7 @@ routerMetrics:
     capabilities:
       drop:
         - all
-  ## @param routerMetrics.podDisruptionBudget defines disruption budget for router-metrics
+  ## @param routerMetrics.podDisruptionBudget.enabled defines disruption budget for router-metrics
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
