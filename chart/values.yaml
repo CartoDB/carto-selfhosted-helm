@@ -4447,6 +4447,8 @@ externalProxy:
   username:
   ## @param externalProxy.password Proxy password (if required)
   password:
+  ## @param externalProxy.excludedDomains List of domains that will bypass the proxy
+  excludedDomains: []
   ## @param externalProxy.sslRejectUnauthorized Wheter or not verify the HTTPS proxy SSL certificate
   sslRejectUnauthorized: true
   ## @param externalProxy.sslCA CA for the proxy SSL certificate in case is self-signed or signed by a not well-known CA

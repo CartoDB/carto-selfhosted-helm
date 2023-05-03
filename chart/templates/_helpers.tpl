@@ -1323,6 +1323,7 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := list -}}
 {{- $messages := append $messages (include "carto.validateValues.redis" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.postgresql" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.proxy" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 
@@ -1336,4 +1337,51 @@ Return the proper Carto upgrade check image name
 */}}
 {{- define "carto.upgradeCheck.image" -}}
 {{- include "carto.images.image" (dict "imageRoot" .Values.upgradeCheck.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure proxy values
+FIXME: Add support for user and password
+*/}}
+{{- define "carto.proxy.connectionString" -}}
+{{- printf "%s:%d" .Values.externalProxy.host (int .Values.externalProxy.port) -}}
+{{- end -}}
+
+{{/*
+Get the proxy config map name
+*/}}
+{{- define "carto.proxy.configMapName" -}}
+{{- printf "%s-%s" .Release.Name "externalproxy" -}}
+{{- end -}}
+
+{{/*
+Return the directory where the proxy CA cert will be mounted
+*/}}
+{{- define "carto.proxy.configMapMountDir" -}}
+{{- print "/usr/src/certs/proxy-ssl-ca" -}}
+{{- end -}}
+
+{{/*
+Return the filename where the proxy CA will be mounted
+*/}}
+{{- define "carto.proxy.configMapMountFilename" -}}
+{{- print "ca.crt" -}}
+{{- end -}}
+
+{{/*
+Return the absolute path where the proxy CA cert will be mounted
+*/}}
+{{- define "carto.proxy.configMapMountAbsolutePath" -}}
+{{- printf "%s/%s" (include "carto.proxy.configMapMountDir" .) (include "carto.proxy.configMapMountFilename" .) -}}
+{{- end -}}
+
+{{/*
+Validate external proxy config
+*/}}
+{{- define "carto.validateValues.proxy" -}}
+{{- if and .Values.externalProxy.enabled (not .Values.externalProxy.host) (not .Values.externalProxy.port) (not .Values.externalProxy.type) -}}
+CARTO: Missing proxy configuration
+
+If externalProxy.enabled=true you need to specify the host, port and type of the external proxy
+{{- end -}}
 {{- end -}}
