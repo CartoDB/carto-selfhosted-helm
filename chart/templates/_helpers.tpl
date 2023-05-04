@@ -1344,7 +1344,7 @@ Add environment variables to configure proxy values
 FIXME: Add support for user and password
 */}}
 {{- define "carto.proxy.connectionString" -}}
-{{- printf "%s:%d" .Values.externalProxy.host (int .Values.externalProxy.port) -}}
+{{- printf "%s://%s:%d" (lower .Values.externalProxy.type) .Values.externalProxy.host (int .Values.externalProxy.port) -}}
 {{- end -}}
 
 {{/*
