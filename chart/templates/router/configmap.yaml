@@ -34,4 +34,14 @@ data:
   ROUTER_METRICS_PUBSUB_TOPIC: "data-updates"
   ROUTER_METRICS_HOST: "localhost"
   ROUTER_METRICS_PUBSUB_SUBSCRIPTION_FILTER: "aggregated-selfhosted-metrics"
+  {{- if .Values.externalProxy.enabled }}
+  {{- if eq (lower .Values.externalProxy.type) "http" }}
+  HTTP_PROXY: "http://{{ include "carto.proxy.connectionString" . }}"
+  {{- else if eq (lower .Values.externalProxy.type) "https" }}
+  HTTPS_PROXY: "https://{{ include "carto.proxy.connectionString" . }}"
+  {{- end }}
+  {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
+  NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  {{- end }}
+  {{- end }}
 {{- end }}

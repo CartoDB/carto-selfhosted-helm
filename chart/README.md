@@ -1409,12 +1409,13 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | Name                                  | Description                                                                              | Value   |
 | ------------------------------------- | ---------------------------------------------------------------------------------------- | ------- |
 | `externalProxy.enabled`               | Whether the APIs will use an external proxy or not                                       | `false` |
-| `externalProxy.host`                  | Proxy host                                                                               | `nil`   |
-| `externalProxy.port`                  | Proxy port                                                                               | `nil`   |
+| `externalProxy.host`                  | Proxy host                                                                               | `""`    |
+| `externalProxy.port`                  | Proxy port                                                                               | `""`    |
 | `externalProxy.type`                  | Proxy type. Only HTTP and HTTPS proxies are supported                                    | `""`    |
 | `externalProxy.username`              | Proxy username (if required)                                                             | `nil`   |
 | `externalProxy.password`              | Proxy password (if required)                                                             | `nil`   |
-| `externalProxy.sslRejectUnauthorized` | Wheter or not verify the HTTPS proxy SSL certificate                                     | `true`  |
+| `externalProxy.excludedDomains`       | List of domains that will bypass the proxy                                               | `[]`    |
+| `externalProxy.sslRejectUnauthorized` | Whether or not verify the HTTPS proxy SSL certificate                                    | `true`  |
 | `externalProxy.sslCA`                 | CA for the proxy SSL certificate in case is self-signed or signed by a not well-known CA | `""`    |
 
 
