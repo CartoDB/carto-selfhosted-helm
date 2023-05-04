@@ -766,10 +766,10 @@ importApi:
   existingSecret: ""
   ## @param importApi.command Override default container command (useful when using custom images)
   ##
-  command: []
+  command: ["/bin/bash"]
   ## @param importApi.args Override default container args (useful when using custom images)
   ##
-  args: []
+  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
   ## @param importApi.hostAliases import-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1025,10 +1025,10 @@ importWorker:
   existingSecret: ""
   ## @param importWorker.command Override default container command (useful when using custom images)
   ##
-  command: []
+  command: ["/bin/bash"]
   ## @param importWorker.args Override default container args (useful when using custom images)
   ##
-  args: []
+  args: ["-c", "node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js"]
   ## @param importWorker.hostAliases import-worker pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1298,10 +1298,10 @@ ldsApi:
   existingSecret: ""
   ## @param ldsApi.command Override default container command (useful when using custom images)
   ##
-  command: []
+  command: ["/bin/bash"]
   ## @param ldsApi.args Override default container args (useful when using custom images)
   ##
-  args: []
+  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
   ## @param ldsApi.hostAliases lds-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1617,10 +1617,10 @@ mapsApi:
   existingSecret: ""
   ## @param mapsApi.command Override default container command (useful when using custom images)
   ##
-  command: []
+  command: ["/bin/bash"]
   ## @param mapsApi.args Override default container args (useful when using custom images)
   ##
-  args: []
+  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
   ## @param mapsApi.hostAliases maps-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1911,10 +1911,10 @@ sqlWorker:
   existingSecret: ""
   ## @param sqlWorker.command Override default container command (useful when using custom images)
   ##
-  command: []
+  command: ["/bin/bash"]
   ## @param sqlWorker.args Override default container args (useful when using custom images)
   ##
-  args: []
+  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js"]
   ## @param sqlWorker.hostAliases sql-worker pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -3217,10 +3217,10 @@ cdnInvalidatorSub:
   existingSecret: ""
   ## @param cdnInvalidatorSub.command Override default container command (useful when using custom images)
   ##
-  command: []
+  command: ["/bin/bash"]
   ## @param cdnInvalidatorSub.args Override default container args (useful when using custom images)
   ##
-  args: []
+  args: ["-c", "node -r /usr/src/app/cdn-invalidator-sub/tsconfig-paths-bootstrap.js /usr/src/app/cdn-invalidator-sub/dist/app/cdn-invalidator-sub/index.js"]
   ## @param cdnInvalidatorSub.hostAliases cdnInvalidatorSub pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -3538,10 +3538,11 @@ workspaceApi:
   existingSecret: ""
   ## @param workspaceApi.command Override default container command (useful when using custom images)
   ##
-  command: []
+  command: ["/bin/bash"]
+
   ## @param workspaceApi.args Override default container args (useful when using custom images)
   ##
-  args: []
+  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
   ## @param workspaceApi.hostAliases workspace-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -3797,10 +3798,10 @@ workspaceSubscriber:
   existingSecret: ""
   ## @param workspaceSubscriber.command Override default container command (useful when using custom images)
   ##
-  command: []
+  command: ["/bin/bash"]
   ## @param workspaceSubscriber.args Override default container args (useful when using custom images)
   ##
-  args: []
+  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js"]
   ## @param workspaceSubscriber.hostAliases workspace-subscriber pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
