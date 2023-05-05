@@ -2251,7 +2251,13 @@ router:
   schedulerName: ""
   ## @param router.lifecycleHooks for the router container(s) to automate configuration before or after startup
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - sh
+          - '-c'
+          - sleep 15 && /usr/sbin/nginx -s quit
   ## @param router.extraEnvVars Array with extra environment variables to add to router nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -4530,10 +4536,10 @@ routerMetrics:
     pullSecrets: []
   ## @param routerMetrics.command Override default container command (useful when using custom images)
   ##
-  command: []
+  command: ["/bin/bash"]
   ## @param routerMetrics.args Override default container args (useful when using custom images)
   ##
-  args: []
+  args: ["-c", "/docker-entrypoint.d/20-carto-templates.sh && /usr/share/logstash/bin/logstash"]
   ## @param routerMetrics.jvmProcessMaxMemoryAllocationPercentage Percentage for JVM max memory allocation inside the container memory limit
   ##
   jvmProcessMaxMemoryAllocationPercentage: 70
