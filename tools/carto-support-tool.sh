@@ -111,6 +111,10 @@ _dump_info (){
 	echo "Downloading ingress..."
 	kubectl get ingress -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/ingress.out 2>>"${DUMP_FOLDER}"/error.log
 	kubectl describe ingress -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" >> "${DUMP_FOLDER}"/ingress.out 2>>"${DUMP_FOLDER}"/error.log
+	
+	echo "Downloading nodes..."
+	kubectl get nodes -n "${NAMESPACE}" > "${DUMP_FOLDER}"/nodes.out 2>>"${DUMP_FOLDER}"/error.log
+	kubectl describe nodes -n "${NAMESPACE}" >> "${DUMP_FOLDER}"/nodes.out 2>>"${DUMP_FOLDER}"/error.log
 
 	echo "Downloading BackendConfigs..."
 	kubectl get backendconfigs -n "${NAMESPACE}" -l app.kubernetes.io/instance="${HELM_RELEASE}" > "${DUMP_FOLDER}"/backendconfigs.out 2>>"${DUMP_FOLDER}"/error.log
