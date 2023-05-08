@@ -1323,7 +1323,6 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := list -}}
 {{- $messages := append $messages (include "carto.validateValues.redis" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.postgresql" .) -}}
-{{- $messages := append $messages (include "carto.validateValues.proxy" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 
@@ -1373,15 +1372,4 @@ Return the absolute path where the proxy CA cert will be mounted
 */}}
 {{- define "carto.proxy.configMapMountAbsolutePath" -}}
 {{- printf "%s/%s" (include "carto.proxy.configMapMountDir" .) (include "carto.proxy.configMapMountFilename" .) -}}
-{{- end -}}
-
-{{/*
-Validate external proxy config
-*/}}
-{{- define "carto.validateValues.proxy" -}}
-{{- if and .Values.externalProxy.enabled (not .Values.externalProxy.host) (not .Values.externalProxy.port) (not .Values.externalProxy.type) -}}
-CARTO: Missing proxy configuration
-
-If externalProxy.enabled=true you need to specify the host, port and type of the external proxy
-{{- end -}}
 {{- end -}}

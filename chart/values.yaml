@@ -4443,11 +4443,7 @@ externalProxy:
   port: ""
   ## @param externalProxy.type Proxy type. Only HTTP and HTTPS proxies are supported
   type: ""
-  ## @param externalProxy.username Proxy username (if required)
-  username:
-  ## @param externalProxy.password Proxy password (if required)
-  password:
-  ## @param externalProxy.excludedDomains List of domains that will bypass the proxy
+  ## @param externalProxy.excludedDomains List of domains that should not be proxied
   excludedDomains: []
   ## @param externalProxy.sslRejectUnauthorized Whether or not verify the HTTPS proxy SSL certificate
   sslRejectUnauthorized: true
