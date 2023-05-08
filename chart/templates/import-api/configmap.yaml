@@ -59,10 +59,13 @@ data:
   {{- end }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.connectionString" . | quote }}
+  http_proxy: {{ include "carto.proxy.connectionString" . | quote }}
   HTTPS_PROXY: {{ include "carto.proxy.connectionString" . | quote }}
+  https_proxy: {{ include "carto.proxy.connectionString" . | quote }}
   NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
   {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
   {{- if .Values.externalProxy.sslCA }}
   EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
