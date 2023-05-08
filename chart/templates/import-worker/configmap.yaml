@@ -64,7 +64,7 @@ data:
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
   {{- if .Values.externalProxy.sslCA }}
-  EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
+  NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   {{- end }}
 {{- end }}
