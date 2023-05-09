@@ -1372,6 +1372,7 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
       ## If it is not your case, uncomment the line below
       cloud.google.com/neg: '{"ingress": true}'
   ```
+
 ### Helm upgrade fails: another operation (install/upgrade/rollback) is in progress
 
 If you face a problem like the one below while you are updating your CARTO selfhosted installation```
@@ -1414,3 +1415,24 @@ REVISION	UPDATED                 	STATUS         	CHART             	APP VERSION
 29      	Tue Oct  4 10:58:22 2022	deployed       	carto-1.42.10-beta	2022.9.28  	Rollback to 27
 ``` 
 Now you can run the upgrade operation again
+
+### 413 Request Entity Too Large
+
+  You are trying to make a POST request to the SQL Api with a large payload. Please see the following considerations:
+
+  - We support a payload up to 10Mb
+
+  - If your payload is lower than 10Mb, probably the error code is returned by a service in a higher layer than the Carto Selfhosted environment. Please upload your service configuration to be able to manage higher requests. E.g:
+
+  In Nginx, you have to add this config line to your location service:
+
+    ```bash
+    client_max_body_size 10M;
+    ```
+
+  If you have an Ingress Nginx, you have to add the following annotation:
+
+    ```yaml
+      annotations:
+        nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    ```
