@@ -53,6 +53,8 @@ data:
   http_proxy: {{ include "carto.proxy.connectionString" . | quote }}
   HTTPS_PROXY: {{ include "carto.proxy.connectionString" . | quote }}
   https_proxy: {{ include "carto.proxy.connectionString" . | quote }}
+  GRPC_PROXY: {{ include "carto.proxy.connectionString" . | quote }}
+  grpc_proxy: {{ include "carto.proxy.connectionString" . | quote }}
   NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
   {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
