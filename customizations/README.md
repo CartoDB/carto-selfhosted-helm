@@ -1427,13 +1427,13 @@ Now you can run the upgrade operation again
 
   In Nginx, you have to add this config line to your location service:
 
-    ```bash
-    client_max_body_size 10M;
-    ```
+  ```bash
+  client_max_body_size 10M;
+  ```
 
   If you have an Ingress Nginx, you have to add the following annotation:
 
-    ```yaml
-      annotations:
-        nginx.ingress.kubernetes.io/proxy-body-size: "10m"
-    ```
+  ```yaml
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+  ```
