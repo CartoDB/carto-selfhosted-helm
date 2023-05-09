@@ -52,6 +52,7 @@
     - [Diagnosis tool](#diagnosis-tool)
     - [Ingress](#ingress)
     - [Helm upgrade fails: another operation (install/upgrade/rollback) is in progress](#helm-upgrade-fails-another-operation-installupgraderollback-is-in-progress)
+    - [413 Request Entity Too Large](#413-request-entity-too-large)
 
 # Customizations
 
