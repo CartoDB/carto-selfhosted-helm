@@ -28,7 +28,7 @@ appConfigValues:
   ## @param appConfigValues.bigqueryOauth2ClientId The Client ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key.
   bigqueryOauth2ClientId: ""
   ## @param appConfigValues.enableExports Enable or disable DO and Workflow exports in Workspace
-  enableExports: false
+  enableExports: "false"
 
 ## @section CARTO config parameters
 ## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
