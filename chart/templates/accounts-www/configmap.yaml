@@ -16,6 +16,7 @@ data:
   PORT: {{ .Values.accountsWww.containerPorts.http | quote }}
   REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
   REACT_APP_ACCOUNTS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/"
+  REACT_APP_ACCOUNTS_WWW_ENABLE_TRACKJS: "true"
   REACT_APP_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   REACT_APP_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   REACT_APP_CUSTOM_TENANT: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
