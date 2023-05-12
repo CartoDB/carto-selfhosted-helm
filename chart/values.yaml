@@ -51,6 +51,7 @@ cartoConfigValues:
   selfHostedTenantId: ""
   ## @param cartoConfigValues.launchDarklyClientSideId LaunchDarkly ClientSideId (by www) used to enable/disable features.
   launchDarklyClientSideId: ""
+
 ## @section App secret
 ## Global secrets to be edited by the client
 appSecrets:
@@ -418,7 +419,7 @@ accountsWww:
     capabilities:
       drop:
         - all
-  ## @param accountsWww.podDisruptionBudget defines disruption budget for accounts-www
+  ## @param accountsWww.podDisruptionBudget.enabled defines disruption budget for accounts-www
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -750,7 +751,7 @@ importApi:
     capabilities:
       drop:
         - all
-  ## @param importApi.podDisruptionBudget defines disruption budget for import-api
+  ## @param importApi.podDisruptionBudget.enabled defines disruption budget for import-api
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -1009,7 +1010,7 @@ importWorker:
     capabilities:
       drop:
         - all
-  ## @param importWorker.podDisruptionBudget defines disruption budget for import-worker
+  ## @param importWorker.podDisruptionBudget.enabled defines disruption budget for import-worker
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -1282,7 +1283,7 @@ ldsApi:
     capabilities:
       drop:
         - all
-  ## @param ldsApi.podDisruptionBudget defines disruption budget for lds-api
+  ## @param ldsApi.podDisruptionBudget.enabled defines disruption budget for lds-api
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -1601,7 +1602,7 @@ mapsApi:
     capabilities:
       drop:
         - all
-  ## @param mapsApi.podDisruptionBudget defines disruption budget for maps-api
+  ## @param mapsApi.podDisruptionBudget.enabled defines disruption budget for maps-api
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -1895,7 +1896,7 @@ sqlWorker:
     capabilities:
       drop:
         - all
-  ## @param sqlWorker.podDisruptionBudget defines disruption budget for sql-worker
+  ## @param sqlWorker.podDisruptionBudget.enabled defines disruption budget for sql-worker
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -2164,7 +2165,7 @@ router:
     capabilities:
       drop:
         - all
-  ## @param router.podDisruptionBudget defines disruption budget for router
+  ## @param router.podDisruptionBudget.enabled defines disruption budget for router
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -2570,7 +2571,7 @@ httpCache:
     capabilities:
       drop:
         - all
-  ## @param httpCache.podDisruptionBudget defines disruption budget for http-cache
+  ## @param httpCache.podDisruptionBudget.enabled defines disruption budget for http-cache
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -2890,7 +2891,7 @@ notifier:
     capabilities:
       drop:
         - all
-  ## @param notifier.podDisruptionBudget defines disruption budget for notifier
+  ## @param notifier.podDisruptionBudget.enabled defines disruption budget for notifier
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -3213,7 +3214,7 @@ cdnInvalidatorSub:
     capabilities:
       drop:
         - all
-  ## @param cdnInvalidatorSub.podDisruptionBudget defines disruption budget for cdn-invalidator-sub
+  ## @param cdnInvalidatorSub.podDisruptionBudget.enabled defines disruption budget for cdn-invalidator-sub
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -3534,7 +3535,7 @@ workspaceApi:
     capabilities:
       drop:
         - all
-  ## @param workspaceApi.podDisruptionBudget defines disruption budget for workspace-api
+  ## @param workspaceApi.podDisruptionBudget.enabled defines disruption budget for workspace-api
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -3794,7 +3795,7 @@ workspaceSubscriber:
     capabilities:
       drop:
         - all
-  ## @param workspaceSubscriber.podDisruptionBudget defines disruption budget for workspace-subscriber
+  ## @param workspaceSubscriber.podDisruptionBudget.enabled defines disruption budget for workspace-subscriber
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -4061,7 +4062,7 @@ workspaceWww:
     capabilities:
       drop:
         - all
-  ## @param workspaceWww.podDisruptionBudget defines disruption budget for workspace-www
+  ## @param workspaceWww.podDisruptionBudget.enabled defines disruption budget for workspace-www
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
@@ -4444,6 +4445,24 @@ externalPostgresql:
   sslEnabled: false
   sslCA: ""
 
+## @section External proxy configuration
+## Configuration for an external proxy provided by the client. Only HTTP and HTTPS proxies are supported
+externalProxy:
+  ## @param externalProxy.enabled Whether the APIs will use an external proxy or not
+  enabled: false
+  ## @param externalProxy.host Proxy host
+  host: ""
+  ## @param externalProxy.port Proxy port
+  port: ""
+  ## @param externalProxy.type Proxy type. Only HTTP and HTTPS proxies are supported
+  type: ""
+  ## @param externalProxy.excludedDomains List of domains that should not be proxied
+  excludedDomains: []
+  ## @param externalProxy.sslRejectUnauthorized Whether or not verify the HTTPS proxy SSL certificate
+  sslRejectUnauthorized: true
+  ## @param externalProxy.sslCA CA for the proxy SSL certificate in case is self-signed or signed by a not well-known CA
+  sslCA: ""
+
 ## @section Upgrade Check pre hook parameters
 ## @param upgradeCheck.enabled upgradeCheck will run or not
 upgradeCheck:
@@ -4582,7 +4601,7 @@ routerMetrics:
     capabilities:
       drop:
         - all
-  ## @param routerMetrics.podDisruptionBudget defines disruption budget for router-metrics
+  ## @param routerMetrics.podDisruptionBudget.enabled defines disruption budget for router-metrics
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:

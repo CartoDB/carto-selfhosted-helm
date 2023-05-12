@@ -201,6 +201,11 @@ spec:
               mountPath: {{ include "carto.redis.configMapMountDir" . }}
               readOnly: true
             {{- end }}
+            {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+            - name: proxy-ssl-ca
+              mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
           {{- if .Values.importApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -231,6 +236,11 @@ spec:
         - name: redis-tls-ca
           configMap:
             name: {{ include "carto.redis.configMapName" . }}
+        {{- end }}
+        {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+        - name: proxy-ssl-ca
+          configMap:
+            name: {{ include "carto.proxy.configMapName" . }}
         {{- end }}
         {{- if .Values.importApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraVolumes "context" $) | nindent 8 }}

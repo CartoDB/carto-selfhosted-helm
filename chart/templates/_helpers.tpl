@@ -1337,3 +1337,39 @@ Return the proper Carto upgrade check image name
 {{- define "carto.upgradeCheck.image" -}}
 {{- include "carto.images.image" (dict "imageRoot" .Values.upgradeCheck.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
+
+{{/*
+Add environment variables to configure proxy values
+FIXME: Add support for user and password
+*/}}
+{{- define "carto.proxy.connectionString" -}}
+{{- printf "%s://%s:%d" (lower .Values.externalProxy.type) .Values.externalProxy.host (int .Values.externalProxy.port) -}}
+{{- end -}}
+
+{{/*
+Get the proxy config map name
+*/}}
+{{- define "carto.proxy.configMapName" -}}
+{{- printf "%s-%s" .Release.Name "externalproxy" -}}
+{{- end -}}
+
+{{/*
+Return the directory where the proxy CA cert will be mounted
+*/}}
+{{- define "carto.proxy.configMapMountDir" -}}
+{{- print "/usr/src/certs/proxy-ssl-ca" -}}
+{{- end -}}
+
+{{/*
+Return the filename where the proxy CA will be mounted
+*/}}
+{{- define "carto.proxy.configMapMountFilename" -}}
+{{- print "ca.crt" -}}
+{{- end -}}
+
+{{/*
+Return the absolute path where the proxy CA cert will be mounted
+*/}}
+{{- define "carto.proxy.configMapMountAbsolutePath" -}}
+{{- printf "%s/%s" (include "carto.proxy.configMapMountDir" .) (include "carto.proxy.configMapMountFilename" .) -}}
+{{- end -}}

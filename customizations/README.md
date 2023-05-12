@@ -26,6 +26,7 @@
       - [Setup Redis creating secrets](#setup-redis-creating-secrets)
       - [Setup Redis with automatic secret creation](#setup-redis-with-automatic-secret-creation)
       - [Configure Redis TLS](#configure-redis-tls)
+    - [Configure external proxy](#configure-external-proxy)
     - [Custom Buckets](#custom-buckets)
       - [Pre-requisites](#pre-requisites)
       - [Google Cloud Storage](#google-cloud-storage)
@@ -646,6 +647,18 @@ externalRedis:
     #   ...
     #   -----END CERTIFICATE-----
 ```
+
+### Configure external proxy
+
+CARTO stack supports working behind a HTTP/HTTPS proxy. This proxy is used to connect to external services like Google APIs, Mapbox, etc.
+
+You can find customizations examples for different proxies in the [proxy](./proxy/) directory.
+
+The `externalProxy.excludedDomains` property can contain a list of all the domains that shouldn't be proxied. This is useful for example to avoid proxying the internal services like the internal Redis or Postgresql.
+
+```yaml
+
+> :warning: Your proxy user/password credentials will appear in clear text in the environment variables of the CARTO stack components
 
 ### Custom Buckets
 
@@ -1376,14 +1389,14 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
 
 If you face a problem like the one below while you are updating your CARTO selfhosted installation```
 ```bash
-helm upgrade my-release carto/carto --namespace my namespace -f carto-values.yaml -f carto-secrets.yaml -f customizations.yml 
+helm upgrade my-release carto/carto --namespace my namespace -f carto-values.yaml -f carto-secrets.yaml -f customizations.yml
 Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
 ```
 
 Probably an upgrade operation wasn't killed gracefully. The fix is to rollback to a previous deployment:
 
 ```bash
-helm history my-release                                                                                                                               
+helm history my-release
 
 REVISION	UPDATED                 	STATUS         	CHART             	APP VERSION	DESCRIPTION
 19      	Fri Aug 26 11:10:20 2022	superseded     	carto-1.40.6-beta 	2022.8.19-2	Upgrade complete
@@ -1396,10 +1409,10 @@ REVISION	UPDATED                 	STATUS         	CHART             	APP VERSION
 26      	Fri Sep 30 14:14:29 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
 27      	Fri Sep 30 14:37:41 2022	deployed       	carto-1.42.10-beta	2022.9.28  	Upgrade complete
 28      	Fri Sep 30 15:07:06 2022	pending-upgrade	carto-1.42.10-beta	2022.9.28  	Preparing upgrade
-helm rollback my-release 27                                                                                                                                              
+helm rollback my-release 27
 Rollback was a success! Happy Helming!
 
-helm history my-release   
+helm history my-release
 
 REVISION	UPDATED                 	STATUS         	CHART             	APP VERSION	DESCRIPTION
 20      	Fri Sep 16 12:00:57 2022	superseded     	carto-1.42.1-beta 	2022.9.16  	Upgrade complete
@@ -1412,5 +1425,5 @@ REVISION	UPDATED                 	STATUS         	CHART             	APP VERSION
 27      	Fri Sep 30 14:37:41 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
 28      	Fri Sep 30 15:07:06 2022	pending-upgrade	carto-1.42.10-beta	2022.9.28  	Preparing upgrade
 29      	Tue Oct  4 10:58:22 2022	deployed       	carto-1.42.10-beta	2022.9.28  	Rollback to 27
-``` 
+```
 Now you can run the upgrade operation again
