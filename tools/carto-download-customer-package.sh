@@ -146,7 +146,7 @@ gcloud auth activate-service-account "${CARTO_SERVICE_ACCOUNT_EMAIL}" \
 
 # Get latest customer package version
 CUSTOMER_PACKAGE_FILE_LATEST=$(gsutil ls "gs://${CLIENT_STORAGE_BUCKET}/${CUSTOMER_PACKAGE_FOLDER}/${CUSTOMER_PACKAGE_NAME_PREFIX}-${CLIENT_ID}-*-*-*.zip")
-SELFHOSTED_VERSION_LATEST=$(echo "${CUSTOMER_PACKAGE_FILE_LATEST}" | grep -Eo "[0-9]+-[0-9]+-[0-9]+")
+SELFHOSTED_VERSION_LATEST=$(echo "${CUSTOMER_PACKAGE_FILE_LATEST}" | grep -Eo "[0-9]+-[0-9]+-[0-9]+(-rc-[0-9])?")
 
 # Download package
 gsutil cp \
