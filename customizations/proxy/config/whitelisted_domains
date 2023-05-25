@@ -1,8 +1,11 @@
-######################
+##############################################################
 # Whitelisted domains
-######################
+# NOTE: This is a list of the minimum domains that should be 
+#       whitelisted by the proxy for CARTO selfhosted to work.
+##############################################################
 
 # global
+cloudresourcemanager.googleapis.com
 api.tomtom.com
 auth.carto.com
 bigquery.googleapis.com
@@ -15,11 +18,15 @@ sqladmin.googleapis.com
 storage.googleapis.com
 tools.google.com 
 www.googleapis.com
+oauth2.googleapis.com
 # only for Mapbox geocoding
 api.mapbox.com
-# only for Google Maps geocoding
+# only for Google Maps basemaps & geocoding
 maps.googleapis.com
 # only for AWS S3 buckets
 *.amazonaws.com
 # only for Azure Blob Storage
 *.blob.core.windows.net
+# only for Snowflake
+*.snowflakecomputing.com
+

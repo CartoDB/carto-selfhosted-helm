@@ -27,6 +27,8 @@
       - [Setup Redis with automatic secret creation](#setup-redis-with-automatic-secret-creation)
       - [Configure Redis TLS](#configure-redis-tls)
     - [Configure external proxy](#configure-external-proxy)
+      - [Supported datawarehouses](#supported-datawarehouses)
+      - [Non-proxied egress traffic](#non-proxied-egress-traffic)
     - [Custom Buckets](#custom-buckets)
       - [Pre-requisites](#pre-requisites)
       - [Google Cloud Storage](#google-cloud-storage)
@@ -650,13 +652,41 @@ externalRedis:
 
 ### Configure external proxy
 
-CARTO stack supports working behind a HTTP/HTTPS proxy. This proxy is used to connect to external services like Google APIs, Mapbox, etc.
+CARTO selfhosted supports working behind a HTTP proxy. This proxy is used for the CARTO selfhosted components to connect to external services like Google APIs, Mapbox, etc.
 
-You can find customizations examples for different proxies in the [proxy](./proxy/) directory.
+> :warning: Currently, only HTTP proxy is supported.
+
+You can find customizations examples for different proxies in the [proxy](../customizations/proxy/) directory.
 
 The `externalProxy.excludedDomains` property can contain a list of all the domains that shouldn't be proxied. This is useful for example to avoid proxying the internal services like the internal Redis or Postgresql.
 
 > :warning: Your proxy user/password credentials will appear in clear text in the environment variables of the CARTO stack components
+
+#### Supported datawarehouses
+
+While some datawarehouses are compatible with the proxy configuration, there are others that will automatically
+ bypass the proxy.It will require you to allow this egress non-proxied traffic if you have a restrictive network policy in place.
+
+ | Datawarehouse | Proxy support |
+ | ------------- | ------------- |
+ | BigQuery      | Yes           |
+ | Snowflake     | Yes           |
+ | Databricks    | No            |
+ | Postgres      | No            |
+ | Redshift      | No            |
+
+ > :warning: You don't need to include the non supported datawarehouses in the `externalProxy.excludedDomains` property as CARTO selfhosted components will attempt a direct connection to them but you will have to allow this non-proxied traffic in your network policy.
+
+
+#### Non-proxied egress traffic
+
+If no network policy is applied to the namespace, all non-proxied egress traffic will be allowed.
+
+In more restrictive environments, you might want to ensure the CARTO selfhosted components can only connect to external services allowed by the proxy configuration (whitelist), while all other non-proxied egress traffic is blocked. You can find a list of the domains that should be whitelisted by the proxy for CARTO self-hosted to work.
+
+This can be achieved by applying a [network policy like this one](../customizations/proxy/network_policy/restricted-internet-access-network-policy.yaml) within the same namespace.
+
+
 
 ### Custom Buckets
 
