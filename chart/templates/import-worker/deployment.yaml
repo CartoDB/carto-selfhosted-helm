@@ -110,6 +110,7 @@ spec:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.key" . }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+              "BIGQUERY_OAUTH2_CLIENT_SECRET"
               "ENCRYPTION_SECRET_KEY"
               "IMPORT_JWT_SECRET"
               "IMPORT_AWS_ACCESS_KEY_ID"
@@ -125,6 +126,7 @@ spec:
             - configMapRef:
                 name: {{ template "carto.importWorker.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+              "BIGQUERY_OAUTH2_CLIENT_SECRET"
               "ENCRYPTION_SECRET_KEY"
               "IMPORT_JWT_SECRET"
               "IMPORT_AWS_ACCESS_KEY_ID"
