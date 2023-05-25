@@ -656,8 +656,6 @@ You can find customizations examples for different proxies in the [proxy](./prox
 
 The `externalProxy.excludedDomains` property can contain a list of all the domains that shouldn't be proxied. This is useful for example to avoid proxying the internal services like the internal Redis or Postgresql.
 
-```yaml
-
 > :warning: Your proxy user/password credentials will appear in clear text in the environment variables of the CARTO stack components
 
 ### Custom Buckets
