@@ -660,7 +660,7 @@ You can use this [customizations](../customizations/proxy/) file as an example.
 
 The externalProxy.excludedDomains property allows you to specify a comprehensive list of domains that should not be proxied. This is useful in scenarios where you want to exclude certain services, such as internal Redis or Postgresql, from being routed through the proxy.
 
-> :warning: Please be aware that your proxy user/password credentials will be exposed in clear text within the environment variables of the CARTO components.
+A comprehensive list of domains that must be whitelisted by the proxy for proper functioning of CARTO self-hosted can be found [here](../customizations/proxy/config/whitelisted_domains). The list includes domains for the essential core services of CARTO self-hosted, as well as additional optional domains that should be enabled to access specific features.
 
 #### Supported datawarehouses
 
@@ -681,7 +681,7 @@ Note that while certain data warehouses can be configured to work with the proxy
 
 When no network policy is enforced, all outgoing traffic that does not pass through a proxy will be permitted.
 
-In restrictive environments, it is important to maintain strict control over connections made by CARTO self-hosted components. To achieve this, you should configure your proxy to allow only approved external services (whitelisting), while blocking any other outgoing traffic that does not go through the proxy. A comprehensive list of domains that must be whitelisted by the proxy for proper functioning of CARTO self-hosted can be found [here](../customizations/proxy/config/whitelisted_domains).
+In restrictive environments, it is important to maintain strict control over connections made by CARTO self-hosted components. To achieve this, you should configure your proxy to allow only approved external services (whitelisting), while blocking any other outgoing traffic that does not go through the proxy.
 
 To accomplish this, you can apply a network policy, such as the one provided in this [example](../customizations/proxy/network_policy/restricted-internet-access-network-policy.yaml).
 
