@@ -656,7 +656,7 @@ externalRedis:
 
 #### Important notes
 
-Please consider the following important notes regarding the proxy configuration:
+:warning: Please consider the following important notes regarding the proxy configuration:
 
 - CARTO self-hosted helm chart does not install any proxy component, instead it supports connecting to an existing proxy software deployed by the customer.
 
@@ -666,7 +666,7 @@ Please consider the following important notes regarding the proxy configuration:
 
 #### Configuration
 
-CARTO self-hosted provides support for operating behind an **HTTP** proxy. The proxy acts as a HTTP gateway, enabling CARTO self-hosted components to establish connections with essential external services like Google APIs, Mapbox, and others.
+CARTO self-hosted provides support for operating behind an **HTTP** proxy. The proxy acts as an HTTP gateway, enabling CARTO self-hosted components to establish connections with essential external services like Google APIs, Mapbox, and others.
 
 You can use this [customizations](../customizations/proxy/) file as an example.
 
