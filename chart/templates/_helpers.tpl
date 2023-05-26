@@ -1340,7 +1340,6 @@ Return the proper Carto upgrade check image name
 
 {{/*
 Add environment variables to configure proxy values
-FIXME: Add support for user and password
 */}}
 {{- define "carto.proxy.connectionString" -}}
 {{- printf "%s://%s:%d" (lower .Values.externalProxy.type) .Values.externalProxy.host (int .Values.externalProxy.port) -}}

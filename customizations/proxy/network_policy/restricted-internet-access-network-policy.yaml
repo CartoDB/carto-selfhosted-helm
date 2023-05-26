@@ -1,0 +1,67 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: carto-no-internet-access
+  # Optional labels
+  labels:
+    app.kubernetes.io/instance: <instance-name>
+    app.kubernetes.io/managed-by: <managed-by>
+    app.kubernetes.io/name: <app-name>
+spec:
+  # Match all Pods except the proxy Pod.
+  # NOTE: Make sure your proxy pod has the label app.kubernetes.io/component: proxy
+  # NOTE: Proxy pod is not deployed with the CARTO Self-hosted chart
+  podSelector:
+    matchExpressions:
+      - key: app.kubernetes.io/component
+        operator: NotIn
+        values:
+          - proxy
+          - router
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow connections within the same namespace
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: <namespace>
+  egress:
+    # Allow connections within the same namespace
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: <namespace>
+    # Allow DNS resolution
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+        - podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+    # Allow connections to external datawarehouses
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        # Postgres
+        - port: 5432
+          protocol: TCP
+        # Redshift
+        - port: 5439
+          protocol: TCP
+        # Redis
+        - port: 6379
+          protocol: TCP
+    # Allow connections to other datawarehouses hosts on port 443
+    - to:
+        - ipBlock:
+            cidr: <CIDR>
+      ports:
+        - port: 443
+          protocol: TCP
