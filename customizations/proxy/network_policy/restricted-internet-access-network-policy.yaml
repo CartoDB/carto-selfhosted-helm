@@ -10,6 +10,7 @@ metadata:
 spec:
   # Match all Pods except the proxy Pod.
   # NOTE: Make sure your proxy pod has the label app.kubernetes.io/component: proxy
+  # NOTE: Proxy pod is not deployed with the CARTO Self-hosted chart
   podSelector:
     matchExpressions:
       - key: app.kubernetes.io/component

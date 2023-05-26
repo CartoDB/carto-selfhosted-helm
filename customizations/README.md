@@ -26,7 +26,9 @@
       - [Setup Redis creating secrets](#setup-redis-creating-secrets)
       - [Setup Redis with automatic secret creation](#setup-redis-with-automatic-secret-creation)
       - [Configure Redis TLS](#configure-redis-tls)
-    - [Configure external proxy](#configure-external-proxy)
+    - [External proxy](#external-proxy)
+      - [Important notes](#important-notes)
+      - [Configuration](#configuration)
       - [Supported datawarehouses](#supported-datawarehouses)
       - [Enhaced control over non-proxied egress traffic](#enhaced-control-over-non-proxied-egress-traffic)
     - [Custom Buckets](#custom-buckets)
@@ -47,7 +49,7 @@
   - [Pod Disruption Budget](#pod-disruption-budget)
   - [Redshift imports](#redshift-imports)
   - [Workload Identity BigQuery connection](#workload-identity-bigquery-connection)
-    - [Configuration](#configuration)
+    - [Configuration](#configuration-1)
     - [Enabling-Disabling TrackJS](#enabling-disabling-trackjs)
   - [Advanced configuration](#advanced-configuration)
   - [Tips for creating the customization Yaml file](#tips-for-creating-the-customization-yaml-file)
@@ -650,17 +652,27 @@ externalRedis:
     #   -----END CERTIFICATE-----
 ```
 
-### Configure external proxy
+### External proxy
 
-CARTO self-hosted provides support for operating behind an HTTP proxy. The proxy acts as a gateway, enabling CARTO self-hosted components to establish connections with essential external services like Google APIs, Mapbox, and others.
+#### Important notes
 
-> :warning: Please note that at the moment, only HTTP proxy is supported.
+Please consider the following important notes regarding the proxy configuration:
+
+- CARTO self-hosted helm chart does not install any proxy component, instead it supports connecting to an existing proxy software deployed by the customer.
+
+- Currently, CARTO Self-hosted only supports the configuration of proxies using the **HTTP protocol**.
+
+- At the moment, password authentication is not supported for the proxy connection.
+
+#### Configuration
+
+CARTO self-hosted provides support for operating behind an **HTTP** proxy. The proxy acts as a HTTP gateway, enabling CARTO self-hosted components to establish connections with essential external services like Google APIs, Mapbox, and others.
 
 You can use this [customizations](../customizations/proxy/) file as an example.
 
-The externalProxy.excludedDomains property allows you to specify a comprehensive list of domains that should not be proxied. This is useful in scenarios where you want to exclude certain services, such as internal Redis or Postgresql, from being routed through the proxy.
+The ``externalProxy.excludedDomains`` property allows you to specify a comprehensive list of domains that should not be proxied.
 
-A comprehensive list of domains that must be whitelisted by the proxy for proper functioning of CARTO self-hosted can be found [here](../customizations/proxy/config/whitelisted_domains). The list includes domains for the essential core services of CARTO self-hosted, as well as additional optional domains that should be enabled to access specific features.
+A comprehensive list of domains that must be whitelisted by the proxy for the proper functioning of CARTO self-hosted can be found [here](../customizations/proxy/config/whitelisted_domains). The list includes domains for the essential core services of CARTO self-hosted, as well as additional optional domains that should be enabled to access specific features.
 
 #### Supported datawarehouses
 
