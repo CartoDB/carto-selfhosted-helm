@@ -237,7 +237,7 @@ Redis state is not critical for the proper operation of the CARTO stack, so no b
 
 As a rule of thumb, you should keep a backup of all Secrets created outside the CARTO Helm Chart but referenced in it via the `.existingSecret` property, which you can find in the various customizations of the Chart, for example,
 
-+ The external database credentials defined in `externalPostgresql.existingSecret
++ The external database credentials defined in `externalPostgresql.existingSecret`
 + The custom TLS certificate for the external domain, defined at `tlsCerts.existingSecret`
 
 No additional Kubernetes Object backup is required
