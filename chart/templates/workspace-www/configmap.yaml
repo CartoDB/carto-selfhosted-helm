@@ -21,8 +21,6 @@ data:
   LOG_LEVEL: "debug"
   REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
   REACT_APP_ACCOUNTS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/"
-  REACT_APP_WORKSPACE_WWW_ENABLE_EXPORTS: "false"
-  REACT_APP_WORKSPACE_WWW_ENABLE_TRACKJS: "true"
   REACT_APP_API_BASE_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api"
   REACT_APP_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   REACT_APP_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
@@ -35,4 +33,6 @@ data:
   REACT_APP_NOTIFIER_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/notifier"
   REACT_APP_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
   THUMBNAILS_BUCKET_EXTERNAL_URL: {{ .Values.appConfigValues.thumbnailsBucketExternalURL | quote }}
+  REACT_APP_WORKSPACE_WWW_ENABLE_TRACKJS: {{ .Values.appConfigValues.enableTrackJS | quote }}
+  REACT_APP_WORKSPACE_WWW_ENABLE_EXPORTS: "false"
 {{- end }}
