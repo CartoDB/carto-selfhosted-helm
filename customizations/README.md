@@ -1226,18 +1226,11 @@ CARTO self-hosted running on a GKE cluster (Google Cloud Platform) can take adva
 
 ### Enabling-Disabling TrackJS
 
-- TrackJS is enabled by default in the www components, but you can disable it with these variables:
+TrackJS is enabled by default in the www components, but you can disable with:
 
-   ```bash
-   accountsWww:
-     extraEnvVars:
-       - name: REACT_APP_ACCOUNTS_WWW_ENABLE_TRACKJS
-         value: false
-
-   workspaceWww:
-     extraEnvVars:
-       - name: REACT_APP_WORKSPACE_WWW_ENABLE_TRACKJS
-         value: false
+   ```yaml
+   appConfigValues:
+    enableTrackJS: false
    ```
 
 ## Advanced configuration
