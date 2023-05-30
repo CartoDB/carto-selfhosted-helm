@@ -16,7 +16,7 @@ function check_deps()
 {
   for DEP in ${DEPENDENCIES}; do
     # shellcheck disable=SC2261,SC2210
-    command -v "${DEP}" 2>&1 > /dev/null || \
+    command -v "${DEP}" > /dev/null 2>&1 || \
       { echo -e "\n[ERROR]: missing dependency <${DEP}>. Please, install it.\n"; exit 1;}
   done
 }
