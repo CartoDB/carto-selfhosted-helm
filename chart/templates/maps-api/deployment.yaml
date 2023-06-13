@@ -115,6 +115,7 @@ spec:
              "BIGQUERY_OAUTH2_CLIENT_SECRET"
              "ENCRYPTION_SECRET_KEY"
              "MAPS_API_V3_JWT_SECRET"
+             "LAUNCHDARKLY_SDK_KEY"
              ) "context" $ ) | nindent 12 }}
             {{- if .Values.mapsApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraEnvVars "context" $) | nindent 12 }}
@@ -126,6 +127,7 @@ spec:
              "BIGQUERY_OAUTH2_CLIENT_SECRET"
              "ENCRYPTION_SECRET_KEY"
              "MAPS_API_V3_JWT_SECRET"
+             "LAUNCHDARKLY_SDK_KEY"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
