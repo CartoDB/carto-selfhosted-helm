@@ -12,7 +12,6 @@ gcr.io
 iamcredentials.googleapis.com
 logging.googleapis.com
 pubsub.googleapis.com
-sqladmin.googleapis.com
 storage.googleapis.com
 tools.google.com
 www.googleapis.com
@@ -25,6 +24,9 @@ gcp-us-east1.api.carto.com
 
 ## Azure storage buckets
 .blob.core.windows.net
+
+## Google Cloud SQL
+sqladmin.googleapis.com
 
 ## Snowflake
 .snowflakecomputing.com
