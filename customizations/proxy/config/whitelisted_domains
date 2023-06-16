@@ -2,34 +2,48 @@
 # Whitelisted domains
 ######################
 
-# core services
+## Global
 auth.carto.com
 bigquery.googleapis.com
+clientstream.launchdarkly.com
 cloudresourcemanager.googleapis.com
+events.launchdarkly.com
 gcr.io
 iamcredentials.googleapis.com
 logging.googleapis.com
 pubsub.googleapis.com
 storage.googleapis.com
-tools.google.com 
+tools.google.com
 www.googleapis.com
-# only for creating Bigquery Oauth connections
-oauth2.googleapis.com
-# only for Tomtom geocoding
-api.tomtom.com
-# only for Google Cloud SQL
+
+## Demo maps
+gcp-us-east1.api.carto.com
+
+## AWS S3 buckets
+.amazonaws.com
+
+## Azure storage buckets
+.blob.core.windows.net
+
+## Google Cloud SQL
 sqladmin.googleapis.com
-# only for Here geocoding
-isoline.router.hereapi.com
-# only for Mapbox geocoding
+
+## Snowflake
+.snowflakecomputing.com
+o.ss2.us
+ocsp.rootg2.amazontrust.com
+
+## Mapbox geocoding
 api.mapbox.com
-# only for Google Maps basemaps & geocoding
+
+## Tomtom geocoding
+api.tomtom.com
+
+## Here geocoding
+isoline.router.hereapi.com
+
+## Google geocoding and basemaps
 maps.googleapis.com
-# only for AWS S3 buckets
-*.amazonaws.com
-# only for Azure Blob Storage
-*.blob.core.windows.net
-# only for Snowflake
-*.snowflakecomputing.com
 
-
+## Bigquery Oauth connections
+oauth2.googleapis.com
