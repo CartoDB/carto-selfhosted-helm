@@ -4528,6 +4528,7 @@ upgradeCheck:
   podSecurityContext:
     enabled: true
     fsGroup: 1000
+    supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param upgradeCheck.containerSecurityContext.enabled Enabled Upgrade Check pre-hook containers' Security Context
@@ -4538,7 +4539,9 @@ upgradeCheck:
   containerSecurityContext:
     enabled: true
     runAsUser: 1000
+    runAsGroup: 1000
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
