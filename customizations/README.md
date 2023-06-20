@@ -712,6 +712,7 @@ You can create and use your own storage buckets in any of the following supporte
 #### Pre-requisites
 
 1. Create 3 buckets in your preferred Cloud provider:
+
    - Import Bucket
    - Client Bucket
    - Thumbnails Bucket
@@ -720,7 +721,7 @@ You can create and use your own storage buckets in any of the following supporte
 
    > There're no name constraints.
 
-2. CORS configuration: Thumbnails and Import buckets require having the following CORS headers configured.
+2. CORS configuration: The Thumbnails and Client buckets require having the following CORS headers configured.
    - Allowed origins: `*`
    - Allowed methods: `GET`, `PUT`, `POST`
    - Allowed headers (common): `Content-Type`, `Content-MD5`, `Content-Disposition`, `Cache-Control`
@@ -729,6 +730,8 @@ You can create and use your own storage buckets in any of the following supporte
    - Max age: `3600`
 
    > CORS is configured at bucket level in GCS and S3, and at storage account level in Azure.
+
+   > :warning: The Imports bucket do not require CORS configuration
 
    > How do I setup CORS configuration? Check the provider docs: [GCS](https://cloud.google.com/storage/docs/configuring-cors), [AWS S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/enabling-cors-examples.html), [Azure Storage](https://docs.microsoft.com/en-us/rest/api/storageservices/cross-origin-resource-sharing--cors--support-for-the-azure-storage-services#enabling-cors-for-azure-storage).
 
