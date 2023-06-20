@@ -14,12 +14,12 @@ metadata:
 data:
   LOG_LEVEL: "debug"
   PORT: {{ .Values.accountsWww.containerPorts.http | quote }}
-  REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
-  REACT_APP_ACCOUNTS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/"
-  REACT_APP_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
-  REACT_APP_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
-  REACT_APP_CUSTOM_TENANT: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  REACT_APP_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
+  VITE_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
+  VITE_ACCOUNTS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/"
+  VITE_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
+  VITE_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
+  VITE_CUSTOM_TENANT: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  VITE_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
   THUMBNAILS_BUCKET_EXTERNAL_URL: {{ .Values.appConfigValues.thumbnailsBucketExternalURL | quote }}
-  REACT_APP_ACCOUNTS_WWW_ENABLE_TRACKJS: {{ .Values.appConfigValues.enableTrackJS | quote }}
+  VITE_ACCOUNTS_WWW_ENABLE_TRACKJS: {{ .Values.appConfigValues.enableTrackJS | quote }}
 {{- end }}

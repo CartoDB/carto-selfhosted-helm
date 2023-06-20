@@ -13,27 +13,27 @@ metadata:
   {{- end }}
 data:
   {{- if $.Values.appConfigValues.bigqueryOauth2ClientId }}
-  REACT_APP_BIGQUERY_OAUTH: "true"
+  VITE_BIGQUERY_OAUTH: "true"
   {{- else }}
-  REACT_APP_BIGQUERY_OAUTH: "false"
+  VITE_BIGQUERY_OAUTH: "false"
   {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   LOG_LEVEL: "debug"
-  REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
-  REACT_APP_ACCOUNTS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/"
-  REACT_APP_API_BASE_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api"
-  REACT_APP_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
-  REACT_APP_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
-  REACT_APP_HUBSPOT_ID: "474999"
-  REACT_APP_HUBSPOT_LIMIT_FORM_ID: "cd9486fa-5766-4bac-81b9-d8c6cd029b3b"
-  REACT_APP_HUBSPOT_REQUEST_SUBSCRIPTION_FORM_ID: "49d53632-80f9-4720-b4be-bf623a527af4"
-  REACT_APP_LAUNCH_DARKLY_CLIENT_SIDE_ID: {{ .Values.cartoConfigValues.launchDarklyClientSideId | quote }}
-  REACT_APP_PUBLIC_MAP_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api/v3/maps/public"
-  REACT_APP_WORKSPACE_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/workspace-api"
-  REACT_APP_NOTIFIER_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/notifier"
-  REACT_APP_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
+  VITE_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
+  VITE_ACCOUNTS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/"
+  VITE_API_BASE_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api"
+  VITE_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
+  VITE_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
+  VITE_HUBSPOT_ID: "474999"
+  VITE_HUBSPOT_LIMIT_FORM_ID: "cd9486fa-5766-4bac-81b9-d8c6cd029b3b"
+  VITE_HUBSPOT_REQUEST_SUBSCRIPTION_FORM_ID: "49d53632-80f9-4720-b4be-bf623a527af4"
+  VITE_LAUNCH_DARKLY_CLIENT_SIDE_ID: {{ .Values.cartoConfigValues.launchDarklyClientSideId | quote }}
+  VITE_PUBLIC_MAP_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api/v3/maps/public"
+  VITE_WORKSPACE_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/workspace-api"
+  VITE_NOTIFIER_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/notifier"
+  VITE_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
   THUMBNAILS_BUCKET_EXTERNAL_URL: {{ .Values.appConfigValues.thumbnailsBucketExternalURL | quote }}
-  REACT_APP_WORKSPACE_WWW_ENABLE_TRACKJS: {{ .Values.appConfigValues.enableTrackJS | quote }}
-  REACT_APP_WORKSPACE_WWW_ENABLE_EXPORTS: "false"
-  REACT_APP_ASKNICELY_MIN_HOURS_ACCOUNT_OLD_ENOUGH: "1920"
+  VITE_WORKSPACE_WWW_ENABLE_TRACKJS: {{ .Values.appConfigValues.enableTrackJS | quote }}
+  VITE_WORKSPACE_WWW_ENABLE_EXPORTS: "false"
+  VITE_ASKNICELY_MIN_HOURS_ACCOUNT_OLD_ENOUGH: "1920"
 {{- end }}
