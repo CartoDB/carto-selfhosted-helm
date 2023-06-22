@@ -712,6 +712,7 @@ You can create and use your own storage buckets in any of the following supporte
 #### Pre-requisites
 
 1. Create 3 buckets in your preferred Cloud provider:
+
    - Import Bucket
    - Client Bucket
    - Thumbnails Bucket
@@ -720,7 +721,7 @@ You can create and use your own storage buckets in any of the following supporte
 
    > There're no name constraints.
 
-2. CORS configuration: Thumbnails and Import buckets require having the following CORS headers configured.
+2. CORS configuration: The Thumbnails and Client buckets require having the following CORS headers configured.
    - Allowed origins: `*`
    - Allowed methods: `GET`, `PUT`, `POST`
    - Allowed headers (common): `Content-Type`, `Content-MD5`, `Content-Disposition`, `Cache-Control`
