@@ -1,6 +1,6 @@
 {{- if and .Values.mapsApi.podDisruptionBudget.enabled}}
 ---
-apiVersion: policy/v1beta1
+apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ template "carto.mapsApi.fullname" . }}-pdb
