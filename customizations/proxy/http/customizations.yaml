@@ -3,4 +3,4 @@ externalProxy:
   host: <Proxy IP/Hostname>
   port: <Proxy port>
   type: http
-  excludedDomains: []
+  excludedDomains: ["localhost,.svc.cluster.local"]
