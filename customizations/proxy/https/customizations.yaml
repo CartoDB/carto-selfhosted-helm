@@ -1,0 +1,12 @@
+externalProxy:
+  enabled: true
+  host: <Proxy IP/Hostname>
+  port: <Proxy port>
+  type: https
+  excludedDomains: ["localhost,.svc.cluster.local"]
+  ## NOTE: Please, carefully read CARTO Self-hosted proxy documentation to understand the  the current limitations with [custom CAs].
+  sslRejectUnauthorized: true
+  # sslCA: |
+  #  -----BEGIN CERTIFICATE-----
+  #  XXXXXXXXXXXXXXXXXXXXXXXXXXX
+  #  -----END CERTIFICATE-----
