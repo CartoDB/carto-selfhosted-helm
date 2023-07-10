@@ -78,6 +78,21 @@ while getopts d:s:h OPTS ; do
 done
 
 # ==================================================
+# sanity checks
+# ==================================================
+
+# Validate provided path
+[ ! -d "${FILE_DIR}" ] && _error "Directory <${FILE_DIR}> does not exist." 2
+
+# Validate selfhosted mode
+# shellcheck disable=SC2076
+[[ ! '[ "docker", "k8s" ]' =~ "\"${SELFHOSTED_MODE}\"" ]] && _error "illegal value '${SELFHOSTED_MODE}'" 3
+
+# Check dependencies
+check_deps
+
+
+# ==================================================
 # main block
 # ==================================================
 # docker
@@ -88,9 +103,6 @@ CARTO_VALUES="${FILE_DIR}/carto-values.yaml"
 CARTO_SECRETS="${FILE_DIR}/carto-secrets.yaml"
 # global
 CUSTOMER_PACKAGE_NAME_PREFIX="carto-selfhosted-${SELFHOSTED_MODE}-customer-package"
-
-# Check dependencies
-check_deps
 
 # Validate selfhosted mode
 if [ "$(echo "${SELFHOSTED_MODE}" | grep -E "docker|k8s")" == "" ]; then
