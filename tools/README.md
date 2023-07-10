@@ -68,12 +68,30 @@ This tool can be used to download a newer version of the Carto selfhosted custom
 > | `-d` | Directory containing the existing `carto-values.yaml` and `carto-secrets.yaml` files. |
 > | `-s` | Carto selfhosted installation mode. Use `k8s`. |
 
-   ```bash
-   $ ./carto-download-customer-package.sh -d /tmp/carto -s k8s
-   Activated service account credentials for: [serv-onp-xxx@carto-tnt-onp-xxx.iam.gserviceaccount.com]
-   Copying gs://carto-tnt-onp-xxx-client-storage/customer-package/carto-selfhosted-k8s-customer-package-xxx-2022-10-18.zip...
-   / [1 files][  3.5 KiB/  3.5 KiB]                                                
-   Operation completed over 1 objects/3.5 KiB.                                      
-   ```
+> ```bash
+> $ ./carto-download-customer-package.sh -d /tmp/carto -s k8s
+> ```
+
+> Example output: 
+> 
+> ```
+> ℹ️ selfhosted mode: k8s
+> ✅ found: /tmp/carto/carto-values.yaml
+> ✅ found: /tmp/carto/carto-secrets.yaml
+> ✅ activating: service account credentials for: [serv-onp-xxx@carto-tnt-onp-xxx.iam.gserviceaccount.com]
+> Copying gs://carto-tnt-onp-xxx-client-storage/customer-package/carto-selfhosted-k8s-customer-package-xxx-2023-6-16.zip...
+> / [1 files][  2.6 KiB/  2.6 KiB]
+> Operation completed over 1 objects/2.6 KiB.
+> ✅ downloading: carto-selfhosted-k8s-customer-package-xxx-2023-6-16.zip
+> 
+> ##############################################################
+> Current selfhosted version in [carto-values.yaml]: 2023.6.16
+> Latest selfhosted version downloaded: 2023-6-16
+> Downloaded file: carto-selfhosted-k8s-customer-package-xxx-2023-6-16.zip
+> Downloaded from: gs://carto-tnt-onp-xxx-client-storage/customer-package/carto-selfhosted-k8s-customer-package-xxx-2023-6-16.zip
+> ##############################################################
+> 
+> ✅ finished [0]
+> ```
 
 2. Unzip your customer package files and use them to update your Carto selfhosted installation.
