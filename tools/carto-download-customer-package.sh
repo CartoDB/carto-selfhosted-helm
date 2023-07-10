@@ -1,11 +1,11 @@
 #!/bin/bash
 
 ##########################################
-# Requirements: yq gsutil
+# Requirements: yq jq gsutil gcloud
 ##########################################
 DEPENDENCIES="yq jq gsutil gcloud"
 SELFHOSTED_MODE="k8s"
-FILE_DIR=""
+FILE_DIR="."
 CARTO_SERVICE_ACCOUNT_FILE="./carto-service-account.json"
 CLIENT_STORAGE_BUCKET=""
 CUSTOMER_PACKAGE_NAME_PREFIX="carto-selfhosted-${SELFHOSTED_MODE}-customer-package"
