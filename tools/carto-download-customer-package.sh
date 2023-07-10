@@ -49,6 +49,18 @@ function usage()
 EOF
 }
 
+function _error() {
+  # ARGV1 = message
+  # ARGV2 = desired exit code (default is 1)
+  local EXIT_CODE="${2:-1}"
+  RED="\033[1;31m"
+  YELLOW="\033[1;93m"
+  NONE="\033[0m"
+  echo -e "❌ ${RED}ERROR ${NONE}[${EXIT_CODE}]: ${YELLOW}${1}${NONE}"
+  usage
+  exit "${EXIT_CODE}"
+}
+
 # ==================================================
 # Verify input
 # ==================================================
