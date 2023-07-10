@@ -38,7 +38,6 @@ data:
   {{- end }}
   IMPORT_AWS_CUSTOM_BUCKET_ROLE_ARN: {{ .Values.appConfigValues.importAwsRoleArn | quote }}
   IMPORT_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
-  IMPORT_BUCKET: {{ .Values.appConfigValues.importBucket | quote }}
   {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
   {{- if .Values.appConfigValues.googleCloudStorageProjectId }}
   IMPORT_PROJECTID: {{ .Values.appConfigValues.googleCloudStorageProjectId | quote }}

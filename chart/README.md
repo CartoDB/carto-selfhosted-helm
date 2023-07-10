@@ -20,7 +20,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.storageProvider`             | Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob`                             | `gcp`                  |
 | `appConfigValues.httpCacheEnabled`            | Enable the internal httpCache                                                                                          | `true`                 |
 | `appConfigValues.importAwsRoleArn`            | ARN Role to be used to import files from the bucket                                                                    | `""`                   |
-| `appConfigValues.importBucket`                | Bucket to be used to store the import files                                                                            | `""`                   |
 | `appConfigValues.workspaceImportsBucket`      | Bucket to be used to store metadata of the workspace                                                                   | `""`                   |
 | `appConfigValues.workspaceImportsPublic`      | Indicate if the imports could be accessed publicly                                                                     | `true`                 |
 | `appConfigValues.workspaceThumbnailsBucket`   | Bucket to be used to store the thumbnails generated in the app                                                         | `""`                   |
