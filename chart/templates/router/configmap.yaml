@@ -17,6 +17,12 @@ data:
   {{- end }}
   HTTP_CACHE_ENABLED: {{ .Values.appConfigValues.httpCacheEnabled | quote }}
   LS_JAVA_OPTS: {{ template "carto.routerMetrics.jvmOptions" . }}
+  NGINX_CLIENT_MAX_BODY_SIZE: {{ .Values.router.nginxConfig.client_max_body_size | quote }}
+  NGINX_GZIP_MIN_LENGTH: {{ .Values.router.nginxConfig.gzip_min_length | quote }}
+  NGINX_GZIP_BUFFERS: {{ .Values.router.nginxConfig.gzip_buffers | quote }}
+  NGINX_PROXY_BUFFERS: {{ .Values.router.nginxConfig.proxy_buffers | quote }}
+  NGINX_PROXY_BUFFER_SIZE: {{ .Values.router.nginxConfig.proxy_buffer_size | quote }}
+  NGINX_PROXY_BUSY_BUFFERS_SIZE: {{ .Values.router.nginxConfig.proxy_busy_buffers_size | quote }}
   ROUTER_ACCOUNTS_WWW_INTERNAL_URL: {{ include "carto.accountsWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_HTTP_CACHE_INTERNAL_URL: {{ include "carto.httpCache.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_NOTIFIER_INTERNAL_URL: {{ include "carto.notifier.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
