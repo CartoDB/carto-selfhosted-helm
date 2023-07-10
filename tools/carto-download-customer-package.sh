@@ -1,11 +1,11 @@
 #!/bin/bash
 
 ##########################################
-# Requirements: yq gsutil
+# Requirements: yq jq gsutil gcloud
 ##########################################
 DEPENDENCIES="yq jq gsutil gcloud"
 SELFHOSTED_MODE="k8s"
-FILE_DIR=""
+FILE_DIR="."
 CARTO_SERVICE_ACCOUNT_FILE="./carto-service-account.json"
 CLIENT_STORAGE_BUCKET=""
 CUSTOMER_PACKAGE_NAME_PREFIX="carto-selfhosted-${SELFHOSTED_MODE}-customer-package"
@@ -37,16 +37,29 @@ function usage()
 {
   cat <<EOF
 
-   Usage: $PROGNAME [--dir] [dir_path] [--selfhosted-mode] [k8s|docker]
+   Usage: $PROGNAME [-d dir_path] [-s <k8s|docker>]
 
    optional arguments:
-     -h, --help             Show this help message and exit
-     -d, --dir              Folder path where both <carto-values.yaml> and <carto-secrets.yaml> are located (k8s)
-                            or where both <customer.env> and <key.json> are located (docker). 
-                            Default is current directory.
-     -s, --selfhosted-mode  Selfhosted-mode for the customer package: k8s, or docker. Default is k8s.
+     -d    Folder path where both <carto-values.yaml> and <carto-secrets.yaml> are located (k8s)
+           or where both <customer.env> and <key.json> are located (docker). 
+           Default is current directory.
+     -h    Show this help message and exit
+     -s    Selfhosted-mode for the customer package: k8s or docker.
+           Default is k8s.
 
 EOF
+}
+
+function _error() {
+  # ARGV1 = message
+  # ARGV2 = desired exit code (default is 1)
+  local EXIT_CODE="${2:-1}"
+  RED="\033[1;31m"
+  YELLOW="\033[1;93m"
+  NONE="\033[0m"
+  echo -e "❌ ${RED}ERROR ${NONE}[${EXIT_CODE}]: ${YELLOW}${1}${NONE}"
+  usage
+  exit "${EXIT_CODE}"
 }
 
 # ==================================================
@@ -54,34 +67,30 @@ EOF
 # ==================================================
 PROGNAME="$(basename "$0")"
 
-# use getopt and store the output into $OPTS
-# note the use of -o for the short options, --long for the long name options
-# and a : for any option that takes a parameter
-OPTS=$(getopt -o "hd:s" --long "help,dir,selfhosted-mode" -n "$PROGNAME" -- "$@")
-
-# Check getopt errors
-# shellcheck disable=SC2166,SC2181
-if [ $? -ne 0 ] ; then
-  echo -e "[ERROR]: please check input arguments."
-  usage
-  exit 1
-elif [ $# -lt 2 -o $# -gt 5 ]; then
-  usage
-  exit 1
-fi
-
-eval set -- "$OPTS"
-
-# Remove trailing slash from --dir argument
-while true; do
-  case "$1" in
-    -h | --help ) usage; exit; ;;
-    -d | --dir) FILE_DIR="${2%/}"; shift 2 ;;
-    -s | --selfhosted-mode) SELFHOSTED_MODE="$3"; shift 2 ;;
-    -- ) shift ;;
-    * ) break ;;
+# use getopts builtin to store provided options
+while getopts d:s:h OPTS ; do
+  case "${OPTS}" in
+    d) FILE_DIR="${OPTARG%/}" ;;
+    s) SELFHOSTED_MODE="${OPTARG}" ;;
+    h) usage ; exit ;;
+    *) _error "Invalid args provided" 1
   esac
 done
+
+# ==================================================
+# sanity checks
+# ==================================================
+
+# Validate provided path
+[ ! -d "${FILE_DIR}" ] && _error "Directory <${FILE_DIR}> does not exist." 2
+
+# Validate selfhosted mode
+# shellcheck disable=SC2076
+[[ ! '[ "docker", "k8s" ]' =~ "\"${SELFHOSTED_MODE}\"" ]] && _error "illegal value '${SELFHOSTED_MODE}'" 3
+
+# Check dependencies
+check_deps
+
 
 # ==================================================
 # main block
@@ -94,9 +103,6 @@ CARTO_VALUES="${FILE_DIR}/carto-values.yaml"
 CARTO_SECRETS="${FILE_DIR}/carto-secrets.yaml"
 # global
 CUSTOMER_PACKAGE_NAME_PREFIX="carto-selfhosted-${SELFHOSTED_MODE}-customer-package"
-
-# Check dependencies
-check_deps
 
 # Validate selfhosted mode
 if [ "$(echo "${SELFHOSTED_MODE}" | grep -E "docker|k8s")" == "" ]; then
