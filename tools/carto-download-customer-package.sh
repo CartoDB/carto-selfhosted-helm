@@ -151,7 +151,7 @@ CARTO_GCP_PROJECT=$(jq -r ".project_id" < "${CARTO_SERVICE_ACCOUNT_FILE}")
 # Download the latest customer package
 STEP="activating: service account credentials for: [${CARTO_SERVICE_ACCOUNT_EMAIL}]"
 if ( gcloud auth activate-service-account "${CARTO_SERVICE_ACCOUNT_EMAIL}" --key-file="${CARTO_SERVICE_ACCOUNT_FILE}" --project="${CARTO_GCP_PROJECT}" &>/dev/null ) ; then
-  _success "${STEP}" ; else _error "${STEP}"
+  _success "${STEP}" ; else _error "${STEP}" 5
 fi
 
 # Get latest customer package version
@@ -162,7 +162,7 @@ SELFHOSTED_VERSION_LATEST="${SELFHOSTED_VERSION_LATEST/#${CLIENT_ID}-}"
 # Download package
 STEP="downloading: $(basename "${CUSTOMER_PACKAGE_FILE_LATEST}")"
 if ( gsutil cp "gs://${CLIENT_STORAGE_BUCKET}/${CUSTOMER_PACKAGE_FOLDER}/${CUSTOMER_PACKAGE_NAME_PREFIX}-${CLIENT_ID}-${SELFHOSTED_VERSION_LATEST}.zip" ./ ) ; then
-  _success "${STEP}" ; else _error "${STEP}"
+  _success "${STEP}" && RC="0" ; else _error "${STEP}" 6
 fi
 
 # Print message
@@ -173,4 +173,4 @@ echo -e "Downloaded file: $(basename "${CUSTOMER_PACKAGE_FILE_LATEST}")"
 echo -e "Downloaded from: ${CUSTOMER_PACKAGE_FILE_LATEST}"
 echo -e "##############################################################\n"
 
-_success "finished [$?]\n"
+_success "finished [${RC}]\n"
