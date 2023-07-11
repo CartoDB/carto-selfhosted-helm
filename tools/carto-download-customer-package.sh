@@ -159,9 +159,13 @@ CUSTOMER_PACKAGE_FILE_LATEST="$(gsutil ls "gs://${CLIENT_STORAGE_BUCKET}/${CUSTO
 SELFHOSTED_VERSION_LATEST="$(echo "${CUSTOMER_PACKAGE_FILE_LATEST}" | grep -Eo "${CLIENT_ID}-[0-9]+-[0-9]+-[0-9]+")"
 SELFHOSTED_VERSION_LATEST="${SELFHOSTED_VERSION_LATEST/#${CLIENT_ID}-}"
 
+# Double-check customer package download URI
+[[ "${CUSTOMER_PACKAGE_FILE_LATEST}" != "gs://${CLIENT_STORAGE_BUCKET}/${CUSTOMER_PACKAGE_FOLDER}/${CUSTOMER_PACKAGE_NAME_PREFIX}-${CLIENT_ID}-${SELFHOSTED_VERSION_LATEST}.zip" ]] && \
+  _error "customer package download URI mismatch" 7
+
 # Download package
 STEP="downloading: $(basename "${CUSTOMER_PACKAGE_FILE_LATEST}")"
-if ( gsutil cp "gs://${CLIENT_STORAGE_BUCKET}/${CUSTOMER_PACKAGE_FOLDER}/${CUSTOMER_PACKAGE_NAME_PREFIX}-${CLIENT_ID}-${SELFHOSTED_VERSION_LATEST}.zip" ./ ) ; then
+if ( gsutil cp "${CUSTOMER_PACKAGE_FILE_LATEST}" ./ ) ; then
   _success "${STEP}" && RC="0" ; else _error "${STEP}" 6
 fi
 
