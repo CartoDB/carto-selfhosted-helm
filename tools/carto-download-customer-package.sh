@@ -112,19 +112,19 @@ _info "selfhosted mode: ${SELFHOSTED_MODE}"
 
 # global
 CUSTOMER_PACKAGE_NAME_PREFIX="carto-selfhosted-${SELFHOSTED_MODE}-customer-package"
+CARTO_ENV="${FILE_DIR}/customer.env"
+CARTO_SA="${FILE_DIR}/key.json"
+# Check that CARTO_ENV exist
+_check_input_files "${CARTO_ENV}"
+# Get information from customer.env file
+# shellcheck disable=SC1090
+source "${CARTO_ENV}"
 
 if [ "${SELFHOSTED_MODE}" == "docker" ] ; then
-  # Check that required files exist
-  CARTO_ENV="${FILE_DIR}/customer.env"
-  CARTO_SA="${FILE_DIR}/key.json"
   ENV_SOURCE="$(basename "${CARTO_ENV}")"
-  _check_input_files "${CARTO_ENV}"
+  # Check that required files exist
   _check_input_files "${CARTO_SA}"
-  # Get information from customer.env file (docker)
-  # shellcheck disable=SC1090
-  source "${CARTO_ENV}"
   cp "${CARTO_SA}" "${CARTO_SERVICE_ACCOUNT_FILE}"
-  CLIENT_STORAGE_BUCKET="${SELFHOSTED_GCP_PROJECT_ID}-client-storage"
   TENANT_ID="${SELFHOSTED_TENANT_ID}"
   CLIENT_ID="${TENANT_ID/#onp-}" # Remove onp- prefix
   SELFHOSTED_VERSION_CURRENT="${CARTO_SELFHOSTED_CUSTOMER_PACKAGE_VERSION}"
@@ -138,11 +138,13 @@ elif [ "${SELFHOSTED_MODE}" == "k8s" ] ; then
   # Get information from YAML files (k8s)
   yq ".cartoSecrets.defaultGoogleServiceAccount.value" < "${CARTO_SECRETS}" | \
     grep -v "^$" > "${CARTO_SERVICE_ACCOUNT_FILE}"
-  CLIENT_STORAGE_BUCKET="$(yq -r ".appConfigValues.workspaceImportsBucket" < "${CARTO_VALUES}")"
   TENANT_ID="$(yq -r ".cartoConfigValues.selfHostedTenantId" < "${CARTO_VALUES}")"
   CLIENT_ID="${TENANT_ID/#onp-}" # Remove onp- prefix
   SELFHOSTED_VERSION_CURRENT="$(yq -r ".cartoConfigValues.customerPackageVersion" < "${CARTO_VALUES}")"
 fi
+
+# Use carto project GCP bucket for custoemr package
+CLIENT_STORAGE_BUCKET="${SELFHOSTED_GCP_PROJECT_ID}-client-storage"
 
 # Get information from JSON service account file
 CARTO_SERVICE_ACCOUNT_EMAIL="$(jq -r ".client_email" < "${CARTO_SERVICE_ACCOUNT_FILE}")"
