@@ -138,15 +138,15 @@ elif [ "${SELFHOSTED_MODE}" == "k8s" ] ; then
   # Get information from YAML files (k8s)
   yq ".cartoSecrets.defaultGoogleServiceAccount.value" < "${CARTO_SECRETS}" | \
     grep -v "^$" > "${CARTO_SERVICE_ACCOUNT_FILE}"
-  CLIENT_STORAGE_BUCKET=$(yq -r ".appConfigValues.workspaceImportsBucket" < "${CARTO_VALUES}")
-  TENANT_ID=$(yq -r ".cartoConfigValues.selfHostedTenantId" < "${CARTO_VALUES}")
+  CLIENT_STORAGE_BUCKET="$(yq -r ".appConfigValues.workspaceImportsBucket" < "${CARTO_VALUES}")"
+  TENANT_ID="$(yq -r ".cartoConfigValues.selfHostedTenantId" < "${CARTO_VALUES}")"
   CLIENT_ID="${TENANT_ID/#onp-}" # Remove onp- prefix
-  SELFHOSTED_VERSION_CURRENT=$(yq -r ".cartoConfigValues.customerPackageVersion" < "${CARTO_VALUES}") 
+  SELFHOSTED_VERSION_CURRENT="$(yq -r ".cartoConfigValues.customerPackageVersion" < "${CARTO_VALUES}")"
 fi
 
 # Get information from JSON service account file
-CARTO_SERVICE_ACCOUNT_EMAIL=$(jq -r ".client_email" < "${CARTO_SERVICE_ACCOUNT_FILE}")
-CARTO_GCP_PROJECT=$(jq -r ".project_id" < "${CARTO_SERVICE_ACCOUNT_FILE}")
+CARTO_SERVICE_ACCOUNT_EMAIL="$(jq -r ".client_email" < "${CARTO_SERVICE_ACCOUNT_FILE}")"
+CARTO_GCP_PROJECT="$(jq -r ".project_id" < "${CARTO_SERVICE_ACCOUNT_FILE}")"
 
 # Download the latest customer package
 STEP="activating: service account credentials for: [${CARTO_SERVICE_ACCOUNT_EMAIL}]"
@@ -155,8 +155,8 @@ if ( gcloud auth activate-service-account "${CARTO_SERVICE_ACCOUNT_EMAIL}" --key
 fi
 
 # Get latest customer package version
-CUSTOMER_PACKAGE_FILE_LATEST=$(gsutil ls "gs://${CLIENT_STORAGE_BUCKET}/${CUSTOMER_PACKAGE_FOLDER}/${CUSTOMER_PACKAGE_NAME_PREFIX}-${CLIENT_ID}-*-*-*.zip")
-SELFHOSTED_VERSION_LATEST=$(echo "${CUSTOMER_PACKAGE_FILE_LATEST}" | grep -Eo "${CLIENT_ID}-[0-9]+-[0-9]+-[0-9]+")
+CUSTOMER_PACKAGE_FILE_LATEST="$(gsutil ls "gs://${CLIENT_STORAGE_BUCKET}/${CUSTOMER_PACKAGE_FOLDER}/${CUSTOMER_PACKAGE_NAME_PREFIX}-${CLIENT_ID}-*-*-*.zip")"
+SELFHOSTED_VERSION_LATEST="$(echo "${CUSTOMER_PACKAGE_FILE_LATEST}" | grep -Eo "${CLIENT_ID}-[0-9]+-[0-9]+-[0-9]+")"
 SELFHOSTED_VERSION_LATEST="${SELFHOSTED_VERSION_LATEST/#${CLIENT_ID}-}"
 
 # Download package
