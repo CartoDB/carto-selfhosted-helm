@@ -163,8 +163,7 @@ SELFHOSTED_VERSION_LATEST="${SELFHOSTED_VERSION_LATEST/#${CLIENT_ID}-}"
 # Double-check customer package download URI
 STEP="checking: customer package download URI"
 if [[ "${CUSTOMER_PACKAGE_FILE_LATEST}" != "gs://${CLIENT_STORAGE_BUCKET}/${CUSTOMER_PACKAGE_FOLDER}/${CUSTOMER_PACKAGE_NAME_PREFIX}-${CLIENT_ID}-${SELFHOSTED_VERSION_LATEST}.zip" ]] ; then
-  _error "customer package download URI mismatch:\n  a. ${CUSTOMER_PACKAGE_FILE_LATEST}\n  b. gs://${CLIENT_STORAGE_BUCKET}/${CUSTOMER_PACKAGE_FOLDER}/${CUSTOMER_PACKAGE_NAME_PREFIX}-${CLIENT_ID}-${SELFHOSTED_VERSION_LATEST}.zip\n" 6
-  # _success "${STEP}" ; else _error "${STEP}" 6
+  _success "${STEP}" ; else _error "${STEP}" 6
 fi
 
 # Download package
