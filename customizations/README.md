@@ -261,7 +261,7 @@ If you want to add your own certificate you need:
 
 Carto Router uses Nginx to manage the requests inside the namespace. These are the parameters you can update for your installation:
 
-  ref: https://nginx.org/en/docs/dirindex.html
+  > ref: https://nginx.org/en/docs/dirindex.html
 
   `gzip_buffers` Sets the number and size of buffers used to compress a response
 
