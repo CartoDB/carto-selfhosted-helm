@@ -263,17 +263,14 @@ Carto Router uses Nginx to manage the requests inside the namespace. These are t
 
   > ref: https://nginx.org/en/docs/dirindex.html
 
-  `gzip_buffers` Sets the number and size of buffers used to compress a response
-
-  `gzip_min_length` Sets the minimum length of a response that will be gzipped
-
-  `proxy_buffers` Sets the number and size of the buffers used for reading a response from the proxied server, for a single connection
-
-  `proxy_buffer_size` Sets the size of the buffer used for reading the first part of the response received from the proxied server
-
-  `proxy_busy_buffers_size` Limits the total size of buffers that can be busy sending a response to the client while the response is not yet fully read
-
-  `client_max_body_size` Sets the maximum allowed size of the client request body
+  | Parameter | Description |
+  |---|---|
+  | `gzip_buffers` | Sets the number and size of buffers used to compress a response |
+  | `gzip_min_length` | Sets the minimum length of a response that will be gzipped |
+  | `proxy_buffers` | Sets the number and size of the buffers used for reading a response from the proxied server, for a single connection |
+  | `proxy_buffer_size` | Sets the size of the buffer used for reading the first part of the response received from the proxied server |
+  | `proxy_busy_buffers_size` | Limits the total size of buffers that can be busy sending a response to the client while the response is not yet fully read |
+  | `client_max_body_size` | Sets the maximum allowed size of the client request body |
 
   Default values for these parameters are:
 
@@ -1558,9 +1555,9 @@ Now you can run the upgrade operation again
 
 You are trying to make a POST request to the SQL Api with a large payload. Please see the following considerations:
 
-  - By default, we support a payload up to 10Mb. If you need a higher payload size, please see [how to parametrize nginx](#parametrize-router-nginx)
+  - By default, we support a payload up to 10Mb. If you need a higher payload size, please see [how to parametrize nginx](#parametrize-router-nginx).
 ￼
-  - If your payload is lower than 10Mb, probably the error code is returned by a service in a higher layer than the Carto Selfhosted environment. Please upload your service configuration to be able to manage higher requests. E.g:
+  - If your payload is lower than 10Mb, probably the error code is returned by a service in a higher layer than the Carto Selfhosted environment. Please upload your service configuration to be able to manage higher requests.
 
   If you have an Ingress Nginx, you have to add the following kubernetes annotation.
 ￼
