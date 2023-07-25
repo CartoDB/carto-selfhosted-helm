@@ -33,7 +33,7 @@ If you are looking for another installation method, please refer to [carto-selfh
 - Kubernetes 1.12+
 - Helm 3.6.0
 - Configuration and license files received from CARTO
-- Internet HTTP/HTTPS access from the cluster to the [whitelisted domains list](doc/whitelisted_domains).
+- Internet HTTP/HTTPS access from the cluster to the [whitelisted domains list](customizations/proxy/config/whitelisted_domains.md).
 - (Optional) PV provisioner support in the underlying infrastructure. Required only for non-production deployment without external and managed databases (Postgres and Redis).
 
 <!--
@@ -165,7 +165,7 @@ If you need to open a support ticket, please execute our [carto-support-tool](to
   helm repo update
   ```
 
-3. Download the latest customer package (containing `carto-values.yaml` and `carto-secrets.yaml` files) using [this tool](tools/carto-download-customer-package.sh).
+3. Download the latest customer package (containing `carto-values.yaml` and `carto-secrets.yaml` files) using the tool described [here](tools/README.md#download-customer-package-tool).
 
 4. Update CARTO
 

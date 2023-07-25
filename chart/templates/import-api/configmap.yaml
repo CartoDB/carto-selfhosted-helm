@@ -15,6 +15,7 @@ data:
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
+  CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   IMPORT_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
   IMPORT_PORT: {{ .Values.importApi.containerPorts.http | quote }}
   IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-import-sub"
@@ -38,7 +39,6 @@ data:
   {{- end }}
   IMPORT_AWS_CUSTOM_BUCKET_ROLE_ARN: {{ .Values.appConfigValues.importAwsRoleArn | quote }}
   IMPORT_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
-  IMPORT_BUCKET: {{ .Values.appConfigValues.importBucket | quote }}
   {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
   {{- if .Values.appConfigValues.googleCloudStorageProjectId }}
   IMPORT_PROJECTID: {{ .Values.appConfigValues.googleCloudStorageProjectId | quote }}

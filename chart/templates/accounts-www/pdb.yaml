@@ -1,6 +1,6 @@
 {{- if and .Values.accountsWww.podDisruptionBudget.enabled}}
 ---
-apiVersion: policy/v1beta1
+apiVersion: {{ .Values.global.kubernetesPolicyVersion }}
 kind: PodDisruptionBudget
 metadata:
   name: {{ template "carto.accountsWww.fullname" . }}-pdb

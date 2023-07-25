@@ -12,6 +12,7 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
+  CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   LOG_LEVEL: "debug"
   PORT: {{ .Values.accountsWww.containerPorts.http | quote }}
   VITE_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"

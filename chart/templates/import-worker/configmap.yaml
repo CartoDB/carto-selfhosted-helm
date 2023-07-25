@@ -13,6 +13,7 @@ metadata:
   {{- end }}
 data:
   BIGQUERY_OAUTH2_CLIENT_ID: {{ .Values.appConfigValues.bigqueryOauth2ClientId | quote }}
+  CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
@@ -35,7 +36,6 @@ data:
   {{- end }}
   IMPORT_AWS_CUSTOM_BUCKET_ROLE_ARN: {{ .Values.appConfigValues.importAwsRoleArn | quote }}
   IMPORT_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
-  IMPORT_BUCKET: {{ .Values.appConfigValues.importBucket | quote }}
   {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
   {{- if .Values.appConfigValues.googleCloudStorageProjectId }}
   IMPORT_PROJECTID: {{ .Values.appConfigValues.googleCloudStorageProjectId | quote }}
