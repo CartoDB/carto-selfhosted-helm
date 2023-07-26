@@ -1,6 +1,5 @@
 appConfigValues:
   storageProvider: "s3"
-  importBucket: <import_bucket_name>
   workspaceImportsBucket: <client_bucket_name>
   workspaceImportsPublic: <false|true>
   workspaceThumbnailsBucket: <thumbnails_bucket_name>
