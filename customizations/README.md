@@ -16,6 +16,7 @@
     - [Configure TLS termination in the CARTO router service](#configure-tls-termination-in-the-carto-router-service)
       - [Disable internal HTTPS](#disable-internal-https)
       - [Use your own TLS certificate](#use-your-own-tls-certificate)
+    - [Parametrize Router Nginx](#parametrize-router-nginx)
     - [Configure external Postgres](#configure-external-postgres)
       - [Setup Postgres creating secrets](#setup-postgres-creating-secrets)
       - [Setup Postgres with automatic secret creation](#setup-postgres-with-automatic-secret-creation)
@@ -59,6 +60,7 @@
     - [Diagnosis tool](#diagnosis-tool)
     - [Ingress](#ingress)
     - [Helm upgrade fails: another operation (install/upgrade/rollback) is in progress](#helm-upgrade-fails-another-operation-installupgraderollback-is-in-progress)
+    - [413 Request Entity Too Large](#413-request-entity-too-large)
 
 # Customizations
 
@@ -253,6 +255,40 @@ If you want to add your own certificate you need:
       name: "mycarto-custom-tls-certificate"
       keyKey: "tls.key"
       certKey: "tls.crt"
+  ```
+
+### Parametrize Router Nginx
+
+Carto Router uses Nginx to manage the requests inside the namespace. These are the parameters you can update for your installation:
+
+  > ref: https://nginx.org/en/docs/dirindex.html
+
+  | Parameter | Description |
+  |---|---|
+  | `gzip_buffers` | Sets the number and size of buffers used to compress a response |
+  | `gzip_min_length` | Sets the minimum length of a response that will be gzipped |
+  | `proxy_buffers` | Sets the number and size of the buffers used for reading a response from the proxied server, for a single connection |
+  | `proxy_buffer_size` | Sets the size of the buffer used for reading the first part of the response received from the proxied server |
+  | `proxy_busy_buffers_size` | Limits the total size of buffers that can be busy sending a response to the client while the response is not yet fully read |
+  | `client_max_body_size` | Sets the maximum allowed size of the client request body |
+
+  Default values for these parameters are:
+
+  ```bash
+  gzip_buffers: "16 8k"
+  gzip_min_length: "1100"
+  proxy_buffers: "16 8k"
+  proxy_buffer_size: "8k"
+  proxy_busy_buffers_size: "8k"
+  client_max_body_size: "10M"
+  ```
+
+  You can override any of them in your customizations file, e.g:
+
+  ```diff
+  router:
+    nginxConfig:
++      client_max_body_size: "20M"
   ```
 
 ### Configure external Postgres
@@ -773,7 +809,6 @@ You can create and use your own storage buckets in any of the following supporte
 
 1. Create 3 buckets in your preferred Cloud provider:
 
-   - Import Bucket
    - Client Bucket
    - Thumbnails Bucket
 
@@ -814,7 +849,6 @@ In order to use Google Cloud Storage custom buckets you need to:
    ```yaml
    appConfigValues:
      storageProvider: "gcp"
-     importBucket: <import_bucket_name>
      workspaceImportsBucket: <client_bucket_name>
      workspaceImportsPublic: <false|true>
      workspaceThumbnailsBucket: <thumbnails_bucket_name>
@@ -888,7 +922,6 @@ In order to use AWS S3 custom buckets you need to:
 ```yaml
 appConfigValues:
   storageProvider: "s3"
-  importBucket: <import_bucket_name>
   workspaceImportsBucket: <client_bucket_name>
   workspaceImportsPublic: <false|true>
   workspaceThumbnailsBucket: <thumbnails_bucket_name>
@@ -962,7 +995,6 @@ In order to use Azure Storage buckets (aka containers) you need to:
 appConfigValues:
   storageProvider: "azure-blob"
   azureStorageAccount: <storage_account_name>
-  importBucket: <import_bucket_name>
   workspaceImportsBucket: <client_bucket_name>
   workspaceImportsPublic: <false|true>
   workspaceThumbnailsBucket: <thumbnails_bucket_name>
@@ -1518,3 +1550,23 @@ REVISION	UPDATED                 	STATUS         	CHART             	APP VERSION
 29      	Tue Oct  4 10:58:22 2022	deployed       	carto-1.42.10-beta	2022.9.28  	Rollback to 27
 ```
 Now you can run the upgrade operation again
+
+### 413 Request Entity Too Large
+
+You are trying to make a POST request to the SQL Api with a large payload. Please see the following considerations:
+
+  - By default, we support a payload up to 10Mb. If you need a higher payload size, please see [how to parametrize nginx](#parametrize-router-nginx).
+￼
+  - If your payload is lower than 10Mb, probably the error code is returned by a service in a higher layer than the Carto Selfhosted environment. Please upload your service configuration to be able to manage higher requests.
+
+  If you have an Ingress Nginx, you have to add the following kubernetes annotation.
+￼
+  ```diff
+  router:
+    ingress:
+      enabled: true
+      tls: true
+      annotations:
++       nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+      ingressClassName: nginx
+  ```

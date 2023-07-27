@@ -1,7 +1,6 @@
 appConfigValues:
   storageProvider: "azure-blob"
   azureStorageAccount: <storage_account_name>
-  importBucket: <import_bucket_name>
   workspaceImportsBucket: <client_bucket_name>
   workspaceImportsPublic: <false|true>
   workspaceThumbnailsBucket: <thumbnails_bucket_name>
