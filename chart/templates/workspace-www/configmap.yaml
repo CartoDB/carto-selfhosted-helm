@@ -34,6 +34,6 @@ data:
   VITE_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
   THUMBNAILS_BUCKET_EXTERNAL_URL: {{ .Values.appConfigValues.thumbnailsBucketExternalURL | quote }}
   VITE_WORKSPACE_WWW_ENABLE_TRACKJS: {{ .Values.appConfigValues.enableTrackJS | quote }}
-  VITE_WORKSPACE_WWW_ENABLE_EXPORTS: "false"
+  VITE_WORKSPACE_WWW_ENABLE_EXPORTS: "true"
   VITE_ASKNICELY_MIN_HOURS_ACCOUNT_OLD_ENOUGH: "1920"
 {{- end }}
