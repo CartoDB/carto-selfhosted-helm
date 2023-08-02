@@ -70,8 +70,6 @@ extraDeploy:
       namespace: {{ .Release.Namespace | quote }}
     spec:
       timeoutSec: 600
-      ## Atach a SSL Policy
-      # sslPolicy: my-ssl-policy
     ---
     ## FrontendConfig object is used to configure downstream Ingress features
     ## Redirect port 80 to 443 automatically
@@ -93,3 +91,5 @@ extraDeploy:
     spec:
       redirectToHttps:
         enabled: true
+      ## Atach a SSL Policy
+      # sslPolicy: my-ssl-policy
