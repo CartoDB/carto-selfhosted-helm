@@ -232,7 +232,7 @@ gcloud compute ssl-policies create my-ssl-policy --min-tls-version=1.2 --profile
 +    sslPolicy: my-ssl-policy
 ```
 
-3. Update your helm installation
+3. [Update your helm installation](https://github.com/CartoDB/carto-selfhosted-helm#update)
 
 **Troubleshooting**
 
