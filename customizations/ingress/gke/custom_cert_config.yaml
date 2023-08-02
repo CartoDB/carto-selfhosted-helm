@@ -91,5 +91,5 @@ extraDeploy:
     spec:
       redirectToHttps:
         enabled: true
-      ## Atach a SSL Policy
+      ## Attach a SSL Policy
       # sslPolicy: my-ssl-policy
