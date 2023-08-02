@@ -13,6 +13,7 @@
       - [Expose CARTO with the Carto Router service in `LoadBalancer` mode](#expose-carto-with-the-carto-router-service-in-loadbalancer-mode)
       - [Expose CARTO with Ingress and your own TLS certificates](#expose-carto-with-ingress-and-your-own-tls-certificates)
       - [Expose CARTO with Ingress and GCP SSL Managed Certificates](#expose-carto-with-ingress-and-gcp-ssl-managed-certificates)
+      - [Create a SSL Policy for your Ingress](#create-a-ssl-policy-for-your-ingress)
     - [Configure TLS termination in the CARTO router service](#configure-tls-termination-in-the-carto-router-service)
       - [Disable internal HTTPS](#disable-internal-https)
       - [Use your own TLS certificate](#use-your-own-tls-certificate)

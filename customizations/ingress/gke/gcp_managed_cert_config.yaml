@@ -84,6 +84,8 @@ extraDeploy:
     spec:
       redirectToHttps:
         enabled: true
+      ## Atach a SSL Policy
+      # sslPolicy: my-ssl-policy
     ---
     ## In case you want to use Google Managed Certificate for Ingress you will
     ## need to deploy the ManagedCertified object
