@@ -165,7 +165,7 @@ If you need to open a support ticket, please execute our [carto-support-tool](to
   helm repo update
   ```
 
-3. Download the latest customer package (containing `carto-values.yaml` and `carto-secrets.yaml` files) using the tool described [here](tools/README.md#download-customer-package-tool).
+3. Download the latest customer package (containing `carto-values.yaml` and `carto-secrets.yaml` files) using the tool described [here](tools/#download-customer-package-tool).
 
 4. Update CARTO
 
