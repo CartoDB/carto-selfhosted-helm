@@ -210,6 +210,29 @@ You can find an example [here](service_loadBalancer/config.yaml). Also, we have 
   gcloud compute addresses create my_carto_ip --global
   ```
 
+#### Create a SSL Policy for your Ingress
+
+To define an SSL policy, you specify a minimum TLS version and a profile. The profile selects a set of SSL features in the Ingress Load Balancer.
+
+Please see the [Google Documentacion](https://cloud.google.com/load-balancing/docs/ssl-policies-concepts#defining_an_ssl_policy) in order to select your best profile
+
+1. In the same project that you have your ingress load balancer, create a profile that meets your requirements
+
+```bash
+gcloud compute ssl-policies create my-ssl-policy --min-tls-version=1.2 --profile=MODERN --project=<gcp-project>
+```
+
+2. Attach the ssl policy to your Ingress frontend configuration
+
+```diff
+  apiVersion: networking.gke.io/v1beta1
+  kind: FrontendConfig
+  spec:
++    sslPolicy: my-ssl-policy
+```
+
+3. Update your helm installation
+
 **Troubleshooting**
 
 Please see our [troubleshooting](#troubleshooting) section if you have problems with your ingress resource.
