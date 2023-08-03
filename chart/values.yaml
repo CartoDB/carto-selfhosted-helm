@@ -995,8 +995,8 @@ importWorker:
   ##
   resources:
     limits:
-      memory: "4096Mi"
-      cpu: "1000m"
+      memory: "8192Mi"
+      cpu: "2000m"
     requests:
       memory: "3072Mi"
       cpu: "350m"
