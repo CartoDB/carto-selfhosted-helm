@@ -55,7 +55,7 @@ EOF
 
 function _info() {
   # ARGV1 = message
-  echo -e "ℹ️ ${1}"
+  echo -e "ℹ️  ${1}"
 }
 
 function _success() {
@@ -112,27 +112,27 @@ _info "selfhosted mode: ${SELFHOSTED_MODE}"
 
 # global
 CUSTOMER_PACKAGE_NAME_PREFIX="carto-selfhosted-${SELFHOSTED_MODE}-customer-package"
+CARTO_ENV="${FILE_DIR}/customer.env"
+CARTO_SA="${FILE_DIR}/key.json"
 
 if [ "${SELFHOSTED_MODE}" == "docker" ] ; then
-  CARTO_ENV="${FILE_DIR}/customer.env"
-  CARTO_SA="${FILE_DIR}/key.json"
   ENV_SOURCE="$(basename "${CARTO_ENV}")"
   # Check that required files exist
-  _check_input_files "${CARTO_ENV}"
   _check_input_files "${CARTO_SA}"
-  # Get information from customer.env file (docker)
+  _check_input_files "${CARTO_ENV}"
+  # Get information from customer.env file
   # shellcheck disable=SC1090
   source "${CARTO_ENV}"
   cp "${CARTO_SA}" "${CARTO_SERVICE_ACCOUNT_FILE}"
   TENANT_ID="${SELFHOSTED_TENANT_ID}"
   CLIENT_ID="${TENANT_ID/#onp-}" # Remove onp- prefix
-  CLIENT_STORAGE_BUCKET="carto-tnt-${TENANT_ID}-client-storage"
   SELFHOSTED_VERSION_CURRENT="${CARTO_SELFHOSTED_CUSTOMER_PACKAGE_VERSION}"
+  GCP_PROJECT_ID="${SELFHOSTED_GCP_PROJECT_ID}"
 elif [ "${SELFHOSTED_MODE}" == "k8s" ] ; then
+  # Check that required files exist
   CARTO_VALUES="${FILE_DIR}/carto-values.yaml"
   CARTO_SECRETS="${FILE_DIR}/carto-secrets.yaml"
   ENV_SOURCE="$(basename "${CARTO_VALUES}")"
-  # Check that required files exist
   _check_input_files "${CARTO_VALUES}"
   _check_input_files "${CARTO_SECRETS}"
   # Get information from YAML files (k8s)
@@ -140,36 +140,35 @@ elif [ "${SELFHOSTED_MODE}" == "k8s" ] ; then
     grep -v "^$" > "${CARTO_SERVICE_ACCOUNT_FILE}"
   TENANT_ID="$(yq -r ".cartoConfigValues.selfHostedTenantId" < "${CARTO_VALUES}")"
   CLIENT_ID="${TENANT_ID/#onp-}" # Remove onp- prefix
-  CLIENT_STORAGE_BUCKET="carto-tnt-${TENANT_ID}-client-storage"
   SELFHOSTED_VERSION_CURRENT="$(yq -r ".cartoConfigValues.customerPackageVersion" < "${CARTO_VALUES}")"
+  GCP_PROJECT_ID="$(yq -r ".cartoConfigValues.selfHostedGcpProjectId" < "${CARTO_VALUES}")"
 fi
 
 # Get information from JSON service account file
 CARTO_SERVICE_ACCOUNT_EMAIL="$(jq -r ".client_email" < "${CARTO_SERVICE_ACCOUNT_FILE}")"
-CARTO_GCP_PROJECT="$(jq -r ".project_id" < "${CARTO_SERVICE_ACCOUNT_FILE}")"
 
-# Activate SA credentials
+# Use carto project GCP bucket for custoemr package
+CLIENT_STORAGE_BUCKET="${GCP_PROJECT_ID}-client-storage"
+
+# Download the latest customer package
 STEP="activating: service account credentials for: [${CARTO_SERVICE_ACCOUNT_EMAIL}]"
-if ( gcloud auth activate-service-account "${CARTO_SERVICE_ACCOUNT_EMAIL}" --key-file="${CARTO_SERVICE_ACCOUNT_FILE}" --project="${CARTO_GCP_PROJECT}" &>/dev/null ) ; then
+if ( gcloud auth activate-service-account "${CARTO_SERVICE_ACCOUNT_EMAIL}" --key-file="${CARTO_SERVICE_ACCOUNT_FILE}" --project="${GCP_PROJECT_ID}" &>/dev/null ) ; then
   _success "${STEP}" ; else _error "${STEP}" 5
 fi
 
 # Get latest customer package version
 CUSTOMER_PACKAGE_FILE_LATEST="$(gsutil ls "gs://${CLIENT_STORAGE_BUCKET}/${CUSTOMER_PACKAGE_FOLDER}/${CUSTOMER_PACKAGE_NAME_PREFIX}-${CLIENT_ID}-*-*-*.zip")"
-CUSTOMER_PACKAGE_FILE_LATEST="${CUSTOMER_PACKAGE_FILE_LATEST//-rc-[0-9]/}"
 SELFHOSTED_VERSION_LATEST="$(echo "${CUSTOMER_PACKAGE_FILE_LATEST}" | grep -Eo "${CLIENT_ID}-[0-9]+-[0-9]+-[0-9]+")"
 SELFHOSTED_VERSION_LATEST="${SELFHOSTED_VERSION_LATEST/#${CLIENT_ID}-}"
 
 # Double-check customer package download URI
-STEP="checking: customer package download URI"
-if [[ "${CUSTOMER_PACKAGE_FILE_LATEST}" == "gs://${CLIENT_STORAGE_BUCKET}/${CUSTOMER_PACKAGE_FOLDER}/${CUSTOMER_PACKAGE_NAME_PREFIX}-${CLIENT_ID}-${SELFHOSTED_VERSION_LATEST}.zip" ]] ; then
-  _success "${STEP}" ; else _error "${STEP}" 6
-fi
+[[ "${CUSTOMER_PACKAGE_FILE_LATEST}" != "gs://${CLIENT_STORAGE_BUCKET}/${CUSTOMER_PACKAGE_FOLDER}/${CUSTOMER_PACKAGE_NAME_PREFIX}-${CLIENT_ID}-${SELFHOSTED_VERSION_LATEST}.zip" ]] && \
+  _error "customer package download URI mismatch" 7
 
 # Download package
 STEP="downloading: $(basename "${CUSTOMER_PACKAGE_FILE_LATEST}")"
 if ( gsutil cp "${CUSTOMER_PACKAGE_FILE_LATEST}" ./ ) ; then
-  _success "${STEP}" && RC="0" ; else _error "${STEP}" 7
+  _success "${STEP}" && RC="0" ; else _error "${STEP}" 6
 fi
 
 # Print message
