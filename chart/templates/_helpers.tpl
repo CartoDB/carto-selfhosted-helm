@@ -998,6 +998,13 @@ Add environment variables to configure database values
 {{/*
 Add environment variables to configure database values
 */}}
+{{- define "carto.postgresql.adminDatabase" -}}
+{{- ternary "postgres" .Values.externalPostgresql.adminDatabase .Values.internalPostgresql.enabled | quote -}}
+{{- end -}}
+
+{{/*
+Add environment variables to configure database values
+*/}}
 {{- define "carto.postgresql.databaseName" -}}
 {{- ternary .Values.internalPostgresql.auth.database .Values.externalPostgresql.database .Values.internalPostgresql.enabled | quote -}}
 {{- end -}}
