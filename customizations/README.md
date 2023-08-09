@@ -320,7 +320,11 @@ from the configuration, or let the chart to create the [secrets automatically](#
      --from-literal=admin-password=<password>
    ```
 
-> Note: `externalPostgresql.user` and `externalPostgresql.database` inside the Postgres instance are going to be created automatically during the installation process. Do not create then manually.
+> **Note**
+> The `externalPostgresql.user` and `externalPostgresql.database` inside the Postgres instance are going to be created automatically during the installation process. Do not create then manually.
+
+> **Note**
+> By default, CARTO will try to connect to the `postgres` database with the `postgres` user. If you want to use a different user, you can configure it via the `externalPostgresql.adminUser`, and `externalPostgresql.adminDatabase` parameters.
 
 2. Configure the package:
    Add the following lines to your `customizations.yaml` to connect to the external Postgres:
