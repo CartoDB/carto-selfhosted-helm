@@ -4448,6 +4448,7 @@ internalPostgresql:
 ## @param externalPostgresql.adminUser Database admin user (seen from outside the database)
 ## @param externalPostgresql.internalAdminUser Database admin user (seen from inside the database). If this value is not defined, `externalPostgresql.adminUser` is used.
 ## @param externalPostgresql.adminPassword Database admin password
+## @param externalPostgresql.adminDatabase Admin database to connect to create the CARTO database (usually postgres)
 ## @param externalPostgresql.existingSecret Name of an existing secret resource containing the DB password
 ## @param externalPostgresql.existingSecretPasswordKey Name of the key inside the secret containing the DB password
 ## @param externalPostgresql.existingSecretAdminPasswordKey Name of the key inside the secret containing the DB admin password
@@ -4464,6 +4465,7 @@ externalPostgresql:
   adminUser: postgres
   internalAdminUser: ""
   adminPassword: ""
+  adminDatabase: "postgres"
   existingSecret: ""
   existingSecretPasswordKey: ""
   existingSecretAdminPasswordKey: ""

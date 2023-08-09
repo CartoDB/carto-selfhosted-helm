@@ -103,6 +103,8 @@ spec:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.adminKey" . }}
+            - name: POSTGRES_ADMIN_DB
+              value: {{ include "carto.postgresql.adminDatabase" . }}
             - name: WORKSPACE_POSTGRES_INTERNAL_USER
               value: {{ include "carto.postgresql.internalUser" . }}
             - name: WORKSPACE_POSTGRES_PASSWORD
