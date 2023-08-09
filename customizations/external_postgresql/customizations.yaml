@@ -6,6 +6,7 @@ externalPostgresql:
   password: ""
   adminUser: "postgres"
   adminPassword: ""
+  adminDatabase: "postgres"
   database: "workspace"
   port: "5432"
   sslEnabled: true
