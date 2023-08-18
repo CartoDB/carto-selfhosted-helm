@@ -1587,7 +1587,7 @@ mapsApi:
   ##
   resources:
     limits:
-      memory: "2500Mi"
+      memory: "4096Mi"
       cpu: "2000m"
     requests:
       memory: "768Mi"
