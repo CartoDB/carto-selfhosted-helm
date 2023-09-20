@@ -4,7 +4,7 @@
 
 This repository contains the Helm chart for CARTO self-hosted used to deploy CARTO in Kubernetes environments.
 
-For a Docker flavor of CARTO, please refer to https://CartoDB/carto-selfhosted
+For a Docker flavor of CARTO, please refer to https://github.com/CartoDB/carto-selfhosted
 
 Documentation and instructions can be found at https://docs.carto.com
 
