@@ -2,21 +2,16 @@
 
 ![](./img/header-k8s.png)
 
-<!--
-- Add how to contact sales or request a live demo
-- Add info about the CARTO SaaS environment
-- Add info about the Docker flavor?
-- Add info about the CHANGELOG.md
---->
+This repository contains the Helm chart for CARTO self-hosted used to deploy CARTO in Kubernetes environments.
 
-## What is CARTO Self-hosted?
+For documentation and instructions please visit https://docs.carto.com
 
-<!-- TODO: Add brief explanation -->
+## Prerequisites
 
-## Orchestrated container deployment
+Self-hosting CARTO requires technical knowledge, if don't have the experience or you just want to try CARTO, we offer a cloud managed solution where you can start a trial in a few clicks, please, refer to https://app.carto.com.
 
-This repository contains all the files needed to deploy CARTO Self-hosted using Kubernetes and Helm
+Self-hosting CARTO also requires an enterprise license. Please [contact our team](https://carto.com/request-live-demo) if you're interested.
 
-## Documentation
+## Release notes
 
-<!-- TODO: Add reference to the official docs.carto.com -->
+Release notes are available at https://docs.carto.com/get-help/deployment-options/self-hosted/release-notes
