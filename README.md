@@ -1,5 +1,7 @@
 # CARTO self-hosted for Kubernetes
 
+![](./img/header-k8s.png)
+
 <!--
 - Add how to contact sales or request a live demo
 - Add info about the CARTO SaaS environment
