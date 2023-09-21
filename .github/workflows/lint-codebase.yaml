@@ -22,7 +22,7 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILTER_REGEX_EXCLUDE: 'chart/.*|README.md'
+          FILTER_REGEX_EXCLUDE: '.*chart/.*|.*doc/.*|.*.github/workflows/release-autotag.*'
 
 #  helm-readme-generator:
 #    runs-on: ubuntu-20.04
