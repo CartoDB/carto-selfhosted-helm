@@ -8,12 +8,10 @@ wording:
   patch:
     - update
     - initial
+    - add
   minor:
     - change
     - improve
     - fix
   major:
-    - breaking
   release:
-    - release-candidate
-    - add-rc
