@@ -17,7 +17,7 @@
 
 CARTO self-hosted provides support for operating behind an HTTP or HTTPS proxy. The proxy acts as a gateway, enabling CARTO self-hosted components to establish connections with essential external services like Google APIs, Mapbox, and others.
 
-A comprehensive list of domains that must be whitelisted by the proxy for the proper functioning of CARTO self-hosted can be found [here](proxy/config/whitelisted_domains.md). The list includes domains for the essential core services of CARTO self-hosted, as well as additional optional domains that should be enabled to access specific features.
+A comprehensive list of domains that must be whitelisted by the proxy for the proper functioning of CARTO self-hosted can be found [here](customizations-examples/proxy/config/whitelisted_domains.md). The list includes domains for the essential core services of CARTO self-hosted, as well as additional optional domains that should be enabled to access specific features.
 
 Add the following lines to your `customizations.yaml`, depending on the protocol your proxy uses.
 

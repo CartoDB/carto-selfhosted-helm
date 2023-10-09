@@ -33,18 +33,18 @@ But this only makes it accessible to your machine.
 
 #### Expose CARTO with the Carto Router service in `LoadBalancer` mode
 
-You can find an example [here](service_loadBalancer/config.yaml). Also, we have prepared a few specifics for different Kubernetes flavors, just add the config that you need in your `customizations.yaml`:
+You can find an example [here](customizations-examples/service_loadBalancer/config.yaml). Also, we have prepared a few specifics for different Kubernetes flavors, just add the config that you need in your `customizations.yaml`:
 
-- [AWS EKS](service_loadBalancer/aws_eks/config.yaml)
-- [AWS EKS](service_loadBalancer/aws_eks_tls_offloading/config.yaml) Note you need to [import your certificate in AWS ACM](https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html)
-- [GCP GKE](service_loadBalancer/config.yaml)
-- [AZU AKS](service_loadBalancer/azu_aks/config.yaml)
+- [AWS EKS](customizations-examples/service_loadBalancer/aws_eks/config.yaml)
+- [AWS EKS](customizations-examples/service_loadBalancer/aws_eks_tls_offloading/config.yaml) Note you need to [import your certificate in AWS ACM](https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html)
+- [GCP GKE](customizations-examples/service_loadBalancer/config.yaml)
+- [AZU AKS](customizations-examples/service_loadBalancer/azu_aks/config.yaml)
 
 > Note that with this config a [Load Balancer](https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer) resource is going to be created in your cloud provider, you can find more documentation about this kind of service [here](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer)
 
 #### Expose CARTO with Ingress and your own TLS certificates
 
-- [GKE Ingress example config for CARTO with custom certificates](ingress/gke/custom_cert_config.yaml)
+- [GKE Ingress example config for CARTO with custom certificates](customizations-examples/ingress/gke/custom_cert_config.yaml)
 
   > :point_right: Note that you need to create the TLS secret certificate in your kubernetes cluster, you could use the following command to create it
 
@@ -56,7 +56,7 @@ You can find an example [here](service_loadBalancer/config.yaml). Also, we have 
 
 #### Expose CARTO with Ingress and GCP SSL Managed Certificates
 
-- [GKE Ingress example config for CARTO with GCP Managed Certificates](ingress/gke/gcp_managed_cert_config.yaml)
+- [GKE Ingress example config for CARTO with GCP Managed Certificates](customizations-examples/ingress/gke/gcp_managed_cert_config.yaml)
 
   You can configure your Ingress controller to use [Google Managed Certificates](https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs) on the load balancer side.
 
