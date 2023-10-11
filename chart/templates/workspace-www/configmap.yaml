@@ -35,5 +35,6 @@ data:
   THUMBNAILS_BUCKET_EXTERNAL_URL: {{ .Values.appConfigValues.thumbnailsBucketExternalURL | quote }}
   REACT_APP_WORKSPACE_WWW_ENABLE_TRACKJS: {{ .Values.appConfigValues.enableTrackJS | quote }}
   REACT_APP_WORKSPACE_WWW_ENABLE_EXPORTS: "false"
+  REACT_APP_WORKSPACE_WWW_ENABLE_GENAI: "false"
   REACT_APP_ASKNICELY_MIN_HOURS_ACCOUNT_OLD_ENOUGH: "1920"
 {{- end }}
