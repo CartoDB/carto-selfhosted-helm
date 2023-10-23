@@ -9,12 +9,20 @@ appConfigValues:
   httpCacheEnabled: "true"
   ## @param appConfigValues.importAwsRoleArn ARN Role to be used to import files from the bucket
   importAwsRoleArn: ""
+  ## @param appConfigValues.exportAwsRoleArn ARN Role to be used to export files from the app
+  exportAwsRoleArn: ""
   ## @param appConfigValues.workspaceImportsBucket Bucket to be used to store metadata of the workspace
   workspaceImportsBucket: ""
   ## @param appConfigValues.workspaceImportsPublic Indicate if the imports could be accessed publicly
   workspaceImportsPublic: "true"
   ## @param appConfigValues.workspaceThumbnailsBucket Bucket to be used to store the thumbnails generated in the app
   workspaceThumbnailsBucket: ""
+  ## @param appConfigValues.gcsExportBucket Bucket to be used to store the exports generated in the app
+  gcsExportBucket: ""
+  ## @param appConfigValues.awsExportBucket Bucket to be used to store the exports generated in the app
+  awsExportBucket: ""
+  ## @param appConfigValues.awsExportBucketRegion Region of the bucket to be used to store the exports generated in the app
+  awsExportBucketRegion: ""
   ## @param appConfigValues.thumbnailsBucketExternalURL Bucket URL to be used to store the thumbnails generated in the app
   thumbnailsBucketExternalURL: ""
   ## @param appConfigValues.workspaceThumbnailsPublic Indicate if the thumbnails could be accessed publicly
@@ -131,6 +139,26 @@ appSecrets:
     value: ""
     ## @param appSecrets.importAwsSecretAccessKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.importAwsSecretAccessKey.existingSecret.key`. If `appSecrets.importAwsSecretAccessKey.value` is defined, this value is going to be ignored and not used.
     ## @param appSecrets.importAwsSecretAccessKey.existingSecret.key Key to find in `appSecrets.importAwsSecretAccessKey.existingSecret.name` where the value of `appSecrets.importAwsSecretAccessKey` is found. If `appSecrets.importAwsSecretAccessKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra appSecrets.exportAwsSecretAccessKey the AccessKey Secret to be used for export files to a bucket
+  exportAwsSecretAccessKey:
+    ## @param appSecrets.exportAwsSecretAccessKey.value Value of the secret `EXPORT_AWS_SECRET_ACCESS_KEY`
+    value: ""
+    ## @param appSecrets.exportAwsSecretAccessKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.exportAwsSecretAccessKey.existingSecret.key`. If `appSecrets.exportAwsSecretAccessKey.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.exportAwsSecretAccessKey.existingSecret.key Key to find in `appSecrets.exportAwsSecretAccessKey.existingSecret.name` where the value of `appSecrets.exportAwsSecretAccessKey` is found. If `appSecrets.exportAwsSecretAccessKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra appSecrets.exportAwsAccessKeyId The AccessKey Id to be used for export files to a bucket.
+  exportAwsAccessKeyId:
+    ## @param appSecrets.exportAwsAccessKeyId.value Value of the secret `IMPORT_AWS_ACCESS_KEY_ID`
+    value: ""
+    ## @param appSecrets.exportAwsAccessKeyId.existingSecret.name Name of the pre-existent secret containing the `appSecrets.exportAwsAccessKeyId.existingSecret.key`. If `appSecrets.exportAwsAccessKeyId.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.exportAwsAccessKeyId.existingSecret.key Key to find in `appSecrets.exportAwsAccessKeyId.existingSecret.name` where the value of `appSecrets.exportAwsAccessKeyId` is found. If `appSecrets.exportAwsAccessKeyId.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""
