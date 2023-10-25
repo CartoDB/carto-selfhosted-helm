@@ -27,6 +27,12 @@ appConfigValues:
   bigqueryOauth2ClientId: ""
   ## @param appConfigValues.enableTrackJS By default, TrackJS will gather information about end-user browser, you can disable it setting this paramter to false
   enableTrackJS: "true"
+  ## @param appConfigValues.defaultAtLocation The default AT location for each provider
+  defaultAtLocation: 
+    bigquery: "carto-un.carto"
+    snowflake: "CARTO.CARTO"
+    redshift: "carto"
+    postgres: "carto"
 
 ## @section CARTO config parameters
 ## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
