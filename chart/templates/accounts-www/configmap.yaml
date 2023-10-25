@@ -23,4 +23,7 @@ data:
   REACT_APP_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
   THUMBNAILS_BUCKET_EXTERNAL_URL: {{ .Values.appConfigValues.thumbnailsBucketExternalURL | quote }}
   REACT_APP_ACCOUNTS_WWW_ENABLE_TRACKJS: {{ .Values.appConfigValues.enableTrackJS | quote }}
+  {{- if .Values.appConfigValues.ssoOrganizationId }}
+  REACT_APP_ORGANIZATION_ID: {{ .Values.appConfigValues.ssoOrganizationId }}
+  {{- end }}
 {{- end }}

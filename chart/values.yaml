@@ -27,6 +27,8 @@ appConfigValues:
   bigqueryOauth2ClientId: ""
   ## @param appConfigValues.enableTrackJS By default, TrackJS will gather information about end-user browser, you can disable it setting this paramter to false
   enableTrackJS: "true"
+  ## @param appConfigValues.ssoOrganizationId SSO organization ID provided by CARTO used to configure the SSO in the app.
+  ssoOrganizationId: ""
   ## @param appConfigValues.defaultAtLocation The default AT location for each provider
   defaultAtLocation: 
     bigquery: "carto-un.carto"
