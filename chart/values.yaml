@@ -59,6 +59,8 @@ cartoConfigValues:
   selfHostedTenantId: ""
   ## @param cartoConfigValues.launchDarklyClientSideId LaunchDarkly ClientSideId (by www) used to enable/disable features.
   launchDarklyClientSideId: ""
+  ## @param cartoConfigValues.cartoDataWarehouseEnabled Enable the Carto Data Warehouse for the self-hosted.
+  cartoDataWarehouseEnabled: "false"
 
 ## @section App secret
 ## Global secrets to be edited by the client
