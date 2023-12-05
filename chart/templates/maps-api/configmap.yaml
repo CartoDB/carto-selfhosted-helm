@@ -65,7 +65,6 @@ data:
   {{- if .Values.externalProxy.sslCA }}
   NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
-  EXPORTS_GCS_BUCKET_NAME: {{ .Values.appConfigValues.gcsExportBucket | quote }}
   EXPORTS_S3_BUCKET_NAME: {{ .Values.appConfigValues.awsExportBucket | quote }}
   EXPORTS_S3_BUCKET_REGION: {{ .Values.appConfigValues.awsExportBucketRegion | quote }}
   EXPORTS_S3_BUCKET_ACCESS_KEY_ID: {{ .Values.appSecrets.exportAwsAccessKeyId | quote }}
