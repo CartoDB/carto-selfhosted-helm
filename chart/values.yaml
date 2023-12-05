@@ -35,6 +35,16 @@ appConfigValues:
   bigqueryOauth2ClientId: ""
   ## @param appConfigValues.enableTrackJS By default, TrackJS will gather information about end-user browser, you can disable it setting this paramter to false
   enableTrackJS: "true"
+  ## @param appConfigValues.ssoOrganizationId SSO organization ID provided by CARTO used to configure the SSO in the app.
+  ssoOrganizationId: ""
+  ## @param appConfigValues.defaultAtLocation The default AT location for each provider
+  defaultAtLocation: 
+    bigquery: "carto-un.carto"
+    snowflake: "CARTO.CARTO"
+    redshift: "carto"
+    postgres: "carto"
+  ## @param appConfigValues.workspaceExportsBucket Bucket to be used to store the exports generated in the app
+  workspaceExportsBucket: ""
 
 ## @section CARTO config parameters
 ## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
@@ -59,6 +69,8 @@ cartoConfigValues:
   selfHostedTenantId: ""
   ## @param cartoConfigValues.launchDarklyClientSideId LaunchDarkly ClientSideId (by www) used to enable/disable features.
   launchDarklyClientSideId: ""
+  ## @param cartoConfigValues.cartoDataWarehouseEnabled Enable the Carto Data Warehouse for the self-hosted.
+  cartoDataWarehouseEnabled: "false"
 
 ## @section App secret
 ## Global secrets to be edited by the client

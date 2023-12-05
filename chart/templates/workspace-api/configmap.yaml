@@ -25,6 +25,7 @@ data:
   CARTO_SELFHOSTED_DEPLOYMENT: "kubernetes"
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
+  EXPORTS_GCS_BUCKET_NAME: {{ .Values.appConfigValues.workspaceExportsBucket | quote }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
@@ -94,6 +95,10 @@ data:
   GRPC_PROXY: {{ include "carto.proxy.connectionString" . | quote }}
   grpc_proxy: {{ include "carto.proxy.connectionString" . | quote }}
   NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
+  AT_LOCATION_BIGQUERY: {{ .Values.appConfigValues.defaultAtLocation.bigquery | quote }}
+  AT_LOCATION_SNOWFLAKE: {{ .Values.appConfigValues.defaultAtLocation.snowflake | quote }}
+  AT_LOCATION_REDSHIFT: {{ .Values.appConfigValues.defaultAtLocation.redshift | quote }}
+  AT_LOCATION_POSTGRES: {{ .Values.appConfigValues.defaultAtLocation.postgres | quote }}
   {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
