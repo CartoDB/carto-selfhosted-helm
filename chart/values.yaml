@@ -35,11 +35,14 @@ appConfigValues:
   enableTrackJS: "true"
   ## @param appConfigValues.ssoOrganizationId SSO organization ID provided by CARTO used to configure the SSO in the app.
   ssoOrganizationId: ""
-  ## @param appConfigValues.defaultAtLocation The default AT location for each provider
   defaultAtLocation: 
+    ## @param appConfigValues.defaultAtLocation.bigquery The default AT location for BigQuery connections
     bigquery: "carto-un.carto"
+    ## @param appConfigValues.defaultAtLocation.snowflake The default AT location for Snowflake connections
     snowflake: "CARTO.CARTO"
+    ## @param appConfigValues.defaultAtLocation.redshift The default AT location for Redshift connections
     redshift: "carto"
+    ## @param appConfigValues.defaultAtLocation.postgres The default AT location for PostgreSQL connections
     postgres: "carto"
   ## @param appConfigValues.workspaceExportsBucket Bucket to be used to store the exports generated in the app
   workspaceExportsBucket: ""
@@ -433,10 +436,8 @@ accountsWww:
     targetCPUUtilizationPercentage: 75
   ## accounts-www resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip accountsWww.resources.limits [object] The resources limits for the accounts-www containers
   ## @param accountsWww.resources.limits.memory Container memory limits in MiB
   ## @param accountsWww.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip accountsWww.resources.requests [object] The requested resources for the accounts-www containers
   ## @param accountsWww.resources.requests.memory Container memory requests in MiB
   ## @param accountsWww.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
@@ -765,10 +766,8 @@ importApi:
     targetCPUUtilizationPercentage: 75
   ## import-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip importApi.resources.limits [object] The resources limits for the import-api containers
   ## @param importApi.resources.limits.memory Container memory limits in MiB
   ## @param importApi.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip importApi.resources.requests [object] The requested resources for the import-api containers
   ## @param importApi.resources.requests.memory Container memory requests in MiB
   ## @param importApi.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
@@ -1024,10 +1023,8 @@ importWorker:
   defaultNodeProcessMaxOldSpace: 2048
   ## import-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip importWorker.resources.limits [object] The resources limits for the import-worker containers
   ## @param importWorker.resources.limits.memory Container memory limits in MiB
   ## @param importWorker.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip importWorker.resources.requests [object] The requested resources for the import-worker containers
   ## @param importWorker.resources.requests.memory Container memory requests in MiB
   ## @param importWorker.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
@@ -1297,10 +1294,8 @@ ldsApi:
     targetCPUUtilizationPercentage: 75
   ## lds-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip ldsApi.resources.limits [object] The resources limits for the lds-api containers
   ## @param ldsApi.resources.limits.memory Container memory limits in MiB
   ## @param ldsApi.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip ldsApi.resources.requests [object] The requested resources for the lds-api containers
   ## @param ldsApi.resources.requests.memory Container memory requests in MiB
   ## @param ldsApi.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
@@ -1616,10 +1611,8 @@ mapsApi:
     targetCPUUtilizationPercentage: 75
   ## maps-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip mapsApi.resources.limits [object] The resources limits for the maps-api containers
   ## @param mapsApi.resources.limits.memory Container memory limits in MiB
   ## @param mapsApi.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip mapsApi.resources.requests [object] The requested resources for the maps-api containers
   ## @param mapsApi.resources.requests.memory Container memory requests in MiB
   ## @param mapsApi.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
@@ -1910,10 +1903,8 @@ sqlWorker:
     failureThreshold: 5
   ## sql-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip sqlWorker.resources.limits [object] The resources limits for the sql-worker containers
   ## @param sqlWorker.resources.limits.memory Container memory limits in MiB
   ## @param sqlWorker.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip sqlWorker.resources.requests [object] The requested resources for the sql-worker containers
   ## @param sqlWorker.resources.requests.memory Container memory requests in MiB
   ## @param sqlWorker.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
@@ -2179,10 +2170,8 @@ router:
     targetCPUUtilizationPercentage: 75
   ## router resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip router.resources.limits [object] The resources limits for the router containers
   ## @param router.resources.limits.memory Container memory limits in MiB
   ## @param router.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip router.resources.requests [object] The requested resources for the router containers
   ## @param router.resources.requests.memory Container memory requests in MiB
   ## @param router.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
@@ -2315,7 +2304,7 @@ router:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param router.lifecycleHooks for the router container(s) to automate configuration before or after startup
+  ## @skip router.lifecycleHooks [object] for the router container(s) to automate configuration before or after startup
   ##
   lifecycleHooks:
     preStop:
@@ -2600,10 +2589,8 @@ httpCache:
   customStartupProbe: {}
   ## http-cache resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip httpCache.resources.limits [object] The resources limits for the http-cache containers
   ## @param httpCache.resources.limits.memory Container memory limits in MiB
   ## @param httpCache.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip httpCache.resources.requests [object] The requested resources for the http-cache containers
   ## @param httpCache.resources.requests.memory Container memory requests in MiB
   ## @param httpCache.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
@@ -2721,7 +2708,7 @@ httpCache:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param httpCache.lifecycleHooks for the http-cache container(s) to automate configuration before or after startup
+  ## @skip httpCache.lifecycleHooks [object] for the http-cache container(s) to automate configuration before or after startup
   ##
   lifecycleHooks:
     preStop:
@@ -3243,10 +3230,8 @@ cdnInvalidatorSub:
   customStartupProbe: {}
   ## cdnInvalidatorSub resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip cdnInvalidatorSub.resources.limits [object] The resources limits for the cdn-invalidator-sub containers
   ## @param cdnInvalidatorSub.resources.limits.memory Container memory limits in MiB
   ## @param cdnInvalidatorSub.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip cdnInvalidatorSub.resources.requests [object] The requested resources for the cdn-invalidator-sub containers
   ## @param cdnInvalidatorSub.resources.requests.memory Container memory requests in MiB
   ## @param cdnInvalidatorSub.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
@@ -3564,10 +3549,8 @@ workspaceApi:
     targetCPUUtilizationPercentage: 75
   ## workspace-api resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip workspaceApi.resources.limits [object] The resources limits for the workspace-api containers
   ## @param workspaceApi.resources.limits.memory Container memory limits in MiB
   ## @param workspaceApi.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip workspaceApi.resources.requests [object] The requested resources for the workspace-api containers
   ## @param workspaceApi.resources.requests.memory Container memory requests in MiB
   ## @param workspaceApi.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
@@ -3824,10 +3807,8 @@ workspaceSubscriber:
   customStartupProbe: {}
   ## workspace-subscriber resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip workspaceSubscriber.resources.limits [object] The resources limits for the workspace-subscriber containers
   ## @param workspaceSubscriber.resources.limits.memory Container memory limits in MiB
   ## @param workspaceSubscriber.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip workspaceSubscriber.resources.requests [object] The requested resources for the workspace-subscriber containers
   ## @param workspaceSubscriber.resources.requests.memory Container memory requests in MiB
   ## @param workspaceSubscriber.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
@@ -4091,10 +4072,8 @@ workspaceWww:
     targetCPUUtilizationPercentage: 75
   ## workspace-www resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip workspaceWww.resources.limits [object] The resources limits for the workspace-www containers
   ## @param workspaceWww.resources.limits.memory Container memory limits in MiB
   ## @param workspaceWww.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip workspaceWww.resources.requests [object] The requested resources for the workspace-www containers
   ## @param workspaceWww.resources.requests.memory Container memory requests in MiB
   ## @param workspaceWww.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
@@ -4347,10 +4326,8 @@ workspaceMigrations:
   args: []
   ## Init container's resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip workspaceMigrations.resources.limits [object] The resources limits for the workspace-migrations containers
   ## @param workspaceMigrations.resources.limits.memory Container memory limits in MiB
   ## @param workspaceMigrations.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip workspaceMigrations.resources.requests [object] The requested resources for the workspace-migrations containers
   ## @param workspaceMigrations.resources.requests.memory Container memory requests in MiB
   ## @param workspaceMigrations.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
@@ -4561,10 +4538,8 @@ upgradeCheck:
     pullSecrets: []
   ## Upgrade Check pre-hook resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip upgradeCheck.resources.limits [object] The resources limits for the upgrade-check containers
   ## @param upgradeCheck.resources.limits.memory Container memory limits in MiB
   ## @param upgradeCheck.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip upgradeCheck.resources.requests [object] The requested resources for the upgrade-check containers
   ## @param upgradeCheck.resources.requests.memory Container memory requests in MiB
   ## @param upgradeCheck.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
@@ -4640,10 +4615,8 @@ routerMetrics:
   defaultJvmProcessMaxMemoryAllocation: 1024
   ## routerMetrics resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @skip routerMetrics.resources.limits [object] The resources limits for the router-metrics containers
   ## @param routerMetrics.resources.limits.memory Container memory limits in MiB
   ## @param routerMetrics.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @skip routerMetrics.resources.requests [object] The requested resources for the router-metrics containers
   ## @param routerMetrics.resources.requests.memory Container memory requests in MiB
   ## @param routerMetrics.resources.requests.cpu Container cpu requests in milliCPU cores
   ##

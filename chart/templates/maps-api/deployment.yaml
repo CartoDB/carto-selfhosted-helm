@@ -114,6 +114,8 @@ spec:
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
              "BIGQUERY_OAUTH2_CLIENT_SECRET"
              "ENCRYPTION_SECRET_KEY"
+             "EXPORTS_S3_BUCKET_ACCESS_KEY_ID"
+             "EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY"
              "MAPS_API_V3_JWT_SECRET"
              "LAUNCHDARKLY_SDK_KEY"
              ) "context" $ ) | nindent 12 }}
@@ -126,6 +128,8 @@ spec:
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
              "BIGQUERY_OAUTH2_CLIENT_SECRET"
              "ENCRYPTION_SECRET_KEY"
+             "EXPORTS_S3_BUCKET_ACCESS_KEY_ID"
+             "EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY"
              "MAPS_API_V3_JWT_SECRET"
              "LAUNCHDARKLY_SDK_KEY"
              ) "context" $ ) -}}
