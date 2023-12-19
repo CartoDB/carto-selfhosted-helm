@@ -52,6 +52,8 @@ IMPORT_AWS_SECRET_ACCESS_KEY: appSecrets.importAwsSecretAccessKey
 IMPORT_JWT_SECRET: cartoSecrets.jwtApiSecret
 IMPORT_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 IMPORT_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
+EXPORTS_S3_BUCKET_ACCESS_KEY_ID: appSecrets.exportAwsAccessKeyId
+EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY: appSecrets.exportAwsSecretAccessKey
 LDS_JWT_SECRET: cartoSecrets.jwtApiSecret
 LAUNCHDARKLY_SDK_KEY: cartoSecrets.launchDarklySdkKey
 MAPS_API_V3_JWT_SECRET: cartoSecrets.jwtApiSecret

@@ -116,6 +116,8 @@ spec:
                   key: {{ include "carto.redis.existingsecret.key" . | quote }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
+              "EXPORTS_S3_BUCKET_ACCESS_KEY_ID"
+              "EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY"
               "MAPS_API_V3_JWT_SECRET"
             ) "context" $ ) | nindent 12 }}
             {{- if .Values.sqlWorker.extraEnvVars }}
@@ -126,6 +128,8 @@ spec:
                 name: {{ template "carto.sqlWorker.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "ENCRYPTION_SECRET_KEY"
+              "EXPORTS_S3_BUCKET_ACCESS_KEY_ID"
+              "EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY"
               "MAPS_API_V3_JWT_SECRET"
             ) "context" $ ) -}}
             {{- if $secretContent }}
