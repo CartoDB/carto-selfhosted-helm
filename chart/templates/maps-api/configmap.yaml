@@ -20,11 +20,9 @@ data:
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   EXPORTS_GCS_BUCKET_NAME: {{ .Values.appConfigValues.workspaceExportsBucket | quote }}
-  EXPORTS_S3_BUCKET_ACCESS_KEY_ID: {{ .Values.appSecrets.exportAwsAccessKeyId | quote }}
   EXPORTS_S3_BUCKET_NAME: {{ .Values.appConfigValues.awsExportBucket | quote }}
   EXPORTS_S3_BUCKET_REGION: {{ .Values.appConfigValues.awsExportBucketRegion | quote }}
   EXPORTS_S3_BUCKET_ROLE_ARN: {{ .Values.appConfigValues.exportAwsRoleArn | quote }}
-  EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY: {{ .Values.appSecrets.exportAwsSecretAccessKey | quote }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
