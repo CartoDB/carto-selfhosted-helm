@@ -23,6 +23,9 @@ data:
   EXPORTS_S3_BUCKET_NAME: {{ .Values.appConfigValues.awsExportBucket | quote }}
   EXPORTS_S3_BUCKET_REGION: {{ .Values.appConfigValues.awsExportBucketRegion | quote }}
   EXPORTS_S3_BUCKET_ROLE_ARN: {{ .Values.appConfigValues.exportAwsRoleArn | quote }}
+  {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
+  EXPORTS_GCS_CREDENTIALS_KEY_FILENAME: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
+  {{- else }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
