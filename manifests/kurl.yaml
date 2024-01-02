@@ -1,0 +1,43 @@
+apiVersion: "cluster.kurl.sh/v1beta1"
+kind: "Installer"
+metadata: 
+  name: "carto"
+spec: 
+  kubernetes:
+    version: "1.27.6"
+  flannel:
+    version: "0.23.0"
+  contour:
+    version: "1.27.0"
+    httpPort: 80
+    httpsPort: 443
+  prometheus: 
+    version: "0.68.0-51.0.0"
+  registry: 
+    version: "2.8.3"
+  containerd: 
+    version: "1.6.24"
+  kotsadm: 
+    version: "1.104.1"
+    # applicationNamespace: "carto"
+  ekco: 
+    version: "0.28.3"
+  minio: 
+    version: "2023-11-01T18-37-25Z"
+
+  # OpenEBS is the default PV provisioner, and
+  # will work for single node clusters, or for
+  # applications that handle data replication
+  # between nodes themselves (MongoDB, Cassandra,
+  # etc). If your requirements are different than
+  # this, see
+  # https://kurl.sh/docs/create-installer/choosing-a-pv-provisioner
+  #
+  openebs: 
+    version: "3.9.0"
+    isLocalPVEnabled: true
+    localPVStorageClassName: "local"
+
+  ## That force us to maintains our owns kurl packages
+  certManager: 
+    version: "1.9.1"
