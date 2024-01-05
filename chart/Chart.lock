@@ -8,5 +8,8 @@ dependencies:
 - name: redis
   repository: https://charts.bitnami.com/bitnami
   version: 16.13.2
-digest: sha256:84aee0e8646953162685396ac350cb02c9805f3324b0bb794dc13c8ac5cd8553
-generated: "2022-12-14T08:48:53.363741474Z"
+- name: replicated
+  repository: oci://registry.replicated.com/library
+  version: 1.0.0-beta.13
+digest: sha256:bd2049ccfd1e6426eed13e8e77535e131029aacf6a21b1c5253dda86bf46828c
+generated: "2024-01-04T09:10:19.355778934+01:00"
