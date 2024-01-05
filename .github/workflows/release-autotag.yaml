@@ -1,22 +1,39 @@
 name: Release - Autotag
 on:
-  push:
+  pull_request:
     branches:
       - main
-    paths:
-      - "chart/Chart.yaml"
+    types:
+      - labeled
+
 jobs:
   create-tag:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Check if we create a new tag for the release
+        id: check
+        env:
+          LABELS: ${{ toJson(github.event.pull_request.labels) }}
+        run: |
+          set -eu
+          RELEASE_LABEL=$(echo $LABELS | jq '.[] | select(.name|test("Release")) | .name')
+          if [[ ${RELEASE_LABEL} == "Release" ]]; then
+            echo "We have a new Release, we should create the tag"
+            RELEASE="true"
+          fi
+
+          echo "release=${RELEASE}" >> ${GITHUB_OUTPUT}
 
       - name: Set up yq
+        if: steps.check.outputs.release == 'true'
         uses: frenck/action-setup-yq@v1
 
       - name: Retrieve Release Version
         id: info
+        if: steps.check.outputs.release == 'true'
         shell: bash
         run: |
           set -eu
@@ -25,6 +42,7 @@ jobs:
 
       - name: Check version
         id: version
+        if: steps.check.outputs.release == 'true'
         env:
           RELEASE_VERSION: ${{ steps.info.outputs.carto-release-version }}
         shell: bash
@@ -45,6 +63,7 @@ jobs:
           fi
 
       - uses: ncipollo/release-action@v1
+        if: steps.check.outputs.release == 'true'
         with:
           token: ${{ secrets.X_GITHUB_CARTOFANTE }}
           commit: ${{ github.sha }}

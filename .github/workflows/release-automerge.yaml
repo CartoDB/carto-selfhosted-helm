@@ -11,14 +11,66 @@ jobs:
     runs-on: ubuntu-20.04
     name: "Automerge PR"
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up yq
+        uses: frenck/action-setup-yq@v1
+
+      - name: Retrieve Branch Release Version
+        id: branch-info
+        shell: bash
+        run: |
+          set -eu
+          echo "branch-carto-release-version=$(yq .appVersion chart/Chart.yaml)" >> ${GITHUB_OUTPUT}
+
+      - name: Checkout Main
+        uses: actions/checkout@v4
+        with:
+          ref: 'main'
+
+      - name: Retrieve Main Release Version
+        id: main-info
+        shell: bash
+        run: |
+          set -eu
+          echo "main-carto-release-version=$(yq .appVersion chart/Chart.yaml)" >> ${GITHUB_OUTPUT}
+
+      - name: Check version
+        id: version
+        env:
+          BRANCH_CARTO_RELEASE_VERSION: ${{ steps.branch-info.outputs.branch-carto-release-version }}
+          MAIN_CARTO_RELEASE_VERSION: ${{ steps.main-info.outputs.main-carto-release-version }}
+        shell: bash
+        run: |
+          set -eu
+          if [[ "${BRANCH_CARTO_RELEASE_VERSION}" != ${MAIN_CARTO_RELEASE_VERSION} ]]; then
+            echo "This is a Release Update... We will automerge and label this PR"
+            echo "automerge=true" >> ${GITHUB_OUTPUT}
+          else
+            echo "This is a change in the chart or dependencies... This PR is not automerged"
+            echo "automerge=false" >> ${GITHUB_OUTPUT}
+          fi
+
       - name: Checkout cloud-native repository
         uses: actions/checkout@v3
+        if: steps.version.outputs.automerge == 'true'
         with:
           repository: CartoDB/cloud-native
           path: cloud-native
           token: ${{ secrets.X_GITHUB_CARTOFANTE }}
+
+      # With this label we will create the tag in the release-autotag.yaml workflow
+      - name: Label Selfhosted PR
+        uses: andymckay/labeler@master
+        if: steps.version.outputs.automerge == 'true'
+        with:
+          add-labels: "Release"
+          issue-number: ${{ github.event.number }}
+
       - name: Automerge PR
         uses: ./cloud-native/.github/actions/automerge-pr
+        if: steps.version.outputs.automerge == 'true'
         with:
           github-token: ${{ secrets.X_GITHUB_CARTOFANTE }}
           github-user: cartofante
