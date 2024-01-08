@@ -2,7 +2,7 @@ name: Release - Autotag
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - VERSION
 jobs:
