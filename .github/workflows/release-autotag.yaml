@@ -4,13 +4,13 @@ on:
     branches:
       - main
     paths:
-      - "chart/Chart.yaml"
+      - VERSION
 jobs:
   create-tag:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up yq
         uses: frenck/action-setup-yq@v1
