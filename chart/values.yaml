@@ -1,5 +1,3 @@
-replicated:
-  enabled: true
 ## @section Custom config parameters
 ## Global configuration to be edited by the client
 appConfigValues:

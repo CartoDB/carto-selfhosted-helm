@@ -15,7 +15,7 @@ stringData:
       collectors:
         - postgres:
             collectorName: workspace-db
-            uri: postgresql://{{ include "carto.postgresql.user" . | trimAll "\"" }}:{{ .Values.internalPostgresql.auth.password }}@{{ include "carto.postgresql.host" . | trimAll "\"" }}:{{ include "carto.postgresql.port" . | trimAll "\"" }}/{{ include "carto.postgresql.databaseName" . | trimAll "\"" }}
+            uri: postgresql://{{ include "carto.postgresql.adminUser" . | trimAll "\"" }}:{{ .Values.externalPostgresql.adminPassword }}@{{ include "carto.postgresql.host" . | trimAll "\"" }}:{{ include "carto.postgresql.port" . | trimAll "\"" }}/{{ include "carto.postgresql.databaseName" . | trimAll "\"" }}
         - redis:
             collectorName: redis
             uri: redis://default:{{ .Values.internalRedis.auth.password }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
@@ -33,7 +33,7 @@ stringData:
                   args: ["-exc", "npm run ready-to-run:built"]
                   env:
                     - name: WORKSPACE_POSTGRES_PASSWORD
-                      value: {{ .Values.internalPostgresql.auth.password | quote }}
+                      value: {{ .Values.externalPostgresql.password | quote }}
                       # valueFrom:
                       #   secretKeyRef:
                       #     name: {{ include "carto.postgresql.secretName" . }}

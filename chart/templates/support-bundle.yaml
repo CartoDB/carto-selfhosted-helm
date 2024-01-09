@@ -3,7 +3,7 @@ kind: Secret
 metadata:
   labels:
     troubleshoot.sh/kind: support-bundle
-  name: {{ template "carto.workspaceApi.fullname" . }}-support-bundle
+  name: {{ .Release.Name }}-support-bundle
   namespace: {{ .Release.Namespace | quote }}
 stringData:
     # To use it: kubectl support-bundle --load-cluster-specs --selector=carto.com/kind=support-bundle
@@ -11,26 +11,19 @@ stringData:
     apiVersion: troubleshoot.sh/v1beta2
     kind: SupportBundle
     metadata:
-      name: {{ template "carto.workspaceApi.fullname" . }}-support-bundle
+      name: {{ .Release.Name }}-support-bundle
     spec:
       collectors:
+        - clusterInfo: {}
+        - clusterResources:
+            namespaces:
+            - {{ .Release.Namespace }}
         - postgres:
             collectorName: workspace-db
-            uri: postgresql://{{ include "carto.postgresql.user" . | trimAll "\"" }}:{{ .Values.internalPostgresql.auth.password }}@{{ include "carto.postgresql.host" . | trimAll "\"" }}:{{ include "carto.postgresql.port" . | trimAll "\"" }}/{{ include "carto.postgresql.databaseName" . | trimAll "\"" }}
+            uri: postgresql://{{ include "carto.postgresql.adminUser" . | trimAll "\"" }}:{{ .Values.externalPostgresql.adminPassword }}@{{ include "carto.postgresql.host" . | trimAll "\"" }}:{{ include "carto.postgresql.port" . | trimAll "\"" }}/{{ include "carto.postgresql.databaseName" . | trimAll "\"" }}
         - redis:
             collectorName: redis
             uri: redis://default:{{ .Values.internalRedis.auth.password }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
-        - clusterInfo: {}
-        - clusterResources: {}
-        # - logs:
-        #     selector:
-        #       - app=someapp
-        #       - component=nginx
-        #     namespace: {{ .Release.Namespace }}
-        #     limits:
-        #       maxAge: 720h # 30*24
-        #       maxLines: 10000
-        #       maxBytes: 5000000
         - logs:
             collectorName: namespace-{{ .Release.Namespace }}-logs
             name: namespace-{{ .Release.Namespace }}-logs
@@ -39,17 +32,6 @@ stringData:
               maxAge: 720h # 30*24
               maxLines: 10000
               maxBytes: 5000000
-        # - logs:
-        #     collectorName: all-logs
-        #     name: all-logs
-        - runPod:
-            collectorName: "support-static-hi"
-            name: "support-static-hi"
-            podSpec:
-              containers:
-              - name: static-hi
-                image: alpine:3
-                command: ["echo", "hi static!"]
         - runPod:
             collectorName: support-run-health-on-maps-api
             name: support-run-health-on-maps-api
@@ -64,7 +46,7 @@ stringData:
                   args: ["-exc", "npm run ready-to-run:built"]
                   env:
                     - name: WORKSPACE_POSTGRES_PASSWORD
-                      value: {{ .Values.internalPostgresql.auth.password | quote }}
+                      value: {{ .Values.externalPostgresql.password | quote }}
                       # valueFrom:
                       #   secretKeyRef:
                       #     name: {{ include "carto.postgresql.secretName" . }}

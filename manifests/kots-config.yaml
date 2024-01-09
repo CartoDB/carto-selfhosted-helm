@@ -5,7 +5,6 @@ metadata:
   name: carto-config
 spec:
   groups:
-
     - name: carto-secret-package
       title: CARTO secrets package
       description: Packages of secrets provided by CARTO
@@ -125,7 +124,6 @@ spec:
           required: true
           value: 'https://storage.googleapis.com/{{repl LicenseFieldValue "selfHostedGcpProjectId" }}-thumbnails-storage'
           default: 'https://storage.googleapis.com/{{repl LicenseFieldValue "selfHostedGcpProjectId" }}-thumbnails-storage'
-
         - name: cartoConfigValues_cartoAuth0ClientId
           title: cartoConfigValues >> cartoAuth0ClientId
           help_text: "Copy the 'cartoConfigValues.cartoAuth0ClientId.value' yaml"
@@ -134,7 +132,6 @@ spec:
           hidden: true
           default: '{{repl LicenseFieldValue "cartoAuth0ClientId" }}'
           value: '{{repl LicenseFieldValue "cartoAuth0ClientId" }}'
-
         - name: cartoConfigValues_cartoSelfhostedDwLocation
           title: cartoConfigValues >> cartoSelfhostedDwLocation
           help_text: "Copy the 'cartoConfigValues.cartoSelfhostedDwLocation.value' yaml"
@@ -175,22 +172,86 @@ spec:
           type: text
           required: true
           default: "null"  # That is going to leave the default provided by Helm
-    - name: internal-values-package
-      title: CARTO internals
-      description: Packages of internal values
+
+    - name: datastores-values-package
+      title: CARTO Datastores
+      description: Carto Workspace Datastores
       items:
-        - name: internalConfig_postgresPassword
-          title: internal Postgres Password
+        - name: postgresHost
+          title: Postgres Host
           type: text
-          value: '{{repl RandomString 64}}'
           readonly: false
           hidden: false
-        - name: internalConfig_redisPassword
-          title: internal Redis Password
+        - name: postgresPort
+          title: Postgres Port
           type: text
-          value: '{{repl RandomString 64}}'
+          default: '5432'
           readonly: false
           hidden: false
+        - name: postgresUser
+          title: Postgres Carto User
+          type: text
+          readonly: false
+          hidden: false
+        - name: postgresPassword
+          title: Postgres Carto Password
+          type: password
+          readonly: false
+          hidden: false
+        - name: postgresCartoDatabase
+          title: Postgres Admin Database
+          type: text
+          default: 'workspace'
+          readonly: false
+          hidden: false
+        - name: postgresAdminUser
+          title: Postgres Admin User
+          type: text
+          default: 'postgres'
+          readonly: false
+          hidden: false
+        - name: postgresAdminPassword
+          title: Postgres Admin Password
+          type: password
+          readonly: false
+          hidden: false
+        - name: postgresAdminDatabase
+          title: Postgres Admin Database
+          type: text
+          default: 'postgres'
+          readonly: false
+          hidden: false
+        - name: enableInternalRedis
+          title: Select your Redis instance type
+          type: select_one
+          items:
+          - name: internal_redis
+            title: Deploy Redis as a container
+          - name: external_redis
+            title: Bring your own Redis instance
+        - name: internalredisPassword
+          title: Redis Password
+          when: '{{repl (ConfigOptionEquals "internalRedisEnabled" "internal_redis")}}'
+          type: password
+          default: '{{repl RandomString 16}}'
+          required: true
+          readonly: false
+          hidden: false
+        - name: externalredisPassword
+          title: Redis Password
+          when: '{{repl (ConfigOptionEquals "internalRedisEnabled" "external_redis")}}'
+          type: password
+          required: true
+          readonly: false
+          hidden: false
+        - name: externalredisPort
+          title: Redis Port
+          when: '{{repl (ConfigOptionEquals "internalRedisEnabled" "external_redis")}}'
+          type: text
+          required: true
+          readonly: false
+          hidden: false
+
     - name: carto-advanced-options
       title: Advanced Options
       description: Advanced options for the CARTO installation

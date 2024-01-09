@@ -4,7 +4,7 @@ kind: Application
 metadata:
   name: Carto
 spec:
-  title: CARTO DEMO
+  title: CARTO
   icon: https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/CARTO-logo.svg/1280px-CARTO-logo.svg.png
   allowRollback: false
   statusInformers:
@@ -21,13 +21,3 @@ spec:
     - deployment/carto-workspace-api
     - deployment/carto-workspace-subscriber
     - deployment/carto-workspace-www
-
-  ports:
-    - serviceName: "carto-router"
-      servicePort: 8080
-      localPort: 80
-      applicationUrl: "http://nginx"
-    - serviceName: "carto-router"
-      servicePort: 8443
-      localPort: 443
-      applicationUrl: "https://carto"
