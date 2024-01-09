@@ -221,7 +221,7 @@ spec:
           default: 'postgres'
           readonly: false
           hidden: false
-        - name: enableInternalRedis
+        - name: internalRedisEnabled
           title: Select your Redis instance type
           type: select_one
           items:
@@ -233,7 +233,6 @@ spec:
           title: Redis Password
           when: '{{repl (ConfigOptionEquals "internalRedisEnabled" "internal_redis")}}'
           type: password
-          default: '{{repl RandomString 16}}'
           required: true
           readonly: false
           hidden: false
