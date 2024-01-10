@@ -44,9 +44,17 @@ spec:
       # Disable the internal Postgres
       enabled: false
     internalRedis:
-      enabled: repl{{ if ConfigOptionEquals "enableInternalRedis" "1"}}truerepl{{ else }}falserepl{{ end }}
+      enabled: repl{{ if ConfigOptionEquals "selectRedisInstance" "1"}}truerepl{{ else }}falserepl{{ end }}
       auth:
         password: '{{repl ConfigOption "internalredisPassword" }}'
+    externalRedis:
+      host: '{{repl ConfigOption "externalRedisHost" }}'
+      port: '{{repl ConfigOption "externalRedisPort" | ParseInt }}'
+      password: '{{repl ConfigOption "externalRedisPassword" }}'
+      # tlsEnabled: repl{{ if ConfigOptionEquals "externalRedisTlsEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
+      # tlsCA: ""
+      # existingSecret: "mycarto-custom-redis-secret"
+      # existingSecretPasswordKey: "password"
     router:
       service:
         type: ClusterIP
@@ -54,7 +62,7 @@ spec:
           http: 8080
           https: 8443
     commonBackendServiceAccount:
-      enableGCPWorkloadIdentity: repl{{ if ConfigOptionEquals "enableGCPWorkloadIdentity" "internal_redis"}}truerepl{{ else }}falserepl{{ end }}
+      enableGCPWorkloadIdentity: repl{{ if ConfigOptionEquals "enableGCPWorkloadIdentity" "workload_idendity_serviceaccount"}}truerepl{{ else }}falserepl{{ end }}
       annotations:
         iam.gke.io/gcp-service-account: '{{repl ConfigOption "workloadIdentityServiceAccountEmail" }}'
     externalPostgresql:
@@ -70,6 +78,6 @@ spec:
       # existingSecretPasswordKey: ""
       # existingSecretAdminPasswordKey: ""
       database: '{{repl ConfigOption "postgresCartoDatabase" }}'
-      port: '{{repl ConfigOption "postgresPort" }}'
+      port: '{{repl ConfigOption "postgresPort" | ParseInt }}'
       # sslEnabled: false
       # sslCA: ""

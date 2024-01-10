@@ -177,6 +177,7 @@ spec:
       title: CARTO Datastores
       description: Carto Workspace Datastores
       items:
+        # Postgres
         - name: postgresHost
           title: Postgres Host
           type: text
@@ -221,9 +222,11 @@ spec:
           default: 'postgres'
           readonly: false
           hidden: false
-        - name: internalRedisEnabled
+          # Redis
+        - name: selectRedisInstance
           title: Select your Redis instance type
           type: select_one
+          default: internal_redis
           items:
           - name: internal_redis
             title: Deploy Redis as a container
@@ -231,25 +234,37 @@ spec:
             title: Bring your own Redis instance
         - name: internalredisPassword
           title: Redis Password
-          when: '{{repl (ConfigOptionEquals "internalRedisEnabled" "internal_redis")}}'
+          when: '{{repl (ConfigOptionEquals "selectRedisInstance" "internal_redis")}}'
           type: password
           required: true
           readonly: false
           hidden: false
-        - name: externalredisPassword
-          title: Redis Password
-          when: '{{repl (ConfigOptionEquals "internalRedisEnabled" "external_redis")}}'
-          type: password
-          required: true
-          readonly: false
-          hidden: false
-        - name: externalredisPort
-          title: Redis Port
-          when: '{{repl (ConfigOptionEquals "internalRedisEnabled" "external_redis")}}'
+        - name: externalRedisHost
+          title: Redis Host
+          when: '{{repl (ConfigOptionEquals "selectRedisInstance" "external_redis")}}'
           type: text
           required: true
           readonly: false
           hidden: false
+        - name: externalRedisPort
+          title: Redis Port
+          when: '{{repl (ConfigOptionEquals "selectRedisInstance" "external_redis")}}'
+          type: text
+          required: true
+          readonly: false
+          hidden: false
+        - name: externalRedisPassword
+          title: Redis Password
+          when: '{{repl (ConfigOptionEquals "selectRedisInstance" "external_redis")}}'
+          type: password
+          required: true
+          readonly: false
+          hidden: false
+        # - name: externalRedisTlsEnabled
+        #   title: Redis TLS Enabled
+        #   when: '{{repl (ConfigOptionEquals "selectRedisInstance" "external_redis")}}'
+        #   type: bool
+        #   default: "0"
 
     - name: carto-advanced-options
       title: Advanced Options

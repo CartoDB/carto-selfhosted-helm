@@ -10,17 +10,12 @@ stringData:
     apiVersion: troubleshoot.sh/v1beta2
     kind: Preflight
     metadata:
-      name: preflight-sample
+      name: preflight
     spec:
       collectors:
         - postgres:
             collectorName: workspace-db
             uri: postgresql://{{ include "carto.postgresql.adminUser" . | trimAll "\"" }}:{{ .Values.externalPostgresql.adminPassword }}@{{ include "carto.postgresql.host" . | trimAll "\"" }}:{{ include "carto.postgresql.port" . | trimAll "\"" }}/{{ include "carto.postgresql.adminDatabase" . | trimAll "\"" }}
-        {{- if not .Values.internalRedis }}
-        - redis:
-            collectorName: redis
-            uri: redis://default:{{ .Values.externalRedis.password }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
-        {{- end }}
         - registryImages:
             images:
               - {{ template "carto.accountsWww.image" . }}
@@ -38,6 +33,17 @@ stringData:
               - {{ template "carto.workspaceSubscriber.image" . }}
               - {{ template "carto.workspaceWww.image" . }}
       analyzers:
+        - registryImages:
+            checkName: Carto Registry Images
+            outcomes:
+              - fail:
+                  when: "missing > 0"
+                  message: Images are missing from registry
+              - warn:
+                  when: "errors > 0"
+                  message: Failed to check if images are present in registry
+              - pass:
+                  message: All Carto images are availables
         - postgres:
             checkName: PostgreSQL is available
             collectorName: workspace-db
@@ -53,25 +59,13 @@ stringData:
             collectorName: workspace-db
             outcomes:
               - fail:
+                  when: connected == false
+                  message: Cannot connect to PostgreSQL server
+              - fail:
                   when: version < 11.x
                   message: The PostgreSQL server must be at least version 11
               - pass:
-                  message: The PostgreSQL version is ready
-        {{- if not .Values.internalRedis }}
-        - jsonCompare:
-            checkName: Required Redis status
-            fileName: redis/redis.json
-            path: "isConnected"
-            value: |
-              true
-            outcomes:
-              - fail:
-                  # when: "false"
-                  message: Redis couldn't be accessed.
-              - pass:
-                  # when: "true"
-                  message: Redis looks good.
-        {{- end }}
+                  message: The PostgreSQL verion checks out
         - clusterVersion:
             outcomes:
               - fail:
@@ -131,14 +125,3 @@ stringData:
                   message: The cluster should contain at least 4 cores.
               - pass:
                   message: There are at least 4 cores in the cluster.
-        - registryImages:
-            checkName: Carto Registry Images
-            outcomes:
-              - fail:
-                  when: "missing > 0"
-                  message: Images are missing from registry
-              - warn:
-                  when: "errors > 0"
-                  message: Failed to check if images are present in registry
-              - pass:
-                  message: All Carto images are availables
