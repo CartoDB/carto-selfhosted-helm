@@ -23,7 +23,7 @@ spec:
       launchDarklySdkKey:
         value: '{{repl ConfigOption "cartoSecrets_launchDarklySdkKey" }}'
       defaultGoogleServiceAccount:
-        value: '{{repl ConfigOption "cartoSecrets_defaultGoogleServiceAccount" }}'
+        value: '{{repl ConfigOption "defaultGoogleServiceAccount" }}'
     appConfigValues:
       selfHostedDomain: '{{repl ConfigOption "appConfigValues_selfHostedDomain" }}'
       workspaceImportsBucket: '{{repl ConfigOption "appConfigValues_workspaceImportsBucket" }}'

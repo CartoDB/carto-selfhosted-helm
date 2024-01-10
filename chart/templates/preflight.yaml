@@ -3,7 +3,7 @@ kind: Secret
 metadata:
   labels:
     troubleshoot.sh/kind: preflight
-  name: {{ template "carto.workspaceApi.fullname" . }}-preflight-config
+  name: {{ .Release.Name }}-preflight-config
   namespace: {{ .Release.Namespace | quote }}
 stringData:
   preflight.yaml: |
@@ -15,12 +15,28 @@ stringData:
       collectors:
         - postgres:
             collectorName: workspace-db
-            uri: postgresql://{{ include "carto.postgresql.adminUser" . | trimAll "\"" }}:{{ .Values.externalPostgresql.adminPassword }}@{{ include "carto.postgresql.host" . | trimAll "\"" }}:{{ include "carto.postgresql.port" . | trimAll "\"" }}/{{ include "carto.postgresql.databaseName" . | trimAll "\"" }}
+            uri: postgresql://{{ include "carto.postgresql.adminUser" . | trimAll "\"" }}:{{ .Values.externalPostgresql.adminPassword }}@{{ include "carto.postgresql.host" . | trimAll "\"" }}:{{ include "carto.postgresql.port" . | trimAll "\"" }}/{{ include "carto.postgresql.adminDatabase" . | trimAll "\"" }}
         {{- if not .Values.internalRedis }}
         - redis:
             collectorName: redis
             uri: redis://default:{{ .Values.externalRedis.password }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
         {{- end }}
+        - registryImages:
+            images:
+              - {{ template "carto.accountsWww.image" . }}
+              - {{ template "carto.cdnInvalidatorSub.image" . }}
+              - {{ template "carto.httpCache.image" . }}
+              - {{ template "carto.importApi.image" . }}
+              - {{ template "carto.importWorker.image" . }}
+              - {{ template "carto.ldsApi.image" . }}
+              - {{ template "carto.mapsApi.image" . }}
+              - {{ template "carto.notifier.image" . }}
+              - {{ template "carto.router.image" . }}
+              - {{ template "carto.sqlWorker.image" . }}
+              - {{ template "carto.workspaceApi.image" . }}
+              - {{ template "carto.workspaceMigrations.image" . }}
+              - {{ template "carto.workspaceSubscriber.image" . }}
+              - {{ template "carto.workspaceWww.image" . }}
       analyzers:
         - postgres:
             checkName: PostgreSQL is available
@@ -115,14 +131,14 @@ stringData:
                   message: The cluster should contain at least 4 cores.
               - pass:
                   message: There are at least 4 cores in the cluster.
-        - yamlCompare:
-            # Not working. I don't know why
-            annotations:
-              kots.io/installer: "true"
-            checkName: Kubernetes Installer
+        - registryImages:
+            checkName: Carto Registry Images
             outcomes:
               - fail:
-                  message: The Kubernetes installer for this version differs from what you have installed. It is recommended that you run the updated Kubernetes installer before deploying this version.
-                  uri: https://kurl.sh/carto
+                  when: "missing > 0"
+                  message: Images are missing from registry
+              - warn:
+                  when: "errors > 0"
+                  message: Failed to check if images are present in registry
               - pass:
-                  message: The Kubernetes installer for this version matches what is currently installed.
+                  message: All Carto images are availables
