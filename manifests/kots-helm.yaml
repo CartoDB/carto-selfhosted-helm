@@ -44,7 +44,7 @@ spec:
       # Disable the internal Postgres
       enabled: false
     internalRedis:
-      enabled: repl{{ if ConfigOptionEquals "selectRedisInstance" "1"}}truerepl{{ else }}falserepl{{ end }}
+      enabled: repl{{ if ConfigOptionEquals "selectRedisInstance" "internal_redis"}}truerepl{{ else }}falserepl{{ end }}
       auth:
         password: '{{repl ConfigOption "internalredisPassword" }}'
     externalRedis:
