@@ -19,7 +19,7 @@ stringData:
         - clusterInfo: {}
         - clusterResources:
             namespaces:
-            - {{ .Release.Namespace }}
+                - {{ .Release.Namespace }}
         - postgres:
             collectorName: workspace-db
             uri: postgresql://{{ include "carto.postgresql.user" . | trimAll "\"" }}:{{ .Values.externalPostgresql.password }}@{{ include "carto.postgresql.host" . | trimAll "\"" }}:{{ include "carto.postgresql.port" . | trimAll "\"" }}/{{ include "carto.postgresql.databaseName" . | trimAll "\"" }}
