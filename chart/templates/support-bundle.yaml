@@ -27,7 +27,7 @@ stringData:
         - redis:
             collectorName: redis
             uri: redis://default:{{ .Values.internalRedis.auth.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
-        {{- else -}}
+        {{- else }}
         - redis:
             collectorName: redis
             uri: redis://default:{{ .Values.externalRedis.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
