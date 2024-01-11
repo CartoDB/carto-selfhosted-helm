@@ -251,6 +251,7 @@ spec:
           when: '{{repl (ConfigOptionEquals "selectRedisInstance" "external_redis")}}'
           type: text
           required: true
+          default: '6379'
           readonly: false
           hidden: false
         - name: externalRedisPassword

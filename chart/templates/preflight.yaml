@@ -1,3 +1,4 @@
+{{- if .Values.replicated.enabled }}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -10,12 +11,18 @@ stringData:
     apiVersion: troubleshoot.sh/v1beta2
     kind: Preflight
     metadata:
-      name: preflight
+      name: {{ .Release.Name }}-preflight
+      namespace: {{ .Release.Namespace | quote }}
     spec:
       collectors:
         - postgres:
             collectorName: workspace-db
-            uri: postgresql://{{ include "carto.postgresql.adminUser" . | trimAll "\"" }}:{{ .Values.externalPostgresql.adminPassword }}@{{ include "carto.postgresql.host" . | trimAll "\"" }}:{{ include "carto.postgresql.port" . | trimAll "\"" }}/{{ include "carto.postgresql.adminDatabase" . | trimAll "\"" }}
+            uri: postgresql://{{ include "carto.postgresql.adminUser" . | trimAll "\"" }}:{{ .Values.externalPostgresql.adminPassword | trimAll "\"" }}@{{ include "carto.postgresql.host" . | trimAll "\"" }}:{{ include "carto.postgresql.port" . | trimAll "\"" }}/{{ include "carto.postgresql.adminDatabase" . | trimAll "\"" }}
+        {{- if not .Values.internalRedis.enabled }}
+        - redis:
+            collectorName: redis
+            uri: redis://default:{{ .Values.externalRedis.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
+        {{- end }}
         - registryImages:
             images:
               - {{ template "carto.accountsWww.image" . }}
@@ -43,7 +50,7 @@ stringData:
                   when: "errors > 0"
                   message: Failed to check if images are present in registry
               - pass:
-                  message: All Carto images are availables
+                  message: All Carto images are available
         - postgres:
             checkName: PostgreSQL is available
             collectorName: workspace-db
@@ -55,17 +62,28 @@ stringData:
                   when: connected == true
                   message: The PostgreSQL server is available
         - postgres:
-            checkName: PostgreSQL must be v11.x or later
+            checkName: PostgreSQL must be v14.x or later
             collectorName: workspace-db
             outcomes:
               - fail:
                   when: connected == false
                   message: Cannot connect to PostgreSQL server
               - fail:
-                  when: version < 11.x
-                  message: The PostgreSQL server must be at least version 11
+                  when: version < 14.x
+                  message: The PostgreSQL server must be at least version 14
               - pass:
                   message: The PostgreSQL verion checks out
+        {{- if not .Values.internalRedis.enabled }}
+        - redis:
+            checkName: Redis is available
+            collectorName: redis
+            outcomes:
+              - fail:
+                when: isConnected == false
+                message: Cannot connect to the Redis instance
+              - pass:
+                message: The Redis instance is available
+        {{- end }}
         - clusterVersion:
             outcomes:
               - fail:
@@ -115,13 +133,25 @@ stringData:
               - warn:
                   message: Unable to determine the distribution of Kubernetes.
         - nodeResources:
-            checkName: Total CPU Cores
+            checkName: The should contain at least 6 cores
             outcomes:
               - fail:
-                  when: "sum(cpuCapacity) < 2"
-                  message: The cluster must contain at least 2 cores, and should contain at least 4 cores.
+                  when: "sum(cpuCapacity) < 5"
+                  message: The cluster must contain at least 5 cores. ➡️ Ignore if you have auto-scale enabled in your cluster.
               - warn:
-                  when: "sum(cpuCapacity) < 4"
-                  message: The cluster should contain at least 4 cores.
+                  when: "sum(cpuCapacity) < 6"
+                  message: The cluster should contain at least 6 cores. ➡️ Ignore if you have auto-scale enabled in your cluster.
               - pass:
-                  message: There are at least 4 cores in the cluster.
+                  message: There are at least 6 cores in the cluster.
+        - nodeResources:
+            checkName: The cluster should contain at least 16 Gi
+            outcomes:
+              - fail:
+                  when: "sum(allocatableMemory) < 16Gi"
+                  message: The cluster must contain at least 16Gi. ➡️ Ignore if you have auto-scale enabled in your cluster.
+              - warn:
+                  when: "sum(allocatableMemory) < 17Gi"
+                  message: The cluster should contain at least 17Gi. ➡️ Ignore if you have auto-scale enabled in your cluster.
+              - pass:
+                  message: There are at least 16 Gi in the cluster.
+{{- end }}
