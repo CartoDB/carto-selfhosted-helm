@@ -26,11 +26,11 @@ stringData:
         {{- if .Values.internalRedis.enabled }}
         - redis:
             collectorName: redis
-            uri: redis://default:{{ .Values.internalRedis.auth.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
+            uri: redis://:{{ .Values.internalRedis.auth.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
         {{- else }}
         - redis:
             collectorName: redis
-            uri: redis://default:{{ .Values.externalRedis.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
+            uri: redis://:{{ .Values.externalRedis.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
         {{- end }}
         - logs:
             collectorName: namespace-{{ .Release.Namespace }}-logs
@@ -141,11 +141,11 @@ stringData:
               - fail:
                   when: "< 1.25.0"
                   message: The application requires Kubernetes 1.25.0 or later, and recommends 1.26.0 or later.
-                  uri: https://www.kubernetes.io
+                  uri: https://kubernetes.io/releases
               - warn:
                   when: "< 1.26.0"
                   message: Your cluster meets the minimum version of Kubernetes, but we recommend you update to 1.26.0 or later.
-                  uri: https://kubernetes.io
+                  uri: https://kubernetes.io/releases
               - pass:
                   message: Your cluster meets the recommended and required versions of Kubernetes.
         - containerRuntime:
