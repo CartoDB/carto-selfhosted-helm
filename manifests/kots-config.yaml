@@ -1,0 +1,301 @@
+---
+apiVersion: kots.io/v1beta1
+kind: Config
+metadata:
+  name: carto-config
+spec:
+  groups:
+    - name: carto-secret-package
+      title: CARTO secrets package
+      description: Packages of secrets provided by CARTO
+      items:
+        # - name: app_config_values
+        #   title: Customize Text Inputs
+        #   help_text: "Copy the 'appConfigValues' yaml"
+        #   type: text
+        #   default: "null"  # That is going to leave the default provided by Helm
+        - name: cartoSecrets_encryptionSecretKey
+          title: cartoSecrets >> encryptionSecretKey
+          help_text: "Copy the 'cartoSecrets.encryptionSecretKey.value' yaml"
+          type: text
+          required: true
+          readonly: false  # Mandatory to persist the value
+          hidden: true
+          value: '{{repl RandomString 32 "[A-Za-z0-9]" }}'
+        - name: cartoSecrets_jwtApiSecret
+          title: cartoSecrets >> jwtApiSecret
+          help_text: "Copy the 'cartoSecrets.jwtApiSecret.value' yaml"
+          type: text
+          required: true
+          readonly: false  # Mandatory to persist the value
+          hidden: true
+          value: '{{repl RandomString 16 "[A-Za-z0-9]" }}'
+        - name: cartoSecrets_varnishDebugSecret
+          title: cartoSecrets >> varnishDebugSecret
+          help_text: "Copy the 'cartoSecrets.varnishDebugSecret.value' yaml"
+          type: text
+          required: true
+          readonly: false  # Mandatory to persist the value
+          hidden: true
+          value: '{{repl RandomString 16 "[A-Za-z0-9]" }}'
+        - name: cartoSecrets_varnishPurgeSecret
+          title: cartoSecrets >> varnishPurgeSecret
+          help_text: "Copy the 'cartoSecrets.varnishPurgeSecret.value' yaml"
+          type: text
+          required: true
+          readonly: false  # Mandatory to persist the value
+          hidden: true
+          value: '{{repl RandomString 16 "[A-Za-z0-9]" }}'
+        - name: cartoSecrets_launchDarklySdkKey
+          title: cartoSecrets >> launchDarklySdkKey
+          help_text: "Copy the 'cartoSecrets.launchDarklySdkKey.value' yaml"
+          type: text
+          required: true
+          hidden: true
+          value: '{{repl LicenseFieldValue "cartoSelfhostedDwLocation" }}'
+
+    - name: carto-service-account
+      title: CARTO service account
+      description: Service Account to be used by Carto
+      items:
+        - name: enableGCPWorkloadIdentity
+          title: Google ServiceAccount Type
+          default: serviceaccount_type_default
+          type: select_one
+          items:
+          - name: carto_default_serviceaccount
+            title: Carto Default ServiceAccount
+          - name: workload_idendity_serviceaccount
+            title: Bring your own ServiceAccount with Workload Identity
+        - name: defaultGoogleServiceAccount
+          title: defaultGoogleServiceAccount
+          when: '{{repl (ConfigOptionEquals "enableGCPWorkloadIdentity" "carto_default_serviceaccount")}}'
+          help_text: "Add the Google Service Account that should be used by CARTO"
+          type: textarea
+          required: true
+          value: '{{repl LicenseFieldValue "defaultGoogleServiceAccount" }}'
+          # Allow the user to edit the default SA
+          hidden: false
+          readonly: false
+        - name: workloadIdentityServiceAccountEmail
+          title: workloadIdentityServiceAccountEmail
+          when: '{{repl (ConfigOptionEquals "enableGCPWorkloadIdentity" "workload_idendity_serviceaccount")}}'
+          help_text: "Add the Workload Idenity Service Account Email that should be used by CARTO"
+          type: textarea
+          required: true
+          value: '{{repl LicenseFieldValue "workloadIdentityServiceAccountEmail" }}'
+          # Allow the user to edit the default SA
+          hidden: false
+          readonly: false
+
+    - name: carto-values-package
+      title: CARTO values package
+      description: Packages of values provided by CARTO
+      items:
+        # - name: app_config_values
+        #   title: Customize Text Inputs
+        #   help_text: "Copy the 'appConfigValues' yaml"
+        #   type: text
+        #   default: "null"  # That is going to leave the default provided by Helm
+        - name: appConfigValues_selfHostedDomain
+          title: appConfigValues >> selfHostedDomain
+          help_text: "Your domain (without protocol)"
+          type: text
+          required: true
+          default: "carto3-onprem.lan"
+        - name: appConfigValues_workspaceImportsBucket
+          title: appConfigValues >> workspaceImportsBucket
+          help_text: "Copy the 'appConfigValues.workspaceImportsBucket.value' yaml"
+          type: text
+          required: true
+          value: '{{repl LicenseFieldValue "selfHostedGcpProjectId" }}-client-storage'
+          default: '{{repl LicenseFieldValue "selfHostedGcpProjectId" }}-client-storage'
+        - name: appConfigValues_workspaceThumbnailsBucket
+          title: appConfigValues >> workspaceThumbnailsBucket
+          help_text: "Copy the 'appConfigValues.workspaceThumbnailsBucket.value' yaml"
+          type: text
+          required: true
+          value: '{{repl LicenseFieldValue "selfHostedGcpProjectId" }}-thumbnails-storage'
+          default: '{{repl LicenseFieldValue "selfHostedGcpProjectId" }}-thumbnails-storage'
+        - name: appConfigValues_thumbnailsBucketExternalURL
+          title: appConfigValues >> thumbnailsBucketExternalURL
+          help_text: "Copy the 'appConfigValues.thumbnailsBucketExternalURL.value' yaml"
+          type: text
+          required: true
+          value: 'https://storage.googleapis.com/{{repl LicenseFieldValue "selfHostedGcpProjectId" }}-thumbnails-storage'
+          default: 'https://storage.googleapis.com/{{repl LicenseFieldValue "selfHostedGcpProjectId" }}-thumbnails-storage'
+        - name: cartoConfigValues_cartoAuth0ClientId
+          title: cartoConfigValues >> cartoAuth0ClientId
+          help_text: "Copy the 'cartoConfigValues.cartoAuth0ClientId.value' yaml"
+          type: text
+          required: true
+          hidden: true
+          default: '{{repl LicenseFieldValue "cartoAuth0ClientId" }}'
+          value: '{{repl LicenseFieldValue "cartoAuth0ClientId" }}'
+        - name: cartoConfigValues_cartoSelfhostedDwLocation
+          title: cartoConfigValues >> cartoSelfhostedDwLocation
+          help_text: "Copy the 'cartoConfigValues.cartoSelfhostedDwLocation.value' yaml"
+          type: text
+          required: true
+          default: '{{repl LicenseFieldValue "cartoSelfhostedDwLocation" }}'
+          value: '{{repl LicenseFieldValue "cartoSelfhostedDwLocation" }}'
+          hidden: true
+        - name: cartoConfigValues_launchDarklyClientSideId
+          title: cartoConfigValues >> launchDarklyClientSideId
+          help_text: "Copy the 'cartoConfigValues.launchDarklyClientSideId.value' yaml"
+          type: text
+          required: true
+          default: '{{repl LicenseFieldValue "launchDarklyClientSideId" }}'
+          value: '{{repl LicenseFieldValue "launchDarklyClientSideId" }}'
+          hidden: true
+        - name: cartoConfigValues_selfHostedGcpProjectId
+          title: cartoConfigValues >> selfHostedGcpProjectId
+          help_text: "Copy the 'cartoConfigValues.selfHostedGcpProjectId.value' yaml"
+          type: text
+          required: true
+          default: '{{repl LicenseFieldValue "selfHostedGcpProjectId" }}'
+          value: '{{repl LicenseFieldValue "selfHostedGcpProjectId" }}'
+          hidden: false
+          readonly: true
+        - name: cartoConfigValues_selfHostedTenantId
+          title: cartoConfigValues >> selfHostedTenantId
+          help_text: "Copy the 'cartoConfigValues.selfHostedTenantId.value' yaml"
+          type: text
+          required: true
+          default: '{{repl LicenseFieldValue "selfHostedTenantId" }}'
+          value: '{{repl LicenseFieldValue "selfHostedTenantId" }}'
+          hidden: false
+          readonly: true
+        - name: cartoConfigValues_customerPackageVersion
+          title: cartoConfigValues >> customerPackageVersion
+          help_text: "Copy the 'cartoConfigValues.customerPackageVersion.value' yaml"
+          type: text
+          required: true
+          default: "null"  # That is going to leave the default provided by Helm
+
+    - name: datastores-values-package
+      title: CARTO Datastores
+      description: Carto Workspace Datastores
+      items:
+        # Postgres
+        - name: postgresHost
+          title: Postgres Host
+          type: text
+          readonly: false
+          hidden: false
+        - name: postgresPort
+          title: Postgres Port
+          type: text
+          default: '5432'
+          readonly: false
+          hidden: false
+        - name: postgresUser
+          title: Postgres Carto User
+          type: text
+          readonly: false
+          hidden: false
+        - name: postgresPassword
+          title: Postgres Carto Password
+          type: password
+          readonly: false
+          hidden: false
+        - name: postgresCartoDatabase
+          title: Postgres Carto Database
+          type: text
+          default: 'workspace'
+          readonly: false
+          hidden: false
+        - name: postgresAdminUser
+          title: Postgres Admin User
+          type: text
+          default: 'postgres'
+          readonly: false
+          hidden: false
+        - name: postgresAdminPassword
+          title: Postgres Admin Password
+          type: password
+          readonly: false
+          hidden: false
+        - name: postgresAdminDatabase
+          title: Postgres Admin Database
+          type: text
+          default: 'postgres'
+          readonly: false
+          hidden: false
+          # Redis
+        - name: selectRedisInstance
+          title: Select your Redis instance type
+          type: select_one
+          default: internal_redis
+          items:
+          - name: internal_redis
+            title: Deploy Redis as a container
+          - name: external_redis
+            title: Bring your own Redis instance
+        - name: internalredisPassword
+          title: Redis Password
+          when: '{{repl (ConfigOptionEquals "selectRedisInstance" "internal_redis")}}'
+          type: password
+          required: true
+          readonly: false
+          hidden: false
+        - name: externalRedisHost
+          title: Redis Host
+          when: '{{repl (ConfigOptionEquals "selectRedisInstance" "external_redis")}}'
+          type: text
+          required: true
+          readonly: false
+          hidden: false
+        - name: externalRedisPort
+          title: Redis Port
+          when: '{{repl (ConfigOptionEquals "selectRedisInstance" "external_redis")}}'
+          type: text
+          required: true
+          default: '6379'
+          readonly: false
+          hidden: false
+        - name: externalRedisPassword
+          title: Redis Password
+          when: '{{repl (ConfigOptionEquals "selectRedisInstance" "external_redis")}}'
+          type: password
+          required: true
+          readonly: false
+          hidden: false
+        # - name: externalRedisTlsEnabled
+        #   title: Redis TLS Enabled
+        #   when: '{{repl (ConfigOptionEquals "selectRedisInstance" "external_redis")}}'
+        #   type: bool
+        #   default: "0"
+
+    - name: carto-advanced-options
+      title: Advanced Options
+      description: Advanced options for the CARTO installation
+      items:
+        - name: cartoConfigValues_cartoAccApiDomain
+          title: cartoConfigValues >> cartoAccApiDomain
+          help_text: "Copy the 'cartoConfigValues.cartoAccApiDomain.value' yaml"
+          type: text
+          required: true
+          value: 'accounts.app.carto.com'
+          default: 'accounts.app.carto.com'
+        - name: cartoConfigValues_cartoAccGcpProjectId
+          title: cartoConfigValues >> cartoAccGcpProjectId
+          help_text: "Copy the 'cartoConfigValues.cartoAccGcpProjectId.value' yaml"
+          type: text
+          required: true
+          value: 'carto-acc-us-east1-1'
+          default: 'carto-acc-us-east1-1'
+        - name: cartoConfigValues_cartoAccGcpProjectRegion
+          title: cartoConfigValues >> cartoAccGcpProjectRegion
+          help_text: "Copy the 'cartoConfigValues.cartoAccGcpProjectRegion.value' yaml"
+          type: text
+          required: true
+          value: 'us-east1-1'
+          default: 'us-east1-1'
+        - name: cartoConfigValues_cartoAuth0CustomDomain
+          title: cartoConfigValues >> cartoAuth0CustomDomain
+          help_text: "Copy the 'cartoConfigValues.cartoAuth0CustomDomain.value' yaml"
+          type: text
+          required: true
+          value: 'auth.carto.com'
+          default: 'auth.carto.com'

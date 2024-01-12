@@ -1,0 +1,83 @@
+apiVersion: kots.io/v1beta2
+kind: HelmChart
+metadata:
+  name: carto
+spec:
+  chart:
+    name: carto
+    chartVersion: 1.73.1
+  values:
+    # Add a value with the same name set to `enabled: false`
+    # This excludes the SDK from KOTS installations
+    replicated:
+      enabled: true
+    cartoSecrets:
+      encryptionSecretKey:
+        value: '{{repl ConfigOption "cartoSecrets_encryptionSecretKey" }}'
+      jwtApiSecret:
+        value: '{{repl ConfigOption "cartoSecrets_jwtApiSecret" }}'
+      varnishDebugSecret:
+        value: '{{repl ConfigOption "cartoSecrets_varnishDebugSecret" }}'
+      varnishPurgeSecret:
+        value: '{{repl ConfigOption "cartoSecrets_varnishPurgeSecret" }}'
+      launchDarklySdkKey:
+        value: '{{repl ConfigOption "cartoSecrets_launchDarklySdkKey" }}'
+      defaultGoogleServiceAccount:
+        value: '{{repl ConfigOption "defaultGoogleServiceAccount" }}'
+    appConfigValues:
+      selfHostedDomain: '{{repl ConfigOption "appConfigValues_selfHostedDomain" }}'
+      workspaceImportsBucket: '{{repl ConfigOption "appConfigValues_workspaceImportsBucket" }}'
+      workspaceThumbnailsBucket: '{{repl ConfigOption "appConfigValues_workspaceThumbnailsBucket" }}'
+      thumbnailsBucketExternalURL: '{{repl ConfigOption "appConfigValues_thumbnailsBucketExternalURL" }}'
+    cartoConfigValues:
+      cartoAccApiDomain: '{{repl ConfigOption "cartoConfigValues_cartoAccApiDomain" }}'
+      cartoAccGcpProjectId: '{{repl ConfigOption "cartoConfigValues_cartoAccGcpProjectId" }}'
+      cartoAccGcpProjectRegion: '{{repl ConfigOption "cartoConfigValues_cartoAccGcpProjectRegion" }}'
+      cartoAuth0ClientId: '{{repl ConfigOption "cartoConfigValues_cartoAuth0ClientId" }}'
+      cartoAuth0CustomDomain: '{{repl ConfigOption "cartoConfigValues_cartoAuth0CustomDomain" }}'
+      cartoSelfhostedDwLocation: '{{repl ConfigOption "cartoConfigValues_cartoSelfhostedDwLocation" }}'
+      selfHostedTenantId: '{{repl ConfigOption "cartoConfigValues_selfHostedTenantId" }}'
+      launchDarklyClientSideId: '{{repl ConfigOption "cartoConfigValues_launchDarklyClientSideId" }}'
+      selfHostedGcpProjectId: '{{repl ConfigOption "cartoConfigValues_selfHostedGcpProjectId" }}'
+      customerPackageVersion: '{{repl ConfigOption "cartoConfigValues_customerPackageVersion" }}'
+    internalPostgresql:
+      # Disable the internal Postgres
+      enabled: false
+    internalRedis:
+      enabled: repl{{ if ConfigOptionEquals "selectRedisInstance" "internal_redis"}}truerepl{{ else }}falserepl{{ end }}
+      auth:
+        password: '{{repl ConfigOption "internalredisPassword" }}'
+    externalRedis:
+      host: '{{repl ConfigOption "externalRedisHost" }}'
+      port: '{{repl ConfigOption "externalRedisPort" | ParseInt }}'
+      password: '{{repl ConfigOption "externalRedisPassword" }}'
+      # tlsEnabled: repl{{ if ConfigOptionEquals "externalRedisTlsEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
+      # tlsCA: ""
+      # existingSecret: "mycarto-custom-redis-secret"
+      # existingSecretPasswordKey: "password"
+    router:
+      service:
+        type: ClusterIP
+        nodePorts:
+          http: 8080
+          https: 8443
+    commonBackendServiceAccount:
+      enableGCPWorkloadIdentity: repl{{ if ConfigOptionEquals "enableGCPWorkloadIdentity" "workload_idendity_serviceaccount"}}truerepl{{ else }}falserepl{{ end }}
+      annotations:
+        iam.gke.io/gcp-service-account: '{{repl ConfigOption "workloadIdentityServiceAccountEmail" }}'
+    externalPostgresql:
+      host: '{{repl ConfigOption "postgresHost" }}'
+      user: '{{repl ConfigOption "postgresUser" }}'
+      # internalUser: ""
+      password: '{{repl ConfigOption "postgresPassword" }}'
+      adminUser: '{{repl ConfigOption "postgresAdminUser" }}'
+      # internalAdminUser: ""
+      adminPassword: '{{repl ConfigOption "postgresAdminPassword" }}'
+      adminDatabase: '{{repl ConfigOption "postgresAdminDatabase" }}'
+      # existingSecret: ""
+      # existingSecretPasswordKey: ""
+      # existingSecretAdminPasswordKey: ""
+      database: '{{repl ConfigOption "postgresCartoDatabase" }}'
+      port: '{{repl ConfigOption "postgresPort" | ParseInt }}'
+      # sslEnabled: false
+      # sslCA: ""

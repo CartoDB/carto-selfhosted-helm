@@ -1,0 +1,161 @@
+{{- if .Values.replicated.enabled }}
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    troubleshoot.sh/kind: preflight
+  name: {{ .Release.Name }}-preflight-config
+  namespace: {{ .Release.Namespace | quote }}
+stringData:
+  preflight.yaml: |
+    apiVersion: troubleshoot.sh/v1beta2
+    kind: Preflight
+    metadata:
+      name: {{ .Release.Name }}-preflight
+      namespace: {{ .Release.Namespace | quote }}
+    spec:
+      collectors:
+        - postgres:
+            collectorName: workspace-db
+            uri: postgresql://{{ include "carto.postgresql.adminUser" . | trimAll "\"" }}:{{ .Values.externalPostgresql.adminPassword | trimAll "\"" }}@{{ include "carto.postgresql.host" . | trimAll "\"" }}:{{ include "carto.postgresql.port" . | trimAll "\"" }}/{{ include "carto.postgresql.adminDatabase" . | trimAll "\"" }}
+        {{- if not .Values.internalRedis.enabled }}
+        - redis:
+            collectorName: redis
+            uri: redis://:{{ .Values.externalRedis.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
+        {{- end }}
+        - registryImages:
+            images:
+              - {{ template "carto.accountsWww.image" . }}
+              - {{ template "carto.cdnInvalidatorSub.image" . }}
+              - {{ template "carto.httpCache.image" . }}
+              - {{ template "carto.importApi.image" . }}
+              - {{ template "carto.importWorker.image" . }}
+              - {{ template "carto.ldsApi.image" . }}
+              - {{ template "carto.mapsApi.image" . }}
+              - {{ template "carto.notifier.image" . }}
+              - {{ template "carto.router.image" . }}
+              - {{ template "carto.sqlWorker.image" . }}
+              - {{ template "carto.workspaceApi.image" . }}
+              - {{ template "carto.workspaceMigrations.image" . }}
+              - {{ template "carto.workspaceSubscriber.image" . }}
+              - {{ template "carto.workspaceWww.image" . }}
+      analyzers:
+        - registryImages:
+            checkName: Carto Registry Images
+            outcomes:
+              - fail:
+                  when: "missing > 0"
+                  message: Images are missing from registry
+              - warn:
+                  when: "errors > 0"
+                  message: Failed to check if images are present in registry
+              - pass:
+                  message: All Carto images are available
+        - postgres:
+            checkName: PostgreSQL is available
+            collectorName: workspace-db
+            outcomes:
+              - fail:
+                  when: connected == false
+                  message: Cannot connect to PostgreSQL server
+              - pass:
+                  when: connected == true
+                  message: The PostgreSQL server is available
+        - postgres:
+            checkName: PostgreSQL must be v14.x or later
+            collectorName: workspace-db
+            outcomes:
+              - fail:
+                  when: connected == false
+                  message: Cannot connect to PostgreSQL server
+              - fail:
+                  when: version < 14.x
+                  message: The PostgreSQL server must be at least version 14
+              - pass:
+                  message: The PostgreSQL verion checks out
+        {{- if not .Values.internalRedis.enabled }}
+        - jsonCompare:
+            checkName: Redis is available
+            fileName: redis/redis.json
+            path: "isConnected"
+            value: |
+              true
+            outcomes:
+              - fail:
+                  when: "false"
+                  message: Cannot connect to the Redis instance
+              - pass:
+                  when: "true"
+                  message: The Redis instance is available
+        {{- end }}
+        - clusterVersion:
+            outcomes:
+              - fail:
+                  when: "< 1.25.0"
+                  message: The application requires Kubernetes 1.25.0 or later, and recommends 1.26.0 or later.
+                  uri: https://kubernetes.io/releases
+              - warn:
+                  when: "< 1.26.0"
+                  message: Your cluster meets the minimum version of Kubernetes, but we recommend you update to 1.26.0 or later.
+                  uri: https://kubernetes.io/releases
+              - pass:
+                  message: Your cluster meets the recommended and required versions of Kubernetes.
+        - containerRuntime:
+            outcomes:
+              - pass:
+                  when: "== containerd"
+                  message: containerd container runtime was found.
+              - fail:
+                  message: Did not find containerd container runtime.
+        - distribution:
+            outcomes:
+              - fail:
+                  when: "== docker-desktop"
+                  message: The application does not support Docker Desktop clusters.
+              - fail:
+                  when: "== microk8s"
+                  message: The application does not support MicroK8s clusters.
+              - fail:
+                  when: "== minikube"
+                  message: The application does not support minikube clusters.
+              - pass:
+                  when: "== eks"
+                  message: EKS is a supported distribution.
+              - pass:
+                  when: "== gke"
+                  message: GKE is a supported distribution.
+              - pass:
+                  when: "== aks"
+                  message: AKS is a supported distribution.
+              # Will be supported in the future
+              - pass:
+                  when: "== kurl"
+                  message: kURL is a supported distribution.
+              - pass:
+                  when: "== digitalocean"
+                  message: DigitalOcean is a supported distribution.
+              - warn:
+                  message: Unable to determine the distribution of Kubernetes.
+        - nodeResources:
+            checkName: The should contain at least 6 cores
+            outcomes:
+              - fail:
+                  when: "sum(cpuCapacity) < 5"
+                  message: The cluster must contain at least 5 cores. ➡️ Ignore if you have auto-scale enabled in your cluster.
+              - warn:
+                  when: "sum(cpuCapacity) < 6"
+                  message: The cluster should contain at least 6 cores. ➡️ Ignore if you have auto-scale enabled in your cluster.
+              - pass:
+                  message: There are at least 6 cores in the cluster.
+        - nodeResources:
+            checkName: The cluster should contain at least 16 Gi
+            outcomes:
+              - fail:
+                  when: "sum(allocatableMemory) < 16Gi"
+                  message: The cluster must contain at least 16Gi. ➡️ Ignore if you have auto-scale enabled in your cluster.
+              - warn:
+                  when: "sum(allocatableMemory) < 17Gi"
+                  message: The cluster should contain at least 17Gi. ➡️ Ignore if you have auto-scale enabled in your cluster.
+              - pass:
+                  message: There are at least 16 Gi in the cluster.
+{{- end }}

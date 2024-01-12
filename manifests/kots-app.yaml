@@ -1,0 +1,23 @@
+---
+apiVersion: kots.io/v1beta1
+kind: Application
+metadata:
+  name: Carto
+spec:
+  title: CARTO
+  icon: https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/CARTO-logo.svg/1280px-CARTO-logo.svg.png
+  allowRollback: false
+  statusInformers:
+    - deployment/carto-accounts-www
+    - deployment/carto-cdn-invalidator-sub
+    - deployment/carto-http-cache
+    - deployment/carto-import-api
+    - deployment/carto-import-worker
+    - deployment/carto-lds-api
+    - deployment/carto-maps-api
+    - deployment/carto-notifier
+    - deployment/carto-router
+    - deployment/carto-sql-worker
+    - deployment/carto-workspace-api
+    - deployment/carto-workspace-subscriber
+    - deployment/carto-workspace-www

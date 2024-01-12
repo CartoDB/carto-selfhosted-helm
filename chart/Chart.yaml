@@ -16,6 +16,10 @@ dependencies:
     alias: internalRedis
     repository: https://charts.bitnami.com/bitnami
     version: 16.x.x
+  - name: replicated
+    repository: oci://registry.replicated.com/library
+    version: 1.0.0-beta.13
+    condition: replicated.enabled
 description: CARTO Location Intelligence Platform. Unlock the power of spatial analysis in the cloud
 engine: gotpl
 home: https://github.com/CartoDB/carto-selfhosted-helm/tree/main/chart
