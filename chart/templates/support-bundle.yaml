@@ -116,14 +116,18 @@ stringData:
                   message: The PostgreSQL server must be at least version 14
               - pass:
                   message: The PostgreSQL version is ready
-        - redis:
+        - jsonCompare:
             checkName: Redis is available
-            collectorName: redis
+            fileName: redis/redis.json
+            path: "isConnected"
+            value: |
+              true
             outcomes:
               - fail:
-                  when: isConnected == false
+                  when: "false"
                   message: Cannot connect to the Redis instance
               - pass:
+                  when: "true"
                   message: The Redis instance is available
         - textAnalyze:
             checkName: Required check maps-api could run
