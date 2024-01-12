@@ -121,7 +121,7 @@ stringData:
             fileName: redis/redis.json
             path: "isConnected"
             value: |
-              "true"
+              true
             outcomes:
               - fail:
                   when: "false"
