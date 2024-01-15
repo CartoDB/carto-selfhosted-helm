@@ -14,6 +14,8 @@ stringData:
     metadata:
       name: {{ .Release.Name }}-support-bundle
       namespace: {{ .Release.Namespace | quote }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/support-bundle-configmap.yaml") . | sha256sum }}
     spec:
       collectors:
     {{- include "carto.replicated.commonChecks.collectors" . | nindent 6 }}
@@ -43,48 +45,28 @@ stringData:
                   args: ["-exc", "npm run ready-to-run:built"]
                   env:
                     - name: WORKSPACE_POSTGRES_PASSWORD
-                      value: {{ .Values.externalPostgresql.password | quote }}
-                      # valueFrom:
-                      #   secretKeyRef:
-                      #     name: {{ include "carto.postgresql.secretName" . }}
-                      #     key: {{ include "carto.postgresql.secret.key" . }}
+                      valueFrom:
+                        secretKeyRef:
+                          name: {{ include "carto.postgresql.secretName" . }}
+                          key: {{ include "carto.postgresql.secret.key" . }}
                     - name: REDIS_PASSWORD
-                      {{- if .Values.internalRedis }}
-                      value: {{ .Values.internalRedis.auth.password | quote }}
-                      {{- end }}
-                      {{- if not .Values.internalRedis }}
-                      value: {{ .Values.externalRedis.password | quote }}
-                      {{- end }}
-                      # valueFrom:
-                      #   secretKeyRef:
-                      #     name: {{ include "carto.redis.secretName" . }}
-                      #     key: {{ include "carto.redis.existingsecret.key" . | quote }}
-                    - name: WORKSPACE_POSTGRES_HOST
-                      value: {{ include "carto.postgresql.host" . }}
-                    - name: WORKSPACE_POSTGRES_PORT
-                      value: {{ include "carto.postgresql.port" . }}
-                    - name: WORKSPACE_POSTGRES_DB
-                      value: {{ include "carto.postgresql.databaseName" . }}
-                    - name: WORKSPACE_POSTGRES_USER
-                      value: {{ include "carto.postgresql.user" . }}
-                    - name: MAPS_API_V3_TENANT_ID
-                      value: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-                    - name: CARTO_SELFHOSTED_VERSION
-                      value: {{ .Chart.AppVersion | quote }}
-                    - name: REDIS_CACHE_PREFIX
-                      value: "onprem"
-                    - name: REDIS_HOST
-                      value: {{ include "carto.redis.host" . }}
-                    - name: AUTH0_DOMAIN
-                      value: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
-                    - name: AUTH0_AUDIENCE
-                      value: "carto-cloud-native-api"
-                    - name: MAPS_API_V3_JWT_SECRET
-                      value: "dummy_placeholder_"
-                    - name: PUBSUB_PROJECT_ID
-                      value: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
-                    - name: MAPS_API_V3_PUBSUB_TENANT_BUS_TOPIC
-                      value: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
+                      valueFrom:
+                        secretKeyRef:
+                          name: {{ include "carto.redis.secretName" . }}
+                          key: {{ include "carto.redis.existingsecret.key" . | quote }}
+                    {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+                     "MAPS_API_V3_JWT_SECRET"
+                     ) "context" $ ) | nindent 12 }}
+                  envFrom:
+                    - configMapRef:
+                        name: {{ .Release.Name }}-support-bundle
+                    {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+                     "MAPS_API_V3_JWT_SECRET"
+                     ) "context" $ ) }}
+                    {{- if $secretContent }}
+                    - secretRef:
+                        name: {{ include "carto.mapsApi.secretName" . }}
+                    {{- end }}
       analyzers:
     {{- include "carto.replicated.commonChecks.analyzers" . | nindent 6 }}
         - textAnalyze:
