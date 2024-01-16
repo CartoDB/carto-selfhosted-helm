@@ -18,4 +18,30 @@ stringData:
     {{- include "carto.replicated.commonChecks.collectors" . | indent 6 }}
       analyzers:
     {{- include "carto.replicated.commonChecks.analyzers" . | indent 6 }}
+        {{- if .Values.internalRedis.enabled }}
+        - textAnalyze:
+            checkName: Required check maps-api
+            fileName: support-run-health-on-maps-api/support-run-health-on-maps-api.log
+            regex: "name: 'tenant-db',\n      type: 'database',\n      driver: 'pg',\n      status: 'up'"
+            outcomes:
+              - pass:
+                  when: "true"
+                  message: "No error found"
+              - fail:
+                  when: "false"
+                  message: "We found some kind of error during the execution"
+        {{- end }}
+        {{- if not .Values.internalRedis.enabled }}
+        - textAnalyze:
+            checkName: Required check maps-api
+            fileName: support-run-health-on-maps-api/support-run-health-on-maps-api.log
+            regex: "overall_status: 'up'"
+            outcomes:
+              - pass:
+                  when: "true"
+                  message: "No error found"
+              - fail:
+                  when: "false"
+                  message: "We found some kind of error during the execution"
+        {{- end }}
 {{- end }}

@@ -31,6 +31,17 @@ stringData:
               maxBytes: 5000000
       analyzers:
     {{- include "carto.replicated.commonChecks.analyzers" . | indent 6 }}
+        - textAnalyze:
+            checkName: Required check maps-api
+            fileName: support-run-health-on-maps-api/support-run-health-on-maps-api.log
+            regex: "overall_status: 'up'"
+            outcomes:
+              - pass:
+                  when: "true"
+                  message: "No error found"
+              - fail:
+                  when: "false"
+                  message: "We found some kind of error during the execution"
         - yamlCompare:
             annotations:
               kots.io/installer: "true"

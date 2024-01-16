@@ -30,7 +30,7 @@ Return common collectors for preflights and support-bundle
       collectorName: support-run-health-on-maps-api
       name: support-run-health-on-maps-api
       namespace: {{ .Release.Namespace | quote }}
-      timeout: 30s   # Maximum supported 30s !
+      timeout: 180s
       podSpec:
         containers:
           - name: run-health
@@ -95,32 +95,6 @@ Return common analyzers for preflights and support-bundle
             message: Failed to check if images are present in registry
         - pass:
             message: All Carto images are available
-  {{- if not .Values.internalRedis.enabled }}
-  - textAnalyze:
-      checkName: Required check maps-api
-      fileName: support-run-health-on-maps-api/support-run-health-on-maps-api.log
-      regex: "overall_status: 'up'"
-      outcomes:
-        - pass:
-            when: "true"
-            message: "No error found"
-        - fail:
-            when: "false"
-            message: "We found some kind of error during the execution"
-  {{- end }}
-  {{- if .Values.internalRedis.enabled }}
-  - textAnalyze:
-      checkName: Required check maps-api
-      fileName: support-run-health-on-maps-api/support-run-health-on-maps-api.log
-      regex: "name: 'tenant-db',\n      type: 'database',\n      driver: 'pg',\n      status: 'up'"
-      outcomes:
-        - pass:
-            when: "true"
-            message: "No error found"
-        - fail:
-            when: "false"
-            message: "We found some kind of error during the execution"
-  {{- end }}
   - clusterVersion:
       outcomes:
         - fail:
