@@ -237,5 +237,5 @@ Return customer secrets to use in preflights and support-bundle
     value: {{ .Values.externalRedis.password | quote }}
     {{- end }}
   - name: MAPS_API_V3_JWT_SECRET
-    value: "some"
+    value: {{ .Values.cartoSecrets.jwtApiSecret | quote }}
 {{- end -}}
