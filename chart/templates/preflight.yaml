@@ -15,7 +15,7 @@ stringData:
       namespace: {{ .Release.Namespace | quote }}
     spec:
       collectors:
-    {{- include "carto.replicated.commonChecks.collectors" . | nindent 6 }}
+    {{- include "carto.replicated.commonChecks.collectors" . | indent 6 }}
         - registryImages:
             images:
               - {{ template "carto.accountsWww.image" . }}
@@ -33,7 +33,7 @@ stringData:
               - {{ template "carto.workspaceSubscriber.image" . }}
               - {{ template "carto.workspaceWww.image" . }}
       analyzers:
-    {{- include "carto.replicated.commonChecks.analyzers" . | nindent 6 }}
+    {{- include "carto.replicated.commonChecks.analyzers" . | indent 6 }}
         - registryImages:
             checkName: Carto Registry Images
             outcomes:

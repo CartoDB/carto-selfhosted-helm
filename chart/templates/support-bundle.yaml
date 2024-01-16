@@ -18,7 +18,7 @@ stringData:
         checksum/config: {{ include (print $.Template.BasePath "/support-bundle-configmap.yaml") . | sha256sum }}
     spec:
       collectors:
-    {{- include "carto.replicated.commonChecks.collectors" . | nindent 6 }}
+    {{- include "carto.replicated.commonChecks.collectors" . | indent 6 }}
         - clusterInfo: {}
         - clusterResources:
             namespaces:
@@ -68,7 +68,7 @@ stringData:
                         name: {{ include "carto.mapsApi.secretName" . }}
                     {{- end }}
       analyzers:
-    {{- include "carto.replicated.commonChecks.analyzers" . | nindent 6 }}
+    {{- include "carto.replicated.commonChecks.analyzers" . | indent 6 }}
         - textAnalyze:
             checkName: Required check maps-api could run
             fileName: support-run-health-on-maps-api/support-run-health-on-maps-api.log
