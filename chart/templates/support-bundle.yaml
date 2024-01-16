@@ -14,8 +14,6 @@ stringData:
     metadata:
       name: {{ .Release.Name }}-support-bundle
       namespace: {{ .Release.Namespace | quote }}
-      annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/support-bundle-configmap.yaml") . | sha256sum }}
     spec:
       collectors:
     {{- include "carto.replicated.commonChecks.collectors" . | indent 6 }}
@@ -31,55 +29,8 @@ stringData:
               maxAge: 720h # 30*24
               maxLines: 10000
               maxBytes: 5000000
-        - runPod:
-            collectorName: support-run-health-on-maps-api
-            name: support-run-health-on-maps-api
-            namespace: {{ .Release.Namespace | quote }}
-            timeout: 30s   # Maximum supported 30s !
-            podSpec:
-              containers:
-                - name: run-health
-                  image: {{ template "carto.mapsApi.image" . }}
-                  imagePullPolicy: Always
-                  command: ["bash"]
-                  args: ["-exc", "npm run ready-to-run:built"]
-                  env:
-                    - name: WORKSPACE_POSTGRES_PASSWORD
-                      valueFrom:
-                        secretKeyRef:
-                          name: {{ include "carto.postgresql.secretName" . }}
-                          key: {{ include "carto.postgresql.secret.key" . }}
-                    - name: REDIS_PASSWORD
-                      valueFrom:
-                        secretKeyRef:
-                          name: {{ include "carto.redis.secretName" . }}
-                          key: {{ include "carto.redis.existingsecret.key" . | quote }}
-                    {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
-                     "MAPS_API_V3_JWT_SECRET"
-                     ) "context" $ ) | nindent 12 }}
-                  envFrom:
-                    - configMapRef:
-                        name: {{ .Release.Name }}-support-bundle
-                    {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
-                     "MAPS_API_V3_JWT_SECRET"
-                     ) "context" $ ) }}
-                    {{- if $secretContent }}
-                    - secretRef:
-                        name: {{ include "carto.mapsApi.secretName" . }}
-                    {{- end }}
       analyzers:
     {{- include "carto.replicated.commonChecks.analyzers" . | indent 6 }}
-        - textAnalyze:
-            checkName: Required check maps-api could run
-            fileName: support-run-health-on-maps-api/support-run-health-on-maps-api.log
-            regex: "overall_status: 'up'"
-            outcomes:
-              - pass:
-                  when: "true"
-                  message: "No error found"
-              - fail:
-                  when: "false"
-                  message: "We found some kind of error during the execution"
         - yamlCompare:
             annotations:
               kots.io/installer: "true"

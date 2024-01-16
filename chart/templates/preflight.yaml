@@ -16,33 +16,6 @@ stringData:
     spec:
       collectors:
     {{- include "carto.replicated.commonChecks.collectors" . | indent 6 }}
-        - registryImages:
-            images:
-              - {{ template "carto.accountsWww.image" . }}
-              - {{ template "carto.cdnInvalidatorSub.image" . }}
-              - {{ template "carto.httpCache.image" . }}
-              - {{ template "carto.importApi.image" . }}
-              - {{ template "carto.importWorker.image" . }}
-              - {{ template "carto.ldsApi.image" . }}
-              - {{ template "carto.mapsApi.image" . }}
-              - {{ template "carto.notifier.image" . }}
-              - {{ template "carto.router.image" . }}
-              - {{ template "carto.sqlWorker.image" . }}
-              - {{ template "carto.workspaceApi.image" . }}
-              - {{ template "carto.workspaceMigrations.image" . }}
-              - {{ template "carto.workspaceSubscriber.image" . }}
-              - {{ template "carto.workspaceWww.image" . }}
       analyzers:
     {{- include "carto.replicated.commonChecks.analyzers" . | indent 6 }}
-        - registryImages:
-            checkName: Carto Registry Images
-            outcomes:
-              - fail:
-                  when: "missing > 0"
-                  message: Images are missing from registry
-              - warn:
-                  when: "errors > 0"
-                  message: Failed to check if images are present in registry
-              - pass:
-                  message: All Carto images are available
 {{- end }}
