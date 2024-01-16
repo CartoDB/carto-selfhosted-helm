@@ -42,6 +42,19 @@ stringData:
               - fail:
                   when: "false"
                   message: "We found some kind of error during the execution"
+        - jsonCompare:
+            checkName: Redis is available
+            fileName: redis/redis.json
+            path: "isConnected"
+            value: |
+              true
+            outcomes:
+              - fail:
+                  when: "false"
+                  message: Cannot connect to the Redis instance
+              - pass:
+                  when: "true"
+                  message: The Redis instance is available
         - yamlCompare:
             annotations:
               kots.io/installer: "true"

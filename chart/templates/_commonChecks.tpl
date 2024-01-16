@@ -10,6 +10,11 @@ Return common collectors for preflights and support-bundle
       collectorName: redis
       uri: redis://:{{ .Values.externalRedis.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
   {{- end }}
+  {{- if .Values.internalRedis.enabled }}
+  - redis:
+      collectorName: redis
+      uri: redis://:{{ .Values.internalRedis.auth.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
+  {{- end }}
   - registryImages:
       images:
         - {{ template "carto.accountsWww.image" . }}
@@ -69,21 +74,6 @@ Return common analyzers for preflights and support-bundle
             message: The PostgreSQL server must be at least version 14
         - pass:
             message: The PostgreSQL verion checks out
-  {{- if not .Values.internalRedis.enabled }}
-  - jsonCompare:
-      checkName: Redis is available
-      fileName: redis/redis.json
-      path: "isConnected"
-      value: |
-        true
-      outcomes:
-        - fail:
-            when: "false"
-            message: Cannot connect to the Redis instance
-        - pass:
-            when: "true"
-            message: The Redis instance is available
-  {{- end }}
   - registryImages:
       checkName: Carto Registry Images
       outcomes:

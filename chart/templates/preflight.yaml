@@ -32,6 +32,19 @@ stringData:
                   message: "We found some kind of error during the execution"
         {{- end }}
         {{- if not .Values.internalRedis.enabled }}
+        - jsonCompare:
+            checkName: Redis is available
+            fileName: redis/redis.json
+            path: "isConnected"
+            value: |
+              true
+            outcomes:
+              - fail:
+                  when: "false"
+                  message: Cannot connect to the Redis instance
+              - pass:
+                  when: "true"
+                  message: The Redis instance is available
         - textAnalyze:
             checkName: Required check maps-api
             fileName: support-run-health-on-maps-api/support-run-health-on-maps-api.log
