@@ -208,7 +208,6 @@ spec:
         - name: postgresAdminUser
           title: Postgres Admin User
           type: text
-          default: 'postgres'
           readonly: false
           hidden: false
         - name: postgresAdminPassword
@@ -219,7 +218,6 @@ spec:
         - name: postgresAdminDatabase
           title: Postgres Admin Database
           type: text
-          default: 'postgres'
           readonly: false
           hidden: false
           # Redis
