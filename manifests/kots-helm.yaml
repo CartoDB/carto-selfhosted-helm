@@ -5,7 +5,7 @@ metadata:
 spec:
   chart:
     name: carto
-    chartVersion: 1.73.1
+    chartVersion: 1.74.2
   values:
     # Add a value with the same name set to `enabled: false`
     # This excludes the SDK from KOTS installations
