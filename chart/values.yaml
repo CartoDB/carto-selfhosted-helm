@@ -4541,10 +4541,10 @@ externalPostgresql:
   user: workspace_admin
   internalUser: ""
   password: ""
-  adminUser: postgres
+  adminUser: ""
   internalAdminUser: ""
   adminPassword: ""
-  adminDatabase: "postgres"
+  adminDatabase: ""
   existingSecret: ""
   existingSecretPasswordKey: ""
   existingSecretAdminPasswordKey: ""
