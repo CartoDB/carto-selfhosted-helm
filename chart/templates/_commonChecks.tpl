@@ -134,7 +134,7 @@ Return common analyzers for preflights and support-bundle
         - warn:
             message: Unable to determine the distribution of Kubernetes.
   - nodeResources:
-      checkName: The should contain at least 6 cores
+      checkName: The cluster should contain at least 6 cores
       outcomes:
         - fail:
             when: "sum(cpuCapacity) < 5"
