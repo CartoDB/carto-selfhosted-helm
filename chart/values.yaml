@@ -516,7 +516,7 @@ accountsWww:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param accountsWww.podSecurityContext.enabled Enabled accounts-www pods' Security Context
   ## @param accountsWww.podSecurityContext.fsGroup Set accounts-www pod's Security Context fsGroup
-  ## @param accountsWww.podSecurityContext.supplementalGroups Set accounts-www pod's Security Context supplementalGroups
+  ## @param accountsWww.podSecurityContext.supplementalGroups[0] Set accounts-www pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -852,7 +852,7 @@ importApi:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importApi.podSecurityContext.enabled Enabled import-api pods' Security Context
   ## @param importApi.podSecurityContext.fsGroup Set import-api pod's Security Context fsGroup
-  ## @param importApi.podSecurityContext.supplementalGroups Set import-api pod's Security Context supplementalGroups
+  ## @param importApi.podSecurityContext.supplementalGroups[0] Set import-api pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -1115,7 +1115,7 @@ importWorker:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importWorker.podSecurityContext.enabled Enabled import-worker pods' Security Context
   ## @param importWorker.podSecurityContext.fsGroup Set import-worker pod's Security Context fsGroup
-  ## @param importWorker.podSecurityContext.supplementalGroups Set import-worker pod's Security Context supplementalGroups
+  ## @param importWorker.podSecurityContext.supplementalGroups[0] Set import-worker pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -1392,7 +1392,7 @@ ldsApi:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param ldsApi.podSecurityContext.enabled Enabled lds-api pods' Security Context
   ## @param ldsApi.podSecurityContext.fsGroup Set lds-api pod's Security Context fsGroup
-  ## @param ldsApi.podSecurityContext.supplementalGroups Set lds-api pod's Security Context supplementalGroups
+  ## @param ldsApi.podSecurityContext.supplementalGroups[0] Set lds-api pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -1715,7 +1715,7 @@ mapsApi:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param mapsApi.podSecurityContext.enabled Enabled maps-api pods' Security Context
   ## @param mapsApi.podSecurityContext.fsGroup Set maps-api pod's Security Context fsGroup
-  ## @param mapsApi.podSecurityContext.supplementalGroups Set maps-api pod's Security Context supplementalGroups
+  ## @param mapsApi.podSecurityContext.supplementalGroups[0] Set maps-api pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -2013,7 +2013,7 @@ sqlWorker:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param sqlWorker.podSecurityContext.enabled Enabled sql-worker pods' Security Context
   ## @param sqlWorker.podSecurityContext.fsGroup Set sql-worker pod's Security Context fsGroup
-  ## @param sqlWorker.podSecurityContext.supplementalGroups Set sql-worker pod's Security Context supplementalGroups
+  ## @param sqlWorker.podSecurityContext.supplementalGroups[0] Set sql-worker pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -2301,7 +2301,7 @@ router:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param router.podSecurityContext.enabled Enabled router pods' Security Context
   ## @param router.podSecurityContext.fsGroup Set router pod's Security Context fsGroup
-  ## @param router.podSecurityContext.supplementalGroups Set router pod's Security Context supplementalGroups
+  ## @param router.podSecurityContext.supplementalGroups[0] Set router pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -2711,7 +2711,7 @@ httpCache:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param httpCache.podSecurityContext.enabled Enabled http-cache pods' Security Context
   ## @param httpCache.podSecurityContext.fsGroup Set http-cache pod's Security Context fsGroup
-  ## @param httpCache.podSecurityContext.supplementalGroups Set httpCache pod's Security Context supplementalGroups
+  ## @param httpCache.podSecurityContext.supplementalGroups[0] Set httpCache pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -3021,10 +3021,10 @@ notifier:
   customStartupProbe: {}
   ## notifier resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param notifier.resources.limits [object] The resources limits for the notifier containers
-  ## @skip notifier.resources.limits
-  ## @param notifier.resources.requests [object] The requested resources for the notifier containers
-  ## @skip notifier.resources.requests
+  ## @param notifier.resources.limits.memory Container memory limits in MiB
+  ## @param notifier.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param notifier.resources.requests.memory Container memory requests in MiB
+  ## @param notifier.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -3036,7 +3036,8 @@ notifier:
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param notifier.podSecurityContext.enabled Enabled notifier pods' Security Context
-  ## @param notifier.podSecurityContext.supplementalGroups Set notifier pod's Security Context supplementalGroups
+  ## @param notifier.podSecurityContext.fsGroup Enabled notifier pods' Security Context fsGroup
+  ## @param notifier.podSecurityContext.supplementalGroups[0] Set notifier pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -3363,7 +3364,7 @@ cdnInvalidatorSub:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param cdnInvalidatorSub.podSecurityContext.enabled Enabled cdnInvalidatorSub pods' Security Context
   ## @param cdnInvalidatorSub.podSecurityContext.fsGroup Set cdnInvalidatorSub pod's Security Context fsGroup
-  ## @param cdnInvalidatorSub.podSecurityContext.supplementalGroups Set cdnInvalidatorSub pod's Security Context supplementalGroups
+  ## @param cdnInvalidatorSub.podSecurityContext.supplementalGroups[0] Set cdnInvalidatorSub pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -3371,12 +3372,12 @@ cdnInvalidatorSub:
     supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-  ## @param accountsWww.containerSecurityContext.enabled Enabled cdnInvalidatorSub containers' Security Context
-  ## @param accountsWww.containerSecurityContext.runAsUser Set cdnInvalidatorSub containers' Security Context runAsUser
-  ## @param accountsWww.containerSecurityContext.runAsGroup Set cdnInvalidatorSub containers' Security Context runAsGroup
-  ## @param accountsWww.containerSecurityContext.runAsNonRoot Set cdnInvalidatorSub containers' Security Context runAsNonRoot
-  ## @param accountsWww.containerSecurityContext.allowPrivilegeEscalation Set cdnInvalidatorSub containers' Security Context allowPrivilegeEscalation
-  ## @param accountsWww.containerSecurityContext.capabilities.drop removes cdnInvalidatorSub containers' Security Context capabilities
+  ## @param cdnInvalidatorSub.containerSecurityContext.enabled Enabled cdnInvalidatorSub containers' Security Context
+  ## @param cdnInvalidatorSub.containerSecurityContext.runAsUser Set cdnInvalidatorSub containers' Security Context runAsUser
+  ## @param cdnInvalidatorSub.containerSecurityContext.runAsGroup Set cdnInvalidatorSub containers' Security Context runAsGroup
+  ## @param cdnInvalidatorSub.containerSecurityContext.runAsNonRoot Set cdnInvalidatorSub containers' Security Context runAsNonRoot
+  ## @param cdnInvalidatorSub.containerSecurityContext.allowPrivilegeEscalation Set cdnInvalidatorSub containers' Security Context allowPrivilegeEscalation
+  ## @param cdnInvalidatorSub.containerSecurityContext.capabilities.drop removes cdnInvalidatorSub containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
@@ -3688,7 +3689,7 @@ workspaceApi:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceApi.podSecurityContext.enabled Enabled workspace-api pods' Security Context
   ## @param workspaceApi.podSecurityContext.fsGroup Set workspace-api pod's Security Context fsGroup
-  ## @param workspaceApi.podSecurityContext.supplementalGroups Set workspace-api pod's Security Context supplementalGroups
+  ## @param workspaceApi.podSecurityContext.supplementalGroups[0] Set workspace-api pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -3952,7 +3953,7 @@ workspaceSubscriber:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceSubscriber.podSecurityContext.enabled Enabled workspace-subscriber pods' Security Context
   ## @param workspaceSubscriber.podSecurityContext.fsGroup Set workspace-subscriber pod's Security Context fsGroup
-  ## @param workspaceSubscriber.podSecurityContext.supplementalGroups workspace-subscriber pod's Security Context supplementalGroups
+  ## @param workspaceSubscriber.podSecurityContext.supplementalGroups[0] workspace-subscriber pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -4223,7 +4224,7 @@ workspaceWww:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceWww.podSecurityContext.enabled Enabled workspace-www pods' Security Context
   ## @param workspaceWww.podSecurityContext.fsGroup Set workspace-www pod's Security Context fsGroup
-  ## @param workspaceWww.podSecurityContext.supplementalGroups Set workspace-www pod's Security Context supplementalGroups
+  ## @param workspaceWww.podSecurityContext.supplementalGroups[0] Set workspace-www pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -4699,7 +4700,7 @@ upgradeCheck:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param upgradeCheck.podSecurityContext.enabled Enabled Upgrade Check pre-hook pods' Security Context
   ## @param upgradeCheck.podSecurityContext.fsGroup Set Upgrade Check pre-hook pod's Security Context fsGroup
-  ## @param upgradeCheck.podSecurityContext.supplementalGroups Set Upgrade Check pre-hook pod's Security Context supplementalGroups
+  ## @param upgradeCheck.podSecurityContext.supplementalGroups[0] Set Upgrade Check pre-hook pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -4709,7 +4710,9 @@ upgradeCheck:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param upgradeCheck.containerSecurityContext.enabled Enabled Upgrade Check pre-hook containers' Security Context
   ## @param upgradeCheck.containerSecurityContext.runAsUser Set Upgrade Check pre-hook containers' Security Context runAsUser
+  ## @param upgradeCheck.containerSecurityContext.runAsGroup Set Upgrade Check pre-hook containers' Security Context runAsGroup
   ## @param upgradeCheck.containerSecurityContext.runAsNonRoot Set Upgrade Check pre-hook containers' Security Context runAsNonRoot
+  ## @param upgradeCheck.containerSecurityContext.allowPrivilegeEscalation Set Upgrade Check pre-hook containers' Security Context allowPrivilegeEscalation
   ## @param upgradeCheck.containerSecurityContext.capabilities.drop removes Upgrade Check pre-hook containers' Security Context capabilities
   ##
   containerSecurityContext:
