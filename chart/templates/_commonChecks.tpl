@@ -4,17 +4,18 @@ Return common collectors for preflights and support-bundle
 {{- define "carto.replicated.commonChecks.collectors" }}
   - postgres:
       collectorName: workspace-db
+      {{- if .Values.externalPostgresql.adminUser }}
       uri: postgresql://{{ include "carto.postgresql.adminUser" . | trimAll "\"" }}:{{ .Values.externalPostgresql.adminPassword | trimAll "\"" }}@{{ include "carto.postgresql.host" . | trimAll "\"" }}:{{ include "carto.postgresql.port" . | trimAll "\"" }}/{{ include "carto.postgresql.adminDatabase" . | trimAll "\"" }}
-  {{- if not .Values.internalRedis.enabled }}
+      {{- else }}
+      uri: postgresql://{{ include "carto.postgresql.user" . | trimAll "\"" }}:{{ .Values.externalPostgresql.password | trimAll "\"" }}@{{ include "carto.postgresql.host" . | trimAll "\"" }}:{{ include "carto.postgresql.port" . | trimAll "\"" }}/{{ include "carto.postgresql.databaseName" . | trimAll "\"" }}
+      {{- end }}
   - redis:
       collectorName: redis
-      uri: redis://:{{ .Values.externalRedis.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
-  {{- end }}
-  {{- if .Values.internalRedis.enabled }}
-  - redis:
-      collectorName: redis
+      {{- if .Values.internalRedis.enabled }}
       uri: redis://:{{ .Values.internalRedis.auth.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
-  {{- end }}
+      {{- else }}
+      uri: redis://:{{ .Values.externalRedis.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
+      {{- end }}
   - registryImages:
       images:
         - {{ template "carto.accountsWww.image" . }}
