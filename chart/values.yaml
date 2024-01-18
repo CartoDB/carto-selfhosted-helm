@@ -516,21 +516,27 @@ accountsWww:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param accountsWww.podSecurityContext.enabled Enabled accounts-www pods' Security Context
   ## @param accountsWww.podSecurityContext.fsGroup Set accounts-www pod's Security Context fsGroup
+  ## @param accountsWww.podSecurityContext.supplementalGroups[0] Set accounts-www pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 101
+    supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param accountsWww.containerSecurityContext.enabled Enabled accounts-www containers' Security Context
   ## @param accountsWww.containerSecurityContext.runAsUser Set accounts-www containers' Security Context runAsUser
+  ## @param accountsWww.containerSecurityContext.runAsGroup Set accounts-www containers' Security Context runAsGroup
   ## @param accountsWww.containerSecurityContext.runAsNonRoot Set accounts-www containers' Security Context runAsNonRoot
+  ## @param accountsWww.containerSecurityContext.allowPrivilegeEscalation Set accounts-www containers' Security Context allowPrivilegeEscalation
   ## @param accountsWww.containerSecurityContext.capabilities.drop removes accounts-www containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 101
+    runAsGroup: 101
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
@@ -846,21 +852,27 @@ importApi:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importApi.podSecurityContext.enabled Enabled import-api pods' Security Context
   ## @param importApi.podSecurityContext.fsGroup Set import-api pod's Security Context fsGroup
+  ## @param importApi.podSecurityContext.supplementalGroups[0] Set import-api pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 1000
+    supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importApi.containerSecurityContext.enabled Enabled import-api containers' Security Context
   ## @param importApi.containerSecurityContext.runAsUser Set import-api containers' Security Context runAsUser
+  ## @param importApi.containerSecurityContext.runAsGroup Set import-api containers' Security Context runAsGroup
   ## @param importApi.containerSecurityContext.runAsNonRoot Set import-api containers' Security Context runAsNonRoot
+  ## @param importApi.containerSecurityContext.allowPrivilegeEscalation Set import-api containers' Security Context allowPrivilegeEscalation
   ## @param importApi.containerSecurityContext.capabilities.drop removes import-api containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 1000
+    runAsGroup: 1000
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
@@ -1103,21 +1115,27 @@ importWorker:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importWorker.podSecurityContext.enabled Enabled import-worker pods' Security Context
   ## @param importWorker.podSecurityContext.fsGroup Set import-worker pod's Security Context fsGroup
+  ## @param importWorker.podSecurityContext.supplementalGroups[0] Set import-worker pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 1000
+    supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importWorker.containerSecurityContext.enabled Enabled import-worker containers' Security Context
   ## @param importWorker.containerSecurityContext.runAsUser Set import-worker containers' Security Context runAsUser
+  ## @param importWorker.containerSecurityContext.runAsGroup Set import-worker containers' Security Context runAsGroup
   ## @param importWorker.containerSecurityContext.runAsNonRoot Set import-worker containers' Security Context runAsNonRoot
+  ## @param importWorker.containerSecurityContext.allowPrivilegeEscalation Set import-worker containers' Security Context allowPrivilegeEscalation
   ## @param importWorker.containerSecurityContext.capabilities.drop removes import-worker containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 1000
+    runAsGroup: 1000
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
@@ -1374,21 +1392,27 @@ ldsApi:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param ldsApi.podSecurityContext.enabled Enabled lds-api pods' Security Context
   ## @param ldsApi.podSecurityContext.fsGroup Set lds-api pod's Security Context fsGroup
+  ## @param ldsApi.podSecurityContext.supplementalGroups[0] Set lds-api pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 1000
+    supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param ldsApi.containerSecurityContext.enabled Enabled lds-api containers' Security Context
   ## @param ldsApi.containerSecurityContext.runAsUser Set lds-api containers' Security Context runAsUser
+  ## @param ldsApi.containerSecurityContext.runAsGroup Set lds-api containers' Security Context runAsGroup
   ## @param ldsApi.containerSecurityContext.runAsNonRoot Set lds-api containers' Security Context runAsNonRoot
+  ## @param ldsApi.containerSecurityContext.allowPrivilegeEscalation Set lds-api containers' Security Context allowPrivilegeEscalation
   ## @param ldsApi.containerSecurityContext.capabilities.drop removes lds-api containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 1000
+    runAsGroup: 1000
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
@@ -1691,21 +1715,27 @@ mapsApi:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param mapsApi.podSecurityContext.enabled Enabled maps-api pods' Security Context
   ## @param mapsApi.podSecurityContext.fsGroup Set maps-api pod's Security Context fsGroup
+  ## @param mapsApi.podSecurityContext.supplementalGroups[0] Set maps-api pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 1000
+    supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param mapsApi.containerSecurityContext.enabled Enabled maps-api containers' Security Context
   ## @param mapsApi.containerSecurityContext.runAsUser Set maps-api containers' Security Context runAsUser
+  ## @param mapsApi.containerSecurityContext.runAsGroup Set maps-api containers' Security Context runAsGroup
   ## @param mapsApi.containerSecurityContext.runAsNonRoot Set maps-api containers' Security Context runAsNonRoot
+  ## @param mapsApi.containerSecurityContext.allowPrivilegeEscalation Set maps-api containers' Security Context allowPrivilegeEscalation
   ## @param mapsApi.containerSecurityContext.capabilities.drop removes maps-api containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 1000
+    runAsGroup: 1000
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
@@ -1983,21 +2013,27 @@ sqlWorker:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param sqlWorker.podSecurityContext.enabled Enabled sql-worker pods' Security Context
   ## @param sqlWorker.podSecurityContext.fsGroup Set sql-worker pod's Security Context fsGroup
+  ## @param sqlWorker.podSecurityContext.supplementalGroups[0] Set sql-worker pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 1000
+    supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param sqlWorker.containerSecurityContext.enabled Enabled sql-worker containers' Security Context
   ## @param sqlWorker.containerSecurityContext.runAsUser Set sql-worker containers' Security Context runAsUser
+  ## @param sqlWorker.containerSecurityContext.runAsGroup Set sql-worker containers' Security Context runAsGroup
   ## @param sqlWorker.containerSecurityContext.runAsNonRoot Set sql-worker containers' Security Context runAsNonRoot
+  ## @param sqlWorker.containerSecurityContext.allowPrivilegeEscalation Set sql-worker containers' Security Context allowPrivilegeEscalation
   ## @param sqlWorker.containerSecurityContext.capabilities.drop removes sql-worker containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 1000
+    runAsGroup: 1000
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
@@ -2265,21 +2301,27 @@ router:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param router.podSecurityContext.enabled Enabled router pods' Security Context
   ## @param router.podSecurityContext.fsGroup Set router pod's Security Context fsGroup
+  ## @param router.podSecurityContext.supplementalGroups[0] Set router pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 101
+    supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param router.containerSecurityContext.enabled Enabled router containers' Security Context
   ## @param router.containerSecurityContext.runAsUser Set router containers' Security Context runAsUser
+  ## @param router.containerSecurityContext.runAsGroup Set router containers' Security Context runAsGroup
   ## @param router.containerSecurityContext.runAsNonRoot Set router containers' Security Context runAsNonRoot
+  ## @param router.containerSecurityContext.allowPrivilegeEscalation Set router containers' Security Context allowPrivilegeEscalation
   ## @param router.containerSecurityContext.capabilities.drop removes router containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 101
+    runAsGroup: 101
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
@@ -2669,21 +2711,27 @@ httpCache:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param httpCache.podSecurityContext.enabled Enabled http-cache pods' Security Context
   ## @param httpCache.podSecurityContext.fsGroup Set http-cache pod's Security Context fsGroup
+  ## @param httpCache.podSecurityContext.supplementalGroups[0] Set httpCache pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 102
+    supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param httpCache.containerSecurityContext.enabled Enabled http-cache containers' Security Context
   ## @param httpCache.containerSecurityContext.runAsUser Set http-cache containers' Security Context runAsUser
+  ## @param httpCache.containerSecurityContext.runAsGroup Set http-cache containers' Security Context runAsGroup
   ## @param httpCache.containerSecurityContext.runAsNonRoot Set http-cache containers' Security Context runAsNonRoot
+  ## @param httpCache.containerSecurityContext.allowPrivilegeEscalation Set http-cache containers' Security Context allowPrivilegeEscalation
   ## @param httpCache.containerSecurityContext.capabilities.drop removes http-cache containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 101
+    runAsGroup: 101
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
@@ -2973,10 +3021,10 @@ notifier:
   customStartupProbe: {}
   ## notifier resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param notifier.resources.limits [object] The resources limits for the notifier containers
-  ## @skip notifier.resources.limits
-  ## @param notifier.resources.requests [object] The requested resources for the notifier containers
-  ## @skip notifier.resources.requests
+  ## @param notifier.resources.limits.memory Container memory limits in MiB
+  ## @param notifier.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param notifier.resources.requests.memory Container memory requests in MiB
+  ## @param notifier.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -2988,22 +3036,28 @@ notifier:
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param notifier.podSecurityContext.enabled Enabled notifier pods' Security Context
-  ## @param notifier.podSecurityContext.fsGroup Set notifier pod's Security Context fsGroup
+  ## @param notifier.podSecurityContext.fsGroup Enabled notifier pods' Security Context fsGroup
+  ## @param notifier.podSecurityContext.supplementalGroups[0] Set notifier pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 102
+    supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param notifier.containerSecurityContext.enabled Enabled notifier containers' Security Context
   ## @param notifier.containerSecurityContext.runAsUser Set notifier containers' Security Context runAsUser
+  ## @param notifier.containerSecurityContext.runAsGroup Set notifier containers' Security Context runAsGroup
   ## @param notifier.containerSecurityContext.runAsNonRoot Set notifier containers' Security Context runAsNonRoot
+  ## @param notifier.containerSecurityContext.allowPrivilegeEscalation Set notifier containers' Security Context allowPrivilegeEscalation
   ## @param notifier.containerSecurityContext.capabilities.drop removes notifier containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 101
+    runAsGroup: 101
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
@@ -3310,21 +3364,27 @@ cdnInvalidatorSub:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param cdnInvalidatorSub.podSecurityContext.enabled Enabled cdnInvalidatorSub pods' Security Context
   ## @param cdnInvalidatorSub.podSecurityContext.fsGroup Set cdnInvalidatorSub pod's Security Context fsGroup
+  ## @param cdnInvalidatorSub.podSecurityContext.supplementalGroups[0] Set cdnInvalidatorSub pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 1000
+    supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param cdnInvalidatorSub.containerSecurityContext.enabled Enabled cdnInvalidatorSub containers' Security Context
   ## @param cdnInvalidatorSub.containerSecurityContext.runAsUser Set cdnInvalidatorSub containers' Security Context runAsUser
+  ## @param cdnInvalidatorSub.containerSecurityContext.runAsGroup Set cdnInvalidatorSub containers' Security Context runAsGroup
   ## @param cdnInvalidatorSub.containerSecurityContext.runAsNonRoot Set cdnInvalidatorSub containers' Security Context runAsNonRoot
+  ## @param cdnInvalidatorSub.containerSecurityContext.allowPrivilegeEscalation Set cdnInvalidatorSub containers' Security Context allowPrivilegeEscalation
   ## @param cdnInvalidatorSub.containerSecurityContext.capabilities.drop removes cdnInvalidatorSub containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 1000
+    runAsGroup: 1000
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
@@ -3629,21 +3689,27 @@ workspaceApi:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceApi.podSecurityContext.enabled Enabled workspace-api pods' Security Context
   ## @param workspaceApi.podSecurityContext.fsGroup Set workspace-api pod's Security Context fsGroup
+  ## @param workspaceApi.podSecurityContext.supplementalGroups[0] Set workspace-api pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 1000
+    supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceApi.containerSecurityContext.enabled Enabled workspace-api containers' Security Context
   ## @param workspaceApi.containerSecurityContext.runAsUser Set workspace-api containers' Security Context runAsUser
+  ## @param workspaceApi.containerSecurityContext.runAsGroup Set workspace-api containers' Security Context runAsGroup
   ## @param workspaceApi.containerSecurityContext.runAsNonRoot Set workspace-api containers' Security Context runAsNonRoot
+  ## @param workspaceApi.containerSecurityContext.allowPrivilegeEscalation Set workspace-api containers' Security Context allowPrivilegeEscalation
   ## @param workspaceApi.containerSecurityContext.capabilities.drop removes workspace-api containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 1000
+    runAsGroup: 1000
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
@@ -3887,21 +3953,27 @@ workspaceSubscriber:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceSubscriber.podSecurityContext.enabled Enabled workspace-subscriber pods' Security Context
   ## @param workspaceSubscriber.podSecurityContext.fsGroup Set workspace-subscriber pod's Security Context fsGroup
+  ## @param workspaceSubscriber.podSecurityContext.supplementalGroups[0] workspace-subscriber pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 1000
+    supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceSubscriber.containerSecurityContext.enabled Enabled workspace-subscriber containers' Security Context
   ## @param workspaceSubscriber.containerSecurityContext.runAsUser Set workspace-subscriber containers' Security Context runAsUser
+  ## @param workspaceSubscriber.containerSecurityContext.runAsGroup Set workspace-subscriber containers' Security Context runAsGroup
   ## @param workspaceSubscriber.containerSecurityContext.runAsNonRoot Set workspace-subscriber containers' Security Context runAsNonRoot
+  ## @param workspaceSubscriber.containerSecurityContext.allowPrivilegeEscalation Set workspace-subscriber containers' Security Context allowPrivilegeEscalation
   ## @param workspaceSubscriber.containerSecurityContext.capabilities.drop removes workspace-subscriber containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 1000
+    runAsGroup: 1000
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
@@ -4152,21 +4224,27 @@ workspaceWww:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceWww.podSecurityContext.enabled Enabled workspace-www pods' Security Context
   ## @param workspaceWww.podSecurityContext.fsGroup Set workspace-www pod's Security Context fsGroup
+  ## @param workspaceWww.podSecurityContext.supplementalGroups[0] Set workspace-www pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 101
+    supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param workspaceWww.containerSecurityContext.enabled Enabled workspace-www containers' Security Context
   ## @param workspaceWww.containerSecurityContext.runAsUser Set workspace-www containers' Security Context runAsUser
+  ## @param workspaceWww.containerSecurityContext.runAsGroup Set workspace-www containers' Security Context runAsGroup
   ## @param workspaceWww.containerSecurityContext.runAsNonRoot Set workspace-www containers' Security Context runAsNonRoot
+  ## @param workspaceWww.containerSecurityContext.allowPrivilegeEscalation Set workspace-www containers' Security Context allowPrivilegeEscalation
   ## @param workspaceWww.containerSecurityContext.capabilities.drop removes workspace-www containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 101
+    runAsGroup: 101
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
@@ -4406,8 +4484,10 @@ workspaceMigrations:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ## @param workspaceMigrations.containerSecurityContext.enabled Enable container security context
   ## @param workspaceMigrations.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
+  ## @param workspaceMigrations.containerSecurityContext.runAsGroup Set init container's Security Context runAsGroup
   ## @param workspaceMigrations.containerSecurityContext.runAsNonRoot Force the init container to run as non root
-  ## @param workspaceMigrations.containerSecurityContext.capabilities.drop removes workspace-migrations containers' Security Contexcapabilitiesot
+  ## @param workspaceMigrations.containerSecurityContext.allowPrivilegeEscalation Set init container's Security Context allowPrivilegeEscalation
+  ## @param workspaceMigrations.containerSecurityContext.capabilities.drop removes workspace-migrations containers' Security Contexcapabilities
   ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
   ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
   ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
@@ -4415,7 +4495,9 @@ workspaceMigrations:
   containerSecurityContext:
     enabled: true
     runAsUser: 1000
+    runAsGroup: 1000
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
@@ -4618,21 +4700,27 @@ upgradeCheck:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param upgradeCheck.podSecurityContext.enabled Enabled Upgrade Check pre-hook pods' Security Context
   ## @param upgradeCheck.podSecurityContext.fsGroup Set Upgrade Check pre-hook pod's Security Context fsGroup
+  ## @param upgradeCheck.podSecurityContext.supplementalGroups[0] Set Upgrade Check pre-hook pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 1000
+    supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param upgradeCheck.containerSecurityContext.enabled Enabled Upgrade Check pre-hook containers' Security Context
   ## @param upgradeCheck.containerSecurityContext.runAsUser Set Upgrade Check pre-hook containers' Security Context runAsUser
+  ## @param upgradeCheck.containerSecurityContext.runAsGroup Set Upgrade Check pre-hook containers' Security Context runAsGroup
   ## @param upgradeCheck.containerSecurityContext.runAsNonRoot Set Upgrade Check pre-hook containers' Security Context runAsNonRoot
+  ## @param upgradeCheck.containerSecurityContext.allowPrivilegeEscalation Set Upgrade Check pre-hook containers' Security Context allowPrivilegeEscalation
   ## @param upgradeCheck.containerSecurityContext.capabilities.drop removes Upgrade Check pre-hook containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 1000
+    runAsGroup: 1000
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
@@ -4695,13 +4783,17 @@ routerMetrics:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param routerMetrics.containerSecurityContext.enabled Enabled router-metrics containers' Security Context
   ## @param routerMetrics.containerSecurityContext.runAsUser Set router-metrics containers' Security Context runAsUser
+  ## @param routerMetrics.containerSecurityContext.runAsGroup Set router-metrics containers' Security Context runAsGroup
   ## @param routerMetrics.containerSecurityContext.runAsNonRoot Set router-metrics containers' Security Context runAsNonRoot
+  ## @param routerMetrics.containerSecurityContext.allowPrivilegeEscalation Set router-metrics containers' Security Context allowPrivilegeEscalation
   ## @param routerMetrics.containerSecurityContext.capabilities.drop removes router-metrics containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
     runAsUser: 1000
+    runAsGroup: 1000
     runAsNonRoot: false
+    allowPrivilegeEscalation: false
     capabilities:
       drop:
         - all
