@@ -3,297 +3,544 @@ apiVersion: kots.io/v1beta1
 kind: Config
 metadata:
   name: carto-config
+  annotations:
+    kots.io/exclude: "true"
 spec:
   groups:
-    - name: carto-secret-package
-      title: CARTO secrets package
-      description: Packages of secrets provided by CARTO
+    - name: Intro
+      title: Intro
+      # description: Basic configuration required by all CARTO Self-Hosted installations
       items:
-        # - name: app_config_values
-        #   title: Customize Text Inputs
-        #   help_text: "Copy the 'appConfigValues' yaml"
-        #   type: text
-        #   default: "null"  # That is going to leave the default provided by Helm
-        - name: cartoSecrets_encryptionSecretKey
-          title: cartoSecrets >> encryptionSecretKey
-          help_text: "Copy the 'cartoSecrets.encryptionSecretKey.value' yaml"
-          type: text
-          required: true
-          readonly: false  # Mandatory to persist the value
-          hidden: true
-          value: '{{repl RandomString 32 "[A-Za-z0-9]" }}'
-        - name: cartoSecrets_jwtApiSecret
-          title: cartoSecrets >> jwtApiSecret
-          help_text: "Copy the 'cartoSecrets.jwtApiSecret.value' yaml"
-          type: text
-          required: true
-          readonly: false  # Mandatory to persist the value
-          hidden: true
-          value: '{{repl RandomString 16 "[A-Za-z0-9]" }}'
-        - name: cartoSecrets_varnishDebugSecret
-          title: cartoSecrets >> varnishDebugSecret
-          help_text: "Copy the 'cartoSecrets.varnishDebugSecret.value' yaml"
-          type: text
-          required: true
-          readonly: false  # Mandatory to persist the value
-          hidden: true
-          value: '{{repl RandomString 16 "[A-Za-z0-9]" }}'
-        - name: cartoSecrets_varnishPurgeSecret
-          title: cartoSecrets >> varnishPurgeSecret
-          help_text: "Copy the 'cartoSecrets.varnishPurgeSecret.value' yaml"
-          type: text
-          required: true
-          readonly: false  # Mandatory to persist the value
-          hidden: true
-          value: '{{repl RandomString 16 "[A-Za-z0-9]" }}'
-        - name: cartoSecrets_launchDarklySdkKey
-          title: cartoSecrets >> launchDarklySdkKey
-          help_text: "Copy the 'cartoSecrets.launchDarklySdkKey.value' yaml"
-          type: text
-          required: true
-          hidden: true
-          value: '{{repl LicenseFieldValue "cartoSelfhostedDwLocation" }}'
+        - name: description
+          type: label
+          title: |-
+            Welcome to the CARTO Self-Hosted installer!
 
-    - name: carto-service-account
-      title: CARTO service account
-      description: Service Account to be used by Carto
+            Here you can configure the basic options required by all CARTO Self-Hosted installations.
+            If you need further info, please check [docs.carto.com](https://docs.carto.com).
+
+            The ID of your Self-Hosted installation is: `{{repl LicenseFieldValue "selfHostedTenantId" }}`
+        # - name: selfHostedId
+        #   title: Self-Hosted ID
+        #   help_text: "The ID of your Self-Hosted installation"
+        #   type: text
+        #   readonly: true
+        #   value: '{{repl LicenseFieldValue "selfHostedTenantId" }}'
+        # - name: example_heading
+        #   type: heading
+        #   title: Example Heading
+        #   help_text: "This is an example heading" ## This doesn't work
+        # - name: example_description
+        #   type: label
+        #   title: "This is an example header with description"
+        - name: enableCDW
+          title: I want to enable the CARTO Data Warehouse
+          help_text: >-
+            The CARTO Data Warehouse is a default connection provided to every CARTO organization,
+            designed to help users get started with the platform.
+            It grants access to resources such as cloud storage and cloud computing provided by CARTO,
+            including access to demo datasets and spatial datasets from CARTO’s Data Observatory.
+            It uses the same structure as a Google BigQuery connection, with projects, datasets, and tables, and includes
+            private datasets for individual users and shared datasets accessible to all users within an organization.
+          type: bool
+          default: "1"
+
+    - name: MetadataDatabase
+      title: Metadata Database
+      description: |-
+        Here you should config the information to connect to your Metadata Database.
+        If you need further info, please check [docs.carto.com](https://docs.carto.com).
       items:
-        - name: enableGCPWorkloadIdentity
-          title: Google ServiceAccount Type
-          default: serviceaccount_type_default
+        - name: metadataDBHost
+          title: Host
+          type: text
+          required: true
+        - name: metadataDBPort
+          title: Port
+          type: text
+          required: true
+          value: "5432"
+          default: "5432"
+        - name: metadataDBName
+          title: Database Name
+          type: text
+          required: true
+        - name: metadataDBUser
+          title: User
+          type: text
+          required: true
+        - name: metadataDBPassword
+          title: Password
+          type: password
+          required: true
+        # - name: DBSSL_heading
+        #   type: heading
+        #   title: SSL
+        - name: metadataDBSSLMode
+          title: SSL Mode
           type: select_one
+          default: ssl_mode_disable
           items:
-          - name: carto_default_serviceaccount
-            title: Carto Default ServiceAccount
-          - name: workload_idendity_serviceaccount
-            title: Bring your own ServiceAccount with Workload Identity
-        - name: defaultGoogleServiceAccount
-          title: defaultGoogleServiceAccount
-          when: '{{repl (ConfigOptionEquals "enableGCPWorkloadIdentity" "carto_default_serviceaccount")}}'
-          help_text: "Add the Google Service Account that should be used by CARTO"
-          type: textarea
+            - name: ssl_mode_disable
+              title: Disable
+            - name: ssl_mode_enable
+              title: Enable
+        - name: metadataDBSSLCertificate
+          title: SSL Certificate
+          when: '{{repl (ConfigOptionEquals "metadataDBSSLMode" "ssl_mode_enable") }}'
+          help_text: |-
+            If you don't know what this is, please change the SSL Mode.
+          type: file
           required: true
-          value: '{{repl LicenseFieldValue "defaultGoogleServiceAccount" }}'
-          # Allow the user to edit the default SA
-          hidden: false
-          readonly: false
-        - name: workloadIdentityServiceAccountEmail
-          title: workloadIdentityServiceAccountEmail
-          when: '{{repl (ConfigOptionEquals "enableGCPWorkloadIdentity" "workload_idendity_serviceaccount")}}'
-          help_text: "Add the Workload Idenity Service Account Email that should be used by CARTO"
-          type: textarea
-          required: true
-          value: '{{repl LicenseFieldValue "workloadIdentityServiceAccountEmail" }}'
-          # Allow the user to edit the default SA
-          hidden: false
-          readonly: false
-
-    - name: carto-values-package
-      title: CARTO values package
-      description: Packages of values provided by CARTO
+    - name: AccessToCARTOSelfHosted
+      title: Access to CARTO
+      description: |-
+        Here you should config how you would like to access to your Self-Hosted from final users devices.
+        If you need further info, please check [docs.carto.com](https://docs.carto.com).
       items:
-        # - name: app_config_values
-        #   title: Customize Text Inputs
-        #   help_text: "Copy the 'appConfigValues' yaml"
-        #   type: text
-        #   default: "null"  # That is going to leave the default provided by Helm
-        - name: appConfigValues_selfHostedDomain
-          title: appConfigValues >> selfHostedDomain
-          help_text: "Your domain (without protocol)"
+        - name: accessToSHLoginMode
+          title: Self-Hosted login mode
+          help_text: |-
+            How CARTO users should login to your Self-Hosted?
+          type: select_one
+          required: true
+          default: "regular"
+          items:
+            - name: regular
+              title: |-
+                Regular
+            - name: sso
+              title: |-
+                SSO only
+        - name: description
+          type: label
+          when: '{{repl not (ConfigOptionEquals "accessToSHLoginMode" "regular") }}'
+          title: |-
+            TODO: Request SSO info
+        - name: accessToSHDomain
+          title: Self-Hosted domain
+          help_text: |-
+            The domain used to access your Self-Hosted (without protocol)
+            This is the domain that the final users will use to access your Self-Hosted.
           type: text
           required: true
           default: "carto3-onprem.lan"
-        - name: appConfigValues_workspaceImportsBucket
-          title: appConfigValues >> workspaceImportsBucket
-          help_text: "Copy the 'appConfigValues.workspaceImportsBucket.value' yaml"
-          type: text
-          required: true
-          value: '{{repl LicenseFieldValue "selfHostedGcpProjectId" }}-client-storage'
-          default: '{{repl LicenseFieldValue "selfHostedGcpProjectId" }}-client-storage'
-        - name: appConfigValues_workspaceThumbnailsBucket
-          title: appConfigValues >> workspaceThumbnailsBucket
-          help_text: "Copy the 'appConfigValues.workspaceThumbnailsBucket.value' yaml"
-          type: text
-          required: true
-          value: '{{repl LicenseFieldValue "selfHostedGcpProjectId" }}-thumbnails-storage'
-          default: '{{repl LicenseFieldValue "selfHostedGcpProjectId" }}-thumbnails-storage'
-        - name: appConfigValues_thumbnailsBucketExternalURL
-          title: appConfigValues >> thumbnailsBucketExternalURL
-          help_text: "Copy the 'appConfigValues.thumbnailsBucketExternalURL.value' yaml"
-          type: text
-          required: true
-          value: 'https://storage.googleapis.com/{{repl LicenseFieldValue "selfHostedGcpProjectId" }}-thumbnails-storage'
-          default: 'https://storage.googleapis.com/{{repl LicenseFieldValue "selfHostedGcpProjectId" }}-thumbnails-storage'
-        - name: cartoConfigValues_cartoAuth0ClientId
-          title: cartoConfigValues >> cartoAuth0ClientId
-          help_text: "Copy the 'cartoConfigValues.cartoAuth0ClientId.value' yaml"
-          type: text
-          required: true
-          hidden: true
-          default: '{{repl LicenseFieldValue "cartoAuth0ClientId" }}'
-          value: '{{repl LicenseFieldValue "cartoAuth0ClientId" }}'
-        - name: cartoConfigValues_cartoSelfhostedDwLocation
-          title: cartoConfigValues >> cartoSelfhostedDwLocation
-          help_text: "Copy the 'cartoConfigValues.cartoSelfhostedDwLocation.value' yaml"
-          type: text
-          required: true
-          default: '{{repl LicenseFieldValue "cartoSelfhostedDwLocation" }}'
-          value: '{{repl LicenseFieldValue "cartoSelfhostedDwLocation" }}'
-          hidden: true
-        - name: cartoConfigValues_launchDarklyClientSideId
-          title: cartoConfigValues >> launchDarklyClientSideId
-          help_text: "Copy the 'cartoConfigValues.launchDarklyClientSideId.value' yaml"
-          type: text
-          required: true
-          default: '{{repl LicenseFieldValue "launchDarklyClientSideId" }}'
-          value: '{{repl LicenseFieldValue "launchDarklyClientSideId" }}'
-          hidden: true
-        - name: cartoConfigValues_selfHostedGcpProjectId
-          title: cartoConfigValues >> selfHostedGcpProjectId
-          help_text: "Copy the 'cartoConfigValues.selfHostedGcpProjectId.value' yaml"
-          type: text
-          required: true
-          default: '{{repl LicenseFieldValue "selfHostedGcpProjectId" }}'
-          value: '{{repl LicenseFieldValue "selfHostedGcpProjectId" }}'
-          hidden: false
-          readonly: true
-        - name: cartoConfigValues_selfHostedTenantId
-          title: cartoConfigValues >> selfHostedTenantId
-          help_text: "Copy the 'cartoConfigValues.selfHostedTenantId.value' yaml"
-          type: text
-          required: true
-          default: '{{repl LicenseFieldValue "selfHostedTenantId" }}'
-          value: '{{repl LicenseFieldValue "selfHostedTenantId" }}'
-          hidden: false
-          readonly: true
-        - name: cartoConfigValues_customerPackageVersion
-          title: cartoConfigValues >> customerPackageVersion
-          help_text: "Copy the 'cartoConfigValues.customerPackageVersion.value' yaml"
-          type: text
-          required: true
-          default: "null"  # That is going to leave the default provided by Helm
+          # validation: # TODO: Should be validated
+        # - name: accessToSHModeOnKurl
+        #   title: Self-Hosted Access Mode
+        #   help_text: |-
+        #     How do you want to access to your Self-Hosted?
+        #   type: select_one
+        #   when: '{{repl (IsKurl) }}'
+        #   required: true
+        #   items:
+        #     - name: accessToSHMode_portForwarding
+        #       title: |-
+        #         Only accessible with port-forwarding
+        #         (Locally, only from your computer)
+        #     - name: accessToSHMode_LoadBalancer
+        #       # recommended: true ## Recommended doesn't work
+        #       title: |-
+        #         A Load Balancer
+        #         (created and configured by CARTO)
+        #     - name: accessToSHMode_Custom
+        #       when: false
+        #       title: |-
+        #         Custom access
+        #         (created and configured by you)
 
-    - name: datastores-values-package
-      title: CARTO Datastores
-      description: Carto Workspace Datastores
-      items:
-        # Postgres
-        - name: postgresHost
-          title: Postgres Host
-          type: text
-          readonly: false
-          hidden: false
-        - name: postgresPort
-          title: Postgres Port
-          type: text
-          default: '5432'
-          readonly: false
-          hidden: false
-        - name: postgresUser
-          title: Postgres Carto User
-          type: text
-          readonly: false
-          hidden: false
-        - name: postgresPassword
-          title: Postgres Carto Password
-          type: password
-          readonly: false
-          hidden: false
-        - name: postgresCartoDatabase
-          title: Postgres Carto Database
-          type: text
-          default: 'workspace'
-          readonly: false
-          hidden: false
-        - name: postgresAdminUser
-          title: Postgres Admin User
-          type: text
-          readonly: false
-          hidden: false
-        - name: postgresAdminPassword
-          title: Postgres Admin Password
-          type: password
-          readonly: false
-          hidden: false
-        - name: postgresAdminDatabase
-          title: Postgres Admin Database
-          type: text
-          readonly: false
-          hidden: false
-          # Redis
-        - name: selectRedisInstance
-          title: Select your Redis instance type
+        ##############################
+        ## Only for non-Kurl installs
+        ##############################
+        - name: accessToSHModeNotKurl
+          title: Self-Hosted access mode
+          help_text: |-
+            How do you want to access to your Self-Hosted?
           type: select_one
-          default: internal_redis
+          when: '{{repl not (IsKurl) }}'
+          required: true
           items:
-          - name: internal_redis
-            title: Deploy Redis as a container
-          - name: external_redis
-            title: Bring your own Redis instance
-        - name: internalredisPassword
-          title: Redis Password
-          when: '{{repl (ConfigOptionEquals "selectRedisInstance" "internal_redis")}}'
-          type: password
+            - name: accessToSHMode_portForwarding
+              title: |-
+                Using port-forwarding: Locally, only from your computer
+                (Quick and easy way to test)
+            # - name: accessToSHMode_LoadBalancer
+            #   # recommended: true ## Recommended doesn't work
+            #   title: |-
+            #     Using a load balancer managed by CARTO installer
+            - name: accessToSHMode_Custom
+              when: false
+              title: |-
+                Custom
+                (created and configured by you outside the CARTO installer)
+        - name: loadBalancerSupportedKind
+          title: Load Balancer kind
+          type: textarea
+          hidden: true
+          default: |-
+            repl{{ $k8sDistribution := Distribution }}
+            repl{{ $result := fromJson "{}" }}
+            repl{{ if eq $k8sDistribution "gke" }}
+            repl{{    $_ := set $result "name" "routerLoadBalancerGKE" }}
+            repl{{    $_ := set $result "title" "GCP GKE LoadBalancer" }}
+            repl{{ else if eq $k8sDistribution "eks" }}
+            repl{{    $_ := set $result "name" "routerLoadBalancerEKS" }}
+            repl{{    $_ := set $result "title" "AWS EKS LoadBalancer" }}
+            repl{{ else if eq $k8sDistribution "aks" }}
+            repl{{    $_ := set $result "name" "routerLoadBalancerAKS" }}
+            repl{{    $_ := set $result "title" "Azure AKS LoadBalancer" }}
+            repl{{ else }}
+            repl{{    $_ := set $result "name" "unsupported" }}
+            repl{{    $_ := set $result "title" (print "ERROR: No Load Balancer supported for your kubernetes platform, " $k8sDistribution) }}
+            repl{{ end }}
+            repl{{ toJson $result }}
+        - name: errorMessage
+          type: heading
+          when: '{{repl and (ConfigOptionEquals "accessToSHModeNotKurl" "accessToSHMode_LoadBalancer") (eq (fromJson (ConfigOption "loadBalancerSupportedKind") | dig "name" "unsupported") "unsupported") }}'
+          title: '{{repl fromJson (ConfigOption "loadBalancerSupportedKind") | dig "title" "Unsupported" }}'
+        - name: accessToSHLoadBalancerKind
+          title: Self-Hosted Load Balancer Kind
+          help_text: |-
+            What kind of Load Balancer do you want to use?
+          type: select_one
+          when: '{{repl and (ConfigOptionEquals "accessToSHModeNotKurl" "accessToSHMode_LoadBalancer") (not (eq (fromJson (ConfigOption "loadBalancerSupportedKind") | dig "name" "unsupported") "unsupported")) }}'
           required: true
-          readonly: false
-          hidden: false
-        - name: externalRedisHost
-          title: Redis Host
-          when: '{{repl (ConfigOptionEquals "selectRedisInstance" "external_redis")}}'
+          items:
+            - name: 'accessToSH_{{repl fromJson (ConfigOption "loadBalancerSupportedKind") | dig "name" "" }}'
+              title: '{{repl fromJson (ConfigOption "loadBalancerSupportedKind") | dig "title" "" }}'
+        - name: accessToSHLoadBalancerStaticName
+          title: Self-Hosted load balancer static DNS reference
+          when: '{{repl and (ConfigOptionEquals "accessToSHModeNotKurl" "accessToSHMode_LoadBalancer") (not (eq (fromJson (ConfigOption "loadBalancerSupportedKind") | dig "name" "unsupported") "unsupported")) }}'
+          help_text: |-
+            Is recommended to define this field for production deployments.
+            In this field you should write the name of the DNS IP to be used (already created on your provider).
           type: text
-          required: true
-          readonly: false
-          hidden: false
-        - name: externalRedisPort
-          title: Redis Port
-          when: '{{repl (ConfigOptionEquals "selectRedisInstance" "external_redis")}}'
-          type: text
-          required: true
-          default: '6379'
-          readonly: false
-          hidden: false
-        - name: externalRedisPassword
-          title: Redis Password
-          when: '{{repl (ConfigOptionEquals "selectRedisInstance" "external_redis")}}'
-          type: password
-          required: true
-          readonly: false
-          hidden: false
-        # - name: externalRedisTlsEnabled
-        #   title: Redis TLS Enabled
-        #   when: '{{repl (ConfigOptionEquals "selectRedisInstance" "external_redis")}}'
-        #   type: bool
-        #   default: "0"
+        ##############################
+        ## END: Only for non-Kurl installs
+        ##############################
 
-    - name: carto-advanced-options
-      title: Advanced Options
-      description: Advanced options for the CARTO installation
+        - name: accessToSHCustomTLSTerminationNotRequired
+          title: The TLS termination is going to be placed outside CARTO control?
+          # This shouldn't be asked in port-forward mode but forced instead
+          # when: '{{repl not (ConfigOptionEquals "accessToSHModeNotKurl" "accessToSHMode_portForwarding") }}'
+          help_text: |-
+            That implies that CARTO is going to accept HTTP requests.
+            Anyway, CARTO users should use TLS to access to Self-Hosted but it could be configured in an external Load Balancer.
+          type: bool
+          default: "0"
+
+        - name: accessToSHCustomTLSTermination
+          title: TLS Termination
+          when: '{{repl (ConfigOptionEquals "accessToSHCustomTLSTerminationNotRequired" "0") }}'
+          help_text: |-
+            TODO: What to do with that option?
+            If you want to use TLS, please provide the certificate and the key or we're going to autogenerate it.
+          type: file
+          # when: '{{repl (ConfigOptionEquals "accessToSHModeNotKurl" "accessToSHMode_Custom") }}'
+          # required: true
+
+        - name: heading
+          type: heading
+          title: Self-Hosted access instructions
+        - name: accessToSHInstructions
+          type: label
+          title: |-
+            TODO: We should put basic instructions here
+            Configure DNS, wait till XYZ is applyed...
+            
+            https://{{repl ConfigOption "accessToSHDomain" }}
+
+
+
+
+
+    - name: StorageBuckets
+      title: Cloud storage
+      description: |-
+        Here you should config the multiple cloud storage buckets used by CARTO.
+        If you need further info, please check [docs.carto.com](https://docs.carto.com).
       items:
-        - name: cartoConfigValues_cartoAccApiDomain
-          title: cartoConfigValues >> cartoAccApiDomain
-          help_text: "Copy the 'cartoConfigValues.cartoAccApiDomain.value' yaml"
+        - name: storageBucketsBehaviour
+          title: What storage buckets do you want to use?
+          help_text: |-
+            TODO: Add guides and links
+            https://github.com/CartoDB/carto-selfhosted-helm/blob/main/doc/customizations-workload-identity-bigquery-connection.md
+          type: select_one
+          default: default
+          items:
+            - name: default
+              title: Use default ones provided by CARTO
+            - name: custom_gcs
+              title: Create and manage my own buckets on Google Cloud Storage
+            - name: custom_aws_s3
+              title: Create and manage my own buckets on Amazon Web Services S3
+            - name: custom_azb
+              title: Create and manage my own buckets on Azure Blob Storage
+
+        - name: storageBucketsCredentials
+          type: heading
+          title: Storage Buckets Credentials
+          # when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
+        - name: storageBucketsCredentials_todo
+          type: label
+          # when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
+          title: |-
+            TODO: Request credentials for each provider
+            - GCP: If custom_gcs, we should show the SA in readonly, extracted from the GCP section
+            - AWS: Should be showed always, including in default mode because we need it for Redshift
+            - AZB: Show if custom_azb
+
+        - name: storageBucketsConfig
+          type: heading
+          title: Storage Buckets Config
+          # when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
+        - name: storageBucketsConfig_todo
+          type: label
+          # when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
+          title: |-
+            TODO: Request bucket info per provider
+            - GCP: Show with default our gcs buckets
+            - AWS:
+              - Always (independent of the selected provider) request (as optional) importAwsRoleARN
+              - Don't forget of the S3 region
+            - AZB: Show if custom_azb
+            - Also... ask (for each of the required buckets) with a bool if is public or not and, if is public and not the default ones ask (not required) for the public URL to access to it
+
+
+
+
+
+
+
+
+    - name: cloudCredentialsConfig
+      title: Cloud credentials
+      description: |-
+        Here you should config the way that Carto connect to the different cloud providers.
+        If you need further info, please check [docs.carto.com](https://docs.carto.com).
+      items:
+        - name: cloudCredentialsGoogleCloud
+          type: heading
+          title: Google Cloud
+        - name: example_description
+          type: label
+          title: |-
+            Connect to Google Cloud Platform
+        - name: googleMapsAPIKey
+          title: Google Maps API Key
+          help_text: |-
+            The Google Maps API Key is required to use the Google Maps API.
           type: text
-          required: true
-          value: 'accounts.app.carto.com'
-          default: 'accounts.app.carto.com'
-        - name: cartoConfigValues_cartoAccGcpProjectId
-          title: cartoConfigValues >> cartoAccGcpProjectId
-          help_text: "Copy the 'cartoConfigValues.cartoAccGcpProjectId.value' yaml"
+        - name: bigqueryOauthStatus
+          title: BigQuery OAuth Connections
+          help_text: |-
+            If you would like the option to connect to BigQuery using OAuth, please enable this option.
+            Please refer to [enable-bigquery-oauth-connections](https://docs.carto.com/carto-self-hosted/guides/enable-bigquery-oauth-connections)
+          type: select_one
+          default: disabled
+          items:
+            - name: disabled
+              title: Disabled
+            - name: enabled
+              title: Enabled
+        - name: bigqueryOauthClientID
+          title: BigQuery OAuth Client ID
+          when: '{{repl (ConfigOptionEquals "bigqueryOauthStatus" "enabled") }}'
           type: text
+        - name: bigqueryOauthClientSecret
+          title: BigQuery OAuth Client Secret
+          when: '{{repl (ConfigOptionEquals "bigqueryOauthStatus" "enabled") }}'
+          type: password
+        - name: googleWorkloadIdentityStatus
+          title: Google Workload Identity
+          help_text: |-
+            The CARTO APIs running on your infrastructure is going to use Workload Identity to access to Google Cloud Platform.
+            TODO: Add guides and links
+            https://github.com/CartoDB/carto-selfhosted-helm/blob/main/doc/customizations-workload-identity-bigquery-connection.md
+          type: select_one
+          default: disabled
+          value: disabled
+          items:
+            - name: disabled
+              title: Disabled
+            - name: enabled
+              title: Enabled
+        - name: googleWorkloadIdentityEmail
+          title: Google Workload Identity Email
+          when: '{{repl (ConfigOptionEquals "googleWorkloadIdentityStatus" "enabled") }}'
           required: true
-          value: 'carto-acc-us-east1-1'
-          default: 'carto-acc-us-east1-1'
-        - name: cartoConfigValues_cartoAccGcpProjectRegion
-          title: cartoConfigValues >> cartoAccGcpProjectRegion
-          help_text: "Copy the 'cartoConfigValues.cartoAccGcpProjectRegion.value' yaml"
           type: text
+        - name: googleWorkloadIdentityConnectionStatus
+          title: Google Workload Identity for CARTO users
+          when: '{{repl (ConfigOptionEquals "googleWorkloadIdentityStatus" "enabled") }}'
+          help_text: |-
+            ⚠️ This is going to create a connection shared with all the users of your Self-Hosted with the permissions of the Service Account for all of them
+            TODO: Add guides and links
+            https://github.com/CartoDB/carto-selfhosted-helm/blob/main/doc/customizations-workload-identity-bigquery-connection.md
+          type: select_one
+          default: disabled
+          items:
+            - name: disabled
+              title: Disabled
+            - name: enabled
+              title: |-
+                Enabled
+        - name: googleWorkloadIdentityConnectionWorkflowTMP
+          title: Google Workload Identity CARTO connection Workflow Temporary location
+          when: &when_google_workload_identy_and_connections >-
+            {{repl $cond1 := (ConfigOptionEquals "googleWorkloadIdentityStatus" "enabled") -}}
+            {{repl $cond2 := (ConfigOptionEquals "googleWorkloadIdentityConnectionStatus" "enabled") -}}
+            {{repl $result := and $cond1 $cond2 -}}
+            {{repl $result -}}
+          help_text: |-
+            BigQuery dataset id used for storing temporary tables (i.e. `my_gcp_project.my_dataset`)
           required: true
-          value: 'us-east1-1'
-          default: 'us-east1-1'
-        - name: cartoConfigValues_cartoAuth0CustomDomain
-          title: cartoConfigValues >> cartoAuth0CustomDomain
-          help_text: "Copy the 'cartoConfigValues.cartoAuth0CustomDomain.value' yaml"
           type: text
+        - name: googleWorkloadIdentityConnectionBillingProject
+          title: Google Workload Identity CARTO connection billing project
+          when: *when_google_workload_identy_and_connections
+          help_text: |-
+            GCP project to be charged with the BigQuery costs
           required: true
-          value: 'auth.carto.com'
-          default: 'auth.carto.com'
+          type: text
+        - name: googleWorkloadIdentityConnectionOwnerId
+          title: Google Workload Identity CARTO connection owner id
+          when: *when_google_workload_identy_and_connections
+          help_text: |-
+            Id of the Carto user who will be the owner of the connection (i.e. `auth0|3idsj230990sj4wsddd10`)
+          required: true
+          type: text
+
+        - name: cloudCredentialsAWS
+          type: heading
+          title: Amazon Web Services
+        - name: example_description
+          type: label
+          title: |-
+            Connect to Amazon Web Services (AWS)
+        - name: aws_todo
+          type: label
+          title: |-
+            TODO: Request credentials (if required but I think that should be required always)
+
+        - name: cloudCredentialsAzure
+          type: heading
+          title: Azure
+        - name: example_description
+          type: label
+          title: |-
+            Connect to Azure
+        - name: aws_todo
+          type: label
+          title: |-
+            TODO: Request credentials
+
+
+        - name: cloudCredentialsCarto
+          type: heading
+          title: CARTO Platform
+        - name: example_description
+          type: label
+          title: |-
+            Connect to CARTO Services
+        - name: googleSA
+          title: Platform credentials
+          when: '{{repl (ConfigOptionEquals "googleWorkloadIdentityStatus" "disabled") }}'
+          help_text: |-
+            This is the Service Account  that is going to be used by CARTO to access to CARTO platform services.
+            Please leave empty at least that you know what you are doing.
+          required: true
+          type: textarea
+          default: '{{repl LicenseFieldValue "defaultGoogleServiceAccount" }}'
+        - name: description
+          type: label
+          when: '{{repl not (ConfigOptionEquals "googleWorkloadIdentityStatus" "disabled") }}'
+          title: |-
+            As you enable the Google Workload Identity, the Service Account that is going to be used by CARTO to access to CARTO platform services is going to be the one configured in the Google Workload Identity section.
+
+
+
+
+
+
+
+    - name: redisConfig
+      title: Redis cache
+      description: |-
+        Here you should config the Redis cache used by CARTO.
+        If you need further info, please check [docs.carto.com](https://docs.carto.com).
+      items:
+        - name: redisCacheBehaviour
+          title: What Redis cache do you want to use?
+          help_text: |-
+            TODO: Add guides and links
+          type: select_one
+          default: internal
+          items:
+            - name: internal
+              title: Use an internal Redis cache installed by CARTO
+            - name: external
+              title: Use your own created and managed Redis cache
+
+        - name: redisCacheBehaviour_todo
+          type: label
+          # when: '{{repl (ConfigOptionEquals "redisCacheBehaviour" "external") }}'
+          title: |-
+            TODO: Request redis credentials if behaviour is external
+
+            Please, take a look to Metadata DB section
+
+
+    - name: locationDataServices
+      title: Location data services
+      description: |-
+        Here you should config the Location Data Services.
+        If you need further info, please check [docs.carto.com](https://docs.carto.com).
+      items:
+        - name: todo
+          type: label
+          title: |-
+            TODO: Define Location Data Services options
+            - Before start asking for Data Services configs, we should ask if the user wants to use LDS and request the credentials to CARTO if required.
+            - We should ask for the credentials of the different providers
+            - We should ask What provider is going to be use for each of the services
+
+
+
+
+    - name: advancedNetworkEgress
+      title: Advanced network egress
+      description: |-
+        Here you should config the advanced network egress of your infrastruscture.
+        If you need further info, please check [docs.carto.com](https://docs.carto.com).
+      items:
+        - name: todo
+          type: label
+          title: |-
+            TODO: Define advanced Network Egress options
+            - proxy (should we pick the already one defined in kots?)
+            - trackjs
+
+
+    - name: platformTunning
+      title: Platform tunning
+      description: |-
+        Here you should config advanced options of CARTO that let you customize a bit more.
+        If you need further info, please check [docs.carto.com](https://docs.carto.com).
+      items:
+        - name: platformTunningUnderstanded
+          title: |-
+            ⚠️ I understand that the following options are advanced and could break my installation but I know what I am doing
+          type: bool
+          default: "0"
+        - name: todo
+          type: label
+          when: '{{repl (ConfigOptionEquals "platformTunningUnderstanded" "1") }}'
+          title: |-
+            TODO: Define advanced Platform Tunning options
+            - Debug mode
+            - Nginx/Varnish configs/optimizations
+            - ?? External Datawarehouse tunning (number of connections on the pool)
+            - Parametros de la infra como el escalado, recursos etc etc
+                - Escalado
+                - Pod disruption budget
