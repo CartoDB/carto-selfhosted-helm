@@ -20,19 +20,6 @@ spec:
             If you need further info, please check [docs.carto.com](https://docs.carto.com).
 
             The ID of your Self-Hosted installation is: `{{repl LicenseFieldValue "selfHostedTenantId" }}`
-        # - name: selfHostedId
-        #   title: Self-Hosted ID
-        #   help_text: "The ID of your Self-Hosted installation"
-        #   type: text
-        #   readonly: true
-        #   value: '{{repl LicenseFieldValue "selfHostedTenantId" }}'
-        # - name: example_heading
-        #   type: heading
-        #   title: Example Heading
-        #   help_text: "This is an example heading" ## This doesn't work
-        # - name: example_description
-        #   type: label
-        #   title: "This is an example header with description"
         - name: enableCDW
           title: I want to enable the CARTO Data Warehouse
           help_text: >-
@@ -73,9 +60,6 @@ spec:
           title: Password
           type: password
           required: true
-        # - name: DBSSL_heading
-        #   type: heading
-        #   title: SSL
         - name: metadataDBSSLMode
           title: SSL Mode
           type: select_one
@@ -92,6 +76,11 @@ spec:
             If you don't know what this is, please change the SSL Mode.
           type: file
           required: true
+
+
+
+
+
     - name: AccessToCARTOSelfHosted
       title: Access to CARTO
       description: |-
@@ -231,13 +220,36 @@ spec:
 
         - name: accessToSHCustomTLSTermination
           title: TLS Termination
+          type: heading
           when: '{{repl (ConfigOptionEquals "accessToSHCustomTLSTerminationNotRequired" "0") }}'
-          help_text: |-
-            TODO: What to do with that option?
-            If you want to use TLS, please provide the certificate and the key or we're going to autogenerate it.
+        - name: accessToSHCustomTLSTerminationCustomCertsLabel
+          type: label
+          when: '{{repl (ConfigOptionEquals "accessToSHCustomTLSTerminationNotRequired" "0") }}'
+          title: "If you want to use TLS, please provide the certificate and the key or we're going to autogenerate them."
+        - name: accessToSHCustomTLSTerminationCertsBehaviour
+          title: TLS Certificates
+          when: '{{repl (ConfigOptionEquals "accessToSHCustomTLSTerminationNotRequired" "0") }}'
+          type: select_one
+          default: tls_custom_certificates
+          items:
+          - name: tls_custom_certificates
+            title: Bring your own certificates
+          - name: tls_selfsigned_certificates
+            title: Generate self-signed certificates
+        - name: accessToSHCustomTLSTerminationKeyFile
+          title: Private Key File
+          when: &when_access_with_custom_tls_and_custom_certs >-
+            {{repl $cond1 := (ConfigOptionEquals "accessToSHCustomTLSTerminationCertsBehaviour" "tls_custom_certificates") -}}
+            {{repl $cond2 := (ConfigOptionEquals "accessToSHCustomTLSTerminationNotRequired" "0") -}}
+            {{repl $result := and $cond1 $cond2 -}}
+            {{repl $result -}}
           type: file
-          # when: '{{repl (ConfigOptionEquals "accessToSHModeNotKurl" "accessToSHMode_Custom") }}'
-          # required: true
+          required: true
+        - name: accessToSHCustomTLSTerminationCertFile
+          title: Certificate File
+          when: *when_access_with_custom_tls_and_custom_certs
+          type: file
+          required: true
 
         - name: heading
           type: heading
@@ -263,8 +275,7 @@ spec:
         - name: storageBucketsBehaviour
           title: What storage buckets do you want to use?
           help_text: |-
-            TODO: Add guides and links
-            https://github.com/CartoDB/carto-selfhosted-helm/blob/main/doc/customizations-workload-identity-bigquery-connection.md
+            https://docs.carto.com/carto-self-hosted/guides/configure-your-own-buckets
           type: select_one
           default: default
           items:
@@ -276,19 +287,56 @@ spec:
               title: Create and manage my own buckets on Amazon Web Services S3
             - name: custom_azb
               title: Create and manage my own buckets on Azure Blob Storage
+        - name: storageBucketsProvider
+          title: Storage Buckets Provider
+          type: textarea
+          hidden: true
+          default: |-
+            repl{{ $gcs := or (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") (ConfigOptionEquals "storageBucketsBehaviour" "default") }}
+            repl{{ $aws := (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}
+            repl{{ $azb := (ConfigOptionEquals "storageBucketsBehaviour" "custom_azb") }}
+            repl{{ $result := fromJson "{}" }}
+            repl{{ if $gcs }}
+            repl{{    $_ := set $result "provider" "gcp" }}
+            repl{{ else if $aws }}
+            repl{{    $_ := set $result "provider" "s3" }}
+            repl{{ else if $azb }}
+            repl{{    $_ := set $result "provider" "azure-blob" }}
+            repl{{ end }}
+            repl{{ toJson $result }}
 
         - name: storageBucketsCredentials
           type: heading
           title: Storage Buckets Credentials
-          # when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
-        - name: storageBucketsCredentials_todo
-          type: label
-          # when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
-          title: |-
-            TODO: Request credentials for each provider
-            - GCP: If custom_gcs, we should show the SA in readonly, extracted from the GCP section
-            - AWS: Should be showed always, including in default mode because we need it for Redshift
-            - AZB: Show if custom_azb
+        - name: storageBucketsGcpServiceAccount
+          title: The Service account to access GCS
+          type: textarea
+          readonly: true
+          default: '{{repl fromJson (ConfigOption "googleServiceAccountUsed") | dig "sa" "" }}'
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
+        - name: storageBucketsAwsAccessKeyId
+          title: The AccessKey ID for S3 buckets
+          type: text
+          required: true
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+        - name: storageBucketsAwsAccessKeySecret
+          title: The AccessKey Secret for S3 buckets
+          type: text
+          required: true
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+        - name: storageBucketsImportAwsArnRole
+          title: ARN Role for import data from bucket
+          help_text: If AWS is used in self-hosted, the ARN Role to be used to import files from the bucket to Redshift
+          type: text
+        - name: storageBucketsExportAwsArnRole
+          title: ARN Role for export data to a bucket
+          help_text: If AWS is used in self-hosted, the ARN Role to be used to store the exports generated in the app
+          type: text
+        - name: storageBucketsAzureAccessKey
+          title: AccessKey for Azure-Blob
+          type: text
+          required: true
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_azb") }}'
 
         - name: storageBucketsConfig
           type: heading
@@ -305,8 +353,6 @@ spec:
               - Don't forget of the S3 region
             - AZB: Show if custom_azb
             - Also... ask (for each of the required buckets) with a bool if is public or not and, if is public and not the default ones ask (not required) for the public URL to access to it
-
-
 
 
 
@@ -457,9 +503,19 @@ spec:
           when: '{{repl not (ConfigOptionEquals "googleWorkloadIdentityStatus" "disabled") }}'
           title: |-
             As you enable the Google Workload Identity, the Service Account that is going to be used by CARTO to access to CARTO platform services is going to be the one configured in the Google Workload Identity section.
-
-
-
+        - name: googleServiceAccountUsed
+          title: Google Service Account used by the app
+          type: textarea
+          hidden: true
+          default: |-
+            repl{{ $workloadId := (ConfigOptionEquals "googleWorkloadIdentityStatus" "enabled") }}
+            repl{{ $result := fromJson "{}" }}
+            repl{{ if $workloadId }}
+            repl{{    $_ := set $result "sa" (ConfigOption "googleWorkloadIdentityEmail") }}
+            repl{{ else }}
+            repl{{    $_ := set $result "sa" (ConfigOption "googleSA") }}
+            repl{{ end }}
+            repl{{ toJson $result }}
 
 
 
@@ -481,15 +537,43 @@ spec:
               title: Use an internal Redis cache installed by CARTO
             - name: external
               title: Use your own created and managed Redis cache
-
-        - name: redisCacheBehaviour_todo
+        - name: externalRedisCacheConfig
           type: label
-          # when: '{{repl (ConfigOptionEquals "redisCacheBehaviour" "external") }}'
+          when: '{{repl (ConfigOptionEquals "redisCacheBehaviour" "external") }}'
           title: |-
-            TODO: Request redis credentials if behaviour is external
-
-            Please, take a look to Metadata DB section
-
+            Redis Cache Configuration
+        - name: externalRedisHost
+          title: Host
+          type: text
+          when: '{{repl (ConfigOptionEquals "redisCacheBehaviour" "external") }}'
+          required: true
+        - name: externalRedisPort
+          title: Port
+          type: text
+          when: '{{repl (ConfigOptionEquals "redisCacheBehaviour" "external") }}'
+          required: true
+          value: "6379"
+          default: "6379"
+        - name: externalRedisPassword
+          title: Password
+          type: password
+          when: '{{repl (ConfigOptionEquals "redisCacheBehaviour" "external") }}'
+          required: true
+        - name: externalRedisSSLMode
+          title: SSL Mode
+          type: select_one
+          default: ssl_mode_disable
+          items:
+            - name: ssl_mode_disable
+              title: Disable
+            - name: ssl_mode_enable
+              title: Enable
+        - name: externalRedisSSLCertificate
+          title: SSL Certificate
+          when: '{{repl (ConfigOptionEquals "redisSSLMode" "ssl_mode_enable") }}'
+          help_text: |-
+            If you don't know what this is, please change the SSL Mode.
+          type: file
 
     - name: locationDataServices
       title: Location data services
