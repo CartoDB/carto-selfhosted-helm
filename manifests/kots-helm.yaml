@@ -9,7 +9,6 @@ spec:
   values:
     replicated:
       enabled: true
-
     # License
     ## Carto Secrets
     cartoSecrets:
@@ -48,21 +47,21 @@ spec:
       bigqueryOauth2ClientSecret:
         value: '{{repl ConfigOption "bigqueryOauthClientSecret" }}'
       googleCloudStorageServiceAccountKey:
-        value: ""
+        value: '{{repl ConfigOption "storageBucketsGcpServiceAccount" }}'
       awsAccessKeyId:
-        value: ""
+        value: '{{repl ConfigOption "storageBucketsAwsAccessKeyId" }}'
       awsAccessKeySecret:
-        value: ""
+        value: '{{repl ConfigOption "storageBucketsAwsAccessKeySecret" }}'
       azureStorageAccessKey:
-        value: ""
+        value: '{{repl ConfigOption "storageBucketsAzureAccessKey" }}'
       importAwsAccessKeyId:
-        value: ""
+        value: '{{repl ConfigOption "storageBucketsImportAwsAccessKeyId" }}'
       importAwsSecretAccessKey:
-        value: ""
+        value: '{{repl ConfigOption "storageBucketsImportAwsSecretAccessKey" }}'
       exportAwsSecretAccessKey:
-        value: ""
+        value: '{{repl ConfigOption "storageBucketsExportAwsSecretAccessKey" }}'
       exportAwsAccessKeyId:
-        value: ""
+        value: '{{repl ConfigOption "storageBucketsExportAwsAccessKeyId" }}'
       ldsHereApiKey:
         value: ""
       ldsTomTomApiKey:
@@ -80,18 +79,17 @@ spec:
       selfHostedDomain: '{{repl ConfigOption "accessToSHDomain" }}'
       # buckets
       storageProvider: '{{repl fromJson (ConfigOption "storageBucketsProvider") | dig "provider" "" }}'
-      workspaceImportsBucket:
-      workspaceImportsPublic: false
-      workspaceThumbnailsBucket: 
-      workspaceThumbnailsPublic: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
-      importAwsRoleArn: ""
-      exportAwsRoleArn: ""
-      awsExportBucket: ""
-      awsExportBucketRegion: ""
-      awsS3Region: ""
-      # thumbnailsBucketExternalURL: ""
-      # googleCloudStorageProjectId: ""
-
+      workspaceImportsBucket: '{{repl fromJson (ConfigOption "storageBucketsDetails") | dig "workspaceImportsBucket" "" }}'
+      workspaceImportsPublic: '{{repl fromJson (ConfigOption "storageBucketsDetails") | dig "workspaceImportsIsPublic" "" }}'
+      workspaceThumbnailsBucket: '{{repl fromJson (ConfigOption "storageBucketsDetails") | dig "thumbnailsBucket" "" }}'
+      workspaceThumbnailsPublic: '{{repl fromJson (ConfigOption "storageBucketsDetails") | dig "thumbnailsIsPublic" "" }}'
+      workspaceExportsBucket: '{{repl fromJson (ConfigOption "storageBucketsDetails") | dig "workspaceExportsBucket" "" }}'
+      awsS3Region: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
+      importAwsRoleArn: '{{repl ConfigOption "storageBucketsImportAwsArnRole" }}'
+      awsExportBucket: '{{repl ConfigOption "storageBucketsExportAws" }}'
+      awsExportBucketRegion: '{{repl ConfigOption "storageBucketsExportAwsRegion" }}'
+      exportAwsRoleArn: '{{repl ConfigOption "storageBucketsExportAwsArnRole" }}'
+      # other config
       httpCacheEnabled: "true"
       bigqueryOauth2ClientId: '{{repl ConfigOption "bigqueryOauthClientID" }}'
       enableTrackJS: "true"
@@ -101,7 +99,6 @@ spec:
         snowflake: "CARTO.CARTO"
         redshift: "carto"
         postgres: "carto"
-      workspaceExportsBucket: ""
 
     ## Postgresql
     internalPostgresql:
@@ -148,3 +145,9 @@ spec:
         nodePorts:
           http: 8080
           https: 8443
+
+  # Values from Advanced Configuration
+  optionalValues:
+    - when: '{{repl ConfigOptionEquals "platformAdvancedConfigUnderstanded" "1" }}'
+      recursiveMerge: true
+      values: repl{{ ConfigOption "platformAdvancedConfigValues" | nindent 8 }}

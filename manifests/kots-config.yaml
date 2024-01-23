@@ -9,7 +9,6 @@ spec:
   groups:
     - name: Intro
       title: Intro
-      # description: Basic configuration required by all CARTO Self-Hosted installations
       items:
         - name: description
           type: label
@@ -308,10 +307,10 @@ spec:
         - name: storageBucketsCredentials
           type: heading
           title: Storage Buckets Credentials
+          when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
         - name: storageBucketsGcpServiceAccount
           title: The Service account to access GCS
           type: textarea
-          readonly: true
           default: '{{repl fromJson (ConfigOption "googleServiceAccountUsed") | dig "sa" "" }}'
           when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
         - name: storageBucketsAwsAccessKeyId
@@ -324,39 +323,113 @@ spec:
           type: text
           required: true
           when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
-        - name: storageBucketsImportAwsArnRole
-          title: ARN Role for import data from bucket
-          help_text: If AWS is used in self-hosted, the ARN Role to be used to import files from the bucket to Redshift
-          type: text
-        - name: storageBucketsExportAwsArnRole
-          title: ARN Role for export data to a bucket
-          help_text: If AWS is used in self-hosted, the ARN Role to be used to store the exports generated in the app
-          type: text
         - name: storageBucketsAzureAccessKey
           title: AccessKey for Azure-Blob
           type: text
           required: true
           when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_azb") }}'
 
-        - name: storageBucketsConfig
+        - name: storageBucketsConfigRequired
           type: heading
-          title: Storage Buckets Config
-          # when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
-        - name: storageBucketsConfig_todo
-          type: label
-          # when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
-          title: |-
-            TODO: Request bucket info per provider
-            - GCP: Show with default our gcs buckets
-            - AWS:
-              - Always (independent of the selected provider) request (as optional) importAwsRoleARN
-              - Don't forget of the S3 region
-            - AZB: Show if custom_azb
-            - Also... ask (for each of the required buckets) with a bool if is public or not and, if is public and not the default ones ask (not required) for the public URL to access to it
+          title: Storage Buckets Required Config
+          when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
+        - name: storageBucketsAwsS3Region
+          title: Bucket AWS S3 Region
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+          help_text: If the buckets are S3, the region to be used
+          type: text
+          required: true
+        - name: storageBucketsWorkspaceImports
+          title: Workspace Imports Bucket
+          when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
+          help_text: Bucket name to be used for imports
+          type: text
+          required: true
+        - name: storageBucketsWorkspaceImportsIsPublic
+          title: Is public this bucket?
+          when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
+          help_text: Please check in case is public
+          type: bool
+          required: true
+          default: "0"
+        - name: storageBucketsThumbnails
+          title: Thumbnails Bucket
+          when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
+          help_text: Bucket name to be used to store the thumbnails generated in the app
+          type: text
+          required: true
+        - name: storageBucketsThumbnailsIsPublic
+          title: Is public this bucket?
+          when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
+          help_text: Please check in case is public
+          type: bool
+          required: true
+          default: "1"
+        - name: storageBucketsWorkspaceExports
+          title: Workspace Exports Bucket
+          when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
+          help_text: Bucket to be used to store the exports generated in the app
+          type: text
+          required: true
+        - name: storageBucketsDetails
+          title: Storage Buckets Details
+          type: textarea
+          hidden: true
+          default: |-
+            repl{{ $defaultStorage := (ConfigOptionEquals "storageBucketsBehaviour" "default") }}
+            repl{{ $result := fromJson "{}" }}
+            repl{{ if not $defaultStorage }}
+            repl{{    $_ := set $result "workspaceImportsBucket" (ConfigOption "storageBucketsWorkspaceImports") }}
+            repl{{    $_ := set $result "workspaceImportsIsPublic" (ConfigOption "storageBucketsWorkspaceImportsIsPublic" ) }}
+            repl{{    $_ := set $result "thumbnailsBucket" (ConfigOption "storageBucketsThumbnails") }}
+            repl{{    $_ := set $result "thumbnailsIsPublic" (ConfigOption "storageBucketsThumbnailsIsPublic") }}
+            repl{{    $_ := set $result "workspaceExportsBucket" (ConfigOption "storageBucketsWorkspaceExports") }}
+            repl{{ else }}
+            repl{{    $_ := set $result "workspaceImportsBucket" (LicenseFieldValue "workspaceImportsBucket") }}
+            repl{{    $_ := set $result "workspaceImportsIsPublic" "false" }}
+            repl{{    $_ := set $result "thumbnailsBucket" (LicenseFieldValue "workspaceThumbnailsBucket") }}
+            repl{{    $_ := set $result "thumbnailsIsPublic" "true" }}
+            repl{{    $_ := set $result "workspaceExportsBucket" (LicenseFieldValue "workspaceExportsBucket") }}
+            repl{{ end }}
+            repl{{ toJson $result }}
 
-
-
-
+        - name: storageBucketsConfigOptional
+          type: heading
+          title: Storage Buckets Optional Config
+        - name: storageBucketsImportAwsArnRole
+          title: AWS role arn for import data
+          help_text: |-
+            If AWS is used in self-hosted, the ARN Role to be used to import files from the bucket to Redshift
+            If you need further info, please check [docs.carto.com](https://docs.carto.com/carto-self-hosted/guides/enable-redshift-imports).
+          type: text
+        - name: storageBucketsImportAwsAccessKeyId
+          title: AWS Imports Access Key Id
+          help_text: If AWS is used in self-hosted, the access key id to be used importing data into the app
+          type: text
+        - name: storageBucketsImportAwsSecretAccessKey
+          title: AWS Imports Secret Access Key
+          help_text: If AWS is used in self-hosted, the secret access key to be used importing data into the app
+          type: text
+        - name: storageBucketsExportAwsAccessKeyId
+          title: AWS Export Access Key Id
+          help_text: If AWS is used in self-hosted, the access key id to be used exporting data
+          type: text
+        - name: storageBucketsExportAwsSecretAccessKey
+          title: AWS Exports Secret Access Key
+          help_text: If AWS is used in self-hosted, the secret access key to be used exporting data
+          type: text
+        - name: storageBucketsExportAws
+          title: AWS Exports Bucket Name
+          help_text: If AWS is used in self-hosted, the bucket name to store the exports generated in the app
+          type: text
+        - name: storageBucketsExportAwsRegion
+          title: AWS Export Bucket Region
+          help_text: The region of the AWS export bucket
+          type: text
+        - name: storageBucketsExportAwsArnRole
+          title: AWS arn role for export data
+          help_text: The role arn to be used to store the exports generated in the app
+          type: text
 
 
     - name: cloudCredentialsConfig
@@ -457,29 +530,29 @@ spec:
           required: true
           type: text
 
-        - name: cloudCredentialsAWS
-          type: heading
-          title: Amazon Web Services
-        - name: example_description
-          type: label
-          title: |-
-            Connect to Amazon Web Services (AWS)
-        - name: aws_todo
-          type: label
-          title: |-
-            TODO: Request credentials (if required but I think that should be required always)
+        #- name: cloudCredentialsAWS
+        #  type: heading
+        #  title: Amazon Web Services
+        #- name: example_description
+        #  type: label
+        #  title: |-
+        #    Connect to Amazon Web Services (AWS)
+        #- name: aws_todo
+        #  type: label
+        #  title: |-
+        #    TODO: Request credentials (if required but I think that should be required always)
 
-        - name: cloudCredentialsAzure
-          type: heading
-          title: Azure
-        - name: example_description
-          type: label
-          title: |-
-            Connect to Azure
-        - name: aws_todo
-          type: label
-          title: |-
-            TODO: Request credentials
+        #- name: cloudCredentialsAzure
+        #  type: heading
+        #  title: Azure
+        #- name: example_description
+        #  type: label
+        #  title: |-
+        #    Connect to Azure
+        #- name: aws_todo
+        #  type: label
+        #  title: |-
+        #    TODO: Request credentials
 
 
         - name: cloudCredentialsCarto
@@ -575,19 +648,108 @@ spec:
             If you don't know what this is, please change the SSL Mode.
           type: file
 
+
+
+
+
     - name: locationDataServices
       title: Location data services
       description: |-
         Here you should config the Location Data Services.
         If you need further info, please check [docs.carto.com](https://docs.carto.com).
       items:
-        - name: todo
-          type: label
-          title: |-
-            TODO: Define Location Data Services options
-            - Before start asking for Data Services configs, we should ask if the user wants to use LDS and request the credentials to CARTO if required.
-            - We should ask for the credentials of the different providers
-            - We should ask What provider is going to be use for each of the services
+        - name: locationDataServicesEnable
+          title: Enable Location Data Services
+          help_text: |-
+            Please select if you'll use LDS
+          type: bool
+          default: "0"
+        - name: locationDataServicesGeocodingProvider
+          title: Geocoding
+          when: '{{repl (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
+          help_text: |-
+            Please select the provider for Geocoding
+          type: select_one
+          default: tomtom
+          items:
+            - name: geocoding_tomtom
+              title: Tomtom
+            - name: geocoding_google
+              title: Google
+            - name: geocoding_mapbox
+              title: Mapbox
+            - name: geocoding_here
+              title: Here
+            - name: geocoding_none
+              title: None
+        - name: locationDataServicesIsolinesProvider
+          title: Isolines
+          when: '{{repl (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
+          help_text: |-
+            Please select the provider for Isolines
+          type: select_one
+          default: isolines_traveltime
+          items:
+            - name: isolines_tomtom
+              title: Tomtom
+            - name: isolines_traveltime
+              title: Traveltime
+            - name: isolines_mapbox
+              title: Mapbox
+            - name: isolines_here
+              title: Here
+            - name: isolines_none
+              title: None
+        - name: locationDataServicesRoutingProvider
+          title: Routing
+          when: '{{repl (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
+          help_text: |-
+            Please select the provider for Routing
+          type: select_one
+          default: routing_tomtom
+          items:
+            - name: routing_tomtom
+              title: Tomtom
+            - name: routing_here
+              title: Here
+            - name: routing_none
+              title: None
+        - name: locationDataServicesTomtomCredentials
+          title: LDS Tomtom credentials
+          when: '{{repl or (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_tomtom") (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_tomtom") (ConfigOptionEquals "locationDataServicesRoutingProvider" "routing_tomtom") }}'
+          help_text: |-
+            Set your TomTom LDS Api Key
+          required: true
+          type: text
+        - name: locationDataServicesGoogleCredentials
+          title: LDS Google credentials
+          when: '{{repl (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_google") }}'
+          help_text: |-
+            Set your Google LDS Api Key
+          required: true
+          type: text
+        - name: locationDataServicesMapboxCredentials
+          title: LDS Mapbox credentials
+          when: '{{repl or (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_mapbox") (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_mapbox") }}'
+          help_text: |-
+            Set your Mapbox LDS Api Key
+          required: true
+          type: text
+        - name: locationDataServicesHereCredentials
+          title: LDS Here credentials
+          when: '{{repl or (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_here") (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_here") (ConfigOptionEquals "locationDataServicesRoutingProvider" "routing_here") }}'
+          help_text: |-
+            Set your Here LDS Api Key
+          required: true
+          type: text
+        - name: locationDataServicesTraveltimeCredentials
+          title: LDS Traveltime credentials
+          when: '{{repl (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_traveltime") }}'
+          help_text: |-
+            Set your Traveltime LDS Api Key
+          required: true
+          type: text
+
 
 
 
@@ -606,25 +768,25 @@ spec:
             - trackjs
 
 
-    - name: platformTunning
-      title: Platform tunning
+    - name: platformAdvancedConfig
+      title: Supply Advanced Config
       description: |-
         Here you should config advanced options of CARTO that let you customize a bit more.
         If you need further info, please check [docs.carto.com](https://docs.carto.com).
       items:
-        - name: platformTunningUnderstanded
+        - name: platformAdvancedConfigUnderstanded
           title: |-
             ⚠️ I understand that the following options are advanced and could break my installation but I know what I am doing
           type: bool
           default: "0"
-        - name: todo
-          type: label
-          when: '{{repl (ConfigOptionEquals "platformTunningUnderstanded" "1") }}'
-          title: |-
-            TODO: Define advanced Platform Tunning options
-            - Debug mode
-            - Nginx/Varnish configs/optimizations
-            - ?? External Datawarehouse tunning (number of connections on the pool)
-            - Parametros de la infra como el escalado, recursos etc etc
-                - Escalado
-                - Pod disruption budget
+        - name: platformAdvancedConfigValues
+          type: textarea
+          when: repl{{ ConfigOptionEquals "platformAdvancedConfigUnderstanded" "1" }}
+          title: Advanced Config Values
+          #  TODO: Define advanced Platform Tunning options
+          #  - Debug mode
+          #  - Nginx/Varnish configs/optimizations
+          #  - ?? External Datawarehouse tunning (number of connections on the pool)
+          #  - Parametros de la infra como el escalado, recursos etc etc
+          #      - Escalado
+          #      - Pod disruption budget
