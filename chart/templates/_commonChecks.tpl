@@ -33,17 +33,15 @@ Return common collectors for preflights and support-bundle
         - {{ template "carto.workspaceSubscriber.image" . }}
         - {{ template "carto.workspaceWww.image" . }}
   - runPod:
-      collectorName: support-run-health-on-maps-api
-      name: support-run-health-on-maps-api
+      collectorName: tenant-requirements-check
+      name: tenant-requirements-check
       namespace: {{ .Release.Namespace | quote }}
       timeout: 180s
       podSpec:
         containers:
-          - name: run-health
-            image: {{ template "carto.mapsApi.image" . }}
-            imagePullPolicy: IfNotPresent
-            command: ["bash"]
-            args: ["-exc", "npm run ready-to-run:built"]
+          - name: run-tenants-requirements-check
+            image: {{ template "carto.tenantRequirementsChecker.image" . }}
+            imagePullPolicy: {{ .Values.tenantRequirementsChecker.image.pullPolicy}}
             env:
             {{- include "carto.replicated.commonChecks.customerValues" . | indent 12 }}
             {{- include "carto.replicated.commonChecks.customerSecrets" . | indent 12 }}
@@ -53,16 +51,19 @@ Return common collectors for preflights and support-bundle
 Return common analyzers for preflights and support-bundle
 */}}
 {{- define "carto.replicated.commonChecks.analyzers" }}
-  - postgres:
-      checkName: PostgreSQL is available
-      collectorName: workspace-db
+  - jsonCompare:
+      checkName: Compare JSON Example
+      fileName: tenant-requirements-check/tenant-requirements-check.log
+      path: "WorkspaceDatabaseValidator.Check_database_connection"
+      value: |
+        "passed"
       outcomes:
         - fail:
-            when: connected == false
-            message: Cannot connect to PostgreSQL server
+            when: "false"
+            message: We can't connect to your database.
         - pass:
-            when: connected == true
-            message: The PostgreSQL server is available
+            when: "true"
+            message: Workspace database can be accessed.
   - postgres:
       checkName: PostgreSQL must be v14.x or later
       collectorName: workspace-db

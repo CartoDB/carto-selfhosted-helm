@@ -4502,6 +4502,23 @@ workspaceMigrations:
       drop:
         - all
 
+## @section tenant-requirements-checker Deployment Parameters
+##
+tenantRequirementsChecker:
+  ## tenant-requirements-checker image
+  ## @param tenantRequirementsChecker.image.registry tenant-requirements-checker image registry
+  ## @param tenantRequirementsChecker.image.repository tenant-requirements-checker image repository
+  ## @param tenantRequirementsChecker.image.tag tenant-requirements-checker image tag (immutable tags are recommended)
+  ## @param tenantRequirementsChecker.image.pullPolicy tenant-requirements-checker image pull policy
+  ## @param tenantRequirementsChecker.image.pullSecrets tenant-requirements-checker image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: tenant-requirements-checker
+    tag: ""
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+
 ## @section Internal Redis&trade; subchart parameters
 ## Internal Redis &trade; chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/redis/values.yaml
