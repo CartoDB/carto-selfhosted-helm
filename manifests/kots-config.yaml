@@ -670,7 +670,7 @@ spec:
           help_text: |-
             Please select the provider for Geocoding
           type: select_one
-          default: tomtom
+          default: geocoding_none
           items:
             - name: geocoding_tomtom
               title: Tomtom
@@ -688,7 +688,7 @@ spec:
           help_text: |-
             Please select the provider for Isolines
           type: select_one
-          default: isolines_traveltime
+          default: isolines_none
           items:
             - name: isolines_tomtom
               title: Tomtom
@@ -706,7 +706,7 @@ spec:
           help_text: |-
             Please select the provider for Routing
           type: select_one
-          default: routing_tomtom
+          default: routing_none
           items:
             - name: routing_tomtom
               title: Tomtom
