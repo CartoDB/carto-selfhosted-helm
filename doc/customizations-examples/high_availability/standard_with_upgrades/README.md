@@ -21,8 +21,8 @@ accountsWww          |  true   |  1024Mi         |  500m        |  768Mi        
 importApi            |  true   |  1024Mi         |  1000m       |  372Mi            |  350m          |  2               |  3               |  75
 importWorker         |  false  |  8192Mi         |  2000m       |  3072Mi           |  350m          |                  |                  |
 ldsApi               |  true   |  1024Mi         |  1000m       |  768Mi            |  350m          |  2               |  3               |  75
-mapsApi              |  true   |  6144Mi         |  1000m       |  768Mi            |  350m          |  2               |  3               |  75
-sqlWorker            |  false  |  2048           |  1000m       |  1024Mi           |  350m          |                  |                  |
+mapsApi              |  true   |  6144Mi         |  2000m       |  768Mi            |  350m          |  2               |  3               |  75
+sqlWorker            |  false  |  2048Mi         |  1000m       |  1024Mi           |  350m          |                  |                  |
 router               |  true   |  512Mi          |  500m        |  372Mi            |  200m          |  2               |  3               |  75
 httpCache            |  false  |  2048Mi         |  500m        |  1256Mi           |  200m          |                  |                  |
 notifier             |  false  |  512Mi          |  500m        |  256Mi            |  200m          |                  |                  |
