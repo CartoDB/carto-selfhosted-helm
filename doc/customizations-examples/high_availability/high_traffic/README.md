@@ -3,7 +3,7 @@
 ### Requirements
 
 - NodePool with at least 2 nodes
-- NodePool with at least `26gb RAM` and `15 CPUs` for workloads, in order to avoid evictions if the minimal number of replicas approaches to the limits
+- NodePool with at least `39Gb RAM` and `28 CPUs` for workloads, in order to avoid evictions if the minimal number of replicas approaches to the limits
 
 ### Setup
 
@@ -36,4 +36,4 @@ cdnInvalidatorSub    |  false    |  1024Mi         |  500m        |  372Mi      
 workspaceApi         |  true     |  1360Mi         |  1000m       |  768Mi            |  350m          |  2               |  6               |  75
 workspaceSubscriber  |  false    |  1024Mi         |  500m        |  372Mi            |  200m          |                  |                  |
 workspaceWww         |  true     |  1024Mi         |  500m        |  768Mi            |  200m          |  2               |  3               |  75
-**TOTAL**            |           |  26960Mi        |  11500m      |  10936Mi          |  3500m         |                  |                  |
+**TOTAL with max replicas**   |  |  39072Mi        |  27500m      |  15520Mi          |  9600m         |                  |                  |
