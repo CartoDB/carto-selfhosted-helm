@@ -163,6 +163,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `tlsCerts.existingSecret.name`    | Name of a secret containing the certificate                                                                                                   | `""`      |
 | `tlsCerts.existingSecret.certKey` | Key of the certificate inside the secret                                                                                                      | `tls.crt` |
 | `tlsCerts.existingSecret.keyKey`  | Key of the certificate key inside the secret                                                                                                  | `tls.key` |
+| `tlsCerts.certificate`            | certificate in base64                                                                                                                         | `""`      |
+| `tlsCerts.privateKey`             | private key in base64                                                                                                                         | `""`      |
 
 ### common backend service account
 
