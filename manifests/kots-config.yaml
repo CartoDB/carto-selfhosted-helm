@@ -19,774 +19,618 @@ spec:
             If you need further info, please check [docs.carto.com](https://docs.carto.com).
 
             The ID of your Self-Hosted installation is: `{{repl LicenseFieldValue "selfHostedTenantId" }}`
-        - name: enableCDW
-          title: I want to enable the CARTO Data Warehouse
-          help_text: >-
-            The CARTO Data Warehouse is a default connection provided to every CARTO organization,
-            designed to help users get started with the platform.
-            It grants access to resources such as cloud storage and cloud computing provided by CARTO,
-            including access to demo datasets and spatial datasets from CARTO’s Data Observatory.
-            It uses the same structure as a Google BigQuery connection, with projects, datasets, and tables, and includes
-            private datasets for individual users and shared datasets accessible to all users within an organization.
-          type: bool
-          default: "1"
 
+    # Postgresql
     - name: MetadataDatabase
       title: Metadata Database
       description: |-
         Here you should config the information to connect to your Metadata Database.
         If you need further info, please check [docs.carto.com](https://docs.carto.com).
       items:
-        - name: metadataDBHost
-          title: Host
-          type: text
-          required: true
-        - name: metadataDBPort
-          title: Port
-          type: text
-          required: true
-          value: "5432"
-          default: "5432"
-        - name: metadataDBName
-          title: Database Name
-          type: text
-          required: true
-        - name: metadataDBUser
-          title: User
-          type: text
-          required: true
-        - name: metadataDBPassword
-          title: Password
-          type: password
-          required: true
-        - name: metadataDBSSLMode
-          title: SSL Mode
-          type: select_one
-          default: ssl_mode_disable
-          items:
-            - name: ssl_mode_disable
-              title: Disable
-            - name: ssl_mode_enable
-              title: Enable
-        - name: metadataDBSSLCertificate
-          title: SSL Certificate
-          when: '{{repl (ConfigOptionEquals "metadataDBSSLMode" "ssl_mode_enable") }}'
-          help_text: |-
-            If you don't know what this is, please change the SSL Mode.
-          type: file
-          required: true
+      - name: metadataDBSSLMode
+        title: Enable TLS
+        type: bool
+        default: "0"
+        affix: left
+      - name: metadataDBSSLCertificate
+        title: SSL Certificate
+        when: '{{repl (ConfigOptionEquals "metadataDBSSLMode" "1") }}'
+        type: file
+        required: true
+        affix: right
+      - name: metadataDBHost
+        title: Host
+        type: text
+        required: true
+        affix: left
+      - name: metadataDBPort
+        title: Port
+        type: text
+        required: true
+        value: "5432"
+        default: "5432"
+        affix: right
+      - name: metadataDBUser
+        title: User
+        type: text
+        required: true
+        affix: left
+      - name: metadataDBPassword
+        title: Password
+        type: password
+        required: true
+        affix: right
+      - name: metadataDBName
+        title: Database Name
+        type: text
+        required: true
+        affix: left
 
 
-
-
-
+    # Access
     - name: AccessToCARTOSelfHosted
       title: Access to CARTO
       description: |-
         Here you should config how you would like to access to your Self-Hosted from final users devices.
         If you need further info, please check [docs.carto.com](https://docs.carto.com).
       items:
-        - name: accessToSHLoginMode
-          title: Self-Hosted login mode
-          help_text: |-
-            How CARTO users should login to your Self-Hosted?
-          type: select_one
-          required: true
-          default: "regular"
-          items:
-            - name: regular
-              title: |-
-                Regular
-            - name: sso
-              title: |-
-                SSO only
-        - name: description
-          type: label
-          when: '{{repl not (ConfigOptionEquals "accessToSHLoginMode" "regular") }}'
-          title: |-
-            TODO: Request SSO info
-        - name: accessToSHDomain
-          title: Self-Hosted domain
-          help_text: |-
-            The domain used to access your Self-Hosted (without protocol)
-            This is the domain that the final users will use to access your Self-Hosted.
-          type: text
-          required: true
-          default: "carto3-onprem.lan"
-          # validation: # TODO: Should be validated
-        # - name: accessToSHModeOnKurl
-        #   title: Self-Hosted Access Mode
-        #   help_text: |-
-        #     How do you want to access to your Self-Hosted?
-        #   type: select_one
-        #   when: '{{repl (IsKurl) }}'
-        #   required: true
-        #   items:
-        #     - name: accessToSHMode_portForwarding
-        #       title: |-
-        #         Only accessible with port-forwarding
-        #         (Locally, only from your computer)
-        #     - name: accessToSHMode_LoadBalancer
-        #       # recommended: true ## Recommended doesn't work
-        #       title: |-
-        #         A Load Balancer
-        #         (created and configured by CARTO)
-        #     - name: accessToSHMode_Custom
-        #       when: false
-        #       title: |-
-        #         Custom access
-        #         (created and configured by you)
-
-        ##############################
-        ## Only for non-Kurl installs
-        ##############################
-        - name: accessToSHModeNotKurl
-          title: Self-Hosted access mode
-          help_text: |-
-            How do you want to access to your Self-Hosted?
-          type: select_one
-          when: '{{repl not (IsKurl) }}'
-          required: true
-          items:
-            - name: accessToSHMode_portForwarding
-              title: |-
-                Using port-forwarding: Locally, only from your computer
-                (Quick and easy way to test)
-            # - name: accessToSHMode_LoadBalancer
-            #   # recommended: true ## Recommended doesn't work
-            #   title: |-
-            #     Using a load balancer managed by CARTO installer
-            - name: accessToSHMode_Custom
-              when: false
-              title: |-
-                Custom
-                (created and configured by you outside the CARTO installer)
-        - name: loadBalancerSupportedKind
-          title: Load Balancer kind
-          type: textarea
-          hidden: true
-          default: |-
-            repl{{ $k8sDistribution := Distribution }}
-            repl{{ $result := fromJson "{}" }}
-            repl{{ if eq $k8sDistribution "gke" }}
-            repl{{    $_ := set $result "name" "routerLoadBalancerGKE" }}
-            repl{{    $_ := set $result "title" "GCP GKE LoadBalancer" }}
-            repl{{ else if eq $k8sDistribution "eks" }}
-            repl{{    $_ := set $result "name" "routerLoadBalancerEKS" }}
-            repl{{    $_ := set $result "title" "AWS EKS LoadBalancer" }}
-            repl{{ else if eq $k8sDistribution "aks" }}
-            repl{{    $_ := set $result "name" "routerLoadBalancerAKS" }}
-            repl{{    $_ := set $result "title" "Azure AKS LoadBalancer" }}
-            repl{{ else }}
-            repl{{    $_ := set $result "name" "unsupported" }}
-            repl{{    $_ := set $result "title" (print "ERROR: No Load Balancer supported for your kubernetes platform, " $k8sDistribution) }}
-            repl{{ end }}
-            repl{{ toJson $result }}
-        - name: errorMessage
-          type: heading
-          when: '{{repl and (ConfigOptionEquals "accessToSHModeNotKurl" "accessToSHMode_LoadBalancer") (eq (fromJson (ConfigOption "loadBalancerSupportedKind") | dig "name" "unsupported") "unsupported") }}'
-          title: '{{repl fromJson (ConfigOption "loadBalancerSupportedKind") | dig "title" "Unsupported" }}'
-        - name: accessToSHLoadBalancerKind
-          title: Self-Hosted Load Balancer Kind
-          help_text: |-
-            What kind of Load Balancer do you want to use?
-          type: select_one
-          when: '{{repl and (ConfigOptionEquals "accessToSHModeNotKurl" "accessToSHMode_LoadBalancer") (not (eq (fromJson (ConfigOption "loadBalancerSupportedKind") | dig "name" "unsupported") "unsupported")) }}'
-          required: true
-          items:
-            - name: 'accessToSH_{{repl fromJson (ConfigOption "loadBalancerSupportedKind") | dig "name" "" }}'
-              title: '{{repl fromJson (ConfigOption "loadBalancerSupportedKind") | dig "title" "" }}'
-        - name: accessToSHLoadBalancerStaticName
-          title: Self-Hosted load balancer static DNS reference
-          when: '{{repl and (ConfigOptionEquals "accessToSHModeNotKurl" "accessToSHMode_LoadBalancer") (not (eq (fromJson (ConfigOption "loadBalancerSupportedKind") | dig "name" "unsupported") "unsupported")) }}'
-          help_text: |-
-            Is recommended to define this field for production deployments.
-            In this field you should write the name of the DNS IP to be used (already created on your provider).
-          type: text
-        ##############################
-        ## END: Only for non-Kurl installs
-        ##############################
-
-        - name: accessToSHCustomTLSTerminationNotRequired
-          title: The TLS termination is going to be placed outside CARTO control?
-          # This shouldn't be asked in port-forward mode but forced instead
-          # when: '{{repl not (ConfigOptionEquals "accessToSHModeNotKurl" "accessToSHMode_portForwarding") }}'
-          help_text: |-
-            That implies that CARTO is going to accept HTTP requests.
-            Anyway, CARTO users should use TLS to access to Self-Hosted but it could be configured in an external Load Balancer.
-          type: bool
-          default: "0"
-
-        - name: accessToSHCustomTLSTermination
-          title: TLS Termination
-          type: heading
-          when: '{{repl (ConfigOptionEquals "accessToSHCustomTLSTerminationNotRequired" "0") }}'
-        - name: accessToSHCustomTLSTerminationCustomCertsLabel
-          type: label
-          when: '{{repl (ConfigOptionEquals "accessToSHCustomTLSTerminationNotRequired" "0") }}'
-          title: "If you want to use TLS, please provide the certificate and the key or we're going to autogenerate them."
-        - name: accessToSHCustomTLSTerminationCertsBehaviour
-          title: TLS Certificates
-          when: '{{repl (ConfigOptionEquals "accessToSHCustomTLSTerminationNotRequired" "0") }}'
-          type: select_one
-          default: tls_custom_certificates
-          items:
-          - name: tls_custom_certificates
-            title: Bring your own certificates
-          - name: tls_selfsigned_certificates
-            title: Generate self-signed certificates
-        - name: accessToSHCustomTLSTerminationKeyFile
-          title: Private Key File
-          when: &when_access_with_custom_tls_and_custom_certs >-
-            {{repl $cond1 := (ConfigOptionEquals "accessToSHCustomTLSTerminationCertsBehaviour" "tls_custom_certificates") -}}
-            {{repl $cond2 := (ConfigOptionEquals "accessToSHCustomTLSTerminationNotRequired" "0") -}}
-            {{repl $result := and $cond1 $cond2 -}}
-            {{repl $result -}}
-          type: file
-          required: true
-        - name: accessToSHCustomTLSTerminationCertFile
-          title: Certificate File
-          when: *when_access_with_custom_tls_and_custom_certs
-          type: file
-          required: true
-
-        - name: heading
-          type: heading
-          title: Self-Hosted access instructions
-        - name: accessToSHInstructions
-          type: label
-          title: |-
-            TODO: We should put basic instructions here
-            Configure DNS, wait till XYZ is applyed...
-            
-            https://{{repl ConfigOption "accessToSHDomain" }}
+      - name: accessToSHDomain
+        title: Domain
+        help_text: |-
+          The domain used to access your Self-Hosted (without protocol)
+          This is the domain that the final users will use to access your Self-Hosted.
+        type: text
+        required: true
+        default: "carto3-onprem.lan"
+      # k8s
+      - name: accessToSHModeNotKurl
+        title: Self-Hosted access mode
+        help_text: |-
+          How do you want to access to your Self-Hosted?
+        type: select_one
+        when: '{{repl not (IsKurl) }}'
+        required: true
+        default: accessToCartoDefaultLB
+        items:
+          - name: accessToCartoDefaultLB
+            when: false
+            title: |-
+              Default Access
+          - name: accessToCartoCustom
+            when: false
+            title: |-
+              Custom
+      - name: accessToCartoDefaultLBLabel
+        type: label
+        when: '{{repl (ConfigOptionEquals "accessToSHModeNotKurl" "accessToCartoDefaultLB") }}'
+        title: ℹ️ We will deploy an external Load Balancer to access to your Carto Self-Hosted environment
+      - name: accessToCartoCustomLabel
+        type: label
+        when: '{{repl (ConfigOptionEquals "accessToSHModeNotKurl" "accessToCartoCustom") }}'
+        title: ℹ️ Created and configured by you outside the CARTO installer
+      - name: loadBalancerSupportedKind
+        title: Load Balancer kind
+        type: textarea
+        hidden: true
+        default: |-
+          repl{{ $k8sDistribution := Distribution }}
+          repl{{ $result := fromJson "{}" }}
+          repl{{ if eq $k8sDistribution "gke" }}
+          repl{{    $_ := set $result "name" "routerLoadBalancerGKE" }}
+          repl{{    $_ := set $result "title" "GCP GKE LoadBalancer" }}
+          repl{{    $_ := set $result "lb_annotations" "service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: \"605\"" }}
+          repl{{ else if eq $k8sDistribution "eks" }}
+          repl{{    $_ := set $result "name" "routerLoadBalancerEKS" }}
+          repl{{    $_ := set $result "title" "AWS EKS LoadBalancer" }}
+          repl{{    $_ := set $result "lb_annotations" "service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: 605" }}
+          repl{{ else if eq $k8sDistribution "aks" }}
+          repl{{    $_ := set $result "name" "routerLoadBalancerAKS" }}
+          repl{{    $_ := set $result "title" "Azure AKS LoadBalancer" }}
+          repl{{    $_ := set $result "lb_annotations" "service.beta.kubernetes.io/azure-load-balancer-tcp-idle-timeout: 10" }}
+          repl{{ else }}
+          repl{{    $_ := set $result "name" "unsupported" }}
+          repl{{    $_ := set $result "title" (print "ERROR: No Load Balancer supported for your kubernetes platform, " $k8sDistribution) }}
+          repl{{ end }}
+          repl{{ toJson $result }}
+      - name: errorMessage
+        type: heading
+        when: '{{repl and (ConfigOptionEquals "accessToSHModeNotKurl" "accessToSHMode_LoadBalancer") (eq (fromJson (ConfigOption "loadBalancerSupportedKind") | dig "name" "unsupported") "unsupported") }}'
+        title: '{{repl fromJson (ConfigOption "loadBalancerSupportedKind") | dig "title" "Unsupported" }}'
+      # TLS
+      - name: accessToSHCustomTLSTermination
+        title: TLS Termination
+        help_text: |-
+          Uncheck if TLS termination is going to be placed outside CARTO control.
+          That implies that CARTO is going to accept HTTP requests.
+          Anyway, CARTO users should use TLS to access to Self-Hosted but it could be configured in an external Load Balancer.
+        type: bool
+        default: "1"
+      - name: accessToSHCustomTLSTerminationCustomCertsLabel
+        type: label
+        when: '{{repl (ConfigOptionEquals "accessToSHCustomTLSTermination" "1") }}'
+        title: "If you want to use TLS, please provide the certificate and the key or we're going to autogenerate them."
+      - name: accessToSHCustomTLSTerminationCertsBehaviour
+        title: TLS Certificates
+        when: '{{repl (ConfigOptionEquals "accessToSHCustomTLSTermination" "1") }}'
+        type: select_one
+        default: tls_custom_certificates
+        items:
+        - name: tls_custom_certificates
+          title: Bring your own certificates
+        - name: tls_selfsigned_certificates
+          title: Generate self-signed certificates
+      - name: accessToSHCustomTLSTerminationKeyFile
+        title: Private Key File
+        when: &when_access_with_custom_tls_and_custom_certs >-
+          {{repl $cond1 := (ConfigOptionEquals "accessToSHCustomTLSTerminationCertsBehaviour" "tls_custom_certificates") -}}
+          {{repl $cond2 := (ConfigOptionEquals "accessToSHCustomTLSTermination" "1") -}}
+          {{repl $result := and $cond1 $cond2 -}}
+          {{repl $result -}}
+        type: file
+        required: true
+      - name: accessToSHCustomTLSTerminationCertFile
+        title: Certificate File
+        when: *when_access_with_custom_tls_and_custom_certs
+        type: file
+        required: true
 
 
-
-
-
+    # Buckets
     - name: StorageBuckets
-      title: Cloud storage
+      title: Cloud Storage
       description: |-
-        Here you should config the multiple cloud storage buckets used by CARTO.
-        If you need further info, please check [docs.carto.com](https://docs.carto.com).
+        What storage buckets do you want to use?
+        https://docs.carto.com/carto-self-hosted/guides/configure-your-own-buckets
       items:
-        - name: storageBucketsBehaviour
-          title: What storage buckets do you want to use?
-          help_text: |-
-            https://docs.carto.com/carto-self-hosted/guides/configure-your-own-buckets
-          type: select_one
-          default: default
-          items:
-            - name: default
-              title: Use default ones provided by CARTO
-            - name: custom_gcs
-              title: Create and manage my own buckets on Google Cloud Storage
-            - name: custom_aws_s3
-              title: Create and manage my own buckets on Amazon Web Services S3
-            - name: custom_azb
-              title: Create and manage my own buckets on Azure Blob Storage
-        - name: storageBucketsProvider
-          title: Storage Buckets Provider
-          type: textarea
-          hidden: true
-          default: |-
-            repl{{ $gcs := or (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") (ConfigOptionEquals "storageBucketsBehaviour" "default") }}
-            repl{{ $aws := (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}
-            repl{{ $azb := (ConfigOptionEquals "storageBucketsBehaviour" "custom_azb") }}
-            repl{{ $result := fromJson "{}" }}
-            repl{{ if $gcs }}
-            repl{{    $_ := set $result "provider" "gcp" }}
-            repl{{ else if $aws }}
-            repl{{    $_ := set $result "provider" "s3" }}
-            repl{{ else if $azb }}
-            repl{{    $_ := set $result "provider" "azure-blob" }}
-            repl{{ end }}
-            repl{{ toJson $result }}
-
-        - name: storageBucketsCredentials
-          type: heading
-          title: Storage Buckets Credentials
-          when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
-        - name: storageBucketsGcpServiceAccount
-          title: The Service account to access GCS
-          type: textarea
-          default: '{{repl fromJson (ConfigOption "googleServiceAccountUsed") | dig "sa" "" }}'
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
-        - name: storageBucketsAwsAccessKeyId
-          title: The AccessKey ID for S3 buckets
-          type: text
-          required: true
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
-        - name: storageBucketsAwsAccessKeySecret
-          title: The AccessKey Secret for S3 buckets
-          type: text
-          required: true
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
-        - name: storageBucketsAzureAccessKey
-          title: AccessKey for Azure-Blob
-          type: text
-          required: true
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_azb") }}'
-
-        - name: storageBucketsConfigRequired
-          type: heading
-          title: Storage Buckets Required Config
-          when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
-        - name: storageBucketsAwsS3Region
-          title: Bucket AWS S3 Region
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
-          help_text: If the buckets are S3, the region to be used
-          type: text
-          required: true
-        - name: storageBucketsWorkspaceImports
-          title: Workspace Imports Bucket
-          when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
-          help_text: Bucket name to be used for imports
-          type: text
-          required: true
-        - name: storageBucketsWorkspaceImportsIsPublic
-          title: Is public this bucket?
-          when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
-          help_text: Please check in case is public
-          type: bool
-          required: true
-          default: "0"
-        - name: storageBucketsThumbnails
-          title: Thumbnails Bucket
-          when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
-          help_text: Bucket name to be used to store the thumbnails generated in the app
-          type: text
-          required: true
-        - name: storageBucketsThumbnailsIsPublic
-          title: Is public this bucket?
-          when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
-          help_text: Please check in case is public
-          type: bool
-          required: true
-          default: "1"
-        - name: storageBucketsWorkspaceExports
-          title: Workspace Exports Bucket
-          when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
-          help_text: Bucket to be used to store the exports generated in the app
-          type: text
-          required: true
-        - name: storageBucketsDetails
-          title: Storage Buckets Details
-          type: textarea
-          hidden: true
-          default: |-
-            repl{{ $defaultStorage := (ConfigOptionEquals "storageBucketsBehaviour" "default") }}
-            repl{{ $result := fromJson "{}" }}
-            repl{{ if not $defaultStorage }}
-            repl{{    $_ := set $result "workspaceImportsBucket" (ConfigOption "storageBucketsWorkspaceImports") }}
-            repl{{    $_ := set $result "workspaceImportsIsPublic" (ConfigOption "storageBucketsWorkspaceImportsIsPublic" ) }}
-            repl{{    $_ := set $result "thumbnailsBucket" (ConfigOption "storageBucketsThumbnails") }}
-            repl{{    $_ := set $result "thumbnailsIsPublic" (ConfigOption "storageBucketsThumbnailsIsPublic") }}
-            repl{{    $_ := set $result "workspaceExportsBucket" (ConfigOption "storageBucketsWorkspaceExports") }}
-            repl{{ else }}
-            repl{{    $_ := set $result "workspaceImportsBucket" (LicenseFieldValue "workspaceImportsBucket") }}
-            repl{{    $_ := set $result "workspaceImportsIsPublic" "false" }}
-            repl{{    $_ := set $result "thumbnailsBucket" (LicenseFieldValue "workspaceThumbnailsBucket") }}
-            repl{{    $_ := set $result "thumbnailsIsPublic" "true" }}
-            repl{{    $_ := set $result "workspaceExportsBucket" (LicenseFieldValue "workspaceExportsBucket") }}
-            repl{{ end }}
-            repl{{ toJson $result }}
-
-        - name: storageBucketsConfigOptional
-          type: heading
-          title: Storage Buckets Optional Config
-        - name: storageBucketsImportAwsArnRole
-          title: AWS role arn for import data
-          help_text: |-
-            If AWS is used in self-hosted, the ARN Role to be used to import files from the bucket to Redshift
-            If you need further info, please check [docs.carto.com](https://docs.carto.com/carto-self-hosted/guides/enable-redshift-imports).
-          type: text
-        - name: storageBucketsImportAwsAccessKeyId
-          title: AWS Imports Access Key Id
-          help_text: If AWS is used in self-hosted, the access key id to be used importing data into the app
-          type: text
-        - name: storageBucketsImportAwsSecretAccessKey
-          title: AWS Imports Secret Access Key
-          help_text: If AWS is used in self-hosted, the secret access key to be used importing data into the app
-          type: text
-        - name: storageBucketsExportAwsAccessKeyId
-          title: AWS Export Access Key Id
-          help_text: If AWS is used in self-hosted, the access key id to be used exporting data
-          type: text
-        - name: storageBucketsExportAwsSecretAccessKey
-          title: AWS Exports Secret Access Key
-          help_text: If AWS is used in self-hosted, the secret access key to be used exporting data
-          type: text
-        - name: storageBucketsExportAws
-          title: AWS Exports Bucket Name
-          help_text: If AWS is used in self-hosted, the bucket name to store the exports generated in the app
-          type: text
-        - name: storageBucketsExportAwsRegion
-          title: AWS Export Bucket Region
-          help_text: The region of the AWS export bucket
-          type: text
-        - name: storageBucketsExportAwsArnRole
-          title: AWS arn role for export data
-          help_text: The role arn to be used to store the exports generated in the app
-          type: text
+      - name: storageBucketsBehaviour
+        title: Select your Buckets
+        type: select_one
+        default: default
+        items:
+          - name: default
+            title: Use the default ones provided by CARTO
+          - name: custom_gcs
+            title: Create and manage my own buckets on Google Cloud Storage
+          - name: custom_aws_s3
+            title: Create and manage my own buckets on Amazon Web Services S3
+          - name: custom_azb
+            title: Create and manage my own buckets on Azure Blob Storage
+      - name: storageBucketsProvider
+        title: Buckets Provider
+        type: textarea
+        hidden: true
+        default: |-
+          repl{{ $gcs := or (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") (ConfigOptionEquals "storageBucketsBehaviour" "default") }}
+          repl{{ $aws := (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}
+          repl{{ $azb := (ConfigOptionEquals "storageBucketsBehaviour" "custom_azb") }}
+          repl{{ $result := fromJson "{}" }}
+          repl{{ if $gcs }}
+          repl{{    $_ := set $result "provider" "gcp" }}
+          repl{{ else if $aws }}
+          repl{{    $_ := set $result "provider" "s3" }}
+          repl{{ else if $azb }}
+          repl{{    $_ := set $result "provider" "azure-blob" }}
+          repl{{ end }}
+          repl{{ toJson $result }}
+      - name: storageBucketsGcpServiceAccount
+        title: Service Account to access GCS
+        help_text: |-
+          You can edit this filed in the Advanced Configuration
+        type: textarea
+        default: '{{repl fromJson (ConfigOption "googleServiceAccountUsed") | dig "sa" "" }}'
+        when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
+      - name: storageBucketsAwsAccessKeyId
+        title: The AccessKey ID for S3 buckets
+        type: text
+        required: true
+        when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+      - name: storageBucketsAwsAccessKeySecret
+        title: The AccessKey Secret for S3 buckets
+        type: text
+        required: true
+        when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+      - name: storageBucketsAzureAccessKey
+        title: AccessKey for Azure-Blob
+        type: text
+        required: true
+        when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_azb") }}'
+      - name: storageBucketsWorkspaceImports
+        title: Workspace Imports Bucket
+        when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
+        help_text: Bucket name to be used for imports
+        type: text
+        required: true
+      - name: storageBucketsWorkspaceImportsIsPublic
+        when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
+        help_text: |-
+          ℹ️ Please check in case is public
+        type: bool
+        default: "0"
+      - name: storageBucketsThumbnails
+        title: Thumbnails Bucket
+        when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
+        help_text: Bucket name to be used to store the thumbnails generated in the app
+        type: text
+        required: true
+      - name: storageBucketsThumbnailsIsPublic
+        when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
+        help_text: |-
+          ℹ️ Please check in case is public
+        type: bool
+        default: "0"
+      - name: storageBucketsWorkspaceExports
+        title: Workspace Exports Bucket
+        when: '{{repl not (ConfigOptionEquals "storageBucketsBehaviour" "default") }}'
+        help_text: Bucket to be used to store the exports generated in the app
+        type: text
+        required: true
+      - name: storageBucketsGcpProjectId
+        title: Buckets project id
+        when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
+        help_text: The GCP Project Id of these buckets
+        type: text
+        required: true
+      - name: storageBucketsAwsS3Region
+        title: Bucket AWS S3 Region
+        when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+        help_text: If the buckets are S3, the region to be used
+        type: text
+        required: true
+      - name: storageBucketsDetails
+        title: Buckets Details
+        type: textarea
+        hidden: true
+        default: |-
+          repl{{ $defaultStorage := (ConfigOptionEquals "storageBucketsBehaviour" "default") }}
+          repl{{ $result := fromJson "{}" }}
+          repl{{ if not $defaultStorage }}
+          repl{{    $_ := set $result "workspaceImportsBucket" (ConfigOption "storageBucketsWorkspaceImports") }}
+          repl{{    $_ := set $result "workspaceImportsIsPublic" (ConfigOption "storageBucketsWorkspaceImportsIsPublic" ) }}
+          repl{{    $_ := set $result "thumbnailsBucket" (ConfigOption "storageBucketsThumbnails") }}
+          repl{{    $_ := set $result "thumbnailsIsPublic" (ConfigOption "storageBucketsThumbnailsIsPublic") }}
+          repl{{    $_ := set $result "workspaceExportsBucket" (ConfigOption "storageBucketsWorkspaceExports") }}
+          repl{{    $_ := set $result "googleCloudStorageProjectId" (ConfigOption "storageBucketsGcpProjectId") }}
+          repl{{ else }}
+          repl{{    $_ := set $result "workspaceImportsBucket" (LicenseFieldValue "workspaceImportsBucket") }}
+          repl{{    $_ := set $result "workspaceImportsIsPublic" "false" }}
+          repl{{    $_ := set $result "thumbnailsBucket" (LicenseFieldValue "workspaceThumbnailsBucket") }}
+          repl{{    $_ := set $result "thumbnailsIsPublic" "true" }}
+          repl{{    $_ := set $result "workspaceExportsBucket" (LicenseFieldValue "workspaceExportsBucket") }}
+          repl{{    $_ := set $result "googleCloudStorageProjectId" (LicenseFieldValue "selfHostedGcpProjectId") }}
+          repl{{ end }}
+          repl{{ toJson $result }}
 
 
-    - name: cloudCredentialsConfig
-      title: Cloud credentials
-      description: |-
-        Here you should config the way that Carto connect to the different cloud providers.
-        If you need further info, please check [docs.carto.com](https://docs.carto.com).
-      items:
-        - name: cloudCredentialsGoogleCloud
-          type: heading
-          title: Google Cloud
-        - name: example_description
-          type: label
-          title: |-
-            Connect to Google Cloud Platform
-        - name: googleMapsAPIKey
-          title: Google Maps API Key
-          help_text: |-
-            The Google Maps API Key is required to use the Google Maps API.
-          type: text
-        - name: bigqueryOauthStatus
-          title: BigQuery OAuth Connections
-          help_text: |-
-            If you would like the option to connect to BigQuery using OAuth, please enable this option.
-            Please refer to [enable-bigquery-oauth-connections](https://docs.carto.com/carto-self-hosted/guides/enable-bigquery-oauth-connections)
-          type: select_one
-          default: disabled
-          items:
-            - name: disabled
-              title: Disabled
-            - name: enabled
-              title: Enabled
-        - name: bigqueryOauthClientID
-          title: BigQuery OAuth Client ID
-          when: '{{repl (ConfigOptionEquals "bigqueryOauthStatus" "enabled") }}'
-          type: text
-        - name: bigqueryOauthClientSecret
-          title: BigQuery OAuth Client Secret
-          when: '{{repl (ConfigOptionEquals "bigqueryOauthStatus" "enabled") }}'
-          type: password
-        - name: googleWorkloadIdentityStatus
-          title: Google Workload Identity
-          help_text: |-
-            The CARTO APIs running on your infrastructure is going to use Workload Identity to access to Google Cloud Platform.
-            TODO: Add guides and links
-            https://github.com/CartoDB/carto-selfhosted-helm/blob/main/doc/customizations-workload-identity-bigquery-connection.md
-          type: select_one
-          default: disabled
-          value: disabled
-          items:
-            - name: disabled
-              title: Disabled
-            - name: enabled
-              title: Enabled
-        - name: googleWorkloadIdentityEmail
-          title: Google Workload Identity Email
-          when: '{{repl (ConfigOptionEquals "googleWorkloadIdentityStatus" "enabled") }}'
-          required: true
-          type: text
-        - name: googleWorkloadIdentityConnectionStatus
-          title: Google Workload Identity for CARTO users
-          when: '{{repl (ConfigOptionEquals "googleWorkloadIdentityStatus" "enabled") }}'
-          help_text: |-
-            ⚠️ This is going to create a connection shared with all the users of your Self-Hosted with the permissions of the Service Account for all of them
-            TODO: Add guides and links
-            https://github.com/CartoDB/carto-selfhosted-helm/blob/main/doc/customizations-workload-identity-bigquery-connection.md
-          type: select_one
-          default: disabled
-          items:
-            - name: disabled
-              title: Disabled
-            - name: enabled
-              title: |-
-                Enabled
-        - name: googleWorkloadIdentityConnectionWorkflowTMP
-          title: Google Workload Identity CARTO connection Workflow Temporary location
-          when: &when_google_workload_identy_and_connections >-
-            {{repl $cond1 := (ConfigOptionEquals "googleWorkloadIdentityStatus" "enabled") -}}
-            {{repl $cond2 := (ConfigOptionEquals "googleWorkloadIdentityConnectionStatus" "enabled") -}}
-            {{repl $result := and $cond1 $cond2 -}}
-            {{repl $result -}}
-          help_text: |-
-            BigQuery dataset id used for storing temporary tables (i.e. `my_gcp_project.my_dataset`)
-          required: true
-          type: text
-        - name: googleWorkloadIdentityConnectionBillingProject
-          title: Google Workload Identity CARTO connection billing project
-          when: *when_google_workload_identy_and_connections
-          help_text: |-
-            GCP project to be charged with the BigQuery costs
-          required: true
-          type: text
-        - name: googleWorkloadIdentityConnectionOwnerId
-          title: Google Workload Identity CARTO connection owner id
-          when: *when_google_workload_identy_and_connections
-          help_text: |-
-            Id of the Carto user who will be the owner of the connection (i.e. `auth0|3idsj230990sj4wsddd10`)
-          required: true
-          type: text
-
-        #- name: cloudCredentialsAWS
-        #  type: heading
-        #  title: Amazon Web Services
-        #- name: example_description
-        #  type: label
-        #  title: |-
-        #    Connect to Amazon Web Services (AWS)
-        #- name: aws_todo
-        #  type: label
-        #  title: |-
-        #    TODO: Request credentials (if required but I think that should be required always)
-
-        #- name: cloudCredentialsAzure
-        #  type: heading
-        #  title: Azure
-        #- name: example_description
-        #  type: label
-        #  title: |-
-        #    Connect to Azure
-        #- name: aws_todo
-        #  type: label
-        #  title: |-
-        #    TODO: Request credentials
-
-
-        - name: cloudCredentialsCarto
-          type: heading
-          title: CARTO Platform
-        - name: example_description
-          type: label
-          title: |-
-            Connect to CARTO Services
-        - name: googleSA
-          title: Platform credentials
-          when: '{{repl (ConfigOptionEquals "googleWorkloadIdentityStatus" "disabled") }}'
-          help_text: |-
-            This is the Service Account  that is going to be used by CARTO to access to CARTO platform services.
-            Please leave empty at least that you know what you are doing.
-          required: true
-          type: textarea
-          default: '{{repl LicenseFieldValue "defaultGoogleServiceAccount" }}'
-        - name: description
-          type: label
-          when: '{{repl not (ConfigOptionEquals "googleWorkloadIdentityStatus" "disabled") }}'
-          title: |-
-            As you enable the Google Workload Identity, the Service Account that is going to be used by CARTO to access to CARTO platform services is going to be the one configured in the Google Workload Identity section.
-        - name: googleServiceAccountUsed
-          title: Google Service Account used by the app
-          type: textarea
-          hidden: true
-          default: |-
-            repl{{ $workloadId := (ConfigOptionEquals "googleWorkloadIdentityStatus" "enabled") }}
-            repl{{ $result := fromJson "{}" }}
-            repl{{ if $workloadId }}
-            repl{{    $_ := set $result "sa" (ConfigOption "googleWorkloadIdentityEmail") }}
-            repl{{ else }}
-            repl{{    $_ := set $result "sa" (ConfigOption "googleSA") }}
-            repl{{ end }}
-            repl{{ toJson $result }}
-
-
-
-
-    - name: redisConfig
-      title: Redis cache
-      description: |-
-        Here you should config the Redis cache used by CARTO.
-        If you need further info, please check [docs.carto.com](https://docs.carto.com).
-      items:
-        - name: redisCacheBehaviour
-          title: What Redis cache do you want to use?
-          help_text: |-
-            TODO: Add guides and links
-          type: select_one
-          default: internal
-          items:
-            - name: internal
-              title: Use an internal Redis cache installed by CARTO
-            - name: external
-              title: Use your own created and managed Redis cache
-        - name: externalRedisCacheConfig
-          type: label
-          when: '{{repl (ConfigOptionEquals "redisCacheBehaviour" "external") }}'
-          title: |-
-            Redis Cache Configuration
-        - name: externalRedisHost
-          title: Host
-          type: text
-          when: '{{repl (ConfigOptionEquals "redisCacheBehaviour" "external") }}'
-          required: true
-        - name: externalRedisPort
-          title: Port
-          type: text
-          when: '{{repl (ConfigOptionEquals "redisCacheBehaviour" "external") }}'
-          required: true
-          value: "6379"
-          default: "6379"
-        - name: externalRedisPassword
-          title: Password
-          type: password
-          when: '{{repl (ConfigOptionEquals "redisCacheBehaviour" "external") }}'
-          required: true
-        - name: externalRedisSSLMode
-          title: SSL Mode
-          type: select_one
-          default: ssl_mode_disable
-          items:
-            - name: ssl_mode_disable
-              title: Disable
-            - name: ssl_mode_enable
-              title: Enable
-        - name: externalRedisSSLCertificate
-          title: SSL Certificate
-          when: '{{repl (ConfigOptionEquals "redisSSLMode" "ssl_mode_enable") }}'
-          help_text: |-
-            If you don't know what this is, please change the SSL Mode.
-          type: file
-
-
-
-
-
-    - name: locationDataServices
-      title: Location data services
-      description: |-
-        Here you should config the Location Data Services.
-        If you need further info, please check [docs.carto.com](https://docs.carto.com).
-      items:
-        - name: locationDataServicesEnable
-          title: Enable Location Data Services
-          help_text: |-
-            Please select if you'll use LDS
-          type: bool
-          default: "0"
-        - name: locationDataServicesGeocodingProvider
-          title: Geocoding
-          when: '{{repl (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
-          help_text: |-
-            Please select the provider for Geocoding
-          type: select_one
-          default: geocoding_none
-          items:
-            - name: geocoding_tomtom
-              title: Tomtom
-            - name: geocoding_google
-              title: Google
-            - name: geocoding_mapbox
-              title: Mapbox
-            - name: geocoding_here
-              title: Here
-            - name: geocoding_none
-              title: None
-        - name: locationDataServicesIsolinesProvider
-          title: Isolines
-          when: '{{repl (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
-          help_text: |-
-            Please select the provider for Isolines
-          type: select_one
-          default: isolines_none
-          items:
-            - name: isolines_tomtom
-              title: Tomtom
-            - name: isolines_traveltime
-              title: Traveltime
-            - name: isolines_mapbox
-              title: Mapbox
-            - name: isolines_here
-              title: Here
-            - name: isolines_none
-              title: None
-        - name: locationDataServicesRoutingProvider
-          title: Routing
-          when: '{{repl (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
-          help_text: |-
-            Please select the provider for Routing
-          type: select_one
-          default: routing_none
-          items:
-            - name: routing_tomtom
-              title: Tomtom
-            - name: routing_here
-              title: Here
-            - name: routing_none
-              title: None
-        - name: locationDataServicesTomtomCredentials
-          title: LDS Tomtom credentials
-          when: '{{repl or (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_tomtom") (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_tomtom") (ConfigOptionEquals "locationDataServicesRoutingProvider" "routing_tomtom") }}'
-          help_text: |-
-            Set your TomTom LDS Api Key
-          required: true
-          type: text
-        - name: locationDataServicesGoogleCredentials
-          title: LDS Google credentials
-          when: '{{repl (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_google") }}'
-          help_text: |-
-            Set your Google LDS Api Key
-          required: true
-          type: text
-        - name: locationDataServicesMapboxCredentials
-          title: LDS Mapbox credentials
-          when: '{{repl or (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_mapbox") (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_mapbox") }}'
-          help_text: |-
-            Set your Mapbox LDS Api Key
-          required: true
-          type: text
-        - name: locationDataServicesHereCredentials
-          title: LDS Here credentials
-          when: '{{repl or (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_here") (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_here") (ConfigOptionEquals "locationDataServicesRoutingProvider" "routing_here") }}'
-          help_text: |-
-            Set your Here LDS Api Key
-          required: true
-          type: text
-        - name: locationDataServicesTraveltimeCredentials
-          title: LDS Traveltime credentials
-          when: '{{repl (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_traveltime") }}'
-          help_text: |-
-            Set your Traveltime LDS Api Key
-          required: true
-          type: text
-
-
-
-
-
-    - name: advancedNetworkEgress
-      title: Advanced network egress
-      description: |-
-        Here you should config the advanced network egress of your infrastruscture.
-        If you need further info, please check [docs.carto.com](https://docs.carto.com).
-      items:
-        - name: todo
-          type: label
-          title: |-
-            TODO: Define advanced Network Egress options
-            - proxy (should we pick the already one defined in kots?)
-            - trackjs
-
-
+    # Advanced Config
     - name: platformAdvancedConfig
-      title: Supply Advanced Config
+      title: Advanced Config
       description: |-
         Here you should config advanced options of CARTO that let you customize a bit more.
         If you need further info, please check [docs.carto.com](https://docs.carto.com).
       items:
-        - name: platformAdvancedConfigUnderstanded
-          title: |-
-            ⚠️ I understand that the following options are advanced and could break my installation but I know what I am doing
-          type: bool
-          default: "0"
-        - name: platformAdvancedConfigValues
-          type: textarea
-          when: repl{{ ConfigOptionEquals "platformAdvancedConfigUnderstanded" "1" }}
-          title: Advanced Config Values
-          #  TODO: Define advanced Platform Tunning options
-          #  - Debug mode
-          #  - Nginx/Varnish configs/optimizations
-          #  - ?? External Datawarehouse tunning (number of connections on the pool)
-          #  - Parametros de la infra como el escalado, recursos etc etc
-          #      - Escalado
-          #      - Pod disruption budget
+        ## Redis
+      - name: externalRedisEnabled
+        title: Redis
+        help_text: |-
+          Bring your own Redis instance for your Self-Hosted environment. If not, a container will be deployed for it
+
+          If you need further info, please check [docs.carto.com](https://docs.carto.com/carto-self-hosted/guides/configure-an-external-in-memory-cache).
+        type: bool
+        default: "0"
+        recommended: true
+      - name: externalRedisHost
+        title: Host
+        type: text
+        when: '{{repl (ConfigOptionEquals "externalRedisEnabled" "1") }}'
+        required: true
+      - name: externalRedisPort
+        title: Port
+        type: text
+        when: '{{repl (ConfigOptionEquals "externalRedisEnabled" "1") }}'
+        required: true
+        value: "6379"
+        default: "6379"
+      - name: externalRedisPassword
+        title: Password
+        type: password
+        when: '{{repl (ConfigOptionEquals "externalRedisEnabled" "1") }}'
+        required: true
+      - name: externalRedisSSLMode
+        title: Enable TLS
+        type: select_one
+        when: '{{repl (ConfigOptionEquals "externalRedisEnabled" "1") }}'
+        default: ssl_mode_disable
+        items:
+          - name: ssl_mode_disable
+            title: Disable
+          - name: ssl_mode_enable
+            title: Enable
+      - name: externalRedisSSLCertificate
+        title: SSL certificate
+        when: '{{repl (ConfigOptionEquals "externalRedisEnabled" "1") }}'
+        help_text: |-
+          If you don't know what this is, please change the SSL Mode.
+        type: file
+
+      ## LDS
+      - name: locationDataServicesEnable
+        title: Location Data Services
+        help_text: |-
+          Here you should config the Location Data Services.
+          If you need further info, please check [docs.carto.com](https://docs.carto.com).
+        type: bool
+        default: "0"
+      - name: locationDataServicesGeocodingProvider
+        title: Geocoding
+        when: '{{repl (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
+        help_text: |-
+          Please select the provider for Geocoding
+        type: select_one
+        default: geocoding_none
+        items:
+          - name: geocoding_tomtom
+            title: Tomtom
+          - name: geocoding_google
+            title: Google
+          - name: geocoding_mapbox
+            title: Mapbox
+          - name: geocoding_here
+            title: Here
+          - name: geocoding_none
+            title: None
+      - name: locationDataServicesIsolinesProvider
+        title: Isolines
+        when: '{{repl (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
+        help_text: |-
+          Please select the provider for Isolines
+        type: select_one
+        default: isolines_none
+        items:
+          - name: isolines_tomtom
+            title: Tomtom
+          - name: isolines_traveltime
+            title: Traveltime
+          - name: isolines_mapbox
+            title: Mapbox
+          - name: isolines_here
+            title: Here
+          - name: isolines_none
+            title: None
+      - name: locationDataServicesRoutingProvider
+        title: Routing
+        when: '{{repl (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
+        help_text: |-
+          Please select the provider for Routing
+        type: select_one
+        default: routing_none
+        items:
+          - name: routing_tomtom
+            title: Tomtom
+          - name: routing_here
+            title: Here
+          - name: routing_none
+            title: None
+      - name: locationDataServicesTomtomCredentials
+        title: LDS Tomtom credentials
+        when: '{{repl or (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_tomtom") (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_tomtom") (ConfigOptionEquals "locationDataServicesRoutingProvider" "routing_tomtom") }}'
+        help_text: |-
+          Set your TomTom LDS Api Key
+        required: true
+        type: text
+      - name: locationDataServicesGoogleCredentials
+        title: LDS Google credentials
+        when: '{{repl (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_google") }}'
+        help_text: |-
+          Set your Google LDS Api Key
+        required: true
+        type: text
+      - name: locationDataServicesMapboxCredentials
+        title: LDS Mapbox credentials
+        when: '{{repl or (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_mapbox") (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_mapbox") }}'
+        help_text: |-
+          Set your Mapbox LDS Api Key
+        required: true
+        type: text
+      - name: locationDataServicesHereCredentials
+        title: LDS Here credentials
+        when: '{{repl or (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_here") (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_here") (ConfigOptionEquals "locationDataServicesRoutingProvider" "routing_here") }}'
+        help_text: |-
+          Set your Here LDS Api Key
+        required: true
+        type: text
+      - name: locationDataServicesTraveltimeAppId
+        title: LDS Traveltime App Id
+        when: '{{repl (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_traveltime") }}'
+        help_text: |-
+          Set your Traveltime App Id
+        required: true
+        type: text
+      - name: locationDataServicesTraveltimeApiKey
+        title: LDS Traveltime Api key
+        when: '{{repl (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_traveltime") }}'
+        help_text: |-
+          Set your Traveltime Api Key
+        required: true
+        type: text
+
+      ## CDW
+      - name: enableCDW
+        title: CARTO Data Warehouse
+        help_text: >-
+          The CARTO Data Warehouse is a default connection provided to every CARTO organization,
+          designed to help users get started with the platform.
+          It grants access to resources such as cloud storage and cloud computing provided by CARTO,
+          including access to demo datasets and spatial datasets from CARTO’s Data Observatory.
+          It uses the same structure as a Google BigQuery connection, with projects, datasets, and tables, and includes
+          private datasets for individual users and shared datasets accessible to all users within an organization.
+        type: bool
+        default: "1"
+        recommended: true
+
+        ## Exports / Imports
+      - name: datawarehousesExportsImportsEnabled
+        title: Exports and Imports in Datawarehouses
+        type: bool
+        default: "0"
+        help_text: |-
+          Enable when you are working with Redshift, RDS or Snowflake
+      - name: datawarehousesExportsImports
+        type: heading
+        title: Exports & Exports in Datawarehouses
+        when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
+      - name: storageBucketsImportExportAwsAccessKeyId
+        title: AWS access key Id
+        help_text: The access key id to be used importing and exporting data in Redshift, RDS or Snowflake
+        type: text
+        when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
+      - name: storageBucketsImportExportAwsSecretAccessKey
+        title: AWS secret access key
+        help_text: The secret access key to be used importing and exporting data in Redshift, RDS or Snowflake
+        type: text
+        when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
+      - name: storageBucketsExportAws
+        title: AWS exports bucket name
+        help_text: The bucket name to store data from Redshift, RDS or Snowflake
+        type: text
+        when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
+      - name: storageBucketsExportAwsRegion
+        title: AWS export bucket region
+        help_text: The region of the AWS export bucket
+        type: text
+        when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
+      - name: storageBucketsImportExportAwsArnRole
+        title: AWS arn bucket role
+        help_text: |-
+          If AWS is used in self-hosted, the ARN Role to be used importing and exporting data:
+          - Import from Redfhist and RDS
+          - Export to Snowflake, Redshift and RDS
+
+          If you need further info, please check [docs.carto.com](https://docs.carto.com/carto-self-hosted/guides/enable-redshift-imports).
+        type: text
+        when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
+
+      ## Google Basemaps
+      - name: googleBasemapsEnabled
+        title: Google Basemaps
+        help_text: |
+          Enable if you whant to use the Google basemaps
+        type: bool
+        default: "0"
+      - name: googleMapsAPIKey
+        title: Google Maps API Key
+        help_text: |-
+          The Google Maps API Key is required to use the Google Maps API.
+        type: text
+        when: '{{repl (ConfigOptionEquals "googleBasemapsEnabled" "1") }}'
+
+      ## BigQuery Oauth
+      - name: bigqueryOauthEnabled
+        title: BigQuery OAuth connections
+        help_text: |-
+          If you would like the option to connect to BigQuery using OAuth, please enable this option.
+          Please refer to [enable-bigquery-oauth-connections](https://docs.carto.com/carto-self-hosted/guides/enable-bigquery-oauth-connections)
+        type: bool
+        default: "0"
+      - name: bigqueryOauthClientID
+        title: BigQuery OAuth client ID
+        when: '{{repl (ConfigOptionEquals "bigqueryOauthEnabled" "1") }}'
+        type: text
+      - name: bigqueryOauthClientSecret
+        title: BigQuery OAuth client secret
+        when: '{{repl (ConfigOptionEquals "bigqueryOauthEnabled" "1") }}'
+        type: password
+
+
+      ## Workload Identity
+      # Google
+      - name: enableGoogleWorkloadIdentity
+        title: Google Workload Identity
+        help_text: |-
+          The CARTO APIs running on your infrastructure are going to use Workload Identity to access to Google Cloud Platform.
+          Please follow these steps to configure it properly [Google Workload Identity](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/doc/deployment-options-gke-workload-identity.md)
+        type: bool
+        default: "0"
+      - name: googleWorkloadIdentityEmail
+        title: Google workload identity email
+        when: '{{repl (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") }}'
+        required: true
+        type: text
+        # BigQuery
+      - name: enableBigqueryWorkloadIdentityConnection
+        title: BigQuery workload identity
+        when: '{{repl (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") }}'
+        help_text: |-
+          ⚠️ This is going to create a shared connection with all the users of your environment
+          Please follow these steps to configure it properly [BigQuery connection Workload Identity](https://github.com/CartoDB/carto-selfhosted-helm/blob/main/doc/customizations-workload-identity-bigquery-connection.md)
+        type: bool
+        default: "0"
+      - name: bigqueryWorkloadIdentityConnectionWorkflowTMP
+        title: BigQuery temporary location
+        when: &when_google_workload_identy_and_connections >-
+          {{repl $cond1 := (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") -}}
+          {{repl $cond2 := (ConfigOptionEquals "enableBigqueryWorkloadIdentityConnection" "1") -}}
+          {{repl $result := and $cond1 $cond2 -}}
+          {{repl $result -}}
+        help_text: |-
+          BigQuery dataset id used for Carto Workflows to store temporary tables (i.e. `my_gcp_project.my_dataset`)
+        required: true
+        type: text
+      - name: bigqueryWorkloadIdentityConnectionBillingProject
+        title: Google billing broject
+        when: *when_google_workload_identy_and_connections
+        help_text: |-
+          GCP project to be charged with the BigQuery costs when using Workload Identity
+        required: true
+        type: text
+      - name: bigqueryWorkloadIdentityConnectionOwnerId
+        title: CARTO connection owner id
+        when: *when_google_workload_identy_and_connections
+        help_text: |-
+          Id of the Carto user who will be the owner of the bigquery connection created by workload identity (i.e. `auth0|3idsj230990sj4wsddd10`)
+        required: true
+        type: text
+
+      ## Tunning
+      - name: platformAdvancedConfig
+        title: Advanced Platform Tunning
+        type: bool
+        default: "0"
+      - name: platformAdvancedConfigValues
+        help_text: |-
+          ⚠️ I understand that the following options are advanced and could break my installation, but I know what I am doing
+        type: textarea
+        when: repl{{ ConfigOptionEquals "platformAdvancedConfig" "1" }}
+        title: ""
+
+      ## Carto Platform Credentials
+      - name: cartoPlatformGoogleSA
+        title: CARTO Platform credentials
+        when: '{{repl (ConfigOptionEquals "enableGoogleWorkloadIdentity" "0") }}'
+        help_text: |-
+          This is the Service Account  that is going to be used by the Self-Hosted environment to access CARTO platform services.
+          Please do not modify it at least that you know what you are doing.
+          Contact [Carto Support](https://docs.carto.com/carto-self-hosted/support) if you have any doubts.
+        required: true
+        type: textarea
+        default: '{{repl LicenseFieldValue "defaultGoogleServiceAccount" }}'
+      - name: cartoPlatformWorkloadIdentityEmail
+        type: textarea
+        when: '{{repl (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") }}'
+        title: |-
+          As you enable the Google Workload Identity, this is the Service Account email that is going to be used by the Self-Hosted environment to access CARTO platform services.
+          If you want to modify it, do in the Google Workload Identity section.
+        readonly: true
+        default: '{{repl (ConfigOption "googleWorkloadIdentityEmail" ) }}'
+      - name: googleServiceAccountUsed
+        title: Google Service Account used by the app
+        type: textarea
+        hidden: true
+        default: |-
+          repl{{ $workloadId := (ConfigOptionEquals "googleWorkloadIdentityStatus" "enabled") }}
+          repl{{ $result := fromJson "{}" }}
+          repl{{ if $workloadId }}
+          repl{{    $_ := set $result "sa" (ConfigOption "googleWorkloadIdentityEmail") }}
+          repl{{ else }}
+          repl{{    $_ := set $result "sa" (ConfigOption "cartoPlatformGoogleSA") }}
+          repl{{ end }}
+          repl{{ toJson $result }}

@@ -63,16 +63,17 @@ spec:
       exportAwsAccessKeyId:
         value: '{{repl ConfigOption "storageBucketsExportAwsAccessKeyId" }}'
       ldsHereApiKey:
-        value: ""
+        value: '{{repl ConfigOption "locationDataServicesHereCredentials" }}'
       ldsTomTomApiKey:
-        value: ""
+        value: '{{repl ConfigOption "locationDataServicesTomtomCredentials" }}'
       ldsGoogleApiKey:
-        value: ""
+        value: '{{repl ConfigOption "locationDataServicesGoogleCredentials" }}'
       ldsMapboxApiKey:
-        value: ""
+        value: '{{repl ConfigOption "locationDataServicesMapboxCredentials" }}'
       ldsTravelTimeAppId:
-        value: ""
-
+        value: '{{repl ConfigOption "locationDataServicesTraveltimeAppId" }}'
+      ldsTravelTimeApiKey:
+        value: '{{repl ConfigOption "locationDataServicesTraveltimeApiKey" }}'
     ## App Config Values
     appConfigValues:
       # domain
@@ -84,17 +85,18 @@ spec:
       workspaceThumbnailsBucket: '{{repl fromJson (ConfigOption "storageBucketsDetails") | dig "thumbnailsBucket" "" }}'
       workspaceThumbnailsPublic: '{{repl fromJson (ConfigOption "storageBucketsDetails") | dig "thumbnailsIsPublic" "" }}'
       workspaceExportsBucket: '{{repl fromJson (ConfigOption "storageBucketsDetails") | dig "workspaceExportsBucket" "" }}'
+      googleCloudStorageProjectId: '{{repl fromJson (ConfigOption "storageBucketsDetails") | dig "googleCloudStorageProjectId" "" }}'
       awsS3Region: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
-      importAwsRoleArn: '{{repl ConfigOption "storageBucketsImportAwsArnRole" }}'
+      importAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
       awsExportBucket: '{{repl ConfigOption "storageBucketsExportAws" }}'
       awsExportBucketRegion: '{{repl ConfigOption "storageBucketsExportAwsRegion" }}'
-      exportAwsRoleArn: '{{repl ConfigOption "storageBucketsExportAwsArnRole" }}'
+      exportAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
       # other config
       httpCacheEnabled: "true"
       bigqueryOauth2ClientId: '{{repl ConfigOption "bigqueryOauthClientID" }}'
       enableTrackJS: "true"
       ssoOrganizationId: ""
-      defaultAtLocation: 
+      defaultAtLocation:
         bigquery: "carto-un.carto"
         snowflake: "CARTO.CARTO"
         redshift: "carto"
@@ -110,13 +112,13 @@ spec:
       database: '{{repl ConfigOption "metadataDBName" }}'
       user: '{{repl ConfigOption "metadataDBUser" }}'
       password: '{{repl ConfigOption "metadataDBPassword" }}'
-      sslEnabled: repl{{ if ConfigOptionEquals "metadataDBSSLMode" "ssl_mode_enable"}}truerepl{{ else }}falserepl{{ end }}
+      sslEnabled: repl{{ if ConfigOptionEquals "metadataDBSSLMode" "1"}}truerepl{{ else }}falserepl{{ end }}
       sslCA: |
         repl{{- ConfigOptionData "metadataDBSSLCertificate" | nindent 8 }}
 
     ## Redis
     internalRedis:
-      enabled: repl{{ if ConfigOptionEquals "redisCacheBehaviour" "internal"}}truerepl{{ else }}falserepl{{ end }}
+      enabled: repl{{ if ConfigOptionEquals "externalRedisEnabled" "0"}}truerepl{{ else }}falserepl{{ end }}
     externalRedis:
       host: '{{repl ConfigOption "externalRedisHost" }}'
       port: '{{repl ConfigOption "externalRedisPort" }}'
@@ -133,21 +135,19 @@ spec:
 
     ## TLS Certs
     tlsCerts:
-      httpsEnabled: repl{{ if ConfigOptionEquals "accessToSHCustomTLSTerminationNotRequired" "0"}}truerepl{{ else }}falserepl{{ end }}
+      httpsEnabled: repl{{ if ConfigOptionEquals "accessToSHCustomTLSTermination" "1"}}truerepl{{ else }}falserepl{{ end }}
       autoGenerate: repl{{ if ConfigOptionEquals "accessToSHCustomTLSTerminationCertsBehaviour" "tls_selfsigned_certificates"}}truerepl{{ else }}falserepl{{ end }}
-      certKey: '{{repl ConfigOption "accessToSHCustomTLSTerminationCertFile" }}'
-      keyKey: '{{repl ConfigOption "accessToSHCustomTLSTerminationKeyFile" }}'
+      certificate: '{{repl ConfigOption "accessToSHCustomTLSTerminationCertFile" }}'
+      privateKey: '{{repl ConfigOption "accessToSHCustomTLSTerminationKeyFile" }}'
 
-    ## Carto Components
+    ## Access to Carto
     router:
       service:
-        type: ClusterIP
-        nodePorts:
-          http: 8080
-          https: 8443
+        type: repl{{ if ConfigOptionEquals "accessToSHModeNotKurl" "accessToCartoDefaultLB"}}LoadBalancerrepl{{ else }}NodePortrepl{{ end }}
+        annotations: '{{repl fromJson (ConfigOption "loadBalancerSupportedKind") | dig "lb_annotations" "" }}'
 
   # Values from Advanced Configuration
   optionalValues:
-    - when: '{{repl ConfigOptionEquals "platformAdvancedConfigUnderstanded" "1" }}'
+    - when: '{{repl ConfigOptionEquals "platformAdvancedConfig" "1" }}'
       recursiveMerge: true
       values: repl{{ ConfigOption "platformAdvancedConfigValues" | nindent 8 }}
