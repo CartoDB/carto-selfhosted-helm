@@ -30,4 +30,4 @@ cdnInvalidatorSub    |  false  |  1024Mi         |  500m        |  372Mi        
 workspaceApi         |  true   |  1360Mi         |  1000m       |  768Mi            |  350m          |  2               |  2               |  75
 workspaceSubscriber  |  false  |  1024Mi         |  500m        |  372Mi            |  200m          |                  |                  |
 workspaceWww         |  true   |  1024Mi         |  500m        |  768Mi            |  200m          |  2               |  2               |  75
-**TOTAL with max replicas**|   |  39072Mi        |  18000m      |  15520Mi          |  5500m         |                  |                  |
+**TOTAL with max replicas**|   |  39072Mi        |  18000m      |                   |                |                  |                  |
