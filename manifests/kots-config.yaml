@@ -23,7 +23,6 @@ spec:
         title: Customer Package Values
         type: textarea
         hidden: true
-        readonly: false
         default: |-
           repl{{ $environment := (LicenseFieldValue "cartoPlatformEnvironment") }}
           repl{{ $result := fromJson "{}" }}
@@ -65,6 +64,11 @@ spec:
         hidden: true
         readonly: false
         value: '{{repl RandomString 16 }}'
+      - name: projectId
+        title: Project Id
+        type: textarea
+        hidden: true
+        default: repl{{ fromJson (LicenseFieldValue "cartoPlatformDefaultSA") | dig "project_id" "" }}
 
 
     # Postgresql
@@ -188,25 +192,24 @@ spec:
       # TLS
       - name: accessToCartoDefaultAccessCertificates
         title: TLS Certificates
-        when: '{{repl (ConfigOptionEquals "accessToSHModeNotKurl" "accessToCartoDefaultLB") }}'
+        when: '{{repl and (ConfigOptionEquals "accessToSHModeNotKurl" "accessToCartoDefaultLB") (eq Distribution "gke") }}'
         type: select_one
-        default: tls_managed_certificates
+        default: tls_custom_certificates
         items:
-        - name: tls_managed_certificates
-          title: Generate managed certificates
+        #- name: tls_managed_certificates
+        #  title: Generate managed certificates
         - name: tls_custom_certificates
           title: Bring your own certificates
       - name: accessToSHCustomTLSTerminationKeyFile
         title: Private Key File
-        when: '{{repl (ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates") }}'
+        when: '{{repl or (ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates") (ne Distribution "gke") }}'
         type: file
         required: true
       - name: accessToSHCustomTLSTerminationCertFile
         title: Certificate File
-        when: '{{repl (ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates") }}'
+        when: '{{repl or (ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates") (ne Distribution "gke") }}'
         type: file
         required: true
-
 
     # Buckets
     - name: StorageBuckets
@@ -325,7 +328,7 @@ spec:
         hidden: true
         default: |-
           repl{{ $defaultStorage := (ConfigOptionEquals "storageBucketsBehaviour" "default") }}
-          repl{{ $projectId := fromJson (LicenseFieldValue "cartoPlatformDefaultSA") | dig "project_id" "" }}
+          repl{{ $projectId := (ConfigOption "projectId") }}
           repl{{ $result := fromJson "{}" }}
           repl{{ if not $defaultStorage }}
           repl{{    $_ := set $result "workspaceImportsBucket" (ConfigOption "storageBucketsWorkspaceImports") }}
@@ -343,7 +346,6 @@ spec:
           repl{{    $_ := set $result "googleCloudStorageProjectId" $projectId }}
           repl{{ end }}
           repl{{ toJson $result }}
-
 
     # Advanced Config
     - name: platformAdvancedConfig
@@ -699,3 +701,5 @@ spec:
         type: textarea
         when: repl{{ ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}
         title: ""
+
+

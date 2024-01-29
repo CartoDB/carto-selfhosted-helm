@@ -33,7 +33,7 @@ spec:
       cartoAuth0CustomDomain: '{{repl fromJson (ConfigOption "environmentCustomerPackageValues") | dig "cartoAuth0CustomDomain" "" | Base64Decode }}'
       selfHostedTenantId: '{{repl LicenseFieldValue "selfHostedId" }}'
       launchDarklyClientSideId: '{{repl fromJson (ConfigOption "environmentCustomerPackageValues") | dig "launchDarklyClientSideId" "" | Base64Decode }}'
-      selfHostedGcpProjectId: '{{repl fromJson (LicenseFieldValue "cartoPlatformDefaultSA") | dig "project_id" "" }}'
+      selfHostedGcpProjectId: '{{repl (ConfigOption "projectId") }}'
       # customerPackageVersion: ""
       enableErrorResponseStackTrace: "false"
       cartoDataWarehouseEnabled: '{{repl ConfigOptionEquals "enableCDW" "1" }}'
@@ -135,7 +135,7 @@ spec:
 
     ## TLS Certs
     tlsCerts:
-      httpsEnabled: repl{{ if ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_managed_certificates"}}falserepl{{ else }}truerepl{{ end }}
+      httpsEnabled: repl{{ if and (ConfigOptionEquals "accessToSHModeNotKurl" "accessToCartoDefaultLB") (ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates")}}truerepl{{ else }}falserepl{{ end }}
       autoGenerate: false
       customCerts: repl{{ if ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates"}}truerepl{{ else }}falserepl{{ end }}
       customCertificate: '{{repl ConfigOption "accessToSHCustomTLSTerminationCertFile" }}'
@@ -145,7 +145,8 @@ spec:
     ## Access to Carto
     router:
       service:
-        type: NodePort
+        type: LoadBalancer
+
 
   # Values from Advanced Configuration
   optionalValues:
