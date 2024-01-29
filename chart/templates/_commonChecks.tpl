@@ -167,7 +167,7 @@ Return customer values to use in preflights and support-bundle
   - name: WORKSPACE_POSTGRES_PORT
     value: {{ include "carto.postgresql.port" . }}
   - name: WORKSPACE_POSTGRES_DB
-    value: {{ include "carto.postgresql.database" . }}
+    value: {{ include "carto.postgresql.databaseName" . }}
   - name: WORKSPACE_POSTGRES_USER
     value: {{ include "carto.postgresql.user" . }}
   - name: MAPS_API_V3_TENANT_ID

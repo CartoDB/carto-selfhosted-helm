@@ -13,31 +13,31 @@ spec:
     ## Carto Secrets
     cartoSecrets:
       encryptionSecretKey:
-        value: '{{repl LicenseFieldValue "encryptionSecretKey" }}'
+        value: '{{repl ConfigOption "kotsEncryptionSecretKey" }}'
       jwtApiSecret:
-        value: '{{repl LicenseFieldValue "jwtApiSecret" }}'
+        value: '{{repl ConfigOption "kotsVarnishDebugSecret" }}'
       varnishDebugSecret:
-        value: '{{repl LicenseFieldValue "varnishDebugSecret" }}'
+        value: '{{repl ConfigOption "kotsJwtApiSecret" }}'
       varnishPurgeSecret:
-        value: '{{repl LicenseFieldValue "varnishPurgeSecret" }}'
+        value: '{{repl ConfigOption "kotsVarnishPurgeSecret" }}'
       launchDarklySdkKey:
-        value: '{{repl LicenseFieldValue "launchDarklySdkKey" }}'
+        value: '{{repl LicenseFieldValue "cartoFeaturesFlagSdkKey" }}'
       defaultGoogleServiceAccount:
-        value: '{{repl ConfigOption "defaultGoogleServiceAccount" }}'
+        value: '{{repl ConfigOption "cartoPlatformGoogleSA" }}'
     # Carto Config Values
     cartoConfigValues:
-      cartoAccApiDomain: '{{repl LicenseFieldValue "cartoAccApiDomain" }}'
-      cartoAccGcpProjectId: '{{repl LicenseFieldValue "cartoAccGcpProjectId" }}'
-      cartoAccGcpProjectRegion: '{{repl LicenseFieldValue "cartoAccGcpProjectRegion" }}'
-      cartoAuth0ClientId: '{{repl LicenseFieldValue "cartoAuth0ClientId" }}'
-      cartoAuth0CustomDomain: '{{repl LicenseFieldValue "cartoAuth0CustomDomain" }}'
-      selfHostedTenantId: '{{repl LicenseFieldValue "selfHostedTenantId" }}'
-      launchDarklyClientSideId: '{{repl LicenseFieldValue "launchDarklyClientSideId" }}'
-      selfHostedGcpProjectId: '{{repl LicenseFieldValue "selfHostedGcpProjectId" }}'
-      customerPackageVersion: '{{repl LicenseFieldValue "customerPackageVersion" }}'
+      cartoAccApiDomain: '{{repl fromJson (ConfigOption "environmentCustomerPackageValues") | dig "cartoAccApiDomain" "" | Base64Decode }}'
+      cartoAccGcpProjectId: '{{repl fromJson (ConfigOption "environmentCustomerPackageValues") | dig "cartoAccGcpProjectId" "" | Base64Decode }}'
+      cartoAccGcpProjectRegion: '{{repl fromJson (ConfigOption "environmentCustomerPackageValues") | dig "cartoAccGcpProjectRegion" "" | Base64Decode }}'
+      cartoAuth0ClientId: '{{repl LicenseFieldValue "cartoAuthClientId" }}'
+      cartoAuth0CustomDomain: '{{repl fromJson (ConfigOption "environmentCustomerPackageValues") | dig "cartoAuth0CustomDomain" "" | Base64Decode }}'
+      selfHostedTenantId: '{{repl LicenseFieldValue "selfHostedId" }}'
+      launchDarklyClientSideId: '{{repl fromJson (ConfigOption "environmentCustomerPackageValues") | dig "launchDarklyClientSideId" "" | Base64Decode }}'
+      selfHostedGcpProjectId: '{{repl fromJson (LicenseFieldValue "cartoPlatformDefaultSA") | dig "project_id" "" }}'
+      # customerPackageVersion: ""
       enableErrorResponseStackTrace: "false"
       cartoDataWarehouseEnabled: '{{repl ConfigOptionEquals "enableCDW" "1" }}'
-      cartoSelfhostedDwLocation: '{{repl LicenseFieldValue "cartoSelfhostedDwLocation" }}'
+      cartoSelfhostedDwLocation: '{{repl LicenseFieldValue "cartoDWLocation" }}'
 
     # Customizations
     ## App Secrets
@@ -135,19 +135,20 @@ spec:
 
     ## TLS Certs
     tlsCerts:
-      httpsEnabled: repl{{ if ConfigOptionEquals "accessToSHCustomTLSTermination" "1"}}truerepl{{ else }}falserepl{{ end }}
-      autoGenerate: repl{{ if ConfigOptionEquals "accessToSHCustomTLSTerminationCertsBehaviour" "tls_selfsigned_certificates"}}truerepl{{ else }}falserepl{{ end }}
-      certificate: '{{repl ConfigOption "accessToSHCustomTLSTerminationCertFile" }}'
-      privateKey: '{{repl ConfigOption "accessToSHCustomTLSTerminationKeyFile" }}'
+      httpsEnabled: repl{{ if ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_managed_certificates"}}falserepl{{ else }}truerepl{{ end }}
+      autoGenerate: false
+      customCerts: repl{{ if ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates"}}truerepl{{ else }}falserepl{{ end }}
+      customCertificate: '{{repl ConfigOption "accessToSHCustomTLSTerminationCertFile" }}'
+      customPrivateKey: '{{repl ConfigOption "accessToSHCustomTLSTerminationKeyFile" }}'
+      generateManagedCerts: repl{{ if ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_managed_certificates"}}truerepl{{ else }}falserepl{{ end }}
 
     ## Access to Carto
     router:
       service:
-        type: repl{{ if ConfigOptionEquals "accessToSHModeNotKurl" "accessToCartoDefaultLB"}}LoadBalancerrepl{{ else }}NodePortrepl{{ end }}
-        annotations: '{{repl fromJson (ConfigOption "loadBalancerSupportedKind") | dig "lb_annotations" "" }}'
+        type: NodePort
 
   # Values from Advanced Configuration
   optionalValues:
-    - when: '{{repl ConfigOptionEquals "platformAdvancedConfig" "1" }}'
+    - when: '{{repl ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}'
       recursiveMerge: true
-      values: repl{{ ConfigOption "platformAdvancedConfigValues" | nindent 8 }}
+      values: repl{{ ConfigOption "platformAdvancedTuningValues" | nindent 8 }}
