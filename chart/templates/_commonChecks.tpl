@@ -193,7 +193,7 @@ Return customer secrets to use in preflights and support-bundle
 */}}
 {{- define "carto.replicated.commonChecks.customerSecrets" }}
   - name: WORKSPACE_POSTGRES_PASSWORD
-    value: {{ .Values.externalPostgresql.adminPassword | quote }}
+    value: {{ .Values.externalPostgresql.password | quote }}
   - name: REDIS_PASSWORD
     {{- if .Values.internalRedis.enabled }}
     value: {{ .Values.internalRedis.auth.password | quote }}
