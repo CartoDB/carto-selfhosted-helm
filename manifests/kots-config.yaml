@@ -325,6 +325,7 @@ spec:
         hidden: true
         default: |-
           repl{{ $defaultStorage := (ConfigOptionEquals "storageBucketsBehaviour" "default") }}
+          repl{{ $projectId := fromJson (LicenseFieldValue "cartoPlatformDefaultSA") | dig "project_id" "" }}
           repl{{ $result := fromJson "{}" }}
           repl{{ if not $defaultStorage }}
           repl{{    $_ := set $result "workspaceImportsBucket" (ConfigOption "storageBucketsWorkspaceImports") }}
@@ -334,12 +335,12 @@ spec:
           repl{{    $_ := set $result "workspaceExportsBucket" (ConfigOption "storageBucketsWorkspaceExports") }}
           repl{{    $_ := set $result "googleCloudStorageProjectId" (ConfigOption "storageBucketsGcpProjectId") }}
           repl{{ else }}
-          repl{{    $_ := set $result "workspaceImportsBucket" (LicenseFieldValue "workspaceImportsBucket") }}
+          repl{{    $_ := set $result "workspaceImportsBucket" (print $projectId "-client-storage") }}
           repl{{    $_ := set $result "workspaceImportsIsPublic" "false" }}
-          repl{{    $_ := set $result "thumbnailsBucket" (LicenseFieldValue "workspaceThumbnailsBucket") }}
+          repl{{    $_ := set $result "thumbnailsBucket" (print $projectId "-thumbnails-storage") }}
           repl{{    $_ := set $result "thumbnailsIsPublic" "true" }}
-          repl{{    $_ := set $result "workspaceExportsBucket" (LicenseFieldValue "workspaceExportsBucket") }}
-          repl{{    $_ := set $result "googleCloudStorageProjectId" (LicenseFieldValue "selfHostedGcpProjectId") }}
+          repl{{    $_ := set $result "workspaceExportsBucket" (print $projectId "-export-storage") }}
+          repl{{    $_ := set $result "googleCloudStorageProjectId" $projectId }}
           repl{{ end }}
           repl{{ toJson $result }}
 
