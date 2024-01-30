@@ -167,9 +167,9 @@ Return customer values to use in preflights and support-bundle
   - name: WORKSPACE_POSTGRES_PORT
     value: {{ include "carto.postgresql.port" . }}
   - name: WORKSPACE_POSTGRES_DB
-    value: {{ include "carto.postgresql.adminDatabase" . }}
+    value: {{ include "carto.postgresql.databaseName" . }}
   - name: WORKSPACE_POSTGRES_USER
-    value: {{ include "carto.postgresql.adminUser" . }}
+    value: {{ include "carto.postgresql.user" . }}
   - name: MAPS_API_V3_TENANT_ID
     value: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   - name: CARTO_SELFHOSTED_VERSION
@@ -193,7 +193,7 @@ Return customer secrets to use in preflights and support-bundle
 */}}
 {{- define "carto.replicated.commonChecks.customerSecrets" }}
   - name: WORKSPACE_POSTGRES_PASSWORD
-    value: {{ .Values.externalPostgresql.adminPassword | quote }}
+    value: {{ .Values.externalPostgresql.password | quote }}
   - name: REDIS_PASSWORD
     {{- if .Values.internalRedis.enabled }}
     value: {{ .Values.internalRedis.auth.password | quote }}

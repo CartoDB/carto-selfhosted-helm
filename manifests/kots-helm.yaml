@@ -5,79 +5,151 @@ metadata:
 spec:
   chart:
     name: carto
-    chartVersion: 1.75.1
+    chartVersion: 1.77.1
   values:
-    # Add a value with the same name set to `enabled: false`
-    # This excludes the SDK from KOTS installations
     replicated:
       enabled: true
+    # License
+    ## Carto Secrets
     cartoSecrets:
       encryptionSecretKey:
-        value: '{{repl ConfigOption "cartoSecrets_encryptionSecretKey" }}'
+        value: '{{repl ConfigOption "kotsEncryptionSecretKey" }}'
       jwtApiSecret:
-        value: '{{repl ConfigOption "cartoSecrets_jwtApiSecret" }}'
+        value: '{{repl ConfigOption "kotsVarnishDebugSecret" }}'
       varnishDebugSecret:
-        value: '{{repl ConfigOption "cartoSecrets_varnishDebugSecret" }}'
+        value: '{{repl ConfigOption "kotsJwtApiSecret" }}'
       varnishPurgeSecret:
-        value: '{{repl ConfigOption "cartoSecrets_varnishPurgeSecret" }}'
+        value: '{{repl ConfigOption "kotsVarnishPurgeSecret" }}'
       launchDarklySdkKey:
-        value: '{{repl ConfigOption "cartoSecrets_launchDarklySdkKey" }}'
+        value: '{{repl LicenseFieldValue "cartoFeaturesFlagSdkKey" }}'
       defaultGoogleServiceAccount:
-        value: '{{repl ConfigOption "defaultGoogleServiceAccount" }}'
-    appConfigValues:
-      selfHostedDomain: '{{repl ConfigOption "appConfigValues_selfHostedDomain" }}'
-      workspaceImportsBucket: '{{repl ConfigOption "appConfigValues_workspaceImportsBucket" }}'
-      workspaceThumbnailsBucket: '{{repl ConfigOption "appConfigValues_workspaceThumbnailsBucket" }}'
-      thumbnailsBucketExternalURL: '{{repl ConfigOption "appConfigValues_thumbnailsBucketExternalURL" }}'
+        value: '{{repl ConfigOption "cartoPlatformGoogleSA" }}'
+    # Carto Config Values
     cartoConfigValues:
-      cartoAccApiDomain: '{{repl ConfigOption "cartoConfigValues_cartoAccApiDomain" }}'
-      cartoAccGcpProjectId: '{{repl ConfigOption "cartoConfigValues_cartoAccGcpProjectId" }}'
-      cartoAccGcpProjectRegion: '{{repl ConfigOption "cartoConfigValues_cartoAccGcpProjectRegion" }}'
-      cartoAuth0ClientId: '{{repl ConfigOption "cartoConfigValues_cartoAuth0ClientId" }}'
-      cartoAuth0CustomDomain: '{{repl ConfigOption "cartoConfigValues_cartoAuth0CustomDomain" }}'
-      cartoSelfhostedDwLocation: '{{repl ConfigOption "cartoConfigValues_cartoSelfhostedDwLocation" }}'
-      selfHostedTenantId: '{{repl ConfigOption "cartoConfigValues_selfHostedTenantId" }}'
-      launchDarklyClientSideId: '{{repl ConfigOption "cartoConfigValues_launchDarklyClientSideId" }}'
-      selfHostedGcpProjectId: '{{repl ConfigOption "cartoConfigValues_selfHostedGcpProjectId" }}'
-      customerPackageVersion: '{{repl ConfigOption "cartoConfigValues_customerPackageVersion" }}'
+      cartoAccApiDomain: '{{repl fromJson (ConfigOption "environmentCustomerPackageValues") | dig "cartoAccApiDomain" "" | Base64Decode }}'
+      cartoAccGcpProjectId: '{{repl fromJson (ConfigOption "environmentCustomerPackageValues") | dig "cartoAccGcpProjectId" "" | Base64Decode }}'
+      cartoAccGcpProjectRegion: '{{repl fromJson (ConfigOption "environmentCustomerPackageValues") | dig "cartoAccGcpProjectRegion" "" | Base64Decode }}'
+      cartoAuth0ClientId: '{{repl LicenseFieldValue "cartoAuthClientId" }}'
+      cartoAuth0CustomDomain: '{{repl fromJson (ConfigOption "environmentCustomerPackageValues") | dig "cartoAuth0CustomDomain" "" | Base64Decode }}'
+      selfHostedTenantId: '{{repl LicenseFieldValue "selfHostedId" }}'
+      launchDarklyClientSideId: '{{repl fromJson (ConfigOption "environmentCustomerPackageValues") | dig "launchDarklyClientSideId" "" | Base64Decode }}'
+      selfHostedGcpProjectId: '{{repl (ConfigOption "projectId") }}'
+      # customerPackageVersion: ""
+      enableErrorResponseStackTrace: "false"
+      cartoDataWarehouseEnabled: '{{repl ConfigOptionEquals "enableCDW" "1" }}'
+      cartoSelfhostedDwLocation: '{{repl LicenseFieldValue "cartoDWLocation" }}'
+
+    # Customizations
+    ## App Secrets
+    appSecrets:
+      googleMapsApiKey:
+        value: '{{repl ConfigOption "googleMapsAPIKey" }}'
+      bigqueryOauth2ClientSecret:
+        value: '{{repl ConfigOption "bigqueryOauthClientSecret" }}'
+      googleCloudStorageServiceAccountKey:
+        value: '{{repl ConfigOption "storageBucketsGcpServiceAccount" }}'
+      awsAccessKeyId:
+        value: '{{repl ConfigOption "storageBucketsAwsAccessKeyId" }}'
+      awsAccessKeySecret:
+        value: '{{repl ConfigOption "storageBucketsAwsAccessKeySecret" }}'
+      azureStorageAccessKey:
+        value: '{{repl ConfigOption "storageBucketsAzureAccessKey" }}'
+      importAwsAccessKeyId:
+        value: '{{repl ConfigOption "storageBucketsImportAwsAccessKeyId" }}'
+      importAwsSecretAccessKey:
+        value: '{{repl ConfigOption "storageBucketsImportAwsSecretAccessKey" }}'
+      exportAwsSecretAccessKey:
+        value: '{{repl ConfigOption "storageBucketsExportAwsSecretAccessKey" }}'
+      exportAwsAccessKeyId:
+        value: '{{repl ConfigOption "storageBucketsExportAwsAccessKeyId" }}'
+      ldsHereApiKey:
+        value: '{{repl ConfigOption "locationDataServicesHereCredentials" }}'
+      ldsTomTomApiKey:
+        value: '{{repl ConfigOption "locationDataServicesTomtomCredentials" }}'
+      ldsGoogleApiKey:
+        value: '{{repl ConfigOption "locationDataServicesGoogleCredentials" }}'
+      ldsMapboxApiKey:
+        value: '{{repl ConfigOption "locationDataServicesMapboxCredentials" }}'
+      ldsTravelTimeAppId:
+        value: '{{repl ConfigOption "locationDataServicesTraveltimeAppId" }}'
+      ldsTravelTimeApiKey:
+        value: '{{repl ConfigOption "locationDataServicesTraveltimeApiKey" }}'
+    ## App Config Values
+    appConfigValues:
+      # domain
+      selfHostedDomain: '{{repl ConfigOption "accessToSHDomain" }}'
+      # buckets
+      storageProvider: '{{repl fromJson (ConfigOption "storageBucketsProvider") | dig "provider" "" }}'
+      workspaceImportsBucket: '{{repl ConfigOption "storageBucketsWorkspaceImports" }}'
+      workspaceImportsPublic: repl{{ if ConfigOptionEquals "storageBucketsWorkspaceImportsIsPublic" "public"}}truerepl{{ else }}falserepl{{ end }}
+      workspaceThumbnailsBucket: '{{repl ConfigOption "storageBucketsThumbnails" }}'
+      workspaceThumbnailsPublic: repl{{ if ConfigOptionEquals "storageBucketsThumbnailsIsPublic" "public"}}truerepl{{ else }}falserepl{{ end }}
+      workspaceExportsBucket: '{{repl ConfigOption "storageBucketsWorkspaceExports" }}'
+      googleCloudStorageProjectId: '{{repl ConfigOption "storageBucketsGcpProjectId" }}'
+      awsS3Region: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
+      importAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
+      awsExportBucket: '{{repl ConfigOption "storageBucketsExportAws" }}'
+      awsExportBucketRegion: '{{repl ConfigOption "storageBucketsExportAwsRegion" }}'
+      exportAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
+      # other config
+      httpCacheEnabled: "true"
+      bigqueryOauth2ClientId: '{{repl ConfigOption "bigqueryOauthClientID" }}'
+      enableTrackJS: "true"
+      ssoOrganizationId: ""
+      defaultAtLocation:
+        bigquery: "carto-un.carto"
+        snowflake: "CARTO.CARTO"
+        redshift: "carto"
+        postgres: "carto"
+
+    ## Postgresql
     internalPostgresql:
       # Disable the internal Postgres
       enabled: false
+    externalPostgresql:
+      host: '{{repl ConfigOption "metadataDBHost" }}'
+      port: '{{repl ConfigOption "metadataDBPort" }}'
+      database: '{{repl ConfigOption "metadataDBName" }}'
+      user: '{{repl ConfigOption "metadataDBUser" }}'
+      password: '{{repl ConfigOption "metadataDBPassword" }}'
+      sslEnabled: repl{{ if ConfigOptionEquals "metadataDBSSLMode" "1"}}truerepl{{ else }}falserepl{{ end }}
+      sslCA: |
+        repl{{- ConfigOptionData "metadataDBSSLCertificate" | nindent 8 }}
+
+    ## Redis
     internalRedis:
-      enabled: repl{{ if ConfigOptionEquals "selectRedisInstance" "internal_redis"}}truerepl{{ else }}falserepl{{ end }}
-      auth:
-        password: '{{repl ConfigOption "internalredisPassword" }}'
+      enabled: repl{{ if ConfigOptionEquals "externalRedisEnabled" "0"}}truerepl{{ else }}falserepl{{ end }}
     externalRedis:
       host: '{{repl ConfigOption "externalRedisHost" }}'
-      port: '{{repl ConfigOption "externalRedisPort" | ParseInt }}'
+      port: '{{repl ConfigOption "externalRedisPort" }}'
       password: '{{repl ConfigOption "externalRedisPassword" }}'
-      # tlsEnabled: repl{{ if ConfigOptionEquals "externalRedisTlsEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
-      # tlsCA: ""
-      # existingSecret: "mycarto-custom-redis-secret"
-      # existingSecretPasswordKey: "password"
+      tlsEnabled: repl{{ if ConfigOptionEquals "externalRedisSSLMode" "ssl_mode_enable"}}truerepl{{ else }}falserepl{{ end }}
+      tlsCA: |
+        repl{{- ConfigOptionData "externalRedisSSLCertificate" | nindent 8 }}
+
+    # Service Account
+    commonBackendServiceAccount:
+      enableGCPWorkloadIdentity: repl{{ if ConfigOptionEquals "googleWorkloadIdentityStatus" "enabled_on_apis"}}truerepl{{ else }}falserepl{{ end }}
+      annotations:
+        iam.gke.io/gcp-service-account: '{{repl ConfigOption "googleWorkloadIdentityEmail" }}'
+
+    ## TLS Certs
+    tlsCerts:
+      httpsEnabled: repl{{ if and (ConfigOptionEquals "accessToSHModeNotKurl" "accessToCartoDefaultLB") (ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates")}}truerepl{{ else }}falserepl{{ end }}
+      autoGenerate: false
+      customCertsEnabled: repl{{ if ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates"}}truerepl{{ else }}falserepl{{ end }}
+      customCertificateValue: '{{repl ConfigOption "accessToSHCustomTLSTerminationCertFile" }}'
+      customPrivateKeyValue: '{{repl ConfigOption "accessToSHCustomTLSTerminationKeyFile" }}'
+      generateManagedCerts: repl{{ if ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_managed_certificates"}}truerepl{{ else }}falserepl{{ end }}
+
+    ## Access to Carto
     router:
       service:
-        type: ClusterIP
-        nodePorts:
-          http: 8080
-          https: 8443
-    commonBackendServiceAccount:
-      enableGCPWorkloadIdentity: repl{{ if ConfigOptionEquals "enableGCPWorkloadIdentity" "workload_idendity_serviceaccount"}}truerepl{{ else }}falserepl{{ end }}
-      annotations:
-        iam.gke.io/gcp-service-account: '{{repl ConfigOption "workloadIdentityServiceAccountEmail" }}'
-    externalPostgresql:
-      host: '{{repl ConfigOption "postgresHost" }}'
-      user: '{{repl ConfigOption "postgresUser" }}'
-      # internalUser: ""
-      password: '{{repl ConfigOption "postgresPassword" }}'
-      adminUser: '{{repl ConfigOption "postgresAdminUser" }}'
-      # internalAdminUser: ""
-      adminPassword: '{{repl ConfigOption "postgresAdminPassword" }}'
-      adminDatabase: '{{repl ConfigOption "postgresAdminDatabase" }}'
-      # existingSecret: ""
-      # existingSecretPasswordKey: ""
-      # existingSecretAdminPasswordKey: ""
-      database: '{{repl ConfigOption "postgresCartoDatabase" }}'
-      port: '{{repl ConfigOption "postgresPort" | ParseInt }}'
-      # sslEnabled: false
-      # sslCA: ""
+        type: LoadBalancer
+
+
+  # Values from Advanced Configuration
+  optionalValues:
+    - when: '{{repl ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}'
+      recursiveMerge: true
+      values: repl{{ ConfigOption "platformAdvancedTuningValues" | nindent 8 }}
