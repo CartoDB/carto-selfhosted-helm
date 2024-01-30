@@ -163,9 +163,9 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `tlsCerts.existingSecret.name`    | Name of a secret containing the certificate                                                                                                   | `""`      |
 | `tlsCerts.existingSecret.certKey` | Key of the certificate inside the secret                                                                                                      | `tls.crt` |
 | `tlsCerts.existingSecret.keyKey`  | Key of the certificate key inside the secret                                                                                                  | `tls.key` |
-| `tlsCerts.customCerts`            | enable if customer provides their own certificates                                                                                            | `false`   |
-| `tlsCerts.customCertificate`      | certificate in base64                                                                                                                         | `""`      |
-| `tlsCerts.customPrivateKey`       | private key in base64                                                                                                                         | `""`      |
+| `tlsCerts.customCertsEnabled`            | enable if customer provides their own certificates                                                                                            | `false`   |
+| `tlsCerts.customCertificateValue`      | certificate in base64                                                                                                                         | `""`      |
+| `tlsCerts.customPrivateKeyValue`       | private key in base64                                                                                                                         | `""`      |
 | `tlsCerts.generateManagedCerts`   | enable if managed certs creation is required                                                                                                  | `false`   |
 
 ### common backend service account

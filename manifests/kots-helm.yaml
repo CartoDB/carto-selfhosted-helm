@@ -80,12 +80,12 @@ spec:
       selfHostedDomain: '{{repl ConfigOption "accessToSHDomain" }}'
       # buckets
       storageProvider: '{{repl fromJson (ConfigOption "storageBucketsProvider") | dig "provider" "" }}'
-      workspaceImportsBucket: '{{repl fromJson (ConfigOption "storageBucketsDetails") | dig "workspaceImportsBucket" "" }}'
-      workspaceImportsPublic: '{{repl fromJson (ConfigOption "storageBucketsDetails") | dig "workspaceImportsIsPublic" "" }}'
-      workspaceThumbnailsBucket: '{{repl fromJson (ConfigOption "storageBucketsDetails") | dig "thumbnailsBucket" "" }}'
-      workspaceThumbnailsPublic: '{{repl fromJson (ConfigOption "storageBucketsDetails") | dig "thumbnailsIsPublic" "" }}'
-      workspaceExportsBucket: '{{repl fromJson (ConfigOption "storageBucketsDetails") | dig "workspaceExportsBucket" "" }}'
-      googleCloudStorageProjectId: '{{repl fromJson (ConfigOption "storageBucketsDetails") | dig "googleCloudStorageProjectId" "" }}'
+      workspaceImportsBucket: '{{repl ConfigOption "storageBucketsWorkspaceImports" }}'
+      workspaceImportsPublic: repl{{ if ConfigOptionEquals "storageBucketsWorkspaceImportsIsPublic" "public"}}truerepl{{ else }}falserepl{{ end }}
+      workspaceThumbnailsBucket: '{{repl ConfigOption "storageBucketsThumbnails" }}'
+      workspaceThumbnailsPublic: repl{{ if ConfigOptionEquals "storageBucketsThumbnailsIsPublic" "public"}}truerepl{{ else }}falserepl{{ end }}
+      workspaceExportsBucket: '{{repl ConfigOption "storageBucketsWorkspaceExports" }}'
+      googleCloudStorageProjectId: '{{repl ConfigOption "storageBucketsGcpProjectId" }}'
       awsS3Region: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
       importAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
       awsExportBucket: '{{repl ConfigOption "storageBucketsExportAws" }}'
@@ -137,9 +137,9 @@ spec:
     tlsCerts:
       httpsEnabled: repl{{ if and (ConfigOptionEquals "accessToSHModeNotKurl" "accessToCartoDefaultLB") (ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates")}}truerepl{{ else }}falserepl{{ end }}
       autoGenerate: false
-      customCerts: repl{{ if ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates"}}truerepl{{ else }}falserepl{{ end }}
-      customCertificate: '{{repl ConfigOption "accessToSHCustomTLSTerminationCertFile" }}'
-      customPrivateKey: '{{repl ConfigOption "accessToSHCustomTLSTerminationKeyFile" }}'
+      customCertsEnabled: repl{{ if ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates"}}truerepl{{ else }}falserepl{{ end }}
+      customCertificateValue: '{{repl ConfigOption "accessToSHCustomTLSTerminationCertFile" }}'
+      customPrivateKeyValue: '{{repl ConfigOption "accessToSHCustomTLSTerminationKeyFile" }}'
       generateManagedCerts: repl{{ if ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_managed_certificates"}}truerepl{{ else }}falserepl{{ end }}
 
     ## Access to Carto

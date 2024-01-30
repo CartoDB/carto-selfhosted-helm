@@ -314,9 +314,9 @@ cartoSecrets:
 ## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
 ## @param tlsCerts.existingSecret.certKey Key of the certificate inside the secret
 ## @param tlsCerts.existingSecret.keyKey Key of the certificate key inside the secret
-## @param tlsCerts.customCerts enable if customer provides their own certificates
-## @param tlsCerts.customCertificate certificate in base64
-## @param tlsCerts.customPrivateKey private key in base64
+## @param tlsCerts.customCertsEnabled enable if customer provides their own certificates
+## @param tlsCerts.customCertificateValue certificate in base64
+## @param tlsCerts.customPrivateKeyValue private key in base64
 ## @param tlsCerts.generateManagedCerts enable if managed certs creation is required
 ##
 tlsCerts:
@@ -326,9 +326,9 @@ tlsCerts:
     name: ""
     keyKey: "tls.key"
     certKey: "tls.crt"
-  customCerts: false
-  customCertificate: ""
-  customPrivateKey: ""
+  customCertsEnabled: false
+  customCertificateValue: ""
+  customPrivateKeyValue: ""
   generateManagedCerts: false
 
 ## @section common backend service account
