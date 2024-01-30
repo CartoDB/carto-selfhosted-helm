@@ -69,6 +69,11 @@ spec:
           type: textarea
           hidden: true
           default: repl{{ fromJson (LicenseFieldValue "cartoPlatformDefaultSA") | dig "project_id" "" }}
+        - name: defaultSAEmail
+          title: Default SA Email
+          type: textarea
+          hidden: true
+          default: repl{{ fromJson (LicenseFieldValue "cartoPlatformDefaultSA") | dig "client_email" "" }}
 
 
     # Postgresql
@@ -630,7 +635,7 @@ spec:
             Contact [Carto Support](https://docs.carto.com/carto-self-hosted/support) if you have any doubts.
           required: true
           type: textarea
-          default: '{{repl LicenseFieldValue "cartoPlatformDefaultSA" }}'
+          default: '{{repl ConfigOption "defaultSAEmail" }}'
         - name: cartoPlatformWorkloadIdentityEmail
           type: textarea
           when: '{{repl (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") }}'
@@ -649,7 +654,7 @@ spec:
             repl{{ if $workloadId }}
             repl{{    $_ := set $result "sa" (ConfigOption "googleWorkloadIdentityEmail") }}
             repl{{ else }}
-            repl{{    $_ := set $result "sa" (ConfigOption "cartoPlatformGoogleSA") }}
+            repl{{    $_ := set $result "sa" (ConfigOption "defaultSAEmail") }}
             repl{{ end }}
             repl{{ toJson $result }}
 
