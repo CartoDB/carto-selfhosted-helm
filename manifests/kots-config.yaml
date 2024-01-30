@@ -249,11 +249,12 @@ spec:
             repl{{ end }}
             repl{{ toJson $result }}
         - name: storageBucketsGcpServiceAccount
-          title: Service Account to access GCS
+          title: Identity used to access GCS
           help_text: |-
             You can edit this filed in the Advanced Configuration
-          type: textarea
-          default: '{{repl fromJson (ConfigOption "googleServiceAccountUsed") | dig "sa" "" }}'
+          type: text
+          readonly: true
+          value: '{{repl fromJson (ConfigOption "googleServiceAccountUsed") | dig "sa" "" }}'
           when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
         - name: storageBucketsAwsAccessKeyId
           title: The AccessKey ID for S3 buckets
@@ -632,19 +633,20 @@ spec:
           type: textarea
           default: '{{repl LicenseFieldValue "cartoPlatformDefaultSA" }}'
         - name: cartoPlatformWorkloadIdentityEmail
-          type: textarea
+          type: text
           when: '{{repl (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") }}'
           title: |-
             As you enable the Google Workload Identity, this is the Service Account email that is going to be used by the Self-Hosted environment to access CARTO platform services.
             If you want to modify it, do in the Google Workload Identity section.
           readonly: true
-          default: '{{repl (ConfigOption "googleWorkloadIdentityEmail" ) }}'
+          value: '{{repl (ConfigOption "googleWorkloadIdentityEmail" ) }}'
         - name: googleServiceAccountUsed
           title: Google Service Account used by the app
           type: textarea
           hidden: true
-          default: |-
-            repl{{ $workloadId := (ConfigOptionEquals "googleWorkloadIdentityStatus" "enabled") }}
+          readonly: true
+          value: |-
+            repl{{ $workloadId := (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") }}
             repl{{ $result := fromJson "{}" }}
             repl{{ if $workloadId }}
             repl{{    $_ := set $result "sa" (ConfigOption "googleWorkloadIdentityEmail") }}
