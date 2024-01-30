@@ -630,7 +630,7 @@ spec:
             Contact [Carto Support](https://docs.carto.com/carto-self-hosted/support) if you have any doubts.
           required: true
           type: textarea
-          default: '{{repl ConfigOption "defaultSAEmail" }}'
+          default: '{{repl LicenseFieldValue "cartoPlatformDefaultSA" }}'
         - name: cartoPlatformWorkloadIdentityEmail
           type: textarea
           when: '{{repl (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") }}'
