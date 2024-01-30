@@ -69,11 +69,6 @@ spec:
           type: textarea
           hidden: true
           default: repl{{ fromJson (LicenseFieldValue "cartoPlatformDefaultSA") | dig "project_id" "" }}
-        - name: defaultSAEmail
-          title: Default SA Email
-          type: textarea
-          hidden: true
-          default: repl{{ fromJson (LicenseFieldValue "cartoPlatformDefaultSA") | dig "client_email" "" }}
 
 
     # Postgresql
@@ -654,7 +649,8 @@ spec:
             repl{{ if $workloadId }}
             repl{{    $_ := set $result "sa" (ConfigOption "googleWorkloadIdentityEmail") }}
             repl{{ else }}
-            repl{{    $_ := set $result "sa" (ConfigOption "defaultSAEmail") }}
+            repl{{    $extractedEmail := (fromJson (ConfigOption "cartoPlatformGoogleSA") | dig "client_email" "⚠️ Email couldn't be extracted from the configured Service Account ⚠️") }}
+            repl{{    $_ := set $result "sa" $extractedEmail }}
             repl{{ end }}
             repl{{ toJson $result }}
 
