@@ -36,8 +36,6 @@ Return common collectors for preflights and support-bundle
           - name: run-tenants-requirements-check
             image: {{ template "carto.tenantRequirementsChecker.image" . }}
             imagePullPolicy: {{ .Values.tenantRequirementsChecker.image.pullPolicy }}
-            command: ["bash"]
-            args: ["-exc", "npm run ready-to-run:built"]
             env:
             {{- include "carto.replicated.tenantRequirementsChecker.customerValues" . | indent 12 }}
             {{- include "carto.replicated.tenantRequirementsChecker.customerSecrets" . | indent 12 }}
@@ -56,10 +54,10 @@ Return common analyzers for preflights and support-bundle
       outcomes:
         - fail:
             when: "false"
-            message: "{{ WorkspaceDatabaseValidator.Check_database_connection.info }}"
+            message: "fail"
         - pass:
             when: "true"
-            message: "{{ WorkspaceDatabaseValidator.Check_database_connection.info }}"
+            message: "pass"
   - jsonCompare:
       checkName: Check Database Encoding
       fileName: tenant-requirements-check/tenant-requirements-check.log
@@ -69,10 +67,10 @@ Return common analyzers for preflights and support-bundle
       outcomes:
         - fail:
             when: "false"
-            message: "{{ WorkspaceDatabaseValidator.Check_database_encoding.info }}"
+            message: "fail"
         - pass:
             when: "true"
-            message: "{{ WorkspaceDatabaseValidator.Check_database_encoding.info }}"
+            message: "pass"
   - jsonCompare:
       checkName: Check DB User Permissions
       fileName: tenant-requirements-check/tenant-requirements-check.log
@@ -82,10 +80,10 @@ Return common analyzers for preflights and support-bundle
       outcomes:
         - fail:
             when: "false"
-            message: "{{ WorkspaceDatabaseValidator.Check_user_has_right_permissions.info }}"
+            message: "fail"
         - pass:
             when: "true"
-            message: "{{ WorkspaceDatabaseValidator.Check_user_has_right_permissions.info }}"
+            message: "pass"
   - jsonCompare:
       checkName: Check Database Version
       fileName: tenant-requirements-check/tenant-requirements-check.log
@@ -95,10 +93,10 @@ Return common analyzers for preflights and support-bundle
       outcomes:
         - fail:
             when: "false"
-            message: "{{ WorkspaceDatabaseValidator.Check_database_version.info }}"
+            message: "fail"
         - pass:
             when: "true"
-            message: "{{ WorkspaceDatabaseValidator.Check_database_version.info }}"
+            message: "pass"
   - registryImages:
       checkName: Carto Registry Images
       outcomes:
@@ -194,6 +192,8 @@ Return customer values to use in preflights and support-bundle
     value: {{ include "carto.postgresql.databaseName" . }}
   - name: WORKSPACE_POSTGRES_USER
     value: {{ include "carto.postgresql.user" . }}
+  - name: AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE
+    value: "1"
 {{- end -}}
 
 {{/*
