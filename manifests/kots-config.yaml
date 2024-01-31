@@ -378,6 +378,11 @@ spec:
         ## LDS
         - name: locationDataServicesEnable
           title: Location Data Services
+            # Temporary disabled. Should be transmitted from the license: https://cartoteam.slack.com/archives/C06GJA56C5S/p1706714429475869
+            #  Suggested as 2 fields on the license:
+            #    - one for keys (in json format)
+            #    - another for the selected providers on each service (geocoding:xxx,isolines:xxx,routing:xxx)
+          when: false
           help_text: |-
             Here you should config the Location Data Services.
             If you need further info, please check [docs.carto.com](https://docs.carto.com).
@@ -488,7 +493,6 @@ spec:
             private datasets for individual users and shared datasets accessible to all users within an organization.
           type: bool
           default: "0"
-          recommended: true
 
         ## Exports / Imports
         - name: datawarehousesExportsImportsEnabled
