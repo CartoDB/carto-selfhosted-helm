@@ -45,10 +45,11 @@ Return common collectors for preflights and support-bundle
 Return common analyzers for preflights and support-bundle
 */}}
 {{- define "carto.replicated.commonChecks.analyzers" }}
+  {{- range list "Check_database_connection" "Check_database_encoding" "Check_user_has_right_permissions" "Check_database_version" }}
   - jsonCompare:
-      checkName: Check Database Connection
+      checkName: {{ . | replace "_" " " }}
       fileName: tenant-requirements-check/tenant-requirements-check.log
-      path: "WorkspaceDatabaseValidator.Check_database_connection.status"
+      path: "WorkspaceDatabaseValidator.{{ . }}.status"
       value: |
         "passed"
       outcomes:
@@ -58,45 +59,7 @@ Return common analyzers for preflights and support-bundle
         - pass:
             when: "true"
             message: "pass"
-  - jsonCompare:
-      checkName: Check Database Encoding
-      fileName: tenant-requirements-check/tenant-requirements-check.log
-      path: "WorkspaceDatabaseValidator.Check_database_encoding.status"
-      value: |
-        "passed"
-      outcomes:
-        - fail:
-            when: "false"
-            message: "fail"
-        - pass:
-            when: "true"
-            message: "pass"
-  - jsonCompare:
-      checkName: Check DB User Permissions
-      fileName: tenant-requirements-check/tenant-requirements-check.log
-      path: "WorkspaceDatabaseValidator.Check_user_has_right_permissions.status"
-      value: |
-        "passed"
-      outcomes:
-        - fail:
-            when: "false"
-            message: "fail"
-        - pass:
-            when: "true"
-            message: "pass"
-  - jsonCompare:
-      checkName: Check Database Version
-      fileName: tenant-requirements-check/tenant-requirements-check.log
-      path: "WorkspaceDatabaseValidator.Check_database_version.status"
-      value: |
-        "passed"
-      outcomes:
-        - fail:
-            when: "false"
-            message: "fail"
-        - pass:
-            when: "true"
-            message: "pass"
+  {{- end }}
   - registryImages:
       checkName: Carto Registry Images
       outcomes:
@@ -192,8 +155,6 @@ Return customer values to use in preflights and support-bundle
     value: {{ include "carto.postgresql.databaseName" . }}
   - name: WORKSPACE_POSTGRES_USER
     value: {{ include "carto.postgresql.user" . }}
-  - name: AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE
-    value: "1"
 {{- end -}}
 
 {{/*

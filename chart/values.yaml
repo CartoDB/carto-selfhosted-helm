@@ -4524,7 +4524,7 @@ tenantRequirementsChecker:
     registry: gcr.io/carto-onprem-artifacts
     repository: tenant-requirements-checker
     tag: ""
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
     pullSecrets: []
 
   ## Init container's resource requests and limits
