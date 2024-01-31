@@ -45,7 +45,12 @@ Return common collectors for preflights and support-bundle
 Return common analyzers for preflights and support-bundle
 */}}
 {{- define "carto.replicated.commonChecks.analyzers" }}
-  {{- range list "Check_database_connection" "Check_database_encoding" "Check_user_has_right_permissions" "Check_database_version" }}
+  {{- range list 
+        "Check_database_connection"
+        "Check_database_encoding"
+        "Check_user_has_right_permissions"
+        "Check_database_version"
+    }}
   - jsonCompare:
       checkName: {{ . | replace "_" " " }}
       fileName: tenant-requirements-check/tenant-requirements-check.log
