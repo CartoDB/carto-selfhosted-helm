@@ -1402,6 +1402,26 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceMigrations.containerSecurityContext.allowPrivilegeEscalation` | Set init container's Security Context allowPrivilegeEscalation       | `false`                         |
 | `workspaceMigrations.containerSecurityContext.capabilities.drop`        | removes workspace-migrations containers' Security Contexcapabilities | `["all"]`                       |
 
+### tenant-requirements-checker Deployment Parameters
+
+| Name                                                                          | Description                                                                                | Value                           |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------- |
+| `tenantRequirementsChecker.image.registry`                                    | tenant-requirements-checker image registry                                                 | `gcr.io/carto-onprem-artifacts` |
+| `tenantRequirementsChecker.image.repository`                                  | tenant-requirements-checker image repository                                               | `tenant-requirements-checker`   |
+| `tenantRequirementsChecker.image.tag`                                         | tenant-requirements-checker image tag (immutable tags are recommended)                     | `""`                            |
+| `tenantRequirementsChecker.image.pullPolicy`                                  | tenant-requirements-checker image pull policy                                              | `IfNotPresent`                  |
+| `tenantRequirementsChecker.image.pullSecrets`                                 | tenant-requirements-checker image pull secrets                                             | `[]`                            |
+| `tenantRequirementsChecker.resources.limits.memory`                           | Container memory limits in MiB                                                             | `256Mi`                         |
+| `tenantRequirementsChecker.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                     | `500m`                          |
+| `tenantRequirementsChecker.resources.requests.memory`                         | Container memory requests in MiB                                                           | `128Mi`                         |
+| `tenantRequirementsChecker.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                                   | `250m`                          |
+| `tenantRequirementsChecker.containerSecurityContext.enabled`                  | Enable tenant-requirements-checker container security context                              | `true`                          |
+| `tenantRequirementsChecker.containerSecurityContext.runAsUser`                | Set init tenant-requirements-checker container's Security Context runAsUser                | `1000`                          |
+| `tenantRequirementsChecker.containerSecurityContext.runAsGroup`               | Set init tenant-requirements-checker container's Security Context runAsGroup               | `1000`                          |
+| `tenantRequirementsChecker.containerSecurityContext.runAsNonRoot`             | Force the init tenant-requirements-checker container to run as non root                    | `false`                         |
+| `tenantRequirementsChecker.containerSecurityContext.allowPrivilegeEscalation` | Set init tenant-requirements-checker container's Security Context allowPrivilegeEscalation | `false`                         |
+| `tenantRequirementsChecker.containerSecurityContext.capabilities.drop`        | removes tenant-requirements-checker containers' Security Contexcapabilities                | `["all"]`                       |
+
 ### Internal Redis&trade; subchart parameters
 
 | Name                                        | Description                                                                                  | Value        |

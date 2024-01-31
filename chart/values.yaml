@@ -4510,6 +4510,59 @@ workspaceMigrations:
       drop:
         - all
 
+## @section tenant-requirements-checker Deployment Parameters
+##
+tenantRequirementsChecker:
+  ## tenant-requirements-checker image
+  ## @param tenantRequirementsChecker.image.registry tenant-requirements-checker image registry
+  ## @param tenantRequirementsChecker.image.repository tenant-requirements-checker image repository
+  ## @param tenantRequirementsChecker.image.tag tenant-requirements-checker image tag (immutable tags are recommended)
+  ## @param tenantRequirementsChecker.image.pullPolicy tenant-requirements-checker image pull policy
+  ## @param tenantRequirementsChecker.image.pullSecrets tenant-requirements-checker image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: tenant-requirements-checker
+    tag: ""
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+
+  ## Init container's resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param tenantRequirementsChecker.resources.limits.memory Container memory limits in MiB
+  ## @param tenantRequirementsChecker.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param tenantRequirementsChecker.resources.requests.memory Container memory requests in MiB
+  ## @param tenantRequirementsChecker.resources.requests.cpu Container cpu requests in milliCPU cores
+  ##
+  resources:
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+    requests:
+      memory: "128Mi"
+      cpu: "250m"
+  ## Init container Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+  ## @param tenantRequirementsChecker.containerSecurityContext.enabled Enable tenant-requirements-checker container security context
+  ## @param tenantRequirementsChecker.containerSecurityContext.runAsUser Set init tenant-requirements-checker container's Security Context runAsUser
+  ## @param tenantRequirementsChecker.containerSecurityContext.runAsGroup Set init tenant-requirements-checker container's Security Context runAsGroup
+  ## @param tenantRequirementsChecker.containerSecurityContext.runAsNonRoot Force the init tenant-requirements-checker container to run as non root
+  ## @param tenantRequirementsChecker.containerSecurityContext.allowPrivilegeEscalation Set init tenant-requirements-checker container's Security Context allowPrivilegeEscalation
+  ## @param tenantRequirementsChecker.containerSecurityContext.capabilities.drop removes tenant-requirements-checker containers' Security Contexcapabilities
+  ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
+  ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
+  ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: false
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - all
+
 ## @section Internal Redis&trade; subchart parameters
 ## Internal Redis &trade; chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/redis/values.yaml

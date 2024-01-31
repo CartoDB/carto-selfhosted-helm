@@ -2,13 +2,6 @@
 Return common collectors for preflights and support-bundle
 */}}
 {{- define "carto.replicated.commonChecks.collectors" }}
-  - postgres:
-      collectorName: workspace-db
-      {{- if .Values.externalPostgresql.adminUser }}
-      uri: postgresql://{{ include "carto.postgresql.adminUser" . | trimAll "\"" }}:{{ .Values.externalPostgresql.adminPassword | trimAll "\"" }}@{{ include "carto.postgresql.host" . | trimAll "\"" }}:{{ include "carto.postgresql.port" . | trimAll "\"" }}/{{ include "carto.postgresql.adminDatabase" . | trimAll "\"" }}
-      {{- else }}
-      uri: postgresql://{{ include "carto.postgresql.user" . | trimAll "\"" }}:{{ .Values.externalPostgresql.password | trimAll "\"" }}@{{ include "carto.postgresql.host" . | trimAll "\"" }}:{{ include "carto.postgresql.port" . | trimAll "\"" }}/{{ include "carto.postgresql.databaseName" . | trimAll "\"" }}
-      {{- end }}
   - redis:
       collectorName: redis
       {{- if .Values.internalRedis.enabled }}
@@ -32,49 +25,80 @@ Return common collectors for preflights and support-bundle
         - {{ template "carto.workspaceMigrations.image" . }}
         - {{ template "carto.workspaceSubscriber.image" . }}
         - {{ template "carto.workspaceWww.image" . }}
+        - {{ template "carto.tenantRequirementsChecker.image" . }}
   - runPod:
-      collectorName: support-run-health-on-maps-api
-      name: support-run-health-on-maps-api
+      collectorName: tenant-requirements-check
+      name: tenant-requirements-check
       namespace: {{ .Release.Namespace | quote }}
       timeout: 180s
       podSpec:
         containers:
-          - name: run-health
-            image: {{ template "carto.mapsApi.image" . }}
-            imagePullPolicy: IfNotPresent
+          - name: run-tenants-requirements-check
+            image: {{ template "carto.tenantRequirementsChecker.image" . }}
+            imagePullPolicy: {{ .Values.tenantRequirementsChecker.image.pullPolicy }}
             command: ["bash"]
             args: ["-exc", "npm run ready-to-run:built"]
             env:
-            {{- include "carto.replicated.commonChecks.customerValues" . | indent 12 }}
-            {{- include "carto.replicated.commonChecks.customerSecrets" . | indent 12 }}
+            {{- include "carto.replicated.tenantRequirementsChecker.customerValues" . | indent 12 }}
+            {{- include "carto.replicated.tenantRequirementsChecker.customerSecrets" . | indent 12 }}
 {{- end -}}
 
 {{/*
 Return common analyzers for preflights and support-bundle
 */}}
 {{- define "carto.replicated.commonChecks.analyzers" }}
-  - postgres:
-      checkName: PostgreSQL is available
-      collectorName: workspace-db
+  - jsonCompare:
+      checkName: Check Database Connection
+      fileName: tenant-requirements-check/tenant-requirements-check.log
+      path: "WorkspaceDatabaseValidator.Check_database_connection.status"
+      value: |
+        "passed"
       outcomes:
         - fail:
-            when: connected == false
-            message: Cannot connect to PostgreSQL server
+            when: "false"
+            message: "{{ WorkspaceDatabaseValidator.Check_database_connection.info }}"
         - pass:
-            when: connected == true
-            message: The PostgreSQL server is available
-  - postgres:
-      checkName: PostgreSQL must be v14.x or later
-      collectorName: workspace-db
+            when: "true"
+            message: "{{ WorkspaceDatabaseValidator.Check_database_connection.info }}"
+  - jsonCompare:
+      checkName: Check Database Encoding
+      fileName: tenant-requirements-check/tenant-requirements-check.log
+      path: "WorkspaceDatabaseValidator.Check_database_encoding.status"
+      value: |
+        "passed"
       outcomes:
         - fail:
-            when: connected == false
-            message: Cannot connect to PostgreSQL server
-        - fail:
-            when: version < 14.x
-            message: The PostgreSQL server must be at least version 14
+            when: "false"
+            message: "{{ WorkspaceDatabaseValidator.Check_database_encoding.info }}"
         - pass:
-            message: The PostgreSQL verion checks out
+            when: "true"
+            message: "{{ WorkspaceDatabaseValidator.Check_database_encoding.info }}"
+  - jsonCompare:
+      checkName: Check DB User Permissions
+      fileName: tenant-requirements-check/tenant-requirements-check.log
+      path: "WorkspaceDatabaseValidator.Check_user_has_right_permissions.status"
+      value: |
+        "passed"
+      outcomes:
+        - fail:
+            when: "false"
+            message: "{{ WorkspaceDatabaseValidator.Check_user_has_right_permissions.info }}"
+        - pass:
+            when: "true"
+            message: "{{ WorkspaceDatabaseValidator.Check_user_has_right_permissions.info }}"
+  - jsonCompare:
+      checkName: Check Database Version
+      fileName: tenant-requirements-check/tenant-requirements-check.log
+      path: "WorkspaceDatabaseValidator.Check_database_version.status"
+      value: |
+        "passed"
+      outcomes:
+        - fail:
+            when: "false"
+            message: "{{ WorkspaceDatabaseValidator.Check_database_version.info }}"
+        - pass:
+            when: "true"
+            message: "{{ WorkspaceDatabaseValidator.Check_database_version.info }}"
   - registryImages:
       checkName: Carto Registry Images
       outcomes:
@@ -161,7 +185,7 @@ Return common analyzers for preflights and support-bundle
 {{/*
 Return customer values to use in preflights and support-bundle
 */}}
-{{- define "carto.replicated.commonChecks.customerValues" }}
+{{- define "carto.replicated.tenantRequirementsChecker.customerValues" }}
   - name: WORKSPACE_POSTGRES_HOST
     value: {{ include "carto.postgresql.host" . }}
   - name: WORKSPACE_POSTGRES_PORT
@@ -170,37 +194,12 @@ Return customer values to use in preflights and support-bundle
     value: {{ include "carto.postgresql.databaseName" . }}
   - name: WORKSPACE_POSTGRES_USER
     value: {{ include "carto.postgresql.user" . }}
-  - name: MAPS_API_V3_TENANT_ID
-    value: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  - name: CARTO_SELFHOSTED_VERSION
-    value: {{ .Chart.AppVersion | quote }}
-  - name: REDIS_CACHE_PREFIX
-    value: "onprem"
-  - name: REDIS_HOST
-    value: {{ include "carto.redis.host" . }}
-  - name: AUTH0_DOMAIN
-    value: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
-  - name: AUTH0_AUDIENCE
-    value: "carto-cloud-native-api"
-  - name: PUBSUB_PROJECT_ID
-    value: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
-  - name: MAPS_API_V3_PUBSUB_TENANT_BUS_TOPIC
-    value: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
 {{- end -}}
 
 {{/*
 Return customer secrets to use in preflights and support-bundle
 */}}
-{{- define "carto.replicated.commonChecks.customerSecrets" }}
+{{- define "carto.replicated.tenantRequirementsChecker.customerSecrets" }}
   - name: WORKSPACE_POSTGRES_PASSWORD
     value: {{ .Values.externalPostgresql.password | quote }}
-  - name: REDIS_PASSWORD
-    {{- if .Values.internalRedis.enabled }}
-    value: {{ .Values.internalRedis.auth.password | quote }}
-    {{- end }}
-    {{- if not .Values.internalRedis.enabled }}
-    value: {{ .Values.externalRedis.password | quote }}
-    {{- end }}
-  - name: MAPS_API_V3_JWT_SECRET
-    value: {{ .Values.cartoSecrets.jwtApiSecret.value | quote }}
 {{- end -}}
