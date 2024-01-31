@@ -1409,7 +1409,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `tenantRequirementsChecker.image.registry`                                    | tenant-requirements-checker image registry                                                 | `gcr.io/carto-onprem-artifacts` |
 | `tenantRequirementsChecker.image.repository`                                  | tenant-requirements-checker image repository                                               | `tenant-requirements-checker`   |
 | `tenantRequirementsChecker.image.tag`                                         | tenant-requirements-checker image tag (immutable tags are recommended)                     | `""`                            |
-| `tenantRequirementsChecker.image.pullPolicy`                                  | tenant-requirements-checker image pull policy                                              | `IfNotPresent`                  |
+| `tenantRequirementsChecker.image.pullPolicy`                                  | tenant-requirements-checker image pull policy                                              | `Always`                        |
 | `tenantRequirementsChecker.image.pullSecrets`                                 | tenant-requirements-checker image pull secrets                                             | `[]`                            |
 | `tenantRequirementsChecker.resources.limits.memory`                           | Container memory limits in MiB                                                             | `256Mi`                         |
 | `tenantRequirementsChecker.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                     | `500m`                          |
