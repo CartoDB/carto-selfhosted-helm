@@ -151,9 +151,9 @@ spec:
   # Values from Advanced Configuration
   optionalValues:
     # START: Temporary hack to fix some images not already released
-    - when: true
+    - when: "true"
       recursiveMerge: true
-      values: |-
+      values:
         workspaceMigrations:
           image:
             tag: 20240117pr15139
