@@ -44,6 +44,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | Name                                              | Description                                                         | Value   |
 | ------------------------------------------------- | ------------------------------------------------------------------- | ------- |
 | `replicated.enabled`                              | Enable Carto replicated                                             | `false` |
+| `replicated.platformDistribution`                 | Platform distribution to deploy Carto Selfhosted with Replicated    | `""`    |
 | `cartoConfigValues.enableErrorResponseStackTrace` | Enable stack traces in the container responses                      | `false` |
 | `cartoConfigValues.cartoAccApiDomain`             | Domain of the Account API of Carto.                                 | `""`    |
 | `cartoConfigValues.cartoAccGcpProjectId`          | GCP project ID of the Carto Accounts.                               | `""`    |

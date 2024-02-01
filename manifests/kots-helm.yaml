@@ -9,6 +9,7 @@ spec:
   values:
     replicated:
       enabled: true
+      platformDistribution: '{{repl ConfigOption "platformDistribution" }}'
     # License
     ## Carto Secrets
     cartoSecrets:
@@ -135,19 +136,19 @@ spec:
 
     ## TLS Certs
     tlsCerts:
-      httpsEnabled: repl{{ if and (ConfigOptionEquals "accessToSHModeNotKurl" "accessToCartoDefaultLB") (ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates")}}truerepl{{ else }}falserepl{{ end }}
+      httpsEnabled: repl{{ if ConfigOptionEquals "customCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
       autoGenerate: false
-      customCertsEnabled: repl{{ if ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates"}}truerepl{{ else }}falserepl{{ end }}
-      customCertificateValue: '{{repl ConfigOption "accessToSHCustomTLSTerminationCertFile" }}'
-      customPrivateKeyValue: '{{repl ConfigOption "accessToSHCustomTLSTerminationKeyFile" }}'
-      generateManagedCerts: repl{{ if ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_managed_certificates"}}truerepl{{ else }}falserepl{{ end }}
+      customCertsEnabled: repl{{ if ConfigOptionEquals "customCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
+      customCertificateValue: '{{repl ConfigOption "accessToSHCustomTLSCertFile" }}'
+      customPrivateKeyValue: '{{repl ConfigOption "accessToSHCustomTLSKeyFile" }}'
+      generateManagedCerts: repl{{ if ConfigOptionEquals "accessToCartoTLSCertificatesKind" "tls_managed_certificates"}}truerepl{{ else }}falserepl{{ end }}
 
     ## Access to Carto
     router:
       service:
-        type: LoadBalancer
+        type: repl{{ if ConfigOptionEquals "accessToSHModeK8s" "accessToCartoCustom"}}LoadBalancerrepl{{ else }}NodePortrepl{{ end }}
 
-  # Values from Advanced Configuration
+  # Optional Values
   optionalValues:
     # START: Temporary hack to fix some images not already released
     - when: "true"
@@ -198,6 +199,7 @@ spec:
             minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
             maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
 
+    # Values from Advanced Tuning Configuration
     - when: '{{repl ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}'
       recursiveMerge: true
       values: repl{{ ConfigOption "platformAdvancedTuningValues" | nindent 8 }}
