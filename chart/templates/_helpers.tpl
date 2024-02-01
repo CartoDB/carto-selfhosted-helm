@@ -871,6 +871,13 @@ Return the proper Carto workspace-db image name
 {{- end -}}
 
 {{/*
+Return the proper Carto tenant-requirements-checker image name
+*/}}
+{{- define "carto.tenantRequirementsChecker.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.tenantRequirementsChecker.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
