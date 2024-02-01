@@ -633,9 +633,10 @@ spec:
           type: textarea
           default: '{{repl LicenseFieldValue "cartoPlatformDefaultSA" }}'
         - name: cartoPlatformWorkloadIdentityEmail
+          title: CARTO Platform credentials
           type: text
           when: '{{repl (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") }}'
-          title: |-
+          help_text: |-
             As you enable the Google Workload Identity, this is the Service Account email that is going to be used by the Self-Hosted environment to access CARTO platform services.
             If you want to modify it, do in the Google Workload Identity section.
           readonly: true
