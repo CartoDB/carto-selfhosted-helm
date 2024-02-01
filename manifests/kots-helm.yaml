@@ -147,6 +147,42 @@ spec:
       service:
         type: LoadBalancer
 
+    # High Availability
+    importApi:
+      autoscaling:
+        enabled: repl{{ if ConfigOptionEquals "customHighAvailabilityConfig" "0"}}falserepl{{ else }}truerepl{{ end }}
+        minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
+        maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+    ldsApi:
+      autoscaling:
+        enabled: repl{{ if ConfigOptionEquals "customHighAvailabilityConfig" "0"}}falserepl{{ else }}truerepl{{ end }}
+        minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
+        maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+    mapsApi:
+      autoscaling:
+        enabled: repl{{ if ConfigOptionEquals "customHighAvailabilityConfig" "0"}}falserepl{{ else }}truerepl{{ end }}
+        minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
+        maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+    router:
+      autoscaling:
+        enabled: repl{{ if ConfigOptionEquals "customHighAvailabilityConfig" "0"}}falserepl{{ else }}truerepl{{ end }}
+        minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
+        maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+    workspaceApi:
+      autoscaling:
+        enabled: repl{{ if ConfigOptionEquals "customHighAvailabilityConfig" "0"}}falserepl{{ else }}truerepl{{ end }}
+        minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
+        maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+    workspaceWww:
+      autoscaling:
+        enabled: repl{{ if ConfigOptionEquals "customHighAvailabilityConfig" "0"}}falserepl{{ else }}truerepl{{ end }}
+        minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
+        maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+    accountsWww:
+      autoscaling:
+        enabled: repl{{ if ConfigOptionEquals "customHighAvailabilityConfig" "0"}}falserepl{{ else }}truerepl{{ end }}
+        minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
+        maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
 
   # Values from Advanced Configuration
   optionalValues:

@@ -637,9 +637,10 @@ spec:
           type: textarea
           default: '{{repl LicenseFieldValue "cartoPlatformDefaultSA" }}'
         - name: cartoPlatformWorkloadIdentityEmail
+          title: CARTO Platform credentials
           type: text
           when: '{{repl (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") }}'
-          title: |-
+          help_text: |-
             As you enable the Google Workload Identity, this is the Service Account email that is going to be used by the Self-Hosted environment to access CARTO platform services.
             If you want to modify it, do in the Google Workload Identity section.
           readonly: true
@@ -659,6 +660,30 @@ spec:
             repl{{    $_ := set $result "sa" $extractedEmail }}
             repl{{ end }}
             repl{{ toJson $result }}
+
+        ## High Availability
+        - name: customHighAvailabilityConfig
+          title: High Availability
+          help_text: |-
+            Enable if you want to customize the high availability configuration.
+          type: bool
+          default: "0"
+        - name: highAvailabilityMinReplicas
+          title: Min replicas
+          when: '{{repl (ConfigOptionEquals "customHighAvailabilityConfig" "1") }}'
+          help_text: |-
+            Minimum number of replicas to be deployed for each component.
+          type: text
+          required: true
+          default: "2"
+        - name: highAvailabilityMaxReplicas
+          title: Max replicas
+          when: '{{repl (ConfigOptionEquals "customHighAvailabilityConfig" "1") }}'
+          help_text: |-
+            Maximum number of replicas to be deployed for each component.
+          type: text
+          required: true
+          default: "3"
 
         ## Tuning
         - name: enablePlatformAdvancedTuning
