@@ -150,37 +150,37 @@ spec:
     # High Availability
     importApi:
       autoscaling:
-        enabled: true
+        enabled: repl{{ if ConfigOptionEquals "customHighAvailabilityConfig" "0"}}falserepl{{ else }}truerepl{{ end }}
         minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
         maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
     ldsApi:
       autoscaling:
-        enabled: true
+        enabled: repl{{ if ConfigOptionEquals "customHighAvailabilityConfig" "0"}}falserepl{{ else }}truerepl{{ end }}
         minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
         maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
     mapsApi:
       autoscaling:
-        enabled: true
+        enabled: repl{{ if ConfigOptionEquals "customHighAvailabilityConfig" "0"}}falserepl{{ else }}truerepl{{ end }}
         minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
         maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
     router:
       autoscaling:
-        enabled: true
+        enabled: repl{{ if ConfigOptionEquals "customHighAvailabilityConfig" "0"}}falserepl{{ else }}truerepl{{ end }}
         minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
         maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
     workspaceApi:
       autoscaling:
-        enabled: true
+        enabled: repl{{ if ConfigOptionEquals "customHighAvailabilityConfig" "0"}}falserepl{{ else }}truerepl{{ end }}
         minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
         maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
     workspaceWww:
       autoscaling:
-        enabled: true
+        enabled: repl{{ if ConfigOptionEquals "customHighAvailabilityConfig" "0"}}falserepl{{ else }}truerepl{{ end }}
         minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
         maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
     accountsWww:
       autoscaling:
-        enabled: true
+        enabled: repl{{ if ConfigOptionEquals "customHighAvailabilityConfig" "0"}}falserepl{{ else }}truerepl{{ end }}
         minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
         maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
 
