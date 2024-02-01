@@ -150,6 +150,15 @@ spec:
 
   # Values from Advanced Configuration
   optionalValues:
+    # START: Temporary hack to fix some images not already released
+    - when: "true"
+      recursiveMerge: true
+      values:
+        workspaceMigrations:
+          image:
+            tag: 20240117pr15139
+    # END
+
     - when: '{{repl ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}'
       recursiveMerge: true
       values: repl{{ ConfigOption "platformAdvancedTuningValues" | nindent 8 }}
