@@ -147,6 +147,42 @@ spec:
       service:
         type: LoadBalancer
 
+    # High Availability
+    importApi:
+      autoscaling:
+        enabled: true
+        minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
+        maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+    ldsApi:
+      autoscaling:
+        enabled: true
+        minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
+        maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+    mapsApi:
+      autoscaling:
+        enabled: true
+        minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
+        maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+    router:
+      autoscaling:
+        enabled: true
+        minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
+        maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+    workspaceApi:
+      autoscaling:
+        enabled: true
+        minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
+        maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+    workspaceWww:
+      autoscaling:
+        enabled: true
+        minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
+        maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+    accountsWww:
+      autoscaling:
+        enabled: true
+        minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
+        maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
 
   # Values from Advanced Configuration
   optionalValues:

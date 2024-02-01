@@ -656,6 +656,30 @@ spec:
             repl{{ end }}
             repl{{ toJson $result }}
 
+        ## High Availability
+        - name: customHighAvailabilityConfig
+          title: High Availability
+          help_text: |-
+            Enable if you want to customize the high availability configuration.
+          type: bool
+          default: "0"
+        - name: highAvailabilityMinReplicas
+          title: Min replicas
+          when: '{{repl (ConfigOptionEquals "customHighAvailabilityConfig" "1") }}'
+          help_text: |-
+            Minimum number of replicas to be deployed for each component.
+          type: text
+          required: true
+          default: "2"
+        - name: highAvailabilityMaxReplicas
+          title: Max replicas
+          when: '{{repl (ConfigOptionEquals "customHighAvailabilityConfig" "1") }}'
+          help_text: |-
+            Maximum number of replicas to be deployed for each component.
+          type: text
+          required: true
+          default: "3"
+
         ## Tuning
         - name: enablePlatformAdvancedTuning
           title: Advanced Platform Tuning
