@@ -513,7 +513,7 @@ spec:
           required: true
         - name: storageBucketsImportExportAwsSecretAccessKey
           title: AWS secret access key
-          help_text: The access key id to be used importing data to Redshift and exporting data from Redshift, RDS or Snowflake
+          help_text: The secret access key to be used importing data to Redshift and exporting data from Redshift, RDS or Snowflake
           type: text
           when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
           required: true
