@@ -2,6 +2,19 @@
 Return common collectors for preflights and support-bundle
 */}}
 {{- define "carto.replicated.commonChecks.collectors" }}
+  - runPod:
+      collectorName: tenant-requirements-check
+      name: tenant-requirements-check
+      namespace: {{ .Release.Namespace | quote }}
+      timeout: 180s
+      podSpec:
+        containers:
+          - name: run-tenants-requirements-check
+            image: {{ template "carto.tenantRequirementsChecker.image" . }}
+            imagePullPolicy: {{ .Values.tenantRequirementsChecker.image.pullPolicy }}
+            env:
+            {{- include "carto.replicated.tenantRequirementsChecker.customerValues" . | indent 12 }}
+            {{- include "carto.replicated.tenantRequirementsChecker.customerSecrets" . | indent 12 }}
   - redis:
       collectorName: redis
       {{- if .Values.internalRedis.enabled }}
@@ -26,19 +39,6 @@ Return common collectors for preflights and support-bundle
         - {{ template "carto.workspaceSubscriber.image" . }}
         - {{ template "carto.workspaceWww.image" . }}
         - {{ template "carto.tenantRequirementsChecker.image" . }}
-  - runPod:
-      collectorName: tenant-requirements-check
-      name: tenant-requirements-check
-      namespace: {{ .Release.Namespace | quote }}
-      timeout: 180s
-      podSpec:
-        containers:
-          - name: run-tenants-requirements-check
-            image: {{ template "carto.tenantRequirementsChecker.image" . }}
-            imagePullPolicy: {{ .Values.tenantRequirementsChecker.image.pullPolicy }}
-            env:
-            {{- include "carto.replicated.tenantRequirementsChecker.customerValues" . | indent 12 }}
-            {{- include "carto.replicated.tenantRequirementsChecker.customerSecrets" . | indent 12 }}
 {{- end -}}
 
 {{/*
