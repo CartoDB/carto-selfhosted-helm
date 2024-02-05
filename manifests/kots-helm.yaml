@@ -9,6 +9,18 @@ spec:
   values:
     replicated:
       enabled: true
+      # TODO: To be removed when https://app.shortcut.com/cartoteam/story/383961/delete-podsecuritycontext-from-replicated-sdk-when-they-release-a-version-with-the-security-context-updated
+      # is done
+      podSecurityContext:
+        enabled: true
+        fsGroup: 1001
+        runAsUser: 1001
+        runAsGroup: 1001
+        supplementalGroups:
+          - 1001
+        seccompProfile:
+          type: "RuntimeDefault"
+
     # License
     ## Carto Secrets
     cartoSecrets:
