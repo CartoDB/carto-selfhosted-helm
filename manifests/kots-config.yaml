@@ -494,33 +494,32 @@ spec:
           type: bool
           default: "0"
 
-        ## Exports / Imports
+        ## Imports / Exports
         - name: datawarehousesExportsImportsEnabled
-          title: Exports and Imports in Datawarehouses
+          title: Imports & Exports in Datawarehouses
           type: bool
           default: "0"
           help_text: |-
             Enable when you are working with Redshift, RDS or Snowflake
         - name: datawarehousesExportsImports
           type: heading
-          title: Exports & Exports in Datawarehouses
+          title: Imports & Exports in Datawarehouses
           when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
-          required: true
         - name: storageBucketsImportExportAwsAccessKeyId
           title: AWS access key Id
-          help_text: The access key id to be used importing and exporting data in Redshift, RDS or Snowflake
+          help_text: The access key id to be used importing data to Redshift and exporting data from Redshift, RDS or Snowflake
           type: text
           when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
           required: true
         - name: storageBucketsImportExportAwsSecretAccessKey
           title: AWS secret access key
-          help_text: The secret access key to be used importing and exporting data in Redshift, RDS or Snowflake
+          help_text: The access key id to be used importing data to Redshift and exporting data from Redshift, RDS or Snowflake
           type: text
           when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
           required: true
         - name: storageBucketsExportAws
           title: AWS exports bucket name
-          help_text: The bucket name to store data from Redshift, RDS or Snowflake
+          help_text: The bucket name to store exported data from Redshift, RDS or Snowflake
           type: text
           when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
           required: true
