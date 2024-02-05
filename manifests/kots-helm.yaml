@@ -158,45 +158,21 @@ spec:
             tag: 20240117pr15139
     # END
 
-    # High Availability
+    # High Availability Enable
     - when: '{{repl ConfigOptionEquals "enablePlatformHighAvailability" "1" }}'
       recursiveMerge: true
       values:
-        importApi:
+        importApi: &highAvailabilityEnabled
           autoscaling:
             enabled: true
             minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
             maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
-        ldsApi:
-          autoscaling:
-            enabled: true
-            minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
-            maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
-        mapsApi:
-          autoscaling:
-            enabled: true
-            minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
-            maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
-        router:
-          autoscaling:
-            enabled: true
-            minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
-            maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
-        workspaceApi:
-          autoscaling:
-            enabled: true
-            minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
-            maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
-        workspaceWww:
-          autoscaling:
-            enabled: true
-            minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
-            maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
-        accountsWww:
-          autoscaling:
-            enabled: true
-            minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
-            maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+        ldsApi: *highAvailabilityEnabled
+        mapsApi: *highAvailabilityEnabled
+        router: *highAvailabilityEnabled
+        workspaceApi: *highAvailabilityEnabled
+        workspaceWww: *highAvailabilityEnabled
+        accountsWww: *highAvailabilityEnabled
 
     - when: '{{repl ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}'
       recursiveMerge: true
