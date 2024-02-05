@@ -168,11 +168,13 @@ spec:
             {{repl $result -}}
           hidden: true
           type: text
+          default: *when_is_k8s_platform
         - name: isK0sPlatform
           title: Embedded Cluster Platform
           when: &when_is_k0s_platform >-
             {{repl $result :=  (eq Distribution "k0s") -}}
             {{repl $result -}}
+          default: *when_is_k0s_platform
           hidden: true
           type: text
         - name: customCerts
@@ -181,12 +183,44 @@ spec:
           readonly: true
           when: &when_custom_certs >-
             {{repl $cond1 := (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") -}}
-            {{repl $cond2 := (ConfigOptionEquals "accessToCartoTLSCertificatesKind" "tls_custom_certificates") -}}
-            {{repl $cond3 := (ConfigOptionEquals "tlsTermination" "accessToCartoHTTPS") -}}
-            {{repl $result := or (and $cond1 $cond2) $cond3 -}}
+            {{repl $cond2 := (ConfigOptionEquals "accessToCartoTLSCertificatesKindEksAks" "tls_custom_certificates") -}}
+            {{repl $cond3 := (ConfigOptionEquals "accessToCartoTLSCertificatesKindGKE" "tls_custom_certificates") -}}
+            {{repl $cond4 := (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoCustom") -}}
+            {{repl $cond5 := (ConfigOptionEquals "tlsTermination" "accessToCartoHTTPS") -}}
+            {{repl $result := or (and $cond1 (or $cond2 $cond3)) (and $cond4 $cond5) -}}
             {{repl $result -}}
           default: *when_custom_certs
-
+        - name: gcpManagedCerts
+          type: text
+          hidden: true
+          readonly: true
+          when: &when_gcp_managed_certs >-
+            {{repl $cond1 := (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") -}}
+            {{repl $cond2 := (ConfigOptionEquals "accessToCartoTLSCertificatesKindGKE" "tls_managed_certificates") -}}
+            {{repl $result := and $cond1 $cond2 -}}
+            {{repl $result -}}
+          default: *when_gcp_managed_certs
+        - name: httpsEnabled
+          type: text
+          hidden: true
+          readonly: true
+          when: &when_https_enabled >-
+            {{repl $cond1 := (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoCustom") -}}
+            {{repl $cond2 := (eq Distribution "k0s") -}}
+            {{repl $cond3:= (ConfigOptionEquals "tlsTermination" "accessToCartoHTTPS") -}}
+            {{repl $result := and (or $cond1 $cond2) ($cond3) -}}
+            {{repl $result -}}
+          default: *when_https_enabled
+        - name: ingressEnabled
+          type: text
+          hidden: true
+          readonly: true
+          when: &when_ingress_enabled >-
+            {{repl $cond1 := (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") -}}
+            {{repl $result := $cond1 -}}
+            {{repl $result -}}
+          default: *when_ingress_enabled
+        
         - name: accessToSHDomain
           title: Domain
           help_text: |-
@@ -214,47 +248,66 @@ spec:
           type: label
           when: '{{repl (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") }}'
           title: |-
-            ➡️ We will deploy an external Load Balancer to access to your Carto Self-Hosted environment.
+            We will deploy an external Load Balancer to access to your Carto Self-Hosted environment.
         - name: accessToCartoCustomLabel
           type: label
           when: '{{repl (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoCustom") }}'
           title: |-
-            ➡️ You should create and configure your own Load Balancer and connect it to the CARTO router service.
+            You should create and configure your own Load Balancer and connect it to the CARTO router service.
         # Embedded Cluster
         - name: accessToSHModeK0s
           title: |-
-            You are going to deploy CARTO Self-Hosted on a virtual machine, select whether the connections to this instance will be throught HTTPS or HTTP.
+            You are going to deploy CARTO Self-Hosted on a virtual machine.
           type: label
           when: *when_is_k0s_platform
 
           # TLS
-          name: tlsTermination
+        - name: tlsTermination
           title: TLS Termination
           type: select_one
           when: '{{repl or (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoCustom") (eq Distribution "k0s") }}'
+          help_text: |-
+            CARTO only works with HTTPS. TLS termination can be done at the CARTO application level or in a load balancer
+            created by yourself that gets the request before sending it back to the application.
+
+            The connection timeout of all incoming connections must be at least 605 seconds.
           items:
             - name: accessToCartoHTTPS
               title: |-
-                HTTPS
-              help_text: |-
-                TLS Termination is going to be placed inside the CARTO Self-Hosted deployment.
+                Terminate TLS inside CARTO application
             - name: accessToCartoHTTP
               title: |-
-                HTTP
-              help_text: |-
-                In this case, you must do the TLS Termination in a higher layer in your election.
+                Terminate TLS in a higher layer and connect to CARTO over HTTP
+
 
         # Certificates
-        - name: accessToCartoTLSCertificatesKind
+        ## GKE
+        - name: accessToCartoTLSCertificatesKindGKE
           title: TLS Certificates
-          when: '{{repl and (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") }}'
+          when: '{{repl and (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") (eq Distribution "gke") }}'
           type: select_one
           items:
-          #- name: tls_managed_certificates
-          #  title: Generate managed certificates
+          - name: tls_managed_certificates
+            title: Generate GCP managed certificates
+            help_text: 
           - name: tls_custom_certificates
             title: Bring your own certificates
-        # Custom certs
+        - name: accessToSHManagedCerts
+          type: label
+          title: |-
+            We are going to create a managed cert in your GCP project
+            If you need further info, please check [Use Google-managed SSL certificates](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs)
+            Remember that you must update your DNS to point '{{repl ConfigOption "accessToSHDomain" }}' to the load balancer's IP address to be able to sign the certificates
+          when: *when_gcp_managed_certs
+        ## EKS & AKS
+        - name: accessToCartoTLSCertificatesKindEksAks
+          title: TLS Certificates
+          when: '{{repl and (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") (or (eq Distribution "aks") (eq Distribution "eks")) }}'
+          type: select_one
+          items:
+          - name: tls_custom_certificates
+            title: Bring your own certificates
+        ## Custom certs
         - name: accessToSHCustomTLSKeyFile
           title: Private Key File
           when: *when_custom_certs
@@ -265,6 +318,15 @@ spec:
           when: *when_custom_certs
           type: file
           required: true
+
+        # Static IP
+        - name: accessToCartoDefaultLBStaticIP
+          type: text
+          when: '{{repl and (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") (eq Distribution "gke") }}'
+          title: Global static IP name
+          help_text: |-
+            Bring your static IP. We'll link this IP to the Application External Load Balancer
+          recommended: true
 
     # Buckets
     - name: StorageBuckets
@@ -332,7 +394,7 @@ spec:
           default: repl{{ if ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs"}}repl{{ print (ConfigOption "projectId") "-client-storage"}}repl{{ end }}
         - name: storageBucketsWorkspaceImportsIsPublic
           help_text: |-
-            ➡️ Please select the access mode of this bucket
+            Please select the access mode of this bucket
           type: select_one
           default: private
           items:
@@ -348,7 +410,7 @@ spec:
           default: repl{{ if ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs"}}repl{{ print (ConfigOption "projectId") "-thumbnails-storage"}}repl{{ end }}
         - name: storageBucketsThumbnailsIsPublic
           help_text: |-
-            ➡️ Please select the access mode of this bucket
+            Please select the access mode of this bucket
           type: select_one
           default: public
           items:

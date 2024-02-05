@@ -51,7 +51,7 @@ spec:
      {{- if .Values.router.ingress.tls }}
     - hosts:
         - {{ .Values.appConfigValues.selfHostedDomain | quote }}
-      secretName: {{ .Values.tlsCerts.existingSecret.name }}
+      secretName: {{ include "carto.tlsCerts.secretName" . }}
     {{- end }}
     {{- if .Values.router.ingress.extraTls }}
     {{- include "common.tplvalues.render" (dict "value" .Values.router.ingress.extraTls "context" $) | nindent 4 }}
