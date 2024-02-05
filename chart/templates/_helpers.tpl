@@ -1305,6 +1305,10 @@ Return YAML for the Redis init container
   {{- if .Values.workspaceMigrations.containerSecurityContext.enabled }}
   securityContext: {{- omit .Values.workspaceMigrations.containerSecurityContext "enabled" | toYaml | nindent 4 }}
   {{- end }}
+  resources:
+    limits:
+      memory: 256Mi
+      cpu: 100m
   env:
     - name: REDIS_CLIENT_HOST
       value: {{ ternary (include "carto.redis.fullname" .) .Values.externalRedis.host .Values.internalRedis.enabled }}
