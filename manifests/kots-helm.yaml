@@ -12,6 +12,18 @@ spec:
     replicated:
       enabled: true
       platformDistribution: '{{repl ConfigOption "platformDistribution" }}'
+      # TODO: To be removed when https://app.shortcut.com/cartoteam/story/383961/delete-podsecuritycontext-from-replicated-sdk-when-they-release-a-version-with-the-security-context-updated
+      # is done
+      podSecurityContext:
+        enabled: true
+        fsGroup: 1001
+        runAsUser: 1001
+        runAsGroup: 1001
+        supplementalGroups:
+          - 1001
+        seccompProfile:
+          type: "RuntimeDefault"
+
     # License
     ## Carto Secrets
     cartoSecrets:
@@ -192,44 +204,21 @@ spec:
 
 
     ## High Availability
+    # High Availability Enable
     - when: '{{repl ConfigOptionEquals "enablePlatformHighAvailability" "1" }}'
       recursiveMerge: true
       values:
-        importApi:
+        importApi: &highAvailabilityEnabled
           autoscaling:
             enabled: true
             minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
             maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
-        ldsApi:
-          autoscaling:
-            enabled: true
-            minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
-            maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
-        mapsApi:
-          autoscaling:
-            enabled: true
-            minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
-            maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
-        router:
-          autoscaling:
-            enabled: true
-            minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
-            maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
-        workspaceApi:
-          autoscaling:
-            enabled: true
-            minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
-            maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
-        workspaceWww:
-          autoscaling:
-            enabled: true
-            minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
-            maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
-        accountsWww:
-          autoscaling:
-            enabled: true
-            minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
-            maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+        ldsApi: *highAvailabilityEnabled
+        mapsApi: *highAvailabilityEnabled
+        router: *highAvailabilityEnabled
+        workspaceApi: *highAvailabilityEnabled
+        workspaceWww: *highAvailabilityEnabled
+        accountsWww: *highAvailabilityEnabled
 
     ## Advanced Tuning
     - when: '{{repl ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}'
