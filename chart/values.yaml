@@ -2302,7 +2302,7 @@ router:
     client_max_body_size: "10M"
   ## @param router.httpsEnabled Enable https. CARTO only works with `HTTPS`, if you disable this protocol here you should configure it in a higher layer like a Load Balancer
   ##
-  httpsEnabled: true
+  httpsEnabled: false
   ## TLS Certificates
   ## @param router.tlsCertificates.certificateValueBase64 certificate in base64
   ## @param router.tlsCertificates.privateKeyValueBase64 private key in base64

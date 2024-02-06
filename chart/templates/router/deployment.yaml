@@ -156,10 +156,10 @@ spec:
               subPath: {{ template "carto.tlsCerts.secretKeyKey" . }}
             {{- else if .Values.router.httpsEnabled }}
             - name: tls-secret
-              mountPath: tls.crt
+              mountPath: /usr/src/certs/tls.crt
               subPath: tls.crt
             - name: tls-secret
-              mountPath: tls.key
+              mountPath: /usr/src/certs/tls.key
               subPath: tls.key
             {{- end }}
           {{- if .Values.router.extraVolumeMounts }}
