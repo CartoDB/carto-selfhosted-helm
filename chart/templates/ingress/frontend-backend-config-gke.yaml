@@ -1,4 +1,4 @@
-{{- if and .Values.router.ingress.enabled .Values.replicated.enabled (eq .Values.replicated.platformDistribution "gke") }}
+{{- if and .Values.ingress.enabled (eq .Values.replicated.platformDistribution "gke") }}
 # BackendConfig object is used to configure Ingress features related to the
 ## backends
 ## CARTO needs to extend the timeout of the connections to 600 seconds

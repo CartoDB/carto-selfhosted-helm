@@ -309,6 +309,7 @@ cartoSecrets:
       name: ""
       key: ""
 
+## FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 ## @section TLS parameters
 ## Global TLS parameters
 ## @param tlsCerts.httpsEnabled Enable https. CARTO only works with `HTTPS`, if you disable this protocol here you should configure it in a higher layer like a Load Balancer
@@ -316,10 +317,6 @@ cartoSecrets:
 ## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
 ## @param tlsCerts.existingSecret.certKey Key of the certificate inside the secret
 ## @param tlsCerts.existingSecret.keyKey Key of the certificate key inside the secret
-## @param tlsCerts.customCertsEnabled enable if customer provides their own certificates
-## @param tlsCerts.customCertificateValue certificate in base64
-## @param tlsCerts.customPrivateKeyValue private key in base64
-## @param tlsCerts.generateManagedCerts enable if managed certs creation is required
 ##
 tlsCerts:
   httpsEnabled: true
@@ -328,10 +325,6 @@ tlsCerts:
     name: ""
     keyKey: "tls.key"
     certKey: "tls.crt"
-  customCertsEnabled: false
-  customCertificateValue: ""
-  customPrivateKeyValue: ""
-  generateManagedCerts: false
 
 ## @section common backend service account
 ## Service Account to be specified for the client to be used in common backend deployments
@@ -2307,6 +2300,17 @@ router:
     proxy_buffer_size: "8k"
     proxy_busy_buffers_size: "8k"
     client_max_body_size: "10M"
+  ## @param router.httpsEnabled Enable https. CARTO only works with `HTTPS`, if you disable this protocol here you should configure it in a higher layer like a Load Balancer
+  ##
+  httpsEnabled: true
+  ## TLS Certificates
+  ## @param router.tlsCertificates.certificateValueBase64 certificate in base64
+  ## @param router.tlsCertificates.privateKeyValueBase64 private key in base64
+  ##
+  tlsCertificates:
+    certificateValueBase64: ""
+    privateKeyValueBase64: ""
+
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param router.podSecurityContext.enabled Enabled router pods' Security Context
@@ -2525,6 +2529,7 @@ router:
     ## @param router.service.extraPorts Extra ports to expose in router service (normally used with the `sidecars` value)
     ##
     extraPorts: []
+  ## FIXME: Deprecated in favor of ingress instead of router.ingress
   ## Configure the ingress resource that allows you to access the
   ## Carto installation. Set up the URL
   ## ref: https://kubernetes.io/docs/user-guide/ingress/
@@ -4922,3 +4927,90 @@ routerMetrics:
   ## @param routerMetrics.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
+
+ingress:
+  ## @param ingress.enabled Enable ingress controller resource
+  ##
+  enabled: false
+  ## TLS Certificates
+  ## @param ingress.tlsCertificates.customCerts.enabled enable if customer provides their own certificates
+  ## @param ingress.tlsCertificates.customCerts.certificateValueBase64 custom certificate in base64
+  ## @param ingress.tlsCertificates.customCerts.privateKeyValueBase64 custom private key in base64
+  ##
+  tlsCertificates:
+    customCerts:
+      enabled: false
+      certificateValueBase64: ""
+      privateKeyValueBase64: ""
+    ## @param ingress.tlsCertificates.managedCerts.enabled enable if managed certs creation is required
+    ##
+    managedCerts:
+      enabled: false
+
+  ## Configure the ingress resource that allows you to access the
+  ## Carto installation. Set up the URL
+  ## ref: https://kubernetes.io/docs/user-guide/ingress/
+  ##
+
+  ## @param ingress.pathType Ingress Path type
+  ##
+  pathType: ImplementationSpecific
+  ## @param ingress.apiVersion Override API Version (automatically detected if not set)
+  ##
+  apiVersion: ""
+  ## @param ingress.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
+  ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
+  ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
+  ##
+  ingressClassName: ""
+  ## @param ingress.path The Path to CARTO. You may need to set this to '/*' in order to use this
+  ## with ALB ingress controllers.
+  ##
+  path: /*
+  ## @param ingress.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
+  ## For a full list of possible ingress annotations, please see
+  ## ref: https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md
+  ## Use this parameter to set the required annotations for cert-manager, see
+  ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
+  ##
+  ## e.g:
+  ## annotations:
+  ##   kubernetes.io/ingress.class: nginx
+  ##   cert-manager.io/cluster-issuer: cluster-issuer-name
+  ##
+  annotations: {}
+  ## @param ingress.extraHosts The list of additional hostnames to be covered with this ingress record.
+  ## Most likely the hostname above will be enough, but in the event more hosts are needed, this is an array
+  ## extraHosts:
+  ## - name: example.local
+  ##   path: /
+  extraHosts: []
+  ## @param ingress.extraPaths Any additional arbitrary paths that may need to be added to the ingress under the main host.
+  ## For example: The ALB ingress controller requires a special rule for handling SSL redirection.
+  ## extraPaths:
+  ## - path: /*
+  ##   backend:
+  ##     serviceName: ssl-redirect
+  ##     servicePort: use-annotation
+  extraPaths: []
+  ## @param ingress.extraTls The tls configuration for additional hostnames to be covered with this ingress record.
+  ## see: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+  ## extraTls:
+  ## - hosts:
+  ##     - example.local
+  ##   secretName: example.local-tls
+  extraTls: []
+  ## @param ingress.extraRules Additional rules to be covered with this ingress record
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules
+  ## e.g:
+  ## extraRules:
+  ## - host: example.local
+  ##     http:
+  ##       path: /
+  ##       backend:
+  ##         service:
+  ##           name: example-svc
+  ##           port:
+  ##             name: http
+  ##
+  extraRules: []

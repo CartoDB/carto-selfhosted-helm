@@ -149,22 +149,32 @@ spec:
         iam.gke.io/gcp-service-account: '{{repl ConfigOption "googleWorkloadIdentityEmail" }}'
 
     ## TLS Certs
+    # FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
+    # Disable legacy tlsCerts
     tlsCerts:
-      httpsEnabled: repl{{ if ConfigOptionEquals "httpsEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
+      httpsEnabled: false
       autoGenerate: false
-      customCertsEnabled: repl{{ if ConfigOptionEquals "customCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
-      customCertificateValue: '{{repl ConfigOption "accessToSHCustomTLSCertFile" }}'
-      customPrivateKeyValue: '{{repl ConfigOption "accessToSHCustomTLSKeyFile" }}'
-      generateManagedCerts: repl{{ if ConfigOptionEquals "gcpManagedCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
 
     ## Access to Carto
+    # Router
     router:
       service:
         type: NodePort
+      httpsEnabled: repl{{ if ConfigOptionEquals "customCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
+      tlsCertificates:
+        certificateValueBase64: '{{repl ConfigOption "accessToSHCustomTLSCertFile" }}'
+        privateKeyValueBase64: '{{repl ConfigOption "accessToSHCustomTLSKeyFile" }}'
 
-      ingress:
-        enabled: repl{{ if ConfigOptionEquals "ingressEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
-        tls: repl{{ if ConfigOptionEquals "customCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
+    # Ingress
+    ingress:
+      enabled: repl{{ if ConfigOptionEquals "ingressEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
+      tlsCertificates:
+        customCerts:
+          enabled: repl{{ if ConfigOptionEquals "customCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
+          certificateValueBase64: '{{repl ConfigOption "accessToSHCustomTLSCertFile" }}'
+          privateKeyValueBase64: '{{repl ConfigOption "accessToSHCustomTLSKeyFile" }}'
+        managedCerts:
+          enabled: repl{{ if ConfigOptionEquals "gcpManagedCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
 
   # Optional Values
   ## Values from Advanced Configuration

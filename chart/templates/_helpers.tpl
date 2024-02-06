@@ -733,6 +733,13 @@ Create the name of the service account to use for the router deployment
 {{- end -}}
 
 {{/*
+Return the proper Carto ingress full name
+*/}}
+{{- define "carto.ingress.fullname" -}}
+{{- printf "%s-ingress" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto http-cache full name
 */}}
 {{- define "carto.httpCache.fullname" -}}
@@ -933,6 +940,7 @@ Return the absolute path where the Google Secret will be mounted
 
 {{/*
 Return the proper Carto TLS Secret name
+FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 */}}
 {{- define "carto.tlsCerts.secretName" -}}
 {{- if .Values.tlsCerts.existingSecret.name -}}
@@ -944,6 +952,7 @@ Return the proper Carto TLS Secret name
 
 {{/*
 Return the proper Carto TLS secret key for the TLS cert
+FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 */}}
 {{- define "carto.tlsCerts.secretCertKey" -}}
 {{- if .Values.tlsCerts.existingSecret.name -}}
@@ -955,6 +964,7 @@ Return the proper Carto TLS secret key for the TLS cert
 
 {{/*
 Return the proper Carto TLS secret key for the TLS key
+FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 */}}
 {{- define "carto.tlsCerts.secretKeyKey" -}}
 {{- if .Values.tlsCerts.existingSecret.name -}}
@@ -962,6 +972,20 @@ Return the proper Carto TLS secret key for the TLS key
 {{- else -}}
 {{- print "tls.key" -}}
 {{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto Router TLS Secret name
+*/}}
+{{- define "carto.router.tlsCertificates.secretName" -}}
+{{- printf "%s-tls-%s" (include "common.names.fullname" .) (.Values.router.tlsCertificates.certificateValueBase64 | sha256sum | substr 0 5) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto Ingress custom TLS Secret name
+*/}}
+{{- define "carto.ingress.tlsCertificates.secretName" -}}
+{{- printf "%s-tls-%s" (include "common.names.fullname" .) (.Values.ingress.tlsCertificates.customCerts.certificateValueBase64 | sha256sum | substr 0 5) -}}
 {{- end -}}
 
 {{/*
