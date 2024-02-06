@@ -297,7 +297,7 @@ spec:
           title: |-
             We are going to create a managed cert in your GCP project
             If you need further info, please check [Use Google-managed SSL certificates](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs)
-            Remember that you must update your DNS to point '{{repl ConfigOption "accessToSHDomain" }}' to the load balancer's IP address to be able to sign the certificates
+            Remember that you must update your DNS to point `{{repl ConfigOption "accessToSHDomain" }}` to the load balancer's IP address to be able to sign the certificates
           when: *when_gcp_managed_certs
         ## EKS & AKS
         - name: accessToCartoTLSCertificatesKindEksAks
