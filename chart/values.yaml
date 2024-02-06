@@ -4594,9 +4594,75 @@ internalRedis:
   master:
     persistence:
       enabled: false
+    ## Redis resource limits
+    ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+    ## @param internalRedis.master.resources.limits.memory Container memory limits in MiB
+    ## @param internalRedis.master.resources.limits.cpu Container cpu limits in milliCPU cores
+    ##
+    resources:
+      limits:
+        memory: "512Mi"
+        cpu: "200m"
+    ## Configure Pods Security Context
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+    ## @param internalRedis.master.podSecurityContext.fsGroup Set accounts-www pod's Security Context fsGroup
+    ## @param internalRedis.master.podSecurityContext.supplementalGroups[0] Set accounts-www pod's Security Context supplementalGroups
+    ##
+    podSecurityContext:
+      fsGroup: 1000
+      supplementalGroups: [2345]
+    ## Configure Container Security Context
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+    ## @param internalRedis.master.containerSecurityContext.runAsUser Set Upgrade Check pre-hook containers' Security Context runAsUser
+    ## @param internalRedis.master.containerSecurityContext.runAsGroup Set Upgrade Check pre-hook containers' Security Context runAsGroup
+    ## @param internalRedis.master.containerSecurityContext.runAsNonRoot Set Upgrade Check pre-hook containers' Security Context runAsNonRoot
+    ## @param internalRedis.master.containerSecurityContext.allowPrivilegeEscalation Set Upgrade Check pre-hook containers' Security Context allowPrivilegeEscalation
+    ## @param internalRedis.master.containerSecurityContext.capabilities.drop removes Upgrade Check pre-hook containers' Security Context capabilities
+    ##
+    containerSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      runAsNonRoot: false
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - all
   replica:
     persistence:
       enabled: false
+    ## Redis resource limits
+    ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+    ## @param internalRedis.replica.resources.limits.memory Container memory limits in MiB
+    ## @param internalRedis.replica.resources.limits.cpu Container cpu limits in milliCPU cores
+    ##
+    resources:
+      limits:
+        memory: "512Mi"
+        cpu: "200m"
+    ## Configure Pods Security Context
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+    ## @param internalRedis.replica.podSecurityContext.fsGroup Set accounts-www pod's Security Context fsGroup
+    ## @param internalRedis.replica.podSecurityContext.supplementalGroups[0] Set accounts-www pod's Security Context supplementalGroups
+    ##
+    podSecurityContext:
+      fsGroup: 1000
+      supplementalGroups: [2345]
+    ## Configure Container Security Context
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+    ## @param internalRedis.replica.containerSecurityContext.runAsUser Set Upgrade Check pre-hook containers' Security Context runAsUser
+    ## @param internalRedis.replica.containerSecurityContext.runAsGroup Set Upgrade Check pre-hook containers' Security Context runAsGroup
+    ## @param internalRedis.replica.containerSecurityContext.runAsNonRoot Set Upgrade Check pre-hook containers' Security Context runAsNonRoot
+    ## @param internalRedis.replica.containerSecurityContext.allowPrivilegeEscalation Set Upgrade Check pre-hook containers' Security Context allowPrivilegeEscalation
+    ## @param internalRedis.replica.containerSecurityContext.capabilities.drop removes Upgrade Check pre-hook containers' Security Context capabilities
+    ##
+    containerSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      runAsNonRoot: false
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - all
 
 ## @section External Redis parameters
 ## External Redis configuration
