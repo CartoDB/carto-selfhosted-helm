@@ -160,7 +160,7 @@ spec:
     router:
       service:
         type: NodePort
-      httpsEnabled: repl{{ if ConfigOptionEquals "customCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
+      httpsEnabled: repl{{ if ConfigOptionEquals "httpsEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
       tlsCertificates:
         certificateValueBase64: '{{repl ConfigOption "accessToSHCustomTLSCertFile" }}'
         privateKeyValueBase64: '{{repl ConfigOption "accessToSHCustomTLSKeyFile" }}'
