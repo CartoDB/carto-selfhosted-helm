@@ -4601,8 +4601,8 @@ internalRedis:
     ##
     resources:
       limits:
-        memory: "1024Mi"
-        cpu: "500m"
+        memory: "512Mi"
+        cpu: "200m"
     ## Configure Pods Security Context
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
     ## @param internalRedis.master.podSecurityContext.fsGroup Set accounts-www pod's Security Context fsGroup
@@ -4637,8 +4637,8 @@ internalRedis:
     ##
     resources:
       limits:
-        memory: "1024Mi"
-        cpu: "500m"
+        memory: "512Mi"
+        cpu: "200m"
     ## Configure Pods Security Context
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
     ## @param internalRedis.replica.podSecurityContext.fsGroup Set accounts-www pod's Security Context fsGroup
