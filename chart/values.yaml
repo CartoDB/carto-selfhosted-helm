@@ -4594,9 +4594,39 @@ internalRedis:
   master:
     persistence:
       enabled: false
+    resources:
+      limits:
+        memory: "1024Mi"
+        cpu: "500m"
+    podSecurityContext:
+      fsGroup: 1000
+      supplementalGroups: [2345]
+    containerSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      runAsNonRoot: false
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - all
   replica:
     persistence:
       enabled: false
+    resources:
+      limits:
+        memory: "1024Mi"
+        cpu: "500m"
+    podSecurityContext:
+      fsGroup: 1000
+      supplementalGroups: [2345]
+    containerSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      runAsNonRoot: false
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - all
 
 ## @section External Redis parameters
 ## External Redis configuration
