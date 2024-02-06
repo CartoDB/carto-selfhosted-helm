@@ -1,4 +1,4 @@
-{{- if and .Values.ingress.managedCerts.enabled (eq .Values.replicated.platformDistribution "gke") }}
+{{- if and .Values.ingress.tlsCertificates.managedCerts.enabled (eq .Values.replicated.platformDistribution "gke") }}
 ## In case you want to use Google Managed Certificate for Ingress you will
 ## need to deploy the ManagedCertified object
 ## https://cloud.google.com/kubernetes-engine/docs/how-to/managed-certs#setting_up_a_google-managed_certificate

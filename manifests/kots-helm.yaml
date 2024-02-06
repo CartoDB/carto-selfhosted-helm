@@ -197,20 +197,19 @@ spec:
           service:
             annotations:
               cloud.google.com/backend-config: '{"default": "carto-service-backend-config"}'
-          ingress:
-            annotations:
-              networking.gke.io/v1beta1.FrontendConfig: "carto-ingress-frontend-config"
-              kubernetes.io/ingress.class: "gce"
-              kubernetes.io/ingress.global-static-ip-name: '{{repl ConfigOption "accessToCartoDefaultLBStaticIP" }}'
+        ingress:
+          annotations:
+            networking.gke.io/v1beta1.FrontendConfig: "carto-ingress-frontend-config"
+            kubernetes.io/ingress.class: "gce"
+            kubernetes.io/ingress.global-static-ip-name: '{{repl ConfigOption "accessToCartoDefaultLBStaticIP" }}'
 
     # Managed certs
     - when: '{{repl and (ConfigOptionEquals "ingressEnabled" "true") (ConfigOptionEquals "platformDistribution" "gke") (ConfigOptionEquals "gcpManagedCerts" "true") }}'
       recursiveMerge: true
       values:
-        router:
-          ingress:
-            annotations:
-              networking.gke.io/managed-certificates: carto-ingress-managed-cert
+        ingress:
+          annotations:
+            networking.gke.io/managed-certificates: carto-ingress-managed-cert
 
 
     ## High Availability
