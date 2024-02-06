@@ -1435,8 +1435,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `internalRedis.master.persistence.enabled`                                | Enable master persistent volumes                                                             | `false`      |
 | `internalRedis.replica.persistence.enabled`                               | Enable replica persistent volumes                                                            | `false`      |
 | `internalRedis.nameOverride`                                              | String to partially override common.names.fullname template (will maintain the release name) | `redis`      |
-| `internalRedis.master.resources.limits.memory`                            | Container memory limits in MiB                                                               | `1024Mi`     |
-| `internalRedis.master.resources.limits.cpu`                               | Container cpu limits in milliCPU cores                                                       | `500m`       |
+| `internalRedis.master.resources.limits.memory`                            | Container memory limits in MiB                                                               | `512Mi`      |
+| `internalRedis.master.resources.limits.cpu`                               | Container cpu limits in milliCPU cores                                                       | `200m`       |
 | `internalRedis.master.podSecurityContext.fsGroup`                         | Set accounts-www pod's Security Context fsGroup                                              | `1000`       |
 | `internalRedis.master.podSecurityContext.supplementalGroups[0]`           | Set accounts-www pod's Security Context supplementalGroups                                   | `2345`       |
 | `internalRedis.master.containerSecurityContext.runAsUser`                 | Set Upgrade Check pre-hook containers' Security Context runAsUser                            | `1000`       |
@@ -1444,8 +1444,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `internalRedis.master.containerSecurityContext.runAsNonRoot`              | Set Upgrade Check pre-hook containers' Security Context runAsNonRoot                         | `false`      |
 | `internalRedis.master.containerSecurityContext.allowPrivilegeEscalation`  | Set Upgrade Check pre-hook containers' Security Context allowPrivilegeEscalation             | `false`      |
 | `internalRedis.master.containerSecurityContext.capabilities.drop`         | removes Upgrade Check pre-hook containers' Security Context capabilities                     | `["all"]`    |
-| `internalRedis.replica.resources.limits.memory`                           | Container memory limits in MiB                                                               | `1024Mi`     |
-| `internalRedis.replica.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                       | `500m`       |
+| `internalRedis.replica.resources.limits.memory`                           | Container memory limits in MiB                                                               | `512Mi`      |
+| `internalRedis.replica.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                       | `200m`       |
 | `internalRedis.replica.podSecurityContext.fsGroup`                        | Set accounts-www pod's Security Context fsGroup                                              | `1000`       |
 | `internalRedis.replica.podSecurityContext.supplementalGroups[0]`          | Set accounts-www pod's Security Context supplementalGroups                                   | `2345`       |
 | `internalRedis.replica.containerSecurityContext.runAsUser`                | Set Upgrade Check pre-hook containers' Security Context runAsUser                            | `1000`       |
