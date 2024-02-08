@@ -21,3 +21,4 @@ spec:
     - deployment/carto-workspace-api
     - deployment/carto-workspace-subscriber
     - deployment/carto-workspace-www
+  minKotsVersion: 1.107.2
