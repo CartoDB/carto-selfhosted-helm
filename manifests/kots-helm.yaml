@@ -154,10 +154,13 @@ spec:
       customPrivateKeyValue: '{{repl ConfigOption "accessToSHCustomTLSTerminationKeyFile" }}'
       generateManagedCerts: repl{{ if ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_managed_certificates"}}truerepl{{ else }}falserepl{{ end }}
 
-    ## Access to Carto
+    ## Access to Carto in embedded cluster
     router:
       service:
-        type: LoadBalancer
+        type: NodePort
+        nodePorts:
+          http: '80'
+          https: '443'
 
   # Values from Advanced Configuration
   optionalValues:
