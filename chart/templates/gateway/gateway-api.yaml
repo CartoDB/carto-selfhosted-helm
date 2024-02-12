@@ -5,28 +5,34 @@ metadata:
   name: {{ template "carto.gateway.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.gateway.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.gateway.annotations "context" $) | nindent 4 }}
+    {{- end }}
 spec:
   gatewayClassName: {{ .Values.gateway.gatewayClassName }}
   listeners:
-  - name: https
+  - name: {{ .Values.gateway.listeners.https.name }}
     protocol: HTTPS
-    port: 443
+    port: {{ .Values.gateway.listeners.https.port }}
     tls:
-      mode: Terminate
-      {{ if .Values.gateway.tlsCertificates.customCerts.enabled }}
+      mode: {{ .Values.gateway.tls.mode }}
+      {{- if .Values.gateway.tlsCertificates.customCerts.enabled }}
       certificateRefs:
       - kind: Secret
         name: {{ include "carto.gateway.tlsCertificates.secretName" . }}
-      {{- else if and .Values.gateway.tlsCertificates.managedCerts.enabled (eq .Values.replicated.platformDistribution "gke") }}
+      {{- else if and .Values.gateway.tlsCertificates.managedCerts.enabled }}
       options:
         networking.gke.io/pre-shared-certs: {{ .Values.gateway.tlsCertificates.managedCerts.name }}
       {{- end }}
-  - name: http
-    port: 80
+  - name: {{ .Values.gateway.listeners.http.name }}
+    port: {{ .Values.gateway.listeners.http.port }}
     protocol: HTTP
-  {{ if .Values.gateway.staticIP.enabled }}
+  {{- if .Values.gateway.staticIP.enabled }}
   addresses:
-  - type: NamedAddress
+  - type: {{ .Values.gateway.address.type }}
     value: {{ .Values.gateway.staticIP.value }}
   {{- end }}
 ---
@@ -40,7 +46,7 @@ metadata:
 spec:
   parentRefs:
   - name: {{ template "carto.gateway.fullname" . }}
-    sectionName: https
+    sectionName: {{ .Values.gateway.listeners.https.name }}
   hostnames:
   - {{ .Values.appConfigValues.selfHostedDomain | quote }}
   rules:
@@ -49,7 +55,11 @@ spec:
         value: {{ .Values.gateway.path }}
     backendRefs:
     - name: {{ template "carto.router.fullname" . }}
-      port: 80
+      {{- if .Values.router.httpsEnabled }}
+      port: {{ .Values.router.service.ports.https }}
+      {{- else }}
+      port: {{ .Values.router.service.ports.http }}
+      {{- end }}
 ---
 apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
@@ -59,7 +69,7 @@ metadata:
 spec:
   parentRefs:
   - name: {{ template "carto.gateway.fullname" . }}
-    sectionName: http
+    sectionName: {{ .Values.gateway.listeners.http.name }}
   hostnames:
   - {{ .Values.appConfigValues.selfHostedDomain | quote }}
   rules:

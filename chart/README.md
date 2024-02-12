@@ -1593,7 +1593,13 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `gateway.tlsCertificates.managedCerts.enabled`                    | enable if managed certs creation is required.                              | `false`                                                                                   |
 | `gateway.apiVersion`                                              | Kubernetes Gateway API Version.                                            | `""`                                                                                      |
 | `gateway.gatewayClassName`                                        | GatewayClass that will be be used to implement the gateway api.            | `""`                                                                                      |
-| `gateway.path`                                                    | The Path to CARTO                                                          | `/`                                                                                       |
+| `gateway.path`                                                    | The Path to CARTO                                                          | `/*`                                                                                      |
+| `gateway.tls.mode`                                                | defines the TLS behavior for the TLS session initiated by the client.      | `Terminate`                                                                               |
+| `gateway.listeners.https.name`                                    | HTTPS listener name                                                        | `https`                                                                                   |
+| `gateway.listeners.https.port`                                    | HTTPS listener port                                                        | `443`                                                                                     |
+| `gateway.listeners.http.name`                                     | HTTP listener name                                                         | `http`                                                                                    |
+| `gateway.listeners.http.port`                                     | HTTP listener port                                                         | `80`                                                                                      |
+| `gateway.address.type`                                            | AddressType defines how a network address is represented as a text string. | `NamedAddress`                                                                            |
 | `gateway.annotations`                                             | Additional annotations for the gateway resource.                           | `{}`                                                                                      |
 
 

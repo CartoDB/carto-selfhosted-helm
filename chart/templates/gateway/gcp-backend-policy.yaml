@@ -1,3 +1,6 @@
+
+# FIXME: Delete when gateway support tiemouts
+# https://gateway-api.sigs.k8s.io/geps/gep-1742/
 {{- if and .Values.gateway.enabled (eq .Values.replicated.platformDistribution "gke") }}
 apiVersion: networking.gke.io/v1
 kind: GCPBackendPolicy

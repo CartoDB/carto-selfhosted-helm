@@ -4996,6 +4996,7 @@ routerMetrics:
 
 gateway:
   ## @param gateway.enabled Enable gateway api.
+  ## https://gateway-api.sigs.k8s.io/reference/spec/
   ##
   enabled: false
   ## TLS Certificates
@@ -5019,6 +5020,29 @@ gateway:
   ##
   gatewayClassName: ""
   ## @param gateway.path The Path to CARTO
-  path: /
+  path: /*
+  ## TLS
+  ## @param gateway.tls.mode defines the TLS behavior for the TLS session initiated by the client.
+  ## There are two possible modes: Terminate and Passthrough
+  tls:
+    mode: Terminate
+  ## Listeners
+  ## @param gateway.listeners.https.name HTTPS listener name
+  ## @param gateway.listeners.https.port HTTPS listener port
+  ## @param gateway.listeners.http.name HTTP listener name
+  ## @param gateway.listeners.http.port HTTP listener port
+  listeners:
+    https:
+      name: https
+      port: 443
+    http:
+      name: http
+      port: 80
+  # Addresses
+  ## @param gateway.address.type AddressType defines how a network address is represented as a text string.
+  ## There are three possible types: Hostname, IPAddress and NamedAddress
+  ## Use NamedAddress to pass the Static IP name value
+  address:
+    type: NamedAddress
   ## @param gateway.annotations Additional annotations for the gateway resource.
   annotations: {}
