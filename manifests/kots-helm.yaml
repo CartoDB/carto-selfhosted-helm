@@ -177,7 +177,7 @@ spec:
         externalProxy:
           enabled: true
           connectionString: '{{repl ConfigOption "externalProxyHost" }}'
-          excludedDomains: ["localhost,.svc.cluster.local"]
+          excludedDomains: '{{repl ConfigOption "externalProxyExcludedDomains" }}'
 
     # High Availability Enable
     - when: '{{repl ConfigOptionEquals "enablePlatformHighAvailability" "1" }}'
