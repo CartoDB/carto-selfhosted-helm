@@ -142,6 +142,7 @@ spec:
             repl{{ if eq $k8sDistribution "gke" }}
             repl{{    $_ := set $result "name" "routerLoadBalancerGKE" }}
             repl{{    $_ := set $result "title" "GCP GKE LoadBalancer" }}
+            repl{{    $_ := set $result "gatewayClassName" "gke-l7-global-external-managed" }}
             repl{{ else if eq $k8sDistribution "eks" }}
             repl{{    $_ := set $result "name" "routerLoadBalancerEKS" }}
             repl{{    $_ := set $result "title" "AWS EKS LoadBalancer" }}
@@ -182,21 +183,32 @@ spec:
           hidden: true
           readonly: true
           when: &when_custom_certs >-
-            {{repl $cond1 := (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") -}}
-            {{repl $cond2 := (ConfigOptionEquals "accessToCartoTLSCertificatesKindEksAks" "tls_custom_certificates") -}}
-            {{repl $cond3 := (ConfigOptionEquals "accessToCartoTLSCertificatesKindGKE" "tls_custom_certificates") -}}
+            {{repl $cond1 := (eq Distribution "gke") -}}
+            {{repl $cond2 := (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") -}}
+            {{repl $cond3 := (ConfigOptionEquals "accessToCartoTLSCertificatesGKE" "tls_custom_certificates") -}}
             {{repl $cond4 := (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoCustom") -}}
             {{repl $cond5 := (ConfigOptionEquals "tlsTermination" "accessToCartoHTTPS") -}}
-            {{repl $result := or (and $cond1 (or $cond2 $cond3)) (and $cond4 $cond5) -}}
+            {{repl $cond6 := (eq Distribution "eks") -}}
+            {{repl $result := or (and $cond1 $cond2 $cond3) (and (or $cond1 $cond6) (and $cond4 $cond5)) -}}
             {{repl $result -}}
           default: *when_custom_certs
-        - name: gcpManagedCerts
+        - name: AWSCerts
+          type: text
+          hidden: true
+          readonly: true
+          when: &when_aws_certs >-
+            {{repl $cond1 := (eq Distribution "eks") -}}
+            {{repl $cond2 := (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") -}}
+            {{repl $result := and $cond1 $cond2 -}}
+            {{repl $result -}}
+          default: *when_aws_certs
+        - name: GCPManagedCerts
           type: text
           hidden: true
           readonly: true
           when: &when_gcp_managed_certs >-
             {{repl $cond1 := (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") -}}
-            {{repl $cond2 := (ConfigOptionEquals "accessToCartoTLSCertificatesKindGKE" "tls_managed_certificates") -}}
+            {{repl $cond2 := (ConfigOptionEquals "accessToCartoTLSCertificatesGKE" "tls_managed_certificates") -}}
             {{repl $result := and $cond1 $cond2 -}}
             {{repl $result -}}
           default: *when_gcp_managed_certs
@@ -211,16 +223,16 @@ spec:
             {{repl $result := and (or $cond1 $cond2) ($cond3) -}}
             {{repl $result -}}
           default: *when_https_enabled
-        - name: ingressEnabled
+        - name: gatewayEnabled
           type: text
           hidden: true
           readonly: true
-          when: &when_ingress_enabled >-
+          when: &when_gateway_enabled >-
             {{repl $cond1 := (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") -}}
-            {{repl $result := $cond1 -}}
+            {{repl $cond2 := (eq Distribution "gke") -}}
+            {{repl $result := and $cond1 $cond2 -}}
             {{repl $result -}}
-          default: *when_ingress_enabled
-        
+          default: *when_gateway_enabled
         - name: accessToSHDomain
           title: Domain
           help_text: |-
@@ -282,29 +294,13 @@ spec:
 
         # Certificates
         ## GKE
-        - name: accessToCartoTLSCertificatesKindGKE
+        - name: accessToCartoTLSCertificatesGKE
           title: TLS Certificates
           when: '{{repl and (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") (eq Distribution "gke") }}'
           type: select_one
           items:
           - name: tls_managed_certificates
-            title: Generate GCP managed certificates
-            help_text: 
-          - name: tls_custom_certificates
-            title: Bring your own certificates
-        - name: accessToSHManagedCerts
-          type: label
-          title: |-
-            We are going to create a managed cert in your GCP project
-            If you need further info, please check [Use Google-managed SSL certificates](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs)
-            Remember that you must update your DNS to point `{{repl ConfigOption "accessToSHDomain" }}` to the load balancer's IP address to be able to sign the certificates
-          when: *when_gcp_managed_certs
-        ## EKS & AKS
-        - name: accessToCartoTLSCertificatesKindEksAks
-          title: TLS Certificates
-          when: '{{repl and (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") (or (eq Distribution "aks") (eq Distribution "eks")) }}'
-          type: select_one
-          items:
+            title: GCP SSL Managed Certificates
           - name: tls_custom_certificates
             title: Bring your own certificates
         ## Custom certs
@@ -318,14 +314,42 @@ spec:
           when: *when_custom_certs
           type: file
           required: true
+        # Managed Certs
+        - name: accessToSHManagedCertsGCPName
+          type: text
+          title: GCP SSL Managed Cert Name
+          required: true
+          help_text: |-
+            The name of your SSL Managed Certificate
+            If you need further info, please check [Use Google-managed SSL certificates](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs)
+            Remember that you must update your DNS to point `{{repl ConfigOption "accessToSHDomain" }}` to the load balancer's IP address to let Google sign the certificate
+          when: *when_gcp_managed_certs
+        ## EKS
+        - name: accessToCartoTLSCertificatesEKS
+          title: TLS Certificates
+          when: *when_aws_certs
+          type: text
+          required: true
+          help_text: The Certificate ARN in format arn:aws:acm:<REGION>:<AWS_ACCOUNT>:certificate/<CERTIFICATE_ID>
+
 
         # Static IP
-        - name: accessToCartoDefaultLBStaticIP
+        - name: accessToCartoDefaultLBStaticIPAddressGCP
           type: text
           when: '{{repl and (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") (eq Distribution "gke") }}'
-          title: Global static IP name
+          title: Global static IP Address name
           help_text: |-
-            Bring your static IP. We'll link this IP to the Application External Load Balancer
+            Bring your static IP name. We'll link this IP to the External Load Balancer
+          recommended: true
+        # Static IP
+        - name: accessToCartoDefaultLBStaticIPAddressAWS
+          type: text
+          when: '{{repl and (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") (eq Distribution "eks") }}'
+          title: Elastic IP Address allocation ID
+          help_text: |-
+            Bring your static IP allocation ID. We'll link this IP to the External Load Balancer
+            The number of Allocation IDs must match the number of subnets that are used for the load balancer.
+            For more information, see the [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/guide/service/annotations/#eip-allocations) documentation
           recommended: true
 
     # Buckets

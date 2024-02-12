@@ -733,10 +733,10 @@ Create the name of the service account to use for the router deployment
 {{- end -}}
 
 {{/*
-Return the proper Carto ingress full name
+Return the proper Carto gateway full name
 */}}
-{{- define "carto.ingress.fullname" -}}
-{{- printf "%s-ingress" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- define "carto.gateway.fullname" -}}
+{{- printf "%s-gateway" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -940,7 +940,7 @@ Return the absolute path where the Google Secret will be mounted
 
 {{/*
 Return the proper Carto TLS Secret name
-FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
+FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
 */}}
 {{- define "carto.tlsCerts.secretName" -}}
 {{- if .Values.tlsCerts.existingSecret.name -}}
@@ -952,7 +952,7 @@ FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 
 {{/*
 Return the proper Carto TLS secret key for the TLS cert
-FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
+FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
 */}}
 {{- define "carto.tlsCerts.secretCertKey" -}}
 {{- if .Values.tlsCerts.existingSecret.name -}}
@@ -964,7 +964,7 @@ FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 
 {{/*
 Return the proper Carto TLS secret key for the TLS key
-FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
+FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
 */}}
 {{- define "carto.tlsCerts.secretKeyKey" -}}
 {{- if .Values.tlsCerts.existingSecret.name -}}
@@ -982,10 +982,10 @@ Return the proper Carto Router TLS Secret name
 {{- end -}}
 
 {{/*
-Return the proper Carto Ingress custom TLS Secret name
+Return the proper Carto Gateway custom TLS Secret name
 */}}
-{{- define "carto.ingress.tlsCertificates.secretName" -}}
-{{- printf "%s-tls-%s" (include "common.names.fullname" .) (.Values.ingress.tlsCertificates.customCerts.certificateValueBase64 | sha256sum | substr 0 5) -}}
+{{- define "carto.gateway.tlsCertificates.secretName" -}}
+{{- printf "%s-tls-%s" (include "common.names.fullname" .) (.Values.gateway.tlsCertificates.customCerts.certificateValueBase64 | sha256sum | substr 0 5) -}}
 {{- end -}}
 
 {{/*

@@ -149,7 +149,7 @@ spec:
         iam.gke.io/gcp-service-account: '{{repl ConfigOption "googleWorkloadIdentityEmail" }}'
 
     ## TLS Certs
-    # FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
+    # FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
     # Disable legacy tlsCerts
     tlsCerts:
       httpsEnabled: false
@@ -165,16 +165,25 @@ spec:
         certificateValueBase64: '{{repl ConfigOption "accessToSHCustomTLSCertFile" }}'
         privateKeyValueBase64: '{{repl ConfigOption "accessToSHCustomTLSKeyFile" }}'
 
-    # Ingress
-    ingress:
-      enabled: repl{{ if ConfigOptionEquals "ingressEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
+    gateway:
+      enabled: repl{{ if ConfigOptionEquals "gatewayEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
+      gatewayClassName: '{{repl fromJson (ConfigOption "loadBalancerSupportedKind") | dig "gatewayClassName" "" }}'
       tlsCertificates:
         customCerts:
           enabled: repl{{ if ConfigOptionEquals "customCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
           certificateValueBase64: '{{repl ConfigOption "accessToSHCustomTLSCertFile" }}'
           privateKeyValueBase64: '{{repl ConfigOption "accessToSHCustomTLSKeyFile" }}'
         managedCerts:
-          enabled: repl{{ if ConfigOptionEquals "gcpManagedCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
+          # FIXME: api-gateway does not support yet a managed cert created in kubernetes. Can only pass pass the managed cert name, but if we create it
+          # from kubernetes this name is random. We could obtain it with the following lookup function, but the first apply wouldn't work.
+          # So at this moment, we need the customer create the managed cert himself and pass the name in this field
+          # name: repl{{ (Lookup "networking.gke.io/v1" "ManagedCertificate" "agonzalez-kots" "carto-gateway-managed-cert").status.certificateName }}
+          enabled: repl{{ if ConfigOptionEquals "GCPManagedCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
+          name: '{{repl ConfigOption "accessToSHManagedCertsGCPName" }}'
+      staticIP:
+        enabled: repl{{ if ConfigOptionEquals "accessToCartoDefaultLBStaticIPAddressGCP" ""}}falserepl{{ else }}truerepl{{ end }}
+        value: '{{repl ConfigOption "accessToCartoDefaultLBStaticIPAddressGCP" }}'
+
 
   # Optional Values
   ## Values from Advanced Configuration
@@ -188,29 +197,23 @@ spec:
             tag: 20240117pr15139
     # END
 
-    ## Router & Ingress
-    ## GKE
-    - when: '{{repl and (ConfigOptionEquals "ingressEnabled" "true") (ConfigOptionEquals "platformDistribution" "gke") }}'
+    ## Router
+    ## EKS
+    - when: '{{repl and (ConfigOptionEquals "accessToSHModeK8s" "accessToCartoDefaultLB") (ConfigOptionEquals "platformDistribution" "eks") }}'
       recursiveMerge: true
       values:
         router:
           service:
+            type: LoadBalancer
             annotations:
-              cloud.google.com/backend-config: '{"default": "carto-service-backend-config"}'
-        ingress:
-          annotations:
-            networking.gke.io/v1beta1.FrontendConfig: "carto-ingress-frontend-config"
-            kubernetes.io/ingress.class: "gce"
-            kubernetes.io/ingress.global-static-ip-name: '{{repl ConfigOption "accessToCartoDefaultLBStaticIP" }}'
-
-    # Managed certs
-    - when: '{{repl and (ConfigOptionEquals "ingressEnabled" "true") (ConfigOptionEquals "platformDistribution" "gke") (ConfigOptionEquals "gcpManagedCerts" "true") }}'
-      recursiveMerge: true
-      values:
-        ingress:
-          annotations:
-            networking.gke.io/managed-certificates: carto-ingress-managed-cert
-
+              service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+              service.beta.kubernetes.io/aws-load-balancer-ssl-cert: '{{repl ConfigOption "accessToCartoTLSCertificatesEKS" }}'
+              service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
+              service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "605"
+              service.beta.kubernetes.io/aws-load-balancer-eip-allocations: '{{repl ConfigOption "accessToCartoDefaultLBStaticIPAddressAWS" }}'
+              service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+            ports:
+              httpsTargetPort: http
 
     ## High Availability
     # High Availability Enable

@@ -115,13 +115,6 @@ Return common analyzers for preflights and support-bundle
         - pass:
             when: "== aks"
             message: AKS is a supported distribution.
-        # Will be supported in the future
-        - pass:
-            when: "== kurl"
-            message: kURL is a supported distribution.
-        - pass:
-            when: "== digitalocean"
-            message: DigitalOcean is a supported distribution.
         - warn:
             message: Unable to determine the distribution of Kubernetes.
   - nodeResources:

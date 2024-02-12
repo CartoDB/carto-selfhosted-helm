@@ -4928,89 +4928,31 @@ routerMetrics:
   ##
   customStartupProbe: {}
 
-ingress:
-  ## @param ingress.enabled Enable ingress controller resource
+gateway:
+  ## @param gateway.enabled Enable gateway api.
   ##
   enabled: false
   ## TLS Certificates
-  ## @param ingress.tlsCertificates.customCerts.enabled enable if customer provides their own certificates
-  ## @param ingress.tlsCertificates.customCerts.certificateValueBase64 custom certificate in base64
-  ## @param ingress.tlsCertificates.customCerts.privateKeyValueBase64 custom private key in base64
+  ## @param gateway.tlsCertificates.customCerts.enabled enable if customer provides their own certificates.
+  ## @param gateway.tlsCertificates.customCerts.certificateValueBase64 custom certificate in base64.
+  ## @param gateway.tlsCertificates.customCerts.privateKeyValueBase64 custom private key in base64.
   ##
   tlsCertificates:
     customCerts:
       enabled: false
       certificateValueBase64: ""
       privateKeyValueBase64: ""
-    ## @param ingress.tlsCertificates.managedCerts.enabled enable if managed certs creation is required
+    ## @param gateway.tlsCertificates.managedCerts.enabled enable if managed certs creation is required.
     ##
     managedCerts:
       enabled: false
-
-  ## Configure the ingress resource that allows you to access the
-  ## Carto installation. Set up the URL
-  ## ref: https://kubernetes.io/docs/user-guide/ingress/
-  ##
-
-  ## @param ingress.pathType Ingress Path type
-  ##
-  pathType: ImplementationSpecific
-  ## @param ingress.apiVersion Override API Version (automatically detected if not set)
+  ## @param gateway.apiVersion Kubernetes Gateway API Version.
   ##
   apiVersion: ""
-  ## @param ingress.ingressClassName IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)
-  ## This is supported in Kubernetes 1.18+ and required if you have more than one IngressClass marked as the default for your cluster .
-  ## ref: https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/
+  ## @param gateway.gatewayClassName GatewayClass that will be be used to implement the gateway api.
   ##
-  ingressClassName: ""
-  ## @param ingress.path The Path to CARTO. You may need to set this to '/*' in order to use this
-  ## with ALB ingress controllers.
-  ##
-  path: /*
-  ## @param ingress.annotations Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations.
-  ## For a full list of possible ingress annotations, please see
-  ## ref: https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md
-  ## Use this parameter to set the required annotations for cert-manager, see
-  ## ref: https://cert-manager.io/docs/usage/ingress/#supported-annotations
-  ##
-  ## e.g:
-  ## annotations:
-  ##   kubernetes.io/ingress.class: nginx
-  ##   cert-manager.io/cluster-issuer: cluster-issuer-name
-  ##
+  gatewayClassName: ""
+  ## @param gateway.path The Path to CARTO
+  path: /
+  ## @param gateway.annotations Additional annotations for the gateway resource.
   annotations: {}
-  ## @param ingress.extraHosts The list of additional hostnames to be covered with this ingress record.
-  ## Most likely the hostname above will be enough, but in the event more hosts are needed, this is an array
-  ## extraHosts:
-  ## - name: example.local
-  ##   path: /
-  extraHosts: []
-  ## @param ingress.extraPaths Any additional arbitrary paths that may need to be added to the ingress under the main host.
-  ## For example: The ALB ingress controller requires a special rule for handling SSL redirection.
-  ## extraPaths:
-  ## - path: /*
-  ##   backend:
-  ##     serviceName: ssl-redirect
-  ##     servicePort: use-annotation
-  extraPaths: []
-  ## @param ingress.extraTls The tls configuration for additional hostnames to be covered with this ingress record.
-  ## see: https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
-  ## extraTls:
-  ## - hosts:
-  ##     - example.local
-  ##   secretName: example.local-tls
-  extraTls: []
-  ## @param ingress.extraRules Additional rules to be covered with this ingress record
-  ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/#ingress-rules
-  ## e.g:
-  ## extraRules:
-  ## - host: example.local
-  ##     http:
-  ##       path: /
-  ##       backend:
-  ##         service:
-  ##           name: example-svc
-  ##           port:
-  ##             name: http
-  ##
-  extraRules: []
