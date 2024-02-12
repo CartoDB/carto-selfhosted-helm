@@ -170,6 +170,15 @@ spec:
             tag: 20240117pr15139
     # END
 
+    # Proxy
+    - when: '{{repl ConfigOptionEquals "externalProxyEnabled" "1" }}'
+      recursiveMerge: true
+      values:
+        externalProxy:
+          enabled: true
+          connectionString: '{{repl ConfigOption "externalProxyHost" }}'
+          excludedDomains: ["localhost,.svc.cluster.local"]
+
     # High Availability Enable
     - when: '{{repl ConfigOptionEquals "enablePlatformHighAvailability" "1" }}'
       recursiveMerge: true

@@ -323,7 +323,6 @@ spec:
           type: text
           required: true
 
-
     # Advanced Config
     - name: platformAdvancedConfig
       title: Advanced Config
@@ -374,6 +373,28 @@ spec:
             If you don't know what this is, please change the SSL Mode.
           type: file
           required: true
+
+        ## Proxy
+        - name: externalProxyEnabled
+          title: External proxy
+          help_text: |-
+            CARTO Self-hosted supports operating behind an HTTP or HTTPS proxy. Enable this option if you'd like to use an external proxy.
+
+            If you need further info, please check [docs.carto.com](https://docs.carto.com/carto-self-hosted/guides/configure-an-external-proxy).
+          type: bool
+          default: "0"
+        - name: externalProxyHost 
+          title: Host
+          type: text
+          when: '{{repl (ConfigOptionEquals "externalProxyEnabled" "1") }}'
+          value: 'repl{{ HTTPProxy }}'
+          readonly: true
+        - name: externalProxyExcludedDomains 
+          title: Excluded domains
+          type: text
+          when: '{{repl (ConfigOptionEquals "externalProxyEnabled" "1") }}'
+          value: 'repl{{ NoProxy }}'
+          readonly: true
 
         ## LDS
         - name: locationDataServicesEnable
