@@ -106,6 +106,9 @@ Return common analyzers for preflights and support-bundle
         - fail:
             when: "== minikube"
             message: The application does not support minikube clusters.
+        - fail:
+            when: "== digitalocean"
+            message: The application does not support digitalocean platform.
         - pass:
             when: "== eks"
             message: EKS is a supported distribution.
@@ -115,6 +118,10 @@ Return common analyzers for preflights and support-bundle
         - pass:
             when: "== aks"
             message: AKS is a supported distribution.
+        # Will be supported in the future
+        - pass:
+            when: "== k0s"
+            message: K0s is a supported distribution.
         - warn:
             message: Unable to determine the distribution of Kubernetes.
   - nodeResources:
