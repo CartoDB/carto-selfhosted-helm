@@ -1,0 +1,14 @@
+{{- if and .Values.gateway.enabled (eq .Values.replicated.platformDistribution "gke") }}
+apiVersion: networking.gke.io/v1
+kind: GCPBackendPolicy
+metadata:
+  name: {{ template "carto.gateway.fullname" . }}-backend-policy
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  default:
+    timeoutSec: 600
+  targetRef:
+    group: ""
+    kind: Service
+    name: {{ template "carto.router.fullname" . }}
+{{- end }}
