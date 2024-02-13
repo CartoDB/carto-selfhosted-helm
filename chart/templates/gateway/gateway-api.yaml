@@ -19,10 +19,10 @@ spec:
     port: {{ .Values.gateway.listeners.https.port }}
     tls:
       mode: {{ .Values.gateway.tls.mode }}
-      {{- if .Values.gateway.tlsCertificates.customCerts.enabled }}
+      {{- if .Values.gateway.tlsCertificates.customSSLCerts.enabled }}
       certificateRefs:
       - kind: Secret
-        name: {{ include "carto.gateway.tlsCertificates.customCerts.secretName" . }}
+        name: {{ include "carto.gateway.tlsCertificates.customSSLCerts.secretName" . }}
       {{- else if .Values.gateway.tlsCertificates.managedCerts.enabled }}
       options:
         networking.gke.io/pre-shared-certs: {{ .Values.gateway.tlsCertificates.managedCerts.name }}
