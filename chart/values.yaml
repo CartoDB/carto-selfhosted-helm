@@ -5000,12 +5000,12 @@ gateway:
   ##
   enabled: false
   ## TLS Certificates
-  ## @param gateway.tlsCertificates.customCerts.enabled enable if customer provides their own certificates.
-  ## @param gateway.tlsCertificates.customCerts.certificateValueBase64 custom certificate in base64.
-  ## @param gateway.tlsCertificates.customCerts.privateKeyValueBase64 custom private key in base64.
+  ## @param gateway.tlsCertificates.customSSLCerts.enabled enable if customer provides their own certificates.
+  ## @param gateway.tlsCertificates.customSSLCerts.certificateValueBase64 custom certificate in base64.
+  ## @param gateway.tlsCertificates.customSSLCerts.privateKeyValueBase64 custom private key in base64.
   ##
   tlsCertificates:
-    customCerts:
+    customSSLCerts:
       enabled: false
       certificateValueBase64: ""
       privateKeyValueBase64: ""

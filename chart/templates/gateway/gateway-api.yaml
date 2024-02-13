@@ -22,8 +22,8 @@ spec:
       {{- if .Values.gateway.tlsCertificates.customCerts.enabled }}
       certificateRefs:
       - kind: Secret
-        name: {{ include "carto.gateway.tlsCertificates.secretName" . }}
-      {{- else if and .Values.gateway.tlsCertificates.managedCerts.enabled }}
+        name: {{ include "carto.gateway.tlsCertificates.customCerts.secretName" . }}
+      {{- else if .Values.gateway.tlsCertificates.managedCerts.enabled }}
       options:
         networking.gke.io/pre-shared-certs: {{ .Values.gateway.tlsCertificates.managedCerts.name }}
       {{- end }}
