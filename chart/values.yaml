@@ -5020,7 +5020,7 @@ gateway:
   ##
   gatewayClassName: ""
   ## @param gateway.path The Path to CARTO
-  path: /*
+  path: /
   ## TLS
   ## @param gateway.tls.mode defines the TLS behavior for the TLS session initiated by the client.
   ## There are two possible modes: Terminate and Passthrough
