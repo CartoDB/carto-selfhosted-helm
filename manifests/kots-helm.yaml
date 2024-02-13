@@ -59,7 +59,7 @@ spec:
       bigqueryOauth2ClientSecret:
         value: '{{repl ConfigOption "bigqueryOauthClientSecret" }}'
       googleCloudStorageServiceAccountKey:
-        value: '{{repl ConfigOption "storageBucketsGcpServiceAccount" }}'
+        value: '{{repl ConfigOption "cartoPlatformGoogleSA" }}'
       awsAccessKeyId:
         value: '{{repl ConfigOption "storageBucketsAwsAccessKeyId" }}'
       awsAccessKeySecret:
@@ -67,13 +67,13 @@ spec:
       azureStorageAccessKey:
         value: '{{repl ConfigOption "storageBucketsAzureAccessKey" }}'
       importAwsAccessKeyId:
-        value: '{{repl ConfigOption "storageBucketsImportAwsAccessKeyId" }}'
+        value: '{{repl ConfigOption "storageBucketsImportExportAwsAccessKeyId" }}'
       importAwsSecretAccessKey:
-        value: '{{repl ConfigOption "storageBucketsImportAwsSecretAccessKey" }}'
+        value: '{{repl ConfigOption "storageBucketsImportExportAwsSecretAccessKey" }}'
       exportAwsSecretAccessKey:
-        value: '{{repl ConfigOption "storageBucketsExportAwsSecretAccessKey" }}'
+        value: '{{repl ConfigOption "storageBucketsImportExportAwsSecretAccessKey" }}'
       exportAwsAccessKeyId:
-        value: '{{repl ConfigOption "storageBucketsExportAwsAccessKeyId" }}'
+        value: '{{repl ConfigOption "storageBucketsImportExportAwsAccessKeyId" }}'
       ldsHereApiKey:
         value: '{{repl ConfigOption "locationDataServicesHereCredentials" }}'
       ldsTomTomApiKey:
