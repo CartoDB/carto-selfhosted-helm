@@ -2,6 +2,8 @@ apiVersion: kots.io/v1beta2
 kind: HelmChart
 metadata:
   name: carto
+  annotations:
+    kots.io/exclude: "true"
 spec:
   chart:
     name: carto
@@ -178,6 +180,9 @@ spec:
           enabled: true
           connectionString: '{{repl ConfigOption "externalProxyHost" }}'
           excludedDomains: '{{repl ConfigOption "externalProxyExcludedDomains" }}'
+          sslRejectUnauthorized: repl{{ if ConfigOptionEquals "externalHttpsProxySslCertificateCheck" "0"}}falserepl{{ else }}truerepl{{ end }}
+          sslCA: |
+            repl{{ ConfigOptionData "externalHttpsProxySslCa" | nindent 12 }}
 
     # High Availability Enable
     - when: '{{repl ConfigOptionEquals "enablePlatformHighAvailability" "1" }}'

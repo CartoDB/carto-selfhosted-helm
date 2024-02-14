@@ -70,7 +70,6 @@ spec:
           hidden: true
           default: repl{{ fromJson (LicenseFieldValue "cartoPlatformDefaultSA") | dig "project_id" "" }}
 
-
     # Postgresql
     - name: MetadataDatabase
       title: Metadata Database
@@ -248,7 +247,7 @@ spec:
             repl{{    $_ := set $result "provider" "azure-blob" }}
             repl{{ end }}
             repl{{ toJson $result }}
-        - name: storageBucketsGcpServiceAccount
+        - name: storageBucketsGcpServiceAccountEmail
           title: Identity used to access GCS
           help_text: |-
             You can edit this filed in the Advanced Configuration
@@ -383,6 +382,17 @@ spec:
             If you need further info, please check [docs.carto.com](https://docs.carto.com/carto-self-hosted/guides/configure-an-external-proxy).
           type: bool
           default: "0"
+        - name: externalProxyType
+          title: External proxy type
+          type: select_one
+          when: '{{repl (ConfigOptionEquals "externalProxyEnabled" "1") }}'
+          required: true
+          default: http
+          items:
+            - name: http
+              title: HTTP
+            - name: https
+              title: HTTPS
         - name: externalProxyHost 
           title: Host
           type: text
@@ -395,6 +405,19 @@ spec:
           when: '{{repl (ConfigOptionEquals "externalProxyEnabled" "1") }}'
           value: 'repl{{ NoProxy }}'
           readonly: true
+        - name: externalHttpsProxySslCa
+          title: Proxy SSL CA
+          when: '{{repl and (ConfigOptionEquals "externalProxyEnabled" "1") (ConfigOptionEquals "externalProxyType" "https") }}'
+          type: file
+          help_text: |-
+             If the proxy certificate is signed by a custom CA, such CA must be included here, but if it's signed by a well known CA, there is no need to add it here.
+        - name: externalHttpsProxySslCertificateCheck
+          title: SSL certificate checks
+          type: bool
+          when: '{{repl and (ConfigOptionEquals "externalProxyEnabled" "1") (ConfigOptionEquals "externalProxyType" "https") }}'
+          default: "0"
+          help_text: |-
+            Specify if CARTO Self-hosted should check if the proxy certificate is valid or not.
 
         ## LDS
         - name: locationDataServicesEnable
@@ -650,7 +673,7 @@ spec:
           title: CARTO Platform credentials
           when: '{{repl (ConfigOptionEquals "enableGoogleWorkloadIdentity" "0") }}'
           help_text: |-
-            This is the Service Account  that is going to be used by the Self-Hosted environment to access CARTO platform services.
+            This is the Service Account that is going to be used by the Self-Hosted environment to access CARTO platform services.
             Please do not modify it at least that you know what you are doing.
             Contact [Carto Support](https://docs.carto.com/carto-self-hosted/support) if you have any doubts.
           required: true
