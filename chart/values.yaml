@@ -51,7 +51,9 @@ appConfigValues:
 ## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
 replicated:
   ## @param replicated.enabled Enable Carto replicated
+  ## @param replicated.platformDistribution Platform distribution to deploy Carto Selfhosted with Replicated
   enabled: false
+  platformDistribution: ""
 cartoConfigValues:
   ## @param cartoConfigValues.enableErrorResponseStackTrace Enable stack traces in the container responses
   enableErrorResponseStackTrace: "false"
@@ -307,6 +309,7 @@ cartoSecrets:
       name: ""
       key: ""
 
+## FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 ## @section TLS parameters
 ## Global TLS parameters
 ## @param tlsCerts.httpsEnabled Enable https. CARTO only works with `HTTPS`, if you disable this protocol here you should configure it in a higher layer like a Load Balancer
@@ -314,10 +317,6 @@ cartoSecrets:
 ## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
 ## @param tlsCerts.existingSecret.certKey Key of the certificate inside the secret
 ## @param tlsCerts.existingSecret.keyKey Key of the certificate key inside the secret
-## @param tlsCerts.customCertsEnabled enable if customer provides their own certificates
-## @param tlsCerts.customCertificateValue certificate in base64
-## @param tlsCerts.customPrivateKeyValue private key in base64
-## @param tlsCerts.generateManagedCerts enable if managed certs creation is required
 ##
 tlsCerts:
   httpsEnabled: true
@@ -326,10 +325,6 @@ tlsCerts:
     name: ""
     keyKey: "tls.key"
     certKey: "tls.crt"
-  customCertsEnabled: false
-  customCertificateValue: ""
-  customPrivateKeyValue: ""
-  generateManagedCerts: false
 
 ## @section common backend service account
 ## Service Account to be specified for the client to be used in common backend deployments
@@ -2305,6 +2300,17 @@ router:
     proxy_buffer_size: "8k"
     proxy_busy_buffers_size: "8k"
     client_max_body_size: "10M"
+  ## @param router.httpsEnabled Enable https. CARTO only works with `HTTPS`, if you disable this protocol here you should configure it in a higher layer like a Load Balancer
+  ##
+  httpsEnabled: false
+  ## TLS Certificates
+  ## @param router.tlsCertificates.certificateValueBase64 certificate in base64
+  ## @param router.tlsCertificates.privateKeyValueBase64 private key in base64
+  ##
+  tlsCertificates:
+    certificateValueBase64: ""
+    privateKeyValueBase64: ""
+
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param router.podSecurityContext.enabled Enabled router pods' Security Context
@@ -2523,6 +2529,7 @@ router:
     ## @param router.service.extraPorts Extra ports to expose in router service (normally used with the `sidecars` value)
     ##
     extraPorts: []
+  ## FIXME: Deprecated in favor of ingress instead of router.ingress
   ## Configure the ingress resource that allows you to access the
   ## Carto installation. Set up the URL
   ## ref: https://kubernetes.io/docs/user-guide/ingress/
@@ -4988,3 +4995,56 @@ routerMetrics:
   ## @param routerMetrics.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
+
+gateway:
+  ## @param gateway.enabled Enable gateway api.
+  ## https://gateway-api.sigs.k8s.io/reference/spec/
+  ##
+  enabled: false
+  ## TLS Certificates
+  ## @param gateway.tlsCertificates.customSSLCerts.enabled enable if customer provides their own certificates.
+  ## @param gateway.tlsCertificates.customSSLCerts.certificateValueBase64 custom certificate in base64.
+  ## @param gateway.tlsCertificates.customSSLCerts.privateKeyValueBase64 custom private key in base64.
+  ##
+  tlsCertificates:
+    customSSLCerts:
+      enabled: false
+      certificateValueBase64: ""
+      privateKeyValueBase64: ""
+    ## @param gateway.tlsCertificates.managedCerts.enabled enable if managed certs creation is required.
+    ##
+    managedCerts:
+      enabled: false
+  ## @param gateway.apiVersion Kubernetes Gateway API Version.
+  ##
+  apiVersion: ""
+  ## @param gateway.gatewayClassName GatewayClass that will be be used to implement the gateway api.
+  ##
+  gatewayClassName: ""
+  ## @param gateway.path The Path to CARTO
+  path: /
+  ## TLS
+  ## @param gateway.tls.mode defines the TLS behavior for the TLS session initiated by the client.
+  ## There are two possible modes: Terminate and Passthrough
+  tls:
+    mode: Terminate
+  ## Listeners
+  ## @param gateway.listeners.https.name HTTPS listener name
+  ## @param gateway.listeners.https.port HTTPS listener port
+  ## @param gateway.listeners.http.name HTTP listener name
+  ## @param gateway.listeners.http.port HTTP listener port
+  listeners:
+    https:
+      name: https
+      port: 443
+    http:
+      name: http
+      port: 80
+  # Addresses
+  ## @param gateway.address.type AddressType defines how a network address is represented as a text string.
+  ## There are three possible types: Hostname, IPAddress and NamedAddress
+  ## Use NamedAddress to pass the Static IP name value
+  address:
+    type: NamedAddress
+  ## @param gateway.annotations Additional annotations for the gateway resource.
+  annotations: {}
