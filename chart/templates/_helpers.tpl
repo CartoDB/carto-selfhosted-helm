@@ -1390,10 +1390,14 @@ Return the proper Carto upgrade check image name
 {{- end -}}
 
 {{/*
-Add environment variables to configure proxy values
+Return the proxy connection string if the config does not include the complete URL
 */}}
-{{- define "carto.proxy.connectionString" -}}
+{{- define "carto.proxy.computedConnectionString" -}}
+{{- if .Values.externalProxy.connectionString -}}
+{{- printf "%s" .Values.externalProxy.connectionString -}}
+{{- else -}}
 {{- printf "%s://%s:%d" (lower .Values.externalProxy.type) .Values.externalProxy.host (int .Values.externalProxy.port) -}}
+{{- end -}}
 {{- end -}}
 
 {{/*

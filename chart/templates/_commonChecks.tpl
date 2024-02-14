@@ -45,25 +45,26 @@ Return common collectors for preflights and support-bundle
 Return common analyzers for preflights and support-bundle
 */}}
 {{- define "carto.replicated.commonChecks.analyzers" }}
-  {{- range list 
+  {{- range $value := list 
         "Check_database_connection"
         "Check_database_encoding"
         "Check_user_has_right_permissions"
         "Check_database_version"
     }}
   - jsonCompare:
-      checkName: {{ . | replace "_" " " }}
+      checkName: {{ $value | replace "_" " " }}
       fileName: tenant-requirements-check/tenant-requirements-check.log
-      path: "WorkspaceDatabaseValidator.{{ . }}.status"
+      path: "WorkspaceDatabaseValidator.{{ $value }}.status"
       value: |
         "passed"
       outcomes:
         - fail:
             when: "false"
-            message: "fail"
+            message: "{{ printf "{{ .WorkspaceDatabaseValidator.%s.info }}" $value }}"
+
         - pass:
             when: "true"
-            message: "pass"
+            message: "{{ printf "{{ .WorkspaceDatabaseValidator.%s.info }}" $value }}"
   {{- end }}
   - registryImages:
       checkName: Carto Registry Images
