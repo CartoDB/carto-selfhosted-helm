@@ -2,6 +2,8 @@ apiVersion: kots.io/v1beta2
 kind: HelmChart
 metadata:
   name: carto
+  annotations:
+    kots.io/exclude: "true"
 spec:
   chart:
     name: carto
@@ -59,7 +61,7 @@ spec:
       bigqueryOauth2ClientSecret:
         value: '{{repl ConfigOption "bigqueryOauthClientSecret" }}'
       googleCloudStorageServiceAccountKey:
-        value: '{{repl ConfigOption "storageBucketsGcpServiceAccount" }}'
+        value: '{{repl ConfigOption "cartoPlatformGoogleSA" }}'
       awsAccessKeyId:
         value: '{{repl ConfigOption "storageBucketsAwsAccessKeyId" }}'
       awsAccessKeySecret:
@@ -67,13 +69,13 @@ spec:
       azureStorageAccessKey:
         value: '{{repl ConfigOption "storageBucketsAzureAccessKey" }}'
       importAwsAccessKeyId:
-        value: '{{repl ConfigOption "storageBucketsImportAwsAccessKeyId" }}'
+        value: '{{repl ConfigOption "storageBucketsImportExportAwsAccessKeyId" }}'
       importAwsSecretAccessKey:
-        value: '{{repl ConfigOption "storageBucketsImportAwsSecretAccessKey" }}'
+        value: '{{repl ConfigOption "storageBucketsImportExportAwsSecretAccessKey" }}'
       exportAwsSecretAccessKey:
-        value: '{{repl ConfigOption "storageBucketsExportAwsSecretAccessKey" }}'
+        value: '{{repl ConfigOption "storageBucketsImportExportAwsSecretAccessKey" }}'
       exportAwsAccessKeyId:
-        value: '{{repl ConfigOption "storageBucketsExportAwsAccessKeyId" }}'
+        value: '{{repl ConfigOption "storageBucketsImportExportAwsAccessKeyId" }}'
       ldsHereApiKey:
         value: '{{repl ConfigOption "locationDataServicesHereCredentials" }}'
       ldsTomTomApiKey:
@@ -169,6 +171,18 @@ spec:
           image:
             tag: 20240117pr15139
     # END
+
+    # Proxy
+    - when: '{{repl ConfigOptionEquals "externalProxyEnabled" "1" }}'
+      recursiveMerge: true
+      values:
+        externalProxy:
+          enabled: true
+          connectionString: '{{repl ConfigOption "externalProxyHost" }}'
+          excludedDomains: '{{repl ConfigOption "externalProxyExcludedDomains" }}'
+          sslRejectUnauthorized: repl{{ if ConfigOptionEquals "externalHttpsProxySslCertificateCheck" "0"}}falserepl{{ else }}truerepl{{ end }}
+          sslCA: |
+            repl{{ ConfigOptionData "externalHttpsProxySslCa" | nindent 12 }}
 
     # High Availability Enable
     - when: '{{repl ConfigOptionEquals "enablePlatformHighAvailability" "1" }}'

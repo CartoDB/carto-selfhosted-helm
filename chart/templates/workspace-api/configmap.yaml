@@ -88,12 +88,12 @@ data:
   WORKSPACE_IMPORTS_STORAGE_ACCOUNT: {{ .Values.appConfigValues.azureStorageAccount | quote }}
   {{- end }}
   {{- if .Values.externalProxy.enabled }}
-  HTTP_PROXY: {{ include "carto.proxy.connectionString" . | quote }}
-  http_proxy: {{ include "carto.proxy.connectionString" . | quote }}
-  HTTPS_PROXY: {{ include "carto.proxy.connectionString" . | quote }}
-  https_proxy: {{ include "carto.proxy.connectionString" . | quote }}
-  GRPC_PROXY: {{ include "carto.proxy.connectionString" . | quote }}
-  grpc_proxy: {{ include "carto.proxy.connectionString" . | quote }}
+  HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  HTTPS_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  https_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  GRPC_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  grpc_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
   NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
   AT_LOCATION_BIGQUERY: {{ .Values.appConfigValues.defaultAtLocation.bigquery | quote }}
   AT_LOCATION_SNOWFLAKE: {{ .Values.appConfigValues.defaultAtLocation.snowflake | quote }}
