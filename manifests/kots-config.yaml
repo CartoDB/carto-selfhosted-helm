@@ -19,6 +19,10 @@ spec:
             If you need further info, please check [docs.carto.com](https://docs.carto.com).
 
             The ID of your Self-Hosted installation is: `{{repl LicenseFieldValue "selfHostedId" }}`
+        - name: replicatedLicenseType
+          title: License Type
+          hidden: true
+          value: '{{repl LicenseFieldValue "licenseType" }}'
         - name: environmentCustomerPackageValues
           title: Customer Package Values
           type: textarea
@@ -415,7 +419,7 @@ spec:
           help_text: Bucket name to be used for imports
           type: text
           required: true
-          default: repl{{ if ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs"}}repl{{ print (ConfigOption "projectId") "-client-storage"}}repl{{ end }}
+          default: repl{{ if ConfigOptionEquals "replicatedLicenseType" "dev"}}repl{{ print (ConfigOption "projectId") "-client-storage"}}repl{{ end }}
         - name: storageBucketsWorkspaceImportsIsPublic
           help_text: |-
             Please select the access mode of this bucket
@@ -431,7 +435,7 @@ spec:
           help_text: Bucket name to be used to store the thumbnails generated in the app
           type: text
           required: true
-          default: repl{{ if ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs"}}repl{{ print (ConfigOption "projectId") "-thumbnails-storage"}}repl{{ end }}
+          default: repl{{ if ConfigOptionEquals "replicatedLicenseType" "dev"}}repl{{ print (ConfigOption "projectId") "-thumbnails-storage"}}repl{{ end }}
         - name: storageBucketsThumbnailsIsPublic
           help_text: |-
             Please select the access mode of this bucket
@@ -447,14 +451,14 @@ spec:
           help_text: Bucket to be used to store the exports generated in the app
           type: text
           required: true
-          default: repl{{ if ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs"}}repl{{ print (ConfigOption "projectId") "-export-storage"}}repl{{ end }}
+          default: repl{{ if ConfigOptionEquals "replicatedLicenseType" "dev"}}repl{{ print (ConfigOption "projectId") "-export-storage"}}repl{{ end }}
         - name: storageBucketsGcpProjectId
           title: Buckets project id
           when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
           help_text: The GCP Project Id of these buckets
           type: text
           required: true
-          default: repl{{ if ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs"}}repl{{ ConfigOption "projectId"}}repl{{ end }}
+          default: repl{{ if ConfigOptionEquals "replicatedLicenseType" "dev"}}repl{{ ConfigOption "projectId"}}repl{{ end }}
         - name: storageBucketsAwsS3Region
           title: Bucket AWS S3 Region
           when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
