@@ -144,7 +144,7 @@ spec:
 
     # Service Account
     commonBackendServiceAccount:
-      enableGCPWorkloadIdentity: repl{{ if ConfigOptionEquals "googleWorkloadIdentityStatus" "enabled_on_apis"}}truerepl{{ else }}falserepl{{ end }}
+      enableGCPWorkloadIdentity: repl{{ if ConfigOptionEquals "enableGoogleWorkloadIdentity" "1"}}truerepl{{ else }}falserepl{{ end }}
       annotations:
         iam.gke.io/gcp-service-account: '{{repl ConfigOption "googleWorkloadIdentityEmail" }}'
 
