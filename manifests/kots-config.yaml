@@ -788,7 +788,7 @@ spec:
           default: "0"
         - name: bigqueryWorkloadIdentityConnectionWorkflowTMP
           title: BigQuery temporary location
-          when: &when_google_workload_identy_and_connections >-
+          when: &when_google_workload_identity_and_connections >-
             {{repl $cond1 := (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") -}}
             {{repl $cond2 := (ConfigOptionEquals "enableBigqueryWorkloadIdentityConnection" "1") -}}
             {{repl $result := and $cond1 $cond2 -}}
@@ -799,14 +799,14 @@ spec:
           type: text
         - name: bigqueryWorkloadIdentityConnectionBillingProject
           title: Google billing broject
-          when: *when_google_workload_identy_and_connections
+          when: *when_google_workload_identity_and_connections
           help_text: |-
             GCP project to be charged with the BigQuery costs when using Workload Identity
           required: true
           type: text
         - name: bigqueryWorkloadIdentityConnectionOwnerId
           title: CARTO connection owner id
-          when: *when_google_workload_identy_and_connections
+          when: *when_google_workload_identity_and_connections
           help_text: |-
             Id of the Carto user who will be the owner of the bigquery connection created by workload identity (i.e. `auth0|3idsj230990sj4wsddd10`)
           required: true
