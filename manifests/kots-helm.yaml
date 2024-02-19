@@ -217,7 +217,18 @@ spec:
             ports:
               httpsTargetPort: http
 
-    ## High Availability
+    # Workload Identity Connection
+    - when: '{{repl ConfigOptionEquals "enableBigqueryWorkloadIdentityConnection" "1" }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          workloadIdentityConnection:
+            enabled: true
+            workflowsTempLocation: '{{repl ConfigOption "bigqueryWorkloadIdentityConnectionWorkflowTMP" }}'
+            billingProject: '{{repl ConfigOption "bigqueryWorkloadIdentityConnectionBillingProject" }}'
+            serviceAccountEmail: '{{repl ConfigOption "googleWorkloadIdentityEmail" }}'
+            connectionOwner: '{{repl ConfigOption "bigqueryWorkloadIdentityConnectionOwnerId" }}'
+
     # Proxy
     - when: '{{repl ConfigOptionEquals "externalProxyEnabled" "1" }}'
       recursiveMerge: true

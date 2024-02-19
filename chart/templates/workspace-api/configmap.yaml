@@ -87,6 +87,13 @@ data:
   WORKSPACE_THUMBNAILS_STORAGE_ACCOUNT: {{ .Values.appConfigValues.azureStorageAccount | quote }}
   WORKSPACE_IMPORTS_STORAGE_ACCOUNT: {{ .Values.appConfigValues.azureStorageAccount | quote }}
   {{- end }}
+  {{- if .Values.appConfigValues.workloadIdentityConnection.enabled }}
+  WORKSPACE_SYNC_DATA_ENABLED: "true"
+  WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP: {{ .Values.appConfigValues.workloadIdentityConnection.workflowsTempLocation | quote }}
+  WORKSPACE_WORKLOAD_IDENTITY_BILLING_PROJECT: {{ .Values.appConfigValues.workloadIdentityConnection.billingProject | quote }}
+  WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL: {{ .Values.appConfigValues.workloadIdentityConnection.serviceAccountEmail | quote }}
+  WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID: {{ .Values.appConfigValues.workloadIdentityConnection.connectionOwner | quote }}
+  {{- end }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
