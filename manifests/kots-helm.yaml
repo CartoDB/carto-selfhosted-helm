@@ -134,6 +134,8 @@ spec:
     ## Redis
     internalRedis:
       enabled: repl{{ if ConfigOptionEquals "externalRedisEnabled" "0"}}truerepl{{ else }}falserepl{{ end }}
+      auth:
+        password: '{{repl ConfigOption "internalRedisPassword" }}'
     externalRedis:
       host: '{{repl ConfigOption "externalRedisHost" }}'
       port: '{{repl ConfigOption "externalRedisPort" }}'
