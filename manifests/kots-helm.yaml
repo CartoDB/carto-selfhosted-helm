@@ -2,6 +2,8 @@ apiVersion: kots.io/v1beta2
 kind: HelmChart
 metadata:
   name: carto
+  annotations:
+    kots.io/exclude: "true"
 spec:
   chart:
     name: carto
@@ -9,6 +11,7 @@ spec:
   values:
     replicated:
       enabled: true
+      platformDistribution: '{{repl ConfigOption "platformDistribution" }}'
       # TODO: To be removed when https://app.shortcut.com/cartoteam/story/383961/delete-podsecuritycontext-from-replicated-sdk-when-they-release-a-version-with-the-security-context-updated
       # is done
       podSecurityContext:
@@ -59,7 +62,7 @@ spec:
       bigqueryOauth2ClientSecret:
         value: '{{repl ConfigOption "bigqueryOauthClientSecret" }}'
       googleCloudStorageServiceAccountKey:
-        value: '{{repl ConfigOption "storageBucketsGcpServiceAccount" }}'
+        value: '{{repl ConfigOption "cartoPlatformGoogleSA" }}'
       awsAccessKeyId:
         value: '{{repl ConfigOption "storageBucketsAwsAccessKeyId" }}'
       awsAccessKeySecret:
@@ -67,13 +70,13 @@ spec:
       azureStorageAccessKey:
         value: '{{repl ConfigOption "storageBucketsAzureAccessKey" }}'
       importAwsAccessKeyId:
-        value: '{{repl ConfigOption "storageBucketsImportAwsAccessKeyId" }}'
+        value: '{{repl ConfigOption "storageBucketsImportExportAwsAccessKeyId" }}'
       importAwsSecretAccessKey:
-        value: '{{repl ConfigOption "storageBucketsImportAwsSecretAccessKey" }}'
+        value: '{{repl ConfigOption "storageBucketsImportExportAwsSecretAccessKey" }}'
       exportAwsSecretAccessKey:
-        value: '{{repl ConfigOption "storageBucketsExportAwsSecretAccessKey" }}'
+        value: '{{repl ConfigOption "storageBucketsImportExportAwsSecretAccessKey" }}'
       exportAwsAccessKeyId:
-        value: '{{repl ConfigOption "storageBucketsExportAwsAccessKeyId" }}'
+        value: '{{repl ConfigOption "storageBucketsImportExportAwsAccessKeyId" }}'
       ldsHereApiKey:
         value: '{{repl ConfigOption "locationDataServicesHereCredentials" }}'
       ldsTomTomApiKey:
@@ -89,7 +92,7 @@ spec:
     ## App Config Values
     appConfigValues:
       # domain
-      selfHostedDomain: '{{repl ConfigOption "accessToSHDomain" }}'
+      selfHostedDomain: '{{repl ConfigOption "cartoSelfhostedDomain" }}'
       # buckets
       storageProvider: '{{repl fromJson (ConfigOption "storageBucketsProvider") | dig "provider" "" }}'
       workspaceImportsBucket: '{{repl ConfigOption "storageBucketsWorkspaceImports" }}'
@@ -141,25 +144,49 @@ spec:
 
     # Service Account
     commonBackendServiceAccount:
-      enableGCPWorkloadIdentity: repl{{ if ConfigOptionEquals "googleWorkloadIdentityStatus" "enabled_on_apis"}}truerepl{{ else }}falserepl{{ end }}
+      enableGCPWorkloadIdentity: repl{{ if ConfigOptionEquals "enableGoogleWorkloadIdentity" "1"}}truerepl{{ else }}falserepl{{ end }}
       annotations:
         iam.gke.io/gcp-service-account: '{{repl ConfigOption "googleWorkloadIdentityEmail" }}'
 
     ## TLS Certs
+    # FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
+    # Disable legacy tlsCerts
     tlsCerts:
-      httpsEnabled: repl{{ if and (ConfigOptionEquals "accessToSHModeNotKurl" "accessToCartoDefaultLB") (ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates")}}truerepl{{ else }}falserepl{{ end }}
+      httpsEnabled: false
       autoGenerate: false
-      customCertsEnabled: repl{{ if ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_custom_certificates"}}truerepl{{ else }}falserepl{{ end }}
-      customCertificateValue: '{{repl ConfigOption "accessToSHCustomTLSTerminationCertFile" }}'
-      customPrivateKeyValue: '{{repl ConfigOption "accessToSHCustomTLSTerminationKeyFile" }}'
-      generateManagedCerts: repl{{ if ConfigOptionEquals "accessToCartoDefaultAccessCertificates" "tls_managed_certificates"}}truerepl{{ else }}falserepl{{ end }}
 
     ## Access to Carto
+    # Router
     router:
       service:
-        type: LoadBalancer
+        type: NodePort
+      httpsEnabled: repl{{ if ConfigOptionEquals "cartoRouterHTTPSEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
+      tlsCertificates:
+        certificateValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSCertFile" }}'
+        privateKeyValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSKeyFile" }}'
 
-  # Values from Advanced Configuration
+    gateway:
+      enabled: repl{{ if ConfigOptionEquals "kubernetesGatewayEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
+      gatewayClassName: '{{repl fromJson (ConfigOption "loadBalancerSupportedKind") | dig "gatewayClassName" "" }}'
+      tlsCertificates:
+        customSSLCerts:
+          enabled: repl{{ if ConfigOptionEquals "customSSLCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
+          certificateValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSCertFile" }}'
+          privateKeyValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSKeyFile" }}'
+        managedCerts:
+          ## FIXME: api-gateway does not support yet a managed cert created in kubernetes. Can only pass pass the managed cert name, but if we create it
+          ## from kubernetes this name is random. We could obtain it with the following lookup function, but the first apply wouldn't work.
+          ## So at this moment, we need the customer create the managed cert himself and pass the name in this field
+          ## (Lookup "networking.gke.io/v1" "ManagedCertificate" "agonzalez-kots" "carto-gateway-managed-cert").status.certificateName
+          enabled: repl{{ if ConfigOptionEquals "SSLCertificatesGCP" "true"}}truerepl{{ else }}falserepl{{ end }}
+          name: '{{repl ConfigOption "accessToCartoManagedCertsGCPName" }}'
+      staticIP:
+        enabled: repl{{ if ConfigOptionEquals "defaultLBStaticIPAddressGCP" ""}}falserepl{{ else }}truerepl{{ end }}
+        value: '{{repl ConfigOption "defaultLBStaticIPAddressGCP" }}'
+
+
+  # Optional Values
+  ## Values from Advanced Configuration
   optionalValues:
     # START: Temporary hack to fix some images not already released
     - when: "true"
@@ -169,6 +196,37 @@ spec:
           image:
             tag: 20240117pr15139
     # END
+
+    ## Router
+    ## EKS
+    - when: '{{repl and (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefaultLB") (ConfigOptionEquals "platformDistribution" "eks") }}'
+      recursiveMerge: true
+      values:
+        router:
+          service:
+            type: LoadBalancer
+            annotations:
+              service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+              service.beta.kubernetes.io/aws-load-balancer-ssl-cert: '{{repl ConfigOption "accessToCartoTLSCertificatesEKS" }}'
+              service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
+              service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "605"
+              service.beta.kubernetes.io/aws-load-balancer-eip-allocations: '{{repl ConfigOption "defaultLBStaticIPAddressAWS" }}'
+              service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+            ports:
+              httpsTargetPort: http
+
+    ## High Availability
+    # Proxy
+    - when: '{{repl ConfigOptionEquals "externalProxyEnabled" "1" }}'
+      recursiveMerge: true
+      values:
+        externalProxy:
+          enabled: true
+          connectionString: '{{repl ConfigOption "externalProxyHost" }}'
+          excludedDomains: '{{repl ConfigOption "externalProxyExcludedDomains" }}'
+          sslRejectUnauthorized: repl{{ if ConfigOptionEquals "externalHttpsProxySslCertificateCheck" "0"}}falserepl{{ else }}truerepl{{ end }}
+          sslCA: |
+            repl{{ ConfigOptionData "externalHttpsProxySslCa" | nindent 12 }}
 
     # High Availability Enable
     - when: '{{repl ConfigOptionEquals "enablePlatformHighAvailability" "1" }}'
@@ -186,6 +244,7 @@ spec:
         workspaceWww: *highAvailabilityEnabled
         accountsWww: *highAvailabilityEnabled
 
+    ## Advanced Tuning
     - when: '{{repl ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}'
       recursiveMerge: true
       values: repl{{ ConfigOption "platformAdvancedTuningValues" | nindent 8 }}

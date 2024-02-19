@@ -39,6 +39,7 @@ data:
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   WORKSPACE_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
+  WORKSPACE_SYNC_DATA_ENABLED: "true"
   WORKSPACE_IMPORTS_BUCKET: {{ .Values.appConfigValues.workspaceImportsBucket | quote }}
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
@@ -57,12 +58,12 @@ data:
   WORKSPACE_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.appConfigValues.workspaceThumbnailsBucket | quote }}
   {{- if .Values.externalProxy.enabled }}
-  HTTP_PROXY: {{ include "carto.proxy.connectionString" . | quote }}
-  http_proxy: {{ include "carto.proxy.connectionString" . | quote }}
-  HTTPS_PROXY: {{ include "carto.proxy.connectionString" . | quote }}
-  https_proxy: {{ include "carto.proxy.connectionString" . | quote }}
-  GRPC_PROXY: {{ include "carto.proxy.connectionString" . | quote }}
-  grpc_proxy: {{ include "carto.proxy.connectionString" . | quote }}
+  HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  HTTPS_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  https_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  GRPC_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  grpc_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
   NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
   {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}

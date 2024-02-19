@@ -733,6 +733,13 @@ Create the name of the service account to use for the router deployment
 {{- end -}}
 
 {{/*
+Return the proper Carto gateway full name
+*/}}
+{{- define "carto.gateway.fullname" -}}
+{{- printf "%s-gateway" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto http-cache full name
 */}}
 {{- define "carto.httpCache.fullname" -}}
@@ -933,6 +940,7 @@ Return the absolute path where the Google Secret will be mounted
 
 {{/*
 Return the proper Carto TLS Secret name
+FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
 */}}
 {{- define "carto.tlsCerts.secretName" -}}
 {{- if .Values.tlsCerts.existingSecret.name -}}
@@ -944,6 +952,7 @@ Return the proper Carto TLS Secret name
 
 {{/*
 Return the proper Carto TLS secret key for the TLS cert
+FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
 */}}
 {{- define "carto.tlsCerts.secretCertKey" -}}
 {{- if .Values.tlsCerts.existingSecret.name -}}
@@ -955,6 +964,7 @@ Return the proper Carto TLS secret key for the TLS cert
 
 {{/*
 Return the proper Carto TLS secret key for the TLS key
+FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
 */}}
 {{- define "carto.tlsCerts.secretKeyKey" -}}
 {{- if .Values.tlsCerts.existingSecret.name -}}
@@ -962,6 +972,20 @@ Return the proper Carto TLS secret key for the TLS key
 {{- else -}}
 {{- print "tls.key" -}}
 {{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto Router TLS Secret name
+*/}}
+{{- define "carto.router.tlsCertificates.secretName" -}}
+{{- printf "%s-tls-%s" (include "common.names.fullname" .) (.Values.router.tlsCertificates.certificateValueBase64 | sha256sum | substr 0 5) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto Gateway custom TLS Secret name
+*/}}
+{{- define "carto.gateway.tlsCertificates.customSSLCerts.secretName" -}}
+{{- printf "%s-tls-%s" (include "common.names.fullname" .) (.Values.gateway.tlsCertificates.customSSLCerts.certificateValueBase64 | sha256sum | substr 0 5) -}}
 {{- end -}}
 
 {{/*
@@ -1366,10 +1390,14 @@ Return the proper Carto upgrade check image name
 {{- end -}}
 
 {{/*
-Add environment variables to configure proxy values
+Return the proxy connection string if the config does not include the complete URL
 */}}
-{{- define "carto.proxy.connectionString" -}}
+{{- define "carto.proxy.computedConnectionString" -}}
+{{- if .Values.externalProxy.connectionString -}}
+{{- printf "%s" .Values.externalProxy.connectionString -}}
+{{- else -}}
 {{- printf "%s://%s:%d" (lower .Values.externalProxy.type) .Values.externalProxy.host (int .Values.externalProxy.port) -}}
+{{- end -}}
 {{- end -}}
 
 {{/*

@@ -147,12 +147,21 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.router.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            {{- if .Values.tlsCerts.httpsEnabled }}
             - name: tls-secret
               mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
               subPath: {{ template "carto.tlsCerts.secretCertKey" . }}
             - name: tls-secret
               mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretKeyKey" . }}
               subPath: {{ template "carto.tlsCerts.secretKeyKey" . }}
+            {{- else if .Values.router.httpsEnabled }}
+            - name: tls-secret
+              mountPath: /usr/src/certs/tls.crt
+              subPath: tls.crt
+            - name: tls-secret
+              mountPath: /usr/src/certs/tls.key
+              subPath: tls.key
+            {{- end }}
           {{- if .Values.router.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.router.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -238,9 +247,15 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.router.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
+        {{- if .Values.tlsCerts.httpsEnabled }}
         - name: tls-secret
           secret:
             secretName: {{ include "carto.tlsCerts.secretName" . }}
+        {{- else if .Values.router.httpsEnabled }}
+        - name: tls-secret
+          secret:
+            secretName: {{ include "carto.router.tlsCertificates.secretName" . }}
+        {{- end }}
         - name: gcp-default-service-account-key
           secret:
             secretName: {{ include "carto.google.secretName" . }}

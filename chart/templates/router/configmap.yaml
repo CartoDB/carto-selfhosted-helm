@@ -35,18 +35,18 @@ data:
   ROUTER_SSL_CERTIFICATE_PATH: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
   ROUTER_WORKSPACE_API_INTERNAL_URL: {{ include "carto.workspaceApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_WORKSPACE_WWW_INTERNAL_URL: {{ include "carto.workspaceWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
-  ROUTER_ENABLE_HTTPS: {{ .Values.tlsCerts.httpsEnabled | quote }}
+  ROUTER_ENABLE_HTTPS: {{ or .Values.tlsCerts.httpsEnabled .Values.router.httpsEnabled | quote }}
   ROUTER_METRICS_PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   ROUTER_METRICS_PUBSUB_TOPIC: "data-updates"
   ROUTER_METRICS_HOST: "localhost"
   ROUTER_METRICS_PUBSUB_SUBSCRIPTION_FILTER: "aggregated-selfhosted-metrics"
   {{- if .Values.externalProxy.enabled }}
-  HTTP_PROXY: {{ include "carto.proxy.connectionString" . | quote }}
-  http_proxy: {{ include "carto.proxy.connectionString" . | quote }}
-  HTTPS_PROXY: {{ include "carto.proxy.connectionString" . | quote }}
-  https_proxy: {{ include "carto.proxy.connectionString" . | quote }}
-  GRPC_PROXY: {{ include "carto.proxy.connectionString" . | quote }}
-  grpc_proxy: {{ include "carto.proxy.connectionString" . | quote }}
+  HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  HTTPS_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  https_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  GRPC_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  grpc_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
   NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
   {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
