@@ -46,6 +46,17 @@ appConfigValues:
     postgres: "carto"
   ## @param appConfigValues.workspaceExportsBucket Bucket to be used to store the exports generated in the app
   workspaceExportsBucket: ""
+  workloadIdentityConnection:
+    ## @param appConfigValues.workloadIdentityConnection.enabled Enable the creation of a default connection using Workload Identity
+    enabled: false
+    ## @param appConfigValues.workloadIdentityConnection.workflowsTempLocation Workflows temp location to be used in the connection
+    workflowsTempLocation: ""
+    ## @param appConfigValues.workloadIdentityConnection.billingProject Billing project to be used in the connection
+    billingProject: ""
+    ## @param appConfigValues.workloadIdentityConnection.serviceAccountEmail Service account email to be used in the connection
+    serviceAccountEmail: ""
+    ## @param appConfigValues.workloadIdentityConnection.connectionOwner User ID of the owner of the connection
+    connectionOwner: ""
 
 ## @section CARTO config parameters
 ## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
@@ -54,6 +65,7 @@ replicated:
   ## @param replicated.platformDistribution Platform distribution to deploy Carto Selfhosted with Replicated
   enabled: false
   platformDistribution: ""
+
 cartoConfigValues:
   ## @param cartoConfigValues.enableErrorResponseStackTrace Enable stack traces in the container responses
   enableErrorResponseStackTrace: "false"

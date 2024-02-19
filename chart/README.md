@@ -14,30 +14,35 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### Custom config parameters
 
-| Name                                          | Description                                                                                                            | Value                  |
-| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------- |
-| `appConfigValues.selfHostedDomain`            | Domain that is going to be used to access to the CARTO self-hosted.                                                    | `carto-selfhosted.lan` |
-| `appConfigValues.storageProvider`             | Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob`                             | `gcp`                  |
-| `appConfigValues.httpCacheEnabled`            | Enable the internal httpCache                                                                                          | `true`                 |
-| `appConfigValues.importAwsRoleArn`            | ARN Role to be used to import files from the bucket                                                                    | `""`                   |
-| `appConfigValues.exportAwsRoleArn`            | ARN Role to be used to export files from the app                                                                       | `""`                   |
-| `appConfigValues.workspaceImportsBucket`      | Bucket to be used to store metadata of the workspace                                                                   | `""`                   |
-| `appConfigValues.workspaceImportsPublic`      | Indicate if the imports could be accessed publicly                                                                     | `true`                 |
-| `appConfigValues.workspaceThumbnailsBucket`   | Bucket to be used to store the thumbnails generated in the app                                                         | `""`                   |
-| `appConfigValues.awsExportBucket`             | Bucket to be used to store the exports generated in the app                                                            | `""`                   |
-| `appConfigValues.awsExportBucketRegion`       | Region of the bucket to be used to store the exports generated in the app                                              | `""`                   |
-| `appConfigValues.thumbnailsBucketExternalURL` | Bucket URL to be used to store the thumbnails generated in the app                                                     | `""`                   |
-| `appConfigValues.workspaceThumbnailsPublic`   | Indicate if the thumbnails could be accessed publicly                                                                  | `true`                 |
-| `appConfigValues.googleCloudStorageProjectId` | If the bucket is GCP, the ProjectId to be used                                                                         | `""`                   |
-| `appConfigValues.awsS3Region`                 | If the bucket is S3, the region to be used                                                                             | `""`                   |
-| `appConfigValues.bigqueryOauth2ClientId`      | The Client ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key. | `""`                   |
-| `appConfigValues.enableTrackJS`               | By default, TrackJS will gather information about end-user browser, you can disable it setting this paramter to false  | `true`                 |
-| `appConfigValues.ssoOrganizationId`           | SSO organization ID provided by CARTO used to configure the SSO in the app.                                            | `""`                   |
-| `appConfigValues.defaultAtLocation.bigquery`  | The default AT location for BigQuery connections                                                                       | `carto-un.carto`       |
-| `appConfigValues.defaultAtLocation.snowflake` | The default AT location for Snowflake connections                                                                      | `CARTO.CARTO`          |
-| `appConfigValues.defaultAtLocation.redshift`  | The default AT location for Redshift connections                                                                       | `carto`                |
-| `appConfigValues.defaultAtLocation.postgres`  | The default AT location for PostgreSQL connections                                                                     | `carto`                |
-| `appConfigValues.workspaceExportsBucket`      | Bucket to be used to store the exports generated in the app                                                            | `""`                   |
+| Name                                                               | Description                                                                                                            | Value                  |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| `appConfigValues.selfHostedDomain`                                 | Domain that is going to be used to access to the CARTO self-hosted.                                                    | `carto-selfhosted.lan` |
+| `appConfigValues.storageProvider`                                  | Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob`                             | `gcp`                  |
+| `appConfigValues.httpCacheEnabled`                                 | Enable the internal httpCache                                                                                          | `true`                 |
+| `appConfigValues.importAwsRoleArn`                                 | ARN Role to be used to import files from the bucket                                                                    | `""`                   |
+| `appConfigValues.exportAwsRoleArn`                                 | ARN Role to be used to export files from the app                                                                       | `""`                   |
+| `appConfigValues.workspaceImportsBucket`                           | Bucket to be used to store metadata of the workspace                                                                   | `""`                   |
+| `appConfigValues.workspaceImportsPublic`                           | Indicate if the imports could be accessed publicly                                                                     | `true`                 |
+| `appConfigValues.workspaceThumbnailsBucket`                        | Bucket to be used to store the thumbnails generated in the app                                                         | `""`                   |
+| `appConfigValues.awsExportBucket`                                  | Bucket to be used to store the exports generated in the app                                                            | `""`                   |
+| `appConfigValues.awsExportBucketRegion`                            | Region of the bucket to be used to store the exports generated in the app                                              | `""`                   |
+| `appConfigValues.thumbnailsBucketExternalURL`                      | Bucket URL to be used to store the thumbnails generated in the app                                                     | `""`                   |
+| `appConfigValues.workspaceThumbnailsPublic`                        | Indicate if the thumbnails could be accessed publicly                                                                  | `true`                 |
+| `appConfigValues.googleCloudStorageProjectId`                      | If the bucket is GCP, the ProjectId to be used                                                                         | `""`                   |
+| `appConfigValues.awsS3Region`                                      | If the bucket is S3, the region to be used                                                                             | `""`                   |
+| `appConfigValues.bigqueryOauth2ClientId`                           | The Client ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key. | `""`                   |
+| `appConfigValues.enableTrackJS`                                    | By default, TrackJS will gather information about end-user browser, you can disable it setting this paramter to false  | `true`                 |
+| `appConfigValues.ssoOrganizationId`                                | SSO organization ID provided by CARTO used to configure the SSO in the app.                                            | `""`                   |
+| `appConfigValues.defaultAtLocation.bigquery`                       | The default AT location for BigQuery connections                                                                       | `carto-un.carto`       |
+| `appConfigValues.defaultAtLocation.snowflake`                      | The default AT location for Snowflake connections                                                                      | `CARTO.CARTO`          |
+| `appConfigValues.defaultAtLocation.redshift`                       | The default AT location for Redshift connections                                                                       | `carto`                |
+| `appConfigValues.defaultAtLocation.postgres`                       | The default AT location for PostgreSQL connections                                                                     | `carto`                |
+| `appConfigValues.workspaceExportsBucket`                           | Bucket to be used to store the exports generated in the app                                                            | `""`                   |
+| `appConfigValues.workloadIdentityConnection.enabled`               | Enable the creation of a default connection using Workload Identity                                                    | `false`                |
+| `appConfigValues.workloadIdentityConnection.workflowsTempLocation` | Workflows temp location to be used in the connection                                                                   | `""`                   |
+| `appConfigValues.workloadIdentityConnection.billingProject`        | Billing project to be used in the connection                                                                           | `""`                   |
+| `appConfigValues.workloadIdentityConnection.serviceAccountEmail`   | Service account email to be used in the connection                                                                     | `""`                   |
+| `appConfigValues.workloadIdentityConnection.connectionOwner`       | User ID of the owner of the connection                                                                                 | `""`                   |
 
 ### CARTO config parameters
 
