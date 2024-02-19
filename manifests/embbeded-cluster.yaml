@@ -2,3 +2,10 @@ apiVersion: embeddedcluster.replicated.com/v1beta1
 kind: Config
 spec:
   version: 1.29.1+ec.1
+  unsupportedOverrides:
+    k0s: |
+      config:
+        spec:
+          api:
+            extraArgs:
+              service-node-port-range: 80-32767
