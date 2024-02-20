@@ -154,15 +154,12 @@ spec:
     # FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
     # Disable legacy tlsCerts
     tlsCerts:
-      httpsEnabled: false
+      httpsEnabled: repl{{ if ConfigOptionEquals "cartoRouterHTTPSEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
       autoGenerate: false
 
     ## Access to Carto
     # Router
     router:
-      service:
-        type: NodePort
-      httpsEnabled: repl{{ if ConfigOptionEquals "cartoRouterHTTPSEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
       tlsCertificates:
         certificateValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSCertFile" }}'
         privateKeyValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSKeyFile" }}'
@@ -199,7 +196,18 @@ spec:
             tag: 20240117pr15139
     # END
 
-    ## Router
+    ## ---- Router ----
+    ## Open the ports on all nodes
+    - when: '{{repl ConfigOptionEquals "isK0sPlatform" "true" }}'
+      recursiveMerge: true
+      values:
+        router:
+          service:
+            type: NodePort
+            nodePorts:
+              http: 80
+              https: 443
+
     ## EKS
     - when: '{{repl and (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") (ConfigOptionEquals "platformDistribution" "eks") }}'
       recursiveMerge: true
@@ -216,6 +224,7 @@ spec:
               service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
             ports:
               httpsTargetPort: http
+    ## ---- End router ----
 
     # Workload Identity Connection
     - when: '{{repl ConfigOptionEquals "enableBigqueryWorkloadIdentityConnection" "1" }}'
