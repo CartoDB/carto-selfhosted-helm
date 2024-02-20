@@ -25,8 +25,8 @@ spec:
           title: |-
             ⚠️  Don't forget to follow the CARTO docs regarding backups  ⚠️
             You need to implement a backup policy for the next things in order to recover your data in case of upgrade, migration or disaster recovery:
-              - Database
-              - Config. ⚠️ We have some hidden configurations so please, follow the guide.
+            ➡️ Database
+            ➡️ Config. ⚠️ We have some hidden configurations so please, follow the guide.
 
 
         - name: replicatedLicenseType
