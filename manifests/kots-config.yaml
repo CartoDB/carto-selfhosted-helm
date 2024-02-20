@@ -19,9 +19,20 @@ spec:
             If you need further info, please check [docs.carto.com](https://docs.carto.com).
 
             The ID of your Self-Hosted installation is: `{{repl LicenseFieldValue "selfHostedId" }}`
+
+        - name: backupReminder
+          type: label
+          title: |-
+            ⚠️  Don't forget to follow the CARTO docs regarding backups  ⚠️
+            You need to implement a backup policy for the next things in order to recover your data in case of upgrade, migration or disaster recovery:
+            ➡️ Database
+            ➡️ Config. ⚠️ We have some hidden configurations so please, follow the guide.
+
+
         - name: replicatedLicenseType
           title: License Type
           hidden: true
+          type: text
           value: '{{repl LicenseFieldValue "licenseType" }}'
         - name: environmentCustomerPackageValues
           title: Customer Package Values
@@ -64,6 +75,12 @@ spec:
           value: '{{repl RandomString 16 "[A-Za-z0-9]" }}'
         - name: kotsVarnishPurgeSecret
           title: Customer Package Values
+          type: textarea
+          hidden: true
+          readonly: false
+          value: '{{repl RandomString 16 "[A-Za-z0-9]" }}'
+        - name: internalRedisPassword
+          title: password used for the internal redis
           type: textarea
           hidden: true
           readonly: false

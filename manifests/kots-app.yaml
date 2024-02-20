@@ -8,6 +8,7 @@ spec:
   icon: https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/CARTO-logo.svg/1280px-CARTO-logo.svg.png
   allowRollback: false
   statusInformers:
+    # TODO: Add ingress, gateway or router service
     - deployment/carto-accounts-www
     - deployment/carto-cdn-invalidator-sub
     - deployment/carto-http-cache
