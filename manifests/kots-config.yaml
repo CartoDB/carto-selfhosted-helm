@@ -531,7 +531,7 @@ spec:
           title: SSL/TLS certificate
           when: '{{repl and (ConfigOptionEquals "externalRedisEnabled" "1") (ConfigOptionEquals "externalRedisTLSBehaviour" "tls_enabled") }}'
           help_text: |-
-            If you don't know what this is, please change the SSL/TLS Mode.
+            If you don't know what this is, please disable the SSL/TLS Mode.
           type: file
           required: true
 
