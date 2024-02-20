@@ -837,7 +837,7 @@ spec:
           help_text: |-
             This is the Service Account that is going to be used by the Self-Hosted environment to access CARTO platform services.
             ⚠️ Please do not modify it at least that you know what you are doing.
-            Contact [Carto Support](https://docs.carto.com/carto-self-hosted/support) before proceed and if you have any doubts.
+            Contact [Carto Support](https://docs.carto.com/carto-self-hosted/support) before proceeding or if you have any doubts.
           required: true
           type: textarea
           default: '{{repl LicenseFieldValue "cartoPlatformDefaultSA" }}'
