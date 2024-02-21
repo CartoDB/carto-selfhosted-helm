@@ -324,7 +324,7 @@ cartoSecrets:
 ## FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 ## @section TLS parameters
 ## Global TLS parameters
-## @param tlsCerts.httpsEnabled Enable https. CARTO only works with `HTTPS`, if you disable this protocol here you should configure it in a higher layer like a Load Balancer
+## @param tlsCerts.httpsEnabled Enable https on the router component. CARTO only works with `HTTPS`, if you disable this protocol here you should configure it in a higher layer like a Load Balancer
 ## @param tlsCerts.autoGenerate Generate self-signed TLS certificates
 ## @param tlsCerts.existingSecret.name Name of a secret containing the certificate
 ## @param tlsCerts.existingSecret.certKey Key of the certificate inside the secret
@@ -2312,9 +2312,6 @@ router:
     proxy_buffer_size: "8k"
     proxy_busy_buffers_size: "8k"
     client_max_body_size: "10M"
-  ## @param router.httpsEnabled Enable https. CARTO only works with `HTTPS`, if you disable this protocol here you should configure it in a higher layer like a Load Balancer
-  ##
-  httpsEnabled: false
   ## TLS Certificates
   ## @param router.tlsCertificates.certificateValueBase64 certificate in base64
   ## @param router.tlsCertificates.privateKeyValueBase64 private key in base64
