@@ -265,8 +265,8 @@ spec:
           default: "carto-onprem.lan"
           validation:
             regex:
-              pattern: ^([a-zA-Z0-9_\\-]+\\.)+[a-zA-Z]{2,}(:[0-9]+)?$
-              message: "The domain must be only a domain/subdomain. We don't support paths or protocols."
+              pattern: ^([a-zA-Z0-9_\-]+\.)+[a-zA-Z]{2,}(:[0-9]+)?$
+              message: "The domain must be a domain/subdomain. We don't support paths or protocols."
         # k8s
         - name: accessToCartoModeK8s
           title: Self-Hosted access mode
