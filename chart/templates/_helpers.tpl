@@ -941,12 +941,13 @@ Return the absolute path where the Google Secret will be mounted
 {{/*
 Return the proper Carto TLS Secret name
 FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
+TODO: We have to regenerate the secret if the private key changes
 */}}
 {{- define "carto.tlsCerts.secretName" -}}
 {{- if .Values.tlsCerts.existingSecret.name -}}
 {{- .Values.tlsCerts.existingSecret.name -}}
 {{- else -}}
-{{- printf "%s-tls" (include "common.names.fullname" .) -}}
+{{- printf "%s-tls-%s" (include "common.names.fullname" .) (.Values.router.tlsCertificates.certificateValueBase64 | sha256sum | substr 0 5) -}}
 {{- end -}}
 {{- end -}}
 

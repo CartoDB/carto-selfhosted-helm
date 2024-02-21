@@ -154,13 +154,6 @@ spec:
             - name: tls-secret
               mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretKeyKey" . }}
               subPath: {{ template "carto.tlsCerts.secretKeyKey" . }}
-            {{- else if .Values.router.httpsEnabled }}
-            - name: tls-secret
-              mountPath: /usr/src/certs/tls.crt
-              subPath: tls.crt
-            - name: tls-secret
-              mountPath: /usr/src/certs/tls.key
-              subPath: tls.key
             {{- end }}
           {{- if .Values.router.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.router.extraVolumeMounts "context" $) | nindent 12 }}
@@ -251,10 +244,6 @@ spec:
         - name: tls-secret
           secret:
             secretName: {{ include "carto.tlsCerts.secretName" . }}
-        {{- else if .Values.router.httpsEnabled }}
-        - name: tls-secret
-          secret:
-            secretName: {{ include "carto.router.tlsCertificates.secretName" . }}
         {{- end }}
         - name: gcp-default-service-account-key
           secret:
