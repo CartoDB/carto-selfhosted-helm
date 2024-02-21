@@ -99,7 +99,7 @@ spec:
       workspaceImportsPublic: repl{{ if ConfigOptionEquals "storageBucketsWorkspaceImportsIsPublic" "public"}}truerepl{{ else }}falserepl{{ end }}
       workspaceThumbnailsBucket: '{{repl ConfigOption "storageBucketsThumbnails" }}'
       workspaceThumbnailsPublic: repl{{ if ConfigOptionEquals "storageBucketsThumbnailsIsPublic" "public"}}truerepl{{ else }}falserepl{{ end }}
-      workspaceExportsBucket: '{{repl ConfigOption "storageBucketsWorkspaceExports" }}'
+      workspaceExportsBucket: '{{repl ConfigOption "storageBucketsExportGcp" }}'
       googleCloudStorageProjectId: '{{repl ConfigOption "storageBucketsGcpProjectId" }}'
       awsS3Region: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
       importAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
