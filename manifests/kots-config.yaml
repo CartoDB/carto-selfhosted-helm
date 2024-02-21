@@ -211,7 +211,7 @@ spec:
             {{repl $provideCustomSSLCertsSelected := (ConfigOptionEquals "accessToCartoTLSGKECertificateBehaviour" "use_custom_certificates_files_provided") -}}
             {{repl $customAccessModeSelected := (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") -}}
             {{repl $terminateTLSInCARTOSelected := (ConfigOptionEquals "TLSTerminationLayer" "accessToCartoRouterHTTPS") -}}
-            {{repl $isEmbeddedCluster := (empty Distribution) -}}
+            {{repl $isEmbeddedCluster := (ConfigOptionEquals "isEmbeddedCluster" "true") -}}
             {{repl $result := or (and $isGke $defaultAccessModeSelected $provideCustomSSLCertsSelected) (and (or $isGke $isEks) (and $customAccessModeSelected $terminateTLSInCARTOSelected)) (and $isEmbeddedCluster $terminateTLSInCARTOSelected) -}}
             {{repl $result -}}
           default: *when_custom_ssl_certs
@@ -242,7 +242,7 @@ spec:
           readonly: true
           when: &when_router_https_enabled >-
             {{repl $customAccessModeSelected := (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") -}}
-            {{repl $isEmbeddedCluster := (empty Distribution) -}}
+            {{repl $isEmbeddedCluster := (ConfigOptionEquals "isEmbeddedCluster" "true") -}}
             {{repl $terminateTLSInCARTOSelected:= (ConfigOptionEquals "TLSTerminationLayer" "accessToCartoRouterHTTPS") -}}
             {{repl $result := and (or $customAccessModeSelected $isEmbeddedCluster) ($terminateTLSInCARTOSelected) -}}
             {{repl $result -}}
@@ -305,7 +305,7 @@ spec:
         - name: TLSTerminationLayer
           title: TLS Termination
           type: select_one
-          when: '{{repl or (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") (empty Distribution) }}'
+          when: '{{repl or (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") (ConfigOptionEquals "isEmbeddedCluster" "true") }}'
           help_text: |-
             CARTO only works with HTTPS. TLS termination can be done at the CARTO application level or in a load balancer
             created by yourself that gets the request before sending it back to the application.
