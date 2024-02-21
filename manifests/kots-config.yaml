@@ -191,12 +191,13 @@ spec:
           hidden: true
           type: text
           default: *when_is_k8s_platform
-        - name: isK0sPlatform
+        - name: isEmbeddedCluster
           title: Embedded Cluster Platform
-          when: &when_is_k0s_platform >-
-            {{repl $result :=  (eq Distribution "k0s") -}}
+          # TODO: For the moment we're checking if it's embedded cluster if we can't obtain the k8s platform, but we should change this to a more reliable way when allowed by Replicated
+          when: &when_is_embedded_cluster >-
+            {{repl $result :=  (empty Distribution) -}}
             {{repl $result -}}
-          default: *when_is_k0s_platform
+          default: *when_is_embedded_cluster
           hidden: true
           type: text
         - name: customSSLCerts
@@ -204,13 +205,14 @@ spec:
           hidden: true
           readonly: true
           when: &when_custom_ssl_certs >-
-            {{repl $cond1 := (eq Distribution "gke") -}}
-            {{repl $cond2 := (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") -}}
-            {{repl $cond3 := (ConfigOptionEquals "accessToCartoTLSGKECertificateBehaviour" "use_custom_certificates_files_provided") -}}
-            {{repl $cond4 := (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") -}}
-            {{repl $cond5 := (ConfigOptionEquals "TLSTerminationLayer" "accessToCartoRouterHTTPS") -}}
-            {{repl $cond6 := (eq Distribution "eks") -}}
-            {{repl $result := or (and $cond1 $cond2 $cond3) (and (or $cond1 $cond6) (and $cond4 $cond5)) -}}
+            {{repl $isGke := (eq Distribution "gke") -}}
+            {{repl $isEks := (eq Distribution "eks") -}}
+            {{repl $defaultAccessModeSelected := (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") -}}
+            {{repl $provideCustomSSLCertsSelected := (ConfigOptionEquals "accessToCartoTLSGKECertificateBehaviour" "use_custom_certificates_files_provided") -}}
+            {{repl $customAccessModeSelected := (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") -}}
+            {{repl $terminateTLSInCARTOSelected := (ConfigOptionEquals "TLSTerminationLayer" "accessToCartoRouterHTTPS") -}}
+            {{repl $isEmbeddedCluster := (empty Distribution) -}}
+            {{repl $result := or (and $isGke $defaultAccessModeSelected $provideCustomSSLCertsSelected) (and (or $isGke $isEks) (and $customAccessModeSelected $terminateTLSInCARTOSelected)) (and $isEmbeddedCluster $terminateTLSInCARTOSelected) -}}
             {{repl $result -}}
           default: *when_custom_ssl_certs
         - name: SSLCertificatesAWS
@@ -239,10 +241,10 @@ spec:
           hidden: true
           readonly: true
           when: &when_router_https_enabled >-
-            {{repl $cond1 := (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") -}}
-            {{repl $cond2 := (eq Distribution "k0s") -}}
-            {{repl $cond3:= (ConfigOptionEquals "TLSTerminationLayer" "accessToCartoRouterHTTPS") -}}
-            {{repl $result := and (or $cond1 $cond2) ($cond3) -}}
+            {{repl $customAccessModeSelected := (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") -}}
+            {{repl $isEmbeddedCluster := (empty Distribution) -}}
+            {{repl $terminateTLSInCARTOSelected:= (ConfigOptionEquals "TLSTerminationLayer" "accessToCartoRouterHTTPS") -}}
+            {{repl $result := and (or $customAccessModeSelected $isEmbeddedCluster) ($terminateTLSInCARTOSelected) -}}
             {{repl $result -}}
           default: *when_router_https_enabled
         - name: kubernetesGatewayEnabled
@@ -250,9 +252,9 @@ spec:
           hidden: true
           readonly: true
           when: &when_kubernetes_gateway_enabled >-
-            {{repl $cond1 := (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") -}}
-            {{repl $cond2 := (eq Distribution "gke") -}}
-            {{repl $result := and $cond1 $cond2 -}}
+            {{repl $defaultAccessModeSelected := (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") -}}
+            {{repl $isGke := (eq Distribution "gke") -}}
+            {{repl $result := and $defaultAccessModeSelected $isGke -}}
             {{repl $result -}}
           default: *when_kubernetes_gateway_enabled
         - name: cartoSelfHostedDomain
@@ -263,10 +265,10 @@ spec:
           type: text
           required: true
           default: "carto-onprem.lan"
-          validation:
-            regex:
-              pattern: ^([a-zA-Z0-9_\\-]+\\.)+[a-zA-Z]{2,}(:[0-9]+)?$
-              message: "The domain must be only a domain/subdomain. We don't support paths or protocols."
+          # validation:
+          #   regex:
+          #     pattern: ^([a-zA-Z0-9_\\-]+\\.)+[a-zA-Z]{2,}(:[0-9]+)?$
+          #     message: "The domain must be only a domain/subdomain. We don't support paths or protocols."
         # k8s
         - name: accessToCartoModeK8s
           title: Self-Hosted access mode
@@ -293,17 +295,17 @@ spec:
           title: |-
             You should create and configure your own Load Balancer and connect it to the CARTO router service.
         # Embedded Cluster
-        - name: accessToCartoModeK0s
+        - name: accessToCartoModeEmbeddedCluster
           title: |-
             You are going to deploy CARTO Self-Hosted on single-instance mode.
           type: label
-          when: *when_is_k0s_platform
+          when: *when_is_embedded_cluster
 
           # TLS
         - name: TLSTerminationLayer
           title: TLS Termination
           type: select_one
-          when: '{{repl or (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") (eq Distribution "k0s") }}'
+          when: '{{repl or (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") (empty Distribution) }}'
           help_text: |-
             CARTO only works with HTTPS. TLS termination can be done at the CARTO application level or in a load balancer
             created by yourself that gets the request before sending it back to the application.
@@ -316,7 +318,6 @@ spec:
             - name: accessToCartoRouterHTTP
               title: |-
                 Terminate TLS in a higher layer and connect to CARTO over HTTP
-
 
         # Certificates
         ## GKE
