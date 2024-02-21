@@ -16,7 +16,7 @@ spec:
             Welcome to the CARTO Self-Hosted installer!
 
             Here you can configure the basic options required by all CARTO Self-Hosted installations.
-            If you need further info, please check [docs.carto.com](https://docs.carto.com).
+            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP).
 
             The ID of your Self-Hosted installation is: `{{repl LicenseFieldValue "selfHostedId" }}`
 

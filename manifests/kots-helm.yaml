@@ -230,7 +230,7 @@ spec:
             connectionOwner: '{{repl ConfigOption "bigqueryWorkloadIdentityConnectionOwnerId" }}'
 
     # Proxy
-    - when: '{{repl ConfigOptionEquals "externalProxyEnabled" "1" }}'
+    - when: '{{repl and (ConfigOptionEquals "externalProxyEnabled" "1") (not (empty HTTPProxy)) }}'
       recursiveMerge: true
       values:
         externalProxy:
