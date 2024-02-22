@@ -55,7 +55,7 @@ spec:
         value: {{ .Values.gateway.path }}
     backendRefs:
     - name: {{ template "carto.router.fullname" . }}
-      {{- if .Values.router.httpsEnabled }}
+      {{- if .Values.tlsCerts.httpsEnabled }}
       port: {{ .Values.router.service.ports.https }}
       {{- else }}
       port: {{ .Values.router.service.ports.http }}

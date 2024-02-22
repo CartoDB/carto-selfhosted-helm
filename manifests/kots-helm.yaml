@@ -7,7 +7,7 @@ metadata:
 spec:
   chart:
     name: carto
-    chartVersion: 1.77.1
+    chartVersion: 1.84.10
   values:
     replicated:
       enabled: true
@@ -187,18 +187,9 @@ spec:
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
-    # START: Temporary hack to fix some images not already released
-    - when: "true"
-      recursiveMerge: true
-      values:
-        workspaceMigrations:
-          image:
-            tag: 20240117pr15139
-    # END
-
     ## ---- Router ----
     ## Open the ports on all nodes
-    - when: '{{repl ConfigOptionEquals "isK0sPlatform" "true" }}'
+    - when: '{{repl ConfigOptionEquals "isEmbeddedCluster" "true" }}'
       recursiveMerge: true
       values:
         router:
