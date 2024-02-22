@@ -250,6 +250,12 @@ spec:
           sslCA: |
             repl{{ ConfigOptionData "externalHttpsProxySslCa" | nindent 12 }}
 
+    - when: '{{repl ConfigOptionEquals "ssoEnabled" "1"}}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          ssoOrganizationId: '{{repl ConfigOption "ssoOrganizationId" }}'
+
     # High Availability Enable
     - when: '{{repl ConfigOptionEquals "enablePlatformHighAvailability" "1" }}'
       recursiveMerge: true
