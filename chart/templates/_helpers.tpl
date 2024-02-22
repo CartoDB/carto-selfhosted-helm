@@ -944,6 +944,7 @@ FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
 TODO: We have to regenerate the secret if the private key changes
 */}}
 {{- define "carto.tlsCerts.secretName" -}}
+{{- include "carto.tlsCerts.duplicatedValueValidator" . -}}
 {{- if .Values.tlsCerts.existingSecret.name -}}
 {{- .Values.tlsCerts.existingSecret.name -}}
 {{- else -}}
