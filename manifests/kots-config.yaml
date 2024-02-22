@@ -584,6 +584,22 @@ spec:
           help_text: |-
             Specify if CARTO Self-hosted should check if the proxy certificate is valid or not.
 
+        ## SSO
+        - name: ssoEnabled
+          title: Single Sign-On
+          help_text: |-
+            Enable Single Sign-On (SSO) for your Self-Hosted environment.
+            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-single-sign-on-sso).
+          type: bool
+          default: "0"
+        - name: ssoOrganizationId
+          title: Organization ID
+          type: text
+          help_text: |-
+            If you don't have your Organization ID, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-single-sign-on-sso).
+          when: '{{repl (ConfigOptionEquals "ssoEnabled" "1") }}'
+          required: true
+
         ## LDS
         - name: locationDataServicesEnable
           title: Location Data Services
