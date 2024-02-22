@@ -947,6 +947,11 @@ TODO: We have to regenerate the secret if the private key changes
 {{- include "carto.tlsCerts.duplicatedValueValidator" . -}}
 {{- if .Values.tlsCerts.existingSecret.name -}}
 {{- .Values.tlsCerts.existingSecret.name -}}
+{{- else if (empty .Values.router.tlsCertificates.certificateValueBase64) -}}
+{{/*
+     Preserved the original behaviour in case someone use the default secret name without explicitly define that parameter
+*/}}
+{{- printf "%s-tls" (include "common.names.fullname" .) -}}
 {{- else -}}
 {{- printf "%s-tls-%s" (include "common.names.fullname" .) (.Values.router.tlsCertificates.certificateValueBase64 | sha256sum | substr 0 5) -}}
 {{- end -}}
