@@ -7,7 +7,7 @@ metadata:
 spec:
   chart:
     name: carto
-    chartVersion: 1.84.10
+    chartVersion: 1.85.2
   values:
     replicated:
       enabled: true
@@ -104,7 +104,7 @@ spec:
       awsS3Region: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
       importAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
       awsExportBucket: '{{repl ConfigOption "storageBucketsExportAws" }}'
-      awsExportBucketRegion: '{{repl ConfigOption "storageBucketsExportAwsRegion" }}'
+      awsExportBucketRegion: '{{repl ConfigOption "storageBucketsImportExportAwsRegion" }}'
       exportAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
       # other config
       httpCacheEnabled: "true"
@@ -182,7 +182,6 @@ spec:
       staticIP:
         enabled: repl{{ if ConfigOptionEquals "accessToCartoGCPStaticIPName" ""}}falserepl{{ else }}truerepl{{ end }}
         value: '{{repl ConfigOption "accessToCartoGCPStaticIPName" }}'
-
 
   # Optional Values
   ## Values from Advanced Configuration
