@@ -390,11 +390,11 @@ spec:
           default: custom_gcs
           items:
             - name: custom_gcs
-              title: Use the buckets created on Google Cloud Storage
+              title: Google Cloud Storage
             - name: custom_aws_s3
-              title: Use the buckets created on Amazon Web Services S3
+              title: Amazon Web Services S3
             - name: custom_azb
-              title: Use the buckets created on Azure Blob Storage
+              title: Azure Blob Storage
         - name: storageBucketsProvider
           title: Buckets Provider
           type: textarea
