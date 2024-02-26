@@ -721,7 +721,7 @@ spec:
 
         # Bigquery exports
         - name: datawarehousesExportsBigQueryEnabled
-          title: Enable exports from BigQuery
+          title: Enable exports from BigQuery and the CARTO Data Warehouse
           type: bool
           default: "0"
           help_text: |-
