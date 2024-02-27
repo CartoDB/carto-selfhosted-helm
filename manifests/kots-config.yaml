@@ -726,9 +726,11 @@ spec:
           default: "0"
           help_text: |-
             Enable exporting data from BigQuery connections.
+
+            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets#configure-data-export-bucket-for-bigquery).
         - name: storageBucketsExportGcp
           title: BigQuery exports bucket name
-          help_text: The bucket name to store exported data from BigQuery. If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets#configure-data-export-bucket-for-bigquery).
+          help_text: The bucket name to store exported data from BigQuery.
           type: text
           when: '{{repl (ConfigOptionEquals "datawarehousesExportsBigQueryEnabled" "1") }}'
           required: true
@@ -740,47 +742,51 @@ spec:
           type: bool
           default: "0"
           help_text: |-
-            Enable importing data to Redshift connections. If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets#configure-data-exports-in-snowflake-and-redshift).
-        # Snowflake, Redshift or RDS exports enabled
-        - name: datawarehousesExportsSnowflakeOrRedshiftOrRdsEnabled
-          title: Enable exports from Snowflake, Redshift or RDS
+            Enable importing data to Redshift connections.
+
+            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-redshift-imports).
+        # Snowflake or Redshift exports enabled
+        - name: datawarehousesExportsSnowflakeOrRedshiftEnabled
+          title: Enable exports from Snowflake and Redshift
           type: bool
           default: "0"
           help_text: |-
-            Enable exporting data from Snowflake, Redshift or RDS. 
-        # Snowflake, Redshift or RDS exports and Redshift imports configured
+            Enable exporting data from Snowflake and Redshift.
+
+            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets#configure-data-exports-in-snowflake-and-redshift).
+        # Snowflake or Redshift exports and Redshift imports configuration
         - name: storageBucketsExportAws
           title: AWS exports bucket name
-          help_text: The bucket name to store exported data from Redshift, RDS or Snowflake
+          help_text: The bucket name to store exported data from Redshift or Snowflake
           type: text
-          when: '{{repl (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftOrRdsEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") }}'
           required: true
-        - name: storageBucketsImportExportAwsRegion
+        - name: storageBucketsExportAwsRegion
           title: AWS export bucket region
           help_text: The region of the AWS import/export buckets
           type: text
-          when: '{{repl (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftOrRdsEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") }}'
           required: true
         - name: storageBucketsImportExportAwsAccessKeyId
           title: AWS access key Id
-          help_text: The access key id to be used when exporting data from Redshift, RDS or Snowflake and importing data to Redshift
+          help_text: The access key id to be used when exporting data from Redshift or Snowflake and importing data to Redshift
           type: text
-          when: '{{repl or (ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1") (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftOrRdsEnabled" "1") }}'
+          when: '{{repl or (ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1") (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") }}'
           required: true
         - name: storageBucketsImportExportAwsSecretAccessKey
           title: AWS secret access key
-          help_text: The secret access key to be used when exporting data from Redshift, RDS or Snowflake and importing data to Redshift
+          help_text: The secret access key to be used when exporting data from Redshift or Snowflake and importing data to Redshift
           type: text
-          when: '{{repl or (ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1") (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftOrRdsEnabled" "1") }}'
+          when: '{{repl or (ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1") (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") }}'
           required: true
         - name: storageBucketsImportExportAwsArnRole
           title: AWS arn bucket role
           help_text: |-
             If AWS is used in self-hosted, the ARN Role to be used importing and exporting data:
             - Import to Redshift
-            - Export from Snowflake, Redshift and RDS
+            - Export from Snowflake or Redshift
           type: text
-          when: '{{repl or (ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1") (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftOrRdsEnabled" "1") }}'
+          when: '{{repl or (ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1") (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") }}'
           required: true
 
         ## Google Basemaps
