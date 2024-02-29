@@ -7,7 +7,7 @@ metadata:
 spec:
   chart:
     name: carto
-    chartVersion: 1.84.10
+    chartVersion: 1.85.2
   values:
     replicated:
       enabled: true
@@ -69,14 +69,6 @@ spec:
         value: '{{repl ConfigOption "storageBucketsAwsAccessKeySecret" }}'
       azureStorageAccessKey:
         value: '{{repl ConfigOption "storageBucketsAzureAccessKey" }}'
-      importAwsAccessKeyId:
-        value: '{{repl ConfigOption "storageBucketsImportExportAwsAccessKeyId" }}'
-      importAwsSecretAccessKey:
-        value: '{{repl ConfigOption "storageBucketsImportExportAwsSecretAccessKey" }}'
-      exportAwsSecretAccessKey:
-        value: '{{repl ConfigOption "storageBucketsImportExportAwsSecretAccessKey" }}'
-      exportAwsAccessKeyId:
-        value: '{{repl ConfigOption "storageBucketsImportExportAwsAccessKeyId" }}'
       ldsHereApiKey:
         value: '{{repl ConfigOption "locationDataServicesHereCredentials" }}'
       ldsTomTomApiKey:
@@ -99,13 +91,9 @@ spec:
       workspaceImportsPublic: repl{{ if ConfigOptionEquals "storageBucketsWorkspaceImportsIsPublic" "public"}}truerepl{{ else }}falserepl{{ end }}
       workspaceThumbnailsBucket: '{{repl ConfigOption "storageBucketsThumbnails" }}'
       workspaceThumbnailsPublic: repl{{ if ConfigOptionEquals "storageBucketsThumbnailsIsPublic" "public"}}truerepl{{ else }}falserepl{{ end }}
-      workspaceExportsBucket: '{{repl ConfigOption "storageBucketsExportGcp" }}'
       googleCloudStorageProjectId: '{{repl ConfigOption "storageBucketsGcpProjectId" }}'
       awsS3Region: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
-      importAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
-      awsExportBucket: '{{repl ConfigOption "storageBucketsExportAws" }}'
-      awsExportBucketRegion: '{{repl ConfigOption "storageBucketsExportAwsRegion" }}'
-      exportAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
+
       # other config
       httpCacheEnabled: "true"
       bigqueryOauth2ClientId: '{{repl ConfigOption "bigqueryOauthClientID" }}'
@@ -183,10 +171,40 @@ spec:
         enabled: repl{{ if ConfigOptionEquals "accessToCartoGCPStaticIPName" ""}}falserepl{{ else }}truerepl{{ end }}
         value: '{{repl ConfigOption "accessToCartoGCPStaticIPName" }}'
 
-
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
+    ## BigQuery exports
+    - when: '{{repl ConfigOptionEquals "datawarehousesExportsBigQueryEnabled" "1" }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          workspaceExportsBucket: '{{repl ConfigOption "storageBucketsExportGcp" }}'
+    ## Redshift imports
+    - when: '{{repl ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1" }}'
+      recursiveMerge: true
+      values:
+        appSecrets:
+          importAwsAccessKeyId:
+            value: '{{repl ConfigOption "storageBucketsImportExportAwsAccessKeyId" }}'
+          importAwsSecretAccessKey:
+            value: '{{repl ConfigOption "storageBucketsImportExportAwsSecretAccessKey" }}'
+        appConfigValues:
+          importAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
+    ## Snowflake and Redshift exports
+    - when: '{{repl ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1" }}'
+      recursiveMerge: true
+      values:
+        appSecrets:
+          exportAwsSecretAccessKey:
+            value: '{{repl ConfigOption "storageBucketsImportExportAwsSecretAccessKey" }}'
+          exportAwsAccessKeyId:
+            value: '{{repl ConfigOption "storageBucketsImportExportAwsAccessKeyId" }}'
+        appConfigValues:
+          exportAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
+          awsExportBucket: '{{repl ConfigOption "storageBucketsExportAws" }}'
+          awsExportBucketRegion: '{{repl ConfigOption "storageBucketsExportAwsRegion" }}'
+
     ## ---- Router ----
     ## Open the ports on all nodes
     - when: '{{repl ConfigOptionEquals "isEmbeddedCluster" "true" }}'
