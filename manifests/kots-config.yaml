@@ -7,7 +7,7 @@ metadata:
     kots.io/exclude: "true"
 spec:
   groups:
-    - name: Intro
+    - name: intro
       title: Intro
       items:
         - name: description
@@ -27,7 +27,6 @@ spec:
             You need to implement a backup policy for the next things in order to recover your data in case of upgrade, migration or disaster recovery:
             ➡️ Database
             ➡️ Config. ⚠️ We have some hidden configurations so please, follow the guide.
-
 
         - name: replicatedLicenseType
           title: License Type
@@ -93,7 +92,7 @@ spec:
           default: repl{{ fromJson (LicenseFieldValue "cartoPlatformDefaultSA") | dig "project_id" "" }}
 
     # Postgresql
-    - name: MetadataDatabase
+    - name: metadataDatabase
       title: Metadata Database
       description: |-
         Here you should config the information to connect to your Metadata Database.
@@ -147,7 +146,7 @@ spec:
           affix: left
 
     # Access
-    - name: AccessToCARTOSelfHosted
+    - name: accessToCARTOSelfHosted
       title: Access to CARTO
       description: |-
         Here you should config how you would like to access to your Self-Hosted from final users devices.
@@ -359,7 +358,6 @@ spec:
           required: true
           help_text: The Certificate ARN in format arn:aws:acm:<REGION>:<AWS_ACCOUNT>:certificate/<CERTIFICATE_ID>
 
-
         # Static IP
         - name: accessToCartoGCPStaticIPName
           type: text
@@ -380,23 +378,23 @@ spec:
           recommended: true
 
     # Buckets
-    - name: StorageBuckets
+    - name: storageBuckets
       title: Cloud Storage
       description: |-
-        What storage buckets do you want to use?
+        What storage buckets do you want to use? You'll have to create them in your cloud provider.
         If you need more information, please check our [documentation](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets).
       items:
         - name: storageBucketsBehaviour
-          title: Select your Buckets
+          title: Select your storage provider
           type: select_one
           default: custom_gcs
           items:
             - name: custom_gcs
-              title: Create and manage my own buckets on Google Cloud Storage
+              title: Google Cloud Storage
             - name: custom_aws_s3
-              title: Create and manage my own buckets on Amazon Web Services S3
+              title: Amazon Web Services S3
             - name: custom_azb
-              title: Create and manage my own buckets on Azure Blob Storage
+              title: Azure Blob Storage
         - name: storageBucketsProvider
           title: Buckets Provider
           type: textarea
@@ -563,20 +561,20 @@ spec:
           title: Host
           type: text
           when: '{{repl and (ConfigOptionEquals "externalProxyEnabled" "1") (not (empty HTTPProxy)) }}'
-          value: 'repl{{ HTTPProxy }}'
+          value: "repl{{ HTTPProxy }}"
           readonly: true
         - name: externalProxyExcludedDomains
           title: Excluded domains
           type: text
           when: '{{repl and (ConfigOptionEquals "externalProxyEnabled" "1") (not (empty HTTPProxy)) }}'
-          value: 'repl{{ NoProxy }}'
+          value: "repl{{ NoProxy }}"
           readonly: true
         - name: externalHttpsProxySslCa
           title: Proxy SSL CA
           when: '{{repl and (ConfigOptionEquals "externalProxyEnabled" "1") (ConfigOptionEquals "externalProxyType" "https") }}'
           type: file
           help_text: |-
-             If the proxy certificate is signed by a custom CA, such CA must be included here, but if it's signed by a well known CA, there is no need to add it here.
+            If the proxy certificate is signed by a custom CA, such CA must be included here, but if it's signed by a well known CA, there is no need to add it here.
         - name: externalHttpsProxySslCertificateCheck
           title: SSL certificate checks
           type: bool
@@ -603,7 +601,8 @@ spec:
 
         ## LDS
         - name: locationDataServicesEnable
-          title: Location Data Services
+          title:
+            Location Data Services
             # Temporary disabled. Should be transmitted from the license: https://cartoteam.slack.com/archives/C06GJA56C5S/p1706714429475869
             #  Suggested as 2 fields on the license:
             #    - one for keys (in json format)
@@ -720,58 +719,74 @@ spec:
           type: bool
           default: "0"
 
-        ## Imports / Exports
-        - name: datawarehousesExportsImportsEnabled
-          title: Imports & Exports in Datawarehouses
+        # Bigquery exports
+        - name: datawarehousesExportsBigQueryEnabled
+          title: Enable exports from BigQuery and the CARTO Data Warehouse
           type: bool
           default: "0"
           help_text: |-
-            Enable when you are working with Redshift, RDS or Snowflake. More information available in our [documentation](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets).
-        - name: datawarehousesExportsImports
-          type: heading
-          title: Imports & Exports in Datawarehouses
-          when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
+            Enable exporting data from BigQuery connections.
+
+            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets#configure-data-export-bucket-for-bigquery).
         - name: storageBucketsExportGcp
-          title: GCP exports bucket name
-          help_text: The bucket name to store exported data from BigQuery
+          title: BigQuery exports bucket name
+          help_text: The bucket name to store exported data from BigQuery.
           type: text
-          when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "datawarehousesExportsBigQueryEnabled" "1") }}'
           required: true
           default: repl{{ if ConfigOptionEquals "replicatedLicenseType" "dev"}}repl{{ print (ConfigOption "derivedSelfHostedGCPProjectId") "-export-storage"}}repl{{ end }}
-        - name: storageBucketsImportExportAwsAccessKeyId
-          title: AWS access key Id
-          help_text: The access key id to be used importing data to Redshift and exporting data from Redshift, RDS or Snowflake
-          type: text
-          when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
-          required: true
-        - name: storageBucketsImportExportAwsSecretAccessKey
-          title: AWS secret access key
-          help_text: The secret access key to be used importing data to Redshift and exporting data from Redshift, RDS or Snowflake
-          type: text
-          when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
-          required: true
+
+        # Redshift imports enabled
+        - name: datawarehousesImportsRedshiftEnabled
+          title: Enable imports to Redshift
+          type: bool
+          default: "0"
+          help_text: |-
+            Enable importing data to Redshift connections.
+
+            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-redshift-imports).
+        # Snowflake or Redshift exports enabled
+        - name: datawarehousesExportsSnowflakeOrRedshiftEnabled
+          title: Enable exports from Snowflake and Redshift
+          type: bool
+          default: "0"
+          help_text: |-
+            Enable exporting data from Snowflake and Redshift.
+
+            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets#configure-data-exports-in-snowflake-and-redshift).
+        # Snowflake or Redshift exports and Redshift imports configuration
         - name: storageBucketsExportAws
           title: AWS exports bucket name
-          help_text: The bucket name to store exported data from Redshift, RDS or Snowflake
+          help_text: The bucket name to store exported data from Redshift or Snowflake
           type: text
-          when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") }}'
           required: true
         - name: storageBucketsExportAwsRegion
           title: AWS export bucket region
-          help_text: The region of the AWS export bucket
+          help_text: The region of the AWS import/export buckets
           type: text
-          when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") }}'
+          required: true
+        - name: storageBucketsImportExportAwsAccessKeyId
+          title: AWS access key Id
+          help_text: The access key id to be used when exporting data from Redshift or Snowflake and importing data to Redshift
+          type: text
+          when: '{{repl or (ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1") (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") }}'
+          required: true
+        - name: storageBucketsImportExportAwsSecretAccessKey
+          title: AWS secret access key
+          help_text: The secret access key to be used when exporting data from Redshift or Snowflake and importing data to Redshift
+          type: text
+          when: '{{repl or (ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1") (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") }}'
           required: true
         - name: storageBucketsImportExportAwsArnRole
           title: AWS arn bucket role
           help_text: |-
             If AWS is used in self-hosted, the ARN Role to be used importing and exporting data:
-            - Import from Redshift and RDS
-            - Export to Snowflake, Redshift and RDS
-
-            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets).
+            - Import to Redshift
+            - Export from Snowflake or Redshift
           type: text
-          when: '{{repl (ConfigOptionEquals "datawarehousesExportsImportsEnabled" "1") }}'
+          when: '{{repl or (ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1") (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") }}'
           required: true
 
         ## Google Basemaps
@@ -832,7 +847,7 @@ spec:
           type: bool
           default: "0"
         - name: bigqueryWorkloadIdentityConnectionWorkflowTMP
-          title: BigQuery temporary location
+          title: Workflows temporary location
           when: &when_google_workload_identity_and_connections >-
             {{repl $cond1 := (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") -}}
             {{repl $cond2 := (ConfigOptionEquals "enableBigqueryWorkloadIdentityConnection" "1") -}}
@@ -933,10 +948,10 @@ spec:
         If you need further info, please check [docs.carto.com](https://docs.carto.com).
       when: repl{{ ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}
       items:
-      ## Tunning
-      - name: platformAdvancedTuningValues
-        help_text: |-
-          ⚠️ I understand that the following options are advanced and could break my installation, but I know what I am doing
-        type: textarea
-        when: repl{{ ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}
-        title: ""
+        ## Tunning
+        - name: platformAdvancedTuningValues
+          help_text: |-
+            ⚠️ I understand that the following options are advanced and could break my installation, but I know what I am doing
+          type: textarea
+          when: repl{{ ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}
+          title: ""
