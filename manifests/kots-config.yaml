@@ -511,7 +511,6 @@ spec:
             Enable importing data to Redshift connections.
 
             If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-redshift-imports).
-                # Snowflake or Redshift exports enabled
         # Snowflake or Redshift exports enabled
         - name: datawarehousesExportsSnowflakeOrRedshiftEnabled
           title: Enable exports from Snowflake and Redshift
@@ -533,8 +532,8 @@ spec:
           title: AWS arn bucket role
           help_text: |-
             If AWS is used in self-hosted, the ARN Role to be used importing and exporting data:
-            - Import to Redshift
-            - Export from Snowflake or Redshift
+              - Import to Redshift
+              - Export from Snowflake or Redshift
           type: text
           when: '{{repl or (ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1") (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") }}'
           required: true
