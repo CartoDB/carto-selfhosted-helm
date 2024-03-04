@@ -497,7 +497,7 @@ spec:
           title: BigQuery exports bucket name
           help_text: The bucket name to store exported data from BigQuery.
           type: text
-          when: '{{repl (ConfigOptionEquals "datawarehousesExportsBigQueryEnabled" "1") }}'
+          when: '{{repl and (ConfigOptionEquals "datawarehousesExportsBigQueryEnabled" "1") (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
           required: true
           default: repl{{ if ConfigOptionEquals "replicatedLicenseType" "dev"}}repl{{ print (ConfigOption "derivedSelfHostedGCPProjectId") "-export-storage"}}repl{{ end }}
 
@@ -526,7 +526,7 @@ spec:
           title: AWS exports bucket name
           help_text: The bucket name to store exported data from Redshift or Snowflake
           type: text
-          when: '{{repl (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") }}'
+          when: '{{repl and (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
           required: true
         - name: storageBucketsImportExportAwsArnRole
           title: AWS arn bucket role
@@ -535,7 +535,7 @@ spec:
               - Import to Redshift
               - Export from Snowflake or Redshift
           type: text
-          when: '{{repl or (ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1") (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") }}'
+          when: '{{repl and (or (ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1") (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1")) (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
           required: true
     # Advanced Config
     - name: platformAdvancedConfig
