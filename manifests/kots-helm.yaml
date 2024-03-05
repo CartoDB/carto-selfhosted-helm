@@ -88,7 +88,7 @@ spec:
       # buckets
       storageProvider: '{{repl fromJson (ConfigOption "storageBucketsProvider") | dig "provider" "" }}'
       workspaceImportsBucket: '{{repl ConfigOption "storageBucketsWorkspaceImports" }}'
-      workspaceImportsPublic: repl{{ if ConfigOptionEquals "storageBucketsWorkspaceImportsIsPublic" "public"}}truerepl{{ else }}falserepl{{ end }}
+      workspaceImportsPublic: false
       workspaceThumbnailsBucket: '{{repl ConfigOption "storageBucketsThumbnails" }}'
       workspaceThumbnailsPublic: repl{{ if ConfigOptionEquals "storageBucketsThumbnailsIsPublic" "public"}}truerepl{{ else }}falserepl{{ end }}
       googleCloudStorageProjectId: '{{repl ConfigOption "storageBucketsGcpProjectId" }}'
@@ -186,9 +186,9 @@ spec:
       values:
         appSecrets:
           importAwsAccessKeyId:
-            value: '{{repl ConfigOption "storageBucketsImportExportAwsAccessKeyId" }}'
+            value: '{{repl ConfigOption "storageBucketsAwsAccessKeyId" }}'
           importAwsSecretAccessKey:
-            value: '{{repl ConfigOption "storageBucketsImportExportAwsSecretAccessKey" }}'
+            value: '{{repl ConfigOption "storageBucketsAwsAccessKeySecret" }}'
         appConfigValues:
           importAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
     ## Snowflake and Redshift exports
@@ -197,13 +197,13 @@ spec:
       values:
         appSecrets:
           exportAwsSecretAccessKey:
-            value: '{{repl ConfigOption "storageBucketsImportExportAwsSecretAccessKey" }}'
+            value: '{{repl ConfigOption "storageBucketsAwsAccessKeySecret" }}'
           exportAwsAccessKeyId:
-            value: '{{repl ConfigOption "storageBucketsImportExportAwsAccessKeyId" }}'
+            value: '{{repl ConfigOption "storageBucketsAwsAccessKeyId" }}'
         appConfigValues:
           exportAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
           awsExportBucket: '{{repl ConfigOption "storageBucketsExportAws" }}'
-          awsExportBucketRegion: '{{repl ConfigOption "storageBucketsExportAwsRegion" }}'
+          awsExportBucketRegion: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
 
     ## ---- Router ----
     ## Open the ports on all nodes
