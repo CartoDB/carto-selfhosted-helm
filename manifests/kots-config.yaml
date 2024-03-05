@@ -23,7 +23,7 @@ spec:
         - name: backupReminder
           type: label
           title: |-
-            ⚠️  Please, don't forget to follow CARTO docs regarding backups, 
+            ⚠️  Please, don't forget to follow [CARTO docs regarding backups](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/maintenance/backups), 
             You need to implement a backup policy for the next resources in order to recover your data in case of upgrade, migration or disaster recovery:
             ➡️ Database
             ➡️ Config. We have some hidden configurations so please, follow the guide.
