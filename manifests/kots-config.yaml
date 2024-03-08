@@ -13,20 +13,17 @@ spec:
         - name: description
           type: label
           title: |-
-            Welcome to the CARTO Self-Hosted installer!
+            
+            Welcome to the CARTO Self-Hosted Installer!
+            
+            CARTO is the leading Location Intelligence platform for the modern data stack. Our Self-Hosted version is designed to align with your infrastructure requirements, making it ideal for industries with stringent security and network/data policies.
 
-            Here you can configure the basic options required by all CARTO Self-Hosted installations.
-            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP).
+            We strongly recommend that you read the documentation to better integrate CARTO into your enterprise environment:
+            - [Key Concepts](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/key-concepts): Understand the key concepts.
+            - [QuickStart](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/key-concepts): A starter guide to make installation even easier.
+            - [Maintenance](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/maintenance): Since you're hosting this yourself, you'll need to configure your own [backups](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/maintenance/backups), [monitoring](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/maintenance/monitoring), etc.
 
-            The ID of your Self-Hosted installation is: `{{repl LicenseFieldValue "selfHostedId" }}`
-
-        - name: backupReminder
-          type: label
-          title: |-
-            ⚠️  Please, don't forget to follow [CARTO docs regarding backups](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/maintenance/backups), 
-            You need to implement a backup policy for the next resources in order to recover your data in case of upgrade, migration or disaster recovery:
-            ➡️ Database
-            ➡️ Config. We have some hidden configurations so please, follow the guide.
+            Installation id: `{{repl LicenseFieldValue "selfHostedId" }}`
 
         - name: replicatedLicenseType
           title: License Type
@@ -95,8 +92,8 @@ spec:
     - name: metadataDatabase
       title: Metadata Database
       description: |-
-        Configure the information needed to connect to your metadata database.
-        If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/deployment-guides/kubernetes#metadata-database).
+        Information needed to connect to your metadata database.
+        [More info](https://docs.carto.com/carto-self-hosted/key-concepts/deployment-requirements#external-database).
       items:
         - name: metadataDBHost
           title: Host
@@ -149,8 +146,8 @@ spec:
     - name: accessToCARTOSelfHosted
       title: Access to CARTO
       description: |-
-        Here you should config how you would like to access to your Self-Hosted from final users devices.
-        If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/deployment-guides/kubernetes#access-to-carto).
+        Configure your Self-Hosted platform's domain and TLS certificate for secure access.
+        [More info][docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/deployment-guides/kubernetes#access-to-carto).
       items:
         - name: loadBalancerSupportedKind
           title: Load Balancer kind
@@ -259,8 +256,7 @@ spec:
         - name: cartoSelfHostedDomain
           title: Domain
           help_text: |-
-            The domain used to access your Self-Hosted (without protocol or paths)
-            This is the domain that the final users will use to access your Self-Hosted.
+            Specify the domain for end users to access your Self-Hosted platform (excluding protocol or paths)
           type: text
           required: true
           validation:
@@ -305,10 +301,7 @@ spec:
           type: select_one
           when: '{{repl or (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") (ConfigOptionEquals "isEmbeddedCluster" "true") }}'
           help_text: |-
-            CARTO only works with HTTPS. TLS termination can be done at the CARTO application level or in a load balancer
-            created by yourself that gets the request before sending it back to the application.
-
-            The connection timeout of all incoming connections must be at least 605 seconds.
+            TLS termination is required and it can be achieved within the CARTO application itself (recommended) or through a load balancer.
           items:
             - name: accessToCartoRouterHTTPS
               title: |-
@@ -380,7 +373,7 @@ spec:
     - name: storageBuckets
       title: Cloud Storage
       description: |-
-        CARTO platform required to configure cloud storage buckets to store resources that will be used by the platform. Read [this section](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets#configuration) to create the resources required.
+        Cloud storage buckets are required for storing resources utilized by the platform. Read [this section](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets) to create the resources required.
       items:
         - name: storageBucketsBehaviour
           title: Select your storage provider
@@ -455,7 +448,7 @@ spec:
 
         - name: storageBucketsWorkspaceImports
           title: Temp Bucket
-          help_text: Bucket name to be used for storing temporary files during imports
+          help_text: Bucket name to be used for storing temporary data
           type: text
           required: true
           default: repl{{ if and (ConfigOptionEquals "replicatedLicenseType" "dev") (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs")}}repl{{ print (ConfigOption "derivedSelfHostedGCPProjectId") "-client-storage"}}repl{{ end }}
@@ -472,9 +465,7 @@ spec:
           default: repl{{ if and (ConfigOptionEquals "replicatedLicenseType" "dev") (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs")}}repl{{ print (ConfigOption "derivedSelfHostedGCPProjectId") "-thumbnails-storage"}}repl{{ end }}
         - name: storageBucketsThumbnailsIsPublic
           help_text: |-
-            Assets can be configured to be public or private. Some features, such as branding and custom markers, won't work unless the bucket is public.
-
-            Please select the access mode of this bucket.
+            Public bucket is required for some specific features like thumnbails, custom branding or custom markers.
           type: select_one
           default: public
           items:
