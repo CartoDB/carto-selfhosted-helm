@@ -464,84 +464,51 @@ spec:
           required: true
           default: repl{{ if and (ConfigOptionEquals "replicatedLicenseType" "dev") (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs")}}repl{{ print (ConfigOption "derivedSelfHostedGCPProjectId") "-thumbnails-storage"}}repl{{ end }}
         - name: storageBucketsThumbnailsIsPublic
+          title: Assets bucket is public
           help_text: |-
             Public bucket is required for some specific features like thumnbails, custom branding or custom markers.
-          type: select_one
-          default: public
-          items:
-            - name: private
-              title: Private
-            - name: public
-              title: Public
-
-        # Bigquery exports
-        - name: datawarehousesExportsBigQueryEnabled
-          title: Enable exports from BigQuery and the CARTO Data Warehouse
           type: bool
-          default: "0"
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
-          help_text: |-
-            Enable exporting data from BigQuery connections.
+          default: "1"
 
-            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets#configure-data-export-bucket-for-bigquery).
+        # Exports GCP
         - name: storageBucketsExportGcp
-          title: BigQuery exports bucket name
-          help_text: The bucket name to store exported data from BigQuery.
+          title: Exports Bucket
+          help_text: |- 
+            Bucket name to store exported data. Leave it blank to disable exports.
           type: text
-          when: '{{repl and (ConfigOptionEquals "datawarehousesExportsBigQueryEnabled" "1") (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
-          required: true
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
+          required: false
           default: repl{{ if ConfigOptionEquals "replicatedLicenseType" "dev"}}repl{{ print (ConfigOption "derivedSelfHostedGCPProjectId") "-export-storage"}}repl{{ end }}
+            
 
-        # Redshift imports enabled
-        - name: datawarehousesImportsRedshiftEnabled
-          title: Enable imports to Redshift
-          type: bool
-          default: "0"
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
-          help_text: |-
-            Enable importing data to Redshift connections.
-
-            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-redshift-imports).
-        # Snowflake or Redshift exports enabled
-        - name: datawarehousesExportsSnowflakeOrRedshiftEnabled
-          title: Enable exports from Snowflake and Redshift
-          type: bool
-          default: "0"
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
-          help_text: |-
-            Enable exporting data from Snowflake and Redshift.
-
-            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets#configure-data-exports-in-snowflake-and-redshift).
-        # Snowflake or Redshift exports and Redshift imports configuration
+        # Exports for AWS
         - name: storageBucketsExportAws
           title: AWS exports bucket name
-          help_text: The bucket name to store exported data from Redshift or Snowflake
+          help_text: Bucket name to store exported data. Leave it blank to disable exports.
           type: text
-          when: '{{repl and (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
-          required: true
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+          required: false
         - name: storageBucketsImportExportAwsArnRole
           title: AWS arn bucket role
           help_text: |-
-            If AWS is used in self-hosted, the ARN Role to be used importing and exporting data:
-              - Import to Redshift
-              - Export from Snowflake or Redshift
+            A AWS arn role must be provided. Check the following instructions for [Redshift](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets/redshift) or [Snowflake](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets/snowflake) 
+           
           type: text
-          when: '{{repl and (or (ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1") (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1")) (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
-          required: true
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+          required: false
+
     # Advanced Config
     - name: platformAdvancedConfig
       title: Advanced Config
       description: |-
-        Here you should config advanced options of CARTO that let you customize a bit more.
-        If you need further info, please check [docs.carto.com](https://docs.carto.com).
+        Fine-tune your self-hosted environment with advanced configuration
       items:
         ## Redis
         - name: externalRedisEnabled
           title: Redis
           help_text: |-
-            Bring your own Redis instance for your Self-Hosted environment. If not, a container will be deployed for it
-
-            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-an-external-in-memory-cache).
+            Configure an external in memory cache.
+            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-an-external-in-memory-cache).
           type: bool
           default: "0"
         - name: externalRedisHost
@@ -574,8 +541,6 @@ spec:
         - name: externalRedisTLSCertificate
           title: SSL/TLS certificate
           when: '{{repl and (ConfigOptionEquals "externalRedisEnabled" "1") (ConfigOptionEquals "externalRedisTLSBehaviour" "tls_enabled") }}'
-          help_text: |-
-            If you don't know what this is, please disable the SSL/TLS Mode.
           type: file
           required: true
 
@@ -583,9 +548,8 @@ spec:
         - name: externalProxyEnabled
           title: External proxy
           help_text: |-
-            CARTO Self-hosted supports operating behind an HTTP or HTTPS proxy. Enable this option if you'd like to use an external proxy.
-
-            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-an-external-proxy).
+            Configuring an external proxy to egress Connections.
+            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-an-external-proxy).
           type: bool
           default: "0"
         - name: externalProxyNotConfiguredWarning
@@ -634,15 +598,13 @@ spec:
         - name: ssoEnabled
           title: Single Sign-On
           help_text: |-
-            Enable Single Sign-On (SSO) for your Self-Hosted environment.
-            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-single-sign-on-sso).
+            Enable Single Sign-On (SSO) to authenticate against your own IdP.
+            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-single-sign-on-sso).
           type: bool
           default: "0"
         - name: ssoOrganizationId
           title: Organization ID
           type: text
-          help_text: |-
-            If you don't have your Organization ID, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-single-sign-on-sso).
           when: '{{repl (ConfigOptionEquals "ssoEnabled" "1") }}'
           required: true
 
@@ -757,12 +719,8 @@ spec:
         - name: enableCDW
           title: CARTO Data Warehouse
           help_text: >-
-            The CARTO Data Warehouse is a default connection provided to every CARTO organization,
-            designed to help users get started with the platform.
-            It grants access to resources such as cloud storage and cloud computing provided by CARTO,
-            including access to demo datasets and spatial datasets from CARTO's Data Observatory.
-            It uses the same structure as a Google BigQuery connection, with projects, datasets, and tables, and includes
-            private datasets for individual users and shared datasets accessible to all users within an organization.
+            Enable the CARTO Data Warehose.
+            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-the-carto-data-warehouse)
           type: bool
           default: "0"
 
@@ -770,13 +728,12 @@ spec:
         - name: googleBasemapsEnabled
           title: Google Basemaps
           help_text: |
-            Enable if you want to use the Google basemaps. If you need info about how to generate the API Key, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-google-basemaps).
+            Enable if you want to use the Google basemaps. 
+            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-google-basemaps).
           type: bool
           default: "0"
         - name: googleMapsAPIKey
           title: Google Maps API Key
-          help_text: |-
-            The Google Maps API Key is required to use the Google Maps API.
           type: text
           when: '{{repl (ConfigOptionEquals "googleBasemapsEnabled" "1") }}'
           required: true
@@ -786,7 +743,7 @@ spec:
           title: BigQuery OAuth connections
           help_text: |-
             If you would like the option to connect to BigQuery using OAuth, please enable this option.
-            You'll find how to configure it in our [documentation](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-bigquery-oauth-connections).
+            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-bigquery-oauth-connections).
           type: bool
           default: "0"
         - name: bigqueryOauthClientID
@@ -806,7 +763,7 @@ spec:
           title: Google Workload Identity
           help_text: |-
             The CARTO APIs running on your infrastructure are going to use Workload Identity to access to Google Cloud Platform.
-            Please follow these steps to configure it properly [Google Workload Identity](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/use-workload-identity-in-gcp)
+            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/use-workload-identity-in-gcp)
           type: bool
           default: "0"
         - name: googleWorkloadIdentityEmail
@@ -819,8 +776,8 @@ spec:
           title: BigQuery workload identity
           when: '{{repl (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") }}'
           help_text: |-
-            ⚠️ This is going to create a shared connection with all the users of your environment
-            Please follow these steps to configure it properly [BigQuery connection Workload Identity](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/use-workload-identity-in-gcp#create-a-bigquery-connection-managed-using-workload-identity)
+            This is going to create a shared connection with all the users of your environment
+            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/use-workload-identity-in-gcp#create-a-bigquery-connection-managed-using-workload-identity)
           type: bool
           default: "0"
         - name: bigqueryWorkloadIdentityConnectionWorkflowTMP
@@ -831,7 +788,7 @@ spec:
             {{repl $result := and $cond1 $cond2 -}}
             {{repl $result -}}
           help_text: |-
-            BigQuery dataset id used for Carto Workflows to store temporary tables (i.e. `my_gcp_project.my_dataset`)
+            BigQuery dataset used for Carto Workflows to store temporary tables (i.e. `my_gcp_project.my_dataset`)
           required: true
           type: text
         - name: bigqueryWorkloadIdentityConnectionBillingProject
@@ -914,21 +871,18 @@ spec:
           title: Advanced Platform Tuning
           type: bool
           default: "0"
-          help_text: |-
-            ⚠️ Check only for tuning your CARTO Self-Hosted environment with advanced parameters
+
 
     # Advanced Tuning
     - name: platformAdvancedTuning
       title: Advanced Tuning
       description: |-
-        Here you can config advanced options for tuning your CARTO deployment.
-        If you need further info, please check [docs.carto.com](https://docs.carto.com).
+        Advanced Configuration Section where you can enter plaintext configuration settings, provided by the CARTO support team, to tailor your installation to specific requirements.
+        
       when: repl{{ ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}
       items:
         ## Tunning
         - name: platformAdvancedTuningValues
-          help_text: |-
-            ⚠️ I understand that the following options are advanced and could break my installation, but I know what I am doing
           type: textarea
           when: repl{{ ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}
           title: ""
