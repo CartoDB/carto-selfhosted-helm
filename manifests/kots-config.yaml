@@ -471,72 +471,41 @@ spec:
           required: true
           default: repl{{ if and (ConfigOptionEquals "replicatedLicenseType" "dev") (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs")}}repl{{ print (ConfigOption "derivedSelfHostedGCPProjectId") "-thumbnails-storage"}}repl{{ end }}
         - name: storageBucketsThumbnailsIsPublic
+          title: Assets bucket is public
           help_text: |-
             Assets can be configured to be public or private. Some features, such as branding and custom markers, won't work unless the bucket is public.
-
-            Please select the access mode of this bucket.
-          type: select_one
-          default: public
-          items:
-            - name: private
-              title: Private
-            - name: public
-              title: Public
+            If you'd like to use these features, please make the bucket public.
+          type: bool
+          default: "1"
 
         # Bigquery exports
-        - name: datawarehousesExportsBigQueryEnabled
-          title: Enable exports from BigQuery and the CARTO Data Warehouse
-          type: bool
-          default: "0"
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
-          help_text: |-
-            Enable exporting data from BigQuery connections.
-
-            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets#configure-data-export-bucket-for-bigquery).
         - name: storageBucketsExportGcp
           title: BigQuery exports bucket name
-          help_text: The bucket name to store exported data from BigQuery.
+          help_text: |- 
+            The bucket name to store exported data from BigQuery.
           type: text
-          when: '{{repl and (ConfigOptionEquals "datawarehousesExportsBigQueryEnabled" "1") (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
-          required: true
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
+          required: false
           default: repl{{ if ConfigOptionEquals "replicatedLicenseType" "dev"}}repl{{ print (ConfigOption "derivedSelfHostedGCPProjectId") "-export-storage"}}repl{{ end }}
+            
 
-        # Redshift imports enabled
-        - name: datawarehousesImportsRedshiftEnabled
-          title: Enable imports to Redshift
-          type: bool
-          default: "0"
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
-          help_text: |-
-            Enable importing data to Redshift connections.
-
-            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-redshift-imports).
-        # Snowflake or Redshift exports enabled
-        - name: datawarehousesExportsSnowflakeOrRedshiftEnabled
-          title: Enable exports from Snowflake and Redshift
-          type: bool
-          default: "0"
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
-          help_text: |-
-            Enable exporting data from Snowflake and Redshift.
-
-            If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets#configure-data-exports-in-snowflake-and-redshift).
         # Snowflake or Redshift exports and Redshift imports configuration
         - name: storageBucketsExportAws
           title: AWS exports bucket name
-          help_text: The bucket name to store exported data from Redshift or Snowflake
+          help_text: The bucket name to store exported data from Redshift or Snowflake. If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets#configure-data-exports-in-snowflake-and-redshift)
           type: text
-          when: '{{repl and (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1") (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
-          required: true
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+          required: false
         - name: storageBucketsImportExportAwsArnRole
           title: AWS arn bucket role
           help_text: |-
             If AWS is used in self-hosted, the ARN Role to be used importing and exporting data:
-              - Import to Redshift
+              - Import to Redshift. If you need further info, please check [docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-redshift-imports).
               - Export from Snowflake or Redshift
           type: text
-          when: '{{repl and (or (ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1") (ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1")) (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
-          required: true
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+          required: false
+
     # Advanced Config
     - name: platformAdvancedConfig
       title: Advanced Config

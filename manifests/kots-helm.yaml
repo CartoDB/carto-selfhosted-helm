@@ -90,7 +90,7 @@ spec:
       workspaceImportsBucket: '{{repl ConfigOption "storageBucketsWorkspaceImports" }}'
       workspaceImportsPublic: false
       workspaceThumbnailsBucket: '{{repl ConfigOption "storageBucketsThumbnails" }}'
-      workspaceThumbnailsPublic: repl{{ if ConfigOptionEquals "storageBucketsThumbnailsIsPublic" "public"}}truerepl{{ else }}falserepl{{ end }}
+      workspaceThumbnailsPublic: repl{{ if ConfigOptionEquals "storageBucketsThumbnailsIsPublic" "1"}}truerepl{{ else }}falserepl{{ end }}
       googleCloudStorageProjectId: '{{repl ConfigOption "storageBucketsGcpProjectId" }}'
       awsS3Region: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
 
@@ -175,13 +175,13 @@ spec:
   ## Values from Advanced Configuration
   optionalValues:
     ## BigQuery exports
-    - when: '{{repl ConfigOptionEquals "datawarehousesExportsBigQueryEnabled" "1" }}'
+    - when: '{{repl not (empty (ConfigOption "storageBucketsExportGcp"))}}'
       recursiveMerge: true
       values:
         appConfigValues:
           workspaceExportsBucket: '{{repl ConfigOption "storageBucketsExportGcp" }}'
     ## Redshift imports
-    - when: '{{repl ConfigOptionEquals "datawarehousesImportsRedshiftEnabled" "1" }}'
+    - when: '{{repl not (empty (ConfigOption "storageBucketsImportExportAwsArnRole")) }}'
       recursiveMerge: true
       values:
         appSecrets:
@@ -192,7 +192,7 @@ spec:
         appConfigValues:
           importAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
     ## Snowflake and Redshift exports
-    - when: '{{repl ConfigOptionEquals "datawarehousesExportsSnowflakeOrRedshiftEnabled" "1" }}'
+    - when: '{{repl not (empty (ConfigOption "storageBucketsExportAws")) }}'
       recursiveMerge: true
       values:
         appSecrets:
