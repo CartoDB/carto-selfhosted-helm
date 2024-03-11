@@ -93,7 +93,7 @@ spec:
       title: Metadata Database
       description: |-
         Information needed to connect to your metadata database.
-        [More info](https://docs.carto.com/carto-self-hosted/key-concepts/deployment-requirements#external-database).
+        [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/key-concepts/deployment-requirements#external-database).
       items:
         - name: metadataDBHost
           title: Host
@@ -147,7 +147,7 @@ spec:
       title: Access to CARTO
       description: |-
         Configure your Self-Hosted platform's domain and TLS certificate for secure access.
-        [More info][docs.carto.com](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/deployment-guides/kubernetes#access-to-carto).
+        [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/deployment-guides/kubernetes#access-to-carto).
       items:
         - name: loadBalancerSupportedKind
           title: Load Balancer kind
@@ -256,7 +256,7 @@ spec:
         - name: cartoSelfHostedDomain
           title: Domain
           help_text: |-
-            Specify the domain for end users to access your Self-Hosted platform (excluding protocol or paths)
+            Specify the domain for end users to access your Self-Hosted platform (excluding protocol or paths).
           type: text
           required: true
           validation:
@@ -416,7 +416,7 @@ spec:
         - name: storageBucketsGcpProjectId
           title: Buckets project id
           when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
-          help_text: The GCP Project Id of these buckets
+          help_text: The GCP Project Id of these buckets.
           type: text
           required: true
           default: repl{{ if ConfigOptionEquals "replicatedLicenseType" "dev"}}repl{{ ConfigOption "derivedSelfHostedGCPProjectId"}}repl{{ end }}
@@ -448,7 +448,7 @@ spec:
 
         - name: storageBucketsWorkspaceImports
           title: Temp Bucket
-          help_text: Bucket name to be used for storing temporary data
+          help_text: Bucket name to be used for storing temporary data.
           type: text
           required: true
           default: repl{{ if and (ConfigOptionEquals "replicatedLicenseType" "dev") (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs")}}repl{{ print (ConfigOption "derivedSelfHostedGCPProjectId") "-client-storage"}}repl{{ end }}
@@ -459,7 +459,7 @@ spec:
               title: Public
         - name: storageBucketsThumbnails
           title: Assets Bucket
-          help_text: Bucket name to be used to store the assets generated in the app
+          help_text: Bucket name to be used to store the assets generated in the app.
           type: text
           required: true
           default: repl{{ if and (ConfigOptionEquals "replicatedLicenseType" "dev") (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs")}}repl{{ print (ConfigOption "derivedSelfHostedGCPProjectId") "-thumbnails-storage"}}repl{{ end }}
@@ -501,7 +501,7 @@ spec:
     - name: platformAdvancedConfig
       title: Advanced Config
       description: |-
-        Fine-tune your self-hosted environment with advanced configuration
+        Fine-tune your self-hosted environment with advanced configuration.
       items:
         ## Redis
         - name: externalRedisEnabled
@@ -720,7 +720,7 @@ spec:
           title: CARTO Data Warehouse
           help_text: >-
             Enable the CARTO Data Warehose.
-            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-the-carto-data-warehouse)
+            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-the-carto-data-warehouse).
           type: bool
           default: "0"
 
@@ -763,7 +763,7 @@ spec:
           title: Google Workload Identity
           help_text: |-
             The CARTO APIs running on your infrastructure are going to use Workload Identity to access to Google Cloud Platform.
-            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/use-workload-identity-in-gcp)
+            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/use-workload-identity-in-gcp).
           type: bool
           default: "0"
         - name: googleWorkloadIdentityEmail
@@ -873,11 +873,11 @@ spec:
           default: "0"
 
 
-    # Advanced Tuning
+    # Custom configuration
     - name: platformAdvancedTuning
-      title: Advanced Tuning
+      title: Custom Configuration
       description: |-
-        Advanced Configuration Section where you can enter plaintext configuration settings, provided by the CARTO support team, to tailor your installation to specific requirements.
+        Custom configuration section where you can enter plaintext configuration settings, provided by the CARTO support team, to tailor your installation to specific requirements. Please note that modifications should only be made by users with a clear understanding of the implications, and responsibility lies with the user for any changes made.
         
       when: repl{{ ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}
       items:
