@@ -866,12 +866,19 @@ spec:
           required: true
           default: "3"
 
+        ## Debug mode
+        - name: enablePlatformDebugMode
+          title: Debug mode
+          help_text: |-
+            Enable if you want to enable debug mode.
+          type: bool
+          default: "0"
+
         ## Tuning
         - name: enablePlatformAdvancedTuning
           title: Advanced Platform Tuning
           type: bool
           default: "0"
-
 
     # Custom configuration
     - name: platformAdvancedTuning
