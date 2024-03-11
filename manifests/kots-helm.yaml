@@ -281,6 +281,45 @@ spec:
         workspaceWww: *highAvailabilityEnabled
         accountsWww: *highAvailabilityEnabled
 
+    # Debug mode
+    - when: '{{repl ConfigOptionEquals "enablePlatformDebugMode" "1" }}'
+      recursiveMerge: true
+      values:
+        importApi:
+          extraEnvVars:
+            - name: CARTO_TRACING_MODE
+              value: "local"
+
+        importWorker:
+          extraEnvVars:
+            - name: CARTO_TRACING_MODE
+              value: "local"
+
+        ldsApi:
+          extraEnvVars:
+            - name: CARTO_TRACING_MODE
+              value: "local"
+
+        mapsApi:
+          extraEnvVars:
+            - name: CARTO_TRACING_MODE
+              value: "local"
+
+        sqlWorker:
+          extraEnvVars:
+            - name: CARTO_TRACING_MODE
+              value: "local"
+
+        workspaceApi:
+          extraEnvVars:
+            - name: CARTO_TRACING_MODE
+              value: "local"
+
+        workspaceSubscriber:
+          extraEnvVars:
+            - name: CARTO_TRACING_MODE
+              value: "local"
+
     ## Advanced Tuning
     - when: '{{repl ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}'
       recursiveMerge: true
