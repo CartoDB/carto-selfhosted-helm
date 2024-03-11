@@ -281,6 +281,32 @@ spec:
         workspaceWww: *highAvailabilityEnabled
         accountsWww: *highAvailabilityEnabled
 
+    ## Custom AT location
+    - when: '{{repl not (empty (ConfigOption "defaultATLocationBigQuery")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          defaultAtLocation:
+            bigquery: '{{repl ConfigOption "defaultATLocationBigQuery" }}'
+    - when: '{{repl not (empty (ConfigOption "defaultATLocationSnowflake")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          defaultAtLocation:
+            snowflake: '{{repl ConfigOption "defaultATLocationSnowflake" }}'
+    - when: '{{repl not (empty (ConfigOption "defaultATLocationRedshift")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          defaultAtLocation:
+            redshift: '{{repl ConfigOption "defaultATLocationRedshift" }}'
+    - when: '{{repl not (empty (ConfigOption "defaultATLocationPostgres")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          defaultAtLocation:
+            postgres: '{{repl ConfigOption "defaultATLocationPostgres" }}'
+
     # Debug mode
     - when: '{{repl ConfigOptionEquals "enablePlatformDebugMode" "1" }}'
       recursiveMerge: true
@@ -321,6 +347,6 @@ spec:
               value: "local"
 
     ## Advanced Tuning
-    - when: '{{repl ConfigOptionEquals "enablePlatformAdvancedTuning" "1" }}'
+    - when: '{{repl not (empty (ConfigOption "platformAdvancedTuningValues")) }}'
       recursiveMerge: true
       values: repl{{ ConfigOption "platformAdvancedTuningValues" | nindent 8 }}
