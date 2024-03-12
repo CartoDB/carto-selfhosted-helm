@@ -171,6 +171,11 @@ spec:
         enabled: repl{{ if ConfigOptionEquals "accessToCartoGCPStaticIPName" ""}}falserepl{{ else }}truerepl{{ end }}
         value: '{{repl ConfigOption "accessToCartoGCPStaticIPName" }}'
 
+    ## Temporal fix to change tenantRequirementsChecker image until next release
+    tenantRequirementsChecker:
+      image:
+        tag: 'set_timeout_postgres_tenant_requirements_checker'
+
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
