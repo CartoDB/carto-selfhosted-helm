@@ -35,7 +35,7 @@ appConfigValues:
   enableTrackJS: "true"
   ## @param appConfigValues.ssoOrganizationId SSO organization ID provided by CARTO used to configure the SSO in the app.
   ssoOrganizationId: ""
-  defaultAtLocation: 
+  defaultAtLocation:
     ## @param appConfigValues.defaultAtLocation.bigquery The default AT location for BigQuery connections
     bigquery: "carto-un.carto"
     ## @param appConfigValues.defaultAtLocation.snowflake The default AT location for Snowflake connections
@@ -253,7 +253,7 @@ appSecrets:
     existingSecret:
       name: ""
       key: ""
-  
+
 
 ## @section CARTO secrets
 ## Secrets provided by CARTO. Some of them could be customized by the client.
@@ -858,7 +858,7 @@ importApi:
   ##
   resources:
     limits:
-      memory: "1024Mi"
+      memory: "2048Mi"
       cpu: "1000m"
     requests:
       memory: "372Mi"
