@@ -140,10 +140,10 @@ Return common analyzers for preflights and support-bundle
       checkName: The cluster should contain at least 16 Gi
       outcomes:
         - fail:
-            when: "sum(allocatableMemory) < 16Gi"
+            when: "sum(memoryAllocatable) < 16Gi"
             message: The cluster must contain at least 16Gi. ➡️ Ignore if you have auto-scale enabled in your cluster.
         - warn:
-            when: "sum(allocatableMemory) < 17Gi"
+            when: "sum(memoryAllocatable) < 17Gi"
             message: The cluster should contain at least 17Gi. ➡️ Ignore if you have auto-scale enabled in your cluster.
         - pass:
             message: There are at least 16 Gi in the cluster.
