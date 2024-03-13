@@ -218,6 +218,10 @@ Return customer values to use in preflights and support-bundle
     value: {{ include "carto.postgresql.user" . }}
   - name: WORKSPACE_TENANT_ID
     value: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+  - name: GOOGLE_APPLICATION_CREDENTIALS
+    value: {{ include "carto.google.secretMountAbsolutePath" . }}
+  {{- end }}
   - name: WORKSPACE_THUMBNAILS_BUCKET
     value: {{ .Values.appConfigValues.workspaceThumbnailsBucket | quote }}
   - name: WORKSPACE_IMPORTS_BUCKET
