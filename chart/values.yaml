@@ -2434,6 +2434,7 @@ router:
   ##
   schedulerName: ""
   ## @skip router.lifecycleHooks [object] for the router container(s) to automate configuration before or after startup
+  ## @skip router.lifecycleHooks.preStop.exec.command
   ##
   lifecycleHooks:
     preStop:
@@ -2845,6 +2846,7 @@ httpCache:
   ##
   schedulerName: ""
   ## @skip httpCache.lifecycleHooks [object] for the http-cache container(s) to automate configuration before or after startup
+  ## @skip httpCache.lifecycleHooks.preStop.exec.command
   ##
   lifecycleHooks:
     preStop:
