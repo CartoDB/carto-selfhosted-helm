@@ -440,6 +440,11 @@ spec:
           required: true
 
         # Azure
+        - name: storageBucketsAzureStorageAccount
+          title: Azure-Blob Storage Account
+          type: text
+          required: true
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_azb") }}'
         - name: storageBucketsAzureAccessKey
           title: AccessKey for Azure-Blob
           type: text
