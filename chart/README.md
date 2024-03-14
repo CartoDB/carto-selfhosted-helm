@@ -44,7 +44,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.workloadIdentityConnection.serviceAccountEmail`   | Service account email to be used in the connection                                                                     | `""`                   |
 | `appConfigValues.workloadIdentityConnection.connectionOwner`       | User ID of the owner of the connection                                                                                 | `""`                   |
 
-
 ### CARTO config parameters
 
 | Name                                              | Description                                                         | Value   |
@@ -62,7 +61,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cartoConfigValues.selfHostedTenantId`            | Carto internal tenantId used in the installation.                   | `""`    |
 | `cartoConfigValues.launchDarklyClientSideId`      | LaunchDarkly ClientSideId (by www) used to enable/disable features. | `""`    |
 | `cartoConfigValues.cartoDataWarehouseEnabled`     | Enable the Carto Data Warehouse for the self-hosted.                | `false` |
-
 
 ### App secret
 
@@ -133,7 +131,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appSecrets.ldsTravelTimeAppId.existingSecret.name`                  | Name of the pre-existent secret containing the `appSecrets.ldsTravelTimeAppId.existingSecret.key`. If `appSecrets.ldsTravelTimeAppId.value` is defined, this value is going to be ignored and not used.                                                                                 | `""`  |
 | `appSecrets.ldsTravelTimeAppId.existingSecret.key`                   | Key to find in `appSecrets.ldsTravelTimeAppId.existingSecret.name` where the value of `appSecrets.ldsTravelTimeAppId` is found. If `appSecrets.ldsTravelTimeAppId.value` is defined, this value is going to be ignored and not used.                                                    | `""`  |
 
-
 ### CARTO secrets
 
 | Name                                                           | Description                                                                                                                                                                                                                                                           | Value |
@@ -163,7 +160,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cartoSecrets.defaultGoogleServiceAccount.existingSecret.name` | Name of the pre-existent secret containing the `cartoSecrets.defaultGoogleServiceAccount.existingSecret.key`. If `cartoSecrets.defaultGoogleServiceAccount.value` is defined, this value is going to be ignored and not used.                                         | `""`  |
 | `cartoSecrets.defaultGoogleServiceAccount.existingSecret.key`  | Key to find in `cartoSecrets.defaultGoogleServiceAccount.existingSecret.name` where the value of `cartoSecrets.defaultGoogleServiceAccount` is found. If `cartoSecrets.defaultGoogleServiceAccount.value` is defined, this value is going to be ignored and not used. | `""`  |
 
-
 ### TLS parameters
 
 | Name                              | Description                                                                                                                                                           | Value     |
@@ -173,7 +169,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `tlsCerts.existingSecret.name`    | Name of a secret containing the certificate                                                                                                                           | `""`      |
 | `tlsCerts.existingSecret.certKey` | Key of the certificate inside the secret                                                                                                                              | `tls.crt` |
 | `tlsCerts.existingSecret.keyKey`  | Key of the certificate key inside the secret                                                                                                                          | `tls.key` |
-
 
 ### common backend service account
 
@@ -185,7 +180,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `commonBackendServiceAccount.annotations`                  | Annotations to add to this SA                                                               | `{}`    |
 | `commonBackendServiceAccount.name`                         | If not set and create is true, a name is generated using the common.names.fullname template | `""`    |
 
-
 ### Global parameters
 
 | Name                             | Description                                             | Value       |
@@ -194,7 +188,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `global.imagePullSecrets`        | Global Docker registry secret names as an array         | `[]`        |
 | `global.storageClass`            | Global StorageClass for Persistent Volume(s)            | `""`        |
 | `global.kubernetesPolicyVersion` | Global Default kubernetes api version for policy object | `policy/v1` |
-
 
 ### Common parameters
 
@@ -210,7 +203,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `diagnosticMode.enabled` | Enable diagnostic mode (all probes will be disabled and the command will be overridden) | `false`         |
 | `diagnosticMode.command` | Command to override all containers in the deployment                                    | `["sleep"]`     |
 | `diagnosticMode.args`    | Args to override all containers in the deployment                                       | `["999d"]`      |
-
 
 ### accounts-www Deployment Parameters
 
@@ -290,7 +282,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `accountsWww.sidecars`                                          | Add additional sidecar containers to the accounts-www pod(s)                                                                 | `{}`                            |
 | `accountsWww.initContainers`                                    | Add additional init containers to the accounts-www pod(s)                                                                    | `{}`                            |
 
-
 ### accounts-www Service Parameters
 
 | Name                                           | Description                                                                             | Value       |
@@ -306,7 +297,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `accountsWww.service.annotations`              | Additional custom annotations for accounts-www service                                  | `{}`        |
 | `accountsWww.service.extraPorts`               | Extra ports to expose in accounts-www service (normally used with the `sidecars` value) | `[]`        |
 
-
 ### accounts-www ServiceAccount configuration
 
 | Name                                                      | Description                                          | Value   |
@@ -314,7 +304,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `accountsWww.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
 | `accountsWww.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
 | `accountsWww.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
-
 
 ### import-api Deployment Parameters
 
@@ -396,7 +385,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `importApi.sidecars`                                          | Add additional sidecar containers to the import-api pod(s)                                                                        | `{}`                                                                                                                          |
 | `importApi.initContainers`                                    | Add additional init containers to the import-api pod(s)                                                                           | `{}`                                                                                                                          |
 
-
 ### import-api Service Parameters
 
 | Name                                         | Description                                                                           | Value       |
@@ -411,7 +399,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `importApi.service.externalTrafficPolicy`    | import-api service external traffic policy                                            | `Cluster`   |
 | `importApi.service.annotations`              | Additional custom annotations for import-api service                                  | `{}`        |
 | `importApi.service.extraPorts`               | Extra ports to expose in import-api service (normally used with the `sidecars` value) | `[]`        |
-
 
 ### import-worker Deployment Parameters
 
@@ -469,7 +456,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `importWorker.extraVolumeMounts`                                 | Optionally specify extra list of additional volumeMounts for the import-worker container(s)                                       | `[]`                                                                                                  |
 | `importWorker.sidecars`                                          | Add additional sidecar containers to the import-worker pod(s)                                                                     | `{}`                                                                                                  |
 | `importWorker.initContainers`                                    | Add additional init containers to the import-worker pod(s)                                                                        | `{}`                                                                                                  |
-
 
 ### lds-api Deployment Parameters
 
@@ -551,7 +537,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `ldsApi.sidecars`                                          | Add additional sidecar containers to the lds-api pod(s)                                                                           | `{}`                                                                                                                          |
 | `ldsApi.initContainers`                                    | Add additional init containers to the lds-api pod(s)                                                                              | `{}`                                                                                                                          |
 
-
 ### lds-api Service Parameters
 
 | Name                                      | Description                                                                        | Value       |
@@ -566,7 +551,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `ldsApi.service.externalTrafficPolicy`    | lds-api service external traffic policy                                            | `Cluster`   |
 | `ldsApi.service.annotations`              | Additional custom annotations for lds-api service                                  | `{}`        |
 | `ldsApi.service.extraPorts`               | Extra ports to expose in lds-api service (normally used with the `sidecars` value) | `[]`        |
-
 
 ### maps-api Deployment Parameters
 
@@ -648,7 +632,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `mapsApi.sidecars`                                          | Add additional sidecar containers to the maps-api pod(s)                                                                          | `{}`                                                                                                                          |
 | `mapsApi.initContainers`                                    | Add additional init containers to the maps-api pod(s)                                                                             | `{}`                                                                                                                          |
 
-
 ### maps-api Service Parameters
 
 | Name                                       | Description                                                                         | Value       |
@@ -663,7 +646,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `mapsApi.service.externalTrafficPolicy`    | maps-api service external traffic policy                                            | `Cluster`   |
 | `mapsApi.service.annotations`              | Additional custom annotations for maps-api service                                  | `{}`        |
 | `mapsApi.service.extraPorts`               | Extra ports to expose in maps-api service (normally used with the `sidecars` value) | `[]`        |
-
 
 ### sql-worker Deployment Parameters
 
@@ -736,7 +718,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `sqlWorker.extraVolumeMounts`                                 | Optionally specify extra list of additional volumeMounts for the sql-worker container(s)                                          | `[]`                                                                                                                                     |
 | `sqlWorker.sidecars`                                          | Add additional sidecar containers to the sql-worker pod(s)                                                                        | `{}`                                                                                                                                     |
 | `sqlWorker.initContainers`                                    | Add additional init containers to the sql-worker pod(s)                                                                           | `{}`                                                                                                                                     |
-
 
 ### router Deployment Parameters
 
@@ -824,7 +805,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `router.sidecars`                                          | Add additional sidecar containers to the router pod(s)                                                                      | `{}`                            |
 | `router.initContainers`                                    | Add additional init containers to the router pod(s)                                                                         | `{}`                            |
 
-
 ### router Service Parameters
 
 | Name                                      | Description                                                                                                                      | Value                    |
@@ -855,7 +835,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `router.ingress.extraTls`                 | The tls configuration for additional hostnames to be covered with this ingress record.                                           | `[]`                     |
 | `router.ingress.extraRules`               | Additional rules to be covered with this ingress record                                                                          | `[]`                     |
 
-
 ### router ServiceAccount configuration
 
 | Name                                                 | Description                                          | Value   |
@@ -863,7 +842,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `router.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
 | `router.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
 | `router.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
-
 
 ### httpCache Deployment Parameters
 
@@ -938,7 +916,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `httpCache.sidecars`                                          | Add additional sidecar containers to the http-cache pod(s)                                                                 | `{}`                            |
 | `httpCache.initContainers`                                    | Add additional init containers to the http-cache pod(s)                                                                    | `{}`                            |
 
-
 ### http-cache Service Parameters
 
 | Name                                         | Description                                                                           | Value       |
@@ -954,7 +931,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `httpCache.service.annotations`              | Additional custom annotations for http-cache service                                  | `{}`        |
 | `httpCache.service.extraPorts`               | Extra ports to expose in http-cache service (normally used with the `sidecars` value) | `[]`        |
 
-
 ### http-cache ServiceAccount configuration
 
 | Name                                                    | Description                                          | Value   |
@@ -962,7 +938,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `httpCache.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
 | `httpCache.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
 | `httpCache.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
-
 
 ### notifier Deployment Parameters
 
@@ -1039,7 +1014,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `notifier.sidecars`                                          | Add additional sidecar containers to the notifier pod(s)                                                                 | `{}`                            |
 | `notifier.initContainers`                                    | Add additional init containers to the notifier pod(s)                                                                    | `{}`                            |
 
-
 ### notifier Service Parameters
 
 | Name                                        | Description                                                                         | Value       |
@@ -1057,7 +1031,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `notifier.service.annotations`              | Additional custom annotations for notifier service                                  | `{}`        |
 | `notifier.service.extraPorts`               | Extra ports to expose in notifier service (normally used with the `sidecars` value) | `[]`        |
 
-
 ### notifier ServiceAccount configuration
 
 | Name                                                   | Description                                          | Value   |
@@ -1065,7 +1038,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `notifier.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
 | `notifier.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
 | `notifier.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
-
 
 ### cdnInvalidatorSub Deployment Parameters
 
@@ -1143,7 +1115,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cdnInvalidatorSub.sidecars`                                          | Add additional sidecar containers to the cdnInvalidatorSub pod(s)                                                                 | `{}`                                                                                                                                                   |
 | `cdnInvalidatorSub.initContainers`                                    | Add additional init containers to the cdnInvalidatorSub pod(s)                                                                    | `{}`                                                                                                                                                   |
 
-
 ### cdnInvalidatorSub Service Parameters
 
 | Name                                                 | Description                                                                                  | Value       |
@@ -1159,7 +1130,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cdnInvalidatorSub.service.externalTrafficPolicy`    | cdnInvalidatorSub service external traffic policy                                            | `Cluster`   |
 | `cdnInvalidatorSub.service.annotations`              | Additional custom annotations for cdnInvalidatorSub service                                  | `{}`        |
 | `cdnInvalidatorSub.service.extraPorts`               | Extra ports to expose in cdnInvalidatorSub service (normally used with the `sidecars` value) | `[]`        |
-
 
 ### workspace-api Deployment Parameters
 
@@ -1241,7 +1211,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceApi.sidecars`                                          | Add additional sidecar containers to the workspace-api pod(s)                                                                     | `{}`                                                                                                                          |
 | `workspaceApi.initContainers`                                    | Add additional init containers to the workspace-api pod(s)                                                                        | `{}`                                                                                                                          |
 
-
 ### workspace-api Service Parameters
 
 | Name                                            | Description                                                                              | Value       |
@@ -1256,7 +1225,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceApi.service.externalTrafficPolicy`    | workspace-api service external traffic policy                                            | `Cluster`   |
 | `workspaceApi.service.annotations`              | Additional custom annotations for workspace-api service                                  | `{}`        |
 | `workspaceApi.service.extraPorts`               | Extra ports to expose in workspace-api service (normally used with the `sidecars` value) | `[]`        |
-
 
 ### workspace-subscriber Deployment Parameters
 
@@ -1314,7 +1282,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceSubscriber.extraVolumeMounts`                                 | Optionally specify extra list of additional volumeMounts for the workspace-subscriber container(s)                                   | `[]`                                                                                                                                     |
 | `workspaceSubscriber.sidecars`                                          | Add additional sidecar containers to the workspace-subscriber pod(s)                                                                 | `{}`                                                                                                                                     |
 | `workspaceSubscriber.initContainers`                                    | Add additional init containers to the workspace-subscriber pod(s)                                                                    | `{}`                                                                                                                                     |
-
 
 ### workspace-www Deployment Parameters
 
@@ -1394,7 +1361,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceWww.sidecars`                                          | Add additional sidecar containers to the workspace-www pod(s)                                                                 | `{}`                            |
 | `workspaceWww.initContainers`                                    | Add additional init containers to the workspace-www pod(s)                                                                    | `{}`                            |
 
-
 ### workspace-www Service Parameters
 
 | Name                                            | Description                                                                              | Value       |
@@ -1410,7 +1376,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceWww.service.annotations`              | Additional custom annotations for workspace-www service                                  | `{}`        |
 | `workspaceWww.service.extraPorts`               | Extra ports to expose in workspace-www service (normally used with the `sidecars` value) | `[]`        |
 
-
 ### workspace-www ServiceAccount configuration
 
 | Name                                                       | Description                                          | Value   |
@@ -1418,7 +1383,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceWww.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
 | `workspaceWww.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
 | `workspaceWww.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
-
 
 ### Init Container Parameters
 
@@ -1442,7 +1406,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `workspaceMigrations.containerSecurityContext.allowPrivilegeEscalation` | Set init container's Security Context allowPrivilegeEscalation       | `false`                         |
 | `workspaceMigrations.containerSecurityContext.capabilities.drop`        | removes workspace-migrations containers' Security Contexcapabilities | `["all"]`                       |
 
-
 ### tenant-requirements-checker Deployment Parameters
 
 | Name                                                                          | Description                                                                                | Value                           |
@@ -1462,7 +1425,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `tenantRequirementsChecker.containerSecurityContext.runAsNonRoot`             | Force the init tenant-requirements-checker container to run as non root                    | `false`                         |
 | `tenantRequirementsChecker.containerSecurityContext.allowPrivilegeEscalation` | Set init tenant-requirements-checker container's Security Context allowPrivilegeEscalation | `false`                         |
 | `tenantRequirementsChecker.containerSecurityContext.capabilities.drop`        | removes tenant-requirements-checker containers' Security Contexcapabilities                | `["all"]`                       |
-
 
 ### Internal Redis&trade; subchart parameters
 
@@ -1496,7 +1458,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `internalRedis.replica.containerSecurityContext.allowPrivilegeEscalation` | Set Upgrade Check pre-hook containers' Security Context allowPrivilegeEscalation             | `false`      |
 | `internalRedis.replica.containerSecurityContext.capabilities.drop`        | removes Upgrade Check pre-hook containers' Security Context capabilities                     | `["all"]`    |
 
-
 ### External Redis parameters
 
 | Name                                      | Description                                                                                 | Value       |
@@ -1508,7 +1469,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `externalRedis.tlsCA`                     | CA certificate in case Redis TLS cert it's selfsigned                                       | `""`        |
 | `externalRedis.existingSecret`            | Name of an existing secret resource containing the Redis password in a 'redis-password' key | `""`        |
 | `externalRedis.existingSecretPasswordKey` | Key of the existing secret                                                                  | `""`        |
-
 
 ### Internal PostgreSQL subchart parameters
 
@@ -1524,7 +1484,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `internalPostgresql.image.tag`              | Tag of the PostgreSQL image                                                                     | `13.5.0-debian-10-r84` |
 | `internalPostgresql.nameOverride`           | String to partially override common.names.fullname template (will maintain the release name)    | `postgresql`           |
 | `internalPostgresql.primary.initdb.scripts` | Scripts for initializing the database                                                           | `[]`                   |
-
 
 ### External PostgreSQL parameters
 
@@ -1546,7 +1505,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `externalPostgresql.sslEnabled`                     | Whether or not connect to CARTO Postgresql via TLS                                                                                     | `false`           |
 | `externalPostgresql.sslCA`                          | CA certificate in case CARTO Postgresql TLS cert it's selfsigned                                                                       | `""`              |
 
-
 ### External proxy configuration
 
 | Name                                  | Description                                                                              | Value   |
@@ -1559,7 +1517,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `externalProxy.sslRejectUnauthorized` | Whether or not verify the HTTPS proxy SSL certificate                                    | `true`  |
 | `externalProxy.sslCA`                 | CA for the proxy SSL certificate in case is self-signed or signed by a not well-known CA | `""`    |
 | `externalProxy.connectionString`      | Connection string to the proxy                                                           | `""`    |
-
 
 ### Upgrade Check pre hook parameters
 
@@ -1585,10 +1542,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `upgradeCheck.containerSecurityContext.allowPrivilegeEscalation` | Set Upgrade Check pre-hook containers' Security Context allowPrivilegeEscalation | `false`                         |
 | `upgradeCheck.containerSecurityContext.capabilities.drop`        | removes Upgrade Check pre-hook containers' Security Context capabilities         | `["all"]`                       |
 
-
 ### router-metrics parameters
-
-
 
 
 ### routerMetrics container parametres
