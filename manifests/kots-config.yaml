@@ -452,11 +452,6 @@ spec:
           type: text
           required: true
           default: repl{{ if and (ConfigOptionEquals "replicatedLicenseType" "dev") (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs")}}repl{{ print (ConfigOption "derivedSelfHostedGCPProjectId") "-client-storage"}}repl{{ end }}
-          items:
-            - name: private
-              title: Private
-            - name: public
-              title: Public
         - name: storageBucketsThumbnails
           title: Assets Bucket
           help_text: Bucket name to be used to store the assets generated in the app.
@@ -466,7 +461,7 @@ spec:
         - name: storageBucketsThumbnailsIsPublic
           title: Assets bucket is public
           help_text: |-
-            Public bucket is required for some specific features like thumnbails, custom branding or custom markers.
+            Public bucket is required if you'd like to use custom markers.
           type: bool
           default: "1"
 
