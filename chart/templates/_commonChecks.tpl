@@ -15,6 +15,60 @@ Return common collectors for preflights and support-bundle
             env:
             {{- include "carto.replicated.tenantRequirementsChecker.customerValues" . | indent 12 }}
             {{- include "carto.replicated.tenantRequirementsChecker.customerSecrets" . | indent 12 }}
+            volumeMounts:
+              - name: gcp-default-service-account-key
+                mountPath: {{ include "carto.google.secretMountDir" . }}
+                readOnly: true
+              {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
+              - name: gcp-buckets-service-account-key
+                mountPath: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountDir" . }}
+                readOnly: true
+              {{- end }}
+              {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+              - name: postgresql-ssl-ca
+                mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
+                readOnly: true
+              {{- end }}
+              {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+              - name: redis-tls-ca
+                mountPath: {{ include "carto.redis.configMapMountDir" . }}
+                readOnly: true
+              {{- end }}
+              {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+              - name: proxy-ssl-ca
+                mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+                readOnly: true
+              {{- end }}
+        volumes:
+          - name: gcp-default-service-account-key
+            secret:
+              secretName: {{ include "carto.google.secretName" . }}
+              items:
+                - key: {{ include "carto.google.secretKey" . }}
+                  path: {{ include "carto.google.secretMountFilename" . }}
+          {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
+          - name: gcp-buckets-service-account-key
+            secret:
+              secretName: {{ include "carto.googleCloudStorageServiceAccountKey.secretName" . }}
+              items:
+                - key: {{ include "carto.googleCloudStorageServiceAccountKey.secretKey" . }}
+                  path: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountFilename" . }}
+          {{- end }}
+          {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+          - name: postgresql-ssl-ca
+            configMap:
+              name: {{ include "carto.postgresql.configMapName" . }}
+          {{- end }}
+          {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+          - name: redis-tls-ca
+            configMap:
+              name: {{ include "carto.redis.configMapName" . }}
+          {{- end }}
+          {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+          - name: proxy-ssl-ca
+            configMap:
+              name: {{ include "carto.proxy.configMapName" . }}
+          {{- end }}
   - redis:
       collectorName: redis
       {{- if .Values.internalRedis.enabled }}
@@ -45,26 +99,27 @@ Return common collectors for preflights and support-bundle
 Return common analyzers for preflights and support-bundle
 */}}
 {{- define "carto.replicated.commonChecks.analyzers" }}
-  {{- range $value := list 
-        "Check_database_connection"
-        "Check_database_encoding"
-        "Check_user_has_right_permissions"
-        "Check_database_version"
+  {{- range $preflight, $preflightChecks  := dict
+      "WorkspaceDatabaseValidator" (list "Check_database_connection" "Check_database_encoding" "Check_user_has_right_permissions" "Check_database_version") 
+      "ServiceAccountValidator" (list "Check_valid_service_account")
+      "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket")
     }}
+  {{- range $preflightCheckName := $preflightChecks }}
   - jsonCompare:
-      checkName: {{ $value | replace "_" " " }}
+      checkName: {{ $preflightCheckName | replace "_" " " }}
       fileName: tenant-requirements-check/tenant-requirements-check.log
-      path: "WorkspaceDatabaseValidator.{{ $value }}.status"
+      path: "{{ $preflight }}.{{ $preflightCheckName }}.status"
       value: |
         "passed"
       outcomes:
         - fail:
             when: "false"
-            message: "{{ printf "{{ .WorkspaceDatabaseValidator.%s.info }}" $value }}"
+            message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
 
         - pass:
             when: "true"
-            message: "{{ printf "{{ .WorkspaceDatabaseValidator.%s.info }}" $value }}"
+            message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
+  {{- end }}
   {{- end }}
   - registryImages:
       checkName: Carto Registry Images
@@ -161,6 +216,57 @@ Return customer values to use in preflights and support-bundle
     value: {{ include "carto.postgresql.databaseName" . }}
   - name: WORKSPACE_POSTGRES_USER
     value: {{ include "carto.postgresql.user" . }}
+  - name: WORKSPACE_TENANT_ID
+    value: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+  - name: GOOGLE_APPLICATION_CREDENTIALS
+    value: {{ include "carto.google.secretMountAbsolutePath" . }}
+  {{- end }}
+  - name: WORKSPACE_THUMBNAILS_BUCKET
+    value: {{ .Values.appConfigValues.workspaceThumbnailsBucket | quote }}
+  - name: WORKSPACE_IMPORTS_BUCKET
+    value: {{ .Values.appConfigValues.workspaceImportsBucket | quote }}
+  - name: WORKSPACE_THUMBNAILS_PROVIDER
+    value: {{ .Values.appConfigValues.storageProvider | quote }}
+  - name: WORKSPACE_IMPORTS_PROVIDER
+    value: {{ .Values.appConfigValues.storageProvider | quote }}
+  - name: WORKSPACE_THUMBNAILS_PUBLIC
+    value: {{ .Values.appConfigValues.workspaceThumbnailsPublic | quote }}
+  - name: WORKSPACE_IMPORTS_PUBLIC
+    value: {{ .Values.appConfigValues.workspaceImportsPublic | quote }}
+  {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
+  {{- if .Values.appConfigValues.googleCloudStorageProjectId }}
+  - name: WORKSPACE_IMPORTS_PROJECTID
+    value: {{ .Values.appConfigValues.googleCloudStorageProjectId | quote }}
+  - name: WORKSPACE_THUMBNAILS_PROJECTID
+    value: {{ .Values.appConfigValues.googleCloudStorageProjectId | quote }}
+  {{- end }}
+  {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
+  - name: WORKSPACE_IMPORTS_KEYFILENAME
+    value: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
+  - name: WORKSPACE_THUMBNAILS_KEYFILENAME
+    value: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
+  {{- else }}
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+  - name: WORKSPACE_IMPORTS_KEYFILENAME
+    value: {{ include "carto.google.secretMountAbsolutePath" . }}
+  - name: WORKSPACE_THUMBNAILS_KEYFILENAME
+    value: {{ include "carto.google.secretMountAbsolutePath" . }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- if eq .Values.appConfigValues.storageProvider "s3" }}
+  - name: WORKSPACE_THUMBNAILS_REGION
+    value: {{ .Values.appConfigValues.awsS3Region | quote }}
+  - name: WORKSPACE_IMPORTS_REGION
+    value: {{ .Values.appConfigValues.awsS3Region | quote }}
+  {{- end }}
+  {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
+  - name: WORKSPACE_THUMBNAILS_STORAGE_ACCOUNT
+    value: {{ .Values.appConfigValues.azureStorageAccount | quote }}
+  - name: WORKSPACE_IMPORTS_STORAGE_ACCOUNT
+    value: {{ .Values.appConfigValues.azureStorageAccount | quote }}
+  {{- end }}
 {{- end -}}
 
 {{/*
@@ -169,4 +275,12 @@ Return customer secrets to use in preflights and support-bundle
 {{- define "carto.replicated.tenantRequirementsChecker.customerSecrets" }}
   - name: WORKSPACE_POSTGRES_PASSWORD
     value: {{ .Values.externalPostgresql.password | quote }}
+    {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+                "WORKSPACE_THUMBNAILS_ACCESSKEYID"
+                "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
+                "WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY"
+                "WORKSPACE_IMPORTS_ACCESSKEYID"
+                "WORKSPACE_IMPORTS_SECRETACCESSKEY"
+                "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY"
+                ) "context" $ ) }}
 {{- end -}}

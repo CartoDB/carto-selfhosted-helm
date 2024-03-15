@@ -69,6 +69,8 @@ spec:
         value: '{{repl ConfigOption "storageBucketsAwsAccessKeySecret" }}'
       azureStorageAccessKey:
         value: '{{repl ConfigOption "storageBucketsAzureAccessKey" }}'
+      azureStorageAccount:
+        value: '{{repl ConfigOption "storageBucketsAzureStorageAccount"}}'
       ldsHereApiKey:
         value: '{{repl ConfigOption "locationDataServicesHereCredentials" }}'
       ldsTomTomApiKey:
@@ -174,7 +176,7 @@ spec:
     ## Temporal fix to change tenantRequirementsChecker image until next release
     tenantRequirementsChecker:
       image:
-        tag: 'set_timeout_postgres_tenant_requirements_checker'
+        tag: "feature_sc_389822_preflight_check_buckets_publish_simple_pub"
 
   # Optional Values
   ## Values from Advanced Configuration
