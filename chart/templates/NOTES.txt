@@ -4,7 +4,7 @@ CHART VERSION: {{ .Chart.Version }}
 CHART URL: https://github.com/CartoDB/carto-selfhosted-helm/
 APP VERSION: {{ .Chart.AppVersion }}
 
-{{- if  or (.Values.internalPostgresql.enabled) (.Values.internalRedis.enabled) }}
+{{- if .Values.internalPostgresql.enabled }}
 
  +-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
  |N||O||T| |F||O||R| |P||R||O||D||U||C||T||I||O||N|
