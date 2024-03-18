@@ -840,9 +840,9 @@ spec:
 
         ## OpenShift cluster deploy
         - name: isOpenShiftCluster
-          title: OpenShift Cluster Deploy
+          title: OpenShift cluster deploy
           help_text: |-
-            Enable if you want to deploy in OpenShift.
+            Enable if you want to deploy in OpenShift cluster.
           type: bool
           default: "0"
 
