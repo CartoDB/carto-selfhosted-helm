@@ -838,6 +838,14 @@ spec:
           required: true
           type: text
 
+        ## OpenShift cluster deploy
+        - name: isOpenShiftCluster
+          title: OpenShift Cluster Deploy
+          when: '{{repl (ConfigOptionEquals "isOpenShiftCluster" "true") }}'
+          default: false
+          hidden: true
+          type: text
+
         ## Carto Platform Credentials
         - name: cartoPlatformGoogleSA
           title: CARTO Platform credentials
