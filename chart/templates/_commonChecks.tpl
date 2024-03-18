@@ -208,6 +208,18 @@ Return common analyzers for preflights and support-bundle
 Return customer values to use in preflights and support-bundle
 */}}
 {{- define "carto.replicated.tenantRequirementsChecker.customerValues" }}
+  - name: REDIS_CACHE_PREFIX 
+    value: "onprem"
+  - name: REDIS_HOST
+    value: {{ include "carto.redis.host" . }}
+  - name: REDIS_PORT
+    value: {{ include "carto.redis.port" . }}
+  - name: REDIS_TLS_ENABLED
+    value: {{ .Values.externalRedis.tlsEnabled | quote }}
+  {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+  - name: REDIS_TLS_CA
+    value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
+  {{- end }}
   - name: WORKSPACE_POSTGRES_HOST
     value: {{ include "carto.postgresql.host" . }}
   - name: WORKSPACE_POSTGRES_PORT
@@ -275,6 +287,8 @@ Return customer secrets to use in preflights and support-bundle
 {{- define "carto.replicated.tenantRequirementsChecker.customerSecrets" }}
   - name: WORKSPACE_POSTGRES_PASSWORD
     value: {{ .Values.externalPostgresql.password | quote }}
+  - name: REDIS_PASSWORD
+    value: {{ .Values.externalRedis.password | quote }}
     {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
                 "WORKSPACE_THUMBNAILS_ACCESSKEYID"
                 "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
