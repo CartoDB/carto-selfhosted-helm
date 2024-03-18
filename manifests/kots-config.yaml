@@ -838,14 +838,6 @@ spec:
           required: true
           type: text
 
-        ## OpenShift cluster deploy
-        - name: isOpenShiftCluster
-          title: OpenShift cluster deploy
-          help_text: |-
-            Enable if you want to deploy in OpenShift cluster.
-          type: bool
-          default: "0"
-
         ## Carto Platform Credentials
         - name: cartoPlatformGoogleSA
           title: CARTO Platform credentials

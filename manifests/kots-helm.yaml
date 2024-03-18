@@ -359,7 +359,7 @@ spec:
       values: repl{{ ConfigOption "platformAdvancedTuningValues" | nindent 8 }}
 
     ## Openshift
-    - when: '{{repl ConfigOptionEquals "isOpenShiftCluster" "1" }}'
+    - when: '{{repl ConfigOptionEquals "platformDistribution" "openShift" }}'
       recursiveMerge: true
       values:
         accountsWww: &customSecurityContext
