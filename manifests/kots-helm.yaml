@@ -181,6 +181,13 @@ spec:
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
+    ## Temporal fix to change routerMetrics image until next release
+    - when: 'true'
+      recursiveMerge: true
+      values:
+        routerMetrics:
+          image:
+            tag: fix_nonroot_router_metrics
     ## BigQuery exports
     - when: '{{repl not (empty (ConfigOption "storageBucketsExportGcp"))}}'
       recursiveMerge: true
