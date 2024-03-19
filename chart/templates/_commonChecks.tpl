@@ -41,7 +41,7 @@ Return common collectors for preflights and support-bundle
                 for PREFIX in $PREFIXES; do
                   FILE_PATH=$(env | grep ${PREFIX}__FILE_PATH | awk -F= '{print $2}')
                   FILE_CONTENT=$(env | grep ${PREFIX}__FILE_CONTENT | awk -F= '{print $2}')
-                  echo $FILE_CONTENT > $FILE_PATH
+                  printf "%s" "$FILE_CONTENT" > $FILE_PATH
                 done
             env:
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
