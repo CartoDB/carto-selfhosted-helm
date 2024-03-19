@@ -174,6 +174,9 @@ Return common analyzers for preflights and support-bundle
         - pass:
             when: "== aks"
             message: AKS is a supported distribution.
+        - pass:
+            when: "== openShift"
+            message: OpenShift is a supported distribution.
         # Will be supported in the future
         - pass:
             when: "== k0s"

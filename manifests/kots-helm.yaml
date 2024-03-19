@@ -181,6 +181,13 @@ spec:
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
+    ## Temporal fix to change routerMetrics image until next release
+    - when: 'true'
+      recursiveMerge: true
+      values:
+        routerMetrics:
+          image:
+            tag: fix_nonroot_router_metrics
     ## BigQuery exports
     - when: '{{repl not (empty (ConfigOption "storageBucketsExportGcp"))}}'
       recursiveMerge: true
@@ -357,3 +364,32 @@ spec:
     - when: '{{repl not (empty (ConfigOption "platformAdvancedTuningValues")) }}'
       recursiveMerge: true
       values: repl{{ ConfigOption "platformAdvancedTuningValues" | nindent 8 }}
+
+    ## Openshift
+    - when: '{{repl ConfigOptionEquals "platformDistribution" "openShift" }}'
+      recursiveMerge: true
+      values:
+        accountsWww: &customSecurityContext
+          # By not explicitly setting PodSecurityContext and ContainerSecurityContext
+          #   OpenShift sets a random uid (1000700000/10000) with permissions
+          podSecurityContext:
+            enabled: false
+          containerSecurityContext:
+            enabled: false
+        importApi: *customSecurityContext
+        importWorker: *customSecurityContext
+        ldsApi: *customSecurityContext
+        mapsApi: *customSecurityContext
+        sqlWorker: *customSecurityContext
+        router: *customSecurityContext
+        routerMetrics: *customSecurityContext
+        httpCache: *customSecurityContext
+        notifier: *customSecurityContext
+        cdnInvalidatorSub: *customSecurityContext
+        workspaceApi: *customSecurityContext
+        workspaceSubscriber: *customSecurityContext
+        workspaceWww: *customSecurityContext
+        workspaceMigrations: *customSecurityContext
+        tenantRequirementsChecker: *customSecurityContext
+        internalPostgresql: *customSecurityContext
+        upgradeCheck: *customSecurityContext
