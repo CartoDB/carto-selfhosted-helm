@@ -163,9 +163,6 @@ spec:
             repl{{ else if eq $k8sDistribution "eks" }}
             repl{{    $_ := set $result "name" "routerLoadBalancerEKS" }}
             repl{{    $_ := set $result "title" "AWS EKS LoadBalancer" }}
-            repl{{ else if eq $k8sDistribution "aks" }}
-            repl{{    $_ := set $result "name" "routerLoadBalancerAKS" }}
-            repl{{    $_ := set $result "title" "Azure AKS LoadBalancer" }}
             repl{{ else }}
             repl{{    $_ := set $result "name" "unsupported" }}
             repl{{    $_ := set $result "title" (print "ERROR: No Load Balancer supported for your kubernetes platform, " $k8sDistribution) }}
@@ -209,12 +206,9 @@ spec:
           hidden: true
           readonly: true
           when: &when_custom_ssl_certs >-
-            {{repl $isGke := (eq Distribution "gke") -}}
-            {{repl $isEks := (eq Distribution "eks") -}}
-            {{repl $customAccessModeSelected := (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") -}}
+            {{repl $cartoRouterHTTPSEnabled := (ConfigOptionEquals "cartoRouterHTTPSEnabled" "true") -}}
             {{repl $terminateTLSInCARTOSelected := (ConfigOptionEquals "TLSTerminationLayer" "accessToCartoRouterHTTPS") -}}
-            {{repl $isEmbeddedCluster := (ConfigOptionEquals "isEmbeddedCluster" "true") -}}
-            {{repl $result := or (and (or $isGke $isEks) (and $customAccessModeSelected $terminateTLSInCARTOSelected)) (and $isEmbeddedCluster $terminateTLSInCARTOSelected) -}}
+            {{repl $result := and $cartoRouterHTTPSEnabled $terminateTLSInCARTOSelected -}}
             {{repl $result -}}
           default: *when_custom_ssl_certs
         - name: SSLCertificatesAWS
@@ -242,10 +236,18 @@ spec:
           hidden: true
           readonly: true
           when: &when_router_https_enabled >-
-            {{repl $customAccessModeSelected := or (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") (ConfigOptionEquals "accessToCartoModeK8sNotFullySupported" "accessToCartoModeK8sCustom") -}}
+            {{ /* Kind of platforms */ -}}
             {{repl $isEmbeddedCluster := (ConfigOptionEquals "isEmbeddedCluster" "true") -}}
+            {{repl $isK8sFullyImplPlatform := (ConfigOptionEquals "isK8sFullyImplementedPlatform" "true") -}}
+            {{repl $isK8sNotFullyImplPlatform := (ConfigOptionEquals "isK8sNotFullyImplementedPlatform" "true") -}}
+            {{ /* Access mode */ -}}
+            {{repl $customAccessModeSelectedInFull := and $isK8sFullyImplPlatform (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") -}}
+            {{repl $customAccessModeSelectedInNotFull := and $isK8sNotFullyImplPlatform (ConfigOptionEquals "accessToCartoModeK8sNotFullySupported" "accessToCartoModeK8sCustom") -}}
+            {{repl $customAccessModeSelected := or $customAccessModeSelectedInFull $customAccessModeSelectedInNotFull -}}
+            {{ /* TLS termination selected */ -}}
             {{repl $terminateTLSInCARTOSelected:= (ConfigOptionEquals "TLSTerminationLayer" "accessToCartoRouterHTTPS") -}}
-            {{repl $result := and (or $isEmbeddedCluster (and $customAccessModeSelected (not ($isEmbeddedCluster)))) ($terminateTLSInCARTOSelected) -}}
+            {{ /* Evaluate result */ -}}
+            {{repl $result := and $terminateTLSInCARTOSelected (or $isEmbeddedCluster $customAccessModeSelected) -}}
             {{repl $result -}}
           default: *when_router_https_enabled
         - name: kubernetesGatewayEnabled
