@@ -356,7 +356,7 @@ spec:
           when: '{{repl and (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") (eq Distribution "gke") }}'
           title: Global static IP Address name
           help_text: |-
-            Bring your static IP by providing the name of the static IP you created in GCP. We'll link this IP to the External Load Balancer
+            Bring your static IP name. We'll link this IP to the External Load Balancer
           recommended: true
         # Static IP
         - name: accessToCartoAWSStaticIPName
