@@ -12,7 +12,7 @@ Return common collectors for preflights and support-bundle
           - name: init-tenant-requirements-check
             image: {{ template "carto.tenantRequirementsChecker.image" . }}
             imagePullPolicy: {{ .Values.tenantRequirementsChecker.image.pullPolicy }}
-            command: ["sh", "-c"]
+            command: ["/bin/bash", "-c"]
             args:
               - |
                 #!/bin/bash
