@@ -147,21 +147,15 @@ spec:
       httpsEnabled: repl{{ if ConfigOptionEquals "cartoRouterHTTPSEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
       autoGenerate: false
 
-    ## Access to Carto
-    # Router
-    router:
-      tlsCertificates:
-        certificateValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSCertFile" }}'
-        privateKeyValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSKeyFile" }}'
-
     gateway:
       enabled: repl{{ if ConfigOptionEquals "kubernetesGatewayEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
       gatewayClassName: '{{repl fromJson (ConfigOption "loadBalancerSupportedKind") | dig "gatewayClassName" "" }}'
       tlsCertificates:
-        customSSLCerts:
-          enabled: repl{{ if ConfigOptionEquals "customSSLCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
-          certificateValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSCertFile" }}'
-          privateKeyValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSKeyFile" }}'
+        ## TODO: Check this as from now own we'll be requesting an external managed cert
+        # customSSLCerts:
+        #   enabled: repl{{ if ConfigOptionEquals "customSSLCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
+        #   certificateValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSCertFile" }}'
+        #   privateKeyValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSKeyFile" }}'
         managedCerts:
           ## FIXME: api-gateway does not support yet a managed cert created in kubernetes. Can only pass pass the managed cert name, but if we create it
           ## from kubernetes this name is random. We could obtain it with the following lookup function, but the first apply wouldn't work.
@@ -173,21 +167,22 @@ spec:
         enabled: repl{{ if ConfigOptionEquals "accessToCartoGCPStaticIPName" ""}}falserepl{{ else }}truerepl{{ end }}
         value: '{{repl ConfigOption "accessToCartoGCPStaticIPName" }}'
 
-    ## Temporal fix to change tenantRequirementsChecker image until next release
-    tenantRequirementsChecker:
-      image:
-        tag: "feature_sc_389822_preflight_check_buckets_publish_simple_pub"
-
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
-    ## Temporal fix to change routerMetrics image until next release
+    ## TEMPORAL PATCHED IMAGED
     - when: 'true'
       recursiveMerge: true
       values:
+        ## Temporal fix to change routerMetrics image until next release
         routerMetrics:
           image:
             tag: fix_nonroot_router_metrics
+        ## Temporal fix to change tenantRequirementsChecker image until next release
+        tenantRequirementsChecker:
+          image:
+            tag: "feature_sc_389822_preflight_check_buckets_publish_simple_pub"
+
     ## BigQuery exports
     - when: '{{repl not (empty (ConfigOption "storageBucketsExportGcp"))}}'
       recursiveMerge: true
@@ -220,6 +215,17 @@ spec:
           awsExportBucketRegion: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
 
     ## ---- Router ----
+    ## Terminate TLS at router
+    ## Access to Carto
+    # Router
+    - when: '{{repl ConfigOptionEquals "customSSLCerts" "true" }}'
+      recursiveMerge: true
+      values:
+        router:
+          tlsCertificates:
+            certificateValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSCertFile" }}'
+            privateKeyValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSKeyFile" }}'
+
     ## Open the ports on all nodes
     - when: '{{repl ConfigOptionEquals "isEmbeddedCluster" "true" }}'
       recursiveMerge: true

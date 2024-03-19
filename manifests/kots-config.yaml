@@ -203,12 +203,10 @@ spec:
           when: &when_custom_ssl_certs >-
             {{repl $isGke := (eq Distribution "gke") -}}
             {{repl $isEks := (eq Distribution "eks") -}}
-            {{repl $defaultAccessModeSelected := (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") -}}
-            {{repl $provideCustomSSLCertsSelected := (ConfigOptionEquals "accessToCartoTLSGKECertificateBehaviour" "use_custom_certificates_files_provided") -}}
             {{repl $customAccessModeSelected := (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") -}}
             {{repl $terminateTLSInCARTOSelected := (ConfigOptionEquals "TLSTerminationLayer" "accessToCartoRouterHTTPS") -}}
             {{repl $isEmbeddedCluster := (ConfigOptionEquals "isEmbeddedCluster" "true") -}}
-            {{repl $result := or (and $isGke $defaultAccessModeSelected $provideCustomSSLCertsSelected) (and (or $isGke $isEks) (and $customAccessModeSelected $terminateTLSInCARTOSelected)) (and $isEmbeddedCluster $terminateTLSInCARTOSelected) -}}
+            {{repl $result := or (and (or $isGke $isEks) (and $customAccessModeSelected $terminateTLSInCARTOSelected)) (and $isEmbeddedCluster $terminateTLSInCARTOSelected) -}}
             {{repl $result -}}
           default: *when_custom_ssl_certs
         - name: SSLCertificatesAWS
@@ -228,8 +226,7 @@ spec:
           when: &when_gcp_managed_ssl_certs >-
             {{repl $cond1 := (eq Distribution "gke") -}}
             {{repl $cond2 := (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") -}}
-            {{repl $cond3 := (ConfigOptionEquals "accessToCartoTLSGKECertificateBehaviour" "GCP_externally_managed_certificates") -}}
-            {{repl $result := and $cond1 $cond2 $cond3 -}}
+            {{repl $result := and $cond1 $cond2 -}}
             {{repl $result -}}
           default: *when_gcp_managed_ssl_certs
         - name: cartoRouterHTTPSEnabled
@@ -311,16 +308,6 @@ spec:
                 Terminate TLS in a higher layer and connect to CARTO over HTTP
 
         # Certificates
-        ## GKE
-        - name: accessToCartoTLSGKECertificateBehaviour
-          title: TLS Certificates
-          when: '{{repl and (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") (eq Distribution "gke") }}'
-          type: select_one
-          items:
-            - name: GCP_externally_managed_certificates
-              title: GCP SSL Managed Certificates
-            - name: use_custom_certificates_files_provided
-              title: Bring your own certificates
         ## Custom certs
         - name: accessToCartoCustomTLSKeyFile
           title: Private Key File
@@ -332,7 +319,9 @@ spec:
           when: *when_custom_ssl_certs
           type: file
           required: true
+
         # Managed Certs
+        ## GKE
         - name: accessToCartoGCPExternallyManagedCertsName
           type: text
           title: GCP SSL Managed Cert Name
@@ -340,7 +329,7 @@ spec:
           help_text: |-
             The name of your SSL Managed Certificate
             If you need further info, please check [Use Google-managed SSL certificates](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs)
-            Remember that you must update your DNS to point `{{repl ConfigOption "cartoSelfHostedDomain" }}` to the load balancer's IP address to let Google sign the certificate
+            Remember that if you're trying to configure a certificate provisioned by Google you must update your DNS to point `{{repl ConfigOption "cartoSelfHostedDomain" }}` to the load balancer's IP address to let Google sign the certificate
           when: *when_gcp_managed_ssl_certs
         ## EKS
         - name: accessToCartoAWSExternallyManagedCertsName
@@ -356,7 +345,7 @@ spec:
           when: '{{repl and (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") (eq Distribution "gke") }}'
           title: Global static IP Address name
           help_text: |-
-            Bring your static IP name. We'll link this IP to the External Load Balancer
+            Bring your global public IP address from Google static IP by providing the name of the static IP you created in GCP. We'll link this IP to the External Load Balancer.
           recommended: true
         # Static IP
         - name: accessToCartoAWSStaticIPName
