@@ -151,13 +151,6 @@ Return common collectors for preflights and support-bundle
             emptyDir:
               sizeLimit: 1Mi
           {{- end }}
-  - redis:
-      collectorName: redis
-      {{- if .Values.internalRedis.enabled }}
-      uri: redis://:{{ .Values.internalRedis.auth.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
-      {{- else }}
-      uri: redis://:{{ .Values.externalRedis.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
-      {{- end }}
   - registryImages:
       images:
         - {{ template "carto.accountsWww.image" . }}
@@ -181,12 +174,18 @@ Return common collectors for preflights and support-bundle
 Return common analyzers for preflights and support-bundle
 */}}
 {{- define "carto.replicated.commonChecks.analyzers" }}
-  {{- range $preflight, $preflightChecks  := dict
+  {{- $preflightsDict := dict
       "WorkspaceDatabaseValidator" (list "Check_database_connection" "Check_database_encoding" "Check_user_has_right_permissions" "Check_database_version") 
       "ServiceAccountValidator" (list "Check_valid_service_account")
       "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket")
-      "RedisValidator" (list "Check_redis_connection")
   }}
+  {{/*
+  We just need to add the RedisValidator to the preflightsDict if the externalRedis is enabled
+  */}}
+  {{- if not .Values.internalRedis.enabled }}
+  {{- $_ := set $preflightsDict "RedisValidator" (list "Check_redis_connection") }}
+  {{- end }}
+  {{- range $preflight, $preflightChecks  := $preflightsDict }}
   {{- range $preflightCheckName := $preflightChecks }}
   - jsonCompare:
       checkName: {{ $preflightCheckName | replace "_" " " }}

@@ -31,19 +31,6 @@ stringData:
               maxBytes: 5000000
       analyzers:
     {{- include "carto.replicated.commonChecks.analyzers" . | indent 6 }}
-        - jsonCompare:
-            checkName: Redis is available
-            fileName: redis/redis.json
-            path: "isConnected"
-            value: |
-              true
-            outcomes:
-              - fail:
-                  when: "false"
-                  message: Cannot connect to the Redis instance
-              - pass:
-                  when: "true"
-                  message: The Redis instance is available
         - yamlCompare:
             annotations:
               kots.io/installer: "true"

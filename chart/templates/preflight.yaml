@@ -18,19 +18,4 @@ stringData:
     {{- include "carto.replicated.commonChecks.collectors" . | indent 6 }}
       analyzers:
     {{- include "carto.replicated.commonChecks.analyzers" . | indent 6 }}
-        {{- if not .Values.internalRedis.enabled }}
-        - jsonCompare:
-            checkName: Redis is available
-            fileName: redis/redis.json
-            path: "isConnected"
-            value: |
-              true
-            outcomes:
-              - fail:
-                  when: "false"
-                  message: Cannot connect to the Redis instance
-              - pass:
-                  when: "true"
-                  message: The Redis instance is available
-        {{- end }}
 {{- end }}
