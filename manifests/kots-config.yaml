@@ -327,8 +327,7 @@ spec:
           title: GCP SSL Managed Cert Name
           required: true
           help_text: |-
-            The name of your SSL Managed Certificate
-            If you need further info, please check [Use Google-managed SSL certificates](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs)
+            Enter the name of the certificate created in GCP's managed services. For assistance in managing certificates, refer to the [Google Cloud Documentation](https://cloud.google.com/load-balancing/docs/ssl-certificates/google-managed-certs)
             Remember that if you're trying to configure a certificate provisioned by Google you must update your DNS to point `{{repl ConfigOption "cartoSelfHostedDomain" }}` to the load balancer's IP address to let Google sign the certificate
           when: *when_gcp_managed_ssl_certs
         ## EKS
@@ -345,7 +344,7 @@ spec:
           when: '{{repl and (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") (eq Distribution "gke") }}'
           title: Global static IP Address name
           help_text: |-
-            Bring your global public IP address from Google static IP by providing the name of the static IP you created in GCP. We'll link this IP to the External Load Balancer.
+            Please specify the name (not address) of a reserved global external public IP address in GCP to assign to the installation. If left blank, a random IP will be generated.
           recommended: true
         # Static IP
         - name: accessToCartoAWSStaticIPName
