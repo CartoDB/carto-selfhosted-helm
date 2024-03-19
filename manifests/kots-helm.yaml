@@ -151,11 +151,6 @@ spec:
       enabled: repl{{ if ConfigOptionEquals "kubernetesGatewayEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
       gatewayClassName: '{{repl fromJson (ConfigOption "loadBalancerSupportedKind") | dig "gatewayClassName" "" }}'
       tlsCertificates:
-        ## TODO: Check this as from now own we'll be requesting an external managed cert
-        # customSSLCerts:
-        #   enabled: repl{{ if ConfigOptionEquals "customSSLCerts" "true"}}truerepl{{ else }}falserepl{{ end }}
-        #   certificateValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSCertFile" }}'
-        #   privateKeyValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSKeyFile" }}'
         managedCerts:
           ## FIXME: api-gateway does not support yet a managed cert created in kubernetes. Can only pass pass the managed cert name, but if we create it
           ## from kubernetes this name is random. We could obtain it with the following lookup function, but the first apply wouldn't work.
@@ -218,7 +213,7 @@ spec:
     ## Terminate TLS at router
     ## Access to Carto
     # Router
-    - when: '{{repl ConfigOptionEquals "customSSLCerts" "true" }}'
+    - when: '{{repl ConfigOptionEquals "customRouterSSLCerts" "true" }}'
       recursiveMerge: true
       values:
         router:

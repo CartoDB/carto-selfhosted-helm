@@ -196,7 +196,7 @@ spec:
           default: *when_is_embedded_cluster
           hidden: true
           type: text
-        - name: customSSLCerts
+        - name: customRouterSSLCerts
           type: text
           hidden: true
           readonly: true
