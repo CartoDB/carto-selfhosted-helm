@@ -3160,12 +3160,12 @@ notifier:
   ##
   tolerations: []
   ## @param notifier.updateStrategy.type notifier deployment strategy type
-  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
   ##
   updateStrategy:
     ## StrategyType
     ##
-    type: Recreate
+    type: RollingUpdate
   ## @param notifier.priorityClassName notifier pods' priorityClassName
   ##
   priorityClassName: ""
