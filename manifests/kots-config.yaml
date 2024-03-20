@@ -236,17 +236,13 @@ spec:
           hidden: true
           readonly: true
           when: &when_router_https_enabled >-
-            {{ /* Kind of platforms */ -}}
             {{repl $isEmbeddedCluster := (ConfigOptionEquals "isEmbeddedCluster" "true") -}}
             {{repl $isK8sFullyImplPlatform := (ConfigOptionEquals "isK8sFullyImplementedPlatform" "true") -}}
             {{repl $isK8sNotFullyImplPlatform := (ConfigOptionEquals "isK8sNotFullyImplementedPlatform" "true") -}}
-            {{ /* Access mode */ -}}
             {{repl $customAccessModeSelectedInFull := and $isK8sFullyImplPlatform (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") -}}
             {{repl $customAccessModeSelectedInNotFull := and $isK8sNotFullyImplPlatform (ConfigOptionEquals "accessToCartoModeK8sNotFullySupported" "accessToCartoModeK8sCustom") -}}
             {{repl $customAccessModeSelected := or $customAccessModeSelectedInFull $customAccessModeSelectedInNotFull -}}
-            {{ /* TLS termination selected */ -}}
             {{repl $terminateTLSInCARTOSelected:= (ConfigOptionEquals "TLSTerminationLayer" "accessToCartoRouterHTTPS") -}}
-            {{ /* Evaluate result */ -}}
             {{repl $result := and $terminateTLSInCARTOSelected (or $isEmbeddedCluster $customAccessModeSelected) -}}
             {{repl $result -}}
           default: *when_router_https_enabled
