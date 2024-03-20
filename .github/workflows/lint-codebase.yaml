@@ -56,7 +56,7 @@ jobs:
       - name: Slack notification
         if: steps.check-helm-resources-diff.outputs.resources-changed == 'true'
         env:
-          SLACK_CHANNEL: C06QH827FPW #  #selfhosted-internal
+          SLACK_CHANNEL: C06QENHD3D0 #  #selfhosted-internal
         run: |
            curl -F "text=:warning: Self Hosted Helm Chart requested resources have changed in [this PR](https://github.com/CartoDB/carto-selfhosted-helm/pull/${{ github.event.pull_request.number }}). Check that the documentation is updated with the new values!" \
             -F "channel=${SLACK_CHANNEL}" \
