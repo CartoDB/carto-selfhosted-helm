@@ -1,4 +1,4 @@
-name: Lint codebase
+name: Check helm chart resources
 on:
   push:
     branches:
