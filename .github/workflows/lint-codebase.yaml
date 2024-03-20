@@ -53,6 +53,17 @@ jobs:
           body: |
             :warning: Helm Chart resources have changed. Please make sure to update the documentation accordingly. You can find more information [here](https://cartodb.getoutline.com/doc/helm-chart-yJ3vxi6icN#h-deployment-resources).
 
+      - name: Slack notification
+        if: steps.check-helm-resources-diff.outputs.resources-changed == 'true'
+        env:
+          SLACK_CHANNEL: C06QENHD3D0 #  #selfhosted-internal
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+           curl -F "text=:warning: Self Hosted Helm Chart requested resources have changed in [this PR](https://github.com/CartoDB/carto-selfhosted-helm/pull/${PR_NUMBER}). Check that the documentation is updated with the new values!:
+            -F "channel=${SLACK_CHANNEL}" \
+            -H "Authorization: Bearer ${{ secrets.SLACK_KEY }}" \
+            -X POST https://slack.com/api/chat.postMessage
+
   helm-readme-generator:
     runs-on: ubuntu-20.04
     steps:
