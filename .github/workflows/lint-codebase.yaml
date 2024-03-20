@@ -59,7 +59,7 @@ jobs:
           SLACK_CHANNEL: C06QENHD3D0 #  #selfhosted-internal
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-           curl -F "text=:warning: Self Hosted Helm Chart requested resources have changed in [this PR](https://github.com/CartoDB/carto-selfhosted-helm/pull/${PR_NUMBER}). Check that the documentation is updated with the new values!:
+           curl -F "text=:warning: Self Hosted Helm Chart requested resources have changed in [this PR](https://github.com/CartoDB/carto-selfhosted-helm/pull/${PR_NUMBER}). Check that the documentation is updated with the new values!" \
             -F "channel=${SLACK_CHANNEL}" \
             -H "Authorization: Bearer ${{ secrets.SLACK_KEY }}" \
             -X POST https://slack.com/api/chat.postMessage
