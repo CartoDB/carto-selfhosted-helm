@@ -56,9 +56,9 @@ jobs:
       - name: Slack notification
         if: steps.check-helm-resources-diff.outputs.resources-changed == 'true'
         env:
-          SLACK_CHANNEL: C05GHAE0ZUK # carto3-self-hosted-documentation
+          SLACK_CHANNEL: C06QENHD3D0 # internal-mcalzado
         run: |
-           curl -F "text=:warning: Hey @self-hosted-team! Self Hosted Helm Chart requested resources have changed in [this PR](https://github.com/CartoDB/carto-selfhosted-helm/pull/${{ github.event.pull_request.number }}). Check that the documentation is updated with the new values!" \
+           curl -F "text=:warning: Hey <!here>! Self Hosted Helm Chart requested resources have changed in <https://github.com/CartoDB/carto-selfhosted-helm/pull/${{ github.event.pull_request.number }}|this PR>. Check that the documentation is updated with the new values!" \
             -F "channel=${SLACK_CHANNEL}" \
             -H "Authorization: Bearer ${{ secrets.SLACK_KEY }}" \
             -X POST https://slack.com/api/chat.postMessage
