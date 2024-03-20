@@ -44,10 +44,6 @@ jobs:
             echo "resources-changed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Echo outputs
-        run: |
-          echo "resources-changed: ${{ steps.check-helm-resources-diff.outputs.resources-changed }}"
-
       - name: Comment on PR if Helm Chart resources changed
         uses: peter-evans/create-or-update-comment@v2
         if: steps.check-helm-resources-diff.outputs.resources-changed == 'true'
