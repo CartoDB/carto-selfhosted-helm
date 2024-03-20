@@ -354,7 +354,9 @@ spec:
           help_text: |-
             Bring your static IP allocation ID. We'll link this IP to the External Load Balancer
             The number of Allocation IDs must match the number of subnets that are used for the load balancer.
-            For more information, see the [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/guide/service/annotations/#eip-allocations) documentation
+            For more information, see the [AWS Load Balancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.5/guide/service/annotations/#eip-allocations) documentation.
+            
+            If you don't provide an Allocation ID, a random domain will be assigned. You can find some information about how to use the domain name you configured for CARTO platform in the [AWS ELB documentation](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html).
           recommended: true
 
     # Buckets
