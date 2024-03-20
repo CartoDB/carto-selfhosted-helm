@@ -41,7 +41,6 @@ jobs:
           diff=$(git diff --unified=0 origin/main origin/${GITHUB_HEAD_REF} chart/values.yaml | grep -qE "[0-9]+Mi|[0-9]+m")
           set -e
           if [ -n "$diff" ]; then
-            echo  "Not equal"
             echo "resources-changed=true" >> $GITHUB_OUTPUT
           else
             echo "resources-changed=false" >> $GITHUB_OUTPUT
