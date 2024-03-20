@@ -22,7 +22,37 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILTER_REGEX_EXCLUDE: '.*doc/.*|.*github/.*'
+          FILTER_REGEX_EXCLUDE: ".*doc/.*|.*github/.*"
+
+  check-helm-resources-changed:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          # Full git history is needed to get the diff with the main branch
+          fetch-depth: 0
+
+      - name: Get Helm Chart resources diff
+        id: check-helm-resources-diff
+        shell: bash
+        run: |
+          set -ex
+          git diff --unified=0 origin/main origin/${GITHUB_HEAD_REF} chart/values.yaml
+          diff=$(git diff --unified=0 origin/main origin/${GITHUB_HEAD_REF} chart/values.yaml | grep -E "[0-9]+Mi|[0-9]+m")
+          if [ -n "$diff" ]; then
+            echo "resources-changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "resources-changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment on PR if Helm Chart resources changed
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            :warning: Helm Chart resources have changed. Please make sure to update the documentation accordingly. You can find more information [here](https://cartodb.getoutline.com/doc/helm-chart-yJ3vxi6icN#h-deployment-resources).
 
   helm-readme-generator:
     runs-on: ubuntu-20.04
