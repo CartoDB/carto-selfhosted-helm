@@ -8,6 +8,94 @@ Return common collectors for preflights and support-bundle
       namespace: {{ .Release.Namespace | quote }}
       timeout: 180s
       podSpec:
+        initContainers:
+          - name: init-tenant-requirements-check
+            image: {{ template "carto.tenantRequirementsChecker.image" . }}
+            imagePullPolicy: {{ .Values.tenantRequirementsChecker.image.pullPolicy }}
+            command: ["/bin/bash", "-c"]
+            args:
+              - |
+                #!/bin/bash
+
+                set -ex
+
+                # This script is used to transform environment variables in files
+                # How to use it?
+                # 1. Set the environment variables with the content of the files you want to create (e.g. MY__FILE_CONTENT="my content")
+                # 2. Set the environment variables with the path of the files you want to create (e.g. MY__FILE_PATH="/path/to/my/file")
+                # 3. Run the script
+
+                # Extract the list of unique prefixes variables to transform in files (All ended with _FILE_CONTENT but only pick before the __FILE_CONTENT)
+                PREFIXES=$(env | grep __FILE_CONTENT | awk -F__ '{print $1}' | sort | uniq)
+
+
+                # Check that all prefixes have a corresponding __FILE_PATH
+                for PREFIX in $PREFIXES; do
+                  if [ -z "$(env | grep ${PREFIX}__FILE_PATH)" ]; then
+                    echo "No path found for prefix $PREFIX"
+                    exit 1
+                  fi
+                done
+
+                # Transform the variables in files
+                for PREFIX in $PREFIXES; do
+                  FILE_PATH=$(env | grep ${PREFIX}__FILE_PATH | awk -F= '{print $2}')
+                  FILE_CONTENT=$(env | grep ${PREFIX}__FILE_CONTENT | awk -F= '{print $2}')
+                  printf "%s" "$FILE_CONTENT" > $FILE_PATH
+                done
+            env:
+              - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
+                value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | quote }}
+              - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_PATH
+                value: {{ include "carto.google.secretMountAbsolutePath" . }}
+              {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
+              - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_CONTENT
+                value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | quote }}
+              - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_PATH
+                value: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
+              {{- end }}
+              {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+              - name: POSTGRES_SSL_CA__FILE_CONTENT
+                value: {{ .Values.externalPostgresql.sslCA | quote }}
+              - name: POSTGRES_SSL_CA__FILE_PATH
+                value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
+              {{- end }}
+              {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+              - name: REDIS_TLS_CA__FILE_CONTENT
+                value: {{ .Values.externalRedis.tlsCA | quote }}
+              - name: REDIS_TLS_CA__FILE_PATH
+                value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
+              {{- end }}
+              {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+              - name: PROXY_SSL_CA__FILE_CONTENT
+                value: {{ .Values.externalProxy.sslCA | quote }}
+              - name: PROXY_SSL_CA__FILE_PATH
+                value: {{ include "carto.proxy.configMapMountAbsolutePath" . }}
+              {{- end }}
+            volumeMounts:
+              - name: gcp-default-service-account-key
+                mountPath: {{ include "carto.google.secretMountDir" . }}
+                readOnly: false
+              {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
+              - name: gcp-buckets-service-account-key
+                mountPath: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountDir" . }}
+                readOnly: false
+              {{- end }}
+              {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+              - name: postgresql-ssl-ca
+                mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
+                readOnly: false
+              {{- end }}
+              {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+              - name: redis-tls-ca
+                mountPath: {{ include "carto.redis.configMapMountDir" . }}
+                readOnly: false
+              {{- end }}
+              {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+              - name: proxy-ssl-ca
+                mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+                readOnly: false
+              {{- end }}
         containers:
           - name: run-tenants-requirements-check
             image: {{ template "carto.tenantRequirementsChecker.image" . }}
@@ -41,41 +129,28 @@ Return common collectors for preflights and support-bundle
               {{- end }}
         volumes:
           - name: gcp-default-service-account-key
-            secret:
-              secretName: {{ include "carto.google.secretName" . }}
-              items:
-                - key: {{ include "carto.google.secretKey" . }}
-                  path: {{ include "carto.google.secretMountFilename" . }}
+            emptyDir:
+              sizeLimit: 8Mi
           {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
           - name: gcp-buckets-service-account-key
-            secret:
-              secretName: {{ include "carto.googleCloudStorageServiceAccountKey.secretName" . }}
-              items:
-                - key: {{ include "carto.googleCloudStorageServiceAccountKey.secretKey" . }}
-                  path: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountFilename" . }}
+            emptyDir:
+              sizeLimit: 8Mi
           {{- end }}
           {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
           - name: postgresql-ssl-ca
-            configMap:
-              name: {{ include "carto.postgresql.configMapName" . }}
+            emptyDir:
+              sizeLimit: 8Mi
           {{- end }}
           {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
           - name: redis-tls-ca
-            configMap:
-              name: {{ include "carto.redis.configMapName" . }}
+            emptyDir:
+              sizeLimit: 8Mi
           {{- end }}
           {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
           - name: proxy-ssl-ca
-            configMap:
-              name: {{ include "carto.proxy.configMapName" . }}
+            emptyDir:
+              sizeLimit: 1Mi
           {{- end }}
-  - redis:
-      collectorName: redis
-      {{- if .Values.internalRedis.enabled }}
-      uri: redis://:{{ .Values.internalRedis.auth.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
-      {{- else }}
-      uri: redis://:{{ .Values.externalRedis.password | trimAll "\"" }}@{{ include "carto.redis.host" . | trimAll "\"" }}:{{ include "carto.redis.port" . | trimAll "\"" }}
-      {{- end }}
   - registryImages:
       images:
         - {{ template "carto.accountsWww.image" . }}
@@ -99,11 +174,18 @@ Return common collectors for preflights and support-bundle
 Return common analyzers for preflights and support-bundle
 */}}
 {{- define "carto.replicated.commonChecks.analyzers" }}
-  {{- range $preflight, $preflightChecks  := dict
+  {{- $preflightsDict := dict
       "WorkspaceDatabaseValidator" (list "Check_database_connection" "Check_database_encoding" "Check_user_has_right_permissions" "Check_database_version") 
       "ServiceAccountValidator" (list "Check_valid_service_account")
       "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket")
-    }}
+  }}
+  {{/*
+  We just need to add the RedisValidator to the preflightsDict if the externalRedis is enabled
+  */}}
+  {{- if not .Values.internalRedis.enabled }}
+  {{- $_ := set $preflightsDict "RedisValidator" (list "Check_redis_connection") }}
+  {{- end }}
+  {{- range $preflight, $preflightChecks  := $preflightsDict }}
   {{- range $preflightCheckName := $preflightChecks }}
   - jsonCompare:
       checkName: {{ $preflightCheckName | replace "_" " " }}
@@ -211,6 +293,18 @@ Return common analyzers for preflights and support-bundle
 Return customer values to use in preflights and support-bundle
 */}}
 {{- define "carto.replicated.tenantRequirementsChecker.customerValues" }}
+  - name: REDIS_CACHE_PREFIX 
+    value: "onprem"
+  - name: REDIS_HOST
+    value: {{ include "carto.redis.host" . }}
+  - name: REDIS_PORT
+    value: {{ include "carto.redis.port" . }}
+  - name: REDIS_TLS_ENABLED
+    value: {{ .Values.externalRedis.tlsEnabled | quote }}
+  {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+  - name: REDIS_TLS_CA
+    value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
+  {{- end }}
   - name: WORKSPACE_POSTGRES_HOST
     value: {{ include "carto.postgresql.host" . }}
   - name: WORKSPACE_POSTGRES_PORT
@@ -278,6 +372,8 @@ Return customer secrets to use in preflights and support-bundle
 {{- define "carto.replicated.tenantRequirementsChecker.customerSecrets" }}
   - name: WORKSPACE_POSTGRES_PASSWORD
     value: {{ .Values.externalPostgresql.password | quote }}
+  - name: REDIS_PASSWORD
+    value: {{ .Values.externalRedis.password | quote }}
     {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
                 "WORKSPACE_THUMBNAILS_ACCESSKEYID"
                 "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
