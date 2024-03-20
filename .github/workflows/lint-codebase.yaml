@@ -35,16 +35,18 @@ jobs:
 
       - name: Get Helm Chart resources diff
         id: check-helm-resources-diff
-        shell: bash
+        continue-on-error: true
         run: |
-          set +e
-          diff=$(git diff --unified=0 origin/main origin/${GITHUB_HEAD_REF} chart/values.yaml | grep -qE "[0-9]+Mi|[0-9]+m")
-          set -e
-          if [ -n "$diff" ]; then
+          export DIFF=$(git diff --unified=0 origin/main origin/${GITHUB_HEAD_REF} chart/values.yaml | grep -E "[0-9]+Mi|[0-9]+m")
+          if [ -n "$DIFF" ]; then
             echo "resources-changed=true" >> $GITHUB_OUTPUT
           else
             echo "resources-changed=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: Echo outputs
+        run: |
+          echo "resources-changed: ${{ steps.check-helm-resources-diff.outputs.resources-changed }}"
 
       - name: Comment on PR if Helm Chart resources changed
         uses: peter-evans/create-or-update-comment@v2
