@@ -1,10 +1,5 @@
 name: Lint codebase
-on: 
-  pull_request:
-  push:
-    branches:
-      - main
-
+on: [pull_request]
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -57,16 +52,6 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             :warning: Helm Chart resources have changed. Please make sure to update the documentation accordingly. You can find more information [here](https://cartodb.getoutline.com/doc/helm-chart-yJ3vxi6icN#h-deployment-resources).
-
-      - name: Slack notification
-        if: steps.check-helm-resources-diff.outputs.resources-changed == 'true' && github.event_name == 'push'
-        env:
-          SLACK_CHANNEL: C06QENHD3D0 # internal-mcalzado
-        run: |
-           curl -F "text=:warning: Hey <!here>! Self Hosted Helm Chart requested resources have changed in <https://github.com/CartoDB/carto-selfhosted-helm/pull/${{ github.event.pull_request.number }}|this PR>. Check that the documentation is updated with the new values!" \
-            -F "channel=${SLACK_CHANNEL}" \
-            -H "Authorization: Bearer ${{ secrets.SLACK_KEY }}" \
-            -X POST https://slack.com/api/chat.postMessage
 
   helm-readme-generator:
     runs-on: ubuntu-20.04
