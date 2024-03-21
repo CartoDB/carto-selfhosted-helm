@@ -8,6 +8,7 @@ Return common collectors for preflights and support-bundle
       namespace: {{ .Release.Namespace | quote }}
       timeout: 180s
       podSpec:
+        restartPolicy: Never
         initContainers:
           - name: init-tenant-requirements-check
             image: {{ template "carto.tenantRequirementsChecker.image" . }}
@@ -40,8 +41,9 @@ Return common collectors for preflights and support-bundle
                 # Transform the variables in files
                 for PREFIX in $PREFIXES; do
                   FILE_PATH=$(env | grep ${PREFIX}__FILE_PATH | awk -F= '{print $2}')
-                  FILE_CONTENT=$(env | grep ${PREFIX}__FILE_CONTENT | awk -F= '{print $2}')
-                  printf "%s" "$FILE_CONTENT" > $FILE_PATH
+                  FILE_CONTENT_VAR="${PREFIX}__FILE_CONTENT"
+                  FILE_CONTENT=$(eval "echo \$$FILE_CONTENT_VAR")
+                  printf "%s" "$FILE_CONTENT" > "$FILE_PATH"
                 done
             env:
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
