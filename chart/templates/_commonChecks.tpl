@@ -289,6 +289,16 @@ Return common analyzers for preflights and support-bundle
             message: The cluster should contain at least 17Gi. ➡️ Ignore if you have auto-scale enabled in your cluster.
         - pass:
             message: There are at least 16 Gi in the cluster.
+  {{- if .Values.gateway.enabled }}
+  - customResourceDefinition:
+      checkName: Gateway API available
+      customResourceDefinitionName: gateways.gateway.networking.k8s.io
+      outcomes:
+        - fail:
+            message: Gateway API is not enabled for your cluster. Please enable it to continue.
+        - pass:
+            message: Gateway API is enabled for your cluster.
+  {{- end }}
 {{- end -}}
 
 {{/*
