@@ -281,17 +281,113 @@ spec:
     - when: '{{repl ConfigOptionEquals "enablePlatformHighAvailability" "1" }}'
       recursiveMerge: true
       values:
-        importApi: &highAvailabilityEnabled
-          autoscaling:
+        importApi:
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 1
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: "app.kubernetes.io/component"
+                          operator: In
+                          values:
+                            - import-api
+                    topologyKey: "kubernetes.io/hostname"
+          autoscaling: &highAvailabilityEnabled
             enabled: true
             minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
             maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
-        ldsApi: *highAvailabilityEnabled
-        mapsApi: *highAvailabilityEnabled
-        router: *highAvailabilityEnabled
-        workspaceApi: *highAvailabilityEnabled
-        workspaceWww: *highAvailabilityEnabled
-        accountsWww: *highAvailabilityEnabled
+
+        ldsApi: 
+          autoscaling: *highAvailabilityEnabled
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 1
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: "app.kubernetes.io/component"
+                          operator: In
+                          values:
+                            - lds-api
+                    topologyKey: "kubernetes.io/hostname"
+
+        mapsApi:
+          autoscaling: *highAvailabilityEnabled
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 1
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: "app.kubernetes.io/component"
+                          operator: In
+                          values:
+                            - maps-api
+                    topologyKey: "kubernetes.io/hostname"
+
+        router: 
+          autoscaling: *highAvailabilityEnabled
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 1
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: "app.kubernetes.io/component"
+                          operator: In
+                          values:
+                            - router
+                    topologyKey: "kubernetes.io/hostname"
+
+        workspaceApi: 
+          autoscaling: *highAvailabilityEnabled
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 1
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: "app.kubernetes.io/component"
+                          operator: In
+                          values:
+                            - workspace-api
+                    topologyKey: "kubernetes.io/hostname"
+
+        workspaceWww: 
+          autoscaling: *highAvailabilityEnabled
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 1
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: "app.kubernetes.io/component"
+                          operator: In
+                          values:
+                            - workspace-www
+                    topologyKey: "kubernetes.io/hostname"
+
+        accountsWww: 
+          autoscaling: *highAvailabilityEnabled
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 1
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: "app.kubernetes.io/component"
+                          operator: In
+                          values:
+                            - accounts-www
+                    topologyKey: "kubernetes.io/hostname"
 
     ## Custom AT location
     - when: '{{repl not (empty (ConfigOption "defaultATLocationBigQuery")) }}'
