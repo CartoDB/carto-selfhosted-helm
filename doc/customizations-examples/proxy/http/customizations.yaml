@@ -1,6 +1,0 @@
-externalProxy:
-  enabled: true
-  host: <Proxy IP/Hostname>
-  port: <Proxy port>
-  type: http
-  excludedDomains: ["localhost,.svc.cluster.local"]
