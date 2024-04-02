@@ -1,7 +1,0 @@
-appConfigValues:
-  storageProvider: "gcp"
-  workspaceImportsBucket: <client_bucket_name>
-  workspaceImportsPublic: <false|true>
-  workspaceThumbnailsBucket: <thumbnails_bucket_name>
-  workspaceThumbnailsPublic: <false|true>
-  googleCloudStorageProjectId: <gcp_project_id>
