@@ -39,13 +39,22 @@ appConfigValues:
   ssoOrganizationId: ""
   defaultAtLocation:
     ## @param appConfigValues.defaultAtLocation.bigquery The default AT location for BigQuery connections
-    bigquery: "carto-un.carto"
+    bigquery: ""
     ## @param appConfigValues.defaultAtLocation.snowflake The default AT location for Snowflake connections
-    snowflake: "CARTO.CARTO"
+    snowflake: ""
     ## @param appConfigValues.defaultAtLocation.redshift The default AT location for Redshift connections
-    redshift: "carto"
+    redshift: ""
     ## @param appConfigValues.defaultAtLocation.postgres The default AT location for PostgreSQL connections
-    postgres: "carto"
+    postgres: ""
+  defaultDoLocation:
+    ## @param appConfigValues.defaultDoLocation.bigquery The default DO location for BigQuery connections
+    bigquery: ""
+    ## @param appConfigValues.defaultDoLocation.snowflake The default DO location for Snowflake connections
+    snowflake: ""
+    ## @param appConfigValues.defaultDoLocation.redshift The default DO location for Redshift connections
+    redshift: ""
+    ## @param appConfigValues.defaultDoLocation.postgres The default DO location for PostgreSQL connections
+    postgres: ""
   ## @param appConfigValues.workspaceExportsBucket Bucket to be used to store the exports generated in the app
   workspaceExportsBucket: ""
   workloadIdentityConnection:

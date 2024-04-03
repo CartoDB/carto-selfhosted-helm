@@ -93,6 +93,30 @@ data:
   WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL: {{ .Values.appConfigValues.workloadIdentityConnection.serviceAccountEmail | quote }}
   WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID: {{ .Values.appConfigValues.workloadIdentityConnection.connectionOwner | quote }}
   {{- end }}
+  {{- if .Values.appConfigValues.defaultAtLocation.bigquery }}
+  AT_LOCATION_BIGQUERY: {{ .Values.appConfigValues.defaultAtLocation.bigquery }}
+  {{- end }}
+  {{- if .Values.appConfigValues.defaultAtLocation.snowflake }}
+  AT_LOCATION_SNOWFLAKE: {{ .Values.appConfigValues.defaultAtLocation.snowflake }}
+  {{- end }}
+  {{- if .Values.appConfigValues.defaultAtLocation.redshift }}
+  AT_LOCATION_REDSHIFT: {{ .Values.appConfigValues.defaultAtLocation.redshift }}
+  {{- end }}
+  {{- if .Values.appConfigValues.defaultAtLocation.postgres }}
+  AT_LOCATION_POSTGRES: {{ .Values.appConfigValues.defaultAtLocation.postgres }}
+  {{- end }}
+  {{- if .Values.appConfigValues.defaultDoLocation.bigquery }}
+  DO_LOCATION_BIGQUERY: {{ .Values.appConfigValues.defaultDoLocation.bigquery }}
+  {{- end}}
+  {{- if .Values.appConfigValues.defaultDoLocation.snowflake }}
+  DO_LOCATION_SNOWFLAKE: {{ .Values.appConfigValues.defaultDoLocation.snowflake }}
+  {{- end }}
+  {{- if .Values.appConfigValues.defaultDoLocation.redshift }}
+  DO_LOCATION_REDSHIFT: {{ .Values.appConfigValues.defaultDoLocation.redshift }}
+  {{- end }}
+  {{- if .Values.appConfigValues.defaultDoLocation.postgres }}
+  DO_LOCATION_POSTGRES: {{ .Values.appConfigValues.defaultDoLocation.postgres }}
+  {{- end }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
@@ -101,10 +125,6 @@ data:
   GRPC_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   grpc_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
   NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
-  AT_LOCATION_BIGQUERY: {{ .Values.appConfigValues.defaultAtLocation.bigquery | quote }}
-  AT_LOCATION_SNOWFLAKE: {{ .Values.appConfigValues.defaultAtLocation.snowflake | quote }}
-  AT_LOCATION_REDSHIFT: {{ .Values.appConfigValues.defaultAtLocation.redshift | quote }}
-  AT_LOCATION_POSTGRES: {{ .Values.appConfigValues.defaultAtLocation.postgres | quote }}
   {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}

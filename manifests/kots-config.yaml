@@ -795,6 +795,38 @@ spec:
           help_text: |-
             The PostgreSQL schema where the AT is installed (i.e. `carto`)
 
+        ## Custom DO location
+        - name: defaultDOLocationEnabled
+          title: Custom default DO location
+          help_text: |-
+            All connections created from CARTO platform have a default DO location. If you want to use a custom location for the DO in your connections, please enable this option.
+          type: bool
+          default: "0"
+        - name: defaultDOLocationBigQuery
+          title: Default DO location for BigQuery connections
+          when: '{{repl (ConfigOptionEquals "defaultDOLocationEnabled" "1") }}'
+          type: text
+          help_text: |-
+            The BigQuery dataset where the DO is installed (i.e. `carto-un.carto`)
+        - name: defaultDOLocationRedshift
+          title: Default DO location for Redshift connections
+          when: '{{repl (ConfigOptionEquals "defaultDOLocationEnabled" "1") }}'
+          type: text
+          help_text: |-
+            The Redshift schema where the DO is installed (i.e. `carto`)
+        - name: defaultDOLocationSnowflake
+          title: Default DO location for Snowflake connections
+          when: '{{repl (ConfigOptionEquals "defaultDOLocationEnabled" "1") }}'
+          type: text
+          help_text: |-
+            The Snowflake database and schema where the DO is installed (i.e. `CARTO.CARTO`)
+        - name: defaultDOLocationPostgres
+          title: Default DO location for PostgreSQL connections
+          when: '{{repl (ConfigOptionEquals "defaultDOLocationEnabled" "1") }}'
+          type: text
+          help_text: |-
+            The PostgreSQL schema where the DO is installed (i.e. `carto`)
+
         ## Workload Identity
         # Google
         - name: enableGoogleWorkloadIdentity
