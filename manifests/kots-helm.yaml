@@ -38,7 +38,6 @@ spec:
       selfHostedTenantId: '{{repl LicenseFieldValue "selfHostedId" }}'
       launchDarklyClientSideId: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "launchDarklyClientSideId" "" | Base64Decode }}'
       selfHostedGcpProjectId: '{{repl (ConfigOption "derivedSelfHostedGCPProjectId") }}'
-      # customerPackageVersion: ""
       enableErrorResponseStackTrace: "false"
       cartoDataWarehouseEnabled: '{{repl ConfigOptionEquals "enableCDW" "1" }}'
       cartoSelfhostedDwLocation: '{{repl LicenseFieldValue "cartoDWLocation" }}'
@@ -86,15 +85,7 @@ spec:
       awsS3Region: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
 
       # other config
-      httpCacheEnabled: "true"
       bigqueryOauth2ClientId: '{{repl ConfigOption "bigqueryOauthClientID" }}'
-      enableTrackJS: "true"
-      ssoOrganizationId: ""
-      defaultAtLocation:
-        bigquery: "carto-un.carto"
-        snowflake: "CARTO.CARTO"
-        redshift: "carto"
-        postgres: "carto"
 
     ## Postgresql
     internalPostgresql:
@@ -414,6 +405,32 @@ spec:
         appConfigValues:
           defaultAtLocation:
             postgres: '{{repl ConfigOption "defaultATLocationPostgres" }}'
+
+    ## Custom DO location
+    - when: '{{repl not (empty (ConfigOption "defaultDOLocationBigQuery")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          defaultDoLocation:
+            bigquery: '{{repl ConfigOption "defaultDOLocationBigQuery" }}'
+    - when: '{{repl not (empty (ConfigOption "defaultDOLocationSnowflake")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          defaultDoLocation:
+            snowflake: '{{repl ConfigOption "defaultDOLocationSnowflake" }}'
+    - when: '{{repl not (empty (ConfigOption "defaultDOLocationRedshift")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          defaultDoLocation:
+            redshift: '{{repl ConfigOption "defaultDOLocationRedshift" }}'
+    - when: '{{repl not (empty (ConfigOption "defaultDOLocationPostgres")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          defaultDoLocation:
+            postgres: '{{repl ConfigOption "defaultDOLocationPostgres" }}'
 
     # Debug mode
     - when: '{{repl ConfigOptionEquals "enablePlatformDebugMode" "1" }}'
