@@ -59,18 +59,7 @@ spec:
         value: '{{repl ConfigOption "storageBucketsAzureAccessKey" }}'
       azureStorageAccount:
         value: '{{repl ConfigOption "storageBucketsAzureStorageAccount"}}'
-      ldsHereApiKey:
-        value: '{{repl ConfigOption "locationDataServicesHereCredentials" }}'
-      ldsTomTomApiKey:
-        value: '{{repl ConfigOption "locationDataServicesTomtomCredentials" }}'
-      ldsGoogleApiKey:
-        value: '{{repl ConfigOption "locationDataServicesGoogleCredentials" }}'
-      ldsMapboxApiKey:
-        value: '{{repl ConfigOption "locationDataServicesMapboxCredentials" }}'
-      ldsTravelTimeAppId:
-        value: '{{repl ConfigOption "locationDataServicesTraveltimeAppId" }}'
-      ldsTravelTimeApiKey:
-        value: '{{repl ConfigOption "locationDataServicesTraveltimeApiKey" }}'
+
     ## App Config Values
     appConfigValues:
       # domain
@@ -157,6 +146,62 @@ spec:
         tenantRequirementsChecker:
           image:
             tag: "feature_sc_389822_preflight_check_buckets_publish_simple_pub"
+
+    ## LDS configuration
+    ### LDS Geocoding, Isoline and Routing providers
+    - when: '{{repl not (empty (ConfigOption "ldsGeocodingProvider")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          ldsGeocodingProvider: '{{repl ConfigOption "ldsGeocodingProvider" }}'
+    - when: '{{repl not (empty (ConfigOption "ldsIsolineProvider")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          ldsIsolineProvider: '{{repl ConfigOption "ldsIsolineProvider" }}'
+    - when: '{{repl not (empty (ConfigOption "ldsRoutingProvider")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          ldsRoutingProvider: '{{repl ConfigOption "ldsRoutingProvider" }}'
+
+    ### LDS providers credentials
+    - when: '{{repl not (empty (ConfigOption "ldsTomtomApiKey")) }}'
+      recursiveMerge: true
+      values:
+        appSecrets:
+          ldsTomTomApiKey:
+            value: '{{repl ConfigOption "ldsTomtomApiKey" }}'
+    - when: '{{repl not (empty (ConfigOption "ldsTravelTimeAppId")) }}'
+      recursiveMerge: true
+      values:
+        appSecrets:
+          ldsTravelTimeAppId:
+            value: '{{repl ConfigOption "ldsTravelTimeAppId" }}'
+    - when: '{{repl not (empty (ConfigOption "ldsTravelTimeApiKey")) }}'
+      recursiveMerge: true
+      values:
+        appSecrets:
+          ldsTravelTimeApiKey:
+            value: '{{repl ConfigOption "ldsTravelTimeApiKey" }}'
+    - when: '{{repl not (empty (ConfigOption "ldsHereApiKey")) }}'
+      recursiveMerge: true
+      values:
+        appSecrets:
+          ldsHereApiKey:
+            value: '{{repl ConfigOption "ldsHereApiKey" }}'
+    - when: '{{repl not (empty (ConfigOption "ldsMapboxApiKey")) }}'
+      recursiveMerge: true
+      values:
+        appSecrets:
+          ldsMapboxApiKey:
+            value: '{{repl ConfigOption "ldsMapboxApiKey" }}'
+    - when: '{{repl not (empty (ConfigOption "ldsGoogleApiKey")) }}'
+      recursiveMerge: true
+      values:
+        appSecrets:
+          ldsGoogleApiKey:
+            value: '{{repl ConfigOption "ldsGoogleApiKey" }}'
 
     ## BigQuery exports
     - when: '{{repl not (empty (ConfigOption "storageBucketsExportGcp"))}}'

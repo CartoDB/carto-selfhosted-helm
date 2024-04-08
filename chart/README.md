@@ -48,6 +48,9 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.workloadIdentityConnection.billingProject`        | Billing project to be used in the connection                                                                           | `""`                   |
 | `appConfigValues.workloadIdentityConnection.serviceAccountEmail`   | Service account email to be used in the connection                                                                     | `""`                   |
 | `appConfigValues.workloadIdentityConnection.connectionOwner`       | User ID of the owner of the connection                                                                                 | `""`                   |
+| `appConfigValues.ldsGeocodingProvider`                             | The default LDS provider for geocoding                                                                                 | `""`                   |
+| `appConfigValues.ldsRoutingProvider`                               | The default LDS provider for routing                                                                                   | `""`                   |
+| `appConfigValues.ldsIsolineProvider`                               | The default LDS provider for isolines                                                                                  | `""`                   |
 
 ### CARTO config parameters
 
