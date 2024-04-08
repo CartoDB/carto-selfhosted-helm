@@ -88,6 +88,78 @@ spec:
           hidden: true
           default: repl{{ fromJson (LicenseFieldValue "cartoPlatformDefaultSA") | dig "project_id" "" }}
 
+        - name: ldsProcessedConfig
+          title: LDS Configuration
+          type: textarea
+          hidden: true
+          default: |-
+            repl{{ $ldsLicenseConfig := fromJson (LicenseFieldValue "ldsConfiguration") }}
+            repl{{ if $ldsLicenseConfig }}
+            repl{{  toJson $ldsLicenseConfig }}
+            repl{{ else }}
+            repl{{  $ldsLicenseConfig := fromJson "{}" }}
+            repl{{  $_ := set $ldsLicenseConfig "geocoding_provider" "" }}
+            repl{{  $_ := set $ldsLicenseConfig "isoline_provider" "" }}
+            repl{{  $_ := set $ldsLicenseConfig "routing_provider" "" }}
+            repl{{  $ldsCredentials := fromJson "{}" }}
+            repl{{  $_ := set $ldsCredentials "tomtom_api_key" "" }}
+            repl{{  $_ := set $ldsCredentials "traveltime_api_key" "" }}
+            repl{{  $_ := set $ldsCredentials "traveltime_app_id" "" }}
+            repl{{  $_ := set $ldsCredentials "here_api_key" "" }}
+            repl{{  $_ := set $ldsCredentials "mapbox_api_key" "" }}
+            repl{{  $_ := set $ldsCredentials "google_api_key" "" }}
+            repl{{  $_ := set $ldsLicenseConfig "credentials" $ldsCredentials }}
+            repl{{  toJson $ldsLicenseConfig }}
+            repl{{ end }}
+
+        - name: ldsGeocodingProvider
+          title: Geocoding provider
+          type: textarea
+          hidden: true
+          default: repl{{ fromJson (ConfigOption "ldsProcessedConfig") | dig "geocoding_provider" "" }}
+        - name: ldsIsolineProvider
+          title: Isolines provider
+          type: textarea
+          hidden: true
+          default: repl{{ fromJson (ConfigOption "ldsProcessedConfig") | dig "isoline_provider" "" }}
+        - name: ldsRoutingProvider
+          title: Routing provider
+          type: textarea
+          hidden: true
+          default: repl{{ fromJson (ConfigOption "ldsProcessedConfig") | dig "routing_provider" "" }}
+
+
+        - name: ldsTomtomApiKey
+          title: TomTom API Key
+          type: textarea
+          hidden: true
+          default: repl{{ fromJson (ConfigOption "ldsProcessedConfig") | dig "credentials" "tomtom_api_key" "" }}
+        - name: ldsTravelTimeApiKey
+          title: TravelTime API Key
+          type: textarea
+          hidden: true
+          default: repl{{ fromJson (ConfigOption "ldsProcessedConfig") | dig "credentials" "traveltime_api_key" "" }}
+        - name: ldsTravelTimeAppId
+          title: TravelTime App Id
+          type: textarea
+          hidden: true
+          default: repl{{ fromJson (ConfigOption "ldsProcessedConfig") | dig "credentials" "traveltime_app_id" "" }}
+        - name: ldsHereApiKey
+          title: Here API Key
+          type: textarea
+          hidden: true
+          default: repl{{ fromJson (ConfigOption "ldsProcessedConfig") | dig "credentials" "here_api_key" "" }}
+        - name: ldsMapboxApiKey
+          title: Mapbox API Key
+          type: textarea
+          hidden: true
+          default: repl{{ fromJson (ConfigOption "ldsProcessedConfig") | dig "credentials" "mapbox_api_key" "" }}
+        - name: ldsGoogleApiKey
+          title: Google API Key
+          type: textarea
+          hidden: true
+          default: repl{{ fromJson (ConfigOption "ldsProcessedConfig") | dig "credentials" "google_api_key" "" }}
+
     # Postgresql
     - name: metadataDatabase
       title: Metadata Database
@@ -613,113 +685,6 @@ spec:
           type: text
           when: '{{repl (ConfigOptionEquals "ssoEnabled" "1") }}'
           required: true
-
-        ## LDS
-        - name: locationDataServicesEnable
-          title:
-            Location Data Services
-            # Temporary disabled. Should be transmitted from the license: https://cartoteam.slack.com/archives/C06GJA56C5S/p1706714429475869
-            #  Suggested as 2 fields on the license:
-            #    - one for keys (in json format)
-            #    - another for the selected providers on each service (geocoding:xxx,isolines:xxx,routing:xxx)
-          when: false
-          help_text: |-
-            Here you should config the Location Data Services.
-            If you need further info, please check [docs.carto.com](https://docs.carto.com).
-          type: bool
-          default: "0"
-        - name: locationDataServicesGeocodingProvider
-          title: Geocoding
-          when: '{{repl (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
-          help_text: |-
-            Please select the provider for Geocoding
-          type: select_one
-          default: geocoding_none
-          items:
-            - name: geocoding_tomtom
-              title: Tomtom
-            - name: geocoding_google
-              title: Google
-            - name: geocoding_mapbox
-              title: Mapbox
-            - name: geocoding_here
-              title: Here
-            - name: geocoding_none
-              title: None
-        - name: locationDataServicesIsolinesProvider
-          title: Isolines
-          when: '{{repl (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
-          help_text: |-
-            Please select the provider for Isolines
-          type: select_one
-          default: isolines_none
-          items:
-            - name: isolines_tomtom
-              title: Tomtom
-            - name: isolines_traveltime
-              title: Traveltime
-            - name: isolines_mapbox
-              title: Mapbox
-            - name: isolines_here
-              title: Here
-            - name: isolines_none
-              title: None
-        - name: locationDataServicesRoutingProvider
-          title: Routing
-          when: '{{repl (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
-          help_text: |-
-            Please select the provider for Routing
-          type: select_one
-          default: routing_none
-          items:
-            - name: routing_tomtom
-              title: Tomtom
-            - name: routing_here
-              title: Here
-            - name: routing_none
-              title: None
-        - name: locationDataServicesTomtomCredentials
-          title: LDS Tomtom credentials
-          when: '{{repl and (or (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_tomtom") (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_tomtom") (ConfigOptionEquals "locationDataServicesRoutingProvider" "routing_tomtom")) (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
-          help_text: |-
-            Set your TomTom LDS Api Key
-          required: true
-          type: text
-        - name: locationDataServicesGoogleCredentials
-          title: LDS Google credentials
-          when: '{{repl and (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_google") (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
-          help_text: |-
-            Set your Google LDS Api Key
-          required: true
-          type: text
-        - name: locationDataServicesMapboxCredentials
-          title: LDS Mapbox credentials
-          when: '{{repl and (or (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_mapbox") (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_mapbox")) (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
-          help_text: |-
-            Set your Mapbox LDS Api Key
-          required: true
-          type: text
-        - name: locationDataServicesHereCredentials
-          title: LDS Here credentials
-          when: '{{repl and (or (ConfigOptionEquals "locationDataServicesGeocodingProvider" "geocoding_here") (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_here") (ConfigOptionEquals "locationDataServicesRoutingProvider" "routing_here")) (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
-          help_text: |-
-            Set your Here LDS Api Key
-          required: true
-          type: text
-        - name: locationDataServicesTraveltimeAppId
-          title: LDS Traveltime App Id
-          when: '{{repl and (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_traveltime") (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
-          help_text: |-
-            Set your Traveltime App Id
-          required: true
-          type: text
-        - name: locationDataServicesTraveltimeApiKey
-          title: LDS Traveltime Api key
-          when: '{{repl and (ConfigOptionEquals "locationDataServicesIsolinesProvider" "isolines_traveltime") (ConfigOptionEquals "locationDataServicesEnable" "1") }}'
-          help_text: |-
-            Set your Traveltime Api Key
-          required: true
-          type: text
 
         ## CDW
         - name: enableCDW
