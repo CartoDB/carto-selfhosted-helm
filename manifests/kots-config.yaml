@@ -19,9 +19,9 @@ spec:
             CARTO is the leading Location Intelligence platform for the modern data stack. Our Self-Hosted version is designed to align with your infrastructure requirements, making it ideal for industries with stringent security and network/data policies.
 
             We strongly recommend that you read the documentation to better integrate CARTO into your enterprise environment:
-            - [Key Concepts](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/key-concepts): Understand the key concepts.
-            - [QuickStart](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/key-concepts): A starter guide to make installation even easier.
-            - [Maintenance](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/maintenance): Since you're hosting this yourself, you'll need to configure your own [backups](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/maintenance/backups), [monitoring](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/maintenance/monitoring), etc.
+            - [Key Concepts](https://docs.carto.com/carto-self-hosted/key-concepts): Understand the key concepts.
+            - [QuickStart](https://docs.carto.com/carto-self-hosted/key-concepts): A starter guide to make installation even easier.
+            - [Maintenance](https://docs.carto.com/carto-self-hosted/maintenance): Since you're hosting this yourself, you'll need to configure your own [backups](https://docs.carto.com/carto-self-hosted/maintenance/backups), [monitoring](https://docs.carto.com/carto-self-hosted/maintenance/monitoring), etc.
 
             Installation id: `{{repl LicenseFieldValue "selfHostedId" }}`
 
@@ -165,7 +165,7 @@ spec:
       title: Metadata Database
       description: |-
         Information needed to connect to your metadata database.
-        [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/key-concepts/deployment-requirements#external-database).
+        [More info](https://docs.carto.com/carto-self-hosted/key-concepts/deployment-requirements#external-database).
       items:
         - name: metadataDBHost
           title: Host
@@ -219,7 +219,7 @@ spec:
       title: Access to CARTO
       description: |-
         Configure your Self-Hosted platform's domain and TLS certificate for secure access.
-        [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/deployment-guides/kubernetes#access-to-carto).
+        [More info](https://docs.carto.com/carto-self-hosted/deployment-guides/kubernetes#access-to-carto).
       items:
         - name: loadBalancerSupportedKind
           title: Load Balancer kind
@@ -451,7 +451,7 @@ spec:
     - name: storageBuckets
       title: Cloud Storage
       description: |-
-        Cloud storage buckets are required for storing resources utilized by the platform. Read [this section](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets) to create the resources required.
+        Cloud storage buckets are required for storing resources utilized by the platform. Read [this section](https://docs.carto.com/carto-self-hosted/guides/configure-your-own-buckets) to create the resources required.
       items:
         - name: storageBucketsBehaviour
           title: Select your storage provider
@@ -569,7 +569,7 @@ spec:
         - name: storageBucketsImportExportAwsArnRole
           title: AWS arn bucket role
           help_text: |-
-            A AWS arn role must be provided. Check the following instructions for [Redshift](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets/redshift) or [Snowflake](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-your-own-buckets/snowflake) 
+            A AWS arn role must be provided. Check the following instructions for [Redshift](https://docs.carto.com/carto-self-hosted/guides/configure-your-own-buckets/redshift) or [Snowflake](https://docs.carto.com/carto-self-hosted/guides/configure-your-own-buckets/snowflake) 
            
           type: text
           when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
@@ -586,7 +586,7 @@ spec:
           title: Redis
           help_text: |-
             Configure an external in memory cache.
-            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-an-external-in-memory-cache).
+            [More info](https://docs.carto.com/carto-self-hosted/guides/configure-an-external-in-memory-cache).
           type: bool
           default: "0"
         - name: externalRedisHost
@@ -627,13 +627,13 @@ spec:
           title: External proxy
           help_text: |-
             Configuring an external proxy to egress Connections.
-            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-an-external-proxy).
+            [More info](https://docs.carto.com/carto-self-hosted/guides/configure-an-external-proxy).
           type: bool
           default: "0"
         - name: externalProxyNotConfiguredWarning
           type: label
           title: |-
-            ⚠️  The external proxy is not configured correctly. Please, check the [documentation](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-an-external-proxy) to configure it properly.
+            ⚠️  The external proxy is not configured correctly. Please, check the [documentation](https://docs.carto.com/carto-self-hosted/guides/configure-an-external-proxy) to configure it properly.
           when: '{{repl and (ConfigOptionEquals "externalProxyEnabled" "1") (empty HTTPProxy) }}'
         - name: externalProxyType
           title: External proxy type
@@ -677,7 +677,7 @@ spec:
           title: Single Sign-On
           help_text: |-
             Enable Single Sign-On (SSO) to authenticate against your own IdP.
-            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/configure-single-sign-on-sso).
+            [More info](https://docs.carto.com/carto-self-hosted/guides/configure-single-sign-on-sso).
           type: bool
           default: "0"
         - name: ssoOrganizationId
@@ -691,7 +691,7 @@ spec:
           title: CARTO Data Warehouse
           help_text: >-
             Enable the CARTO Data Warehose.
-            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-the-carto-data-warehouse).
+            [More info](https://docs.carto.com/carto-self-hosted/guides/enable-the-carto-data-warehouse).
           type: bool
           default: "0"
 
@@ -700,7 +700,7 @@ spec:
           title: Google Basemaps
           help_text: |
             Enable if you want to use the Google basemaps. 
-            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-google-basemaps).
+            [More info](https://docs.carto.com/carto-self-hosted/guides/enable-google-basemaps).
           type: bool
           default: "0"
         - name: googleMapsAPIKey
@@ -714,7 +714,7 @@ spec:
           title: BigQuery OAuth connections
           help_text: |-
             If you would like the option to connect to BigQuery using OAuth, please enable this option.
-            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/enable-bigquery-oauth-connections).
+            [More info](https://docs.carto.com/carto-self-hosted/guides/enable-bigquery-oauth-connections).
           type: bool
           default: "0"
         - name: bigqueryOauthClientID
@@ -798,7 +798,7 @@ spec:
           title: Google Workload Identity
           help_text: |-
             The CARTO APIs running on your infrastructure are going to use Workload Identity to access to Google Cloud Platform.
-            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/use-workload-identity-in-gcp).
+            [More info](https://docs.carto.com/carto-self-hosted/guides/use-workload-identity-in-gcp).
           type: bool
           default: "0"
         - name: googleWorkloadIdentityEmail
@@ -812,7 +812,7 @@ spec:
           when: '{{repl (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") }}'
           help_text: |-
             This is going to create a shared connection with all the users of your environment
-            [More info](https://docs.carto.com/~/changes/1Lia4Pv0PjH33F9R0CyP/carto-self-hosted/guides/use-workload-identity-in-gcp#create-a-bigquery-connection-managed-using-workload-identity)
+            [More info](https://docs.carto.com/carto-self-hosted/guides/use-workload-identity-in-gcp#create-a-bigquery-connection-managed-using-workload-identity)
           type: bool
           default: "0"
         - name: bigqueryWorkloadIdentityConnectionWorkflowTMP
