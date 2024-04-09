@@ -37,6 +37,8 @@ appConfigValues:
   enableTrackJS: "true"
   ## @param appConfigValues.ssoOrganizationId SSO organization ID provided by CARTO used to configure the SSO in the app.
   ssoOrganizationId: ""
+  ## @param appConfigValues.gitbookApiToken GitBook API Token provided by CARTO
+  gitbookApiToken: ""
   defaultAtLocation:
     ## @param appConfigValues.defaultAtLocation.bigquery The default AT location for BigQuery connections
     bigquery: ""
