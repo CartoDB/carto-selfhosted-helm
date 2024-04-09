@@ -133,4 +133,5 @@ data:
   NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   {{- end }}
+  GITBOOK_API_TOKEN: "gb_api_fYxOxsbSmla8BErT7jXhNxwXQgCtiXnEyPq2g8hx"
 {{- end }}
