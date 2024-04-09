@@ -41,6 +41,7 @@ spec:
       enableErrorResponseStackTrace: "false"
       cartoDataWarehouseEnabled: '{{repl ConfigOptionEquals "enableCDW" "1" }}'
       cartoSelfhostedDwLocation: '{{repl LicenseFieldValue "cartoDWLocation" }}'
+      dataObservatoryProjectId: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "dataObservatoryProjectId" "" | Base64Decode }}'
 
     # Customizations
     ## App Secrets

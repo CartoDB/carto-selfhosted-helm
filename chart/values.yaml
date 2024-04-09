@@ -106,6 +106,8 @@ cartoConfigValues:
   launchDarklyClientSideId: ""
   ## @param cartoConfigValues.cartoDataWarehouseEnabled Enable the Carto Data Warehouse for the self-hosted.
   cartoDataWarehouseEnabled: "false"
+  ## @param cartoConfigValues.dataObservatoryProjectId GCP project ID of the Carto Data Observatory.
+  dataObservatoryProjectId: ""
 
 ## @section App secret
 ## Global secrets to be edited by the client
