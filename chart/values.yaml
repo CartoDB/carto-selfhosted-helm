@@ -338,6 +338,16 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
+  ## @extra cartoSecrets.gitbookApiToken GitBook API Token provided by CARTO
+  gitbookApiToken:
+    ## @param cartoSecrets.gitbookApiToken.value Value of the secret used by the app to connect to google services. This couldn't be changed. One of `cartoSecrets.gitbookApiToken.value` or `cartoSecrets.gitbookApiToken.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.gitbookApiToken.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.gitbookApiToken.existingSecret.key`. If `cartoSecrets.gitbookApiToken.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.gitbookApiToken.existingSecret.key Key to find in `cartoSecrets.gitbookApiToken.existingSecret.name` where the value of `cartoSecrets.gitbookApiToken` is found. If `cartoSecrets.gitbookApiToken.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
 
 ## FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 ## @section TLS parameters
