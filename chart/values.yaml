@@ -336,7 +336,7 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
-  ## @param cartoSecrets.gitbookApiToken GitBook API Token provided by CARTO
+  ## @extra cartoSecrets.gitbookApiToken GitBook API Token provided by CARTO
   gitbookApiToken:
     ## @param cartoSecrets.gitbookApiToken.value Value of the secret used by the app to connect to google services. This couldn't be changed. One of `cartoSecrets.gitbookApiToken.value` or `cartoSecrets.gitbookApiToken.existingSecret` could be defined.
     value: ""
