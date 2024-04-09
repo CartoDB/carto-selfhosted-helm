@@ -93,6 +93,7 @@ data:
   WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL: {{ .Values.appConfigValues.workloadIdentityConnection.serviceAccountEmail | quote }}
   WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID: {{ .Values.appConfigValues.workloadIdentityConnection.connectionOwner | quote }}
   {{- end }}
+  WORKSPACE_DO_PROJECT_ID: {{ .Values.cartoConfigValues.dataObservatoryProjectId | quote }}
   {{- if .Values.appConfigValues.defaultAtLocation.bigquery }}
   AT_LOCATION_BIGQUERY: {{ .Values.appConfigValues.defaultAtLocation.bigquery }}
   {{- end }}

@@ -69,6 +69,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cartoConfigValues.selfHostedTenantId`            | Carto internal tenantId used in the installation.                   | `""`    |
 | `cartoConfigValues.launchDarklyClientSideId`      | LaunchDarkly ClientSideId (by www) used to enable/disable features. | `""`    |
 | `cartoConfigValues.cartoDataWarehouseEnabled`     | Enable the Carto Data Warehouse for the self-hosted.                | `false` |
+| `cartoConfigValues.dataObservatoryProjectId`      | GCP project ID of the Carto Data Observatory.                       | `""`    |
 
 ### App secret
 
