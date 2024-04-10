@@ -57,6 +57,7 @@ data:
   WORKSPACE_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
   WORKSPACE_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.appConfigValues.workspaceThumbnailsBucket | quote }}
+  WORKSPACE_DO_PROJECT_ID: {{ .Values.cartoConfigValues.dataObservatoryProjectId | quote }}
   {{- if .Values.appConfigValues.workloadIdentityConnection.enabled }}
   WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP: {{ .Values.appConfigValues.workloadIdentityConnection.workflowsTempLocation | quote }}
   WORKSPACE_WORKLOAD_IDENTITY_BILLING_PROJECT: {{ .Values.appConfigValues.workloadIdentityConnection.billingProject | quote }}
