@@ -76,6 +76,12 @@ Return common collectors for preflights and support-bundle
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
               {{- end }}
+              {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}	
+              - name: POSTGRES_SSL_CA__FILE_CONTENT	
+                value: {{ .Values.externalPostgresql.sslCA | quote }}	
+              - name: POSTGRES_SSL_CA__FILE_PATH	
+                value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}	
+              {{- end }}
               {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
               - name: REDIS_TLS_CA__FILE_CONTENT
                 value: {{ .Values.externalRedis.tlsCA | quote }}
