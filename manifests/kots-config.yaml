@@ -898,6 +898,7 @@ spec:
             CARTO provides some encryptions keys used to secure the resourced stored in your database and the tokens created on CARTO platform.
             You can use your own keys to secure your data, but please take into account that if you lose these keys it won't be possible to recover CARTO platform.
           type: bool
+          when: '{{repl contains "customEncryptionKeysEnabled" (LicenseFieldValue "installerFeaturesEnabled") }}'
           default: "0"
         - name: databaseEncryptionKey
           title: Custom encryption secret key for database encryption
