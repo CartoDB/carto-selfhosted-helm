@@ -9,30 +9,13 @@ Return common collectors for preflights and support-bundle
       timeout: 180s
       podSpec:
         restartPolicy: Never
-        securityContext:
-          enabled: true
-          fsGroup: 101
-          supplementalGroups: [2345]
+        securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
         initContainers:
           - name: init-tenant-requirements-check
             image: {{ template "carto.tenantRequirementsChecker.image" . }}
             imagePullPolicy: {{ .Values.tenantRequirementsChecker.image.pullPolicy }}
-            securityContext:
-              enabled: true
-              runAsUser: 1000
-              runAsGroup: 1000
-              runAsNonRoot: false
-              allowPrivilegeEscalation: false
-              capabilities:
-                drop:
-                  - all
-            resources:
-              limits:
-                memory: "256Mi"
-                cpu: "500m"
-              requests:
-                memory: "128Mi"
-                cpu: "250m"
+            securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
+            resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
             command: ["/bin/bash", "-c"]
             args:
               - |
@@ -122,22 +105,8 @@ Return common collectors for preflights and support-bundle
           - name: run-tenants-requirements-check
             image: {{ template "carto.tenantRequirementsChecker.image" . }}
             imagePullPolicy: {{ .Values.tenantRequirementsChecker.image.pullPolicy }}
-            securityContext:
-              enabled: true
-              runAsUser: 1000
-              runAsGroup: 1000
-              runAsNonRoot: false
-              allowPrivilegeEscalation: false
-              capabilities:
-                drop:
-                  - all
-            resources:
-              limits:
-                memory: "256Mi"
-                cpu: "500m"
-              requests:
-                memory: "128Mi"
-                cpu: "250m"
+            securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
+            resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
             env:
             {{- include "carto.replicated.tenantRequirementsChecker.customerValues" . | indent 12 }}
             {{- include "carto.replicated.tenantRequirementsChecker.customerSecrets" . | indent 12 }}
