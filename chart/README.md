@@ -1428,7 +1428,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `tenantRequirementsChecker.image.tag`                                         | tenant-requirements-checker image tag (immutable tags are recommended)                     | `""`                            |
 | `tenantRequirementsChecker.image.pullPolicy`                                  | tenant-requirements-checker image pull policy                                              | `Always`                        |
 | `tenantRequirementsChecker.image.pullSecrets`                                 | tenant-requirements-checker image pull secrets                                             | `[]`                            |
-| `tenantRequirementsChecker.resources.limits.memory`                           | Container memory limits in MiB                                                             | `256Mi`                         |
+| `tenantRequirementsChecker.resources.limits.memory`                           | Container memory limits in MiB                                                             | `512Mi`                         |
 | `tenantRequirementsChecker.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                     | `500m`                          |
 | `tenantRequirementsChecker.resources.requests.memory`                         | Container memory requests in MiB                                                           | `128Mi`                         |
 | `tenantRequirementsChecker.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                                   | `250m`                          |
