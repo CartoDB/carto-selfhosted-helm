@@ -1,0 +1,35 @@
+name: Check helm chart resources
+on:
+  push:
+    branches:
+      - main
+jobs:
+  check-helm-resources-changed:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          # Full git history is needed to get the diff
+          fetch-depth: 0
+
+      - name: Get Helm Chart resources diff
+        id: check-helm-resources-diff
+        continue-on-error: true
+        run: |
+          export DIFF=$(git diff --unified=0 @~..@ chart/values.yaml | grep -E "[0-9]+Mi|[0-9]+m")
+          if [ -n "$DIFF" ]; then
+            echo "resources-changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "resources-changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Slack notification
+        if: steps.check-helm-resources-diff.outputs.resources-changed == 'true'
+        env:
+          SLACK_CHANNEL: C06GJA56C5S # selfhosted-internal
+        run: |
+          curl -F "text=:warning: Hey <!here>! Self Hosted Helm Chart requested resources have changed in <https://github.com/CartoDB/carto-selfhosted-helm/pull/${{ github.event.pull_request.number }}|this PR>. Check that the documentation is updated with the new values!" \
+           -F "channel=${SLACK_CHANNEL}" \
+           -H "Authorization: Bearer ${{ secrets.SLACK_KEY }}" \
+           -X POST https://slack.com/api/chat.postMessage
