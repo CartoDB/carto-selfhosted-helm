@@ -9,10 +9,13 @@ Return common collectors for preflights and support-bundle
       timeout: 180s
       podSpec:
         restartPolicy: Never
+        securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
         initContainers:
           - name: init-tenant-requirements-check
             image: {{ template "carto.tenantRequirementsChecker.image" . }}
             imagePullPolicy: {{ .Values.tenantRequirementsChecker.image.pullPolicy }}
+            securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
+            resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
             command: ["/bin/bash", "-c"]
             args:
               - |
@@ -111,6 +114,8 @@ Return common collectors for preflights and support-bundle
           - name: run-tenants-requirements-check
             image: {{ template "carto.tenantRequirementsChecker.image" . }}
             imagePullPolicy: {{ .Values.tenantRequirementsChecker.image.pullPolicy }}
+            securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
+            resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
             env:
             {{- include "carto.replicated.tenantRequirementsChecker.customerValues" . | indent 12 }}
             {{- include "carto.replicated.tenantRequirementsChecker.customerSecrets" . | indent 12 }}

@@ -4587,6 +4587,16 @@ tenantRequirementsChecker:
     requests:
       memory: "128Mi"
       cpu: "250m"
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param tenantRequirementsChecker.podSecurityContext.enabled Enabled Upgrade Check pre-hook pods' Security Context
+  ## @param tenantRequirementsChecker.podSecurityContext.fsGroup Set Upgrade Check pre-hook pod's Security Context fsGroup
+  ## @param tenantRequirementsChecker.podSecurityContext.supplementalGroups[0] Set Upgrade Check pre-hook pod's Security Context supplementalGroups
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 101
+    supplementalGroups: [2345]
   ## Init container Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
   ## @param tenantRequirementsChecker.containerSecurityContext.enabled Enable tenant-requirements-checker container security context

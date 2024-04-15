@@ -1432,6 +1432,9 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `tenantRequirementsChecker.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                     | `500m`                          |
 | `tenantRequirementsChecker.resources.requests.memory`                         | Container memory requests in MiB                                                           | `128Mi`                         |
 | `tenantRequirementsChecker.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                                   | `250m`                          |
+| `tenantRequirementsChecker.podSecurityContext.enabled`                        | Enabled Upgrade Check pre-hook pods' Security Context                                      | `true`                          |
+| `tenantRequirementsChecker.podSecurityContext.fsGroup`                        | Set Upgrade Check pre-hook pod's Security Context fsGroup                                  | `101`                           |
+| `tenantRequirementsChecker.podSecurityContext.supplementalGroups[0]`          | Set Upgrade Check pre-hook pod's Security Context supplementalGroups                       | `2345`                          |
 | `tenantRequirementsChecker.containerSecurityContext.enabled`                  | Enable tenant-requirements-checker container security context                              | `true`                          |
 | `tenantRequirementsChecker.containerSecurityContext.runAsUser`                | Set init tenant-requirements-checker container's Security Context runAsUser                | `1000`                          |
 | `tenantRequirementsChecker.containerSecurityContext.runAsGroup`               | Set init tenant-requirements-checker container's Security Context runAsGroup               | `1000`                          |
