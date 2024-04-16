@@ -70,9 +70,9 @@ Return common collectors for preflights and support-bundle
               {{- end }}
               {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
               {{/* We need to split the SSL CA content in chunks of 2000 characters */}}
-              {{- include "carto.tenantRequirementsChecker.externalPostgresql.sslCA" . | nindent 14 }}
+              {{- include "carto.tenantRequirementsChecker.externalPostgresql.sslCA" . }}
               - name: POSTGRES_SSL_CA__FILE_PATH
-                value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
+                value: {{- include "carto.postgresql.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
               - name: REDIS_TLS_CA__FILE_CONTENT
@@ -413,15 +413,14 @@ Return customer secrets to use in preflights and support-bundle
 
 {{ define "carto.tenantRequirementsChecker.externalPostgresql.sslCA" }}
   {{- $value := .Values.externalPostgresql.sslCA -}}
-  {{- $maxLength := 10000 -}}
+  {{- $maxLength := 1000 -}}
   {{- if gt (len $value) $maxLength -}}
     {{- $neededChunks := int (div (len $value) $maxLength | ceil) -}}
     {{- range $i, $chunk := until (add $neededChunks 1 | int) -}}
-      {{- $envVarName := printf "POSTGRES_SSL_CA__FILE_CONTENT_%02d" (add $i 1) -}}
-      {{- $chunk := substr (mul $i $maxLength | int) (mul (add $i 1) $maxLength | int) $value -}}
-      - name: {{$envVarName}}
-  value: {{toJson $chunk | trimAll "\""}}
-        {{ printf "\n" }}
+      {{- $envVarName := printf "POSTGRES_SSL_CA__FILE_CONTENT_%02d" (add $i 1) }}
+      {{- $chunk := substr (mul $i $maxLength | int) (mul (add $i 1) $maxLength | int) $value }}
+              - name: {{$envVarName}}
+                value: |-{{ $chunk | trim | nindent 18 }}
     {{- end -}}
   {{- else -}}
   - name: POSTGRES_SSL_CA__FILE_CONTENT
