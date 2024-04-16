@@ -54,7 +54,7 @@ Return common collectors for preflights and support-bundle
                     for VAR_NAME in $(env | grep "${PREFIX}__FILE_CONTENT" | awk -F= '{print $1}' | sort -V); do
                       FILE_CONTENT="${FILE_CONTENT}$(eval "echo \$$VAR_NAME")"
                     done
-                    echo -e "$FILE_CONTENT" > "$FILE_PATH"
+                    echo "$FILE_CONTENT" | base64 -d > "$FILE_PATH"
                   fi
                 done
             env:
@@ -72,7 +72,7 @@ Return common collectors for preflights and support-bundle
               {{/* We need to split the SSL CA content in chunks of 2000 characters */}}
               {{- include "carto.tenantRequirementsChecker.externalPostgresql.sslCA" . }}
               - name: POSTGRES_SSL_CA__FILE_PATH
-                value: {{- include "carto.postgresql.configMapMountAbsolutePath" . }}
+                value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
               - name: REDIS_TLS_CA__FILE_CONTENT
@@ -420,7 +420,7 @@ Return customer secrets to use in preflights and support-bundle
       {{- $envVarName := printf "POSTGRES_SSL_CA__FILE_CONTENT_%02d" (add $i 1) }}
       {{- $chunk := substr (mul $i $maxLength | int) (mul (add $i 1) $maxLength | int) $value }}
               - name: {{$envVarName}}
-                value: |-{{ $chunk | trim | nindent 18 }}
+                value: {{ $chunk | b64enc }}
     {{- end -}}
   {{- else -}}
   - name: POSTGRES_SSL_CA__FILE_CONTENT
