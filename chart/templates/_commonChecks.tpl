@@ -381,6 +381,22 @@ Return customer values to use in preflights and support-bundle
   - name: WORKSPACE_IMPORTS_STORAGE_ACCOUNT
     value: {{ .Values.appConfigValues.azureStorageAccount | quote }}
   {{- end }}
+  {{- if .Values.externalProxy.enabled }}
+  HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  HTTPS_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  https_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  GRPC_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  grpc_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
+  {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
+  NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  {{- end }}
+  {{- if .Values.externalProxy.sslCA }}
+  NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
+  {{- end }}
+  {{- end }}
 {{- end -}}
 
 {{/*
