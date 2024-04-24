@@ -7,7 +7,7 @@ metadata:
 spec:
   chart:
     name: carto
-    chartVersion: 1.90.1
+    chartVersion: 1.101.1
   values:
     replicated:
       enabled: true
@@ -135,19 +135,6 @@ spec:
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
-    ## TEMPORAL PATCHED IMAGED
-    - when: 'true'
-      recursiveMerge: true
-      values:
-        ## Temporal fix to change routerMetrics image until next release
-        routerMetrics:
-          image:
-            tag: fix_nonroot_router_metrics
-        ## Temporal fix to change tenantRequirementsChecker image until next release
-        tenantRequirementsChecker:
-          image:
-            tag: "feature_sc_389822_preflight_check_buckets_publish_simple_pub"
-
     ## LDS configuration
     ### LDS Geocoding, Isoline and Routing providers
     - when: '{{repl not (empty (ConfigOption "ldsGeocodingProvider")) }}'
