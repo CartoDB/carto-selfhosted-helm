@@ -135,6 +135,15 @@ spec:
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
+    ## TEMPORAL PATCHED IMAGED
+    - when: 'true'
+      recursiveMerge: true
+      values:
+        ## Temporal fix to change tenantRequirementsChecker image until next release
+        tenantRequirementsChecker:
+          image:
+            tag: "bug_sc_403318_tenant_requirements_checker_not_starting"
+
     ## LDS configuration
     ### LDS Geocoding, Isoline and Routing providers
     - when: '{{repl not (empty (ConfigOption "ldsGeocodingProvider")) }}'

@@ -48,7 +48,7 @@ Return common collectors for preflights and support-bundle
                   if [ "$(env | grep -c "${PREFIX}__FILE_CONTENT")" -eq 1 ]; then
                     FILE_CONTENT_VAR="${PREFIX}__FILE_CONTENT"
                     FILE_CONTENT=$(eval "echo \$$FILE_CONTENT_VAR")
-                    printf "%s" "$FILE_CONTENT" > "$FILE_PATH"
+                    echo "$FILE_CONTENT" | base64 -d > "$FILE_PATH"
                   else
                     # The file is divided in multiple variables, we need to concatenate them
                     for VAR_NAME in $(env | grep "${PREFIX}__FILE_CONTENT" | awk -F= '{print $1}' | sort -V); do
@@ -59,12 +59,12 @@ Return common collectors for preflights and support-bundle
                 done
             env:
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
-                value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | quote }}
+                value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | b64enc | quote }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.google.secretMountAbsolutePath" . }}
               {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_CONTENT
-                value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | quote }}
+                value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | b64enc | quote }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
               {{- end }}
@@ -76,13 +76,13 @@ Return common collectors for preflights and support-bundle
               {{- end }}
               {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
               - name: REDIS_TLS_CA__FILE_CONTENT
-                value: {{ .Values.externalRedis.tlsCA | quote }}
+                value: {{ .Values.externalRedis.tlsCA | b64enc | quote }}
               - name: REDIS_TLS_CA__FILE_PATH
                 value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
               - name: PROXY_SSL_CA__FILE_CONTENT
-                value: {{ .Values.externalProxy.sslCA | quote }}
+                value: {{ .Values.externalProxy.sslCA | b64enc | quote }}
               - name: PROXY_SSL_CA__FILE_PATH
                 value: {{ include "carto.proxy.configMapMountAbsolutePath" . }}
               {{- end }}
@@ -339,6 +339,12 @@ Return customer values to use in preflights and support-bundle
     value: {{ include "carto.postgresql.databaseName" . }}
   - name: WORKSPACE_POSTGRES_USER
     value: {{ include "carto.postgresql.user" . }}
+  - name: WORKSPACE_POSTGRES_SSL_ENABLED
+    value: {{ .Values.externalPostgresql.sslEnabled | quote }}
+  {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+  - name: WORKSPACE_POSTGRES_SSL_CA
+    value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
+  {{- end }}
   - name: WORKSPACE_TENANT_ID
     value: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
@@ -413,7 +419,7 @@ Return customer secrets to use in preflights and support-bundle
 
 {{ define "carto.tenantRequirementsChecker.externalPostgresql.sslCA" }}
   {{- $value := .Values.externalPostgresql.sslCA -}}
-  {{- $maxLength := 1000 -}}
+  {{- $maxLength := 10000 -}}
   {{- if gt (len $value) $maxLength -}}
     {{- $neededChunks := int (div (len $value) $maxLength | ceil) -}}
     {{- range $i, $chunk := until (add $neededChunks 1 | int) -}}
@@ -424,6 +430,6 @@ Return customer secrets to use in preflights and support-bundle
     {{- end -}}
   {{- else -}}
   - name: POSTGRES_SSL_CA__FILE_CONTENT
-    value: {{ $value | quote }}
+    {{ printf "value: %s" ($value | b64enc | quote) | indent 12 }}
   {{- end -}}
 {{ end }}
