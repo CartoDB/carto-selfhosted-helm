@@ -289,7 +289,8 @@ spec:
       values:
         externalProxy:
           enabled: true
-          connectionString: '{{repl ConfigOption "externalProxyHost" }}'
+          type: '{{repl ConfigOption "externalProxyType" }}'
+          host: '{{repl ConfigOption "externalProxyHost" }}'
           excludedDomains: '{{repl ConfigOption "externalProxyExcludedDomains" }}'
           sslRejectUnauthorized: repl{{ if ConfigOptionEquals "externalHttpsProxySslCertificateCheck" "0"}}falserepl{{ else }}truerepl{{ end }}
           sslCA: |
