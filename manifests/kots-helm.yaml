@@ -135,6 +135,14 @@ spec:
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
+    ## TEMPORAL PATCHED IMAGED
+    - when: 'true'
+      recursiveMerge: true
+      values:
+        ## Temporal fix to change tenantRequirementsChecker image until next release
+        tenantRequirementsChecker:
+          image:
+            tag: "bug_sc_404973_preflights_not_working_okay_when_using_a"
     ## LDS configuration
     ### LDS Geocoding, Isoline and Routing providers
     - when: '{{repl not (empty (ConfigOption "ldsGeocodingProvider")) }}'
