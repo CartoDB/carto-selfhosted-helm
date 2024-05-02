@@ -381,6 +381,32 @@ Return customer values to use in preflights and support-bundle
   - name: WORKSPACE_IMPORTS_STORAGE_ACCOUNT
     value: {{ .Values.appConfigValues.azureStorageAccount | quote }}
   {{- end }}
+  {{- if .Values.externalProxy.enabled }}
+  - name: HTTP_PROXY
+    value: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  - name: http_proxy
+    value: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  - name: HTTPS_PROXY
+    value: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  - name: https_proxy
+    value: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  - name: GRPC_PROXY
+    value: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  - name: grpc_proxy
+    value: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  - name: NODE_TLS_REJECT_UNAUTHORIZED
+    value: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
+  {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
+  - name: NO_PROXY
+    value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  - name: no_proxy
+    value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  {{- end }}
+  {{- if .Values.externalProxy.sslCA }}
+  - name: NODE_EXTRA_CA_CERTS
+    value: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
+  {{- end }}
+  {{- end }}
 {{- end -}}
 
 {{/*
