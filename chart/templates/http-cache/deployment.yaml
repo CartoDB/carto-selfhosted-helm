@@ -4,8 +4,12 @@ kind: Deployment
 metadata:
   name: {{ template "carto.httpCache.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
-  labels: {{- include "common.labels.standard" . | nindent 4 }}
+  labels:
     app.kubernetes.io/component: http-cache
+    app.kubernetes.io/instance: carto
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.104.2
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -18,8 +22,10 @@ spec:
   strategy: {{- toYaml .Values.httpCache.updateStrategy | nindent 4 }}
   {{- end }}
   selector:
-    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+    matchLabels:
       app.kubernetes.io/component: http-cache
+      app.kubernetes.io/instance: carto
+      app.kubernetes.io/name: carto
   template:
     metadata:
       annotations:
@@ -28,8 +34,12 @@ spec:
         {{- if .Values.httpCache.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
-      labels: {{- include "common.labels.standard" . | nindent 8 }}
+      labels:
         app.kubernetes.io/component: http-cache
+        app.kubernetes.io/instance: carto
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: carto
+        helm.sh/chart: carto-1.104.2
         {{- if .Values.httpCache.podLabels }}
         {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.podLabels "context" $) | nindent 8 }}
         {{- end }}
@@ -44,7 +54,10 @@ spec:
       {{- else }}
       affinity:
         podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.httpCache.podAffinityPreset "component" "httpCache" "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.httpCache.podAntiAffinityPreset "component" "httpCache" "context" $) | nindent 10 }}
+        podAntiAffinity:
+          app.kubernetes.io/component: httpCache
+          app.kubernetes.io/instance: carto
+          app.kubernetes.io/name: carto
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.httpCache.nodeAffinityPreset.type "key" .Values.httpCache.nodeAffinityPreset.key "values" .Values.httpCache.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
       {{- if .Values.httpCache.nodeSelector }}
@@ -60,7 +73,10 @@ spec:
       schedulerName: {{ .Values.httpCache.schedulerName | quote }}
       {{- end }}
       {{- if .Values.httpCache.podSecurityContext.enabled }}
-      securityContext: {{- omit .Values.httpCache.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      securityContext:
+        fsGroup: 102
+        supplementalGroups:
+        - 2345
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
@@ -73,92 +89,92 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.httpCache.terminationGracePeriodSeconds }}
       containers:
-        - name: http-cache
-          image: {{ template "carto.httpCache.image" . }}
-          imagePullPolicy: {{ .Values.httpCache.image.pullPolicy }}
-          {{- if .Values.httpCache.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.httpCache.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-          {{- end }}
-          {{- if .Values.diagnosticMode.enabled }}
-          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
-          {{- else if .Values.httpCache.command }}
-          command: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.command "context" $) | nindent 12 }}
-          {{- else }}
-          command:
-            - /bin/sh
-          {{- end }}
-          {{- if .Values.diagnosticMode.enabled }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
-          {{- else if .Values.httpCache.args }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.args "context" $) | nindent 12 }}
-          {{ else }}
-          args:
-            - -ec
-            - |
-              /entrypoint.sh
-          {{- end }}
-          env:
-            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list "VARNISH_PURGE_SECRET" "VARNISH_DEBUG_SECRET") "context" $ ) | nindent 12 }}
-            {{- if .Values.httpCache.extraEnvVars }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.extraEnvVars "context" $) | nindent 12 }}
-            {{- end }}
-          envFrom:
-            - configMapRef:
-                name: {{ template "carto.httpCache.configmapName" . }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list "VARNISH_PURGE_SECRET" "VARNISH_DEBUG_SECRET") "context" $ ) -}}
-            {{- if $secretContent }}
-            - secretRef:
-                name: {{ include "carto.httpCache.secretName" . }}
-            {{- end }}
-            {{- if .Values.httpCache.extraEnvVarsCM }}
-            - configMapRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.httpCache.extraEnvVarsCM "context" $) }}
-            {{- end }}
-            {{- if .Values.httpCache.extraEnvVarsSecret }}
-            - secretRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.httpCache.extraEnvVarsSecret "context" $) }}
-            {{- end }}
-          {{- if .Values.httpCache.resources }}
-          resources: {{- toYaml .Values.httpCache.resources | nindent 12 }}
-          {{- end }}
-          ports:
-            - name: http
-              containerPort: {{ .Values.httpCache.containerPorts.http }}
-          {{- if not .Values.diagnosticMode.enabled }}
-          {{- if .Values.httpCache.livenessProbe.enabled }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.httpCache.livenessProbe "enabled") "context" $) | nindent 12 }}
-            tcpSocket:
-              port: http
-          {{- else if .Values.httpCache.customLivenessProbe }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.customLivenessProbe "context" $) | nindent 12 }}
-          {{- end }}
-          {{- if .Values.httpCache.readinessProbe.enabled }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.httpCache.readinessProbe "enabled") "context" $) | nindent 12 }}
-            tcpSocket:
-              port: http
-          {{- else if .Values.httpCache.customReadinessProbe }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.customReadinessProbe "context" $) | nindent 12 }}
-          {{- end }}
-          {{- if .Values.httpCache.startupProbe.enabled }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.httpCache.startupProbe "enabled") "context" $) | nindent 12 }}
-            tcpSocket:
-              port: http
-          {{- else if .Values.httpCache.customStartupProbe }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.customStartupProbe "context" $) | nindent 12 }}
-          {{- end }}
-          {{- end }}
-          {{- if .Values.httpCache.lifecycleHooks }}
-          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.lifecycleHooks "context" $) | nindent 12 }}
-          {{- end }}
-          volumeMounts:
-          {{- if .Values.httpCache.extraVolumeMounts }}
-          {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.extraVolumeMounts "context" $) | nindent 12 }}
-          {{- end }}
-        {{- if .Values.httpCache.sidecars }}
-        {{- include "common.tplvalues.render" ( dict "value" .Values.httpCache.sidecars "context" $) | nindent 8 }}
+      - args:
+        - -ec
+        - |
+          /entrypoint.sh
+        command:
+        - /bin/sh
+        envFrom:
+        - configMapRef:
+            name: carto-http-cache
+        - secretRef:
+            name: carto-http-cache
+        image: {{ template "carto.httpCache.image" . }}
+        imagePullPolicy: IfNotPresent
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - sh
+              - -c
+              - sleep 15 && kill -TERM $(pidof varnishd)
+        livenessProbe:
+          failureThreshold: 5
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          successThreshold: 1
+          tcpSocket:
+            port: http
+          timeoutSeconds: 5
+        name: http-cache
+        ports:
+        - containerPort: 6081
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 5
+          initialDelaySeconds: 10
+          periodSeconds: 30
+          successThreshold: 1
+          tcpSocket:
+            port: http
+          timeoutSeconds: 5
+        {{- if .Values.httpCache.resources }}
+        resources: {{- toYaml .Values.httpCache.resources | nindent 10 }}
         {{- end }}
+        securityContext:
+          allowPrivilegeEscalation: true
+          capabilities:
+            drop:
+            - all
+          runAsGroup: 101
+          runAsNonRoot: false
+          runAsUser: 101
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+          - name: shared-data
+            mountPath: /var/lib/varnish
+        env:
+        - name: VARNISH_HTTP_PORT
+          value: "6081"
+        - name: HTTP_CACHE_WORKING_PATH
+          value: "/var/lib/varnish"
+        {{- if .Values.httpCache.extraEnvVars }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.extraEnvVars "context" $) | nindent 8 }}
+        {{- end }}
+      - name: exporter
+        image: gcr.io/carto-onprem-artifacts/varnish-exporter:latest
+        volumeMounts:
+          - name: shared-data
+            mountPath: /var/lib/varnish
+        ports:
+        - containerPort: 9131
+          name: prometheus
+        {{- if .Values.httpCache.resources }}
+        resources: {{- toYaml .Values.httpCache.resources | nindent 10 }}
+        {{- end }}
+        securityContext:
+          allowPrivilegeEscalation: true
+          capabilities:
+            drop:
+            - all
+          runAsGroup: 101
+          runAsNonRoot: false
+          runAsUser: 0
       volumes:
-        {{- if .Values.httpCache.extraVolumes }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.extraVolumes "context" $) | nindent 8 }}
-        {{- end }}
+        - name: shared-data
+          emptyDir: {}
+      shareProcessNamespace: true
 {{- end }}
