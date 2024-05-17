@@ -268,8 +268,8 @@ Return common analyzers for preflights and support-bundle
             message: OpenShift is a supported distribution.
         # Will be supported in the future
         - pass:
-            when: "== k0s"
-            message: K0s is a supported distribution.
+            when: "== embedded-cluster"
+            message: Using single VM deployment.
         - warn:
             message: Unable to determine the distribution of Kubernetes.
   - nodeResources:
