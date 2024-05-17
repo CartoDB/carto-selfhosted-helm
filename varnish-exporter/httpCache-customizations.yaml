@@ -1,0 +1,17 @@
+httpCache:
+  image:
+    tag: carto_varnish_monitored_internal
+  resources:
+    limits:
+      memory: "256Mi"
+    requests:
+      memory: "256Mi"
+  extraEnvVars:
+    #- name: VARNISH_NUKE_LIMIT
+    #  value: '1000'
+    #- name: VARNISH_SIZE
+    #  value: '1024M'
+  podSecurityContext:
+    enabled: true
+    fsGroup: 101
+    supplementalGroups: [2345]
