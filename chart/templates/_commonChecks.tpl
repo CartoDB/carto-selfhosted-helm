@@ -417,6 +417,8 @@ Return customer secrets to use in preflights and support-bundle
     value: {{ .Values.externalPostgresql.password | quote }}
   - name: REDIS_PASSWORD
     value: {{ .Values.externalRedis.password | quote }}
+  - name: LAUNCHDARKLY_SDK_KEY
+    value: {{ .Values.cartoSecrets.launchDarklySdkKey.value | quote }}
     {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
                 "WORKSPACE_THUMBNAILS_ACCESSKEYID"
                 "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
