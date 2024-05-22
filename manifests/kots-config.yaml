@@ -641,6 +641,10 @@ spec:
           when: '{{repl and (ConfigOptionEquals "externalProxyEnabled" "1") (not (empty HTTPProxy)) }}'
           value: "repl{{ HTTPProxy }}"
           readonly: true
+          validation:
+            regex:
+              pattern: ^(http|https):\/\/([a-zA-Z0-9_\-]+\.)+[a-zA-Z]{2,}(:[0-9]+)?$
+              message: "The proxy host should contain the protocol used to connect to it. Please check that you executed the installation using a valid proxy host. The protocol should be http or https."
         - name: externalProxyExcludedDomains
           title: Excluded domains
           type: text
