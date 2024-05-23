@@ -142,7 +142,7 @@ spec:
         ## Temporal fix to change tenantRequirementsChecker image until next release
         tenantRequirementsChecker:
           image:
-            tag: "bug_sc_404973_preflights_not_working_okay_when_using_a"
+            tag: "bug_sc_412252_preflight_check_for_workspace_postgres_version"
     ## LDS configuration
     ### LDS Geocoding, Isoline and Routing providers
     - when: '{{repl not (empty (ConfigOption "ldsGeocodingProvider")) }}'
