@@ -159,6 +159,12 @@ Return common collectors for preflights and support-bundle
               sizeLimit: 1Mi
           {{- end }}
   - registryImages:
+      {{- if eq (.Values.cartoConfigValues.cartoAuth0CustomDomain) ("auth.dev.carto.com") }}
+      namespace: {{ .Release.Namespace | quote }}
+      imagePullSecret:
+        type: kubernetes.io/dockerconfigjson
+        name: github-actions-artifacts
+      {{- end }}
       images:
         - {{ template "carto.accountsWww.image" . }}
         - {{ template "carto.cdnInvalidatorSub.image" . }}
