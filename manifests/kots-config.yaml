@@ -615,7 +615,7 @@ spec:
         - name: externalProxyEnabled
           title: External proxy
           help_text: |-
-            Configuring an external proxy to egress Connections.
+            Configuring an external proxy for egress Connections.
             [More info](https://docs.carto.com/carto-self-hosted/guides/configure-an-external-proxy).
           type: bool
           default: "0"
@@ -641,6 +641,10 @@ spec:
           when: '{{repl and (ConfigOptionEquals "externalProxyEnabled" "1") (not (empty HTTPProxy)) }}'
           value: "repl{{ HTTPProxy }}"
           readonly: true
+          validation:
+            regex:
+              pattern: ^(http|https):\/\/([a-zA-Z0-9_\-.]+)+[a-zA-Z]{1,}(:[0-9]+)?$
+              message: "The proxy host should contain the protocol used to connect to it. Please check that you executed the installation using a valid proxy host. The protocol should be http or https."
         - name: externalProxyExcludedDomains
           title: Excluded domains
           type: text
