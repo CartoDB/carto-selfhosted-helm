@@ -893,6 +893,28 @@ spec:
           type: text
           required: true
           default: "3"
+        - name: highAvailabilityCacheMemorySize
+          title: Cache Memory Size
+          when: '{{repl (ConfigOptionEquals "enablePlatformHighAvailability" "1") }}'
+          help_text: |-
+            The memory requested for the Cache container in Mi
+          type: text
+          required: true
+          default: "2048"
+          validation:
+            regex:
+              pattern: ^[1-9]\d*$
+        - name: highAvailabilityCacheCPU
+          title: Cache CPU
+          when: '{{repl (ConfigOptionEquals "enablePlatformHighAvailability" "1") }}'
+          help_text: |-
+            The CPU requested for the Cache container in milliCPU
+          type: text
+          required: true
+          default: "500"
+          validation:
+            regex:
+              pattern: ^[1-9]\d*$
 
         ## Custom Encryption Keys
         - name: enableCustomEncryptionKeys
