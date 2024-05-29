@@ -63,7 +63,6 @@ runs:
         helm repo add bitnami https://charts.bitnami.com/bitnami
         helm dependency build chart
         helm package chart
-        echo Trigger action: ${{ inputs.trigger-action }}
 
     # Step 5: Upload Helm package
     - name: Upload chart
@@ -74,12 +73,12 @@ runs:
       if: inputs.trigger-action == 'released' || inputs.trigger-action == 'prereleased'
       run: |
         gsutil cp -r "${CHARTS_BUCKET}" .
-        # mkdir packages-selfhosted-charts
-        # mv carto-helm/*.tgz packages-selfhosted-charts/
-        # cp carto-${{ inputs.version }}*.tgz packages-selfhosted-charts/
-        # helm repo index packages-selfhosted-charts --url "${CHARTS_REPOSITORY}"
-        # gsutil -h "Cache-Control:public,max-age=3600,s-maxage=3600" -m rsync -x "^index.yaml$" -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
-        # gsutil -h "Cache-Control:public,max-age=180,s-maxage=30" cp packages-selfhosted-charts/index.yaml "${CHARTS_BUCKET}"
+        mkdir packages-selfhosted-charts
+        mv carto-helm/*.tgz packages-selfhosted-charts/
+        cp carto-${{ inputs.version }}*.tgz packages-selfhosted-charts/
+        helm repo index packages-selfhosted-charts --url "${CHARTS_REPOSITORY}"
+        gsutil -h "Cache-Control:public,max-age=3600,s-maxage=3600" -m rsync -x "^index.yaml$" -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
+        gsutil -h "Cache-Control:public,max-age=180,s-maxage=30" cp packages-selfhosted-charts/index.yaml "${CHARTS_BUCKET}"
 
     # Step 6: Upload to Replicated
     - name: Upload release to Replicated
@@ -92,4 +91,4 @@ runs:
         replicated release create --auto \
           --promote "${{inputs.replicated-channel}}" \
           --version "${{inputs.version}}" \
-          --release-notes ${{ inputs.release-notes }}"
+          --release-notes "${{ inputs.release-notes }}"
