@@ -56,21 +56,22 @@ runs:
       run: |
         curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-    # Step 5: Create Helm package
+    # Step 4: Create Helm package
     - name: Create package
       shell: bash
       run: |
         helm repo add bitnami https://charts.bitnami.com/bitnami
         helm dependency build chart
         helm package chart
+        echo Trigger action: ${{ inputs.trigger-action }}
 
-    # Step 6: Upload Helm package
+    # Step 5: Upload Helm package
     - name: Upload chart
       shell: bash
-      if: ${{ inputs.trigger-action }} == 'released' || ${{ inputs.trigger-action }} == 'prereleased'
       env:
         CHARTS_BUCKET: ${{ inputs.chart-bucket }}
         CHARTS_REPOSITORY: ${{ inputs.chart-repo-url }}
+      if: ${{ inputs.trigger-action }} == 'released' || ${{ inputs.trigger-action }} == 'prereleased'
       run: |
         gsutil cp -r "${CHARTS_BUCKET}" .
         mkdir packages-selfhosted-charts
@@ -80,7 +81,7 @@ runs:
         gsutil -h "Cache-Control:public,max-age=3600,s-maxage=3600" -m rsync -x "^index.yaml$" -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
         gsutil -h "Cache-Control:public,max-age=180,s-maxage=30" cp packages-selfhosted-charts/index.yaml "${CHARTS_BUCKET}"
 
-    # Step 7: Upload to Replicated
+    # Step 6: Upload to Replicated
     - name: Upload release to Replicated
       shell: bash
       env:
