@@ -21,9 +21,6 @@ inputs:
     description: "API token for Replicated"
     required: true
 
-  gcloud-version:
-    description: "Version of the Google Cloud SDK to use"
-    default: '297.0.1' # https://github.com/google-github-actions/setup-gcloud/issues/128
   chart-repo-url:
     description: "URL of the Helm chart repository in case it needs to be updated"
     default: https://helm.carto.com/
@@ -52,7 +49,6 @@ runs:
       uses: google-github-actions/setup-gcloud@v2
       with:
         project_id: ${{ inputs.chart-gcp-project-id }}
-        version: ${{ inputs.gcloud-version }}
     
     # Step 3: Install helm
     - name: Install helm
