@@ -14,6 +14,12 @@ inputs:
   trigger-action:
     description: "Action that triggered the release"
     required: true
+  gcloud-service-account:
+    description: "Service account key for Google Cloud"
+    required: true
+  replicated-api-token:
+    description: "API token for Replicated"
+    required: true
 
   gcloud-version:
     description: "Version of the Google Cloud SDK to use"
@@ -38,14 +44,14 @@ runs:
     - name: Google Cloud Auth
       uses: google-github-actions/auth@v0
       with:
-        credentials_json: ${{ secrets.CARTO_ARTIFACTS_SERVICE_ACCOUNT }}
-        project_id: ${{ input.artifacts-gcp-project-id }}
+        credentials_json: ${{ inputs.gcloud-service-account }}
+        project_id: ${{ inputs.artifacts-gcp-project-id }}
 
     # Step 2: Install Gcloud CLI
     - name: Google Cloud install
       uses: google-github-actions/setup-gcloud@v0
       with:
-        project_id: ${{ input.chart-gcp-project-id }}
+        project_id: ${{ inputs.chart-gcp-project-id }}
         version: ${{ inputs.gcloud-version }}
     
     # Step 3: Install helm
@@ -87,7 +93,7 @@ runs:
       shell: bash
       env:
         REPLICATED_APP: carto
-        REPLICATED_API_TOKEN: ${{ secrets.REPLICATED_API_TOKEN }}
+        REPLICATED_API_TOKEN: ${{ inputs.replicated-api-token }}
       run: |
         cp carto-${{ inputs.version }}*.tgz manifests/
         replicated release create --auto \

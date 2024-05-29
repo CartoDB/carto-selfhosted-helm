@@ -29,6 +29,8 @@ jobs:
           version: ${{ steps.release-info.outputs.version }}
           release-notes: "CARTO Self-Hosted ${{ steps.release-info.outputs.version }}"
           trigger-action: ${{ github.event.action }}
+          gcloud-service-account: ${{ secrets.CARTO_ARTIFACTS_SERVICE_ACCOUNT }}
+          replicated-api-token: ${{ secrets.REPLICATED_API_TOKEN }}
 
       - name: Slack notification
         if: github.event.action == 'released'
