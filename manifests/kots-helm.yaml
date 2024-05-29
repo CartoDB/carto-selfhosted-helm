@@ -427,15 +427,15 @@ spec:
           # https://varnish-cache.org/docs/6.0/users-guide/sizing-your-cache.html
           # Default values:
           # requests.memory = 2048Mi
-          # requests.limit = 3072Mi
-          # varnish_size = 1536Mi
+          # requests.limit will be -> 3072Mi
+          # varnish_size will be -> 1536Mi
           resources:
             limits:
-              memory: '{{repl (Div (Mult (ConfigOption "highAvailabilityCacheMemorySize" | ParseInt) 3) 2)}}Mi'
-              cpu: '{{repl (Mult (ConfigOption "highAvailabilityCacheCPU" | ParseInt) 2 )}}m'
+              memory: '{{repl (Div (Mult (ConfigOption "highAvailabilityCacheMemoryRequest" | ParseInt) 3) 2)}}Mi'
+              cpu: '{{repl (Mult (ConfigOption "highAvailabilityCacheCPURequest" | ParseInt) 2 )}}m'
             requests:
-              memory: "2048Mi"
-              cpu: "500m"
+              memory: '{{repl (ConfigOption "highAvailabilityCacheMemoryRequest") }}Mi'
+              cpu: '{{repl (ConfigOption "highAvailabilityCacheCPURequest") }}m'
 
     ## Custom AT location
     - when: '{{repl not (empty (ConfigOption "defaultATLocationBigQuery")) }}'
