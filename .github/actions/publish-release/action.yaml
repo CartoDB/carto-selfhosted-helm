@@ -42,14 +42,14 @@ runs:
   steps:
     # Step 1: Authenticate with Google Cloud
     - name: Google Cloud Auth
-      uses: google-github-actions/auth@v0
+      uses: google-github-actions/auth@v2
       with:
         credentials_json: ${{ inputs.gcloud-service-account }}
         project_id: ${{ inputs.artifacts-gcp-project-id }}
 
     # Step 2: Install Gcloud CLI
     - name: Google Cloud install
-      uses: google-github-actions/setup-gcloud@v0
+      uses: google-github-actions/setup-gcloud@v2
       with:
         project_id: ${{ inputs.chart-gcp-project-id }}
         version: ${{ inputs.gcloud-version }}
@@ -59,10 +59,6 @@ runs:
       shell: bash
       run: |
         curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-
-    # Step 4: Set up yq
-    - name: Set up yq
-      uses: frenck/action-setup-yq@v1
 
     # Step 5: Create Helm package
     - name: Create package
