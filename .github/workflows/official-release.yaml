@@ -15,6 +15,7 @@ jobs:
         run: |
           if [ "${{ github.event.action }}" == "prereleased" ]; then
             yq -i '.version = .version + "-beta"' chart/Chart.yaml
+            yq -i '.spec.chart.chartVersion = .spec.chart.chartVersion + "-beta"' manifests/kots-helm.yaml
             echo "channel-name=Release candidates" >> "$GITHUB_OUTPUT"
             echo "version=$(yq .version -r chart/Chart.yaml)" >> "$GITHUB_OUTPUT"
           else
