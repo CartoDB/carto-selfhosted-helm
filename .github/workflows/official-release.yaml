@@ -8,12 +8,6 @@ jobs:
     timeout-minutes: 3
     runs-on: ubuntu-22.04
     steps:
-      - name: Edit version
-        if: github.event.action == 'prereleased'
-        shell: bash
-        run: |
-          
-
       - name: Obtain release info
         id: release-info
         run: |
