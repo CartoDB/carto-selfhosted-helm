@@ -12,7 +12,7 @@ jobs:
       - name: Obtain release info
         id: release-info
         run: |
-          if [ "${{ github.event.action }}" == "prereleased" ]; then
+          if [ "prereleased" == "prereleased" ]; then
             yq -i '.version = .version + "-beta"' chart/Chart.yaml
             echo "channel-name=Release candidates" >> "$GITHUB_OUTPUT"
             echo "version=$(yq .version -r chart/Chart.yaml)" >> "$GITHUB_OUTPUT"
@@ -27,6 +27,6 @@ jobs:
           replicated-channel: ${{ steps.release-info.outputs.channel-name }}
           version: ${{ steps.release-info.outputs.version }}
           release-notes: "CARTO Self-Hosted ${{ steps.release-info.outputs.version }}"
-          trigger-action: ${{ github.event.action }}
+          trigger-action: "prereleased"
           gcloud-service-account: ${{ secrets.CARTO_ARTIFACTS_SERVICE_ACCOUNT }}
           replicated-api-token: ${{ secrets.REPLICATED_API_TOKEN }}

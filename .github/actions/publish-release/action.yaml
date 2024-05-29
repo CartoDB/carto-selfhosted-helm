@@ -84,13 +84,13 @@ runs:
         CHARTS_REPOSITORY: ${{ inputs.chart-repo-url }}
       if: inputs.trigger-action == 'released' || inputs.trigger-action == 'prereleased'
       run: |
-        gsutil cp -r "${CHARTS_BUCKET}" .
         mkdir packages-selfhosted-charts
-        mv carto-helm/*.tgz packages-selfhosted-charts/
-        cp carto-${{ inputs.version }}*.tgz packages-selfhosted-charts/
-        helm repo index packages-selfhosted-charts --url "${CHARTS_REPOSITORY}"
-        gsutil -h "Cache-Control:public,max-age=3600,s-maxage=3600" -m rsync -x "^index.yaml$" -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
-        gsutil -h "Cache-Control:public,max-age=180,s-maxage=30" cp packages-selfhosted-charts/index.yaml "${CHARTS_BUCKET}"
+        # gsutil cp -r "${CHARTS_BUCKET}" .
+        # mv carto-helm/*.tgz packages-selfhosted-charts/
+        # cp carto-${{ inputs.version }}*.tgz packages-selfhosted-charts/
+        # helm repo index packages-selfhosted-charts --url "${CHARTS_REPOSITORY}"
+        # gsutil -h "Cache-Control:public,max-age=3600,s-maxage=3600" -m rsync -x "^index.yaml$" -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
+        # gsutil -h "Cache-Control:public,max-age=180,s-maxage=30" cp packages-selfhosted-charts/index.yaml "${CHARTS_BUCKET}"
 
     # Step 7: Upload to Replicated
     - name: Upload release to Replicated
