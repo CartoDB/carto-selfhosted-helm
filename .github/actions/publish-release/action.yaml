@@ -56,7 +56,19 @@ runs:
       run: |
         curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-    # Step 4: Create Helm package
+    # Step 4: Install Replicated CLI
+    - name: Install Replicated CLI
+      shell: bash
+      run: |
+        curl -s https://api.github.com/repos/replicatedhq/replicated/releases/latest \
+        | grep "browser_download_url.*linux_amd64.tar.gz" \
+        | cut -d : -f 2,3 \
+        | tr -d \" \
+        | wget -O replicated.tar.gz -qi -
+        tar xf replicated.tar.gz replicated && rm replicated.tar.gz
+        mv replicated /usr/local/bin/replicated
+
+    # Step 5: Create Helm package
     - name: Create package
       shell: bash
       run: |
@@ -64,7 +76,7 @@ runs:
         helm dependency build chart
         helm package chart
 
-    # Step 5: Upload Helm package
+    # Step 6: Upload Helm package
     - name: Upload chart
       shell: bash
       env:
@@ -80,7 +92,7 @@ runs:
         gsutil -h "Cache-Control:public,max-age=3600,s-maxage=3600" -m rsync -x "^index.yaml$" -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
         gsutil -h "Cache-Control:public,max-age=180,s-maxage=30" cp packages-selfhosted-charts/index.yaml "${CHARTS_BUCKET}"
 
-    # Step 6: Upload to Replicated
+    # Step 7: Upload to Replicated
     - name: Upload release to Replicated
       shell: bash
       env:
