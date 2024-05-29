@@ -36,10 +36,10 @@ runs:
   steps:
     # Step 1: Authenticate with Google Cloud
     - name: Google Cloud Auth
-        uses: google-github-actions/auth@v0
-        with:
-          credentials_json: ${{ secrets.CARTO_ARTIFACTS_SERVICE_ACCOUNT }}
-          project_id: ${{ input.artifacts-gcp-project-id }}
+      uses: google-github-actions/auth@v0
+      with:
+        credentials_json: ${{ secrets.CARTO_ARTIFACTS_SERVICE_ACCOUNT }}
+        project_id: ${{ input.artifacts-gcp-project-id }}
 
     # Step 2: Install Gcloud CLI
     - name: Google Cloud install
