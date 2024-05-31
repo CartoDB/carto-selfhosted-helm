@@ -13,10 +13,10 @@ spec:
     logConfig:
       enabled: false
     config:
-      type: HTTPS
+      type: HTTP
       httpsHealthCheck:
-        port: {{ .Values.router.service.ports.https }}
-        portName: https
+        port: 80
+        portName: http
         requestPath: /
   targetRef:
     group: ""
