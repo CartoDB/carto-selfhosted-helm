@@ -11,7 +11,7 @@ spec:
     healthyThreshold: 2
     unhealthyThreshold: 2
     logConfig:
-      enabled: false
+      enabled: true
     config:
       type: HTTP
       httpsHealthCheck:
