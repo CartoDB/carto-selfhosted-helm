@@ -583,6 +583,7 @@ accountsWww:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
   ## @param accountsWww.podDisruptionBudget.enabled defines disruption budget for accounts-www
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
@@ -919,6 +920,7 @@ importApi:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
   ## @param importApi.podDisruptionBudget.enabled defines disruption budget for import-api
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
@@ -1182,6 +1184,7 @@ importWorker:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
   ## @param importWorker.podDisruptionBudget.enabled defines disruption budget for import-worker
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
@@ -1459,6 +1462,7 @@ ldsApi:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
   ## @param ldsApi.podDisruptionBudget.enabled defines disruption budget for lds-api
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
@@ -1782,6 +1786,7 @@ mapsApi:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
   ## @param mapsApi.podDisruptionBudget.enabled defines disruption budget for maps-api
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
@@ -2080,6 +2085,7 @@ sqlWorker:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
   ## @param sqlWorker.podDisruptionBudget.enabled defines disruption budget for sql-worker
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
@@ -2333,6 +2339,9 @@ router:
   ## @param router.nginxConfig.proxy_buffer_size Sets the size of the buffer used for reading the first part of the response received from the proxied server
   ## @param router.nginxConfig.proxy_busy_buffers_size Limits the total size of buffers that can be busy sending a response to the client while the response is not yet fully read
   ## @param router.nginxConfig.client_max_body_size Sets the maximum allowed size of the client request body
+  ## @param router.nginxConfig.log_mode
+  ## @param router.nginxConfig.router_metrics_host
+  ## @param router.nginxConfig.router_metrics_port
   nginxConfig:
     gzip_buffers: "16 8k"
     gzip_min_length: "1100"
@@ -2340,6 +2349,9 @@ router:
     proxy_buffer_size: "8k"
     proxy_busy_buffers_size: "8k"
     client_max_body_size: "10M"
+    log_mode: "notice"
+    router_metrics_host: "localhost"
+    router_metrics_port: "5447"
   ## TLS Certificates
   ## @param router.tlsCertificates.certificateValueBase64 certificate in base64
   ## @param router.tlsCertificates.privateKeyValueBase64 private key in base64
@@ -2376,6 +2388,7 @@ router:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
   ## @param router.podDisruptionBudget.enabled defines disruption budget for router
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
@@ -2788,6 +2801,7 @@ httpCache:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
   ## @param httpCache.podDisruptionBudget.enabled defines disruption budget for http-cache
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
@@ -3095,7 +3109,7 @@ notifier:
   ##
   podSecurityContext:
     enabled: true
-    fsGroup: 102
+    fsGroup: 101
     supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
@@ -3115,6 +3129,7 @@ notifier:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
   ## @param notifier.podDisruptionBudget.enabled defines disruption budget for notifier
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
@@ -3442,6 +3457,7 @@ cdnInvalidatorSub:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
   ## @param cdnInvalidatorSub.podDisruptionBudget.enabled defines disruption budget for cdn-invalidator-sub
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
@@ -3767,6 +3783,7 @@ workspaceApi:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
   ## @param workspaceApi.podDisruptionBudget.enabled defines disruption budget for workspace-api
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
@@ -4031,6 +4048,7 @@ workspaceSubscriber:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
   ## @param workspaceSubscriber.podDisruptionBudget.enabled defines disruption budget for workspace-subscriber
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
@@ -4302,6 +4320,7 @@ workspaceWww:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
   ## @param workspaceWww.podDisruptionBudget.enabled defines disruption budget for workspace-www
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
@@ -4555,6 +4574,7 @@ workspaceMigrations:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
 
 ## @section tenant-requirements-checker Deployment Parameters
 ##
@@ -4618,6 +4638,7 @@ tenantRequirementsChecker:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
 
 ## @section Internal Redis&trade; subchart parameters
 ## Internal Redis &trade; chart configuration
@@ -4683,6 +4704,7 @@ internalRedis:
       capabilities:
         drop:
           - all
+    readOnlyRootFilesystem: true
   replica:
     persistence:
       enabled: false
@@ -4719,6 +4741,7 @@ internalRedis:
       capabilities:
         drop:
           - all
+    readOnlyRootFilesystem: true
 
 ## @section External Redis parameters
 ## External Redis configuration
@@ -4909,6 +4932,8 @@ upgradeCheck:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
+
 
 ## @section router-metrics parameters
 routerMetrics:
@@ -4982,6 +5007,7 @@ routerMetrics:
     capabilities:
       drop:
         - all
+    readOnlyRootFilesystem: true
   ## @param routerMetrics.podDisruptionBudget.enabled defines disruption budget for router-metrics
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
@@ -5044,7 +5070,9 @@ routerMetrics:
   ## @param routerMetrics.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
-
+  ## @param routerMetrics.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the router-metrics container(s)
+  ##
+  extraVolumeMounts: []
 gateway:
   ## @param gateway.enabled Enable gateway api.
   ## https://gateway-api.sigs.k8s.io/reference/spec/

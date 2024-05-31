@@ -56,4 +56,77 @@ data:
   NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   {{- end }}
+  nginx.conf: |
+    worker_processes  auto;
+
+    error_log  /var/log/nginx/error.log {{ .Values.router.nginxConfig.log_mode }};
+    pid        /tmp/nginx.pid;
+
+
+    events {
+        worker_connections  1024;
+    }
+
+
+    http {
+        proxy_temp_path /tmp/proxy_temp;
+        client_body_temp_path /tmp/client_temp;
+        fastcgi_temp_path /tmp/fastcgi_temp;
+        uwsgi_temp_path /tmp/uwsgi_temp;
+        scgi_temp_path /tmp/scgi_temp;
+
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+
+        # Set empty value for $service_name / will be filled later by upstreams conf files
+        map $host $service_name {
+            default '';
+        }
+
+        ######################################################################
+        # nginx access log in json format
+        # Logs will be written to syslog (UDP:514), where logstash sidecar will be listening to
+        # + http://nginx.org/en/docs/syslog.html
+        ######################################################################
+        log_format main escape=json '{"time": "$time_iso8601", '
+        '"remote_addr": "$remote_addr", '
+        '"host": "$host", '
+        '"scheme": "$scheme", ' 
+        '"request": "$request", '
+        '"status": "$status", '
+        '"bytes_sent": "$bytes_sent", '
+        '"body_bytes_sent":"$body_bytes_sent", '
+        '"request_time": "$request_time", '
+        '"http_referer": "$http_referer", '
+        '"http_user_agent": "$http_user_agent", '
+        '"request_length": "$request_length", '
+        '"sent_http_x_cache": "$sent_http_x_cache", '
+        '"http_x_forwarded_for": "$http_x_forwarded_for", '
+        '"sent_http_x_served_by_host": "$sent_http_x_served_by_host", '
+        '"upstream_addr": "$upstream_addr", '
+        '"upstream_response_time": "$upstream_response_time", '
+        '"service_name": "$service_name", '
+
+        ## Response Headers
+        '"sent_http_cm": "$sent_http_cm", '
+        '"sent_http_carto_client": "$sent_http_carto_client", '
+        '"sent_http_carto_user": "$sent_http_carto_user",'
+        '"sent_http_carto_account": "$sent_http_carto_account", '
+        '"sent_http_carto_connector": "$sent_http_carto_connector"}';
+
+        access_log syslog:server={{ .Values.router.nginxConfig.router_metrics_host }}:{{ .Values.router.nginxConfig.router_metrics_port }},severity=info main;
+        access_log /dev/stdout main;
+
+        # By default:  [error,crit,alert,emerg]
+        error_log stderr {{ .Values.router.nginxConfig.log_mode }};
+
+        sendfile        on;
+        #tcp_nopush     on;
+
+        keepalive_timeout  65;
+
+        #gzip  on;
+
+        include /etc/nginx/conf.d/*.conf;
+    }
 {{- end }}

@@ -27,4 +27,24 @@ data:
   {{- if .Values.appConfigValues.ssoOrganizationId }}
   REACT_APP_ORGANIZATION_ID: {{ .Values.appConfigValues.ssoOrganizationId }}
   {{- end }}
+  config.yaml: |
+    # Template config file
+    cartoVersion:
+      selfHosted: {{ .Chart.AppVersion | quote }}
+
+    auth0:
+      domain: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
+      audience: "carto-cloud-native-api"
+      clientId: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
+      organizationId: {{ .Values.appConfigValues.ssoOrganizationId }}
+      studentClientId: ""
+
+    apis:
+      accountsUrl: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
+
+    workspaceUrlTemplate: "https://{tenantDomain}"
+    customTenant: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+    enableTrackJs: {{ .Values.appConfigValues.enableTrackJS | quote }}
+    cartoDwEnabled: {{ .Values.cartoConfigValues.cartoDataWarehouseEnabled | quote }}
+    commitHash: "" # If is empty not would be included in TrackJS metadata
 {{- end }}

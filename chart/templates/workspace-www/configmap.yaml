@@ -41,4 +41,47 @@ data:
   {{- if .Values.appConfigValues.ssoOrganizationId }}
   REACT_APP_ORGANIZATION_ID: {{ .Values.appConfigValues.ssoOrganizationId }}
   {{- end }}
+  config.yaml: |
+    # Template config file
+    cartoVersion:
+      selfHosted: {{ .Chart.AppVersion | quote }}
+
+    auth0:
+      domain: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
+      audience: "carto-cloud-native-api"
+      clientId: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
+      organizationId: {{ .Values.appConfigValues.ssoOrganizationId }}
+      studentClientId: ""
+
+    apis:
+      accountsUrl: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
+      workspaceUrl: "https://{{ .Values.appConfigValues.selfHostedDomain }}/workspace-api"
+      notifierUrl: "https://{{ .Values.appConfigValues.selfHostedDomain }}/notifier"
+      baseUrl: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api"
+      recurlyUrl: ""
+      doUrl: "https://public.carto.com/api/v4/data/observatory"
+
+    hubspot:
+      id: "474999"
+      limitFormId: "cd9486fa-5766-4bac-81b9-d8c6cd029b3b"
+      requestSubscriptionFormId: "49d53632-80f9-4720-b4be-bf623a527af4"
+
+    launchDarkly:
+      clientSideId: {{ .Values.cartoConfigValues.launchDarklyClientSideId | quote }}
+
+    accountsUrl: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/"
+    doBundleUrl: "/vendors/do-catalog.umd.min.js"
+    googleMapsApiKey: "${GOOGLE_MAPS_API_KEY}"
+    publicMapUrl: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api/v3/maps/public"
+    publicCatalogUrl: "https://carto.com/spatial-data-catalog/browser"
+    bigqueryOAuthEnabled: ${REACT_APP_BIGQUERY_OAUTH}
+    enableFeaturedApplications: true
+    enableTrackJs: {{ .Values.appConfigValues.enableTrackJS | quote }}
+    enableExports: ${REACT_APP_WORKSPACE_WWW_ENABLE_EXPORTS}
+    enableGenAI: ${REACT_APP_WORKSPACE_WWW_ENABLE_GENAI}
+    cartoDwEnabled: {{ .Values.cartoConfigValues.cartoDataWarehouseEnabled | quote }}
+    commitHash: "" # If is empty not would be included in TrackJS metadata
+
+    askNicely:
+      minHoursAccountOldEnough: ${REACT_APP_ASKNICELY_MIN_HOURS_ACCOUNT_OLD_ENOUGH}
 {{- end }}
