@@ -55,11 +55,7 @@ spec:
         value: {{ .Values.gateway.path }}
     backendRefs:
     - name: {{ template "carto.router.fullname" . }}
-      {{- if .Values.tlsCerts.httpsEnabled }}
       port: {{ .Values.router.service.ports.https }}
-      {{- else }}
-      port: {{ .Values.router.service.ports.http }}
-      {{- end }}
 ---
 apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
