@@ -421,6 +421,22 @@ spec:
                             - accounts-www
                     topologyKey: "kubernetes.io/hostname"
 
+        httpCache: 
+          # Note that we calculate the varnish_size as 75% of the container requests.memory
+          # We know that the limit should be the double value that the varnish_size
+          # https://varnish-cache.org/docs/6.0/users-guide/sizing-your-cache.html
+          # Default values:
+          # requests.memory = 2048Mi
+          # requests.limit will be -> 3072Mi
+          # varnish_size will be -> 1536Mi
+          resources:
+            limits:
+              memory: '{{repl (Div (Mult (ConfigOption "highAvailabilityCacheMemoryRequest" | ParseInt) 3) 2)}}Mi'
+              cpu: '{{repl (Mult (ConfigOption "highAvailabilityCacheCPURequest" | ParseInt) 2 )}}m'
+            requests:
+              memory: '{{repl (ConfigOption "highAvailabilityCacheMemoryRequest") }}Mi'
+              cpu: '{{repl (ConfigOption "highAvailabilityCacheCPURequest") }}m'
+
     ## Custom AT location
     - when: '{{repl not (empty (ConfigOption "defaultATLocationBigQuery")) }}'
       recursiveMerge: true
