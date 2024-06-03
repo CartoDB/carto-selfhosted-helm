@@ -147,7 +147,7 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.router.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            {{- if .Values.tlsCerts.httpsEnabled }}
+            {{- if .Values.router.httpsEnabled }}
             - name: tls-secret
               mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
               subPath: {{ template "carto.tlsCerts.secretCertKey" . }}
@@ -240,7 +240,7 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.router.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        {{- if .Values.tlsCerts.httpsEnabled }}
+        {{- if .Values.router.httpsEnabled }}
         - name: tls-secret
           secret:
             secretName: {{ include "carto.tlsCerts.secretName" . }}

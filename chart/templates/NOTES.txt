@@ -54,33 +54,7 @@ host. To configure CARTO with the URL of your service:
 {{- else }}
 
 1. Get the CARTO URL by running:
-{{-  if .Values.router.ingress.enabled }}
-
-  NOTE: It may take a few minutes for the Ingress IP to be available.
-
-  export CARTO_HOST_IP=$(kubectl get ingress --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} -o jsonpath='{.status..ingress..ip}')
-
-  export CARTO_HOST_CNAME=$(kubectl get ingress --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} -o jsonpath='{.spec..host}')
-
-
-{{- else if eq .Values.router.service.type "ClusterIP" }}
-{{- $port := default 80 .Values.router.service.ports.http | toString }}
-{{- $port_https := default 443 .Values.router.service.ports.https | toString }}
-  {{/* TODO: We should check that HTTPS should be enabled ! */}}
-
-  export CARTO_HOST_IP=127.0.0.1
-  export CARTO_HTTP_PORT={{- $port }}
-  export CARTO_HTTPS_PORT={{- $port_https }}
-  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }} {{ $port_https }}:{{ $port_https }}
-
-  If the previous command fails regarding port permissions, try the next ones:
-  export CARTO_KUBECONFIG=$([[ ! -z "$KUBECONFIG" ]] && echo "$KUBECONFIG" || echo "$HOME/.kube/config")
-  sudo -E kubectl --kubeconfig=${CARTO_KUBECONFIG} port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }} {{ $port_https }}:{{ $port_https }}
--+
-
-
-
-{{- else if eq .Values.router.service.type "NodePort" }}
+{{- if eq .Values.router.service.type "NodePort" }}
 
   export CARTO_HOST_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
   export CARTO_HTTP_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[?(@.name=='http')].nodePort}" services {{ include "carto.router.fullname" . }})
@@ -91,14 +65,6 @@ host. To configure CARTO with the URL of your service:
         After that change, you must wait some minutes while the change is propagated.
         {{/* TODO: Only show (or update it) when https is enabled in app side */}}
         You also need to use the `https://{{ $baseUrl }}:${CARTO_HTTPS_PORT}` to access directly to it.
-
-{{- else if eq .Values.router.service.type "LoadBalancer" }}
-  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-        Watch the status with: 'kubectl get svc --namespace {{ .Release.Namespace }} -w {{ include "carto.router.fullname" . }}'
-
-  export CARTO_HOST_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress.*.ip}')
-
-  export CARTO_HOST_CNAME=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress.*.hostname}')
 
 {{- else }}
 
