@@ -4704,7 +4704,7 @@ internalRedis:
       capabilities:
         drop:
           - all
-    readOnlyRootFilesystem: true
+      readOnlyRootFilesystem: true
   replica:
     persistence:
       enabled: false
@@ -4741,7 +4741,7 @@ internalRedis:
       capabilities:
         drop:
           - all
-    readOnlyRootFilesystem: true
+      readOnlyRootFilesystem: true
 
 ## @section External Redis parameters
 ## External Redis configuration
