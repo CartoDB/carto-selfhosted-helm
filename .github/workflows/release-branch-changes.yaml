@@ -1,0 +1,44 @@
+name: Release Branch Changes
+on:
+  pull_request:
+    types: [ labeled ]
+
+jobs:
+  release-changes:
+    if: ${{ github.event.label.name == 'release-changes' }}
+    timeout-minutes: 3
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Generate channel name
+      id: generate-channel-info
+      shell: bash
+      run: |
+        GITHUB_BRANCH_NAME=${GITHUB_REF}
+
+        # Cleaning refs/*/
+        # refs/whatever/main => main
+        export GITHUB_BRANCH_NAME=${GITHUB_BRANCH_NAME#refs/[a-z]*/}
+
+        # Normalize image tags characters
+        # my-branch/test-01 => my-branch_test-01
+        export NORMALIZED_GIT_BRANCH_NAME=${GITHUB_BRANCH_NAME//[^[:alnum:]]/_}
+
+        # To lowercase all characters
+        export NORMALIZED_GIT_BRANCH_NAME=${NORMALIZED_GIT_BRANCH_NAME,,}
+
+        # Set maximum 128 characters for image name
+        export NORMALIZED_GIT_BRANCH_NAME=${NORMALIZED_GIT_BRANCH_NAME:0:127}
+
+        # Share the variable for further steps
+        echo "channel-name=${NORMALIZED_GIT_BRANCH_NAME}" >> "$GITHUB_OUTPUT"
+        echo "version=$(yq .version -r chart/Chart.yaml)" >> "$GITHUB_OUTPUT"
+
+    # - name: Publish release
+    #     uses: ./.github/actions/publish-release
+    #     with:
+    #       replicated-channel: ${{ steps.generate-channel-info.outputs.channel-name }}
+    #       version: ${{ steps.generate-channel-info.outputs.version }}
+    #       release-notes: "CARTO Self-Hosted dev version generated from branch ${{ steps.generate-channel-info.outputs.channel-name }}"
+    #       trigger-action: "dev"
+    #       gcloud-service-account: ${{ secrets.CARTO_ARTIFACTS_SERVICE_ACCOUNT }}
+    #       replicated-api-token: ${{ secrets.REPLICATED_API_TOKEN }}
