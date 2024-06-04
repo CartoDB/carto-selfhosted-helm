@@ -50,8 +50,6 @@ spec:
         value: '{{repl ConfigOption "googleMapsAPIKey" }}'
       bigqueryOauth2ClientSecret:
         value: '{{repl ConfigOption "bigqueryOauthClientSecret" }}'
-      googleCloudStorageServiceAccountKey:
-        value: '{{repl ConfigOption "cartoPlatformGoogleSA" }}'
       awsAccessKeyId:
         value: '{{repl ConfigOption "storageBucketsAwsAccessKeyId" }}'
       awsAccessKeySecret:
@@ -140,7 +138,17 @@ spec:
         ## Temporal fix to change tenantRequirementsChecker image until next release
         tenantRequirementsChecker:
           image:
-            tag: "bug_sc_412252_preflight_check_for_workspace_postgres_version"
+            tag: "03-06-2024"
+
+    ## Specify service account if workload identity is disabled
+    - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
+      recursiveMerge: true
+      values:
+        appSecrets:
+          googleCloudStorageServiceAccountKey:
+            value: '{{repl ConfigOption "cartoPlatformGoogleSA" }}'
+    
+
     ## LDS configuration
     ### LDS Geocoding, Isoline and Routing providers
     - when: '{{repl not (empty (ConfigOption "ldsGeocodingProvider")) }}'
