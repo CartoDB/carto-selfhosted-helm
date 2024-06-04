@@ -56,9 +56,31 @@ jobs:
           CHANNEL_DELETE_REQUIRED="false"
           if replicated channel ls | grep -q ${{ steps.generate-channel-info.outputs.channel-name }}; then
             CHANNEL_DELETE_REQUIRED="true"
+            CHANNEL_ID=$(replicated channel ls | grep ${{ steps.generate-channel-info.outputs.channel-name }} | awk '{print $1}')
+            echo "Channel ${{ steps.generate-channel-info.outputs.channel-name }} exists with ID $CHANNEL_ID"
+            echo "channel-id=${CHANNEL_ID}" >> "$GITHUB_OUTPUT"
           fi
 
           echo "channel-exists=${CHANNEL_DELETE_REQUIRED}" >> ${GITHUB_OUTPUT}
+
+      - name: Unassign customers from channel
+        if: steps.check-if-channel-exists.outputs.channel-exists == 'true'
+        shell: bash
+        env:
+          REPLICATED_APP: carto
+          REPLICATED_API_TOKEN: ${{ secrets.REPLICATED_API_TOKEN }}
+        run: |
+          echo "::group::Updating customers to Stable channel"
+            CUSTOMERS=$(replicated customer ls | grep ${{ steps.generate-channel-info.outputs.channel-name }})
+            while IFS= read -r customer; do
+              CUSTOMER_ID=$(echo $customer | awk '{print $1}')
+              CUSTOMER_NAME=$(echo $customer | awk '{print $2}')
+              replicated customer update \
+                --channel "Stable" \
+                --name "${CUSTOMER_NAME}" \
+                --customer "${CUSTOMER_ID}"
+            done <<< "$CUSTOMERS"
+          echo "::endgroup::"
 
       - name: Delete channel
         if: steps.check-if-channel-exists.outputs.channel-exists == 'true'
@@ -67,5 +89,4 @@ jobs:
           REPLICATED_APP: carto
           REPLICATED_API_TOKEN: ${{ secrets.REPLICATED_API_TOKEN }}
         run: |
-          CHANNEL_ID=$(replicated channel ls | grep ${{ steps.generate-channel-info.outputs.channel-name }} | awk '{print $1}')
-          replicated channel rm $CHANNEL_ID
+          replicated channel rm ${{ steps.check-if-channel-exists.outputs.channel-id }}
