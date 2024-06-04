@@ -55,7 +55,7 @@ jobs:
         run: |
           if replicated channel ls | grep -q ${{ steps.generate-channel-info.outputs.channel-name }}; then
             echo "channel-exists=true" >> "$GITHUB_OUTPUT"
-            echo "channel-id=$(replicated channel ls | grep ${{ steps.generate-channel-info.outputs.channel-name }} | awk '{print $1}')" >> "$GITHUB_OUTPUT
+            echo "channel-id=$(replicated channel ls | grep ${{ steps.generate-channel-info.outputs.channel-name }} | awk '{print $1}')" >> "$GITHUB_OUTPUT"
           else
             echo "channel-exists=false" >> "$GITHUB_OUTPUT"
           fi
