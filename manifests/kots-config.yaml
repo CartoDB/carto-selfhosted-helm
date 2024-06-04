@@ -893,6 +893,36 @@ spec:
           type: text
           required: true
           default: "3"
+        - name: highAvailabilityCacheMemoryRequest
+          title: Cache Memory Request
+          when: '{{repl (ConfigOptionEquals "enablePlatformHighAvailability" "1") }}'
+          help_text: |-
+            The memory requested for the Cache container in MiB.
+
+            The Cache component doesn't support a high availability configuration, 
+            so you can adjust the memory requested and increase it in case you need.
+          type: text
+          required: true
+          default: "2048"
+          validation:
+            regex:
+              pattern: ^[1-9]\d*$
+              message: "The container memory must be an integer number"
+        - name: highAvailabilityCacheCPURequest
+          title: Cache CPU Request
+          when: '{{repl (ConfigOptionEquals "enablePlatformHighAvailability" "1") }}'
+          help_text: |-
+            The CPU units requested for the Cache container in milliCPU.
+
+            The Cache component doesn't support a high availability configuration, 
+            so you can adjust the CPU requested and increase it in case you need.
+          type: text
+          required: true
+          default: "500"
+          validation:
+            regex:
+              pattern: ^[1-9]\d*$
+              message: "The container CPU must be an integer number"
 
         ## Custom Encryption Keys
         - name: enableCustomEncryptionKeys

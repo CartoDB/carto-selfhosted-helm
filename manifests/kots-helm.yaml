@@ -50,8 +50,6 @@ spec:
         value: '{{repl ConfigOption "googleMapsAPIKey" }}'
       bigqueryOauth2ClientSecret:
         value: '{{repl ConfigOption "bigqueryOauthClientSecret" }}'
-      googleCloudStorageServiceAccountKey:
-        value: '{{repl ConfigOption "cartoPlatformGoogleSA" }}'
       awsAccessKeyId:
         value: '{{repl ConfigOption "storageBucketsAwsAccessKeyId" }}'
       awsAccessKeySecret:
@@ -142,7 +140,17 @@ spec:
         ## Temporal fix to change tenantRequirementsChecker image until next release
         tenantRequirementsChecker:
           image:
-            tag: "bug_sc_412252_preflight_check_for_workspace_postgres_version"
+            tag: "03-06-2024"
+
+    ## Specify service account if workload identity is disabled
+    - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
+      recursiveMerge: true
+      values:
+        appSecrets:
+          googleCloudStorageServiceAccountKey:
+            value: '{{repl ConfigOption "cartoPlatformGoogleSA" }}'
+    
+
     ## LDS configuration
     ### LDS Geocoding, Isoline and Routing providers
     - when: '{{repl not (empty (ConfigOption "ldsGeocodingProvider")) }}'
@@ -420,6 +428,22 @@ spec:
                           values:
                             - accounts-www
                     topologyKey: "kubernetes.io/hostname"
+
+        httpCache: 
+          # Note that we calculate the varnish_size as 75% of the container requests.memory
+          # We know that the limit should be the double value that the varnish_size
+          # https://varnish-cache.org/docs/6.0/users-guide/sizing-your-cache.html
+          # Default values:
+          # requests.memory = 2048Mi
+          # requests.limit will be -> 3072Mi
+          # varnish_size will be -> 1536Mi
+          resources:
+            limits:
+              memory: '{{repl (Div (Mult (ConfigOption "highAvailabilityCacheMemoryRequest" | ParseInt) 3) 2)}}Mi'
+              cpu: '{{repl (Mult (ConfigOption "highAvailabilityCacheCPURequest" | ParseInt) 2 )}}m'
+            requests:
+              memory: '{{repl (ConfigOption "highAvailabilityCacheMemoryRequest") }}Mi'
+              cpu: '{{repl (ConfigOption "highAvailabilityCacheCPURequest") }}m'
 
     ## Custom AT location
     - when: '{{repl not (empty (ConfigOption "defaultATLocationBigQuery")) }}'
