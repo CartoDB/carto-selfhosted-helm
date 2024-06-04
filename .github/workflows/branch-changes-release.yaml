@@ -51,13 +51,12 @@ jobs:
           replicated-api-token: ${{ secrets.REPLICATED_API_TOKEN }}
       
       - name: Comment on PR
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            github.issues.createComment({
+            github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Release changes have been published to the channel.'
+              body: 'Changes release to Replicated on channel ${{ steps.generate-channel-info.outputs.channel-name }}!'
             })
