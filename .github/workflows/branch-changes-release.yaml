@@ -1,0 +1,63 @@
+name: Release Branch Changes
+on:
+  pull_request:
+    types: [labeled, synchronize] # Trigger on label and push events in pull requests
+
+jobs:
+  release-changes:
+    if: |
+      github.event.label.name == 'release-changes' || (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'release-changes')
+      )
+    timeout-minutes: 3
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate channel name
+        id: generate-channel-info
+        shell: bash
+        run: |
+          GITHUB_BRANCH_NAME=${GITHUB_HEAD_REF}
+
+          # Cleaning refs/*/
+          # refs/whatever/main => main
+          export GITHUB_BRANCH_NAME=${GITHUB_BRANCH_NAME#refs/[a-z]*/}
+
+          # Normalize image tags characters
+          # my-branch/test-01 => my-branch_test-01
+          export NORMALIZED_GIT_BRANCH_NAME=${GITHUB_BRANCH_NAME//[^[:alnum:]]/_}
+
+          # To lowercase all characters
+          export NORMALIZED_GIT_BRANCH_NAME=${NORMALIZED_GIT_BRANCH_NAME,,}
+
+          # Set maximum 128 characters for image name
+          export NORMALIZED_GIT_BRANCH_NAME=${NORMALIZED_GIT_BRANCH_NAME:0:127}
+
+          # Share the variable for further steps
+          echo "channel-name=${NORMALIZED_GIT_BRANCH_NAME}" >> "$GITHUB_OUTPUT"
+          echo "version=$(yq .version -r chart/Chart.yaml)" >> "$GITHUB_OUTPUT"
+
+      - name: Publish changes into channel
+        uses: ./.github/actions/publish-release
+        with:
+          replicated-channel: ${{ steps.generate-channel-info.outputs.channel-name }}
+          version: ${{ steps.generate-channel-info.outputs.version }}
+          release-notes: "CARTO Self-Hosted dev version generated from branch ${{ steps.generate-channel-info.outputs.channel-name }}"
+          trigger-action: "dev"
+          gcloud-service-account: ${{ secrets.CARTO_ARTIFACTS_SERVICE_ACCOUNT }}
+          replicated-api-token: ${{ secrets.REPLICATED_API_TOKEN }}
+      
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Changes release to Replicated on channel ${{ steps.generate-channel-info.outputs.channel-name }}! Check the [Replicated Dashboard](https://vendor.replicated.com/apps/carto/channels) for more details.
+               If you need to test the changes, you can assign the channel to your customer and download the latest version from the Admin Console.`
+            })
