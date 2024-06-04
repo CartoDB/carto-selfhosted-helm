@@ -53,11 +53,11 @@ jobs:
           REPLICATED_APP: carto
           REPLICATED_API_TOKEN: ${{ secrets.REPLICATED_API_TOKEN }}
         run: |
+          set -eu
           CHANNEL_DELETE_REQUIRED="false"
           if replicated channel ls | grep -q ${{ steps.generate-channel-info.outputs.channel-name }}; then
             CHANNEL_DELETE_REQUIRED="true"
             CHANNEL_ID=$(replicated channel ls | grep ${{ steps.generate-channel-info.outputs.channel-name }} | awk '{print $1}')
-            echo "Channel ${{ steps.generate-channel-info.outputs.channel-name }} exists with ID $CHANNEL_ID"
             echo "channel-id=${CHANNEL_ID}" >> "$GITHUB_OUTPUT"
           fi
 
@@ -70,6 +70,7 @@ jobs:
           REPLICATED_APP: carto
           REPLICATED_API_TOKEN: ${{ secrets.REPLICATED_API_TOKEN }}
         run: |
+          set -eu
           echo "::group::Updating customers to Stable channel"
             CUSTOMERS=$(replicated customer ls | grep ${{ steps.generate-channel-info.outputs.channel-name }})
             while IFS= read -r customer; do
