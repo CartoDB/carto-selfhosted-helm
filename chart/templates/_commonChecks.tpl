@@ -8,6 +8,7 @@ Return common collectors for preflights and support-bundle
       namespace: {{ .Release.Namespace | quote }}
       timeout: 180s
       podSpec:
+        serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
         restartPolicy: Never
         securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
         initContainers:
@@ -49,6 +50,7 @@ Return common collectors for preflights and support-bundle
                   printf "%s" "$FILE_CONTENT" > "$FILE_PATH"
                 done
             env:
+              {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
                 value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | quote }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_PATH
@@ -58,6 +60,7 @@ Return common collectors for preflights and support-bundle
                 value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | quote }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
+              {{- end }}
               {{- end }}
               {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
               - name: POSTGRES_SSL_CA__FILE_CONTENT
@@ -108,6 +111,12 @@ Return common collectors for preflights and support-bundle
             securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
             resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
             env:
+              - name: PUBSUB_PROJECT_ID
+                value: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+              - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_TOPIC
+                value: projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus
+              - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_SUBSCRIPTION
+                value: projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-tenant-requirements-checker-sub
             {{- include "carto.replicated.tenantRequirementsChecker.customerValues" . | indent 12 }}
             {{- include "carto.replicated.tenantRequirementsChecker.customerSecrets" . | indent 12 }}
             volumeMounts:
@@ -185,6 +194,7 @@ Return common analyzers for preflights and support-bundle
       "WorkspaceDatabaseValidator" (list "Check_database_connection" "Check_database_encoding" "Check_user_has_right_permissions" "Check_database_version") 
       "ServiceAccountValidator" (list "Check_valid_service_account")
       "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket")
+      "PubSubValidator" (list "Check_publish_and_listen_to_topic")
   }}
   {{/*
   We just need to add the RedisValidator to the preflightsDict if the externalRedis is enabled
