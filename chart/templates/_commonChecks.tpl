@@ -8,6 +8,7 @@ Return common collectors for preflights and support-bundle
       namespace: {{ .Release.Namespace | quote }}
       timeout: 180s
       podSpec:
+        serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
         restartPolicy: Never
         securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
         initContainers:
@@ -49,6 +50,7 @@ Return common collectors for preflights and support-bundle
                   printf "%s" "$FILE_CONTENT" > "$FILE_PATH"
                 done
             env:
+              {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
                 value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | quote }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_PATH
@@ -58,6 +60,7 @@ Return common collectors for preflights and support-bundle
                 value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | quote }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
+              {{- end }}
               {{- end }}
               {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
               - name: POSTGRES_SSL_CA__FILE_CONTENT
