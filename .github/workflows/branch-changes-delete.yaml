@@ -53,12 +53,12 @@ jobs:
           REPLICATED_APP: carto
           REPLICATED_API_TOKEN: ${{ secrets.REPLICATED_API_TOKEN }}
         run: |
+          CHANNEL_DELETE_REQUIRED="false"
           if replicated channel ls | grep -q ${{ steps.generate-channel-info.outputs.channel-name }}; then
-            echo "channel-exists=true" >> "$GITHUB_OUTPUT"
-            echo "channel-id=$(replicated channel ls | grep ${{ steps.generate-channel-info.outputs.channel-name }} | awk '{print $1}')" >> "$GITHUB_OUTPUT"
-          else
-            echo "channel-exists=false" >> "$GITHUB_OUTPUT"
+            CHANNEL_DELETE_REQUIRED="true"
           fi
+
+          echo "channel-exists=${CHANNEL_DELETE_REQUIRED}" >> ${GITHUB_OUTPUT}
 
       - name: Delete channel
         if: steps.check-if-channel-exists.outputs.channel-exists == 'true'
@@ -67,4 +67,5 @@ jobs:
           REPLICATED_APP: carto
           REPLICATED_API_TOKEN: ${{ secrets.REPLICATED_API_TOKEN }}
         run: |
-          replicated channel rm ${{ steps.check-if-channel-exists.outputs.channel-id }}
+          CHANNEL_ID=$(replicated channel ls | grep ${{ steps.generate-channel-info.outputs.channel-name }} | awk '{print $1}')
+          replicated channel rm $CHANNEL_ID
