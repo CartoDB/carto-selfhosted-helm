@@ -1,0 +1,129 @@
+{{/* vim: set filetype=mustache: */}}
+CHART NAME: {{ .Chart.Name }}
+CHART VERSION: {{ .Chart.Version }}
+CHART URL: https://github.com/CartoDB/carto-selfhosted-helm/
+APP VERSION: {{ .Chart.AppVersion }}
+
+{{- if .Values.internalPostgresql.enabled }}
+
+ +-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
+ |N||O||T| |F||O||R| |P||R||O||D||U||C||T||I||O||N|
+ +-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
+
+WARNING: You are using a non-production installation, please follow the production mode guide in the documentation. You can find the link below
+
+{{- end }}
+
+** Please be patient while the chart is being deployed **
+
+** Did you check our recommendations to customize your app in production mode? **
+https://github.com/CartoDB/carto-selfhosted-helm/blob/{{- include "chart.version" . }}/customizations/README.md#production-ready
+
+{{- if .Values.diagnosticMode.enabled }}
+
+The chart has been deployed in diagnostic mode. All probes have been disabled and the command has been overwritten with:
+
+  command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 4 }}
+  args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 4 }}
+
+Get the list of pods by executing:
+
+  kubectl get pods --namespace {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+
+Access the pod you want to debug by executing
+
+  kubectl exec --namespace {{ .Release.Namespace }} -ti <NAME OF THE POD> -- sh
+
+{{- else }}
+
+{{- $baseUrl := (include "carto.baseUrl" .) -}}
+{{- $postgresqlSecretName := include "carto.postgresql.secretName" . -}}
+{{- $redisSecretName := include "carto.redis.secretName" . -}}
+{{- if not $baseUrl }}
+#################################################################################
+### ERROR: You did not provide a self-hosted URL in your 'helm install' call ###
+#################################################################################
+
+This deployment will be incomplete until you configure CARTO with a resolvable
+host. To configure CARTO with the URL of your service:
+
+1. Edit the config field `appConfigValues.selfHostedDomain`
+
+2. Complete your CARTO deployment by reading the `Update` section of the documentation.
+
+{{- else }}
+
+1. Get the CARTO URL by running:
+{{-  if .Values.router.ingress.enabled }}
+
+  NOTE: It may take a few minutes for the Ingress IP to be available.
+
+  export CARTO_HOST_IP=$(kubectl get ingress --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} -o jsonpath='{.status..ingress..ip}')
+
+  export CARTO_HOST_CNAME=$(kubectl get ingress --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} -o jsonpath='{.spec..host}')
+
+
+{{- else if eq .Values.router.service.type "ClusterIP" }}
+{{- $port := default 80 .Values.router.service.ports.http | toString }}
+{{- $port_https := default 443 .Values.router.service.ports.https | toString }}
+  {{/* TODO: We should check that HTTPS should be enabled ! */}}
+
+  export CARTO_HOST_IP=127.0.0.1
+  export CARTO_HTTP_PORT={{- $port }}
+  export CARTO_HTTPS_PORT={{- $port_https }}
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }} {{ $port_https }}:{{ $port_https }}
+
+  If the previous command fails regarding port permissions, try the next ones:
+  export CARTO_KUBECONFIG=$([[ ! -z "$KUBECONFIG" ]] && echo "$KUBECONFIG" || echo "$HOME/.kube/config")
+  sudo -E kubectl --kubeconfig=${CARTO_KUBECONFIG} port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }} {{ $port_https }}:{{ $port_https }}
+-+
+
+
+
+{{- else if eq .Values.router.service.type "NodePort" }}
+
+  export CARTO_HOST_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  export CARTO_HTTP_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[?(@.name=='http')].nodePort}" services {{ include "carto.router.fullname" . }})
+  export CARTO_HTTPS_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[?(@.name=='https')].nodePort}" services {{ include "carto.router.fullname" . }})
+
+  NOTE: It you plan to access from your browser to the NodePort, you need to upgrade
+        `appConfigValues.selfHostedDomain` from `{{ $baseUrl }}` to `{{ $baseUrl }}:${CARTO_HTTPS_PORT}`.
+        After that change, you must wait some minutes while the change is propagated.
+        {{/* TODO: Only show (or update it) when https is enabled in app side */}}
+        You also need to use the `https://{{ $baseUrl }}:${CARTO_HTTPS_PORT}` to access directly to it.
+
+{{- else if eq .Values.router.service.type "LoadBalancer" }}
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+        Watch the status with: 'kubectl get svc --namespace {{ .Release.Namespace }} -w {{ include "carto.router.fullname" . }}'
+
+  export CARTO_HOST_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress.*.ip}')
+
+  export CARTO_HOST_CNAME=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress.*.hostname}')
+
+{{- else }}
+
+  echo URL  : {{ $baseUrl }}
+
+{{- end }}
+
+2. Add the `CARTO_HOST_IP` (An 'A' record) or your `CARTO_HOST_CNAME` (A 'CNAME' record) to your DNS or to `/etc/hosts` pointing to the domain `{{ $baseUrl }}`. Remember that CARTO only works with a domain and accessing (from the final client) using https.
+
+{{- end  }}
+
+{{ include "carto.validateValues" . }}
+{{- end }}
+
+{{- if .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+
+3. You have enabled the workload identity feature.
+
+This is the kubernetes Service Account that you need to binding with your IAM SA in the following command or in the terraform example `https://github.com/CartoDB/carto-selfhosted/blob/{{- include "chart.version" . }}/examples/terraform/gcp/gke-autopilot.tf`
+
+KUBERNETES_SERVICE_ACCOUNT={{ template "carto.commonSA.serviceAccountName" . }}
+
+  gcloud iam service-accounts add-iam-policy-binding <IAM_SERVICE_ACCOUNT_EMAIL> \
+  --role roles/iam.workloadIdentityUser \
+  --member "serviceAccount:<PROJECT_ID>.svc.id.goog[{{ .Release.Namespace }}/{{ template "carto.commonSA.serviceAccountName" . }}]
+
+
+{{- end }}
