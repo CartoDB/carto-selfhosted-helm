@@ -9,6 +9,8 @@ jobs:
     timeout-minutes: 3
     runs-on: ubuntu-22.04
     steps:
+    - name: Checkout
+      uses: actions/checkout@v4
     - name: Generate channel name
       id: generate-channel-info
       shell: bash
