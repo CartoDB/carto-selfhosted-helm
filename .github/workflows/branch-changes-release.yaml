@@ -54,11 +54,10 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const comment = ```Changes release to Replicated on channel ${{ steps.generate-channel-info.outputs.channel-name }}! Check the [Replicated Dashboard](https://vendor.replicated.com/apps/carto/channels) for more details.
-               If you need to test the changes, you can assign the channel to your customer and download the latest version from the Admin Console.```
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: comment
+              body: `Changes release to Replicated on channel ${{ steps.generate-channel-info.outputs.channel-name }}! Check the [Replicated Dashboard](https://vendor.replicated.com/apps/carto/channels) for more details.
+               If you need to test the changes, you can assign the channel to your customer and download the latest version from the Admin Console.`
             })
