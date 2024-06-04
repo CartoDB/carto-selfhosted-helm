@@ -977,13 +977,6 @@ Return the proper Carto TLS secret key for the TLS key
 {{- end -}}
 
 {{/*
-Return the proper Carto Router TLS Secret name
-*/}}
-{{- define "carto.router.tlsCertificates.secretName" -}}
-{{- printf "%s-tls-%s" (include "common.names.fullname" .) (.Values.router.tlsCertificates.certificateValueBase64 | sha256sum | substr 0 5) -}}
-{{- end -}}
-
-{{/*
 Return the proper Carto Gateway custom TLS Secret name
 */}}
 {{- define "carto.gateway.tlsCertificates.customSSLCerts.secretName" -}}

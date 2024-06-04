@@ -831,6 +831,28 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `router.service.annotations`              | Additional custom annotations for router service                                  | `{}`        |
 | `router.service.extraPorts`               | Extra ports to expose in router service (normally used with the `sidecars` value) | `[]`        |
 
+### router ServiceAccount configuration
+
+| Name                                                 | Description                                                                                                                      | Value                    |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `router.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created                                                                             | `true`                   |
+| `router.serviceAccount.name`                         | The name of the ServiceAccount to use.                                                                                           | `""`                     |
+| `router.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment                                                                                    | `false`                  |
+| `ingress.enabled`                                    | Enable ingress controller resource                                                                                               | `false`                  |
+| `ingress.pathType`                                   | Ingress Path type                                                                                                                | `ImplementationSpecific` |
+| `ingress.apiVersion`                                 | Override API Version (automatically detected if not set)                                                                         | `""`                     |
+| `ingress.ingressClassName`                           | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)                                                    | `""`                     |
+| `ingress.path`                                       | The Path to CARTO. You may need to set this to '/*' in order to use this                                                         | `/*`                     |
+| `ingress.annotations`                                | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. | `{}`                     |
+| `ingress.tls`                                        | Enable TLS configuration for the hostname defined at ingress.hostname parameter                                                  | `false`                  |
+| `ingress.tlsCertificates.existingSecret.name`        | existing secret name ref                                                                                                         | `""`                     |
+| `ingress.tlsCertificates.existingSecret.certKey`     | secret certificate ref                                                                                                           | `""`                     |
+| `ingress.tlsCertificates.existingSecret.keyKey`      | secret key ref                                                                                                                   | `""`                     |
+| `ingress.extraHosts`                                 | The list of additional hostnames to be covered with this ingress record.                                                         | `[]`                     |
+| `ingress.extraPaths`                                 | Any additional arbitrary paths that may need to be added to the ingress under the main host.                                     | `[]`                     |
+| `ingress.extraTls`                                   | The tls configuration for additional hostnames to be covered with this ingress record.                                           | `[]`                     |
+| `ingress.extraRules`                                 | Additional rules to be covered with this ingress record                                                                          | `[]`                     |
+
 ### httpCache Deployment Parameters
 
 | Name                                                          | Description                                                                                                                | Value                           |
@@ -1586,7 +1608,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `gateway.tlsCertificates.customSSLCerts.enabled`                  | enable if customer provides their own certificates.                        | `false`                                                                                   |
 | `gateway.tlsCertificates.customSSLCerts.certificateValueBase64`   | custom certificate in base64.                                              | `""`                                                                                      |
 | `gateway.tlsCertificates.customSSLCerts.privateKeyValueBase64`    | custom private key in base64.                                              | `""`                                                                                      |
-| `gateway.tlsCertificates.managedCerts.enabled`                    | enable if managed certs creation is required.                              | `false`                                                                                   |
+| `gateway.tlsCertificates.managedCerts.enabled`                    | enable to use a managed cert                                               | `false`                                                                                   |
+| `gateway.tlsCertificates.managedCerts.name`                       | managed certificate name                                                   | `""`                                                                                      |
 | `gateway.apiVersion`                                              | Kubernetes Gateway API Version.                                            | `""`                                                                                      |
 | `gateway.gatewayClassName`                                        | GatewayClass that will be be used to implement the gateway api.            | `""`                                                                                      |
 | `gateway.path`                                                    | The Path to CARTO                                                          | `/`                                                                                       |
@@ -1596,6 +1619,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `gateway.listeners.http.name`                                     | HTTP listener name                                                         | `http`                                                                                    |
 | `gateway.listeners.http.port`                                     | HTTP listener port                                                         | `80`                                                                                      |
 | `gateway.address.type`                                            | AddressType defines how a network address is represented as a text string. | `NamedAddress`                                                                            |
+| `gateway.staticIP.enabled`                                        | Assign a Static IP to the Gateway-api                                      | `false`                                                                                   |
+| `gateway.staticIP.value`                                          | Static IP name                                                             | `""`                                                                                      |
 | `gateway.annotations`                                             | Additional annotations for the gateway resource.                           | `{}`                                                                                      |
 
 
