@@ -19,7 +19,7 @@ jobs:
         id: generate-channel-info
         shell: bash
         run: |
-          GITHUB_BRANCH_NAME=${GITHUB_REF}
+          GITHUB_BRANCH_NAME=${GITHUB_HEAD_REF}
 
           # Cleaning refs/*/
           # refs/whatever/main => main
@@ -38,7 +38,7 @@ jobs:
           # Share the variable for further steps
           echo "channel-name=${NORMALIZED_GIT_BRANCH_NAME}" >> "$GITHUB_OUTPUT"
           echo "version=$(yq .version -r chart/Chart.yaml)" >> "$GITHUB_OUTPUT"
-      - name: Publish release
+      - name: Publish changes into channel
         uses: ./.github/actions/publish-release
         with:
           replicated-channel: ${{ steps.generate-channel-info.outputs.channel-name }}
