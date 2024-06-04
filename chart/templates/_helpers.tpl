@@ -943,8 +943,8 @@ Return the absolute path where the Google Secret will be mounted
 Return the proper Carto TLS Secret name
 TODO: We have to regenerate the secret if the private key changes
 */}}
-{{- define "carto.tlsCerts.secretName" -}}
-{{- include "carto.tlsCerts.duplicatedValueValidator" . -}}
+{{- define "carto.router.tlsCertificates.secretName" -}}
+{{- include "carto.router.tlsCertificates.duplicatedValueValidator" . -}}
 {{- if .Values.router.tlsCertificates.existingSecret.name -}}
 {{- .Values.router.tlsCertificates.existingSecret.name -}}
 {{- else if (empty .Values.router.tlsCertificates.certificateValueBase64) -}}
