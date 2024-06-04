@@ -4,8 +4,6 @@ on:
     types:
       - closed
       - unlabeled
-          label: release-changes
-          action: deleted
 
 jobs:
   delete-channel:
@@ -14,6 +12,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install Replicated CLI
+        shell: bash
+        run: |
+          curl -s https://api.github.com/repos/replicatedhq/replicated/releases/latest \
+          | grep "browser_download_url.*linux_amd64.tar.gz" \
+          | cut -d : -f 2,3 \
+          | tr -d \" \
+          | wget -O replicated.tar.gz -qi -
+          tar xf replicated.tar.gz replicated && rm replicated.tar.gz
+          mv replicated /usr/local/bin/replicated
+
       - name: Generate channel name
         id: generate-channel-info
         shell: bash
@@ -37,3 +47,24 @@ jobs:
           # Share the variable for further steps
           echo "channel-name=${NORMALIZED_GIT_BRANCH_NAME}" >> "$GITHUB_OUTPUT"
           echo "version=$(yq .version -r chart/Chart.yaml)" >> "$GITHUB_OUTPUT"
+      
+      - name: Check if channel assigned to PR exists
+        shell: bash
+        env:
+          REPLICATED_APP: carto
+          REPLICATED_API_TOKEN: ${{ inputs.replicated-api-token }}
+        run: |
+          if replicated channel ls | grep -q ${{ steps.generate-channel-info.outputs.channel-name }}; then
+            echo "::set-output name=channel-exists::true"
+          else
+            echo "::set-output name=channel-exists::false"
+          fi
+
+      - name: Delete channel
+        if: steps.check-if-channel-exists.outputs.channel-exists == 'true'
+        shell: bash
+        env:
+          REPLICATED_APP: carto
+          REPLICATED_API_TOKEN: ${{ inputs.replicated-api-token }}
+        run: |
+          replicated channel delete ${{ steps.generate-channel-info.outputs.channel-name }}
