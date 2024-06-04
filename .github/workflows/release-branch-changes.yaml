@@ -1,39 +1,43 @@
 name: Release Branch Changes
 on:
   pull_request:
-    types: [ labeled ]
+    types: [labeled, synchronize] # Trigger on label and push events in pull requests
 
 jobs:
   release-changes:
-    if: ${{ github.event.label.name == 'release-changes' }}
+    if: |
+      github.event.label.name == 'release-changes' || (
+        github.event_name == 'pull_request' &&
+        contains(github.event.pull_request.labels.*.name, 'release-changes')
+      )
     timeout-minutes: 3
     runs-on: ubuntu-22.04
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Generate channel name
-      id: generate-channel-info
-      shell: bash
-      run: |
-        GITHUB_BRANCH_NAME=${GITHUB_REF}
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Generate channel name
+        id: generate-channel-info
+        shell: bash
+        run: |
+          GITHUB_BRANCH_NAME=${GITHUB_REF}
 
-        # Cleaning refs/*/
-        # refs/whatever/main => main
-        export GITHUB_BRANCH_NAME=${GITHUB_BRANCH_NAME#refs/[a-z]*/}
+          # Cleaning refs/*/
+          # refs/whatever/main => main
+          export GITHUB_BRANCH_NAME=${GITHUB_BRANCH_NAME#refs/[a-z]*/}
 
-        # Normalize image tags characters
-        # my-branch/test-01 => my-branch_test-01
-        export NORMALIZED_GIT_BRANCH_NAME=${GITHUB_BRANCH_NAME//[^[:alnum:]]/_}
+          # Normalize image tags characters
+          # my-branch/test-01 => my-branch_test-01
+          export NORMALIZED_GIT_BRANCH_NAME=${GITHUB_BRANCH_NAME//[^[:alnum:]]/_}
 
-        # To lowercase all characters
-        export NORMALIZED_GIT_BRANCH_NAME=${NORMALIZED_GIT_BRANCH_NAME,,}
+          # To lowercase all characters
+          export NORMALIZED_GIT_BRANCH_NAME=${NORMALIZED_GIT_BRANCH_NAME,,}
 
-        # Set maximum 128 characters for image name
-        export NORMALIZED_GIT_BRANCH_NAME=${NORMALIZED_GIT_BRANCH_NAME:0:127}
+          # Set maximum 128 characters for image name
+          export NORMALIZED_GIT_BRANCH_NAME=${NORMALIZED_GIT_BRANCH_NAME:0:127}
 
-        # Share the variable for further steps
-        echo "channel-name=${NORMALIZED_GIT_BRANCH_NAME}" >> "$GITHUB_OUTPUT"
-        echo "version=$(yq .version -r chart/Chart.yaml)" >> "$GITHUB_OUTPUT"
+          # Share the variable for further steps
+          echo "channel-name=${NORMALIZED_GIT_BRANCH_NAME}" >> "$GITHUB_OUTPUT"
+          echo "version=$(yq .version -r chart/Chart.yaml)" >> "$GITHUB_OUTPUT"
 
     # - name: Publish release
     #     uses: ./.github/actions/publish-release
