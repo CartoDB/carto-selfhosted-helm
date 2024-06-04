@@ -119,6 +119,7 @@ spec:
               value: "disable"
               {{- end }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+              "CARTO_SELFHOSTED_INSTANCE_ID"
               "ENCRYPTION_SECRET_KEY"
               "IMPORT_AWS_ACCESS_KEY_ID"
               "IMPORT_AWS_SECRET_ACCESS_KEY"
@@ -134,6 +135,7 @@ spec:
             - configMapRef:
                 name: {{ template "carto.workspaceApi.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+              "CARTO_SELFHOSTED_INSTANCE_ID"
               "ENCRYPTION_SECRET_KEY"
               "IMPORT_AWS_ACCESS_KEY_ID"
               "IMPORT_AWS_SECRET_ACCESS_KEY"
