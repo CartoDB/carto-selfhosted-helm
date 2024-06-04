@@ -1,12 +1,10 @@
 name: Delete Branch Changes
 on:
   pull_request:
-    types:
-      - closed
-      - unlabeled
+    types: [closed, unlabeled] # Trigger on close and unlabel events in pull requests
 
 jobs:
-  delete-channel:
+  delete-changes:
     timeout-minutes: 3
     runs-on: ubuntu-22.04
     steps:
@@ -47,8 +45,9 @@ jobs:
           # Share the variable for further steps
           echo "channel-name=${NORMALIZED_GIT_BRANCH_NAME}" >> "$GITHUB_OUTPUT"
           echo "version=$(yq .version -r chart/Chart.yaml)" >> "$GITHUB_OUTPUT"
-      
+
       - name: Check if channel assigned to PR exists
+        id: check-if-channel-exists
         shell: bash
         env:
           REPLICATED_APP: carto
@@ -65,6 +64,6 @@ jobs:
         shell: bash
         env:
           REPLICATED_APP: carto
-          REPLICATED_API_TOKEN: ${{ inputs.replicated-api-token }}
+          REPLICATED_API_TOKEN: ${{ secrets.REPLICATED_API_TOKEN }}
         run: |
           replicated channel delete ${{ steps.generate-channel-info.outputs.channel-name }}
