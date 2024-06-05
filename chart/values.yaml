@@ -917,6 +917,7 @@ importApi:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -1180,6 +1181,7 @@ importWorker:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -1457,6 +1459,7 @@ ldsApi:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -1780,6 +1783,7 @@ mapsApi:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -2078,6 +2082,7 @@ sqlWorker:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -2374,6 +2379,7 @@ router:
     runAsGroup: 101
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -2786,6 +2792,7 @@ httpCache:
     runAsGroup: 101
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -3113,6 +3120,7 @@ notifier:
     runAsGroup: 101
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -3440,6 +3448,7 @@ cdnInvalidatorSub:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -3765,6 +3774,7 @@ workspaceApi:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -4029,6 +4039,7 @@ workspaceSubscriber:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -4300,6 +4311,7 @@ workspaceWww:
     runAsGroup: 101
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -4553,6 +4565,7 @@ workspaceMigrations:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -4682,6 +4695,7 @@ internalRedis:
       runAsGroup: 1000
       runAsNonRoot: false
       allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
       capabilities:
         drop:
           - all
@@ -4718,6 +4732,7 @@ internalRedis:
       runAsGroup: 1000
       runAsNonRoot: false
       allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
       capabilities:
         drop:
           - all
@@ -4982,6 +4997,7 @@ routerMetrics:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
