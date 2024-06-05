@@ -147,6 +147,9 @@ spec:
         workspaceWww:
           image:
             tag: "feature_sc_415854_generate_config_yaml_file_in_a_subdirectory"
+        router:
+          image:
+            tag: "update_sh_router_nginx_to_be_able_to_run_with_read_only_fs_policy"
 
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
