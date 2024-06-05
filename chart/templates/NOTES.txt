@@ -62,7 +62,7 @@ host. To configure CARTO with the URL of your service:
 
   export CARTO_HOST_CNAME=$(kubectl get ingress --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} -o jsonpath='{.spec..host}')
 
-{{- else if eq .Values.gateway.enabled }}
+{{- else if .Values.gateway.enabled }}
 
   NOTE: It may take a few minutes for the Gateway IP to be available.
 
