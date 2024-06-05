@@ -155,6 +155,8 @@ spec:
               mountPath: /www/data/config
             - name: tmp
               mountPath: /tmp
+            - name: nginx-shared-snippets
+              mountPath: /etc/nginx/conf.d/shared-snippets
           {{- if .Values.workspaceWww.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -165,6 +167,8 @@ spec:
         - name: config
           emptyDir: {}
         - name: tmp
+          emptyDir: {}
+        - name: nginx-shared-snippets
           emptyDir: {}
       {{- if .Values.workspaceWww.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraVolumes "context" $) | nindent 8 }}
