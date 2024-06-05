@@ -572,6 +572,7 @@ accountsWww:
   ## @param accountsWww.containerSecurityContext.runAsGroup Set accounts-www containers' Security Context runAsGroup
   ## @param accountsWww.containerSecurityContext.runAsNonRoot Set accounts-www containers' Security Context runAsNonRoot
   ## @param accountsWww.containerSecurityContext.allowPrivilegeEscalation Set accounts-www containers' Security Context allowPrivilegeEscalation
+  ## @param accountsWww.containerSecurityContext.readOnlyRootFilesystem Set accounts-www containers' Security Context readOnlyRootFilesystem
   ## @param accountsWww.containerSecurityContext.capabilities.drop removes accounts-www containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -909,6 +910,7 @@ importApi:
   ## @param importApi.containerSecurityContext.runAsGroup Set import-api containers' Security Context runAsGroup
   ## @param importApi.containerSecurityContext.runAsNonRoot Set import-api containers' Security Context runAsNonRoot
   ## @param importApi.containerSecurityContext.allowPrivilegeEscalation Set import-api containers' Security Context allowPrivilegeEscalation
+  ## @param importApi.containerSecurityContext.readOnlyRootFilesystem Set import-api containers' Security Context readOnlyRootFilesystem
   ## @param importApi.containerSecurityContext.capabilities.drop removes import-api containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -1173,6 +1175,7 @@ importWorker:
   ## @param importWorker.containerSecurityContext.runAsGroup Set import-worker containers' Security Context runAsGroup
   ## @param importWorker.containerSecurityContext.runAsNonRoot Set import-worker containers' Security Context runAsNonRoot
   ## @param importWorker.containerSecurityContext.allowPrivilegeEscalation Set import-worker containers' Security Context allowPrivilegeEscalation
+  ## @param importWorker.containerSecurityContext.readOnlyRootFilesystem Set import-worker containers' Security Context readOnlyRootFilesystem
   ## @param importWorker.containerSecurityContext.capabilities.drop removes import-worker containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -1451,6 +1454,7 @@ ldsApi:
   ## @param ldsApi.containerSecurityContext.runAsGroup Set lds-api containers' Security Context runAsGroup
   ## @param ldsApi.containerSecurityContext.runAsNonRoot Set lds-api containers' Security Context runAsNonRoot
   ## @param ldsApi.containerSecurityContext.allowPrivilegeEscalation Set lds-api containers' Security Context allowPrivilegeEscalation
+  ## @param ldsApi.containerSecurityContext.readOnlyRootFilesystem Set lds-api containers' Security Context readOnlyRootFilesystem
   ## @param ldsApi.containerSecurityContext.capabilities.drop removes lds-api containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -1775,6 +1779,7 @@ mapsApi:
   ## @param mapsApi.containerSecurityContext.runAsGroup Set maps-api containers' Security Context runAsGroup
   ## @param mapsApi.containerSecurityContext.runAsNonRoot Set maps-api containers' Security Context runAsNonRoot
   ## @param mapsApi.containerSecurityContext.allowPrivilegeEscalation Set maps-api containers' Security Context allowPrivilegeEscalation
+  ## @param mapsApi.containerSecurityContext.readOnlyRootFilesystem Set maps-api containers' Security Context readOnlyRootFilesystem
   ## @param mapsApi.containerSecurityContext.capabilities.drop removes maps-api containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -2074,6 +2079,7 @@ sqlWorker:
   ## @param sqlWorker.containerSecurityContext.runAsGroup Set sql-worker containers' Security Context runAsGroup
   ## @param sqlWorker.containerSecurityContext.runAsNonRoot Set sql-worker containers' Security Context runAsNonRoot
   ## @param sqlWorker.containerSecurityContext.allowPrivilegeEscalation Set sql-worker containers' Security Context allowPrivilegeEscalation
+  ## @param sqlWorker.containerSecurityContext.readOnlyRootFilesystem Set sql-worker containers' Security Context readOnlyRootFilesystem
   ## @param sqlWorker.containerSecurityContext.capabilities.drop removes sql-worker containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -2371,6 +2377,7 @@ router:
   ## @param router.containerSecurityContext.runAsGroup Set router containers' Security Context runAsGroup
   ## @param router.containerSecurityContext.runAsNonRoot Set router containers' Security Context runAsNonRoot
   ## @param router.containerSecurityContext.allowPrivilegeEscalation Set router containers' Security Context allowPrivilegeEscalation
+  ## @param router.containerSecurityContext.readOnlyRootFilesystem Set router containers' Security Context readOnlyRootFilesystem
   ## @param router.containerSecurityContext.capabilities.drop removes router containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -2784,6 +2791,7 @@ httpCache:
   ## @param httpCache.containerSecurityContext.runAsGroup Set http-cache containers' Security Context runAsGroup
   ## @param httpCache.containerSecurityContext.runAsNonRoot Set http-cache containers' Security Context runAsNonRoot
   ## @param httpCache.containerSecurityContext.allowPrivilegeEscalation Set http-cache containers' Security Context allowPrivilegeEscalation
+  ## @param httpCache.containerSecurityContext.readOnlyRootFilesystem Set http-cache containers' Security Context readOnlyRootFilesystem
   ## @param httpCache.containerSecurityContext.capabilities.drop removes http-cache containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -3112,6 +3120,7 @@ notifier:
   ## @param notifier.containerSecurityContext.runAsGroup Set notifier containers' Security Context runAsGroup
   ## @param notifier.containerSecurityContext.runAsNonRoot Set notifier containers' Security Context runAsNonRoot
   ## @param notifier.containerSecurityContext.allowPrivilegeEscalation Set notifier containers' Security Context allowPrivilegeEscalation
+  ## @param notifier.containerSecurityContext.readOnlyRootFilesystem Set notifier containers' Security Context readOnlyRootFilesystem
   ## @param notifier.containerSecurityContext.capabilities.drop removes notifier containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -3440,6 +3449,7 @@ cdnInvalidatorSub:
   ## @param cdnInvalidatorSub.containerSecurityContext.runAsGroup Set cdnInvalidatorSub containers' Security Context runAsGroup
   ## @param cdnInvalidatorSub.containerSecurityContext.runAsNonRoot Set cdnInvalidatorSub containers' Security Context runAsNonRoot
   ## @param cdnInvalidatorSub.containerSecurityContext.allowPrivilegeEscalation Set cdnInvalidatorSub containers' Security Context allowPrivilegeEscalation
+  ## @param cdnInvalidatorSub.containerSecurityContext.readOnlyRootFilesystem Set cdnInvalidatorSub containers' Security Context readOnlyRootFilesystem
   ## @param cdnInvalidatorSub.containerSecurityContext.capabilities.drop removes cdnInvalidatorSub containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -3766,6 +3776,7 @@ workspaceApi:
   ## @param workspaceApi.containerSecurityContext.runAsGroup Set workspace-api containers' Security Context runAsGroup
   ## @param workspaceApi.containerSecurityContext.runAsNonRoot Set workspace-api containers' Security Context runAsNonRoot
   ## @param workspaceApi.containerSecurityContext.allowPrivilegeEscalation Set workspace-api containers' Security Context allowPrivilegeEscalation
+  ## @param workspaceApi.containerSecurityContext.readOnlyRootFilesystem Set workspace-api containers' Security Context readOnlyRootFilesystem
   ## @param workspaceApi.containerSecurityContext.capabilities.drop removes workspace-api containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -4031,6 +4042,7 @@ workspaceSubscriber:
   ## @param workspaceSubscriber.containerSecurityContext.runAsGroup Set workspace-subscriber containers' Security Context runAsGroup
   ## @param workspaceSubscriber.containerSecurityContext.runAsNonRoot Set workspace-subscriber containers' Security Context runAsNonRoot
   ## @param workspaceSubscriber.containerSecurityContext.allowPrivilegeEscalation Set workspace-subscriber containers' Security Context allowPrivilegeEscalation
+  ## @param workspaceSubscriber.containerSecurityContext.readOnlyRootFilesystem Set workspace-subscriber containers' Security Context readOnlyRootFilesystem
   ## @param workspaceSubscriber.containerSecurityContext.capabilities.drop removes workspace-subscriber containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -4303,6 +4315,7 @@ workspaceWww:
   ## @param workspaceWww.containerSecurityContext.runAsGroup Set workspace-www containers' Security Context runAsGroup
   ## @param workspaceWww.containerSecurityContext.runAsNonRoot Set workspace-www containers' Security Context runAsNonRoot
   ## @param workspaceWww.containerSecurityContext.allowPrivilegeEscalation Set workspace-www containers' Security Context allowPrivilegeEscalation
+  ## @param workspaceWww.containerSecurityContext.readOnlyRootFilesystem Set workspace-www containers' Security Context readOnlyRootFilesystem
   ## @param workspaceWww.containerSecurityContext.capabilities.drop removes workspace-www containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -4554,6 +4567,7 @@ workspaceMigrations:
   ## @param workspaceMigrations.containerSecurityContext.runAsGroup Set init container's Security Context runAsGroup
   ## @param workspaceMigrations.containerSecurityContext.runAsNonRoot Force the init container to run as non root
   ## @param workspaceMigrations.containerSecurityContext.allowPrivilegeEscalation Set init container's Security Context allowPrivilegeEscalation
+  ## @param workspaceMigrations.containerSecurityContext.readOnlyRootFilesystem Set init containers' Security Context readOnlyRootFilesystem
   ## @param workspaceMigrations.containerSecurityContext.capabilities.drop removes workspace-migrations containers' Security Contexcapabilities
   ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
   ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
@@ -4618,6 +4632,7 @@ tenantRequirementsChecker:
   ## @param tenantRequirementsChecker.containerSecurityContext.runAsGroup Set init tenant-requirements-checker container's Security Context runAsGroup
   ## @param tenantRequirementsChecker.containerSecurityContext.runAsNonRoot Force the init tenant-requirements-checker container to run as non root
   ## @param tenantRequirementsChecker.containerSecurityContext.allowPrivilegeEscalation Set init tenant-requirements-checker container's Security Context allowPrivilegeEscalation
+  ## @param tenantRequirementsChecker.containerSecurityContext.readOnlyRootFilesystem Set init tenant-requirements-checker containers' Security Context readOnlyRootFilesystem
   ## @param tenantRequirementsChecker.containerSecurityContext.capabilities.drop removes tenant-requirements-checker containers' Security Contexcapabilities
   ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
   ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
@@ -4684,11 +4699,12 @@ internalRedis:
       supplementalGroups: [2345]
     ## Configure Container Security Context
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-    ## @param internalRedis.master.containerSecurityContext.runAsUser Set Upgrade Check pre-hook containers' Security Context runAsUser
-    ## @param internalRedis.master.containerSecurityContext.runAsGroup Set Upgrade Check pre-hook containers' Security Context runAsGroup
-    ## @param internalRedis.master.containerSecurityContext.runAsNonRoot Set Upgrade Check pre-hook containers' Security Context runAsNonRoot
-    ## @param internalRedis.master.containerSecurityContext.allowPrivilegeEscalation Set Upgrade Check pre-hook containers' Security Context allowPrivilegeEscalation
-    ## @param internalRedis.master.containerSecurityContext.capabilities.drop removes Upgrade Check pre-hook containers' Security Context capabilities
+    ## @param internalRedis.master.containerSecurityContext.runAsUser Set Redis containers' Security Context runAsUser
+    ## @param internalRedis.master.containerSecurityContext.runAsGroup Set Redis containers' Security Context runAsGroup
+    ## @param internalRedis.master.containerSecurityContext.runAsNonRoot Set Redis containers' Security Context runAsNonRoot
+    ## @param internalRedis.master.containerSecurityContext.allowPrivilegeEscalation Set Redis containers' Security Context allowPrivilegeEscalation
+    ## @param internalRedis.master.containerSecurityContext.readOnlyRootFilesystem Set Redis containers' Security Context readOnlyRootFilesystem
+    ## @param internalRedis.master.containerSecurityContext.capabilities.drop removes Redis containers' Security Context capabilities
     ##
     containerSecurityContext:
       runAsUser: 1000
@@ -4721,11 +4737,12 @@ internalRedis:
       supplementalGroups: [2345]
     ## Configure Container Security Context
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-    ## @param internalRedis.replica.containerSecurityContext.runAsUser Set Upgrade Check pre-hook containers' Security Context runAsUser
-    ## @param internalRedis.replica.containerSecurityContext.runAsGroup Set Upgrade Check pre-hook containers' Security Context runAsGroup
-    ## @param internalRedis.replica.containerSecurityContext.runAsNonRoot Set Upgrade Check pre-hook containers' Security Context runAsNonRoot
-    ## @param internalRedis.replica.containerSecurityContext.allowPrivilegeEscalation Set Upgrade Check pre-hook containers' Security Context allowPrivilegeEscalation
-    ## @param internalRedis.replica.containerSecurityContext.capabilities.drop removes Upgrade Check pre-hook containers' Security Context capabilities
+    ## @param internalRedis.replica.containerSecurityContext.runAsUser Set Redis replica containers' Security Context runAsUser
+    ## @param internalRedis.replica.containerSecurityContext.runAsGroup Set Redis replica containers' Security Context runAsGroup
+    ## @param internalRedis.replica.containerSecurityContext.runAsNonRoot Set Redis replica containers' Security Context runAsNonRoot
+    ## @param internalRedis.replica.containerSecurityContext.allowPrivilegeEscalation Set Redis replica containers' Security Context allowPrivilegeEscalation
+    ## @param internalRedis.replica.containerSecurityContext.readOnlyRootFilesystem Set Redis containers' Security Context readOnlyRootFilesystem
+    ## @param internalRedis.replica.containerSecurityContext.capabilities.drop removes Redis replica containers' Security Context capabilities
     ##
     containerSecurityContext:
       runAsUser: 1000
@@ -4915,6 +4932,7 @@ upgradeCheck:
   ## @param upgradeCheck.containerSecurityContext.runAsGroup Set Upgrade Check pre-hook containers' Security Context runAsGroup
   ## @param upgradeCheck.containerSecurityContext.runAsNonRoot Set Upgrade Check pre-hook containers' Security Context runAsNonRoot
   ## @param upgradeCheck.containerSecurityContext.allowPrivilegeEscalation Set Upgrade Check pre-hook containers' Security Context allowPrivilegeEscalation
+  ## @param upgradeCheck.containerSecurityContext.readOnlyRootFilesystem Set Upgrade Check pre-hook containers' Security Context readOnlyRootFilesystem
   ## @param upgradeCheck.containerSecurityContext.capabilities.drop removes Upgrade Check pre-hook containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -4989,6 +5007,7 @@ routerMetrics:
   ## @param routerMetrics.containerSecurityContext.runAsGroup Set router-metrics containers' Security Context runAsGroup
   ## @param routerMetrics.containerSecurityContext.runAsNonRoot Set router-metrics containers' Security Context runAsNonRoot
   ## @param routerMetrics.containerSecurityContext.allowPrivilegeEscalation Set router-metrics containers' Security Context allowPrivilegeEscalation
+  ## @param routerMetrics.containerSecurityContext.readOnlyRootFilesystem Set router-metrics containers' Security Context readOnlyRootFilesystem
   ## @param routerMetrics.containerSecurityContext.capabilities.drop removes router-metrics containers' Security Context capabilities
   ##
   containerSecurityContext:

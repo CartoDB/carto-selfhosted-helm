@@ -144,6 +144,9 @@ spec:
         accountsWww:
           image:
             tag: "feature_sc_415853_generate_config_yaml_file_in_a_subdirectory"
+        workspaceWww:
+          image:
+            tag: "feature_sc_415854_generate_config_yaml_file_in_a_subdirectory"
 
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
