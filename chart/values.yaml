@@ -4616,6 +4616,7 @@ tenantRequirementsChecker:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -4907,6 +4908,7 @@ upgradeCheck:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
