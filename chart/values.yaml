@@ -580,6 +580,7 @@ accountsWww:
     runAsGroup: 101
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
