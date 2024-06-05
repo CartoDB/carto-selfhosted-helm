@@ -95,7 +95,7 @@ spec:
             - -ec
             - |
               ROUTER_RESOLVER="$(grep nameserver /etc/resolv.conf  | awk '{print $2}')"
-              /docker-entrypoint.sh nginx -g "daemon off;"
+              /docker-entrypoint.sh nginx -c /etc/nginx/config/nginx.conf -g "daemon off;"
           {{- end }}
           env:
             {{- if .Values.router.extraEnvVars }}
@@ -147,6 +147,12 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.router.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: confd
+              mountPath: /etc/nginx/conf.d
+            - name: tmp
+              mountPath: /tmp
+            - name: config
+              mountPath: /etc/nginx/config
             {{- if .Values.tlsCerts.httpsEnabled }}
             - name: tls-secret
               mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
@@ -240,6 +246,12 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.router.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
+        - name: confd
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        - name: config
+          emptyDir: {}
         {{- if .Values.tlsCerts.httpsEnabled }}
         - name: tls-secret
           secret:
