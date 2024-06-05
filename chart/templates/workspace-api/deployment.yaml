@@ -122,6 +122,7 @@ spec:
               "ENCRYPTION_SECRET_KEY"
               "IMPORT_AWS_ACCESS_KEY_ID"
               "IMPORT_AWS_SECRET_ACCESS_KEY"
+              "LAUNCHDARKLY_SDK_KEY"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"
               "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_ACCESSKEYID"
@@ -137,6 +138,7 @@ spec:
               "ENCRYPTION_SECRET_KEY"
               "IMPORT_AWS_ACCESS_KEY_ID"
               "IMPORT_AWS_SECRET_ACCESS_KEY"
+              "LAUNCHDARKLY_SDK_KEY"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"
               "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_ACCESSKEYID"
@@ -190,6 +192,7 @@ spec:
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "BIGQUERY_OAUTH2_CLIENT_SECRET"
               "ENCRYPTION_SECRET_KEY"
+              "LAUNCHDARKLY_SDK_KEY"
               "WORKSPACE_JWT_SECRET"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"
               "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
@@ -207,6 +210,7 @@ spec:
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "BIGQUERY_OAUTH2_CLIENT_SECRET"
               "ENCRYPTION_SECRET_KEY"
+              "LAUNCHDARKLY_SDK_KEY"
               "WORKSPACE_JWT_SECRET"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"
               "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
