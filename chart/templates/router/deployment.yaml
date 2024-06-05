@@ -1,4 +1,4 @@
-{{- if .Values.router.ingress.enabled }}
+{{- if (include "carto.baseUrl" .) }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
