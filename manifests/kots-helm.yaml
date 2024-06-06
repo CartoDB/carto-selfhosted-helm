@@ -569,3 +569,11 @@ spec:
         tenantRequirementsChecker: *customSecurityContext
         internalPostgresql: *customSecurityContext
         upgradeCheck: *customSecurityContext
+
+    # Local Registry
+    - when: '{{repl HasLocalRegistry }}'
+      recursiveMerge: true
+      values:
+        global:
+          imageRegistry: '{{repl LocalRegistryAddress }}'
+          imagePullSecrets: '{{repl LocalRegistryImagePullSecret }}'
