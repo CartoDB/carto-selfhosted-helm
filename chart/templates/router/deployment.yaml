@@ -236,8 +236,8 @@ spec:
           {{- end }}
           volumeMounts:
             - name: logstash-data
-              subPath: config
-              mountPath: /usr/share/logstash/temp
+              subPath: pipeline
+              mountPath: /usr/share/logstash/pipeline
             - name: logstash-data
               subPath: data
               mountPath: /usr/share/logstash/data
