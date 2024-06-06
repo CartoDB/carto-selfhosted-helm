@@ -153,7 +153,7 @@ spec:
         routerMetrics:
           enabled: true
           image:
-            tag: "update_sh_router_nginx_to_be_able_to_run_with_read_only_fs_policy"
+            tag: "feature_sc_415871_try_to_make_router_metrics_container_work"
         importWorker:
           containerSecurityContext:
             readOnlyRootFilesystem: true
