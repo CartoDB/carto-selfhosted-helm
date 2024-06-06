@@ -235,8 +235,12 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: logstash-config
+            - name: logstash-data
+              subPath: config
               mountPath: /usr/share/logstash/temp
+            - name: logstash-data
+              subPath: data
+              mountPath: /usr/share/logstash/data
             - name: tmp
               mountPath: /tmp
               subPath: router-metrics-tmp-dir
@@ -255,7 +259,7 @@ spec:
           emptyDir: {}
         - name: tmp
           emptyDir: {}
-        - name: logstash-config
+        - name: logstash-data
           emptyDir: {}
         {{- if .Values.tlsCerts.httpsEnabled }}
         - name: tls-secret
