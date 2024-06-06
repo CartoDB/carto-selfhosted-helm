@@ -147,13 +147,10 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.router.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: confd
-              mountPath: /etc/nginx/conf.d
+            - name: nginx
+              mountPath: /etc/nginx
             - name: tmp
               mountPath: /tmp
-              subPath: router-tmp-dir
-            - name: config
-              mountPath: /etc/nginx/config
             {{- if .Values.tlsCerts.httpsEnabled }}
             - name: tls-secret
               mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
@@ -254,11 +251,9 @@ spec:
         {{- end }}
         {{- end }}
       volumes:
-        - name: confd
+        - name: nginx
           emptyDir: {}
         - name: tmp
-          emptyDir: {}
-        - name: config
           emptyDir: {}
         - name: logstash-config
           emptyDir: {}
