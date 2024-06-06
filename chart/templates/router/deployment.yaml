@@ -95,7 +95,7 @@ spec:
             - -ec
             - |
               ROUTER_RESOLVER="$(grep nameserver /etc/resolv.conf  | awk '{print $2}')"
-              /docker-entrypoint.sh nginx -c /etc/nginx/config/nginx.conf -g "daemon off;"
+              /docker-entrypoint.sh nginx -g "daemon off;"
           {{- end }}
           env:
             {{- if .Values.router.extraEnvVars }}
