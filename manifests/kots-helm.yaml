@@ -576,4 +576,4 @@ spec:
       values:
         global:
           imageRegistry: '{{repl LocalRegistryAddress }}'
-          imagePullSecrets: '{{repl LocalRegistryImagePullSecret }}'
+          imagePullSecrets: '{{repl ImagePullSecretName }}'
