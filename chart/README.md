@@ -1578,8 +1578,11 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### router-metrics parameters
 
+| Name                    | Description                    | Value  |
+| ----------------------- | ------------------------------ | ------ |
+| `routerMetrics.enabled` | Enable routerMetrics container | `true` |
 
-### routerMetrics container parametres
+### routerMetrics container parameters
 
 | Name                                                              | Description                                                                | Value                                                                                     |
 | ----------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |

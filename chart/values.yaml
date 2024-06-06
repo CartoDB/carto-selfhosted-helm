@@ -4948,8 +4948,9 @@ upgradeCheck:
 
 ## @section router-metrics parameters
 routerMetrics:
+  ## @param routerMetrics.enabled Enable routerMetrics container
   enabled: true
-  ## @section routerMetrics container parametres
+  ## @section routerMetrics container parameters
   ## routerMetrics image
   ## @param routerMetrics.image.registry routerMetrics image registry
   ## @param routerMetrics.image.repository routerMetrics image repository
