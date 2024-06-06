@@ -164,6 +164,7 @@ spec:
           {{- if .Values.router.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.router.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
+        {{- if .Values.routerMetrics.enabled }}
         - name: router-metrics
           image: {{ template "carto.routerMetrics.image" . }}
           imagePullPolicy: {{ .Values.routerMetrics.image.pullPolicy }}
@@ -244,6 +245,7 @@ spec:
           {{- end }}
         {{- if .Values.router.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.router.sidecars "context" $) | nindent 8 }}
+        {{- end }}
         {{- end }}
       volumes:
         - name: confd
