@@ -185,7 +185,7 @@ spec:
           args:
             - -ec
             - |
-              /docker-entrypoint.sh logstash
+              /docker-entrypoint.sh logstash --path.settings /usr/share/logstash/custom-config/logstash.yml
           {{- end }}
           env:
             {{- if .Values.routerMetrics.extraEnvVars }}
@@ -241,6 +241,9 @@ spec:
             - name: logstash-data
               subPath: data
               mountPath: /usr/share/logstash/data
+            - name: logstash-data
+              subPath: custom-config
+              mountPath: /usr/share/logstash/custom-config
             - name: tmp
               mountPath: /tmp
               subPath: router-metrics-tmp-dir
