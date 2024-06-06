@@ -152,6 +152,8 @@ spec:
             tag: "update_sh_router_nginx_to_be_able_to_run_with_read_only_fs_policy"
         routerMetrics:
           enabled: true
+          image:
+            tag: "update_sh_router_nginx_to_be_able_to_run_with_read_only_fs_policy"
         importWorker:
           containerSecurityContext:
             readOnlyRootFilesystem: true

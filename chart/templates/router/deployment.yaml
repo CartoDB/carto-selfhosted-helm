@@ -151,6 +151,7 @@ spec:
               mountPath: /etc/nginx/conf.d
             - name: tmp
               mountPath: /tmp
+              subPath: router-tmp-dir
             - name: config
               mountPath: /etc/nginx/config
             {{- if .Values.tlsCerts.httpsEnabled }}
@@ -237,6 +238,11 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: logstash-config
+              mountPath: /usr/share/logstash/temp
+            - name: tmp
+              mountPath: /tmp
+              subPath: router-metrics-tmp-dir
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
@@ -253,6 +259,8 @@ spec:
         - name: tmp
           emptyDir: {}
         - name: config
+          emptyDir: {}
+        - name: logstash-config
           emptyDir: {}
         {{- if .Values.tlsCerts.httpsEnabled }}
         - name: tls-secret
