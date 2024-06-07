@@ -588,4 +588,5 @@ spec:
           image:
             repository: router-http
         cdnInvalidatorSub:
-          repository: cdn-invalidator-sub
+          image:
+            repository: cdn-invalidator-sub
