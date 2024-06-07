@@ -570,8 +570,8 @@ spec:
         internalPostgresql: *customSecurityContext
         upgradeCheck: *customSecurityContext
 
-    # Local Registry
-    - when: '{{repl HasLocalRegistry }}'
+    # Airgap mode AND Local Registry
+    - when: '{{repl and (IsAirgap) (HasLocalRegistry) }}'
       recursiveMerge: true
       values:
         global:
