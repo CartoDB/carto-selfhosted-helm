@@ -239,6 +239,8 @@ spec:
               mountPath: /usr/share/logstash/config
             - name: logstash-pipeline
               mountPath: /usr/share/logstash/pipeline
+            - name: logstash-data
+              mountPath: /usr/share/logstash/data
             - name: tmp
               mountPath: /tmp
               subPath: router-metrics-tmp-dir
@@ -260,6 +262,8 @@ spec:
         - name: logstash-config
           emptyDir: {}
         - name: logstash-pipeline
+          emptyDir: {}
+        - name: logstash-data
           emptyDir: {}
         {{- if .Values.tlsCerts.httpsEnabled }}
         - name: tls-secret
