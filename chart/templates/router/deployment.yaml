@@ -236,14 +236,7 @@ spec:
           {{- end }}
           volumeMounts:
             - name: logstash-data
-              subPath: pipeline
-              mountPath: /usr/share/logstash/pipeline
-            - name: logstash-data
-              subPath: data
-              mountPath: /usr/share/logstash/data
-            - name: logstash-data
-              subPath: custom-config
-              mountPath: /usr/share/logstash/custom-config
+              mountPath: /usr/share/logstash_temp
             - name: tmp
               mountPath: /tmp
               subPath: router-metrics-tmp-dir
