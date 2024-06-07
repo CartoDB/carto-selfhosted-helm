@@ -587,4 +587,5 @@ spec:
         upgradeCheck:
           image:
             repository: router-http
-
+        cdnInvalidatorSub:
+          repository: cdn-invalidator-sub
