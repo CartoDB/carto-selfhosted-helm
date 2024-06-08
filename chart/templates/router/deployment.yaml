@@ -185,7 +185,7 @@ spec:
           args:
             - -ec
             - |
-              /docker-entrypoint.sh logstash --path.settings /usr/share/logstash/custom-config/logstash.yml
+              /docker-entrypoint.sh logstash
           {{- end }}
           env:
             {{- if .Values.routerMetrics.extraEnvVars }}

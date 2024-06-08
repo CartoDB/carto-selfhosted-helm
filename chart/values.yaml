@@ -4981,7 +4981,7 @@ routerMetrics:
   command: ["/bin/bash"]
   ## @param routerMetrics.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "/docker-entrypoint.d/20-carto-templates.sh && /usr/share/logstash/bin/logstash"]
+  args: []
   ## @param routerMetrics.jvmProcessMaxMemoryAllocationPercentage Percentage for JVM max memory allocation inside the container memory limit
   ##
   jvmProcessMaxMemoryAllocationPercentage: 70
