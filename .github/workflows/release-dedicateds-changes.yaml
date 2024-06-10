@@ -1,0 +1,30 @@
+name: Deploy changes to Dedicateds channel
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release-changes:
+    timeout-minutes: 3
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate channel name
+        id: get-chart-version
+        shell: bash
+        run: |
+          # Share the variable for further steps
+          echo "version=$(yq .version -r chart/Chart.yaml)" >> "$GITHUB_OUTPUT"
+
+      - name: Publish changes into channel
+        uses: ./.github/actions/publish-release
+        with:
+          replicated-channel: "Dedicateds"
+          version: ${{ steps.get-chart-version.outputs.version }}
+          release-notes: "CARTO Self-Hosted version generated from main branch."
+          trigger-action: "dev"
+          gcloud-service-account: ${{ secrets.CARTO_ARTIFACTS_SERVICE_ACCOUNT }}
+          replicated-api-token: ${{ secrets.REPLICATED_API_TOKEN }}
