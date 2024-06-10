@@ -110,13 +110,11 @@ spec:
       annotations:
         iam.gke.io/gcp-service-account: '{{repl ConfigOption "googleWorkloadIdentityEmail" }}'
 
-    ## TLS Certs
-    # FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
-    # Disable legacy tlsCerts
-    tlsCerts:
+    # Router
+    router:
       httpsEnabled: repl{{ if ConfigOptionEquals "cartoRouterHTTPSEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
-      autoGenerate: false
 
+    # api-gateway
     gateway:
       enabled: repl{{ if ConfigOptionEquals "kubernetesGatewayEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
       gatewayClassName: '{{repl fromJson (ConfigOption "loadBalancerSupportedKind") | dig "gatewayClassName" "" }}'
@@ -244,7 +242,7 @@ spec:
     ## Terminate TLS at router
     ## Access to Carto
     # Router
-    - when: '{{repl ConfigOptionEquals "customRouterSSLCerts" "true" }}'
+    - when: '{{repl and (ConfigOptionEquals "cartoRouterHTTPSEnabled" "true") (ConfigOptionEquals "customRouterSSLCerts" "true") }}'
       recursiveMerge: true
       values:
         router:

@@ -942,17 +942,13 @@ Return the absolute path where the Google Secret will be mounted
 
 {{/*
 Return the proper Carto TLS Secret name
-FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
 TODO: We have to regenerate the secret if the private key changes
 */}}
-{{- define "carto.tlsCerts.secretName" -}}
-{{- include "carto.tlsCerts.duplicatedValueValidator" . -}}
-{{- if .Values.tlsCerts.existingSecret.name -}}
-{{- .Values.tlsCerts.existingSecret.name -}}
+{{- define "carto.router.tlsCertificates.secretName" -}}
+{{- include "carto.router.tlsCertificates.duplicatedValueValidator" . -}}
+{{- if .Values.router.tlsCertificates.existingSecret.name -}}
+{{- .Values.router.tlsCertificates.existingSecret.name -}}
 {{- else if (empty .Values.router.tlsCertificates.certificateValueBase64) -}}
-{{/*
-     Preserved the original behaviour in case someone use the default secret name without explicitly define that parameter
-*/}}
 {{- printf "%s-tls" (include "common.names.fullname" .) -}}
 {{- else -}}
 {{- printf "%s-tls-%s" (include "common.names.fullname" .) (.Values.router.tlsCertificates.certificateValueBase64 | sha256sum | substr 0 5) -}}
@@ -961,11 +957,10 @@ TODO: We have to regenerate the secret if the private key changes
 
 {{/*
 Return the proper Carto TLS secret key for the TLS cert
-FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
 */}}
-{{- define "carto.tlsCerts.secretCertKey" -}}
-{{- if .Values.tlsCerts.existingSecret.name -}}
-{{- .Values.tlsCerts.existingSecret.certKey -}}
+{{- define "carto.router.tlsCertificates.secretCertKey" -}}
+{{- if .Values.router.tlsCertificates.existingSecret.name -}}
+{{- .Values.router.tlsCertificates.existingSecret.certKey -}}
 {{- else -}}
 {{- print "tls.crt" -}}
 {{- end -}}
@@ -973,21 +968,13 @@ FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
 
 {{/*
 Return the proper Carto TLS secret key for the TLS key
-FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
 */}}
-{{- define "carto.tlsCerts.secretKeyKey" -}}
-{{- if .Values.tlsCerts.existingSecret.name -}}
-{{- .Values.tlsCerts.existingSecret.keyKey -}}
+{{- define "carto.router.tlsCertificates.secretKeyKey" -}}
+{{- if .Values.router.tlsCertificates.existingSecret.name -}}
+{{- .Values.router.tlsCertificates.existingSecret.keyKey -}}
 {{- else -}}
 {{- print "tls.key" -}}
 {{- end -}}
-{{- end -}}
-
-{{/*
-Return the proper Carto Router TLS Secret name
-*/}}
-{{- define "carto.router.tlsCertificates.secretName" -}}
-{{- printf "%s-tls-%s" (include "common.names.fullname" .) (.Values.router.tlsCertificates.certificateValueBase64 | sha256sum | substr 0 5) -}}
 {{- end -}}
 
 {{/*

@@ -177,16 +177,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cartoSecrets.instanceId.existingSecret.name`                  | Name of the pre-existent secret containing the `cartoSecrets.instanceId.existingSecret.key`. If `cartoSecrets.instanceId.value` is defined, this value is going to be ignored and not used.                                                                           | `""`  |
 | `cartoSecrets.instanceId.existingSecret.key`                   | Key to find in `cartoSecrets.instanceId.existingSecret.name` where the value of `cartoSecrets.instanceId` is found. If `cartoSecrets.instanceId.value` is defined, this value is going to be ignored and not used.                                                    | `""`  |
 
-### TLS parameters
-
-| Name                              | Description                                                                                                                                                           | Value     |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| `tlsCerts.httpsEnabled`           | Enable https on the router component. CARTO only works with `HTTPS`, if you disable this protocol here you should configure it in a higher layer like a Load Balancer | `true`    |
-| `tlsCerts.autoGenerate`           | Generate self-signed TLS certificates                                                                                                                                 | `true`    |
-| `tlsCerts.existingSecret.name`    | Name of a secret containing the certificate                                                                                                                           | `""`      |
-| `tlsCerts.existingSecret.certKey` | Key of the certificate inside the secret                                                                                                                              | `tls.crt` |
-| `tlsCerts.existingSecret.keyKey`  | Key of the certificate key inside the secret                                                                                                                          | `tls.key` |
-
 ### common backend service account
 
 | Name                                                       | Description                                                                                 | Value   |
@@ -783,8 +773,12 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `router.nginxConfig.proxy_buffer_size`                     | Sets the size of the buffer used for reading the first part of the response received from the proxied server                | `8k`                            |
 | `router.nginxConfig.proxy_busy_buffers_size`               | Limits the total size of buffers that can be busy sending a response to the client while the response is not yet fully read | `8k`                            |
 | `router.nginxConfig.client_max_body_size`                  | Sets the maximum allowed size of the client request body                                                                    | `10M`                           |
+| `router.httpsEnabled`                                      | Terminate or not TLS inside Carto router                                                                                    | `false`                         |
 | `router.tlsCertificates.certificateValueBase64`            | certificate in base64                                                                                                       | `""`                            |
 | `router.tlsCertificates.privateKeyValueBase64`             | private key in base64                                                                                                       | `""`                            |
+| `router.tlsCertificates.existingSecret.name`               | existing secret name ref                                                                                                    | `""`                            |
+| `router.tlsCertificates.existingSecret.certKey`            | secret certificate ref                                                                                                      | `""`                            |
+| `router.tlsCertificates.existingSecret.keyKey`             | secret key ref                                                                                                              | `""`                            |
 | `router.podSecurityContext.enabled`                        | Enabled router pods' Security Context                                                                                       | `true`                          |
 | `router.podSecurityContext.fsGroup`                        | Set router pod's Security Context fsGroup                                                                                   | `101`                           |
 | `router.podSecurityContext.supplementalGroups[0]`          | Set router pod's Security Context supplementalGroups                                                                        | `2345`                          |
@@ -824,41 +818,44 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### router Service Parameters
 
-| Name                                      | Description                                                                                                                      | Value                    |
-| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| `router.service.type`                     | router service type                                                                                                              | `ClusterIP`              |
-| `router.service.ports.http`               | router service HTTP port                                                                                                         | `80`                     |
-| `router.service.ports.httpTargetPort`     | router service HTTP Target port                                                                                                  | `http`                   |
-| `router.service.ports.https`              | router service HTTPS port                                                                                                        | `443`                    |
-| `router.service.ports.httpsTargetPort`    | router service HTTPS Target port                                                                                                 | `https`                  |
-| `router.service.nodePorts.http`           | Node.js port for HTTP                                                                                                            | `""`                     |
-| `router.service.nodePorts.https`          | Node.js port for HTTPS                                                                                                           | `""`                     |
-| `router.service.clusterIP`                | router service Cluster IP                                                                                                        | `""`                     |
-| `router.service.loadBalancerIP`           | router service Load Balancer IP                                                                                                  | `""`                     |
-| `router.service.labelSelectorsOverride`   | Selector for router service                                                                                                      | `{}`                     |
-| `router.service.loadBalancerSourceRanges` | router service Load Balancer sources                                                                                             | `[]`                     |
-| `router.service.externalTrafficPolicy`    | router service external traffic policy                                                                                           | `Cluster`                |
-| `router.service.annotations`              | Additional custom annotations for router service                                                                                 | `{}`                     |
-| `router.service.extraPorts`               | Extra ports to expose in router service (normally used with the `sidecars` value)                                                | `[]`                     |
-| `router.ingress.enabled`                  | Enable ingress controller resource                                                                                               | `false`                  |
-| `router.ingress.pathType`                 | Ingress Path type                                                                                                                | `ImplementationSpecific` |
-| `router.ingress.apiVersion`               | Override API Version (automatically detected if not set)                                                                         | `""`                     |
-| `router.ingress.ingressClassName`         | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)                                                    | `""`                     |
-| `router.ingress.path`                     | The Path to CARTO. You may need to set this to '/*' in order to use this                                                         | `/*`                     |
-| `router.ingress.annotations`              | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. | `{}`                     |
-| `router.ingress.tls`                      | Enable TLS configuration for the hostname defined at ingress.hostname parameter                                                  | `false`                  |
-| `router.ingress.extraHosts`               | The list of additional hostnames to be covered with this ingress record.                                                         | `[]`                     |
-| `router.ingress.extraPaths`               | Any additional arbitrary paths that may need to be added to the ingress under the main host.                                     | `[]`                     |
-| `router.ingress.extraTls`                 | The tls configuration for additional hostnames to be covered with this ingress record.                                           | `[]`                     |
-| `router.ingress.extraRules`               | Additional rules to be covered with this ingress record                                                                          | `[]`                     |
+| Name                                      | Description                                                                       | Value       |
+| ----------------------------------------- | --------------------------------------------------------------------------------- | ----------- |
+| `router.service.type`                     | router service type                                                               | `ClusterIP` |
+| `router.service.ports.http`               | router service HTTP port                                                          | `80`        |
+| `router.service.ports.httpTargetPort`     | router service HTTP Target port                                                   | `http`      |
+| `router.service.ports.https`              | router service HTTPS port                                                         | `443`       |
+| `router.service.ports.httpsTargetPort`    | router service HTTPS Target port                                                  | `https`     |
+| `router.service.nodePorts.http`           | Node.js port for HTTP                                                             | `""`        |
+| `router.service.nodePorts.https`          | Node.js port for HTTPS                                                            | `""`        |
+| `router.service.clusterIP`                | router service Cluster IP                                                         | `""`        |
+| `router.service.loadBalancerIP`           | router service Load Balancer IP                                                   | `""`        |
+| `router.service.labelSelectorsOverride`   | Selector for router service                                                       | `{}`        |
+| `router.service.loadBalancerSourceRanges` | router service Load Balancer sources                                              | `[]`        |
+| `router.service.externalTrafficPolicy`    | router service external traffic policy                                            | `Cluster`   |
+| `router.service.annotations`              | Additional custom annotations for router service                                  | `{}`        |
+| `router.service.extraPorts`               | Extra ports to expose in router service (normally used with the `sidecars` value) | `[]`        |
 
 ### router ServiceAccount configuration
 
-| Name                                                 | Description                                          | Value   |
-| ---------------------------------------------------- | ---------------------------------------------------- | ------- |
-| `router.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created | `true`  |
-| `router.serviceAccount.name`                         | The name of the ServiceAccount to use.               | `""`    |
-| `router.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment        | `false` |
+| Name                                                 | Description                                                                                                                      | Value                    |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `router.serviceAccount.create`                       | Specifies whether a ServiceAccount should be created                                                                             | `true`                   |
+| `router.serviceAccount.name`                         | The name of the ServiceAccount to use.                                                                                           | `""`                     |
+| `router.serviceAccount.automountServiceAccountToken` | Mount service account token in the deployment                                                                                    | `false`                  |
+| `ingress.enabled`                                    | Enable ingress controller resource                                                                                               | `false`                  |
+| `ingress.pathType`                                   | Ingress Path type                                                                                                                | `ImplementationSpecific` |
+| `ingress.apiVersion`                                 | Override API Version (automatically detected if not set)                                                                         | `""`                     |
+| `ingress.ingressClassName`                           | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)                                                    | `""`                     |
+| `ingress.path`                                       | The Path to CARTO. You may need to set this to '/*' in order to use this                                                         | `/*`                     |
+| `ingress.annotations`                                | Additional annotations for the Ingress resource. To enable certificate autogeneration, place here your cert-manager annotations. | `{}`                     |
+| `ingress.tls`                                        | Enable TLS configuration for the hostname defined at ingress.hostname parameter                                                  | `false`                  |
+| `ingress.tlsCertificates.existingSecret.name`        | existing secret name ref                                                                                                         | `""`                     |
+| `ingress.tlsCertificates.existingSecret.certKey`     | secret certificate ref                                                                                                           | `""`                     |
+| `ingress.tlsCertificates.existingSecret.keyKey`      | secret key ref                                                                                                                   | `""`                     |
+| `ingress.extraHosts`                                 | The list of additional hostnames to be covered with this ingress record.                                                         | `[]`                     |
+| `ingress.extraPaths`                                 | Any additional arbitrary paths that may need to be added to the ingress under the main host.                                     | `[]`                     |
+| `ingress.extraTls`                                   | The tls configuration for additional hostnames to be covered with this ingress record.                                           | `[]`                     |
+| `ingress.extraRules`                                 | Additional rules to be covered with this ingress record                                                                          | `[]`                     |
 
 ### httpCache Deployment Parameters
 
@@ -1615,7 +1612,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `gateway.tlsCertificates.customSSLCerts.enabled`                  | enable if customer provides their own certificates.                        | `false`                                                                                   |
 | `gateway.tlsCertificates.customSSLCerts.certificateValueBase64`   | custom certificate in base64.                                              | `""`                                                                                      |
 | `gateway.tlsCertificates.customSSLCerts.privateKeyValueBase64`    | custom private key in base64.                                              | `""`                                                                                      |
-| `gateway.tlsCertificates.managedCerts.enabled`                    | enable if managed certs creation is required.                              | `false`                                                                                   |
+| `gateway.tlsCertificates.managedCerts.enabled`                    | enable to use a managed cert                                               | `false`                                                                                   |
+| `gateway.tlsCertificates.managedCerts.name`                       | managed certificate name                                                   | `""`                                                                                      |
 | `gateway.apiVersion`                                              | Kubernetes Gateway API Version.                                            | `""`                                                                                      |
 | `gateway.gatewayClassName`                                        | GatewayClass that will be be used to implement the gateway api.            | `""`                                                                                      |
 | `gateway.path`                                                    | The Path to CARTO                                                          | `/`                                                                                       |
@@ -1625,6 +1623,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `gateway.listeners.http.name`                                     | HTTP listener name                                                         | `http`                                                                                    |
 | `gateway.listeners.http.port`                                     | HTTP listener port                                                         | `80`                                                                                      |
 | `gateway.address.type`                                            | AddressType defines how a network address is represented as a text string. | `NamedAddress`                                                                            |
+| `gateway.staticIP.enabled`                                        | Assign a Static IP to the Gateway-api                                      | `false`                                                                                   |
+| `gateway.staticIP.value`                                          | Static IP name                                                             | `""`                                                                                      |
 | `gateway.annotations`                                             | Additional annotations for the gateway resource.                           | `{}`                                                                                      |
 
 

@@ -16,8 +16,8 @@ WARNING: You are using a non-production installation, please follow the producti
 
 ** Please be patient while the chart is being deployed **
 
-** Did you check our recommendations to customize your app in production mode? **
-https://github.com/CartoDB/carto-selfhosted-helm/blob/{{- include "chart.version" . }}/customizations/README.md#production-ready
+** Did you check our recommendations to enable High Availability? **
+https://docs.carto.com/carto-self-hosted/guides/high-availability-configuration-for-carto-self-hosted
 
 {{- if .Values.diagnosticMode.enabled }}
 
@@ -54,7 +54,7 @@ host. To configure CARTO with the URL of your service:
 {{- else }}
 
 1. Get the CARTO URL by running:
-{{-  if .Values.router.ingress.enabled }}
+{{-  if .Values.ingress.enabled }}
 
   NOTE: It may take a few minutes for the Ingress IP to be available.
 
@@ -62,6 +62,13 @@ host. To configure CARTO with the URL of your service:
 
   export CARTO_HOST_CNAME=$(kubectl get ingress --namespace {{ .Release.Namespace }} {{ include "carto.router.fullname" . }} -o jsonpath='{.spec..host}')
 
+{{- else if .Values.gateway.enabled }}
+
+  NOTE: It may take a few minutes for the Gateway IP to be available.
+
+  export CARTO_HOST_IP=$(kubectl get gateway --namespace {{ .Release.Namespace }} {{ include "carto.gateway.fullname" . }} -o jsonpath='{.status..addresses..value}')
+
+  export CARTO_HOST_CNAME=$(kubectl get httproutes --namespace {{ .Release.Namespace }} {{ include "carto.gateway.fullname" . }}-https -o jsonpath='{.spec..hostnames[0]}')
 
 {{- else if eq .Values.router.service.type "ClusterIP" }}
 {{- $port := default 80 .Values.router.service.ports.http | toString }}
@@ -77,8 +84,6 @@ host. To configure CARTO with the URL of your service:
   export CARTO_KUBECONFIG=$([[ ! -z "$KUBECONFIG" ]] && echo "$KUBECONFIG" || echo "$HOME/.kube/config")
   sudo -E kubectl --kubeconfig=${CARTO_KUBECONFIG} port-forward --namespace {{ .Release.Namespace }} svc/{{ include "carto.router.fullname" . }} {{ $port }}:{{ $port }} {{ $port_https }}:{{ $port_https }}
 -+
-
-
 
 {{- else if eq .Values.router.service.type "NodePort" }}
 
