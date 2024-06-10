@@ -1591,7 +1591,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `routerMetrics.image.tag`                                         | routerMetrics image tag (immutable tags are recommended)                   | `""`                            |
 | `routerMetrics.image.pullPolicy`                                  | routerMetrics image pull policy                                            | `IfNotPresent`                  |
 | `routerMetrics.image.pullSecrets`                                 | routerMetrics image pull secrets                                           | `[]`                            |
-| `routerMetrics.command`                                           | Override default container command (useful when using custom images)       | `["/bin/bash"]`                 |
+| `routerMetrics.command`                                           | Override default container command (useful when using custom images)       | `[]`                            |
 | `routerMetrics.args`                                              | Override default container args (useful when using custom images)          | `[]`                            |
 | `routerMetrics.jvmProcessMaxMemoryAllocationPercentage`           | Percentage for JVM max memory allocation inside the container memory limit | `70`                            |
 | `routerMetrics.defaultJvmProcessMaxMemoryAllocation`              | Default value for JVM max memory allocation                                | `1024`                          |
