@@ -173,19 +173,11 @@ spec:
           command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
           {{- else if .Values.routerMetrics.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.command "context" $) | nindent 12 }}
-          {{- else }}
-          command:
-            - /bin/sh
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
           {{- else if .Values.routerMetrics.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.args "context" $) | nindent 12 }}
-          {{ else }}
-          args:
-            - -ec
-            - |
-              /docker-entrypoint.sh logstash
           {{- end }}
           env:
             {{- if .Values.routerMetrics.extraEnvVars }}

@@ -4978,7 +4978,7 @@ routerMetrics:
     pullSecrets: []
   ## @param routerMetrics.command Override default container command (useful when using custom images)
   ##
-  command: ["/bin/bash"]
+  command: []
   ## @param routerMetrics.args Override default container args (useful when using custom images)
   ##
   args: []
