@@ -143,6 +143,21 @@ spec:
         tenantRequirementsChecker:
           image:
             tag: "03-06-2024"
+        accountsWww:
+          image:
+            tag: "feature_sc_415853_generate_config_yaml_file_in_a_subdirectory"
+        workspaceWww:
+          image:
+            tag: "feature_sc_415854_generate_config_yaml_file_in_a_subdirectory"
+        router:
+          image:
+            tag: "update_sh_router_nginx_to_be_able_to_run_with_read_only_fs_policy"
+        routerMetrics:
+          image:
+            tag: "feature_sc_415871_try_to_make_router_metrics_container_work"
+        importWorker:
+          containerSecurityContext:
+            readOnlyRootFilesystem: true
 
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
