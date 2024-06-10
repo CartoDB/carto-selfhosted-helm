@@ -2,7 +2,7 @@ name: Deploy changes to Dedicateds channel
 on:
   push:
     branches:
-      - main
+      - feature/sc-416788/release-changes-to-dedicateds-channel-when
 
 jobs:
   release-changes:
