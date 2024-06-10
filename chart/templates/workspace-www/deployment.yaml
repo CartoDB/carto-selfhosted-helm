@@ -165,10 +165,12 @@ spec:
         {{- end }}
       volumes:
         - name: config
-          emptyDir: {}
-        - name: tmp
-          emptyDir: {}
+          emptyDir:
+            medium: Memory
         - name: nginx-shared-snippets
+          emptyDir:
+            medium: Memory
+        - name: tmp
           emptyDir: {}
       {{- if .Values.workspaceWww.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraVolumes "context" $) | nindent 8 }}

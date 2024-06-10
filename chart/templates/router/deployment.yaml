@@ -256,14 +256,18 @@ spec:
         {{- end }}
       volumes:
         - name: nginx
-          emptyDir: {}
-        - name: tmp
-          emptyDir: {}
+          emptyDir:
+            medium: Memory
         - name: logstash-config
-          emptyDir: {}
+          emptyDir:
+            medium: Memory
         - name: logstash-pipeline
-          emptyDir: {}
+          emptyDir:
+            medium: Memory
         - name: logstash-data
+          emptyDir:
+            medium: Memory
+        - name: tmp
           emptyDir: {}
         {{- if .Values.tlsCerts.httpsEnabled }}
         - name: tls-secret

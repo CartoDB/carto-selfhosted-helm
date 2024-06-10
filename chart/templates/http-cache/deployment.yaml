@@ -161,7 +161,8 @@ spec:
         {{- end }}
       volumes:
         - name: tmp
-          emptyDir: {}
+          emptyDir:
+            medium: Memory
         {{- if .Values.httpCache.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

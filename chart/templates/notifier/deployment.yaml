@@ -149,7 +149,8 @@ spec:
         - name: tmp
           emptyDir: {}
         - name: pushpin-routes
-          emptyDir: {}
+          emptyDir:
+            medium: Memory
         {{- if .Values.notifier.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.notifier.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
