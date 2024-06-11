@@ -149,8 +149,7 @@ spec:
             - name: tmp
               mountPath: /tmp
             - name: tmp
-              mountPath: /home/node/.snowsql
-              subPath: .snowsql
+              mountPath: /home/node/
           {{- if .Values.accountsWww.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -161,6 +160,8 @@ spec:
         - name: config
           emptyDir:
             medium: Memory
+        - name: home
+          emptyDir: {}
         - name: tmp
           emptyDir: {}
         {{- if .Values.accountsWww.extraVolumes }}
