@@ -23,6 +23,9 @@ data:
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   CARTO_SELFHOSTED_DEPLOYMENT: "kubernetes"
+  {{- if .Values.replicated.enabled }}
+  CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "replicated:3000"
+  {{- end }}
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   EXPORTS_GCS_BUCKET_NAME: {{ .Values.appConfigValues.workspaceExportsBucket | quote }}
