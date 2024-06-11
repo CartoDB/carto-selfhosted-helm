@@ -156,7 +156,8 @@ spec:
         {{- end }}
       volumes:
         - name: config
-          emptyDir: {}
+          emptyDir:
+            medium: Memory
         - name: tmp
           emptyDir: {}
         {{- if .Values.accountsWww.extraVolumes }}
