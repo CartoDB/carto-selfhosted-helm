@@ -148,8 +148,6 @@ spec:
               mountPath: /www/data/config
             - name: tmp
               mountPath: /tmp
-            - name: tmp
-              mountPath: /home/node/
           {{- if .Values.accountsWww.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -158,9 +156,6 @@ spec:
         {{- end }}
       volumes:
         - name: config
-          emptyDir:
-            medium: Memory
-        - name: home
           emptyDir: {}
         - name: tmp
           emptyDir: {}
