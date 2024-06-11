@@ -12,6 +12,9 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
+  {{- if .Values.replicated.enabled }}
+  CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "http://replicated:3000"
+  {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   CDN_INVALIDATOR_BACKEND_ENGINE: "varnish"

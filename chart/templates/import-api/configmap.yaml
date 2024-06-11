@@ -15,6 +15,9 @@ data:
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
+  {{- if .Values.replicated.enabled }}
+  CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "http://replicated:3000"
+  {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   IMPORT_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
   IMPORT_PORT: {{ .Values.importApi.containerPorts.http | quote }}
