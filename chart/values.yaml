@@ -1192,7 +1192,7 @@ importWorker:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
