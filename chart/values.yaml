@@ -33,7 +33,7 @@ appConfigValues:
   awsS3Region: ""
   ## @param appConfigValues.bigqueryOauth2ClientId The Client ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key.
   bigqueryOauth2ClientId: ""
-  ## @param appConfigValues.enableTrackJS By default, TrackJS will gather information about end-user browser, you can disable it setting this paramter to false
+  ## @param appConfigValues.enableTrackJS By default, TrackJS will gather information about end-user browser, you can disable it setting this parameter to false
   enableTrackJS: "true"
   ## @param appConfigValues.ssoOrganizationId SSO organization ID provided by CARTO used to configure the SSO in the app.
   ssoOrganizationId: ""
@@ -326,8 +326,6 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
-      # name: "lolo"
-      # key: "lolo"
   ## @extra cartoSecrets.defaultGoogleServiceAccount The secret used by the app to connect to google services. This couldn't be changed.
   defaultGoogleServiceAccount:
     ## @param cartoSecrets.defaultGoogleServiceAccount.value Value of the secret used by the app to connect to google services. This couldn't be changed. One of `cartoSecrets.defaultGoogleServiceAccount.value` or `cartoSecrets.defaultGoogleServiceAccount.existingSecret` could be defined.
@@ -542,7 +540,7 @@ accountsWww:
   ## accounts-www autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param accountsWww.autoscaling.enabled Enable autoscaling for the accounts-www containers
-  ## @param accountsWww.autoscaling.minReplicas The minimal number of containters for the accounts-www deployment
+  ## @param accountsWww.autoscaling.minReplicas The minimal number of containers for the accounts-www deployment
   ## @param accountsWww.autoscaling.maxReplicas The maximum number of containers for the accounts-www deployment
   ## @param accountsWww.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in accounts-www deployment
   ##
@@ -880,7 +878,7 @@ importApi:
   ## import-api autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param importApi.autoscaling.enabled Enable autoscaling for the import-api containers
-  ## @param importApi.autoscaling.minReplicas The minimal number of containters for the import-api deployment
+  ## @param importApi.autoscaling.minReplicas The minimal number of containers for the import-api deployment
   ## @param importApi.autoscaling.maxReplicas The maximum number of containers for the import-api deployment
   ## @param importApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in import-api deployment
   ##
@@ -1424,7 +1422,7 @@ ldsApi:
   ## lds-api autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param ldsApi.autoscaling.enabled Enable autoscaling for the lds-api containers
-  ## @param ldsApi.autoscaling.minReplicas The minimal number of containters for the workspldsace-api deployment
+  ## @param ldsApi.autoscaling.minReplicas The minimal number of containers for the workspace-api deployment
   ## @param ldsApi.autoscaling.maxReplicas The maximum number of containers for the lds-api deployment
   ## @param ldsApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in lds-api deployment
   ##
@@ -1749,7 +1747,7 @@ mapsApi:
   ## maps-api autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param mapsApi.autoscaling.enabled Enable autoscaling for the maps-api containers
-  ## @param mapsApi.autoscaling.minReplicas The minimal number of containters for the maps-api deployment
+  ## @param mapsApi.autoscaling.minReplicas The minimal number of containers for the maps-api deployment
   ## @param mapsApi.autoscaling.maxReplicas The maximum number of containers for the maps-api deployment
   ## @param mapsApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in maps-api deployment
   ##
@@ -2324,7 +2322,7 @@ router:
   ## router autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param router.autoscaling.enabled Enable autoscaling for the router containers
-  ## @param router.autoscaling.minReplicas The minimal number of containters for the router deployment
+  ## @param router.autoscaling.minReplicas The minimal number of containers for the router deployment
   ## @param router.autoscaling.maxReplicas The maximum number of containers for the router deployment
   ## @param router.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in router deployment
   ##
@@ -3746,7 +3744,7 @@ workspaceApi:
   ## workspace-api autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param workspaceApi.autoscaling.enabled Enable autoscaling for the workspace-api containers
-  ## @param workspaceApi.autoscaling.minReplicas The minimal number of containters for the workspace-api deployment
+  ## @param workspaceApi.autoscaling.minReplicas The minimal number of containers for the workspace-api deployment
   ## @param workspaceApi.autoscaling.maxReplicas The maximum number of containers for the workspace-api deployment
   ## @param workspaceApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in workspace-api deployment
   ##
@@ -4285,7 +4283,7 @@ workspaceWww:
   ## workspace-www autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param workspaceWww.autoscaling.enabled Enable autoscaling for the workspace-www containers
-  ## @param workspaceWww.autoscaling.minReplicas The minimal number of containters for the workspace-www deployment
+  ## @param workspaceWww.autoscaling.minReplicas The minimal number of containers for the workspace-www deployment
   ## @param workspaceWww.autoscaling.maxReplicas The maximum number of containers for the workspace-www deployment
   ## @param workspaceWww.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in workspace-www deployment
   ##
@@ -4578,7 +4576,7 @@ workspaceMigrations:
   ## @param workspaceMigrations.containerSecurityContext.runAsNonRoot Force the init container to run as non root
   ## @param workspaceMigrations.containerSecurityContext.allowPrivilegeEscalation Set init container's Security Context allowPrivilegeEscalation
   ## @param workspaceMigrations.containerSecurityContext.readOnlyRootFilesystem Set init containers' Security Context readOnlyRootFilesystem
-  ## @param workspaceMigrations.containerSecurityContext.capabilities.drop removes workspace-migrations containers' Security Contexcapabilities
+  ## @param workspaceMigrations.containerSecurityContext.capabilities.drop removes workspace-migrations containers' Security Context capabilities
   ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
   ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
   ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
@@ -4643,7 +4641,7 @@ tenantRequirementsChecker:
   ## @param tenantRequirementsChecker.containerSecurityContext.runAsNonRoot Force the init tenant-requirements-checker container to run as non root
   ## @param tenantRequirementsChecker.containerSecurityContext.allowPrivilegeEscalation Set init tenant-requirements-checker container's Security Context allowPrivilegeEscalation
   ## @param tenantRequirementsChecker.containerSecurityContext.readOnlyRootFilesystem Set init tenant-requirements-checker containers' Security Context readOnlyRootFilesystem
-  ## @param tenantRequirementsChecker.containerSecurityContext.capabilities.drop removes tenant-requirements-checker containers' Security Contexcapabilities
+  ## @param tenantRequirementsChecker.containerSecurityContext.capabilities.drop removes tenant-requirements-checker containers' Security Context capabilities
   ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
   ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
   ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
