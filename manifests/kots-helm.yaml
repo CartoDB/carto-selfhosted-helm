@@ -156,8 +156,8 @@ spec:
           image:
             tag: "feature_sc_415871_try_to_make_router_metrics_container_work"
         importWorker:
-          containerSecurityContext:
-            readOnlyRootFilesystem: true
+          image:
+            tag: "feature_sc_415870_fix_import_api_as_snowcli_is_writing_to_readonly"
 
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
