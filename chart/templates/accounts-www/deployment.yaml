@@ -148,6 +148,9 @@ spec:
               mountPath: /www/data/config
             - name: tmp
               mountPath: /tmp
+            - name: tmp
+              mountPath: /home/node/.snowsql
+              subPath: .snowsql
           {{- if .Values.accountsWww.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
