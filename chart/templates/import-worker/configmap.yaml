@@ -14,7 +14,7 @@ metadata:
 data:
   BIGQUERY_OAUTH2_CLIENT_ID: {{ .Values.appConfigValues.bigqueryOauth2ClientId | quote }}
   {{- if .Values.replicated.enabled }}
-  CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "http://replicated:3000"
+  CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "replicated:3000"
   {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}

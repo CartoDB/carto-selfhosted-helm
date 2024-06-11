@@ -24,7 +24,7 @@ data:
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   CARTO_SELFHOSTED_DEPLOYMENT: "kubernetes"
   {{- if .Values.replicated.enabled }}
-  CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "http://replicated:3000"
+  CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "replicated:3000"
   {{- end }}
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"

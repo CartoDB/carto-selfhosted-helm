@@ -17,7 +17,7 @@ data:
   AUTH0_NAMESPACE: "http://app.carto.com"
   BIGQUERY_OAUTH2_CLIENT_ID: {{ .Values.appConfigValues.bigqueryOauth2ClientId | quote }}
   {{- if .Values.replicated.enabled }}
-  CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "http://replicated:3000"
+  CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "replicated:3000"
   {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
