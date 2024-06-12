@@ -151,6 +151,8 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: tmp
+              mountPath: /tmp
           {{- if .Values.httpCache.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -158,6 +160,9 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.httpCache.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
+        - name: tmp
+          emptyDir:
+            medium: Memory
         {{- if .Values.httpCache.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

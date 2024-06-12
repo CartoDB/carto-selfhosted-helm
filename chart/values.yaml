@@ -33,7 +33,7 @@ appConfigValues:
   awsS3Region: ""
   ## @param appConfigValues.bigqueryOauth2ClientId The Client ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key.
   bigqueryOauth2ClientId: ""
-  ## @param appConfigValues.enableTrackJS By default, TrackJS will gather information about end-user browser, you can disable it setting this paramter to false
+  ## @param appConfigValues.enableTrackJS By default, TrackJS will gather information about end-user browser, you can disable it setting this parameter to false
   enableTrackJS: "true"
   ## @param appConfigValues.ssoOrganizationId SSO organization ID provided by CARTO used to configure the SSO in the app.
   ssoOrganizationId: ""
@@ -326,8 +326,6 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
-      # name: "lolo"
-      # key: "lolo"
   ## @extra cartoSecrets.defaultGoogleServiceAccount The secret used by the app to connect to google services. This couldn't be changed.
   defaultGoogleServiceAccount:
     ## @param cartoSecrets.defaultGoogleServiceAccount.value Value of the secret used by the app to connect to google services. This couldn't be changed. One of `cartoSecrets.defaultGoogleServiceAccount.value` or `cartoSecrets.defaultGoogleServiceAccount.existingSecret` could be defined.
@@ -344,6 +342,16 @@ cartoSecrets:
     value: ""
     ## @param cartoSecrets.gitbookApiToken.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.gitbookApiToken.existingSecret.key`. If `cartoSecrets.gitbookApiToken.value` is defined, this value is going to be ignored and not used.
     ## @param cartoSecrets.gitbookApiToken.existingSecret.key Key to find in `cartoSecrets.gitbookApiToken.existingSecret.name` where the value of `cartoSecrets.gitbookApiToken` is found. If `cartoSecrets.gitbookApiToken.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra cartoSecrets.instanceId The secret used to define the instance ID for the active installation
+  instanceId:
+    ## @param cartoSecrets.instanceId.value Value of the secret used to define the instance ID for the active installation. One of `cartoSecrets.instanceId.value` or `cartoSecrets.instanceId.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.instanceId.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.instanceId.existingSecret.key`. If `cartoSecrets.instanceId.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.instanceId.existingSecret.key Key to find in `cartoSecrets.instanceId.existingSecret.name` where the value of `cartoSecrets.instanceId` is found. If `cartoSecrets.instanceId.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""
@@ -532,7 +540,7 @@ accountsWww:
   ## accounts-www autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param accountsWww.autoscaling.enabled Enable autoscaling for the accounts-www containers
-  ## @param accountsWww.autoscaling.minReplicas The minimal number of containters for the accounts-www deployment
+  ## @param accountsWww.autoscaling.minReplicas The minimal number of containers for the accounts-www deployment
   ## @param accountsWww.autoscaling.maxReplicas The maximum number of containers for the accounts-www deployment
   ## @param accountsWww.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in accounts-www deployment
   ##
@@ -572,6 +580,7 @@ accountsWww:
   ## @param accountsWww.containerSecurityContext.runAsGroup Set accounts-www containers' Security Context runAsGroup
   ## @param accountsWww.containerSecurityContext.runAsNonRoot Set accounts-www containers' Security Context runAsNonRoot
   ## @param accountsWww.containerSecurityContext.allowPrivilegeEscalation Set accounts-www containers' Security Context allowPrivilegeEscalation
+  ## @param accountsWww.containerSecurityContext.readOnlyRootFilesystem Set accounts-www containers' Security Context readOnlyRootFilesystem
   ## @param accountsWww.containerSecurityContext.capabilities.drop removes accounts-www containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -580,6 +589,7 @@ accountsWww:
     runAsGroup: 101
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -868,7 +878,7 @@ importApi:
   ## import-api autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param importApi.autoscaling.enabled Enable autoscaling for the import-api containers
-  ## @param importApi.autoscaling.minReplicas The minimal number of containters for the import-api deployment
+  ## @param importApi.autoscaling.minReplicas The minimal number of containers for the import-api deployment
   ## @param importApi.autoscaling.maxReplicas The maximum number of containers for the import-api deployment
   ## @param importApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in import-api deployment
   ##
@@ -908,6 +918,7 @@ importApi:
   ## @param importApi.containerSecurityContext.runAsGroup Set import-api containers' Security Context runAsGroup
   ## @param importApi.containerSecurityContext.runAsNonRoot Set import-api containers' Security Context runAsNonRoot
   ## @param importApi.containerSecurityContext.allowPrivilegeEscalation Set import-api containers' Security Context allowPrivilegeEscalation
+  ## @param importApi.containerSecurityContext.readOnlyRootFilesystem Set import-api containers' Security Context readOnlyRootFilesystem
   ## @param importApi.containerSecurityContext.capabilities.drop removes import-api containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -916,6 +927,7 @@ importApi:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -1171,6 +1183,7 @@ importWorker:
   ## @param importWorker.containerSecurityContext.runAsGroup Set import-worker containers' Security Context runAsGroup
   ## @param importWorker.containerSecurityContext.runAsNonRoot Set import-worker containers' Security Context runAsNonRoot
   ## @param importWorker.containerSecurityContext.allowPrivilegeEscalation Set import-worker containers' Security Context allowPrivilegeEscalation
+  ## @param importWorker.containerSecurityContext.readOnlyRootFilesystem Set import-worker containers' Security Context readOnlyRootFilesystem
   ## @param importWorker.containerSecurityContext.capabilities.drop removes import-worker containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -1179,6 +1192,7 @@ importWorker:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -1408,7 +1422,7 @@ ldsApi:
   ## lds-api autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param ldsApi.autoscaling.enabled Enable autoscaling for the lds-api containers
-  ## @param ldsApi.autoscaling.minReplicas The minimal number of containters for the workspldsace-api deployment
+  ## @param ldsApi.autoscaling.minReplicas The minimal number of containers for the workspace-api deployment
   ## @param ldsApi.autoscaling.maxReplicas The maximum number of containers for the lds-api deployment
   ## @param ldsApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in lds-api deployment
   ##
@@ -1448,6 +1462,7 @@ ldsApi:
   ## @param ldsApi.containerSecurityContext.runAsGroup Set lds-api containers' Security Context runAsGroup
   ## @param ldsApi.containerSecurityContext.runAsNonRoot Set lds-api containers' Security Context runAsNonRoot
   ## @param ldsApi.containerSecurityContext.allowPrivilegeEscalation Set lds-api containers' Security Context allowPrivilegeEscalation
+  ## @param ldsApi.containerSecurityContext.readOnlyRootFilesystem Set lds-api containers' Security Context readOnlyRootFilesystem
   ## @param ldsApi.containerSecurityContext.capabilities.drop removes lds-api containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -1456,6 +1471,7 @@ ldsApi:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -1731,7 +1747,7 @@ mapsApi:
   ## maps-api autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param mapsApi.autoscaling.enabled Enable autoscaling for the maps-api containers
-  ## @param mapsApi.autoscaling.minReplicas The minimal number of containters for the maps-api deployment
+  ## @param mapsApi.autoscaling.minReplicas The minimal number of containers for the maps-api deployment
   ## @param mapsApi.autoscaling.maxReplicas The maximum number of containers for the maps-api deployment
   ## @param mapsApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in maps-api deployment
   ##
@@ -1771,6 +1787,7 @@ mapsApi:
   ## @param mapsApi.containerSecurityContext.runAsGroup Set maps-api containers' Security Context runAsGroup
   ## @param mapsApi.containerSecurityContext.runAsNonRoot Set maps-api containers' Security Context runAsNonRoot
   ## @param mapsApi.containerSecurityContext.allowPrivilegeEscalation Set maps-api containers' Security Context allowPrivilegeEscalation
+  ## @param mapsApi.containerSecurityContext.readOnlyRootFilesystem Set maps-api containers' Security Context readOnlyRootFilesystem
   ## @param mapsApi.containerSecurityContext.capabilities.drop removes maps-api containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -1779,6 +1796,7 @@ mapsApi:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -2069,6 +2087,7 @@ sqlWorker:
   ## @param sqlWorker.containerSecurityContext.runAsGroup Set sql-worker containers' Security Context runAsGroup
   ## @param sqlWorker.containerSecurityContext.runAsNonRoot Set sql-worker containers' Security Context runAsNonRoot
   ## @param sqlWorker.containerSecurityContext.allowPrivilegeEscalation Set sql-worker containers' Security Context allowPrivilegeEscalation
+  ## @param sqlWorker.containerSecurityContext.readOnlyRootFilesystem Set sql-worker containers' Security Context readOnlyRootFilesystem
   ## @param sqlWorker.containerSecurityContext.capabilities.drop removes sql-worker containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -2077,6 +2096,7 @@ sqlWorker:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -2302,7 +2322,7 @@ router:
   ## router autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param router.autoscaling.enabled Enable autoscaling for the router containers
-  ## @param router.autoscaling.minReplicas The minimal number of containters for the router deployment
+  ## @param router.autoscaling.minReplicas The minimal number of containers for the router deployment
   ## @param router.autoscaling.maxReplicas The maximum number of containers for the router deployment
   ## @param router.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in router deployment
   ##
@@ -2365,6 +2385,7 @@ router:
   ## @param router.containerSecurityContext.runAsGroup Set router containers' Security Context runAsGroup
   ## @param router.containerSecurityContext.runAsNonRoot Set router containers' Security Context runAsNonRoot
   ## @param router.containerSecurityContext.allowPrivilegeEscalation Set router containers' Security Context allowPrivilegeEscalation
+  ## @param router.containerSecurityContext.readOnlyRootFilesystem Set router containers' Security Context readOnlyRootFilesystem
   ## @param router.containerSecurityContext.capabilities.drop removes router containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -2373,6 +2394,7 @@ router:
     runAsGroup: 101
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -2777,6 +2799,7 @@ httpCache:
   ## @param httpCache.containerSecurityContext.runAsGroup Set http-cache containers' Security Context runAsGroup
   ## @param httpCache.containerSecurityContext.runAsNonRoot Set http-cache containers' Security Context runAsNonRoot
   ## @param httpCache.containerSecurityContext.allowPrivilegeEscalation Set http-cache containers' Security Context allowPrivilegeEscalation
+  ## @param httpCache.containerSecurityContext.readOnlyRootFilesystem Set http-cache containers' Security Context readOnlyRootFilesystem
   ## @param httpCache.containerSecurityContext.capabilities.drop removes http-cache containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -2785,6 +2808,7 @@ httpCache:
     runAsGroup: 101
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -3104,6 +3128,7 @@ notifier:
   ## @param notifier.containerSecurityContext.runAsGroup Set notifier containers' Security Context runAsGroup
   ## @param notifier.containerSecurityContext.runAsNonRoot Set notifier containers' Security Context runAsNonRoot
   ## @param notifier.containerSecurityContext.allowPrivilegeEscalation Set notifier containers' Security Context allowPrivilegeEscalation
+  ## @param notifier.containerSecurityContext.readOnlyRootFilesystem Set notifier containers' Security Context readOnlyRootFilesystem
   ## @param notifier.containerSecurityContext.capabilities.drop removes notifier containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -3112,6 +3137,7 @@ notifier:
     runAsGroup: 101
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -3431,6 +3457,7 @@ cdnInvalidatorSub:
   ## @param cdnInvalidatorSub.containerSecurityContext.runAsGroup Set cdnInvalidatorSub containers' Security Context runAsGroup
   ## @param cdnInvalidatorSub.containerSecurityContext.runAsNonRoot Set cdnInvalidatorSub containers' Security Context runAsNonRoot
   ## @param cdnInvalidatorSub.containerSecurityContext.allowPrivilegeEscalation Set cdnInvalidatorSub containers' Security Context allowPrivilegeEscalation
+  ## @param cdnInvalidatorSub.containerSecurityContext.readOnlyRootFilesystem Set cdnInvalidatorSub containers' Security Context readOnlyRootFilesystem
   ## @param cdnInvalidatorSub.containerSecurityContext.capabilities.drop removes cdnInvalidatorSub containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -3439,6 +3466,7 @@ cdnInvalidatorSub:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -3716,7 +3744,7 @@ workspaceApi:
   ## workspace-api autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param workspaceApi.autoscaling.enabled Enable autoscaling for the workspace-api containers
-  ## @param workspaceApi.autoscaling.minReplicas The minimal number of containters for the workspace-api deployment
+  ## @param workspaceApi.autoscaling.minReplicas The minimal number of containers for the workspace-api deployment
   ## @param workspaceApi.autoscaling.maxReplicas The maximum number of containers for the workspace-api deployment
   ## @param workspaceApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in workspace-api deployment
   ##
@@ -3756,6 +3784,7 @@ workspaceApi:
   ## @param workspaceApi.containerSecurityContext.runAsGroup Set workspace-api containers' Security Context runAsGroup
   ## @param workspaceApi.containerSecurityContext.runAsNonRoot Set workspace-api containers' Security Context runAsNonRoot
   ## @param workspaceApi.containerSecurityContext.allowPrivilegeEscalation Set workspace-api containers' Security Context allowPrivilegeEscalation
+  ## @param workspaceApi.containerSecurityContext.readOnlyRootFilesystem Set workspace-api containers' Security Context readOnlyRootFilesystem
   ## @param workspaceApi.containerSecurityContext.capabilities.drop removes workspace-api containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -3764,6 +3793,7 @@ workspaceApi:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -4020,6 +4050,7 @@ workspaceSubscriber:
   ## @param workspaceSubscriber.containerSecurityContext.runAsGroup Set workspace-subscriber containers' Security Context runAsGroup
   ## @param workspaceSubscriber.containerSecurityContext.runAsNonRoot Set workspace-subscriber containers' Security Context runAsNonRoot
   ## @param workspaceSubscriber.containerSecurityContext.allowPrivilegeEscalation Set workspace-subscriber containers' Security Context allowPrivilegeEscalation
+  ## @param workspaceSubscriber.containerSecurityContext.readOnlyRootFilesystem Set workspace-subscriber containers' Security Context readOnlyRootFilesystem
   ## @param workspaceSubscriber.containerSecurityContext.capabilities.drop removes workspace-subscriber containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -4028,6 +4059,7 @@ workspaceSubscriber:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -4251,7 +4283,7 @@ workspaceWww:
   ## workspace-www autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param workspaceWww.autoscaling.enabled Enable autoscaling for the workspace-www containers
-  ## @param workspaceWww.autoscaling.minReplicas The minimal number of containters for the workspace-www deployment
+  ## @param workspaceWww.autoscaling.minReplicas The minimal number of containers for the workspace-www deployment
   ## @param workspaceWww.autoscaling.maxReplicas The maximum number of containers for the workspace-www deployment
   ## @param workspaceWww.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in workspace-www deployment
   ##
@@ -4291,6 +4323,7 @@ workspaceWww:
   ## @param workspaceWww.containerSecurityContext.runAsGroup Set workspace-www containers' Security Context runAsGroup
   ## @param workspaceWww.containerSecurityContext.runAsNonRoot Set workspace-www containers' Security Context runAsNonRoot
   ## @param workspaceWww.containerSecurityContext.allowPrivilegeEscalation Set workspace-www containers' Security Context allowPrivilegeEscalation
+  ## @param workspaceWww.containerSecurityContext.readOnlyRootFilesystem Set workspace-www containers' Security Context readOnlyRootFilesystem
   ## @param workspaceWww.containerSecurityContext.capabilities.drop removes workspace-www containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -4299,6 +4332,7 @@ workspaceWww:
     runAsGroup: 101
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -4541,7 +4575,8 @@ workspaceMigrations:
   ## @param workspaceMigrations.containerSecurityContext.runAsGroup Set init container's Security Context runAsGroup
   ## @param workspaceMigrations.containerSecurityContext.runAsNonRoot Force the init container to run as non root
   ## @param workspaceMigrations.containerSecurityContext.allowPrivilegeEscalation Set init container's Security Context allowPrivilegeEscalation
-  ## @param workspaceMigrations.containerSecurityContext.capabilities.drop removes workspace-migrations containers' Security Contexcapabilities
+  ## @param workspaceMigrations.containerSecurityContext.readOnlyRootFilesystem Set init containers' Security Context readOnlyRootFilesystem
+  ## @param workspaceMigrations.containerSecurityContext.capabilities.drop removes workspace-migrations containers' Security Context capabilities
   ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
   ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
   ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
@@ -4552,6 +4587,7 @@ workspaceMigrations:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -4604,7 +4640,8 @@ tenantRequirementsChecker:
   ## @param tenantRequirementsChecker.containerSecurityContext.runAsGroup Set init tenant-requirements-checker container's Security Context runAsGroup
   ## @param tenantRequirementsChecker.containerSecurityContext.runAsNonRoot Force the init tenant-requirements-checker container to run as non root
   ## @param tenantRequirementsChecker.containerSecurityContext.allowPrivilegeEscalation Set init tenant-requirements-checker container's Security Context allowPrivilegeEscalation
-  ## @param tenantRequirementsChecker.containerSecurityContext.capabilities.drop removes tenant-requirements-checker containers' Security Contexcapabilities
+  ## @param tenantRequirementsChecker.containerSecurityContext.readOnlyRootFilesystem Set init tenant-requirements-checker containers' Security Context readOnlyRootFilesystem
+  ## @param tenantRequirementsChecker.containerSecurityContext.capabilities.drop removes tenant-requirements-checker containers' Security Context capabilities
   ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
   ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
   ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
@@ -4615,6 +4652,7 @@ tenantRequirementsChecker:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
@@ -4669,17 +4707,19 @@ internalRedis:
       supplementalGroups: [2345]
     ## Configure Container Security Context
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-    ## @param internalRedis.master.containerSecurityContext.runAsUser Set Upgrade Check pre-hook containers' Security Context runAsUser
-    ## @param internalRedis.master.containerSecurityContext.runAsGroup Set Upgrade Check pre-hook containers' Security Context runAsGroup
-    ## @param internalRedis.master.containerSecurityContext.runAsNonRoot Set Upgrade Check pre-hook containers' Security Context runAsNonRoot
-    ## @param internalRedis.master.containerSecurityContext.allowPrivilegeEscalation Set Upgrade Check pre-hook containers' Security Context allowPrivilegeEscalation
-    ## @param internalRedis.master.containerSecurityContext.capabilities.drop removes Upgrade Check pre-hook containers' Security Context capabilities
+    ## @param internalRedis.master.containerSecurityContext.runAsUser Set Redis containers' Security Context runAsUser
+    ## @param internalRedis.master.containerSecurityContext.runAsGroup Set Redis containers' Security Context runAsGroup
+    ## @param internalRedis.master.containerSecurityContext.runAsNonRoot Set Redis containers' Security Context runAsNonRoot
+    ## @param internalRedis.master.containerSecurityContext.allowPrivilegeEscalation Set Redis containers' Security Context allowPrivilegeEscalation
+    ## @param internalRedis.master.containerSecurityContext.readOnlyRootFilesystem Set Redis containers' Security Context readOnlyRootFilesystem
+    ## @param internalRedis.master.containerSecurityContext.capabilities.drop removes Redis containers' Security Context capabilities
     ##
     containerSecurityContext:
       runAsUser: 1000
       runAsGroup: 1000
       runAsNonRoot: false
       allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
       capabilities:
         drop:
           - all
@@ -4705,17 +4745,19 @@ internalRedis:
       supplementalGroups: [2345]
     ## Configure Container Security Context
     ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-    ## @param internalRedis.replica.containerSecurityContext.runAsUser Set Upgrade Check pre-hook containers' Security Context runAsUser
-    ## @param internalRedis.replica.containerSecurityContext.runAsGroup Set Upgrade Check pre-hook containers' Security Context runAsGroup
-    ## @param internalRedis.replica.containerSecurityContext.runAsNonRoot Set Upgrade Check pre-hook containers' Security Context runAsNonRoot
-    ## @param internalRedis.replica.containerSecurityContext.allowPrivilegeEscalation Set Upgrade Check pre-hook containers' Security Context allowPrivilegeEscalation
-    ## @param internalRedis.replica.containerSecurityContext.capabilities.drop removes Upgrade Check pre-hook containers' Security Context capabilities
+    ## @param internalRedis.replica.containerSecurityContext.runAsUser Set Redis replica containers' Security Context runAsUser
+    ## @param internalRedis.replica.containerSecurityContext.runAsGroup Set Redis replica containers' Security Context runAsGroup
+    ## @param internalRedis.replica.containerSecurityContext.runAsNonRoot Set Redis replica containers' Security Context runAsNonRoot
+    ## @param internalRedis.replica.containerSecurityContext.allowPrivilegeEscalation Set Redis replica containers' Security Context allowPrivilegeEscalation
+    ## @param internalRedis.replica.containerSecurityContext.readOnlyRootFilesystem Set Redis containers' Security Context readOnlyRootFilesystem
+    ## @param internalRedis.replica.containerSecurityContext.capabilities.drop removes Redis replica containers' Security Context capabilities
     ##
     containerSecurityContext:
       runAsUser: 1000
       runAsGroup: 1000
       runAsNonRoot: false
       allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
       capabilities:
         drop:
           - all
@@ -4898,6 +4940,7 @@ upgradeCheck:
   ## @param upgradeCheck.containerSecurityContext.runAsGroup Set Upgrade Check pre-hook containers' Security Context runAsGroup
   ## @param upgradeCheck.containerSecurityContext.runAsNonRoot Set Upgrade Check pre-hook containers' Security Context runAsNonRoot
   ## @param upgradeCheck.containerSecurityContext.allowPrivilegeEscalation Set Upgrade Check pre-hook containers' Security Context allowPrivilegeEscalation
+  ## @param upgradeCheck.containerSecurityContext.readOnlyRootFilesystem Set Upgrade Check pre-hook containers' Security Context readOnlyRootFilesystem
   ## @param upgradeCheck.containerSecurityContext.capabilities.drop removes Upgrade Check pre-hook containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -4906,13 +4949,16 @@ upgradeCheck:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
 
 ## @section router-metrics parameters
 routerMetrics:
-  ## @section routerMetrics container parametres
+  ## @param routerMetrics.enabled Enable routerMetrics container
+  enabled: true
+  ## @section routerMetrics container parameters
   ## routerMetrics image
   ## @param routerMetrics.image.registry routerMetrics image registry
   ## @param routerMetrics.image.repository routerMetrics image repository
@@ -4940,10 +4986,10 @@ routerMetrics:
     pullSecrets: []
   ## @param routerMetrics.command Override default container command (useful when using custom images)
   ##
-  command: ["/bin/bash"]
+  command: []
   ## @param routerMetrics.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "/docker-entrypoint.d/20-carto-templates.sh && /usr/share/logstash/bin/logstash"]
+  args: []
   ## @param routerMetrics.jvmProcessMaxMemoryAllocationPercentage Percentage for JVM max memory allocation inside the container memory limit
   ##
   jvmProcessMaxMemoryAllocationPercentage: 70
@@ -4971,6 +5017,7 @@ routerMetrics:
   ## @param routerMetrics.containerSecurityContext.runAsGroup Set router-metrics containers' Security Context runAsGroup
   ## @param routerMetrics.containerSecurityContext.runAsNonRoot Set router-metrics containers' Security Context runAsNonRoot
   ## @param routerMetrics.containerSecurityContext.allowPrivilegeEscalation Set router-metrics containers' Security Context allowPrivilegeEscalation
+  ## @param routerMetrics.containerSecurityContext.readOnlyRootFilesystem Set router-metrics containers' Security Context readOnlyRootFilesystem
   ## @param routerMetrics.containerSecurityContext.capabilities.drop removes router-metrics containers' Security Context capabilities
   ##
   containerSecurityContext:
@@ -4979,6 +5026,7 @@ routerMetrics:
     runAsGroup: 1000
     runAsNonRoot: false
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - all
