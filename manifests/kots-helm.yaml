@@ -7,7 +7,7 @@ metadata:
 spec:
   chart:
     name: carto
-    chartVersion: 1.104.2
+    chartVersion: 1.110.1
   values:
     replicated:
       enabled: true
@@ -135,30 +135,6 @@ spec:
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
-    ## TEMPORAL PATCHED IMAGED
-    - when: 'true'
-      recursiveMerge: true
-      values:
-        ## Temporal fix to change tenantRequirementsChecker image until next release
-        tenantRequirementsChecker:
-          image:
-            tag: "03-06-2024"
-        accountsWww:
-          image:
-            tag: "feature_sc_415853_generate_config_yaml_file_in_a_subdirectory"
-        workspaceWww:
-          image:
-            tag: "feature_sc_415854_generate_config_yaml_file_in_a_subdirectory"
-        router:
-          image:
-            tag: "update_sh_router_nginx_to_be_able_to_run_with_read_only_fs_policy"
-        routerMetrics:
-          image:
-            tag: "feature_sc_415871_try_to_make_router_metrics_container_work"
-        importWorker:
-          image:
-            tag: "feature_sc_415870_fix_import_api_as_snowcli_is_writing_to_readonly"
-
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
       recursiveMerge: true
@@ -166,7 +142,6 @@ spec:
         appSecrets:
           googleCloudStorageServiceAccountKey:
             value: '{{repl ConfigOption "cartoPlatformGoogleSA" }}'
-    
 
     ## LDS configuration
     ### LDS Geocoding, Isoline and Routing providers
