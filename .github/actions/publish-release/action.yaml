@@ -1,0 +1,106 @@
+name: "Publish CARTO Self-Hosted release"
+description: "Publishes a CARTO Self-Hosted release to Replicated and to the Helm chart repository if it is a prerelease or a release."
+
+inputs:
+  replicated-channel:
+    description: "Channel to publish the release to"
+    required: true
+  release-notes:
+    description: "Release notes for the release"
+    required: true
+  version:
+    description: "Version of the release"
+    required: true
+  trigger-action:
+    description: "Action that triggered the release"
+    required: true
+  gcloud-service-account:
+    description: "Service account key for Google Cloud"
+    required: true
+  replicated-api-token:
+    description: "API token for Replicated"
+    required: true
+
+  chart-repo-url:
+    description: "URL of the Helm chart repository in case it needs to be updated"
+    default: https://helm.carto.com/
+  chart-bucket:
+    description: "Google Cloud Storage bucket where the Helm chart is stored"
+    default: gs://carto-helm
+  chart-gcp-project-id:
+    description: "Google Cloud project ID where the Helm chart is stored"
+    default: carto-onprem-artifacts
+  artifacts-gcp-project-id:
+    description: "Google Cloud project ID where the artifacts are stored"
+    default: carto-artifacts
+
+runs:
+  using: "composite"
+  steps:
+    # Step 1: Authenticate with Google Cloud
+    - name: Google Cloud Auth
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ inputs.gcloud-service-account }}
+        project_id: ${{ inputs.artifacts-gcp-project-id }}
+
+    # Step 2: Install Gcloud CLI
+    - name: Google Cloud install
+      uses: google-github-actions/setup-gcloud@v2
+      with:
+        project_id: ${{ inputs.chart-gcp-project-id }}
+    
+    # Step 3: Install helm
+    - name: Install helm
+      shell: bash
+      run: |
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+    # Step 4: Install Replicated CLI
+    - name: Install Replicated CLI
+      shell: bash
+      run: |
+        curl -s https://api.github.com/repos/replicatedhq/replicated/releases/latest \
+        | grep "browser_download_url.*linux_amd64.tar.gz" \
+        | cut -d : -f 2,3 \
+        | tr -d \" \
+        | wget -O replicated.tar.gz -qi -
+        tar xf replicated.tar.gz replicated && rm replicated.tar.gz
+        mv replicated /usr/local/bin/replicated
+
+    # Step 5: Create Helm package
+    - name: Create package
+      shell: bash
+      run: |
+        helm repo add bitnami https://charts.bitnami.com/bitnami
+        helm dependency build chart
+        helm package chart
+
+    # Step 6: Upload Helm package
+    - name: Upload chart
+      shell: bash
+      env:
+        CHARTS_BUCKET: ${{ inputs.chart-bucket }}
+        CHARTS_REPOSITORY: ${{ inputs.chart-repo-url }}
+      if: inputs.trigger-action == 'released' || inputs.trigger-action == 'prereleased'
+      run: |
+        mkdir packages-selfhosted-charts
+        gsutil cp -r "${CHARTS_BUCKET}" .
+        mv carto-helm/*.tgz packages-selfhosted-charts/
+        cp carto-${{ inputs.version }}*.tgz packages-selfhosted-charts/
+        helm repo index packages-selfhosted-charts --url "${CHARTS_REPOSITORY}"
+        gsutil -h "Cache-Control:public,max-age=3600,s-maxage=3600" -m rsync -x "^index.yaml$" -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
+        gsutil -h "Cache-Control:public,max-age=180,s-maxage=30" cp packages-selfhosted-charts/index.yaml "${CHARTS_BUCKET}"
+
+    # Step 7: Upload to Replicated
+    - name: Upload release to Replicated
+      shell: bash
+      env:
+        REPLICATED_APP: carto
+        REPLICATED_API_TOKEN: ${{ inputs.replicated-api-token }}
+      run: |
+        cp carto-${{ inputs.version }}*.tgz manifests/
+        replicated release create -y --auto \
+          --promote "${{inputs.replicated-channel}}" \
+          --version "${{inputs.version}}" \
+          --release-notes "${{ inputs.release-notes }}"

@@ -116,6 +116,7 @@ spec:
                   key: {{ include "carto.redis.existingsecret.key" . | quote }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
              "BIGQUERY_OAUTH2_CLIENT_SECRET"
+             "CARTO_SELFHOSTED_INSTANCE_ID"
              "ENCRYPTION_SECRET_KEY"
              "WORKSPACE_JWT_SECRET"
              ) "context" $ ) | nindent 12 }}
@@ -127,6 +128,7 @@ spec:
                 name: {{ template "carto.workspaceSubscriber.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
              "BIGQUERY_OAUTH2_CLIENT_SECRET"
+             "CARTO_SELFHOSTED_INSTANCE_ID"
              "ENCRYPTION_SECRET_KEY"
              "WORKSPACE_JWT_SECRET"
              ) "context" $ ) -}}

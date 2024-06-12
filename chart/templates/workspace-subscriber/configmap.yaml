@@ -19,6 +19,9 @@ data:
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
+  {{- if .Values.replicated.enabled }}
+  CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "replicated:3000"
+  {{- end }}
   COMPUTE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/data-updates-compute-sub"
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"

@@ -144,6 +144,10 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: config
+              mountPath: /www/data/config
+            - name: tmp
+              mountPath: /tmp
           {{- if .Values.accountsWww.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -151,6 +155,11 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.accountsWww.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
+        - name: config
+          emptyDir:
+            medium: Memory
+        - name: tmp
+          emptyDir: {}
         {{- if .Values.accountsWww.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.accountsWww.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

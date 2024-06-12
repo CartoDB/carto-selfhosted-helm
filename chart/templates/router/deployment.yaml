@@ -147,6 +147,10 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.router.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: nginx
+              mountPath: /etc/nginx
+            - name: tmp
+              mountPath: /tmp
             {{- if .Values.tlsCerts.httpsEnabled }}
             - name: tls-secret
               mountPath: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
@@ -158,6 +162,7 @@ spec:
           {{- if .Values.router.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.router.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
+        {{- if .Values.routerMetrics.enabled }}
         - name: router-metrics
           image: {{ template "carto.routerMetrics.image" . }}
           imagePullPolicy: {{ .Values.routerMetrics.image.pullPolicy }}
@@ -168,19 +173,11 @@ spec:
           command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
           {{- else if .Values.routerMetrics.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.command "context" $) | nindent 12 }}
-          {{- else }}
-          command:
-            - /bin/sh
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
           {{- else if .Values.routerMetrics.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.args "context" $) | nindent 12 }}
-          {{ else }}
-          args:
-            - -ec
-            - |
-              /docker-entrypoint.sh logstash
           {{- end }}
           env:
             {{- if .Values.routerMetrics.extraEnvVars }}
@@ -230,6 +227,15 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: logstash-config
+              mountPath: /usr/share/logstash/config
+            - name: logstash-pipeline
+              mountPath: /usr/share/logstash/pipeline
+            - name: logstash-data
+              mountPath: /usr/share/logstash/data
+            - name: tmp
+              mountPath: /tmp
+              subPath: router-metrics-tmp-dir
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
@@ -239,7 +245,22 @@ spec:
         {{- if .Values.router.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.router.sidecars "context" $) | nindent 8 }}
         {{- end }}
+        {{- end }}
       volumes:
+        - name: nginx
+          emptyDir:
+            medium: Memory
+        - name: logstash-config
+          emptyDir:
+            medium: Memory
+        - name: logstash-pipeline
+          emptyDir:
+            medium: Memory
+        - name: logstash-data
+          emptyDir:
+            medium: Memory
+        - name: tmp
+          emptyDir: {}
         {{- if .Values.tlsCerts.httpsEnabled }}
         - name: tls-secret
           secret:

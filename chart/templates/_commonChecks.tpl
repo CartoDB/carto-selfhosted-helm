@@ -8,6 +8,9 @@ Return common collectors for preflights and support-bundle
       namespace: {{ .Release.Namespace | quote }}
       timeout: 180s
       podSpec:
+        {{- if lookup "v1" "ServiceAccount" .Release.Namespace (include "carto.commonSA.serviceAccountName" .) }}
+        serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+        {{- end }}
         restartPolicy: Never
         securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
         initContainers:
@@ -58,6 +61,7 @@ Return common collectors for preflights and support-bundle
                   fi
                 done
             env:
+              {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
                 value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | b64enc | quote }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_PATH
@@ -67,6 +71,7 @@ Return common collectors for preflights and support-bundle
                 value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | b64enc | quote }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
+              {{- end }}
               {{- end }}
               {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
               {{/* We need to split the SSL CA content in chunks of 2000 characters */}}
@@ -117,6 +122,12 @@ Return common collectors for preflights and support-bundle
             securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
             resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
             env:
+              - name: PUBSUB_PROJECT_ID
+                value: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+              - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_TOPIC
+                value: projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus
+              - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_SUBSCRIPTION
+                value: projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-tenant-requirements-checker-sub
             {{- include "carto.replicated.tenantRequirementsChecker.customerValues" . | indent 12 }}
             {{- include "carto.replicated.tenantRequirementsChecker.customerSecrets" . | indent 12 }}
             volumeMounts:
@@ -194,6 +205,8 @@ Return common analyzers for preflights and support-bundle
       "WorkspaceDatabaseValidator" (list "Check_database_connection" "Check_database_encoding" "Check_user_has_right_permissions" "Check_database_version") 
       "ServiceAccountValidator" (list "Check_valid_service_account")
       "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket")
+      "EgressRequirementsValidator" (list "Check_CARTO_Auth_connectivity" "Check_PubSub_connectivity" "Check_Google_Storage_connectivity" "Check_release_channels_connectivity" "Check_Google_Storage_connectivity" "Check_CARTO_images_registry_connectivity" "Check_TomTom_connectivity" "Check_TravelTime_connectivity")
+      "PubSubValidator" (list "Check_publish_and_listen_to_topic")
   }}
   {{/*
   We just need to add the RedisValidator to the preflightsDict if the externalRedis is enabled
@@ -213,7 +226,6 @@ Return common analyzers for preflights and support-bundle
         - fail:
             when: "false"
             message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
-
         - pass:
             when: "true"
             message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
@@ -277,8 +289,8 @@ Return common analyzers for preflights and support-bundle
             message: OpenShift is a supported distribution.
         # Will be supported in the future
         - pass:
-            when: "== k0s"
-            message: K0s is a supported distribution.
+            when: "== embedded-cluster"
+            message: Using single VM deployment.
         - warn:
             message: Unable to determine the distribution of Kubernetes.
   - nodeResources:
@@ -396,6 +408,32 @@ Return customer values to use in preflights and support-bundle
   - name: WORKSPACE_IMPORTS_STORAGE_ACCOUNT
     value: {{ .Values.appConfigValues.azureStorageAccount | quote }}
   {{- end }}
+  {{- if .Values.externalProxy.enabled }}
+  - name: HTTP_PROXY
+    value: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  - name: http_proxy
+    value: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  - name: HTTPS_PROXY
+    value: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  - name: https_proxy
+    value: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  - name: GRPC_PROXY
+    value: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  - name: grpc_proxy
+    value: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  - name: NODE_TLS_REJECT_UNAUTHORIZED
+    value: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
+  {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
+  - name: NO_PROXY
+    value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  - name: no_proxy
+    value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  {{- end }}
+  {{- if .Values.externalProxy.sslCA }}
+  - name: NODE_EXTRA_CA_CERTS
+    value: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
+  {{- end }}
+  {{- end }}
 {{- end -}}
 
 {{/*
@@ -406,6 +444,8 @@ Return customer secrets to use in preflights and support-bundle
     value: {{ .Values.externalPostgresql.password | quote }}
   - name: REDIS_PASSWORD
     value: {{ .Values.externalRedis.password | quote }}
+  - name: LAUNCHDARKLY_SDK_KEY
+    value: {{ .Values.cartoSecrets.launchDarklySdkKey.value | quote }}
     {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
                 "WORKSPACE_THUMBNAILS_ACCESSKEYID"
                 "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
