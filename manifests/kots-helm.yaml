@@ -570,15 +570,3 @@ spec:
           imageRegistry: '{{repl LocalRegistryAddress }}'
           imagePullSecrets:
             - '{{repl ImagePullSecretName }}'
-        router:
-          image:
-            repository: router-http
-        routerMetrics:
-          image:
-            repository: router-metrics
-        upgradeCheck:
-          image:
-            repository: router-http
-        cdnInvalidatorSub:
-          image:
-            repository: cdn-invalidator-sub
