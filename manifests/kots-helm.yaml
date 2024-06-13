@@ -8,10 +8,18 @@ spec:
   chart:
     name: carto
     chartVersion: 1.110.1
+  builder:
+    replicated:
+      enabled: true
+    internalPostgresql:
+      enabled: false
+
   values:
     replicated:
       enabled: true
       platformDistribution: '{{repl ConfigOption "platformDistribution" }}'
+      images:
+        replicated-sdk: '{{repl LocalImageName "docker.io/replicated/replicated-sdk:v1.0.0-beta.21" }}'
 
     # License
     ## Carto Secrets
