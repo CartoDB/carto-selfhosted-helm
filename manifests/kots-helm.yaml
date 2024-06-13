@@ -578,3 +578,6 @@ spec:
           imageRegistry: '{{repl LocalRegistryAddress }}'
           imagePullSecrets:
             - '{{repl ImagePullSecretName }}'
+        replicated:
+          imagePullSecrets:
+            - '{{repl ImagePullSecretName }}'
