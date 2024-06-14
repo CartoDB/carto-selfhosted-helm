@@ -590,3 +590,6 @@ spec:
           ingressDebugMode: true
         internalRedis:
           enabled: false
+        router:
+          image:
+            tag: feature_sc_415629_add_ingress_debug_mode_in_carto_self_hosted
