@@ -588,3 +588,5 @@ spec:
       values:
         replicated:
           ingressDebugMode: true
+        internalRedis:
+          enabled: false

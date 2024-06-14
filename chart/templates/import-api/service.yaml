@@ -1,3 +1,4 @@
+{{- if (not .Values.replicated.ingressDebugMode) }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -49,3 +50,4 @@ spec:
     {{- include "common.labels.matchLabels" . | nindent 4 }}
     app.kubernetes.io/component: import-api
     {{- end }}
+{{- end }}
