@@ -80,8 +80,10 @@ appConfigValues:
 replicated:
   ## @param replicated.enabled Enable Carto replicated
   ## @param replicated.platformDistribution Platform distribution to deploy Carto Selfhosted with Replicated
+  ## @param replicated.ingressDebugMode Enable debug mode for the application. This will just deploy the router component to check the ingress layer.
   enabled: false
   platformDistribution: ""
+  ingressDebugMode: false
 
 cartoConfigValues:
   ## @param cartoConfigValues.enableErrorResponseStackTrace Enable stack traces in the container responses

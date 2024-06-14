@@ -581,3 +581,10 @@ spec:
         replicated:
           imagePullSecrets:
             - '{{repl ImagePullSecretName }}'
+
+    # Ingress Debug Mode
+    - when: '{{repl ConfigOptionEquals "enableIngressDebugMode" "1" }}'
+      recursiveMerge: true
+      values:
+        replicated:
+          ingressDebugMode: true

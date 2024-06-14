@@ -1,4 +1,4 @@
-{{- if and (include "carto.baseUrl" .) (eq .Values.appConfigValues.httpCacheEnabled "true") }}
+{{- if and (include "carto.baseUrl" .) .Values.replicated.ingressDebugMode }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
