@@ -15,6 +15,11 @@ spec:
       enabled: false
 
   values:
+    global:
+      imagePullSecrets:
+        - '{{repl ImagePullSecretName }}'
+      imageRegistry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com" }}'
+
     replicated:
       enabled: true
       platformDistribution: '{{repl ConfigOption "platformDistribution" }}'
