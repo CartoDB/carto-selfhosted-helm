@@ -52,12 +52,18 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.ldsRoutingProvider`                               | The default LDS provider for routing                                                                                   | `""`                   |
 | `appConfigValues.ldsIsolineProvider`                               | The default LDS provider for isolines                                                                                  | `""`                   |
 
+### CARTO Replicated parameters
+
+| Name                              | Description                                                                                                   | Value   |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------- |
+| `replicated.enabled`              | Enable Carto replicated                                                                                       | `false` |
+| `replicated.platformDistribution` | Platform distribution to deploy Carto Selfhosted with Replicated                                              | `""`    |
+| `replicated.ingressDebugMode`     | Enable debug mode for the application. This will just deploy the router component to check the ingress layer. | `false` |
+
 ### CARTO config parameters
 
 | Name                                              | Description                                                         | Value   |
 | ------------------------------------------------- | ------------------------------------------------------------------- | ------- |
-| `replicated.enabled`                              | Enable Carto replicated                                             | `false` |
-| `replicated.platformDistribution`                 | Platform distribution to deploy Carto Selfhosted with Replicated    | `""`    |
 | `cartoConfigValues.enableErrorResponseStackTrace` | Enable stack traces in the container responses                      | `false` |
 | `cartoConfigValues.cartoAccApiDomain`             | Domain of the Account API of Carto.                                 | `""`    |
 | `cartoConfigValues.cartoAccGcpProjectId`          | GCP project ID of the Carto Accounts.                               | `""`    |
