@@ -1355,43 +1355,6 @@ Return YAML for the Redis init container
 {{- end -}}
 
 {{/*
-Validate external Redis config
-*/}}
-{{- define "carto.validateValues.redis" -}}
-{{- if and (not .Values.internalRedis.enabled) (not .Values.externalRedis.host) -}}
-CARTO: Missing Redis(TM)
-
-If internalRedis.enabled=false you need to specify the host of an external Redis(TM) instance setting externalRedis.host
-{{- end -}}
-{{- end -}}
-
-{{/*
-Validate external Redis config
-*/}}
-{{- define "carto.validateValues.postgresql" -}}
-{{- if and (not .Values.internalRedis.enabled) (not .Values.externalRedis.host) -}}
-CARTO: Missing PostgreSQL
-
-If internalPostgresql.enabled=false you need to specify the host of an external PostgreSQL instance setting externalPostgresql.host
-{{- end -}}
-{{- end -}}
-
-{{/*
-Compile all warnings into a single message, and call fail.
-*/}}
-{{- define "carto.validateValues" -}}
-{{- $messages := list -}}
-{{- $messages := append $messages (include "carto.validateValues.redis" .) -}}
-{{- $messages := append $messages (include "carto.validateValues.postgresql" .) -}}
-{{- $messages := without $messages "" -}}
-{{- $message := join "\n" $messages -}}
-
-{{- if $message -}}
-{{-   printf "\nVALUES VALIDATION:\n%s" $message | fail -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Return the proper Carto upgrade check image name
 */}}
 {{- define "carto.upgradeCheck.image" -}}
