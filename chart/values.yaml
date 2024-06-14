@@ -83,7 +83,7 @@ replicated:
   ## @param replicated.ingressDebugMode Enable debug mode for the application. This will just deploy the router component to check the ingress layer.
   enabled: false
   platformDistribution: ""
-  ingressDebugMode: false
+  ingressDebugMode: "false"
 
 ## @section CARTO config parameters
 ## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
