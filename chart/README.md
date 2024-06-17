@@ -54,11 +54,12 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### CARTO Replicated parameters
 
-| Name                              | Description                                                                                                   | Value   |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------- |
-| `replicated.enabled`              | Enable Carto replicated                                                                                       | `false` |
-| `replicated.platformDistribution` | Platform distribution to deploy Carto Selfhosted with Replicated                                              | `""`    |
-| `replicated.ingressDebugMode`     | Enable debug mode for the application. This will just deploy the router component to check the ingress layer. | `false` |
+| Name                              | Description                                                                                                                                    | Value   |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `replicated.enabled`              | Enable Carto replicated                                                                                                                        | `false` |
+| `replicated.platformDistribution` | Platform distribution to deploy Carto Selfhosted with Replicated                                                                               | `""`    |
+| `replicated.ingressTestingMode`   | Enable router testing mode for the application. This will just deploy the router in testing mode serving a simple page to check that it works. | `false` |
+| `replicated.onlyRunRouter`        | Enable only the router component in the installation. This will just deploy the router component to check the ingress layer.                   | `false` |
 
 ### CARTO config parameters
 

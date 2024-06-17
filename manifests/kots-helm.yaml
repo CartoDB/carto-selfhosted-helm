@@ -143,6 +143,14 @@ spec:
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
+    ## TEMPORAL PATCHED IMAGED
+    - when: 'true'
+      recursiveMerge: true
+      values:
+        router:
+          image:
+            tag: "feature_sc_415629_add_ingress_debug_mode_in_carto_self_hosted"
+
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
       recursiveMerge: true
@@ -582,12 +590,10 @@ spec:
           imagePullSecrets:
             - '{{repl ImagePullSecretName }}'
 
-    # Ingress Debug Mode
-    - when: '{{repl ConfigOptionEquals "enableIngressDebugMode" "1" }}'
+    # Ingress Testing Mode
+    - when: '{{repl ConfigOptionEquals "enableIngressTestingMode" "1" }}'
       recursiveMerge: true
       values:
         replicated:
-          ingressDebugMode: true
-        router:
-          image:
-            tag: feature_sc_415629_add_ingress_debug_mode_in_carto_self_hosted
+          ingressTestingMode: true
+          onlyRunRouter: true

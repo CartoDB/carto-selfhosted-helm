@@ -442,12 +442,12 @@ spec:
             If you don't provide an Allocation ID, a random domain will be assigned to your load balancer. You can find some information about how to use the domain you configured for CARTO platform in the [AWS ELB documentation](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html).
           recommended: true
 
-        # Ingress debug mode
-        - name: enableIngressDebugMode
-          title: Ingress debug mode
+        # Ingress testing mode
+        - name: enableIngressTestingMode
+          title: Ingress testing mode
           when: '{{repl (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") }}'
           help_text: |-
-            Enable if you want to enable ingress debug mode. This will just deploy the ingress controller with the CARTO router to test that the layers you place on top of CARTO work.
+            Enable if you want to enable ingress testing mode. This will just deploy the ingress controller with the CARTO router to test that the layers you place on top of CARTO work.
           type: bool
           default: "0"
 

@@ -1,4 +1,4 @@
-{{- if and (include "carto.baseUrl" .) (not .Values.replicated.ingressDebugMode) }}
+{{- if and (include "carto.baseUrl" .) (not .Values.replicated.onlyRunRouter) }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
