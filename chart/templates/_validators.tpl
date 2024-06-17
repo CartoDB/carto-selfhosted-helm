@@ -10,7 +10,7 @@ If internalRedis.enabled=false you need to specify the host of an external Redis
 {{- end -}}
 
 {{/*
-Validate external Redis config
+Validate external Postgres config
 */}}
 {{- define "carto.validateValues.postgresql" -}}
 {{- if and (not .Values.internalPostgresql.enabled) (not .Values.externalPostgresql.host) -}}
