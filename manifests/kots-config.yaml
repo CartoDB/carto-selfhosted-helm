@@ -447,7 +447,7 @@ spec:
           title: Ingress testing mode
           when: '{{repl (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") }}'
           help_text: |-
-            Enable if you want to enable ingress testing mode. This will just deploy the ingress controller with the CARTO router to test that the layers you place on top of CARTO work.
+            Enable if you want to enable ingress testing mode. This will just deploy the CARTO router in testing mode to check that the layers you place on top of CARTO work.
           type: bool
           default: "0"
 
