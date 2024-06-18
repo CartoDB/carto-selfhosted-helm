@@ -2,7 +2,7 @@
 Validate external Redis config
 */}}
 {{- define "carto.validateValues.redis" -}}
-{{- if and (not .Values.internalRedis.enabled) (not .Values.externalRedis.host) (not .Values.replicated.onlyRunRouter) -}}
+{{- if and (not .Values.internalRedis.enabled) (not .Values.externalRedis.host) (not .Values.cartoConfigValues.onlyRunRouter) -}}
 CARTO: Missing Redis(TM)
 
 If internalRedis.enabled=false you need to specify the host of an external Redis(TM) instance setting externalRedis.host

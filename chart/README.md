@@ -54,29 +54,29 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### CARTO Replicated parameters
 
-| Name                              | Description                                                                                                                                    | Value   |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| `replicated.enabled`              | Enable Carto replicated                                                                                                                        | `false` |
-| `replicated.platformDistribution` | Platform distribution to deploy Carto Selfhosted with Replicated                                                                               | `""`    |
-| `replicated.ingressTestingMode`   | Enable router testing mode for the application. This will just deploy the router in testing mode serving a simple page to check that it works. | `false` |
-| `replicated.onlyRunRouter`        | Enable only the router component in the installation. This will just deploy the router component to check the ingress layer.                   | `false` |
+| Name                              | Description                                                      | Value   |
+| --------------------------------- | ---------------------------------------------------------------- | ------- |
+| `replicated.enabled`              | Enable Carto replicated                                          | `false` |
+| `replicated.platformDistribution` | Platform distribution to deploy Carto Selfhosted with Replicated | `""`    |
 
 ### CARTO config parameters
 
-| Name                                              | Description                                                         | Value   |
-| ------------------------------------------------- | ------------------------------------------------------------------- | ------- |
-| `cartoConfigValues.enableErrorResponseStackTrace` | Enable stack traces in the container responses                      | `false` |
-| `cartoConfigValues.cartoAccApiDomain`             | Domain of the Account API of Carto.                                 | `""`    |
-| `cartoConfigValues.cartoAccGcpProjectId`          | GCP project ID of the Carto Accounts.                               | `""`    |
-| `cartoConfigValues.cartoAccGcpProjectRegion`      | GCP project region of the Carto Accounts.                           | `""`    |
-| `cartoConfigValues.cartoAuth0ClientId`            | Client ID of Auth0.                                                 | `""`    |
-| `cartoConfigValues.cartoAuth0CustomDomain`        | Custom Domain of Auth0.                                             | `""`    |
-| `cartoConfigValues.cartoSelfhostedDwLocation`     | Location of the Carto Data Warehouse.                               | `""`    |
-| `cartoConfigValues.selfHostedGcpProjectId`        | GCP project ID used in the installation.                            | `""`    |
-| `cartoConfigValues.selfHostedTenantId`            | Carto internal tenantId used in the installation.                   | `""`    |
-| `cartoConfigValues.launchDarklyClientSideId`      | LaunchDarkly ClientSideId (by www) used to enable/disable features. | `""`    |
-| `cartoConfigValues.cartoDataWarehouseEnabled`     | Enable the Carto Data Warehouse for the self-hosted.                | `false` |
-| `cartoConfigValues.dataObservatoryProjectId`      | GCP project ID of the Carto Data Observatory.                       | `""`    |
+| Name                                              | Description                                                                                                                                                                                          | Value   |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `cartoConfigValues.enableErrorResponseStackTrace` | Enable stack traces in the container responses                                                                                                                                                       | `false` |
+| `cartoConfigValues.cartoAccApiDomain`             | Domain of the Account API of Carto.                                                                                                                                                                  | `""`    |
+| `cartoConfigValues.cartoAccGcpProjectId`          | GCP project ID of the Carto Accounts.                                                                                                                                                                | `""`    |
+| `cartoConfigValues.cartoAccGcpProjectRegion`      | GCP project region of the Carto Accounts.                                                                                                                                                            | `""`    |
+| `cartoConfigValues.cartoAuth0ClientId`            | Client ID of Auth0.                                                                                                                                                                                  | `""`    |
+| `cartoConfigValues.cartoAuth0CustomDomain`        | Custom Domain of Auth0.                                                                                                                                                                              | `""`    |
+| `cartoConfigValues.cartoSelfhostedDwLocation`     | Location of the Carto Data Warehouse.                                                                                                                                                                | `""`    |
+| `cartoConfigValues.selfHostedGcpProjectId`        | GCP project ID used in the installation.                                                                                                                                                             | `""`    |
+| `cartoConfigValues.selfHostedTenantId`            | Carto internal tenantId used in the installation.                                                                                                                                                    | `""`    |
+| `cartoConfigValues.launchDarklyClientSideId`      | LaunchDarkly ClientSideId (by www) used to enable/disable features.                                                                                                                                  | `""`    |
+| `cartoConfigValues.cartoDataWarehouseEnabled`     | Enable the Carto Data Warehouse for the self-hosted.                                                                                                                                                 | `false` |
+| `cartoConfigValues.dataObservatoryProjectId`      | GCP project ID of the Carto Data Observatory.                                                                                                                                                        | `""`    |
+| `cartoConfigValues.ingressTestingMode`            | Enable router testing mode for the application. This will deploy the router in testing mode serving a simple page to check that it works without routing traffic to other components.                | `false` |
+| `cartoConfigValues.onlyRunRouter`                 | Enable only the router component in the installation. This will just deploy the router component. Useful to check the ingress layer together with the option `cartoConfigValues.ingressTestingMode`. | `false` |
 
 ### App secret
 

@@ -40,7 +40,7 @@ data:
   ROUTER_METRICS_PUBSUB_TOPIC: "data-updates"
   ROUTER_METRICS_HOST: "localhost"
   ROUTER_METRICS_PUBSUB_SUBSCRIPTION_FILTER: "aggregated-selfhosted-metrics"
-  ROUTER_INGRESS_TESTING_MODE: {{ .Values.replicated.ingressTestingMode | quote }}
+  ROUTER_INGRESS_TESTING_MODE: {{ .Values.cartoConfigValues.ingressTestingMode | quote }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}

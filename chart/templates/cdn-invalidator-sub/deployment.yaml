@@ -1,4 +1,4 @@
-{{- if and (include "carto.baseUrl" .) (eq .Values.appConfigValues.httpCacheEnabled "true") (not .Values.replicated.onlyRunRouter) }}
+{{- if and (include "carto.baseUrl" .) (eq .Values.appConfigValues.httpCacheEnabled "true") (not .Values.cartoConfigValues.onlyRunRouter) }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:

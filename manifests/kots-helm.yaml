@@ -594,6 +594,6 @@ spec:
     - when: '{{repl ConfigOptionEquals "enableIngressTestingMode" "1" }}'
       recursiveMerge: true
       values:
-        replicated:
+        cartoConfigValues:
           ingressTestingMode: true
           onlyRunRouter: true
