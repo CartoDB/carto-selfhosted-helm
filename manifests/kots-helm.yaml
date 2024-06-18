@@ -20,7 +20,7 @@ spec:
     global:
       imagePullSecrets:
         - replicated-registry-pull-secret
-      imageRegistry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "proxy.replicated.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+      imageRegistry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
 
     replicated:
       enabled: true
