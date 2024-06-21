@@ -156,6 +156,15 @@ spec:
         accountsWww:
           image:
             registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+        router:
+          image:
+            registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+        routerMetrics:
+          image:
+            registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+        cdnInvalidatorSub:
+          image:
+            registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
 
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
