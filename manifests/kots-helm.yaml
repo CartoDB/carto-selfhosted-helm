@@ -20,7 +20,6 @@ spec:
     global:
       imagePullSecrets:
         - replicated-registry-pull-secret
-      imageRegistry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
 
     replicated:
       enabled: true
@@ -150,6 +149,14 @@ spec:
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
+    ## Use Replicated images proxy
+    - when: 'true'
+      recursiveMerge: true
+      values:
+        accountsWww:
+          image:
+            registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
       recursiveMerge: true
