@@ -233,7 +233,7 @@ Return common analyzers for preflights and support-bundle
             message: Failed to check if images are present in registry
         - pass:
             message: All Carto images are available
-  {{- if lookup "rbac.authorization.k8s.io/v1" "Role" .Release.Namespace "kotsadm-role" .) }}
+  {{- if lookup "rbac.authorization.k8s.io/v1" "Role" .Release.Namespace "kotsadm-role" . }}
   - clusterVersion:
       outcomes:
         - fail:
