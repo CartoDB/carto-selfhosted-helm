@@ -353,6 +353,7 @@ spec:
           title: *accessToCartoModeK8sTitle
           help_text: *accessToCartoModeK8sHelpText
           type: select_one
+          default: accessToCartoModeK8sCustom
           required: true
           items:
             - name: accessToCartoModeK8sCustom
