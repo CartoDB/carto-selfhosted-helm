@@ -536,11 +536,6 @@ spec:
             - name: CARTO_TRACING_MODE
               value: "local"
 
-    ## Advanced Tuning
-    - when: '{{repl not (empty (ConfigOption "platformAdvancedTuningValues")) }}'
-      recursiveMerge: true
-      values: repl{{ ConfigOption "platformAdvancedTuningValues" | nindent 8 }}
-
     ## Openshift
     - when: '{{repl ConfigOptionEquals "platformDistribution" "openShift" }}'
       recursiveMerge: true
@@ -581,3 +576,9 @@ spec:
         replicated:
           imagePullSecrets:
             - name: '{{repl ImagePullSecretName }}'
+
+    # THIS SHOULD ALWAYS BE THE LAST OPTIONAL VALUE!!!!
+    ## Advanced Tuning
+    - when: '{{repl not (empty (ConfigOption "platformAdvancedTuningValues")) }}'
+      recursiveMerge: true
+      values: repl{{ ConfigOption "platformAdvancedTuningValues" | nindent 8 }}
