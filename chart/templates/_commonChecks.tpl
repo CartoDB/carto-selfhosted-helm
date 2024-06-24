@@ -197,7 +197,6 @@ Return common analyzers for preflights and support-bundle
       "ServiceAccountValidator" (list "Check_valid_service_account")
       "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket")
       "EgressRequirementsValidator" (list "Check_CARTO_Auth_connectivity" "Check_PubSub_connectivity" "Check_Google_Storage_connectivity" "Check_release_channels_connectivity" "Check_Google_Storage_connectivity" "Check_CARTO_images_registry_connectivity" "Check_TomTom_connectivity" "Check_TravelTime_connectivity")
-      "PubSubValidator" (list "Check_publish_and_listen_to_topic")
   }}
   {{/*
   We just need to add the RedisValidator to the preflightsDict if the externalRedis is enabled
