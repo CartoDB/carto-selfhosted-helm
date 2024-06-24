@@ -7,6 +7,7 @@ spec:
   title: CARTO
   icon: https://storage.googleapis.com/carto-published-resources-bucket/CARTO-Logo-Marker.png
   allowRollback: false
+  supportMinimalRBACPrivileges: true
   statusInformers:
     # TODO: Add ingress, gateway or router service
     - deployment/carto-accounts-www
