@@ -580,4 +580,4 @@ spec:
             - '{{repl ImagePullSecretName }}'
         replicated:
           imagePullSecrets:
-            - '{{repl ImagePullSecretName }}'
+            - name: '{{repl ImagePullSecretName }}'
