@@ -20,11 +20,10 @@ spec:
     global:
       imagePullSecrets:
         - '{{repl ImagePullSecretName }}'
+
     replicated:
       imagePullSecrets:
         - '{{repl ImagePullSecretName }}'
-
-    replicated:
       enabled: true
       platformDistribution: '{{repl ConfigOption "platformDistribution" }}'
       images:
