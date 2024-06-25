@@ -235,7 +235,7 @@ Return common analyzers for preflights and support-bundle
             message: All Carto images are available
   {{/*
   We only can run the following preflight checks and get the platform distribution when a cluster role is created.
-  Otherwise, we can't obtain this info
+  Otherwise, we cannot obtain this info
   */}}
   {{- if ne .Values.replicated.platformDistribution "" }}
   - clusterVersion:
