@@ -349,10 +349,12 @@ spec:
               title: |-
                 Custom
         - name: accessToCartoModeK8sNotFullySupported
+          hidden: true
           when: *when_is_k8s_NOT_fully_implemented_platform
           title: *accessToCartoModeK8sTitle
           help_text: *accessToCartoModeK8sHelpText
           type: select_one
+          default: accessToCartoModeK8sCustom
           required: true
           items:
             - name: accessToCartoModeK8sCustom
@@ -381,7 +383,7 @@ spec:
           type: select_one
           when: '{{repl or (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") (ConfigOptionEquals "accessToCartoModeK8sNotFullySupported" "accessToCartoModeK8sCustom") (ConfigOptionEquals "isEmbeddedCluster" "true") }}'
           help_text: |-
-            TLS termination is required and it can be achieved within the CARTO application itself (recommended) or through a load balancer.
+            TLS termination is required and it can be achieved within the CARTO application itself or through a load balancer (recommended).
           items:
             - name: accessToCartoRouterHTTPS
               title: |-

@@ -233,6 +233,11 @@ Return common analyzers for preflights and support-bundle
             message: Failed to check if images are present in registry
         - pass:
             message: All Carto images are available
+  {{/*
+  We only can run the following preflight checks and get the platform distribution when a cluster role is created.
+  Otherwise, we cannot obtain this info
+  */}}
+  {{- if ne .Values.replicated.platformDistribution "" }}
   - clusterVersion:
       outcomes:
         - fail:
@@ -306,6 +311,7 @@ Return common analyzers for preflights and support-bundle
             message: The cluster should contain at least 17Gi. ➡️ Ignore if you have auto-scale enabled in your cluster.
         - pass:
             message: There are at least 16 Gi in the cluster.
+  {{- end }}
   {{- if .Values.gateway.enabled }}
   - customResourceDefinition:
       checkName: Gateway API available
