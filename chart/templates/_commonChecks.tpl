@@ -233,7 +233,7 @@ Return common analyzers for preflights and support-bundle
             message: Failed to check if images are present in registry
         - pass:
             message: All Carto images are available
-  {{- if ne .Values.platformDistribution "" }}
+  {{- if ne .Values.replicated.platformDistribution "" }}
   - clusterVersion:
       outcomes:
         - fail:
