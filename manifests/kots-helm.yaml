@@ -19,7 +19,10 @@ spec:
       enabled: false
     global:
       imagePullSecrets:
-        - replicated-registry-pull-secret
+        - '{{repl ImagePullSecretName }}'
+    replicated:
+      imagePullSecrets:
+        - '{{repl ImagePullSecretName }}'
 
     replicated:
       enabled: true

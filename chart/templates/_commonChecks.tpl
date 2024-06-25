@@ -3,6 +3,16 @@ Return common collectors for preflights and support-bundle
 */}}
 {{- define "carto.replicated.commonChecks.collectors" }}
   - runPod:
+    name: "nslookup"
+    namespace: {{ .Release.Namespace | quote }}
+    podSpec:
+      containers:
+        - name: busybox
+          image: busybox:latest
+          command:
+            - nslookup
+            - registry.self-hosted.carto.com
+  - runPod:
       collectorName: tenant-requirements-check
       name: tenant-requirements-check
       namespace: {{ .Release.Namespace | quote }}
