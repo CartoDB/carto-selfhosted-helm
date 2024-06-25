@@ -233,8 +233,8 @@ Return common analyzers for preflights and support-bundle
             message: Failed to check if images are present in registry
         - pass:
             message: All Carto images are available
-  {{- $namespaceKotsadmRole := lookup "rbac.authorization.k8s.io/v1" "Role" .Release.Namespace "kotsadm-role" -}}
-  {{- if not $namespaceKotsadmRole }}
+  "{{ printf "{{- $role := lookup rbac.authorization.k8s.io/v1 Role .Release.Namespace kotsadm-role }}" }}"
+  "{{ printf "{{- if not $role }}" }}"
   - clusterVersion:
       outcomes:
         - fail:
@@ -308,7 +308,7 @@ Return common analyzers for preflights and support-bundle
             message: The cluster should contain at least 17Gi. ➡️ Ignore if you have auto-scale enabled in your cluster.
         - pass:
             message: There are at least 16 Gi in the cluster.
-  {{- end }}
+  "{{ printf "{{- end }}" }}"
   {{- if .Values.gateway.enabled }}
   - customResourceDefinition:
       checkName: Gateway API available
