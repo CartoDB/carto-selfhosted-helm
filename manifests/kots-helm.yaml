@@ -23,7 +23,7 @@ spec:
 
     replicated:
       imagePullSecrets:
-        - '{{repl ImagePullSecretName }}'
+        - name: '{{repl ImagePullSecretName }}'
       enabled: true
       platformDistribution: '{{repl ConfigOption "platformDistribution" }}'
       images:
