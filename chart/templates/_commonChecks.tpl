@@ -172,7 +172,6 @@ Return common collectors for preflights and support-bundle
   - registryImages:
       namespace: {{ .Release.Namespace | quote }}
       imagePullSecret:
-        type: kubernetes.io/dockerconfigjson
         name: carto-registry
       images:
         - {{ template "carto.accountsWww.image" . }}
