@@ -170,6 +170,7 @@ Return common collectors for preflights and support-bundle
               sizeLimit: 1Mi
           {{- end }}
   - registryImages:
+      namespace: {{ .Release.Namespace | quote }}
       imagePullSecret:
         type: kubernetes.io/dockerconfigjson
         name: carto-registry
