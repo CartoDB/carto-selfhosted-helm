@@ -171,8 +171,7 @@ Return common collectors for preflights and support-bundle
           {{- end }}
   - registryImages:
       namespace: {{ .Release.Namespace | quote }}
-      imagePullSecret:
-        name: carto-registry
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
       images:
         - {{ template "carto.accountsWww.image" . }}
         - {{ template "carto.cdnInvalidatorSub.image" . }}
