@@ -170,6 +170,7 @@ Return common collectors for preflights and support-bundle
               sizeLimit: 1Mi
           {{- end }}
   - registryImages:
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
       images:
         - {{ template "carto.accountsWww.image" . }}
         - {{ template "carto.cdnInvalidatorSub.image" . }}
