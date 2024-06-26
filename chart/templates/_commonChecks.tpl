@@ -170,7 +170,9 @@ Return common collectors for preflights and support-bundle
               sizeLimit: 1Mi
           {{- end }}
   - registryImages:
-      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      imagePullSecret:
+        type: kubernetes.io/dockerconfigjson
+        name: carto-registry
       images:
         - {{ template "carto.accountsWww.image" . }}
         - {{ template "carto.cdnInvalidatorSub.image" . }}
