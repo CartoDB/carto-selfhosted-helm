@@ -172,7 +172,7 @@ Return common collectors for preflights and support-bundle
   - registryImages:
       namespace: {{ .Release.Namespace | quote }}
       {{/*
-        We can't use the imagePullSecrets template that we have because the registryImages collector needs a single imagePullSecret.
+        We cannot use the imagePullSecrets template that we have because the registryImages collector needs a single imagePullSecret.
         As we just include the preflights if using Replicated the carto-registry secret should be present always!
       */}}
       imagePullSecret:
