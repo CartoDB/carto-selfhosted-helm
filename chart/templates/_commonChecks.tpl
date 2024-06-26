@@ -171,7 +171,12 @@ Return common collectors for preflights and support-bundle
           {{- end }}
   - registryImages:
       namespace: {{ .Release.Namespace | quote }}
-      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{/*
+        We can't use the imagePullSecrets template that we have because the registryImages collector needs a single imagePullSecret.
+        As we just include the preflights if using Replicated the carto-registry secret should be present always!
+      */}}
+      imagePullSecret:
+        name: carto-registry
       images:
         - {{ template "carto.accountsWww.image" . }}
         - {{ template "carto.cdnInvalidatorSub.image" . }}
