@@ -808,7 +808,7 @@ spec:
           required: true
           type: text
           help_text: |-
-            The kubernetes service account you have created in the carto namespace.
+            The kubernetes service account name you have created in the carto namespace.
             Remember to annotate this SA with the GCP service account email.
           # BigQuery
         - name: enableBigqueryWorkloadIdentityConnection
