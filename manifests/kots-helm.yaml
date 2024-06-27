@@ -212,7 +212,7 @@ spec:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
 
     upgradeCheck:
-      disabled: true
+      enabled: false
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
 
