@@ -802,11 +802,14 @@ spec:
             [More info](https://docs.carto.com/carto-self-hosted/guides/use-workload-identity-in-gcp).
           type: bool
           default: "0"
-        - name: googleWorkloadIdentityEmail
-          title: Google workload identity email
+        - name: k8sWorkloadIdentityServiceAccountName
+          title: Kubernetes workload identity service account name
           when: '{{repl (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") }}'
           required: true
           type: text
+          help_text: |-
+            The kubernetes service account you have created in the carto namespace.
+            Remember to annotate this SA with the GCP service account email.
           # BigQuery
         - name: enableBigqueryWorkloadIdentityConnection
           title: BigQuery workload identity
