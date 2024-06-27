@@ -229,17 +229,20 @@ Return common analyzers for preflights and support-bundle
             message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
   {{- end }}
   {{- end }}
-  - registryImages:
-      checkName: Carto Registry Images
-      outcomes:
-        - fail:
-            when: "missing > 0"
-            message: Images are missing from registry
-        - warn:
-            when: "errors > 0"
-            message: Failed to check if images are present in registry
-        - pass:
-            message: All Carto images are available
+  {{/*
+  Commented until replicated fixes this: https://github.com/replicated-collab/carto-replicated/issues/30
+  */}}
+  # - registryImages:
+  #   checkName: Carto Registry Images
+  #    outcomes:
+  #      - fail:
+  #          when: "missing > 0"
+  #          message: Images are missing from registry
+  #      - warn:
+  #          when: "errors > 0"
+  #          message: Failed to check if images are present in registry
+  #      - pass:
+  #          message: All Carto images are available
   {{/*
   We only can run the following preflight checks and get the platform distribution when a cluster role is created.
   Otherwise, we cannot obtain this info
