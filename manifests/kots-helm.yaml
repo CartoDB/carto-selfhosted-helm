@@ -139,8 +139,7 @@ spec:
       staticIP:
         enabled: repl{{ if ConfigOptionEquals "accessToCartoGCPStaticIPName" ""}}falserepl{{ else }}truerepl{{ end }}
         value: '{{repl ConfigOption "accessToCartoGCPStaticIPName" }}'
-
-            
+        
     accountsWww:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
@@ -213,6 +212,13 @@ spec:
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
+    - when: 'true'
+      recursiveMerge: true
+      values:
+        tenantRequirementsChecker:
+          image:
+            tag: 'feature_sc_402060_add_a_preflight_check_to_ensure_that_the'
+
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
       recursiveMerge: true

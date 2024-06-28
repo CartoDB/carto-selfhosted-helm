@@ -82,6 +82,16 @@ Return common collectors for preflights and support-bundle
               - name: PROXY_SSL_CA__FILE_PATH
                 value: {{ include "carto.proxy.configMapMountAbsolutePath" . }}
               {{- end }}
+              {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+              - name: ROUTER_SSL_CERT__FILE_CONTENT
+                value: {{ .Values.router.tlsCertificates.certificateValueBase64 | b64dec | quote }}
+              - name: ROUTER_SSL_CERT__FILE_PATH
+                value: "/etc/ssl/certs/cert.crt"
+              - name: ROUTER_SSL_CERT_KEY__FILE_CONTENT
+                value: {{ .Values.router.tlsCertificates.privateKeyValueBase64 | b64dec | quote }}
+              - name: ROUTER_SSL_CERT_KEY__FILE_PATH
+                value: "/etc/ssl/certs/cert.key"
+              {{- end }}
             volumeMounts:
               - name: gcp-default-service-account-key
                 mountPath: {{ include "carto.google.secretMountDir" . }}
@@ -104,6 +114,11 @@ Return common collectors for preflights and support-bundle
               {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
               - name: proxy-ssl-ca
                 mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+                readOnly: false
+              {{- end }}
+              {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+              - name: router-tls-cert-and-key
+                mountPath: /etc/ssl/certs/
                 readOnly: false
               {{- end }}
         containers:
@@ -145,6 +160,11 @@ Return common collectors for preflights and support-bundle
                 mountPath: {{ include "carto.proxy.configMapMountDir" . }}
                 readOnly: true
               {{- end }}
+              {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+              - name: router-tls-cert-and-key
+                mountPath: /etc/ssl/certs/
+                readOnly: true
+              {{- end }}
         volumes:
           - name: gcp-default-service-account-key
             emptyDir:
@@ -166,6 +186,11 @@ Return common collectors for preflights and support-bundle
           {{- end }}
           {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
           - name: proxy-ssl-ca
+            emptyDir:
+              sizeLimit: 1Mi
+          {{- end }}
+          {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+          - name: router-tls-cert-and-key
             emptyDir:
               sizeLimit: 1Mi
           {{- end }}
@@ -205,6 +230,7 @@ Return common analyzers for preflights and support-bundle
       "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket")
       "EgressRequirementsValidator" (list "Check_CARTO_Auth_connectivity" "Check_PubSub_connectivity" "Check_Google_Storage_connectivity" "Check_release_channels_connectivity" "Check_Google_Storage_connectivity" "Check_CARTO_images_registry_connectivity" "Check_TomTom_connectivity" "Check_TravelTime_connectivity")
       "PubSubValidator" (list "Check_publish_and_listen_to_topic")
+      "CertificatesValidator" (list "Check_Postgres_certificate" "Check_Redis_certificate" "Check_Router_certificate")
   }}
   {{/*
   We just need to add the RedisValidator to the preflightsDict if the externalRedis is enabled
@@ -434,6 +460,12 @@ Return customer values to use in preflights and support-bundle
   - name: NODE_EXTRA_CA_CERTS
     value: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
+  {{- end }}
+  {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+  - name: ROUTER_SSL_CERT
+    value: "/etc/ssl/certs/cert.crt"
+  - name: ROUTER_SSL_CERT_KEY
+    value: "/etc/ssl/certs/cert.key"
   {{- end }}
 {{- end -}}
 
