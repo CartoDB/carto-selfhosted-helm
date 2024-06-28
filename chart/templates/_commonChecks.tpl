@@ -384,6 +384,12 @@ Return customer values to use in preflights and support-bundle
     value: {{ include "carto.postgresql.databaseName" . }}
   - name: WORKSPACE_POSTGRES_USER
     value: {{ include "carto.postgresql.user" . }}
+  - name: WORKSPACE_POSTGRES_SSL_ENABLED
+    value: {{ .Values.externalPostgresql.sslEnabled | quote }}
+  {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA  }}
+  - name: WORKSPACE_POSTGRES_SSL_CA
+    value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
+  {{- end }}
   - name: WORKSPACE_TENANT_ID
     value: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
