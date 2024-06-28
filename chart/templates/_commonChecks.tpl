@@ -51,6 +51,8 @@ Return common collectors for preflights and support-bundle
                   FILE_CONTENT=$(eval "echo \$$FILE_CONTENT_VAR")
                   printf "%s" "$FILE_CONTENT" > "$FILE_PATH"
                 done
+
+                cat /usr/src/certs/postgresql-ssl-ca/ca.crt
             env:
               {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
