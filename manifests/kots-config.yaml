@@ -808,9 +808,8 @@ spec:
           required: true
           type: text
           help_text: |-
-            The kubernetes service account name you have created in the carto namespace.
-            Remember to annotate this SA with the GCP service account email.
-            Please see [How to enable workload identity?](https://docs.carto.com/carto-self-hosted/guides/use-workload-identity-in-gcp)
+            Name of the kubernetes service account that you created in the namespace to configure Workload Identity.
+            [More info](https://docs.carto.com/carto-self-hosted/guides/use-workload-identity-in-gcp).
           # BigQuery
         - name: enableBigqueryWorkloadIdentityConnection
           title: BigQuery workload identity
