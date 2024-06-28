@@ -118,12 +118,6 @@ spec:
       tlsCA: |
         repl{{- ConfigOptionData "externalRedisTLSCertificate" | nindent 8 }}
 
-    # Service Account
-    commonBackendServiceAccount:
-      enableGCPWorkloadIdentity: repl{{ if ConfigOptionEquals "enableGoogleWorkloadIdentity" "1"}}truerepl{{ else }}falserepl{{ end }}
-      annotations:
-        iam.gke.io/gcp-service-account: '{{repl ConfigOption "googleWorkloadIdentityEmail" }}'
-
     ## TLS Certs
     # FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
     # Disable legacy tlsCerts
@@ -640,6 +634,16 @@ spec:
         tenantRequirementsChecker: *customSecurityContext
         internalPostgresql: *customSecurityContext
         upgradeCheck: *customSecurityContext
+
+    # GKE Workload Identity
+    - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "1" }}'
+      recursiveMerge: true
+      values:
+        commonBackendServiceAccount:
+          enableGCPWorkloadIdentity: true
+          # When enabling gke workload identity, the k8s SA should be created by the customer to be able to run preflights
+          create: false
+          name: '{{repl ConfigOption "k8sWorkloadIdentityServiceAccountName" }}'
 
     # Airgap mode AND Local Registry
     - when: '{{repl and (IsAirgap) (HasLocalRegistry) }}'
