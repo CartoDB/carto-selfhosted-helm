@@ -58,8 +58,8 @@ spec:
       cartoDataWarehouseEnabled: '{{repl ConfigOptionEquals "enableCDW" "1" }}'
       cartoSelfhostedDwLocation: '{{repl LicenseFieldValue "cartoDWLocation" }}'
       dataObservatoryProjectId: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "dataObservatoryProjectId" "" | Base64Decode }}'
-      ingressTestingMode: '{{repl ConfigOptionEquals "enableIngressTestingMode" "1" }}'
-      onlyRunRouter: '{{repl ConfigOptionEquals "enableIngressTestingMode" "1" }}'
+      ingressTestingMode: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
+      onlyRunRouter: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
 
     # Customizations
     ## App Secrets
