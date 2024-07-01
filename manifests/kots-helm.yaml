@@ -219,6 +219,9 @@ spec:
         router:
           image:
             tag: "feature_sc_415629_add_ingress_debug_mode_in_carto_self_hosted"
+        tenantRequirementsChecker:
+          image:
+            tag: 'feature_sc_402060_add_a_preflight_check_to_ensure_that_the'
 
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
