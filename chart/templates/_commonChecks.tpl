@@ -8,7 +8,7 @@ Return common collectors for preflights and support-bundle
       namespace: {{ .Release.Namespace | quote }}
       timeout: 180s
       podSpec:
-        {{- if lookup "v1" "ServiceAccount" .Release.Namespace (include "carto.commonSA.serviceAccountName" .) }}
+        {{- if .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
         {{- end }}
         restartPolicy: Never
@@ -49,38 +49,48 @@ Return common collectors for preflights and support-bundle
                   FILE_PATH=$(env | grep ${PREFIX}__FILE_PATH | awk -F= '{print $2}')
                   FILE_CONTENT_VAR="${PREFIX}__FILE_CONTENT"
                   FILE_CONTENT=$(eval "echo \$$FILE_CONTENT_VAR")
-                  printf "%s" "$FILE_CONTENT" > "$FILE_PATH"
+                  echo "$FILE_CONTENT" | base64 -d > "$FILE_PATH"
                 done
             env:
               {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
-                value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | quote }}
+                value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | b64enc | quote }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.google.secretMountAbsolutePath" . }}
               {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_CONTENT
-                value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | quote }}
+                value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | b64enc | quote }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
               {{- end }}
               {{- end }}
               {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
               - name: POSTGRES_SSL_CA__FILE_CONTENT
-                value: {{ .Values.externalPostgresql.sslCA | quote }}
+                value: {{ .Values.externalPostgresql.sslCA | b64enc | quote }}
               - name: POSTGRES_SSL_CA__FILE_PATH
                 value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
               - name: REDIS_TLS_CA__FILE_CONTENT
-                value: {{ .Values.externalRedis.tlsCA | quote }}
+                value: {{ .Values.externalRedis.tlsCA | b64enc | quote }}
               - name: REDIS_TLS_CA__FILE_PATH
                 value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
               - name: PROXY_SSL_CA__FILE_CONTENT
-                value: {{ .Values.externalProxy.sslCA | quote }}
+                value: {{ .Values.externalProxy.sslCA | b64enc | quote }}
               - name: PROXY_SSL_CA__FILE_PATH
                 value: {{ include "carto.proxy.configMapMountAbsolutePath" . }}
+              {{- end }}
+              {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+              - name: ROUTER_SSL_CERT__FILE_CONTENT
+                value: {{ .Values.router.tlsCertificates.certificateValueBase64 | quote }}
+              - name: ROUTER_SSL_CERT__FILE_PATH
+                value: "/etc/ssl/certs/cert.crt"
+              - name: ROUTER_SSL_CERT_KEY__FILE_CONTENT
+                value: {{ .Values.router.tlsCertificates.privateKeyValueBase64 | quote }}
+              - name: ROUTER_SSL_CERT_KEY__FILE_PATH
+                value: "/etc/ssl/certs/cert.key"
               {{- end }}
             volumeMounts:
               - name: gcp-default-service-account-key
@@ -104,6 +114,11 @@ Return common collectors for preflights and support-bundle
               {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
               - name: proxy-ssl-ca
                 mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+                readOnly: false
+              {{- end }}
+              {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+              - name: router-tls-cert-and-key
+                mountPath: /etc/ssl/certs/
                 readOnly: false
               {{- end }}
         containers:
@@ -145,6 +160,11 @@ Return common collectors for preflights and support-bundle
                 mountPath: {{ include "carto.proxy.configMapMountDir" . }}
                 readOnly: true
               {{- end }}
+              {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+              - name: router-tls-cert-and-key
+                mountPath: /etc/ssl/certs/
+                readOnly: true
+              {{- end }}
         volumes:
           - name: gcp-default-service-account-key
             emptyDir:
@@ -169,7 +189,19 @@ Return common collectors for preflights and support-bundle
             emptyDir:
               sizeLimit: 1Mi
           {{- end }}
+          {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+          - name: router-tls-cert-and-key
+            emptyDir:
+              sizeLimit: 1Mi
+          {{- end }}
   - registryImages:
+      namespace: {{ .Release.Namespace | quote }}
+      {{/*
+        We cannot use the imagePullSecrets template that we have because the registryImages collector needs a single imagePullSecret.
+        As we just include the preflights if using Replicated the carto-registry secret should be present always!
+      */}}
+      imagePullSecret:
+        name: carto-registry
       images:
         - {{ template "carto.accountsWww.image" . }}
         - {{ template "carto.cdnInvalidatorSub.image" . }}
@@ -201,6 +233,22 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
       "PubSubValidator" (list "Check_publish_and_listen_to_topic")
   }}
   {{/*
+  We push conditionally new analyzers for the certs provided if they're provided for: Postgres, Redis and Router SSL
+  */}}
+  {{- $certChecks := list }}
+  {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+  {{- $certChecks = append $certChecks "Check_Router_certificate" }}
+  {{- end }}
+  {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+  {{- $certChecks = append $certChecks "Check_Postgres_certificate" }}
+  {{- end }}
+  {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+  {{- $certChecks = append $certChecks "Check_Redis_certificate" }}
+  {{- end }}
+  {{- if gt (len $certChecks) 0 }}
+  {{- $_ := set $preflightsDict "CertificatesValidator" $certChecks -}}
+  {{- end }}
+  {{/*
   We just need to add the RedisValidator to the preflightsDict if the externalRedis is enabled
   */}}
   {{- if not .Values.internalRedis.enabled }}
@@ -223,17 +271,25 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
             message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
   {{- end }}
   {{- end }}
-  - registryImages:
-      checkName: Carto Registry Images
-      outcomes:
-        - fail:
-            when: "missing > 0"
-            message: Images are missing from registry
-        - warn:
-            when: "errors > 0"
-            message: Failed to check if images are present in registry
-        - pass:
-            message: All Carto images are available
+  {{/*
+  Commented until replicated fixes this: https://github.com/replicated-collab/carto-replicated/issues/30
+  */}}
+  # - registryImages:
+  #   checkName: Carto Registry Images
+  #    outcomes:
+  #      - fail:
+  #          when: "missing > 0"
+  #          message: Images are missing from registry
+  #      - warn:
+  #          when: "errors > 0"
+  #          message: Failed to check if images are present in registry
+  #      - pass:
+  #          message: All Carto images are available
+  {{/*
+  We only can run the following preflight checks and get the platform distribution when a cluster role is created.
+  Otherwise, we cannot obtain this info
+  */}}
+  {{- if ne .Values.replicated.platformDistribution "" }}
   - clusterVersion:
       outcomes:
         - fail:
@@ -307,6 +363,7 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
             message: The cluster should contain at least 17Gi. ➡️ Ignore if you have auto-scale enabled in your cluster.
         - pass:
             message: There are at least 16 Gi in the cluster.
+  {{- end }}
   {{- if .Values.gateway.enabled }}
   - customResourceDefinition:
       checkName: Gateway API available
@@ -343,6 +400,12 @@ Return customer values to use in preflights and support-bundle
     value: {{ include "carto.postgresql.databaseName" . }}
   - name: WORKSPACE_POSTGRES_USER
     value: {{ include "carto.postgresql.user" . }}
+  - name: WORKSPACE_POSTGRES_SSL_ENABLED
+    value: {{ .Values.externalPostgresql.sslEnabled | quote }}
+  {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA  }}
+  - name: WORKSPACE_POSTGRES_SSL_CA
+    value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
+  {{- end }}
   - name: WORKSPACE_TENANT_ID
     value: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
@@ -419,6 +482,12 @@ Return customer values to use in preflights and support-bundle
   - name: NODE_EXTRA_CA_CERTS
     value: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
+  {{- end }}
+  {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+  - name: ROUTER_SSL_CERT
+    value: "/etc/ssl/certs/cert.crt"
+  - name: ROUTER_SSL_CERT_KEY
+    value: "/etc/ssl/certs/cert.key"
   {{- end }}
 {{- end -}}
 
