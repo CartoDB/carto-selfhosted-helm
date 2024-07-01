@@ -47,38 +47,47 @@ Return common collectors for preflights and support-bundle
                 # Transform the variables in files
                 for PREFIX in $PREFIXES; do
                   FILE_PATH=$(env | grep ${PREFIX}__FILE_PATH | awk -F= '{print $2}')
-                  FILE_CONTENT_VAR="${PREFIX}__FILE_CONTENT"
-                  FILE_CONTENT=$(eval "echo \$$FILE_CONTENT_VAR")
-                  printf "%s" "$FILE_CONTENT" > "$FILE_PATH"
+                  FILE_CONTENT=""
+                  if [ "$(env | grep -c "${PREFIX}__FILE_CONTENT")" -eq 1 ]; then
+                    FILE_CONTENT_VAR="${PREFIX}__FILE_CONTENT"
+                    FILE_CONTENT=$(eval "echo \$$FILE_CONTENT_VAR")
+                    echo "$FILE_CONTENT" | base64 -d > "$FILE_PATH"
+                  else
+                    # The file is divided in multiple variables, we need to concatenate them
+                    for VAR_NAME in $(env | grep "${PREFIX}__FILE_CONTENT" | awk -F= '{print $1}' | sort -V); do
+                      FILE_CONTENT="${FILE_CONTENT}$(eval "echo \$$VAR_NAME")"
+                    done
+                    echo "$FILE_CONTENT" | base64 -d > "$FILE_PATH"
+                  fi
                 done
             env:
               {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
-                value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | quote }}
+                value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | b64enc | quote }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.google.secretMountAbsolutePath" . }}
               {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_CONTENT
-                value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | quote }}
+                value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | b64enc | quote }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
               {{- end }}
               {{- end }}
               {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
-              - name: POSTGRES_SSL_CA__FILE_CONTENT
-                value: {{ .Values.externalPostgresql.sslCA | quote }}
+              {{/* We need to split the SSL CA content in chunks of 2000 characters */}}
+              {{- include "carto.tenantRequirementsChecker.externalPostgresql.sslCA" . }}
               - name: POSTGRES_SSL_CA__FILE_PATH
                 value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
               - name: REDIS_TLS_CA__FILE_CONTENT
-                value: {{ .Values.externalRedis.tlsCA | quote }}
+                value: {{ .Values.externalRedis.tlsCA | b64enc | quote }}
               - name: REDIS_TLS_CA__FILE_PATH
                 value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
               - name: PROXY_SSL_CA__FILE_CONTENT
-                value: {{ .Values.externalProxy.sslCA | quote }}
+                value: {{ .Values.externalProxy.sslCA | b64enc | quote }}
               - name: PROXY_SSL_CA__FILE_PATH
                 value: {{ include "carto.proxy.configMapMountAbsolutePath" . }}
               {{- end }}
@@ -358,6 +367,12 @@ Return customer values to use in preflights and support-bundle
     value: {{ include "carto.postgresql.databaseName" . }}
   - name: WORKSPACE_POSTGRES_USER
     value: {{ include "carto.postgresql.user" . }}
+  - name: WORKSPACE_POSTGRES_SSL_ENABLED
+    value: {{ .Values.externalPostgresql.sslEnabled | quote }}
+  {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+  - name: WORKSPACE_POSTGRES_SSL_CA
+    value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
+  {{- end }}
   - name: WORKSPACE_TENANT_ID
     value: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
@@ -456,3 +471,21 @@ Return customer secrets to use in preflights and support-bundle
                 "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY"
                 ) "context" $ ) }}
 {{- end -}}
+
+
+{{ define "carto.tenantRequirementsChecker.externalPostgresql.sslCA" }}
+  {{- $value := .Values.externalPostgresql.sslCA -}}
+  {{- $maxLength := 10000 -}}
+  {{- if gt (len $value) $maxLength -}}
+    {{- $neededChunks := int (div (len $value) $maxLength | ceil) -}}
+    {{- range $i, $chunk := until (add $neededChunks 1 | int) -}}
+      {{- $envVarName := printf "POSTGRES_SSL_CA__FILE_CONTENT_%02d" (add $i 1) }}
+      {{- $chunk := substr (mul $i $maxLength | int) (mul (add $i 1) $maxLength | int) $value }}
+              - name: {{$envVarName}}
+                value: {{ $chunk | b64enc }}
+    {{- end -}}
+  {{- else -}}
+  - name: POSTGRES_SSL_CA__FILE_CONTENT
+    {{ printf "value: %s" ($value | b64enc | quote) | indent 12 }}
+  {{- end -}}
+{{ end }}
