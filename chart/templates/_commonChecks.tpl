@@ -49,38 +49,48 @@ Return common collectors for preflights and support-bundle
                   FILE_PATH=$(env | grep ${PREFIX}__FILE_PATH | awk -F= '{print $2}')
                   FILE_CONTENT_VAR="${PREFIX}__FILE_CONTENT"
                   FILE_CONTENT=$(eval "echo \$$FILE_CONTENT_VAR")
-                  printf "%s" "$FILE_CONTENT" > "$FILE_PATH"
+                  echo "$FILE_CONTENT" | base64 -d > "$FILE_PATH"
                 done
             env:
               {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
-                value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | quote }}
+                value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | b64enc | quote }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.google.secretMountAbsolutePath" . }}
               {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_CONTENT
-                value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | quote }}
+                value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | b64enc | quote }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
               {{- end }}
               {{- end }}
               {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
               - name: POSTGRES_SSL_CA__FILE_CONTENT
-                value: {{ .Values.externalPostgresql.sslCA | quote }}
+                value: {{ .Values.externalPostgresql.sslCA | b64enc | quote }}
               - name: POSTGRES_SSL_CA__FILE_PATH
                 value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
               - name: REDIS_TLS_CA__FILE_CONTENT
-                value: {{ .Values.externalRedis.tlsCA | quote }}
+                value: {{ .Values.externalRedis.tlsCA | b64enc | quote }}
               - name: REDIS_TLS_CA__FILE_PATH
                 value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
               - name: PROXY_SSL_CA__FILE_CONTENT
-                value: {{ .Values.externalProxy.sslCA | quote }}
+                value: {{ .Values.externalProxy.sslCA | b64enc | quote }}
               - name: PROXY_SSL_CA__FILE_PATH
                 value: {{ include "carto.proxy.configMapMountAbsolutePath" . }}
+              {{- end }}
+              {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+              - name: ROUTER_SSL_CERT__FILE_CONTENT
+                value: {{ .Values.router.tlsCertificates.certificateValueBase64 | quote }}
+              - name: ROUTER_SSL_CERT__FILE_PATH
+                value: "/etc/ssl/certs/cert.crt"
+              - name: ROUTER_SSL_CERT_KEY__FILE_CONTENT
+                value: {{ .Values.router.tlsCertificates.privateKeyValueBase64 | quote }}
+              - name: ROUTER_SSL_CERT_KEY__FILE_PATH
+                value: "/etc/ssl/certs/cert.key"
               {{- end }}
             volumeMounts:
               - name: gcp-default-service-account-key
@@ -104,6 +114,11 @@ Return common collectors for preflights and support-bundle
               {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
               - name: proxy-ssl-ca
                 mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+                readOnly: false
+              {{- end }}
+              {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+              - name: router-tls-cert-and-key
+                mountPath: /etc/ssl/certs/
                 readOnly: false
               {{- end }}
         containers:
@@ -145,6 +160,11 @@ Return common collectors for preflights and support-bundle
                 mountPath: {{ include "carto.proxy.configMapMountDir" . }}
                 readOnly: true
               {{- end }}
+              {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+              - name: router-tls-cert-and-key
+                mountPath: /etc/ssl/certs/
+                readOnly: true
+              {{- end }}
         volumes:
           - name: gcp-default-service-account-key
             emptyDir:
@@ -166,6 +186,11 @@ Return common collectors for preflights and support-bundle
           {{- end }}
           {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
           - name: proxy-ssl-ca
+            emptyDir:
+              sizeLimit: 1Mi
+          {{- end }}
+          {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+          - name: router-tls-cert-and-key
             emptyDir:
               sizeLimit: 1Mi
           {{- end }}
@@ -206,6 +231,22 @@ Return common analyzers for preflights and support-bundle
       "EgressRequirementsValidator" (list "Check_CARTO_Auth_connectivity" "Check_PubSub_connectivity" "Check_Google_Storage_connectivity" "Check_release_channels_connectivity" "Check_Google_Storage_connectivity" "Check_CARTO_images_registry_connectivity" "Check_TomTom_connectivity" "Check_TravelTime_connectivity")
       "PubSubValidator" (list "Check_publish_and_listen_to_topic")
   }}
+  {{/*
+  We push conditionally new analyzers for the certs provided if they're provided for: Postgres, Redis and Router SSL
+  */}}
+  {{- $certChecks := list }}
+  {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+  {{- $certChecks = append $certChecks "Check_Router_certificate" }}
+  {{- end }}
+  {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+  {{- $certChecks = append $certChecks "Check_Postgres_certificate" }}
+  {{- end }}
+  {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+  {{- $certChecks = append $certChecks "Check_Redis_certificate" }}
+  {{- end }}
+  {{- if gt (len $certChecks) 0 }}
+  {{- $_ := set $preflightsDict "CertificatesValidator" $certChecks -}}
+  {{- end }}
   {{/*
   We just need to add the RedisValidator to the preflightsDict if the externalRedis is enabled
   */}}
@@ -358,6 +399,12 @@ Return customer values to use in preflights and support-bundle
     value: {{ include "carto.postgresql.databaseName" . }}
   - name: WORKSPACE_POSTGRES_USER
     value: {{ include "carto.postgresql.user" . }}
+  - name: WORKSPACE_POSTGRES_SSL_ENABLED
+    value: {{ .Values.externalPostgresql.sslEnabled | quote }}
+  {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA  }}
+  - name: WORKSPACE_POSTGRES_SSL_CA
+    value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
+  {{- end }}
   - name: WORKSPACE_TENANT_ID
     value: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
@@ -434,6 +481,12 @@ Return customer values to use in preflights and support-bundle
   - name: NODE_EXTRA_CA_CERTS
     value: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
+  {{- end }}
+  {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+  - name: ROUTER_SSL_CERT
+    value: "/etc/ssl/certs/cert.crt"
+  - name: ROUTER_SSL_CERT_KEY
+    value: "/etc/ssl/certs/cert.key"
   {{- end }}
 {{- end -}}
 
