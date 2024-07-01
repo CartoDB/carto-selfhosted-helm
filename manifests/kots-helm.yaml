@@ -58,6 +58,8 @@ spec:
       cartoDataWarehouseEnabled: '{{repl ConfigOptionEquals "enableCDW" "1" }}'
       cartoSelfhostedDwLocation: '{{repl LicenseFieldValue "cartoDWLocation" }}'
       dataObservatoryProjectId: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "dataObservatoryProjectId" "" | Base64Decode }}'
+      ingressTestingMode: '{{repl ConfigOptionEquals "enableIngressTestingMode" "1" }}'
+      onlyRunRouter: '{{repl ConfigOptionEquals "enableIngressTestingMode" "1" }}'
 
     # Customizations
     ## App Secrets
@@ -672,14 +674,6 @@ spec:
         replicated:
           imagePullSecrets:
             - name: '{{repl ImagePullSecretName }}'
-
-    # Ingress Testing Mode
-    - when: '{{repl ConfigOptionEquals "enableIngressTestingMode" "1" }}'
-      recursiveMerge: true
-      values:
-        cartoConfigValues:
-          ingressTestingMode: true
-          onlyRunRouter: true
 
     # THIS SHOULD ALWAYS BE THE LAST OPTIONAL VALUE!!!!
     ## Advanced Tuning
