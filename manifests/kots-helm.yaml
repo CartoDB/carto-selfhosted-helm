@@ -380,6 +380,12 @@ spec:
           sslRejectUnauthorized: repl{{ if ConfigOptionEquals "externalHttpsProxySslCertificateCheck" "0"}}falserepl{{ else }}truerepl{{ end }}
           sslCA: |
             repl{{ ConfigOptionData "externalHttpsProxySslCa" | nindent 12 }}
+        replicated:
+          extraEnv:
+          - name: repl{{ if ConfigOptionEquals "externalProxyType" "http"}}HTTP_PROXYrepl{{ else }}HTTPS_PROXYrepl{{ end }}
+            value: '{{repl ConfigOption "externalProxyHost" }}'
+          - name: NO_PROXY
+            value: '{{repl ConfigOption "externalProxyExcludedDomains" }}'
 
     - when: '{{repl ConfigOptionEquals "ssoEnabled" "1"}}'
       recursiveMerge: true
