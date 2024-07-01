@@ -230,8 +230,23 @@ Return common analyzers for preflights and support-bundle
       "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket")
       "EgressRequirementsValidator" (list "Check_CARTO_Auth_connectivity" "Check_PubSub_connectivity" "Check_Google_Storage_connectivity" "Check_release_channels_connectivity" "Check_Google_Storage_connectivity" "Check_CARTO_images_registry_connectivity" "Check_TomTom_connectivity" "Check_TravelTime_connectivity")
       "PubSubValidator" (list "Check_publish_and_listen_to_topic")
-      "CertificatesValidator" (list "Check_Postgres_certificate" "Check_Redis_certificate" "Check_Router_certificate")
   }}
+  {{/*
+  We push conditionally new analyzers for the certs provided if they're provided for: Postgres, Redis and Router SSL
+  */}}
+  {{- $certChecks := list }}
+  {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
+  {{- $certChecks = append $certChecks "Check_Router_certificate" }}
+  {{- end }}
+  {{- if .Values.externalPostgresql.sslCA }}
+  {{- $certChecks = append $certChecks "Check_Postgres_certificate" }}
+  {{- end }}
+  {{- if .Values.externalRedis.tlsCA }}
+  {{- $certChecks = append $certChecks "Check_Redis_certificate" }}
+  {{- end }}
+  {{- if gt (len $certChecks) 0 }}
+  {{- $_ := set $preflightsDict "CertificatesValidator" $certChecks -}}
+  {{- end }}
   {{/*
   We just need to add the RedisValidator to the preflightsDict if the externalRedis is enabled
   */}}
