@@ -238,10 +238,10 @@ Return common analyzers for preflights and support-bundle
   {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
   {{- $certChecks = append $certChecks "Check_Router_certificate" }}
   {{- end }}
-  {{- if .Values.externalPostgresql.sslCA }}
+  {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
   {{- $certChecks = append $certChecks "Check_Postgres_certificate" }}
   {{- end }}
-  {{- if .Values.externalRedis.tlsCA }}
+  {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
   {{- $certChecks = append $certChecks "Check_Redis_certificate" }}
   {{- end }}
   {{- if gt (len $certChecks) 0 }}
