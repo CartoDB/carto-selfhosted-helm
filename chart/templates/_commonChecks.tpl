@@ -49,48 +49,46 @@ Return common collectors for preflights and support-bundle
                   FILE_PATH=$(env | grep ${PREFIX}__FILE_PATH | awk -F= '{print $2}')
                   FILE_CONTENT_VAR="${PREFIX}__FILE_CONTENT"
                   FILE_CONTENT=$(eval "echo \$$FILE_CONTENT_VAR")
-                  printf "%s" "$FILE_CONTENT" > "$FILE_PATH"
+                  echo "$FILE_CONTENT" | base64 -d > "$FILE_PATH"
                 done
-
-                cat /usr/src/certs/postgresql-ssl-ca/ca.crt
             env:
               {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
-                value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | quote }}
+                value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | b64enc | quote }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.google.secretMountAbsolutePath" . }}
               {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_CONTENT
-                value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | quote }}
+                value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | b64enc | quote }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
               {{- end }}
               {{- end }}
               {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
               - name: POSTGRES_SSL_CA__FILE_CONTENT
-                value: {{ .Values.externalPostgresql.sslCA | quote }}
+                value: {{ .Values.externalPostgresql.sslCA | b64enc | quote }}
               - name: POSTGRES_SSL_CA__FILE_PATH
                 value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
               - name: REDIS_TLS_CA__FILE_CONTENT
-                value: {{ .Values.externalRedis.tlsCA | quote }}
+                value: {{ .Values.externalRedis.tlsCA | b64enc | quote }}
               - name: REDIS_TLS_CA__FILE_PATH
                 value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
               - name: PROXY_SSL_CA__FILE_CONTENT
-                value: {{ .Values.externalProxy.sslCA | quote }}
+                value: {{ .Values.externalProxy.sslCA | b64enc | quote }}
               - name: PROXY_SSL_CA__FILE_PATH
                 value: {{ include "carto.proxy.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
               - name: ROUTER_SSL_CERT__FILE_CONTENT
-                value: {{ .Values.router.tlsCertificates.certificateValueBase64 | b64dec | quote }}
+                value: {{ .Values.router.tlsCertificates.certificateValueBase64 | quote }}
               - name: ROUTER_SSL_CERT__FILE_PATH
                 value: "/etc/ssl/certs/cert.crt"
               - name: ROUTER_SSL_CERT_KEY__FILE_CONTENT
-                value: {{ .Values.router.tlsCertificates.privateKeyValueBase64 | b64dec | quote }}
+                value: {{ .Values.router.tlsCertificates.privateKeyValueBase64 | quote }}
               - name: ROUTER_SSL_CERT_KEY__FILE_PATH
                 value: "/etc/ssl/certs/cert.key"
               {{- end }}
