@@ -58,6 +58,8 @@ spec:
       cartoDataWarehouseEnabled: '{{repl ConfigOptionEquals "enableCDW" "1" }}'
       cartoSelfhostedDwLocation: '{{repl LicenseFieldValue "cartoDWLocation" }}'
       dataObservatoryProjectId: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "dataObservatoryProjectId" "" | Base64Decode }}'
+      ingressTestingMode: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
+      onlyRunRouter: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
 
     # Customizations
     ## App Secrets
@@ -212,9 +214,13 @@ spec:
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
+    ## TEMPORAL PATCHED IMAGED
     - when: 'true'
       recursiveMerge: true
       values:
+        router:
+          image:
+            tag: "feature_sc_415629_add_ingress_debug_mode_in_carto_self_hosted"
         tenantRequirementsChecker:
           image:
             tag: 'feature_sc_402060_add_a_preflight_check_to_ensure_that_the'

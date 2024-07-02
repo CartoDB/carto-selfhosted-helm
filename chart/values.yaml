@@ -75,14 +75,16 @@ appConfigValues:
   ## @param appConfigValues.ldsIsolineProvider The default LDS provider for isolines
   ldsIsolineProvider: ""
 
-## @section CARTO config parameters
-## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
+## @section CARTO Replicated parameters
+## Global configuration for installations using Replicated. If you change something from this section probably your self-hosted is going to stop working.
 replicated:
   ## @param replicated.enabled Enable Carto replicated
   ## @param replicated.platformDistribution Platform distribution to deploy Carto Selfhosted with Replicated
   enabled: false
   platformDistribution: ""
 
+## @section CARTO config parameters
+## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
 cartoConfigValues:
   ## @param cartoConfigValues.enableErrorResponseStackTrace Enable stack traces in the container responses
   enableErrorResponseStackTrace: "false"
@@ -108,6 +110,10 @@ cartoConfigValues:
   cartoDataWarehouseEnabled: "false"
   ## @param cartoConfigValues.dataObservatoryProjectId GCP project ID of the Carto Data Observatory.
   dataObservatoryProjectId: ""
+  ## @param cartoConfigValues.ingressTestingMode Enable router testing mode for the application. This will deploy the router in testing mode serving a simple page to check that it works without routing traffic to other components.
+  ingressTestingMode: "false"
+  ## @param cartoConfigValues.onlyRunRouter Enable only the router component in the installation. This will just deploy the router component. Useful to check the ingress layer together with the option `cartoConfigValues.ingressTestingMode`.
+  onlyRunRouter: "false"
 
 ## @section App secret
 ## Global secrets to be edited by the client

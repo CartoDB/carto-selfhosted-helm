@@ -221,7 +221,8 @@ Return common collectors for preflights and support-bundle
 {{- end -}}
 
 {{/*
-Return common analyzers for preflights and support-bundle
+Return common analyzers for preflights and support-bundle.
+NOTE: Remember that with the ingress testing mode the components are not deployed, so take it into account when adding a new preflight!!
 */}}
 {{- define "carto.replicated.commonChecks.analyzers" }}
   {{- $preflightsDict := dict
