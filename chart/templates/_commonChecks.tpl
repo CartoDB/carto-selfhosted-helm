@@ -74,7 +74,7 @@ Return common collectors for preflights and support-bundle
               {{- end }}
               {{- end }}
               {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
-              {{/* We need to split the SSL CA content in chunks of 2000 characters */}}
+              {{/* We need to split the SSL CA content in chunks of 10000 characters */}}
               {{- include "carto.tenantRequirementsChecker.externalPostgresql.sslCA" . }}
               - name: POSTGRES_SSL_CA__FILE_PATH
                 value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
