@@ -7,6 +7,7 @@ spec:
   title: CARTO
   icon: https://storage.googleapis.com/carto-published-resources-bucket/CARTO-Logo-Marker.png
   allowRollback: false
+  supportMinimalRBACPrivileges: true
   statusInformers:
     # TODO: Add ingress, gateway or router service
     - deployment/carto-accounts-www
@@ -23,6 +24,8 @@ spec:
     - deployment/carto-workspace-subscriber
     - deployment/carto-workspace-www
   minKotsVersion: 1.107.4
+  additionalImages:
+    - gcr.io/carto-onprem-artifacts/tenant-requirements-checker:2024.4.17-rc.7
 ---
 apiVersion: app.k8s.io/v1beta1
 kind: Application

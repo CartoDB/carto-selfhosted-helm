@@ -7,11 +7,25 @@ metadata:
 spec:
   chart:
     name: carto
-    chartVersion: 1.104.2
-  values:
+    chartVersion: 1.110.1
+  builder:
     replicated:
       enabled: true
+    internalPostgresql:
+      enabled: false
+
+  values:
+    global:
+      imagePullSecrets:
+        - '{{repl ImagePullSecretName }}'
+
+    replicated:
+      imagePullSecrets:
+        - name: '{{repl ImagePullSecretName }}'
+      enabled: true
       platformDistribution: '{{repl ConfigOption "platformDistribution" }}'
+      images:
+        replicated-sdk: '{{repl LocalImageName "docker.io/replicated/replicated-sdk:v1.0.0-beta.21" }}'
 
     # License
     ## Carto Secrets
@@ -44,6 +58,8 @@ spec:
       cartoDataWarehouseEnabled: '{{repl ConfigOptionEquals "enableCDW" "1" }}'
       cartoSelfhostedDwLocation: '{{repl LicenseFieldValue "cartoDWLocation" }}'
       dataObservatoryProjectId: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "dataObservatoryProjectId" "" | Base64Decode }}'
+      ingressTestingMode: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
+      onlyRunRouter: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
 
     # Customizations
     ## App Secrets
@@ -104,12 +120,6 @@ spec:
       tlsCA: |
         repl{{- ConfigOptionData "externalRedisTLSCertificate" | nindent 8 }}
 
-    # Service Account
-    commonBackendServiceAccount:
-      enableGCPWorkloadIdentity: repl{{ if ConfigOptionEquals "enableGoogleWorkloadIdentity" "1"}}truerepl{{ else }}falserepl{{ end }}
-      annotations:
-        iam.gke.io/gcp-service-account: '{{repl ConfigOption "googleWorkloadIdentityEmail" }}'
-
     ## TLS Certs
     # FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
     # Disable legacy tlsCerts
@@ -131,6 +141,75 @@ spec:
       staticIP:
         enabled: repl{{ if ConfigOptionEquals "accessToCartoGCPStaticIPName" ""}}falserepl{{ else }}truerepl{{ end }}
         value: '{{repl ConfigOption "accessToCartoGCPStaticIPName" }}'
+        
+    accountsWww:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    importApi:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    importWorker:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    ldsApi:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    mapsApi:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    sqlWorker:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    router:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    httpCache:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    notifier:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    cdnInvalidatorSub:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    workspaceApi:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    workspaceSubscriber:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    workspaceWww:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    workspaceMigrations:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    tenantRequirementsChecker:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    routerMetrics:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+
+    upgradeCheck:
+      enabled: false
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
 
   # Optional Values
   ## Values from Advanced Configuration
@@ -139,25 +218,12 @@ spec:
     - when: 'true'
       recursiveMerge: true
       values:
-        ## Temporal fix to change tenantRequirementsChecker image until next release
-        tenantRequirementsChecker:
-          image:
-            tag: "03-06-2024"
-        accountsWww:
-          image:
-            tag: "feature_sc_415853_generate_config_yaml_file_in_a_subdirectory"
-        workspaceWww:
-          image:
-            tag: "feature_sc_415854_generate_config_yaml_file_in_a_subdirectory"
         router:
           image:
-            tag: "update_sh_router_nginx_to_be_able_to_run_with_read_only_fs_policy"
-        routerMetrics:
+            tag: "feature_sc_415629_add_ingress_debug_mode_in_carto_self_hosted"
+        tenantRequirementsChecker:
           image:
-            tag: "feature_sc_415871_try_to_make_router_metrics_container_work"
-        importWorker:
-          image:
-            tag: "feature_sc_415870_fix_import_api_as_snowcli_is_writing_to_readonly"
+            tag: 'feature_sc_402060_add_a_preflight_check_to_ensure_that_the'
 
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
@@ -166,7 +232,6 @@ spec:
         appSecrets:
           googleCloudStorageServiceAccountKey:
             value: '{{repl ConfigOption "cartoPlatformGoogleSA" }}'
-    
 
     ## LDS configuration
     ### LDS Geocoding, Isoline and Routing providers
@@ -327,6 +392,12 @@ spec:
           sslRejectUnauthorized: repl{{ if ConfigOptionEquals "externalHttpsProxySslCertificateCheck" "0"}}falserepl{{ else }}truerepl{{ end }}
           sslCA: |
             repl{{ ConfigOptionData "externalHttpsProxySslCa" | nindent 12 }}
+        replicated:
+          extraEnv:
+          - name: repl{{ if ConfigOptionEquals "externalProxyType" "http"}}HTTP_PROXYrepl{{ else }}HTTPS_PROXYrepl{{ end }}
+            value: '{{repl ConfigOption "externalProxyHost" }}'
+          - name: NO_PROXY
+            value: '{{repl ConfigOption "externalProxyExcludedDomains" }}'
 
     - when: '{{repl ConfigOptionEquals "ssoEnabled" "1"}}'
       recursiveMerge: true
@@ -553,11 +624,6 @@ spec:
             - name: CARTO_TRACING_MODE
               value: "local"
 
-    ## Advanced Tuning
-    - when: '{{repl not (empty (ConfigOption "platformAdvancedTuningValues")) }}'
-      recursiveMerge: true
-      values: repl{{ ConfigOption "platformAdvancedTuningValues" | nindent 8 }}
-
     ## Openshift
     - when: '{{repl ConfigOptionEquals "platformDistribution" "openShift" }}'
       recursiveMerge: true
@@ -586,3 +652,31 @@ spec:
         tenantRequirementsChecker: *customSecurityContext
         internalPostgresql: *customSecurityContext
         upgradeCheck: *customSecurityContext
+
+    # GKE Workload Identity
+    - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "1" }}'
+      recursiveMerge: true
+      values:
+        commonBackendServiceAccount:
+          enableGCPWorkloadIdentity: true
+          # When enabling gke workload identity, the k8s SA should be created by the customer to be able to run preflights
+          create: false
+          name: '{{repl ConfigOption "k8sWorkloadIdentityServiceAccountName" }}'
+
+    # Airgap mode AND Local Registry
+    - when: '{{repl and (IsAirgap) (HasLocalRegistry) }}'
+      recursiveMerge: true
+      values:
+        global:
+          imageRegistry: '{{repl LocalRegistryAddress }}'
+          imagePullSecrets:
+            - '{{repl ImagePullSecretName }}'
+        replicated:
+          imagePullSecrets:
+            - name: '{{repl ImagePullSecretName }}'
+
+    # THIS SHOULD ALWAYS BE THE LAST OPTIONAL VALUE!!!!
+    ## Advanced Tuning
+    - when: '{{repl not (empty (ConfigOption "platformAdvancedTuningValues")) }}'
+      recursiveMerge: true
+      values: repl{{ ConfigOption "platformAdvancedTuningValues" | nindent 8 }}

@@ -67,6 +67,9 @@ data:
   WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL: {{ .Values.appConfigValues.workloadIdentityConnection.serviceAccountEmail | quote }}
   WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID: {{ .Values.appConfigValues.workloadIdentityConnection.connectionOwner | quote }}
   {{- end }}
+  {{- if .Values.appConfigValues.defaultAtLocation.bigquery }}
+  AT_LOCATION_BIGQUERY: {{ .Values.appConfigValues.defaultAtLocation.bigquery }}
+  {{- end }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}

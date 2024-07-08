@@ -348,16 +348,6 @@ spec:
             - name: accessToCartoModeK8sCustom
               title: |-
                 Custom
-        - name: accessToCartoModeK8sNotFullySupported
-          when: *when_is_k8s_NOT_fully_implemented_platform
-          title: *accessToCartoModeK8sTitle
-          help_text: *accessToCartoModeK8sHelpText
-          type: select_one
-          required: true
-          items:
-            - name: accessToCartoModeK8sCustom
-              title: |-
-                Custom
         - name: accessToCartoModeK8sDefaultLabel
           type: label
           when: '{{repl (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") }}'
@@ -379,9 +369,9 @@ spec:
         - name: TLSTerminationLayer
           title: TLS Termination
           type: select_one
-          when: '{{repl or (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") (ConfigOptionEquals "accessToCartoModeK8sNotFullySupported" "accessToCartoModeK8sCustom") (ConfigOptionEquals "isEmbeddedCluster" "true") }}'
+          when: '{{repl or (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") (ConfigOptionEquals "isK8sNotFullyImplementedPlatform" "true") (ConfigOptionEquals "isEmbeddedCluster" "true") }}'
           help_text: |-
-            TLS termination is required and it can be achieved within the CARTO application itself (recommended) or through a load balancer.
+            TLS termination is required and it can be achieved within the CARTO application itself or through a load balancer (recommended).
           items:
             - name: accessToCartoRouterHTTPS
               title: |-
@@ -441,6 +431,15 @@ spec:
             
             If you don't provide an Allocation ID, a random domain will be assigned to your load balancer. You can find some information about how to use the domain you configured for CARTO platform in the [AWS ELB documentation](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/using-domain-names-with-elb.html).
           recommended: true
+
+        # Ingress testing mode
+        - name: enableIngressTestingMode
+          title: Ingress testing mode
+          when: '{{repl or (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") (ConfigOptionEquals "accessToCartoModeK8sNotFullySupported" "accessToCartoModeK8sCustom") (ConfigOptionEquals "isEmbeddedCluster" "true") }}'
+          help_text: |-
+            Enable if you want to turn on ingress testing mode. This will deploy the CARTO router in testing mod, showing a static page to check that the layers you place on top of CARTO work.
+          type: bool
+          default: "0"
 
     # Buckets
     - name: storageBuckets
@@ -800,11 +799,14 @@ spec:
             [More info](https://docs.carto.com/carto-self-hosted/guides/use-workload-identity-in-gcp).
           type: bool
           default: "0"
-        - name: googleWorkloadIdentityEmail
-          title: Google workload identity email
+        - name: k8sWorkloadIdentityServiceAccountName
+          title: Kubernetes workload identity service account name
           when: '{{repl (ConfigOptionEquals "enableGoogleWorkloadIdentity" "1") }}'
           required: true
           type: text
+          help_text: |-
+            Name of the kubernetes service account that you created in the namespace to configure Workload Identity.
+            [More info](https://docs.carto.com/carto-self-hosted/guides/use-workload-identity-in-gcp).
           # BigQuery
         - name: enableBigqueryWorkloadIdentityConnection
           title: BigQuery workload identity
