@@ -47,9 +47,18 @@ Return common collectors for preflights and support-bundle
                 # Transform the variables in files
                 for PREFIX in $PREFIXES; do
                   FILE_PATH=$(env | grep ${PREFIX}__FILE_PATH | awk -F= '{print $2}')
-                  FILE_CONTENT_VAR="${PREFIX}__FILE_CONTENT"
-                  FILE_CONTENT=$(eval "echo \$$FILE_CONTENT_VAR")
-                  echo "$FILE_CONTENT" | base64 -d > "$FILE_PATH"
+                  FILE_CONTENT=""
+                  if [ "$(env | grep -c "${PREFIX}__FILE_CONTENT")" -eq 1 ]; then
+                    FILE_CONTENT_VAR="${PREFIX}__FILE_CONTENT"
+                    FILE_CONTENT=$(eval "echo \$$FILE_CONTENT_VAR")
+                    echo "$FILE_CONTENT" | base64 -d > "$FILE_PATH"
+                  else
+                    # The file is divided in multiple variables, we need to concatenate them
+                    for VAR_NAME in $(env | grep "${PREFIX}__FILE_CONTENT" | awk -F= '{print $1}' | sort -V); do
+                      FILE_CONTENT="${FILE_CONTENT}$(eval "echo \$$VAR_NAME")"
+                    done
+                    echo "$FILE_CONTENT" | base64 -d > "$FILE_PATH"
+                  fi
                 done
             env:
               {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
@@ -65,8 +74,8 @@ Return common collectors for preflights and support-bundle
               {{- end }}
               {{- end }}
               {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
-              - name: POSTGRES_SSL_CA__FILE_CONTENT
-                value: {{ .Values.externalPostgresql.sslCA | b64enc | quote }}
+              {{/* We need to split the SSL CA content in chunks of 10000 characters */}}
+              {{- include "carto.tenantRequirementsChecker.externalPostgresql.sslCA" . }}
               - name: POSTGRES_SSL_CA__FILE_PATH
                 value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
               {{- end }}
@@ -402,7 +411,7 @@ Return customer values to use in preflights and support-bundle
     value: {{ include "carto.postgresql.user" . }}
   - name: WORKSPACE_POSTGRES_SSL_ENABLED
     value: {{ .Values.externalPostgresql.sslEnabled | quote }}
-  {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA  }}
+  {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
   - name: WORKSPACE_POSTGRES_SSL_CA
     value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
   {{- end }}
@@ -510,3 +519,21 @@ Return customer secrets to use in preflights and support-bundle
                 "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY"
                 ) "context" $ ) }}
 {{- end -}}
+
+
+{{ define "carto.tenantRequirementsChecker.externalPostgresql.sslCA" }}
+  {{- $value := .Values.externalPostgresql.sslCA -}}
+  {{- $maxLength := 10000 -}}
+  {{- if gt (len $value) $maxLength -}}
+    {{- $neededChunks := int (div (len $value) $maxLength | ceil) -}}
+    {{- range $i, $chunk := until (add $neededChunks 1 | int) -}}
+      {{- $envVarName := printf "POSTGRES_SSL_CA__FILE_CONTENT_%02d" (add $i 1) }}
+      {{- $chunk := substr (mul $i $maxLength | int) (mul (add $i 1) $maxLength | int) $value }}
+              - name: {{$envVarName}}
+                value: {{ $chunk | b64enc }}
+    {{- end -}}
+  {{- else -}}
+  - name: POSTGRES_SSL_CA__FILE_CONTENT
+    {{ printf "value: %s" ($value | b64enc | quote) | indent 12 }}
+  {{- end -}}
+{{ end }}
