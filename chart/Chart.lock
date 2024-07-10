@@ -14,5 +14,5 @@ dependencies:
 - name: zitadel
   repository: https://charts.zitadel.com
   version: 8.0.0
-digest: sha256:ad62c4c808a7322c697cb5b365edf2542a9958638f508a82421dd39d85ce35ec
-generated: "2024-07-10T14:10:46.771094+02:00"
+digest: sha256:707f52c41a7e506b4eafe204fd56d49dc0dcadf07e2407fd0afec41c9c7d353d
+generated: "2024-07-10T15:22:43.107547+02:00"
