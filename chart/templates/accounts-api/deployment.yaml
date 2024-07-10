@@ -73,7 +73,7 @@ spec:
         {{ include "carto.redis-init-container" . | nindent 8 }}
         {{- end }}
         - name: accounts-migrations
-          image: {{ template "carto.accountsMigrations.image" . }}
+          image: gcr.io/carto-onprem-artifacts/workspace-api
           imagePullPolicy: {{ .Values.accountsMigrations.image.pullPolicy }}
           {{- if .Values.accountsMigrations.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.accountsMigrations.containerSecurityContext "enabled" | toYaml | nindent 12 }}
