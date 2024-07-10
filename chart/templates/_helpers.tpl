@@ -8,7 +8,7 @@ Return the version of the chart without removing `-*` from the version
 {{- end -}}
 
 {{/*
-Get the user defined LoadBalancerIP for this release.
+Get the user defined LoadBalancerIP for thicarto.accountsMigrationss release.
 Note, returns 127.0.0.1 if using ClusterIP.
 */}}
 {{- define "carto.serviceIP" -}}
@@ -1453,4 +1453,11 @@ Return the absolute path where the proxy CA cert will be mounted
 */}}
 {{- define "carto.proxy.configMapMountAbsolutePath" -}}
 {{- printf "%s/%s" (include "carto.proxy.configMapMountDir" .) (include "carto.proxy.configMapMountFilename" .) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto accounts-db image name
+*/}}
+{{- define "carto.accountsMigrations.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.accountMigrations.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
