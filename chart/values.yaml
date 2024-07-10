@@ -5512,3 +5512,70 @@ accountsApi:
     ## @param accountsApi.service.extraPorts Extra ports to expose in accounts-api service (normally used with the `sidecars` value)
     ##
     extraPorts: []
+
+
+accountsMigrations:
+  ## accounts-db image
+  ## @param accountsMigrations.image.registry accounts-db image registry
+  ## @param accountsMigrations.image.repository accounts-db image repository
+  ## @param accountsMigrations.image.tag accounts-db image tag (immutable tags are recommended)
+  ## @param accountsMigrations.image.pullPolicy accounts-db image pull policy
+  ## @param accountsMigrations.image.pullSecrets accounts-db image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: accounts-db
+    ## Specify a custom image tag
+    tag: ""
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param accountsMigrations.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param accountsMigrations.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## Init container's resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param accountsMigrations.resources.limits.memory Container memory limits in MiB
+  ## @param accountsMigrations.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param accountsMigrations.resources.requests.memory Container memory requests in MiB
+  ## @param accountsMigrations.resources.requests.cpu Container cpu requests in milliCPU cores
+  ##
+  resources:
+    limits:
+      memory: "2048Mi"
+      cpu: "1"
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+  ## Init container Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+  ## @param accountsMigrations.containerSecurityContext.enabled Enable container security context
+  ## @param accountsMigrations.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
+  ## @param accountsMigrations.containerSecurityContext.runAsGroup Set init container's Security Context runAsGroup
+  ## @param accountsMigrations.containerSecurityContext.runAsNonRoot Force the init container to run as non root
+  ## @param accountsMigrations.containerSecurityContext.allowPrivilegeEscalation Set init container's Security Context allowPrivilegeEscalation
+  ## @param accountsMigrations.containerSecurityContext.readOnlyRootFilesystem Set init containers' Security Context readOnlyRootFilesystem
+  ## @param accountsMigrations.containerSecurityContext.capabilities.drop removes accounts-migrations containers' Security Context capabilities
+  ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
+  ##   data folder to auto-determined user&group, using commands: `id -u`:`id -G | cut -d" " -f2`
+  ##   "auto" is especially useful for OpenShift which has scc with dynamic user ids (and 0 is not allowed)
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: false
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
