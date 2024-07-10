@@ -54,6 +54,7 @@ jobs:
             :warning: Helm Chart resources have changed. Please make sure to update the documentation accordingly. You can find more information [here](https://cartodb.getoutline.com/doc/helm-chart-yJ3vxi6icN#h-deployment-resources).
 
   helm-readme-generator:
+    if: false
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout Code
