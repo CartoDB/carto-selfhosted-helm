@@ -23,8 +23,10 @@ spec:
   template:
     metadata:
       annotations:
+      {{/*
         checksum/config: {{ include (print $.Template.BasePath "/accounts-api/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/accounts-api/secret.yaml") . | sha256sum }}
+        */}}
         {{- if .Values.accountsApi.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
