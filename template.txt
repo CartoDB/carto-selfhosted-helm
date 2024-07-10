@@ -1,0 +1,4272 @@
+---
+# Source: carto/charts/internalRedis/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+automountServiceAccountToken: true
+metadata:
+  name: release-name-redis
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: redis
+    helm.sh/chart: internalRedis-16.13.2
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: carto/templates/accounts-www/service-account.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: accounts-www
+  name: release-name-carto-accounts-www
+  namespace: "default"
+automountServiceAccountToken: false
+---
+# Source: carto/templates/carto-common-service-account.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: carto
+  name: carto-common-backend
+  namespace: "default"
+  annotations:
+    {}
+automountServiceAccountToken: false
+---
+# Source: carto/templates/http-cache/service-account.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: http-cache
+  name: release-name-carto-http-cache
+  namespace: "default"
+automountServiceAccountToken: false
+---
+# Source: carto/templates/notifier/service-account.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: notifier
+  name: release-name-carto-notifier
+  namespace: "default"
+automountServiceAccountToken: false
+---
+# Source: carto/templates/workspace-www/service-account.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: workspace-www
+  name: release-name-carto-workspace-www
+  namespace: "default"
+automountServiceAccountToken: false
+---
+# Source: carto/charts/internalPostgresql/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-postgresql
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: postgresql
+    helm.sh/chart: internalPostgresql-11.9.13
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+type: Opaque
+data:
+  postgres-password: "ZnZVdklWNTFjYg=="
+  password: "MGRYRmRRQVU2UA=="
+  # We don't auto-generate LDAP password when it's not provided as we do for other passwords
+---
+# Source: carto/charts/internalRedis/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-redis
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: redis
+    helm.sh/chart: internalRedis-16.13.2
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+type: Opaque
+data:
+  redis-password: "bzlNUlVCak1zdg=="
+---
+# Source: carto/templates/cdn-invalidator-sub/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-carto-cdn-invalidator-sub
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: cdn-invalidator-sub
+data:
+  
+  
+  VARNISH_PURGE_SECRET: ""  # cartoSecrets.varnishPurgeSecret.value
+  VARNISH_DEBUG_SECRET: ""  # cartoSecrets.varnishDebugSecret.value
+---
+# Source: carto/templates/google-serviceaccount-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-carto-gcp-default-service-account
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+  namespace: "default"
+type: Opaque
+data:
+  key.json: ""
+---
+# Source: carto/templates/google-serviceaccount-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-carto-gcp-buckets-service-account
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+  namespace: "default"
+type: Opaque
+data:
+  key.json: ""
+---
+# Source: carto/templates/http-cache/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-carto-http-cache
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: http-cache
+data:
+  
+  
+  VARNISH_PURGE_SECRET: ""  # cartoSecrets.varnishPurgeSecret.value
+  VARNISH_DEBUG_SECRET: ""  # cartoSecrets.varnishDebugSecret.value
+---
+# Source: carto/templates/import-api/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-carto-import-api
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: import-api
+data:
+  
+  
+  ENCRYPTION_SECRET_KEY: ""  # cartoSecrets.encryptionSecretKey.value
+  IMPORT_JWT_SECRET: ""  # cartoSecrets.jwtApiSecret.value
+  IMPORT_ACCESSKEYID: ""  # appSecrets.awsAccessKeyId.value
+  IMPORT_SECRETACCESSKEY: ""  # appSecrets.awsAccessKeySecret.value
+  IMPORT_STORAGE_ACCESSKEY: ""  # appSecrets.azureStorageAccessKey.value
+  IMPORT_AWS_ACCESS_KEY_ID: ""  # appSecrets.importAwsAccessKeyId.value
+  IMPORT_AWS_SECRET_ACCESS_KEY: ""  # appSecrets.importAwsSecretAccessKey.value
+---
+# Source: carto/templates/import-worker/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-carto-import-worker
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: import-worker
+data:
+  
+  
+  BIGQUERY_OAUTH2_CLIENT_SECRET: ""  # appSecrets.bigqueryOauth2ClientSecret.value
+  ENCRYPTION_SECRET_KEY: ""  # cartoSecrets.encryptionSecretKey.value
+  IMPORT_JWT_SECRET: ""  # cartoSecrets.jwtApiSecret.value
+  IMPORT_ACCESSKEYID: ""  # appSecrets.awsAccessKeyId.value
+  IMPORT_SECRETACCESSKEY: ""  # appSecrets.awsAccessKeySecret.value
+  IMPORT_STORAGE_ACCESSKEY: ""  # appSecrets.azureStorageAccessKey.value
+  IMPORT_AWS_ACCESS_KEY_ID: ""  # appSecrets.importAwsAccessKeyId.value
+  IMPORT_AWS_SECRET_ACCESS_KEY: ""  # appSecrets.importAwsSecretAccessKey.value
+---
+# Source: carto/templates/lds-api/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-carto-lds-api
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: lds-api
+data:
+  
+  
+  ENCRYPTION_SECRET_KEY: ""  # cartoSecrets.encryptionSecretKey.value
+  LDS_JWT_SECRET: ""  # cartoSecrets.jwtApiSecret.value
+  LDS_PROVIDER_HERE_API_KEY: ""  # appSecrets.ldsHereApiKey.value
+  LDS_PROVIDER_MAPBOX_API_KEY: ""  # appSecrets.ldsMapboxApiKey.value
+  LDS_PROVIDER_TOMTOM_API_KEY: ""  # appSecrets.ldsTomTomApiKey.value
+  LDS_PROVIDER_GOOGLE_API_KEY: ""  # appSecrets.ldsGoogleApiKey.value
+  LDS_PROVIDER_TRAVELTIME_API_KEY: ""  # appSecrets.ldsTravelTimeApiKey.value
+  LDS_PROVIDER_TRAVELTIME_APP_ID: ""  # appSecrets.ldsTravelTimeAppId.value
+---
+# Source: carto/templates/maps-api/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-carto-maps-api
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: maps-api
+data:
+  
+  
+  BIGQUERY_OAUTH2_CLIENT_SECRET: ""  # appSecrets.bigqueryOauth2ClientSecret.value
+  ENCRYPTION_SECRET_KEY: ""  # cartoSecrets.encryptionSecretKey.value
+  EXPORTS_S3_BUCKET_ACCESS_KEY_ID: ""  # appSecrets.exportAwsAccessKeyId.value
+  EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY: ""  # appSecrets.exportAwsSecretAccessKey.value
+  MAPS_API_V3_JWT_SECRET: ""  # cartoSecrets.jwtApiSecret.value
+  LAUNCHDARKLY_SDK_KEY: ""  # cartoSecrets.launchDarklySdkKey.value
+---
+# Source: carto/templates/sql-worker/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-carto-sql-worker
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: sql-worker
+data:
+  
+  
+  ENCRYPTION_SECRET_KEY: ""  # cartoSecrets.encryptionSecretKey.value
+  EXPORTS_S3_BUCKET_ACCESS_KEY_ID: ""  # appSecrets.exportAwsAccessKeyId.value
+  EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY: ""  # appSecrets.exportAwsSecretAccessKey.value
+  MAPS_API_V3_JWT_SECRET: ""  # cartoSecrets.jwtApiSecret.value
+---
+# Source: carto/templates/tls-secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-carto-tls
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+type: kubernetes.io/tls
+data:
+  tls.crt: "LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURQakNDQWlhZ0F3SUJBZ0lRZVBVY3NpT1VlN1dCMkc0elNKN3dHVEFOQmdrcWhraUc5dzBCQVFzRkFEQVQKTVJFd0R3WURWUVFERXdoallYSjBieTFqWVRBZUZ3MHlOREF4TWpVd056VXdNVE5hRncweU5UQXhNalF3TnpVdwpNVE5hTUI4eEhUQWJCZ05WQkFNVEZHTmhjblJ2TFhObGJHWm9iM04wWldRdWJHRnVNSUlCSWpBTkJna3Foa2lHCjl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUF5M1VhL0tDSTF5N3RsaHlNdlJ4ZFNUcGM3VEdTb2h2UHpYOGkKVU5Rd3p5UEpsa2dXL0FLeGFLdmdKQi8vTUsxeSt2ZGJyTWFjcSt0WGhGdmNteXJJSWsvbURRR010SzNoR1crYwo1ekJZbXFhbmczamx6aEdNNjVzWVJXOFAxbDFtUXpjRUd1R3dIazdnczJZaWJ5NjltWGJRdjNGc3hFYkVsd3F4CktKQ1p3VTh0K21PL3ZsRDk4R2o4TXozYWpDdkpDQ3NuRkJUaFNnM1FUb21MTFpMQThsRzRLVnFwbXpmVEtydk4KejhFL2JZYVFhUjk5U1JYK3ladGNlV0EzbWYrdEp5THovcUl3TUFVK1ZPUERWcVRDaWF3emVWSnU2blY0cTlMYQppUEZPQWt2NVFjcU9xTDFqNFMwOFFHelFDYjBUZ21yTEhVWXRqcG5Vd0xickdhWHYyd0lEQVFBQm80R0JNSDh3CkRnWURWUjBQQVFIL0JBUURBZ1dnTUIwR0ExVWRKUVFXTUJRR0NDc0dBUVVGQndNQkJnZ3JCZ0VGQlFjREFqQU0KQmdOVkhSTUJBZjhFQWpBQU1COEdBMVVkSXdRWU1CYUFGRUFydkhoamVLeHdnUzdPbzFLSVk1NmduUHBVTUI4RwpBMVVkRVFRWU1CYUNGR05oY25SdkxYTmxiR1pvYjNOMFpXUXViR0Z1TUEwR0NTcUdTSWIzRFFFQkN3VUFBNElCCkFRQmwwY0h1OTJKMGlkd1RNc21NRHY4VDA0Q3RkZ0FaMVNrcVlXNytKdlNBMUdaR0VhU2YyVkZrelY3RUtsWHAKYkp2a0l6TnNRWlp4VnJXQm90RzZYZGRMYjVjclBlKzJXSHJFZjhHQWhDczY4WC9jTmlqT0E0OXJxRElwRDNmWgo5Y1FHSHNrR05RdGw1Qk1kV1hZN3QvaEwzRlNSblVaVFcrSTY5SmMrUEZGY0QwWGNXZUZndDRWZEk1MXY5UWsxCkVFWjhtOFAyVXhxc2NUZ1RjRXFwNHJUTXZxOGNyZWJ6aXh3VzllNGI1QU9OWUpDTUpGOGtGdTcwOU0rRjRxRHgKRlpQQ2hoRG1EL0EvS0I3VlpNNUIvTjUrWmhFb1BVRllSbzB5Z0dIVlVpWkhYZHgvSlFFQUVHWnErOWZ2b2RuYQpPSzV1RUZuZ2FUdmd1TDFXM05vUTZvbk4KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQoKCi0tLS0tQkVHSU4gQ0VSVElGSUNBVEUtLS0tLQpNSUlERVRDQ0FmbWdBd0lCQWdJUUdsTnFSSXhjb2d2M2lJd3BaaFh6SlRBTkJna3Foa2lHOXcwQkFRc0ZBREFUCk1SRXdEd1lEVlFRREV3aGpZWEowYnkxallUQWVGdzB5TkRBeE1qVXdOelV3TVROYUZ3MHlOVEF4TWpRd056VXcKTVROYU1CTXhFVEFQQmdOVkJBTVRDR05oY25SdkxXTmhNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QQpNSUlCQ2dLQ0FRRUFxSG93VzBWNG1PUldoVENyclFNUThUZ3VhenRkcWRNZC9XblhIdnNmbVg1LzNsWFpsbkVnCjVIZ25EL2pIZFFrcUIvZU5SNlNsRE95TVgxMHJpSzM0dGZtN2JBTXdpWXdaVG1RS2szbHpIRm9hRGZDUWEybUcKS0xpaGR4ZFVFOFg3OHJCaE5JUGJDM09MNWIwZmpiK1FyWDByT0drVXBQZG1EbjJuZ290RlBtSS8xeUhDd2tTQwpoY1VHbytlUXU1UjRHeFlzNUVyMUV1WTdkSFRXMmZqVUpKMW1zT0dDblRYemFKOVVGTjhneTFPa1M3cXdGdFZtCjRCZGd0UzJ4clY1a0dVMjZTSjF6T1pBUXhWVkxGeW9Zc0hGMmt3N01lZ3A4U2tNa3ZWV3VhYW1zYlF6WlpUZi8KSkszUHM5dDg0MVoxNGVhTkY5cDg0Rm1UWnNCMnVmSk5nUUlEQVFBQm8yRXdYekFPQmdOVkhROEJBZjhFQkFNQwpBcVF3SFFZRFZSMGxCQll3RkFZSUt3WUJCUVVIQXdFR0NDc0dBUVVGQndNQ01BOEdBMVVkRXdFQi93UUZNQU1CCkFmOHdIUVlEVlIwT0JCWUVGRUFydkhoamVLeHdnUzdPbzFLSVk1NmduUHBVTUEwR0NTcUdTSWIzRFFFQkN3VUEKQTRJQkFRQmdIRkJvbm51Nk8vVkpRRGpUTFJta2pkam9PNnR6blppR0JVOTUzNHBSbW41Z3VKUHdBY1JQQ1k0TgovSXc3VEhTVVJ2VGpTNmtvQjJKa3VJaWIrbXo3YkVhcksySk5NeGRzQUdtem5LUzBud0dWZXM4cTRZMWZhc0tnClN0RnZUNytUL1VmVHNSWXQ1OU0rYzlDWjhEVFdxdU9tRklFQU02MnVmczBIV2dhd3RWbExmd2VHSHluRUtlNmoKZnFsKzVQUWVzVFUzeFVIQS9DZHRqVW1tOGk1WEU4a0dpek1YS2R4b0V3TWFWS2dveWpIN1Z5WERaWXEvb2wzWQpjSGpnRVFwUUhQQWsxUkpEdkVPa0lVTmpWVFAwTzdZTEZqQk5JTmhMa1lpRUVQRnVEenQyR3pyMHFHS0d4a1lGCksyN2xWYzBLdTFMUjlCNzNHQnBhMGkyeDFjZVMKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo="
+  tls.key: "LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcFFJQkFBS0NBUUVBeTNVYS9LQ0kxeTd0bGh5TXZSeGRTVHBjN1RHU29odlB6WDhpVU5Rd3p5UEpsa2dXCi9BS3hhS3ZnSkIvL01LMXkrdmRick1hY3ErdFhoRnZjbXlySUlrL21EUUdNdEszaEdXK2M1ekJZbXFhbmczamwKemhHTTY1c1lSVzhQMWwxbVF6Y0VHdUd3SGs3Z3MyWWlieTY5bVhiUXYzRnN4RWJFbHdxeEtKQ1p3VTh0K21PLwp2bEQ5OEdqOE16M2FqQ3ZKQ0NzbkZCVGhTZzNRVG9tTExaTEE4bEc0S1ZxcG16ZlRLcnZOejhFL2JZYVFhUjk5ClNSWCt5WnRjZVdBM21mK3RKeUx6L3FJd01BVStWT1BEVnFUQ2lhd3plVkp1Nm5WNHE5TGFpUEZPQWt2NVFjcU8KcUwxajRTMDhRR3pRQ2IwVGdtckxIVVl0anBuVXdMYnJHYVh2MndJREFRQUJBb0lCQUR1akJkZ0xEbEZVMWh0cwpIdXpIeGFoVFRTM1JuQk9jWjFycTZ4b2FPSHhmRnhYUDU3elM1VUd6TDY0bkd0d2YyMVlvNzF4RGsyVHBST3Z0CktVcnFUV09SVy9Od0F0aHJKMUlYWHp4ODlWdlBnY2FOeDM2UnNtYlZQVllNNmUyQnp4bmdwSGxrc2dVUVJka1EKRlFQV0JZbFlSSFA1UVZKL0U5emFLM2VpZXc4b0twQWlMaXp5WkRJSkJnZ2ZHVEY2YXJzRWRtU0w0NGc0SG14UApYWWMxOWh0QU5vMG1UTEgxRVdmMEFRRmJxNlBVbE1CNkVvcE1xUmpEZHlNem5jV2RybEp5WE1wbVhlVXpEa2ZaCnNXNzNhSEVUK2d0a2tCOUYvTkJYajF4OGt5bnhHUWZDWlg5NGlueXdhdUErYnV3WWg0dHc5Szc2aFFJRDJ0KzUKWFdQWDViRUNnWUVBNm9xK25XN0paeWd4R2hmTWN6QjhyTmRRR1F1eEVudDFYR2QvdUFkLytiRWtWM1lDd1AyYQpPVHozeER4Z0VrWThLZUtOZlFYRnNKRncrcjNQckNPNXF0YmVBTW9RNVZlUklmRldiVUFqem9qVElTcXV3cGdjCmhyR2dGUU53bFAzcmlIanQ1d2xQK2lOY0ViOHQyUkk0WnE1OGNNeUt1ZHRPRThvVkV2M2tuaDhDZ1lFQTNoSlMKNFNFc1F1WnRJblZhdXpvTnErSXYrbnViS2lVSS83ZWdPb2IyaVJXSzJnaFQ2YTJwN0dEK1hobWx0c3VNZmR3QwpGczVtQ1IzTVo4WWl2NzBFYXRnVk1zbnFFYUMxdktxcGZiMEx0eVlGNHZRZVR4NTZ5d2lCZ2dKbURFWUU0Qk5CCjZ5bWw4YlVra1lKU1B1d2VRTlRHL0NibDRpUnp2MnhUNVlaN2ZzVUNnWUVBbE5LL0N3U09WWitpTUkxalZNQXkKakRYL2hEVHdBZXRHMkFCd2dXUjQ1d1pwS2ZvZTJ6alFVSHVJT0FPYmJsMFV0ZnNram0xSU9MYkErc25RYWNrdAplZUxuY1piR1M5QlpyakVHQjBMSXRiZ0tTQ1JlU2VuZFIvYVR2bUcxWVVVUjNFSG5xMDgwYVdOZ2UzNVU2RVZ3CmRtOUhWUWZsQ3ZQR1FqWmJVdmE1eHo4Q2dZRUFoYmQyM0VTRFNFMURqYW9vVmZCZzV3eXRZeUFta0R2NHJURysKY3o5dEY2STNGNDVJS0w3L1FHd3UvaTVuVUNoRWtreDFuWkh1Y3JMVXIrL29ZSmZLSHlPNXIvbFF6Z2g5SmZ1RgpUMGNUMU5ZNldTd3hTK2JJZlpURGxxc25FMkRkOHFibDNGb1pwKzh3ODhVTERRUlVPeWxrSDlTME8zVkRsUkgvCmVvZDl1UmtDZ1lFQXFPU1lxbEtBakNjUEppUkgvQUdRU2JsdGZ2SzVFL3BteTl4UFlKbzd0ck96QXJnNnBuY2EKMzE5b0tOUU5sdkJld0VyVHJGdUh6ZmdxRjVZczVSSFJSbmdrdHNYWE9QSC8rRVFrM3NDYU5iTzVvWW1mMG5SNgpHSWJyUk5pbitSS0xhMVdLV2p2b0JOdzhxaG9nbm9tU21CRSs1c3hMdFZTWE9iU0JBWlRPSnNNPQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo="
+---
+# Source: carto/templates/workspace-api/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-carto-workspace-api
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: workspace-api
+data:
+  
+  
+  BIGQUERY_OAUTH2_CLIENT_SECRET: ""  # appSecrets.bigqueryOauth2ClientSecret.value
+  ENCRYPTION_SECRET_KEY: ""  # cartoSecrets.encryptionSecretKey.value
+  IMPORT_AWS_ACCESS_KEY_ID: ""  # appSecrets.importAwsAccessKeyId.value
+  IMPORT_AWS_SECRET_ACCESS_KEY: ""  # appSecrets.importAwsSecretAccessKey.value
+  WORKSPACE_JWT_SECRET: ""  # cartoSecrets.jwtApiSecret.value
+  WORKSPACE_THUMBNAILS_ACCESSKEYID: ""  # appSecrets.awsAccessKeyId.value
+  WORKSPACE_THUMBNAILS_SECRETACCESSKEY: ""  # appSecrets.awsAccessKeySecret.value
+  WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY: ""  # appSecrets.azureStorageAccessKey.value
+  WORKSPACE_IMPORTS_ACCESSKEYID: ""  # appSecrets.awsAccessKeyId.value
+  WORKSPACE_IMPORTS_SECRETACCESSKEY: ""  # appSecrets.awsAccessKeySecret.value
+  WORKSPACE_IMPORTS_STORAGE_ACCESSKEY: ""  # appSecrets.azureStorageAccessKey.value
+---
+# Source: carto/templates/workspace-subscriber/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-carto-workspace-subscriber
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: workspace-subscriber
+data:
+  
+  
+  BIGQUERY_OAUTH2_CLIENT_SECRET: ""  # appSecrets.bigqueryOauth2ClientSecret.value
+  ENCRYPTION_SECRET_KEY: ""  # cartoSecrets.encryptionSecretKey.value
+  WORKSPACE_JWT_SECRET: ""  # cartoSecrets.jwtApiSecret.value
+---
+# Source: carto/templates/workspace-www/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: release-name-carto-workspace-www
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: workspace-www
+data:
+  
+  
+  GOOGLE_MAPS_API_KEY: ""  # appSecrets.googleMapsApiKey.value
+---
+# Source: carto/charts/internalPostgresql/templates/primary/initialization-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-postgresql-init-scripts
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: postgresql
+    helm.sh/chart: internalPostgresql-11.9.13
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+data:
+  delete_db_and_user.sh: |
+    # Using bash because we need the postgres user and the initDbUser and initDbPassword values don't work
+    # correctly with the postgres user
+    PGPASSWORD=$POSTGRES_POSTGRES_PASSWORD psql -U postgres <<EOF
+    DROP DATABASE "workspace";
+    DROP USER "workspace_admin";
+    EOF
+---
+# Source: carto/charts/internalRedis/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-redis-configuration
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: redis
+    helm.sh/chart: internalRedis-16.13.2
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+data:
+  redis.conf: |-
+    # User-supplied common configuration:
+    # Enable AOF https://redis.io/topics/persistence#append-only-file
+    appendonly yes
+    # Disable RDB persistence, AOF persistence already enabled.
+    save ""
+    # End of common configuration
+  master.conf: |-
+    dir /data
+    # User-supplied master configuration:
+    rename-command FLUSHDB ""
+    rename-command FLUSHALL ""
+    # End of master configuration
+  replica.conf: |-
+    dir /data
+    # User-supplied replica configuration:
+    rename-command FLUSHDB ""
+    rename-command FLUSHALL ""
+    # End of replica configuration
+---
+# Source: carto/charts/internalRedis/templates/health-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-redis-health
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: redis
+    helm.sh/chart: internalRedis-16.13.2
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+data:
+  ping_readiness_local.sh: |-
+    #!/bin/bash
+
+    [[ -f $REDIS_PASSWORD_FILE ]] && export REDIS_PASSWORD="$(< "${REDIS_PASSWORD_FILE}")"
+    [[ -n "$REDIS_PASSWORD" ]] && export REDISCLI_AUTH="$REDIS_PASSWORD"
+    response=$(
+      timeout -s 3 $1 \
+      redis-cli \
+        -h localhost \
+        -p $REDIS_PORT \
+        ping
+    )
+    if [ "$?" -eq "124" ]; then
+      echo "Timed out"
+      exit 1
+    fi
+    if [ "$response" != "PONG" ]; then
+      echo "$response"
+      exit 1
+    fi
+  ping_liveness_local.sh: |-
+    #!/bin/bash
+
+    [[ -f $REDIS_PASSWORD_FILE ]] && export REDIS_PASSWORD="$(< "${REDIS_PASSWORD_FILE}")"
+    [[ -n "$REDIS_PASSWORD" ]] && export REDISCLI_AUTH="$REDIS_PASSWORD"
+    response=$(
+      timeout -s 3 $1 \
+      redis-cli \
+        -h localhost \
+        -p $REDIS_PORT \
+        ping
+    )
+    if [ "$?" -eq "124" ]; then
+      echo "Timed out"
+      exit 1
+    fi
+    responseFirstWord=$(echo $response | head -n1 | awk '{print $1;}')
+    if [ "$response" != "PONG" ] && [ "$responseFirstWord" != "LOADING" ] && [ "$responseFirstWord" != "MASTERDOWN" ]; then
+      echo "$response"
+      exit 1
+    fi
+  ping_readiness_master.sh: |-
+    #!/bin/bash
+
+    [[ -f $REDIS_MASTER_PASSWORD_FILE ]] && export REDIS_MASTER_PASSWORD="$(< "${REDIS_MASTER_PASSWORD_FILE}")"
+    [[ -n "$REDIS_MASTER_PASSWORD" ]] && export REDISCLI_AUTH="$REDIS_MASTER_PASSWORD"
+    response=$(
+      timeout -s 3 $1 \
+      redis-cli \
+        -h $REDIS_MASTER_HOST \
+        -p $REDIS_MASTER_PORT_NUMBER \
+        ping
+    )
+    if [ "$?" -eq "124" ]; then
+      echo "Timed out"
+      exit 1
+    fi
+    if [ "$response" != "PONG" ]; then
+      echo "$response"
+      exit 1
+    fi
+  ping_liveness_master.sh: |-
+    #!/bin/bash
+
+    [[ -f $REDIS_MASTER_PASSWORD_FILE ]] && export REDIS_MASTER_PASSWORD="$(< "${REDIS_MASTER_PASSWORD_FILE}")"
+    [[ -n "$REDIS_MASTER_PASSWORD" ]] && export REDISCLI_AUTH="$REDIS_MASTER_PASSWORD"
+    response=$(
+      timeout -s 3 $1 \
+      redis-cli \
+        -h $REDIS_MASTER_HOST \
+        -p $REDIS_MASTER_PORT_NUMBER \
+        ping
+    )
+    if [ "$?" -eq "124" ]; then
+      echo "Timed out"
+      exit 1
+    fi
+    responseFirstWord=$(echo $response | head -n1 | awk '{print $1;}')
+    if [ "$response" != "PONG" ] && [ "$responseFirstWord" != "LOADING" ]; then
+      echo "$response"
+      exit 1
+    fi
+  ping_readiness_local_and_master.sh: |-
+    script_dir="$(dirname "$0")"
+    exit_status=0
+    "$script_dir/ping_readiness_local.sh" $1 || exit_status=$?
+    "$script_dir/ping_readiness_master.sh" $1 || exit_status=$?
+    exit $exit_status
+  ping_liveness_local_and_master.sh: |-
+    script_dir="$(dirname "$0")"
+    exit_status=0
+    "$script_dir/ping_liveness_local.sh" $1 || exit_status=$?
+    "$script_dir/ping_liveness_master.sh" $1 || exit_status=$?
+    exit $exit_status
+---
+# Source: carto/charts/internalRedis/templates/scripts-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-redis-scripts
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: redis
+    helm.sh/chart: internalRedis-16.13.2
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+data:
+  start-master.sh: |
+    #!/bin/bash
+
+    [[ -f $REDIS_PASSWORD_FILE ]] && export REDIS_PASSWORD="$(< "${REDIS_PASSWORD_FILE}")"
+    if [[ ! -f /opt/bitnami/redis/etc/master.conf ]];then
+        cp /opt/bitnami/redis/mounted-etc/master.conf /opt/bitnami/redis/etc/master.conf
+    fi
+    if [[ ! -f /opt/bitnami/redis/etc/redis.conf ]];then
+        cp /opt/bitnami/redis/mounted-etc/redis.conf /opt/bitnami/redis/etc/redis.conf
+    fi
+    ARGS=("--port" "${REDIS_PORT}")
+    ARGS+=("--requirepass" "${REDIS_PASSWORD}")
+    ARGS+=("--masterauth" "${REDIS_PASSWORD}")
+    ARGS+=("--include" "/opt/bitnami/redis/etc/redis.conf")
+    ARGS+=("--include" "/opt/bitnami/redis/etc/master.conf")
+    exec redis-server "${ARGS[@]}"
+---
+# Source: carto/templates/accounts-www/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-carto-accounts-www
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: accounts-www
+data:
+  CARTO_DATA_WAREHOUSE_ENABLED: "false"
+  CARTO_SELFHOSTED_VERSION: "2024.1.11"
+  LOG_LEVEL: "debug"
+  PORT: "8080"
+  REACT_APP_ACCOUNTS_API_URL: "https://"
+  REACT_APP_ACCOUNTS_URL: "https://carto-selfhosted.lan/acc/"
+  REACT_APP_AUTH0_DOMAIN: ""
+  REACT_APP_CLIENT_ID: ""
+  REACT_APP_CUSTOM_TENANT: ""
+  REACT_APP_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
+  THUMBNAILS_BUCKET_EXTERNAL_URL: ""
+  REACT_APP_ACCOUNTS_WWW_ENABLE_TRACKJS: "true"
+---
+# Source: carto/templates/cdn-invalidator-sub/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-carto-cdn-invalidator-sub
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: cdn-invalidator-sub
+data:
+  CARTO_SELFHOSTED_VERSION: "2024.1.11"
+  EVENT_BUS_PROJECT_ID: ""
+  CDN_INVALIDATOR_BACKEND_ENGINE: "varnish"
+  CDN_INVALIDATOR_SUBSCRIBER_ERROR_RESPONSE_STACK_TRACE: "false"
+  CDN_INVALIDATOR_SUBSCRIBER_SUBSCRIPTION: "projects//subscriptions/event-bus-cdn-inval-sub"
+  CDN_INVALIDATOR_TENANT_ID: ""
+  CDN_INVALIDATOR_VARNISH_PURGE_BASE_URL: "http://release-name-carto-http-cache.default.svc.cluster.local"
+  EVENT_BUS_TOPIC: "projects//topics/-event-bus"
+  NODE_OPTIONS: "--max-old-space-size=768"
+  GOOGLE_APPLICATION_CREDENTIALS: /usr/src/certs/gcp-default-service-account/key.json
+  PUBSUB_PROJECT_ID: ""
+---
+# Source: carto/templates/http-cache/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-carto-http-cache
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: http-cache
+data:
+  VARNISH_MAPS_API_INTERNAL_URL: release-name-carto-maps-api.default.svc.cluster.local
+  VARNISH_WORKSPACE_API_INTERNAL_URL: release-name-carto-workspace-api.default.svc.cluster.local
+  VARNISH_PURGE_ALLOWED_IPS: "0.0.0.0/0"
+  VARNISH_REPORT_BASIC_INFORMATION_HEADERS: "true"
+  VARNISH_SIZE: "942M"
+---
+# Source: carto/templates/import-api/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-carto-import-api
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: import-api
+data:
+  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_DOMAIN: ""
+  AUTH0_NAMESPACE: "http://app.carto.com"
+  CARTO_SELFHOSTED_VERSION: "2024.1.11"
+  IMPORT_ERROR_RESPONSE_STACK_TRACE: "false"
+  IMPORT_PORT: "8003"
+  IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects//subscriptions/tenant-bus-import-sub"
+  IMPORT_PUBSUB_TENANT_BUS_TOPIC: "projects//topics/tenant-bus"
+  IMPORT_TENANT_ID: ""
+  IMPORT_WORKER_PROCESSING_DIR: "/tmp/import-worker"
+  LOG_LEVEL: "debug"
+  EVENT_BUS_TOPIC: "projects//topics/-event-bus"
+  PUBSUB_PROJECT_ID: ""
+  GOOGLE_APPLICATION_CREDENTIALS: /usr/src/certs/gcp-default-service-account/key.json
+  NODE_OPTIONS: "--max-old-space-size=768"
+  WORKSPACE_POSTGRES_DB: "workspace"
+  WORKSPACE_POSTGRES_HOST: "release-name-postgresql"
+  WORKSPACE_POSTGRES_PORT: "5432"
+  WORKSPACE_POSTGRES_USER: "workspace_admin"
+  WORKSPACE_POSTGRES_SSL_ENABLED: "false"
+  IMPORT_AWS_CUSTOM_BUCKET_ROLE_ARN: ""
+  IMPORT_PROVIDER: "gcp"
+  IMPORT_KEYFILENAME: /usr/src/certs/gcp-default-service-account/key.json
+---
+# Source: carto/templates/import-worker/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-carto-import-worker
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: import-worker
+data:
+  BIGQUERY_OAUTH2_CLIENT_ID: ""
+  CARTO_SELFHOSTED_VERSION: "2024.1.11"
+  GOOGLE_APPLICATION_CREDENTIALS: /usr/src/certs/gcp-default-service-account/key.json
+  IMPORT_ERROR_RESPONSE_STACK_TRACE: "false"
+  IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects//subscriptions/tenant-bus-import-sub"
+  IMPORT_PUBSUB_TENANT_BUS_TOPIC: "projects//topics/tenant-bus"
+  IMPORT_TENANT_ID: ""
+  IMPORT_WORKER_PROCESSING_DIR: "/tmp/import-worker"
+  LOG_LEVEL: "debug"
+  EVENT_BUS_TOPIC: "projects//topics/-event-bus"
+  NODE_OPTIONS: "--max-old-space-size=4096"
+  PUBSUB_PROJECT_ID: ""
+  WORKSPACE_POSTGRES_DB: "workspace"
+  WORKSPACE_POSTGRES_HOST: "release-name-postgresql"
+  WORKSPACE_POSTGRES_PORT: "5432"
+  WORKSPACE_POSTGRES_USER: "workspace_admin"
+  WORKSPACE_POSTGRES_SSL_ENABLED: "false"
+  IMPORT_AWS_CUSTOM_BUCKET_ROLE_ARN: ""
+  IMPORT_PROVIDER: "gcp"
+  IMPORT_KEYFILENAME: /usr/src/certs/gcp-default-service-account/key.json
+---
+# Source: carto/templates/lds-api/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-carto-lds-api
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: lds-api
+data:
+  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_DOMAIN: ""
+  AUTH0_NAMESPACE: "http://app.carto.com"
+  CARTO_SELFHOSTED_VERSION: "2024.1.11"
+  GOOGLE_APPLICATION_CREDENTIALS: /usr/src/certs/gcp-default-service-account/key.json
+  EVENT_BUS_PROJECT_ID: ""
+  EVENT_BUS_TOPIC: "projects//topics/-event-bus"
+  LDS_ERROR_RESPONSE_STACK_TRACE: "false"
+  LDS_PORT: "8004"
+  LOG_LEVEL: "debug"
+  NODE_OPTIONS: "--max-old-space-size=768"
+  REDIS_CACHE_PREFIX: "onprem"
+  REDIS_HOST: "release-name-redis-master"
+  REDIS_PORT: "6379"
+  REDIS_TLS_ENABLED: "false"
+  PUBSUB_PROJECT_ID: ""
+  WORKSPACE_POSTGRES_DB: "workspace"
+  WORKSPACE_POSTGRES_HOST: "release-name-postgresql"
+  WORKSPACE_POSTGRES_PORT: "5432"
+  WORKSPACE_POSTGRES_USER: "workspace_admin"
+  WORKSPACE_POSTGRES_SSL_ENABLED: "false"
+  LDS_TENANT_ID: ""
+---
+# Source: carto/templates/maps-api/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-carto-maps-api
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: maps-api
+data:
+  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_DOMAIN: ""
+  AUTH0_NAMESPACE: "http://app.carto.com"
+  BIGQUERY_OAUTH2_CLIENT_ID: ""
+  CARTO_SELFHOSTED_VERSION: "2024.1.11"
+  EVENT_BUS_PROJECT_ID: ""
+  EVENT_BUS_TOPIC: "projects//topics/-event-bus"
+  EXPORTS_GCS_BUCKET_NAME: ""
+  EXPORTS_S3_BUCKET_NAME: ""
+  EXPORTS_S3_BUCKET_REGION: ""
+  EXPORTS_S3_BUCKET_ROLE_ARN: ""
+  GOOGLE_APPLICATION_CREDENTIALS: /usr/src/certs/gcp-default-service-account/key.json
+  LOG_LEVEL: "debug"
+  MAPS_API_V3_ERROR_RESPONSE_STACK_TRACE: "false"
+  MAPS_API_V3_PORT: "8002"
+  MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: "carto-selfhosted.lan"
+  MAPS_API_V3_RESOURCE_URL_HOST: "carto-selfhosted.lan"
+  MAPS_API_V3_RESOURCE_URL_TEMPLATE_NEW: 'https://${host}/api/${path}'
+  MAPS_API_V3_TENANT_ID: ""
+  MAPS_API_V3_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects//subscriptions/tenant-bus-sql-worker-sub"
+  MAPS_API_V3_PUBSUB_TENANT_BUS_TOPIC: "projects//topics/tenant-bus"
+  NODE_OPTIONS: "--max-old-space-size=4608"
+  PUBSUB_MODE: "pull"
+  PUBSUB_PROJECT_ID: ""
+  REDIS_CACHE_PREFIX: "onprem"
+  REDIS_HOST: "release-name-redis-master"
+  REDIS_PORT: "6379"
+  REDIS_TLS_ENABLED: "false"
+  WORKSPACE_POSTGRES_DB: "workspace"
+  WORKSPACE_POSTGRES_HOST: "release-name-postgresql"
+  WORKSPACE_POSTGRES_PORT: "5432"
+  WORKSPACE_POSTGRES_USER: "workspace_admin"
+  WORKSPACE_POSTGRES_SSL_ENABLED: "false"
+---
+# Source: carto/templates/notifier/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-carto-notifier
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: notifier
+data:
+  CARTO_SELFHOSTED_VERSION: "2024.1.11"
+  WORKSPACE_API_INTERNAL_URL: release-name-carto-workspace-api.default.svc.cluster.local:80
+---
+# Source: carto/templates/router/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-carto-router
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: router
+data:
+  GOOGLE_APPLICATION_CREDENTIALS: /usr/src/certs/gcp-default-service-account/key.json
+  HTTP_CACHE_ENABLED: "true"
+  LS_JAVA_OPTS: "-Xms512m -Xmx1024m"
+  NGINX_CLIENT_MAX_BODY_SIZE: "10M"
+  NGINX_GZIP_MIN_LENGTH: "1100"
+  NGINX_GZIP_BUFFERS: "16 8k"
+  NGINX_PROXY_BUFFERS: "16 8k"
+  NGINX_PROXY_BUFFER_SIZE: "8k"
+  NGINX_PROXY_BUSY_BUFFERS_SIZE: "8k"
+  ROUTER_ACCOUNTS_WWW_INTERNAL_URL: release-name-carto-accounts-www.default.svc.cluster.local
+  ROUTER_HTTP_CACHE_INTERNAL_URL: release-name-carto-http-cache.default.svc.cluster.local
+  ROUTER_NOTIFIER_INTERNAL_URL: release-name-carto-notifier.default.svc.cluster.local
+  ROUTER_IMPORT_API_INTERNAL_URL: release-name-carto-import-api.default.svc.cluster.local
+  ROUTER_LDS_API_INTERNAL_URL: release-name-carto-lds-api.default.svc.cluster.local
+  ROUTER_MAPS_API_INTERNAL_URL: release-name-carto-maps-api.default.svc.cluster.local
+  # If required, is going to be generated by Helm and inyected as secret
+  ROUTER_SSL_AUTOGENERATE: "0"
+  ROUTER_SSL_CERTIFICATE_KEY_PATH: /usr/src/certs/tls.key
+  ROUTER_SSL_CERTIFICATE_PATH: /usr/src/certs/tls.crt
+  ROUTER_WORKSPACE_API_INTERNAL_URL: release-name-carto-workspace-api.default.svc.cluster.local
+  ROUTER_WORKSPACE_WWW_INTERNAL_URL: release-name-carto-workspace-www.default.svc.cluster.local
+  ROUTER_ENABLE_HTTPS: "true"
+  ROUTER_METRICS_PUBSUB_PROJECT_ID: ""
+  ROUTER_METRICS_PUBSUB_TOPIC: "data-updates"
+  ROUTER_METRICS_HOST: "localhost"
+  ROUTER_METRICS_PUBSUB_SUBSCRIPTION_FILTER: "aggregated-selfhosted-metrics"
+---
+# Source: carto/templates/sql-worker/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-carto-sql-worker
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: sql-worker
+data:
+  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_DOMAIN: ""
+  AUTH0_NAMESPACE: "http://app.carto.com"
+  CARTO_SELFHOSTED_VERSION: "2024.1.11"
+  EXPORTS_GCS_BUCKET_NAME: ""
+  EXPORTS_S3_BUCKET_NAME: ""
+  EXPORTS_S3_BUCKET_REGION: ""
+  EXPORTS_S3_BUCKET_ROLE_ARN: ""
+  GOOGLE_APPLICATION_CREDENTIALS: /usr/src/certs/gcp-default-service-account/key.json
+  LOG_LEVEL: "debug"
+  EVENT_BUS_TOPIC: "projects//topics/-event-bus"
+  MAPS_API_V3_COMPONENT_NAME: "sql-worker"
+  MAPS_API_V3_ERROR_RESPONSE_STACK_TRACE: "false"
+  MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: "carto-selfhosted.lan"
+  MAPS_API_V3_RESOURCE_URL_HOST: "carto-selfhosted.lan"
+  MAPS_API_V3_RESOURCE_URL_TEMPLATE_NEW: 'https://${host}/api/${path}'
+  MAPS_API_V3_TENANT_ID: ""
+  MAPS_API_V3_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects//subscriptions/tenant-bus-sql-worker-sub"
+  MAPS_API_V3_PUBSUB_TENANT_BUS_TOPIC: "projects//topics/tenant-bus"
+  NODE_OPTIONS: "--max-old-space-size=1536"
+  PUBSUB_MODE: "pull"
+  PUBSUB_PROJECT_ID: ""
+  REDIS_CACHE_PREFIX: "onprem"
+  REDIS_HOST: "release-name-redis-master"
+  REDIS_PORT: "6379"
+  REDIS_TLS_ENABLED: "false"
+  WORKSPACE_POSTGRES_DB: "workspace"
+  WORKSPACE_POSTGRES_HOST: "release-name-postgresql"
+  WORKSPACE_POSTGRES_PORT: "5432"
+  WORKSPACE_POSTGRES_USER: "workspace_admin"
+  WORKSPACE_POSTGRES_SSL_ENABLED: "false"
+  WORKSPACE_TENANT_ID: ""
+---
+# Source: carto/templates/workspace-api/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-carto-workspace-api
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: workspace-api
+data:
+  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_DOMAIN: ""
+  AUTH0_NAMESPACE: "http://app.carto.com"
+  BIGQUERY_OAUTH2_CLIENT_ID: ""
+  CARTO_SELFHOSTED_AUTH0_CLIENT_ID: ""
+  CARTO_SELFHOSTED_CARTO_DW_LOCATION: ""
+  CARTO_SELFHOSTED_DOMAIN: "carto-selfhosted.lan"
+  CARTO_SELFHOSTED_GCP_PROJECT_ID: ""
+  CARTO_SELFHOSTED_NAME: ""
+  CARTO_SELFHOSTED_VERSION: "2024.1.11"
+  CARTO_SELFHOSTED_DEPLOYMENT: "kubernetes"
+  EVENT_BUS_PROJECT_ID: ""
+  EVENT_BUS_TOPIC: "projects//topics/-event-bus"
+  EXPORTS_GCS_BUCKET_NAME: ""
+  GOOGLE_APPLICATION_CREDENTIALS: /usr/src/certs/gcp-default-service-account/key.json
+  LOG_LEVEL: "debug"
+  NODE_OPTIONS: "--max-old-space-size=1020"
+  PUBSUB_MODE: "pull"
+  PUBSUB_PROJECT_ID: ""
+  REDIS_CACHE_PREFIX: "onprem"
+  REDIS_HOST: "release-name-redis-master"
+  REDIS_PORT: "6379"
+  REDIS_TLS_ENABLED: "false"
+  SELFHOSTED_DOMAIN: "carto-selfhosted.lan"
+  SELFHOSTED_GCP_PROJECT_ID: ""
+  WORKSPACE_ERROR_RESPONSE_STACK_TRACE: "false"
+  WORKSPACE_PORT: "8001"
+  WORKSPACE_POSTGRES_DB: "workspace"
+  WORKSPACE_POSTGRES_HOST: "release-name-postgresql"
+  WORKSPACE_POSTGRES_PORT: "5432"
+  WORKSPACE_POSTGRES_USER: "workspace_admin"
+  WORKSPACE_POSTGRES_SSL_ENABLED: "false"
+  IMPORT_AWS_CUSTOM_BUCKET_ROLE_ARN: ""
+  WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects//subscriptions/data-updates-workspace-sub"
+  WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC: "projects//topics/data-updates"
+  WORKSPACE_PUBSUB_TENANT_BUS_TOPIC: "projects//topics/tenant-bus"
+  WORKSPACE_TENANT_ID: ""
+  WORKSPACE_SYNC_DATA_ENABLED: "true"
+  WORKSPACE_IMPORTS_BUCKET: ""
+  WORKSPACE_IMPORTS_PUBLIC: "true"
+  WORKSPACE_IMPORTS_PROVIDER: "gcp"
+  WORKSPACE_THUMBNAILS_BUCKET: ""
+  WORKSPACE_THUMBNAILS_PUBLIC: "true"
+  WORKSPACE_THUMBNAILS_PROVIDER: "gcp"
+  WORKSPACE_IMPORTS_KEYFILENAME: /usr/src/certs/gcp-default-service-account/key.json
+  WORKSPACE_THUMBNAILS_KEYFILENAME: /usr/src/certs/gcp-default-service-account/key.json
+---
+# Source: carto/templates/workspace-subscriber/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-carto-workspace-subscriber
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: workspace-subscriber
+data:
+  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_DOMAIN: ""
+  BIGQUERY_OAUTH2_CLIENT_ID: ""
+  CARTO_SELFHOSTED_DOMAIN: "carto-selfhosted.lan"
+  CARTO_SELFHOSTED_GCP_PROJECT_ID: ""
+  CARTO_SELFHOSTED_NAME: ""
+  CARTO_SELFHOSTED_VERSION: "2024.1.11"
+  COMPUTE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects//subscriptions/data-updates-compute-sub"
+  EVENT_BUS_PROJECT_ID: ""
+  EVENT_BUS_TOPIC: "projects//topics/-event-bus"
+  GOOGLE_APPLICATION_CREDENTIALS: /usr/src/certs/gcp-default-service-account/key.json
+  NODE_OPTIONS: "--max-old-space-size=768"
+  REDIS_CACHE_PREFIX: "onprem"
+  REDIS_HOST: "release-name-redis-master"
+  REDIS_PORT: "6379"
+  REDIS_TLS_ENABLED: "false"
+  LOG_LEVEL: "debug"
+  PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE: "projects/{project_id}/topics/data-updates"
+  PUBSUB_MODE: "pull"
+  PUBSUB_PROJECT_ID: ""
+  SELFHOSTED_GCP_PROJECT_ID: ""
+  WORKSPACE_ERROR_RESPONSE_STACK_TRACE: "false"
+  WORKSPACE_IMPORTS_BUCKET: ""
+  WORKSPACE_POSTGRES_DB: "workspace"
+  WORKSPACE_POSTGRES_HOST: "release-name-postgresql"
+  WORKSPACE_POSTGRES_PORT: "5432"
+  WORKSPACE_POSTGRES_USER: "workspace_admin"
+  WORKSPACE_POSTGRES_SSL_ENABLED: "false"
+  WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects//subscriptions/data-updates-workspace-sub"
+  WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC: "projects//topics/data-updates"
+  WORKSPACE_PUBSUB_EVENT_BUS_SUBSCRIPTION: "projects//subscriptions/event-bus-workspace-sub"
+  WORKSPACE_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects//subscriptions/tenant-bus-sub"
+  WORKSPACE_NOTIFIER_PUBLISH_URL: "http://release-name-carto-notifier.default.svc.cluster.local:5561/publish/"
+  WORKSPACE_PUBSUB_TENANT_BUS_TOPIC: "projects//topics/tenant-bus"
+  WORKSPACE_TENANT_ID: ""
+  WORKSPACE_THUMBNAILS_BUCKET: ""
+---
+# Source: carto/templates/workspace-www/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-carto-workspace-www
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: workspace-www
+data:
+  CARTO_DATA_WAREHOUSE_ENABLED: "false"
+  REACT_APP_BIGQUERY_OAUTH: "false"
+  CARTO_SELFHOSTED_VERSION: "2024.1.11"
+  LOG_LEVEL: "debug"
+  REACT_APP_ACCOUNTS_API_URL: "https://"
+  REACT_APP_ACCOUNTS_URL: "https://carto-selfhosted.lan/acc/"
+  REACT_APP_API_BASE_URL: "https://carto-selfhosted.lan/api"
+  REACT_APP_AUTH0_DOMAIN: ""
+  REACT_APP_CLIENT_ID: ""
+  REACT_APP_HUBSPOT_ID: "474999"
+  REACT_APP_HUBSPOT_LIMIT_FORM_ID: "cd9486fa-5766-4bac-81b9-d8c6cd029b3b"
+  REACT_APP_HUBSPOT_REQUEST_SUBSCRIPTION_FORM_ID: "49d53632-80f9-4720-b4be-bf623a527af4"
+  REACT_APP_LAUNCH_DARKLY_CLIENT_SIDE_ID: ""
+  REACT_APP_PUBLIC_MAP_URL: "https://carto-selfhosted.lan/api/v3/maps/public"
+  REACT_APP_WORKSPACE_API_URL: "https://carto-selfhosted.lan/workspace-api"
+  REACT_APP_NOTIFIER_API_URL: "https://carto-selfhosted.lan/notifier"
+  REACT_APP_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
+  THUMBNAILS_BUCKET_EXTERNAL_URL: ""
+  REACT_APP_WORKSPACE_WWW_ENABLE_TRACKJS: "true"
+  REACT_APP_WORKSPACE_WWW_ENABLE_EXPORTS: "false"
+  REACT_APP_WORKSPACE_WWW_ENABLE_GENAI: "false"
+  REACT_APP_ASKNICELY_MIN_HOURS_ACCOUNT_OLD_ENOUGH: "1920"
+---
+# Source: carto/charts/internalPostgresql/templates/primary/svc-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-postgresql-hl
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: postgresql
+    helm.sh/chart: internalPostgresql-11.9.13
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: primary
+    # Use this annotation in addition to the actual publishNotReadyAddresses
+    # field below because the annotation will stop being respected soon but the
+    # field is broken in some versions of Kubernetes:
+    # https://github.com/kubernetes/kubernetes/issues/58662
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  type: ClusterIP
+  clusterIP: None
+  # We want all pods in the StatefulSet to have their addresses published for
+  # the sake of the other Postgresql pods even before they're ready, since they
+  # have to be able to talk to each other in order to become ready.
+  publishNotReadyAddresses: true
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+  selector:
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: primary
+---
+# Source: carto/charts/internalPostgresql/templates/primary/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-postgresql
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: postgresql
+    helm.sh/chart: internalPostgresql-11.9.13
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: primary
+  annotations:
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: primary
+---
+# Source: carto/charts/internalRedis/templates/headless-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-redis-headless
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: redis
+    helm.sh/chart: internalRedis-16.13.2
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: tcp-redis
+      port: 6379
+      targetPort: redis
+  selector:
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/instance: release-name
+---
+# Source: carto/charts/internalRedis/templates/master/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-redis-master
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: redis
+    helm.sh/chart: internalRedis-16.13.2
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: master
+spec:
+  type: ClusterIP
+  internalTrafficPolicy: Cluster
+  sessionAffinity: None
+  ports:
+    - name: tcp-redis
+      port: 6379
+      targetPort: redis
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: redis
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: master
+---
+# Source: carto/templates/accounts-www/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-carto-accounts-www
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: accounts-www
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: carto
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: accounts-www
+---
+# Source: carto/templates/cdn-invalidator-sub/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-carto-cdn-invalidator-sub
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: cdn-invalidator-sub
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: carto
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: cdn-invalidator-sub
+---
+# Source: carto/templates/http-cache/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-carto-http-cache
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: http-cache
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: carto
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: http-cache
+---
+# Source: carto/templates/import-api/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-carto-import-api
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: import-api
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: carto
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: import-api
+---
+# Source: carto/templates/lds-api/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-carto-lds-api
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: lds-api
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: carto
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: lds-api
+---
+# Source: carto/templates/maps-api/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-carto-maps-api
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: maps-api
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: carto
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: maps-api
+---
+# Source: carto/templates/notifier/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-carto-notifier
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: notifier
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+      nodePort: null
+    - port: 5561
+      targetPort: internal
+      protocol: TCP
+      name: internal
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: carto
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: notifier
+---
+# Source: carto/templates/router/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-carto-router
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: router
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+      nodePort: null
+    - port: 443
+      targetPort: https
+      protocol: TCP
+      name: https
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: carto
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: router
+---
+# Source: carto/templates/workspace-api/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-carto-workspace-api
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: workspace-api
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: carto
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: workspace-api
+---
+# Source: carto/templates/workspace-www/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-carto-workspace-www
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: workspace-www
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+      nodePort: null
+  selector:
+    app.kubernetes.io/name: carto
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: workspace-www
+---
+# Source: carto/templates/accounts-www/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-carto-accounts-www
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: accounts-www
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carto
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: accounts-www
+  template:
+    metadata:
+      annotations:
+        checksum/config: 2d840fa3572fe34b4d4513b54b84c2071a1db4bbae751c750c29165dc08afefd
+      labels:
+        app.kubernetes.io/name: carto
+        helm.sh/chart: carto-1.77.1
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: accounts-www
+    spec:
+      serviceAccountName: release-name-carto-accounts-www
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: carto
+                    app.kubernetes.io/instance: release-name
+                    app.kubernetes.io/component: accounts-www
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 101
+        supplementalGroups:
+        - 2345
+      initContainers:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: accounts-www
+          image: gcr.io/carto-onprem-artifacts/accounts-www:2024.1.11
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 101
+            runAsNonRoot: false
+            runAsUser: 101
+          command:
+            - /bin/sh
+          args:
+            - -ec
+            - |
+              /docker-entrypoint.sh nginx -g "daemon off;"
+          env:
+          envFrom:
+            - configMapRef:
+                name: release-name-carto-accounts-www
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1024Mi
+            requests:
+              cpu: 200m
+              memory: 768Mi
+          ports:
+            - name: http
+              containerPort: 8080
+          livenessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            httpGet:
+              path: /acc/
+              port: http
+          readinessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            httpGet:
+              path: /acc/config.yaml
+              port: http
+          volumeMounts:
+      volumes:
+---
+# Source: carto/templates/cdn-invalidator-sub/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-carto-cdn-invalidator-sub
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: cdn-invalidator-sub
+spec:
+  # In order to publish the charts in official marketplaces, it's necessary that all components are able to start with default values without errors
+  # Components which needs other configuration requirements such as client specific parameters should not boot if these values ​​are not provided
+  replicas: 0
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carto
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: cdn-invalidator-sub
+  template:
+    metadata:
+      annotations:
+        checksum/config: f34d85c1cf316e264ede12b5c1955c786eca597a78ca75cec2b9999f2d7e25b4
+        checksum/secret: 80265931f6baf5bf7f23eed129b7a0c1dc22c73b382990bbf7bcee28d2aa21f6
+      labels:
+        app.kubernetes.io/name: carto
+        helm.sh/chart: carto-1.77.1
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: cdn-invalidator-sub
+    spec:
+      serviceAccountName: carto-common-backend
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: carto
+                    app.kubernetes.io/instance: release-name
+                    app.kubernetes.io/component: cdnInvalidatorSub
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1000
+        supplementalGroups:
+        - 2345
+      initContainers:
+        
+        # NOTE: The value internalPostgresql.image is not available unless internalPostgresql.enabled is not set. We could change this to use bitnami-shell if
+        # it had the binary wait-for-port.
+        # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+        - name: wait-for-db
+          image: docker.io/bitnami/postgresql:13.5.0-debian-10-r84
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              #!/bin/bash
+        
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+        
+              . /opt/bitnami/scripts/libos.sh
+              . /opt/bitnami/scripts/liblog.sh
+              . /opt/bitnami/scripts/libpostgresql.sh
+        
+              check_postgresql_connection() {
+                  echo "SELECT 1" | postgresql_remote_execute "$POSTGRESQL_CLIENT_DATABASE_HOST" "$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER" "$POSTGRESQL_CLIENT_DATABASE_NAME" "$POSTGRESQL_CLIENT_POSTGRES_USER" "$POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD"
+              }
+        
+              info "Connecting to the PostgreSQL instance $POSTGRESQL_CLIENT_DATABASE_HOST:$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER"
+              if ! retry_while "check_postgresql_connection" 100; then
+                  error "Could not connect to the database server"
+                  exit 1
+              else
+                  info "Connected to the PostgreSQL instance"
+              fi
+          securityContext:
+                    allowPrivilegeEscalation: false
+                    capabilities:
+                      drop:
+                      - all
+                    runAsGroup: 1000
+                    runAsNonRoot: false
+                    runAsUser: 1000
+          resources:
+                    limits:
+                      cpu: "1"
+                      memory: 2048Mi
+                    requests:
+                      cpu: 250m
+                      memory: 512Mi
+          env:
+            - name: POSTGRESQL_CLIENT_DATABASE_HOST
+              value: "release-name-postgresql"
+            - name: POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: POSTGRESQL_CLIENT_POSTGRES_USER
+              value: "workspace_admin"
+            - name: POSTGRESQL_CLIENT_DATABASE_NAME
+              value: "workspace"
+      terminationGracePeriodSeconds: 300
+      containers:
+        - name: cdn-invalidator-sub
+          image: gcr.io/carto-onprem-artifacts/consumers/cdn-invalidator-sub:2024.1.11
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 1000
+            runAsNonRoot: false
+            runAsUser: 1000
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - node -r /usr/src/app/cdn-invalidator-sub/tsconfig-paths-bootstrap.js /usr/src/app/cdn-invalidator-sub/dist/app/cdn-invalidator-sub/index.js
+          
+          env:
+            
+          envFrom:
+            - configMapRef:
+                name: release-name-carto-cdn-invalidator-sub
+            - secretRef:
+                name: release-name-carto-cdn-invalidator-sub
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1024Mi
+            requests:
+              cpu: 200m
+              memory: 372Mi
+          ports:
+            - name: http
+              containerPort: 3000
+          volumeMounts:
+            - name: gcp-default-service-account-key
+              mountPath: /usr/src/certs/gcp-default-service-account
+              readOnly: true
+      volumes:
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: release-name-carto-gcp-default-service-account
+            items:
+              - key: key.json
+                path: key.json
+---
+# Source: carto/templates/http-cache/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-carto-http-cache
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: http-cache
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carto
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: http-cache
+  template:
+    metadata:
+      annotations:
+        checksum/config: 4b4100752a770ccce0aa6da760353ffc5f2765843e39ce982f195a6ff3901950
+        checksum/secret: 824b9e63e37aae26de240464433ab6854d6dba8be09aabd711676e5052f6d978
+      labels:
+        app.kubernetes.io/name: carto
+        helm.sh/chart: carto-1.77.1
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: http-cache
+    spec:
+      serviceAccountName: release-name-carto-http-cache
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: carto
+                    app.kubernetes.io/instance: release-name
+                    app.kubernetes.io/component: httpCache
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 102
+        supplementalGroups:
+        - 2345
+      initContainers:
+        
+        # NOTE: The value internalPostgresql.image is not available unless internalPostgresql.enabled is not set. We could change this to use bitnami-shell if
+        # it had the binary wait-for-port.
+        # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+        - name: wait-for-db
+          image: docker.io/bitnami/postgresql:13.5.0-debian-10-r84
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              #!/bin/bash
+        
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+        
+              . /opt/bitnami/scripts/libos.sh
+              . /opt/bitnami/scripts/liblog.sh
+              . /opt/bitnami/scripts/libpostgresql.sh
+        
+              check_postgresql_connection() {
+                  echo "SELECT 1" | postgresql_remote_execute "$POSTGRESQL_CLIENT_DATABASE_HOST" "$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER" "$POSTGRESQL_CLIENT_DATABASE_NAME" "$POSTGRESQL_CLIENT_POSTGRES_USER" "$POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD"
+              }
+        
+              info "Connecting to the PostgreSQL instance $POSTGRESQL_CLIENT_DATABASE_HOST:$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER"
+              if ! retry_while "check_postgresql_connection" 100; then
+                  error "Could not connect to the database server"
+                  exit 1
+              else
+                  info "Connected to the PostgreSQL instance"
+              fi
+          securityContext:
+                    allowPrivilegeEscalation: false
+                    capabilities:
+                      drop:
+                      - all
+                    runAsGroup: 1000
+                    runAsNonRoot: false
+                    runAsUser: 1000
+          resources:
+                    limits:
+                      cpu: "1"
+                      memory: 2048Mi
+                    requests:
+                      cpu: 250m
+                      memory: 512Mi
+          env:
+            - name: POSTGRESQL_CLIENT_DATABASE_HOST
+              value: "release-name-postgresql"
+            - name: POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: POSTGRESQL_CLIENT_POSTGRES_USER
+              value: "workspace_admin"
+            - name: POSTGRESQL_CLIENT_DATABASE_NAME
+              value: "workspace"
+      terminationGracePeriodSeconds: 600
+      containers:
+        - name: http-cache
+          image: gcr.io/carto-onprem-artifacts/http-cache:2024.1.11
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 101
+            runAsNonRoot: false
+            runAsUser: 101
+          command:
+            - /bin/sh
+          args:
+            - -ec
+            - |
+              /entrypoint.sh
+          env:
+            
+          envFrom:
+            - configMapRef:
+                name: release-name-carto-http-cache
+            - secretRef:
+                name: release-name-carto-http-cache
+          resources:
+            limits:
+              cpu: 500m
+              memory: 2048Mi
+            requests:
+              cpu: 200m
+              memory: 1256Mi
+          ports:
+            - name: http
+              containerPort: 6081
+          livenessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            tcpSocket:
+              port: http
+          readinessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            tcpSocket:
+              port: http
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - sh
+                - -c
+                - sleep 15 && kill -TERM $(pidof varnishd)
+          volumeMounts:
+      volumes:
+---
+# Source: carto/templates/import-api/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-carto-import-api
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: import-api
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carto
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: import-api
+  template:
+    metadata:
+      annotations:
+        checksum/config: 8c1775be7e2ac64d6004a8b033d4590244d5dea46470bc3741dface31dab6804
+        checksum/secret: 250baf1c8b9dc10a4fb2540df07473bf6320db00709fe8b4ea11ee362955887c
+      labels:
+        app.kubernetes.io/name: carto
+        helm.sh/chart: carto-1.77.1
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: import-api
+    spec:
+      serviceAccountName: carto-common-backend
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: carto
+                    app.kubernetes.io/instance: release-name
+                    app.kubernetes.io/component: import-api
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1000
+        supplementalGroups:
+        - 2345
+      initContainers:
+        
+        # NOTE: The value internalPostgresql.image is not available unless internalPostgresql.enabled is not set. We could change this to use bitnami-shell if
+        # it had the binary wait-for-port.
+        # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+        - name: wait-for-db
+          image: docker.io/bitnami/postgresql:13.5.0-debian-10-r84
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              #!/bin/bash
+        
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+        
+              . /opt/bitnami/scripts/libos.sh
+              . /opt/bitnami/scripts/liblog.sh
+              . /opt/bitnami/scripts/libpostgresql.sh
+        
+              check_postgresql_connection() {
+                  echo "SELECT 1" | postgresql_remote_execute "$POSTGRESQL_CLIENT_DATABASE_HOST" "$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER" "$POSTGRESQL_CLIENT_DATABASE_NAME" "$POSTGRESQL_CLIENT_POSTGRES_USER" "$POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD"
+              }
+        
+              info "Connecting to the PostgreSQL instance $POSTGRESQL_CLIENT_DATABASE_HOST:$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER"
+              if ! retry_while "check_postgresql_connection" 100; then
+                  error "Could not connect to the database server"
+                  exit 1
+              else
+                  info "Connected to the PostgreSQL instance"
+              fi
+          securityContext:
+                    allowPrivilegeEscalation: false
+                    capabilities:
+                      drop:
+                      - all
+                    runAsGroup: 1000
+                    runAsNonRoot: false
+                    runAsUser: 1000
+          resources:
+                    limits:
+                      cpu: "1"
+                      memory: 2048Mi
+                    requests:
+                      cpu: 250m
+                      memory: 512Mi
+          env:
+            - name: POSTGRESQL_CLIENT_DATABASE_HOST
+              value: "release-name-postgresql"
+            - name: POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: POSTGRESQL_CLIENT_POSTGRES_USER
+              value: "workspace_admin"
+            - name: POSTGRESQL_CLIENT_DATABASE_NAME
+              value: "workspace"
+        
+        # NOTE: The value redis.image is not available unless redis.enabled is not set. We could change this to use bitnami-shell if
+        # it had the binary wait-for-port.
+        # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+        - name: wait-for-redis
+          image: docker.io/bitnami/redis:6.2.7-debian-11-r11
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              #!/bin/bash
+        
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+        
+              . /opt/bitnami/scripts/libos.sh
+              . /opt/bitnami/scripts/liblog.sh
+              . /opt/bitnami/scripts/libredis.sh
+        
+              check_redis_connection() {
+                  echo "INFO" | redis-cli -a "$REDIS_CLIENT_PASSWORD" -p "$REDIS_CLIENT_PORT_NUMBER" -h "$REDIS_CLIENT_HOST"
+              }
+        
+              info "Connecting to the Redis instance $REDIS_CLIENT_HOST:$REDIS_CLIENT_PORT_NUMBER"
+              if ! retry_while "check_redis_connection"; then
+                  error "Could not connect to the Redis server"
+                  exit 1
+              else
+                  info "Connected to the Redis instance"
+              fi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 1000
+            runAsNonRoot: false
+            runAsUser: 1000
+          env:
+            - name: REDIS_CLIENT_HOST
+              value: release-name-redis
+            - name: REDIS_CLIENT_PORT_NUMBER
+              value: "6379"
+            - name: REDIS_CLIENT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-redis
+                  key: "redis-password"
+      terminationGracePeriodSeconds: 300
+      containers:
+        - name: import-api
+          image: gcr.io/carto-onprem-artifacts/import-api:2024.1.11
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 1000
+            runAsNonRoot: false
+            runAsUser: 1000
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js
+              /usr/src/app/dist/app/index.js
+          
+          env:
+            - name: WORKSPACE_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-redis
+                  key: "redis-password"
+            
+          envFrom:
+            - configMapRef:
+                name: release-name-carto-import-api
+            - secretRef:
+                name: release-name-carto-import-api
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
+            requests:
+              cpu: 350m
+              memory: 372Mi
+          ports:
+            - name: http
+              containerPort: 8003
+          livenessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            httpGet:
+              path: /
+              port: http
+          volumeMounts:
+            - name: gcp-default-service-account-key
+              mountPath: /usr/src/certs/gcp-default-service-account
+              readOnly: true
+      volumes:
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: release-name-carto-gcp-default-service-account
+            items:
+              - key: key.json
+                path: key.json
+---
+# Source: carto/templates/import-worker/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-carto-import-worker
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: import-worker
+spec:
+  # In order to publish the charts in official marketplaces, it's necessary that all components are able to start with default values without errors
+  # Components which needs other configuration requirements such as client specific parameters should not boot if these values ​​are not provided
+  replicas: 0
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carto
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: import-worker
+  template:
+    metadata:
+      annotations:
+        checksum/config: c675b46b4ce3f5c0c73b5f831c153083ef5aab6a0dbef81dc76f02de4e794dd6
+        checksum/secret: dacff3d917f602af6a5658b63c0b1bf0c05d1fcdeda2da710556aee5a3bf906a
+      labels:
+        app.kubernetes.io/name: carto
+        helm.sh/chart: carto-1.77.1
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: import-worker
+    spec:
+      serviceAccountName: carto-common-backend
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: carto
+                    app.kubernetes.io/instance: release-name
+                    app.kubernetes.io/component: import-worker
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1000
+        supplementalGroups:
+        - 2345
+      initContainers:
+        
+        # NOTE: The value internalPostgresql.image is not available unless internalPostgresql.enabled is not set. We could change this to use bitnami-shell if
+        # it had the binary wait-for-port.
+        # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+        - name: wait-for-db
+          image: docker.io/bitnami/postgresql:13.5.0-debian-10-r84
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              #!/bin/bash
+        
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+        
+              . /opt/bitnami/scripts/libos.sh
+              . /opt/bitnami/scripts/liblog.sh
+              . /opt/bitnami/scripts/libpostgresql.sh
+        
+              check_postgresql_connection() {
+                  echo "SELECT 1" | postgresql_remote_execute "$POSTGRESQL_CLIENT_DATABASE_HOST" "$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER" "$POSTGRESQL_CLIENT_DATABASE_NAME" "$POSTGRESQL_CLIENT_POSTGRES_USER" "$POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD"
+              }
+        
+              info "Connecting to the PostgreSQL instance $POSTGRESQL_CLIENT_DATABASE_HOST:$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER"
+              if ! retry_while "check_postgresql_connection" 100; then
+                  error "Could not connect to the database server"
+                  exit 1
+              else
+                  info "Connected to the PostgreSQL instance"
+              fi
+          securityContext:
+                    allowPrivilegeEscalation: false
+                    capabilities:
+                      drop:
+                      - all
+                    runAsGroup: 1000
+                    runAsNonRoot: false
+                    runAsUser: 1000
+          resources:
+                    limits:
+                      cpu: "1"
+                      memory: 2048Mi
+                    requests:
+                      cpu: 250m
+                      memory: 512Mi
+          env:
+            - name: POSTGRESQL_CLIENT_DATABASE_HOST
+              value: "release-name-postgresql"
+            - name: POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: POSTGRESQL_CLIENT_POSTGRES_USER
+              value: "workspace_admin"
+            - name: POSTGRESQL_CLIENT_DATABASE_NAME
+              value: "workspace"
+      terminationGracePeriodSeconds: 3600
+      containers:
+        - name: import-worker
+          image: gcr.io/carto-onprem-artifacts/import-api:2024.1.11
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 1000
+            runAsNonRoot: false
+            runAsUser: 1000
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js
+          
+          env:
+            - name: WORKSPACE_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            
+          envFrom:
+            - configMapRef:
+                name: release-name-carto-import-worker
+            - secretRef:
+                name: release-name-carto-import-worker
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 8192Mi
+            requests:
+              cpu: 350m
+              memory: 3072Mi
+          volumeMounts:
+            - name: gcp-default-service-account-key
+              mountPath: /usr/src/certs/gcp-default-service-account
+              readOnly: true
+      volumes:
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: release-name-carto-gcp-default-service-account
+            items:
+              - key: key.json
+                path: key.json
+---
+# Source: carto/templates/lds-api/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-carto-lds-api
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: lds-api
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carto
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: lds-api
+  template:
+    metadata:
+      annotations:
+        checksum/config: 0608c1314781e81f0d27a099306600fff496534f32b5ba0839cf399443921775
+        checksum/secret: e7ed3fbf70a32b1fff90919e7cd9800d71a2480d7762da5781bdf66ed1c1b5d3
+      labels:
+        app.kubernetes.io/name: carto
+        helm.sh/chart: carto-1.77.1
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: lds-api
+    spec:
+      serviceAccountName: carto-common-backend
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: carto
+                    app.kubernetes.io/instance: release-name
+                    app.kubernetes.io/component: lds-api
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1000
+        supplementalGroups:
+        - 2345
+      initContainers:
+        
+        # NOTE: The value internalPostgresql.image is not available unless internalPostgresql.enabled is not set. We could change this to use bitnami-shell if
+        # it had the binary wait-for-port.
+        # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+        - name: wait-for-db
+          image: docker.io/bitnami/postgresql:13.5.0-debian-10-r84
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              #!/bin/bash
+        
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+        
+              . /opt/bitnami/scripts/libos.sh
+              . /opt/bitnami/scripts/liblog.sh
+              . /opt/bitnami/scripts/libpostgresql.sh
+        
+              check_postgresql_connection() {
+                  echo "SELECT 1" | postgresql_remote_execute "$POSTGRESQL_CLIENT_DATABASE_HOST" "$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER" "$POSTGRESQL_CLIENT_DATABASE_NAME" "$POSTGRESQL_CLIENT_POSTGRES_USER" "$POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD"
+              }
+        
+              info "Connecting to the PostgreSQL instance $POSTGRESQL_CLIENT_DATABASE_HOST:$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER"
+              if ! retry_while "check_postgresql_connection" 100; then
+                  error "Could not connect to the database server"
+                  exit 1
+              else
+                  info "Connected to the PostgreSQL instance"
+              fi
+          securityContext:
+                    allowPrivilegeEscalation: false
+                    capabilities:
+                      drop:
+                      - all
+                    runAsGroup: 1000
+                    runAsNonRoot: false
+                    runAsUser: 1000
+          resources:
+                    limits:
+                      cpu: "1"
+                      memory: 2048Mi
+                    requests:
+                      cpu: 250m
+                      memory: 512Mi
+          env:
+            - name: POSTGRESQL_CLIENT_DATABASE_HOST
+              value: "release-name-postgresql"
+            - name: POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: POSTGRESQL_CLIENT_POSTGRES_USER
+              value: "workspace_admin"
+            - name: POSTGRESQL_CLIENT_DATABASE_NAME
+              value: "workspace"
+        
+        # NOTE: The value redis.image is not available unless redis.enabled is not set. We could change this to use bitnami-shell if
+        # it had the binary wait-for-port.
+        # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+        - name: wait-for-redis
+          image: docker.io/bitnami/redis:6.2.7-debian-11-r11
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              #!/bin/bash
+        
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+        
+              . /opt/bitnami/scripts/libos.sh
+              . /opt/bitnami/scripts/liblog.sh
+              . /opt/bitnami/scripts/libredis.sh
+        
+              check_redis_connection() {
+                  echo "INFO" | redis-cli -a "$REDIS_CLIENT_PASSWORD" -p "$REDIS_CLIENT_PORT_NUMBER" -h "$REDIS_CLIENT_HOST"
+              }
+        
+              info "Connecting to the Redis instance $REDIS_CLIENT_HOST:$REDIS_CLIENT_PORT_NUMBER"
+              if ! retry_while "check_redis_connection"; then
+                  error "Could not connect to the Redis server"
+                  exit 1
+              else
+                  info "Connected to the Redis instance"
+              fi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 1000
+            runAsNonRoot: false
+            runAsUser: 1000
+          env:
+            - name: REDIS_CLIENT_HOST
+              value: release-name-redis
+            - name: REDIS_CLIENT_PORT_NUMBER
+              value: "6379"
+            - name: REDIS_CLIENT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-redis
+                  key: "redis-password"
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: lds-api
+          image: gcr.io/carto-onprem-artifacts/lds-api:2024.1.11
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 1000
+            runAsNonRoot: false
+            runAsUser: 1000
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js
+              /usr/src/app/dist/app/index.js
+          
+          env:
+            - name: WORKSPACE_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-redis
+                  key: "redis-password"
+            
+          envFrom:
+            - configMapRef:
+                name: release-name-carto-lds-api
+            - secretRef:
+                name: release-name-carto-lds-api
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
+            requests:
+              cpu: 350m
+              memory: 768Mi
+          ports:
+            - name: http
+              containerPort: 8004
+          livenessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            httpGet:
+              path: /v3/lds/
+              port: http
+          readinessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            httpGet:
+              path: /v3/lds/
+              port: http
+          volumeMounts:
+            - name: gcp-default-service-account-key
+              mountPath: /usr/src/certs/gcp-default-service-account
+              readOnly: true
+      volumes:
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: release-name-carto-gcp-default-service-account
+            items:
+              - key: key.json
+                path: key.json
+---
+# Source: carto/templates/maps-api/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-carto-maps-api
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: maps-api
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carto
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: maps-api
+  template:
+    metadata:
+      annotations:
+        checksum/config: e5c44da18ad7627f24df63e9288534e243617de66eb4c44cf47ea7d5c70fd554
+        checksum/secret: e19144daf14b4e9392379749aa8d284fc16c8853b1eb14e408d2dd15f64d4526
+      labels:
+        app.kubernetes.io/name: carto
+        helm.sh/chart: carto-1.77.1
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: maps-api
+    spec:
+      serviceAccountName: carto-common-backend
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: carto
+                    app.kubernetes.io/instance: release-name
+                    app.kubernetes.io/component: maps-api
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1000
+        supplementalGroups:
+        - 2345
+      initContainers:
+        
+        # NOTE: The value internalPostgresql.image is not available unless internalPostgresql.enabled is not set. We could change this to use bitnami-shell if
+        # it had the binary wait-for-port.
+        # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+        - name: wait-for-db
+          image: docker.io/bitnami/postgresql:13.5.0-debian-10-r84
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              #!/bin/bash
+        
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+        
+              . /opt/bitnami/scripts/libos.sh
+              . /opt/bitnami/scripts/liblog.sh
+              . /opt/bitnami/scripts/libpostgresql.sh
+        
+              check_postgresql_connection() {
+                  echo "SELECT 1" | postgresql_remote_execute "$POSTGRESQL_CLIENT_DATABASE_HOST" "$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER" "$POSTGRESQL_CLIENT_DATABASE_NAME" "$POSTGRESQL_CLIENT_POSTGRES_USER" "$POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD"
+              }
+        
+              info "Connecting to the PostgreSQL instance $POSTGRESQL_CLIENT_DATABASE_HOST:$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER"
+              if ! retry_while "check_postgresql_connection" 100; then
+                  error "Could not connect to the database server"
+                  exit 1
+              else
+                  info "Connected to the PostgreSQL instance"
+              fi
+          securityContext:
+                    allowPrivilegeEscalation: false
+                    capabilities:
+                      drop:
+                      - all
+                    runAsGroup: 1000
+                    runAsNonRoot: false
+                    runAsUser: 1000
+          resources:
+                    limits:
+                      cpu: "1"
+                      memory: 2048Mi
+                    requests:
+                      cpu: 250m
+                      memory: 512Mi
+          env:
+            - name: POSTGRESQL_CLIENT_DATABASE_HOST
+              value: "release-name-postgresql"
+            - name: POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: POSTGRESQL_CLIENT_POSTGRES_USER
+              value: "workspace_admin"
+            - name: POSTGRESQL_CLIENT_DATABASE_NAME
+              value: "workspace"
+        
+        # NOTE: The value redis.image is not available unless redis.enabled is not set. We could change this to use bitnami-shell if
+        # it had the binary wait-for-port.
+        # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+        - name: wait-for-redis
+          image: docker.io/bitnami/redis:6.2.7-debian-11-r11
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              #!/bin/bash
+        
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+        
+              . /opt/bitnami/scripts/libos.sh
+              . /opt/bitnami/scripts/liblog.sh
+              . /opt/bitnami/scripts/libredis.sh
+        
+              check_redis_connection() {
+                  echo "INFO" | redis-cli -a "$REDIS_CLIENT_PASSWORD" -p "$REDIS_CLIENT_PORT_NUMBER" -h "$REDIS_CLIENT_HOST"
+              }
+        
+              info "Connecting to the Redis instance $REDIS_CLIENT_HOST:$REDIS_CLIENT_PORT_NUMBER"
+              if ! retry_while "check_redis_connection"; then
+                  error "Could not connect to the Redis server"
+                  exit 1
+              else
+                  info "Connected to the Redis instance"
+              fi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 1000
+            runAsNonRoot: false
+            runAsUser: 1000
+          env:
+            - name: REDIS_CLIENT_HOST
+              value: release-name-redis
+            - name: REDIS_CLIENT_PORT_NUMBER
+              value: "6379"
+            - name: REDIS_CLIENT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-redis
+                  key: "redis-password"
+      terminationGracePeriodSeconds: 600
+      containers:
+        - name: maps-api
+          image: gcr.io/carto-onprem-artifacts/maps-api:2024.1.11
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 1000
+            runAsNonRoot: false
+            runAsUser: 1000
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js
+              /usr/src/app/dist/app/index.js
+          
+          env:
+            - name: WORKSPACE_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-redis
+                  key: "redis-password"
+            
+          envFrom:
+            - configMapRef:
+                name: release-name-carto-maps-api
+            - secretRef:
+                name: release-name-carto-maps-api
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 6144Mi
+            requests:
+              cpu: 350m
+              memory: 768Mi
+          ports:
+            - name: http
+              containerPort: 8002
+          livenessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            httpGet:
+              path: /
+              port: http
+          volumeMounts:
+            - name: gcp-default-service-account-key
+              mountPath: /usr/src/certs/gcp-default-service-account
+              readOnly: true
+      volumes:
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: release-name-carto-gcp-default-service-account
+            items:
+              - key: key.json
+                path: key.json
+---
+# Source: carto/templates/notifier/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-carto-notifier
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: notifier
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carto
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: notifier
+  template:
+    metadata:
+      annotations:
+        checksum/config: 4aef060c7f596c7ccfff29f8442bc86954e976080692d23cc1cc34283adccb39
+      labels:
+        app.kubernetes.io/name: carto
+        helm.sh/chart: carto-1.77.1
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: notifier
+    spec:
+      serviceAccountName: release-name-carto-notifier
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: carto
+                    app.kubernetes.io/instance: release-name
+                    app.kubernetes.io/component: notifier
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 102
+        supplementalGroups:
+        - 2345
+      initContainers:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: notifier
+          image: gcr.io/carto-onprem-artifacts/notifier:2024.1.11
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 101
+            runAsNonRoot: false
+            runAsUser: 101
+          env:
+          envFrom:
+            - configMapRef:
+                name: release-name-carto-notifier
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 200m
+              memory: 256Mi
+          ports:
+            - name: http
+              containerPort: 7999
+            - name: internal
+              containerPort: 5561
+          livenessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            tcpSocket:
+              port: http
+          readinessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            tcpSocket:
+              port: http
+          volumeMounts:
+      volumes:
+---
+# Source: carto/templates/router/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-carto-router
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: router
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carto
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: router
+  template:
+    metadata:
+      annotations:
+        checksum/config: 6f8c7ac3a89f976d616626ac6ce4103cf28f0a597e019b1a0683963bc17a6a91
+      labels:
+        app.kubernetes.io/name: carto
+        helm.sh/chart: carto-1.77.1
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: router
+    spec:
+      serviceAccountName: carto-common-backend
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: carto
+                    app.kubernetes.io/instance: release-name
+                    app.kubernetes.io/component: router
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 101
+        supplementalGroups:
+        - 2345
+      initContainers:
+        
+        # NOTE: The value internalPostgresql.image is not available unless internalPostgresql.enabled is not set. We could change this to use bitnami-shell if
+        # it had the binary wait-for-port.
+        # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+        - name: wait-for-db
+          image: docker.io/bitnami/postgresql:13.5.0-debian-10-r84
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              #!/bin/bash
+        
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+        
+              . /opt/bitnami/scripts/libos.sh
+              . /opt/bitnami/scripts/liblog.sh
+              . /opt/bitnami/scripts/libpostgresql.sh
+        
+              check_postgresql_connection() {
+                  echo "SELECT 1" | postgresql_remote_execute "$POSTGRESQL_CLIENT_DATABASE_HOST" "$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER" "$POSTGRESQL_CLIENT_DATABASE_NAME" "$POSTGRESQL_CLIENT_POSTGRES_USER" "$POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD"
+              }
+        
+              info "Connecting to the PostgreSQL instance $POSTGRESQL_CLIENT_DATABASE_HOST:$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER"
+              if ! retry_while "check_postgresql_connection" 100; then
+                  error "Could not connect to the database server"
+                  exit 1
+              else
+                  info "Connected to the PostgreSQL instance"
+              fi
+          securityContext:
+                    allowPrivilegeEscalation: false
+                    capabilities:
+                      drop:
+                      - all
+                    runAsGroup: 1000
+                    runAsNonRoot: false
+                    runAsUser: 1000
+          resources:
+                    limits:
+                      cpu: "1"
+                      memory: 2048Mi
+                    requests:
+                      cpu: 250m
+                      memory: 512Mi
+          env:
+            - name: POSTGRESQL_CLIENT_DATABASE_HOST
+              value: "release-name-postgresql"
+            - name: POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: POSTGRESQL_CLIENT_POSTGRES_USER
+              value: "workspace_admin"
+            - name: POSTGRESQL_CLIENT_DATABASE_NAME
+              value: "workspace"
+      terminationGracePeriodSeconds: 600
+      containers:
+        - name: router-http
+          image: gcr.io/carto-onprem-artifacts/router/router-http:2024.1.11
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 101
+            runAsNonRoot: false
+            runAsUser: 101
+          command:
+            - /bin/sh
+          args:
+            - -ec
+            - |
+              ROUTER_RESOLVER="$(grep nameserver /etc/resolv.conf  | awk '{print $2}')"
+              /docker-entrypoint.sh nginx -g "daemon off;"
+          env:
+          envFrom:
+            - configMapRef:
+                name: release-name-carto-router
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 200m
+              memory: 372Mi
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: https
+              containerPort: 8443
+          livenessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            tcpSocket:
+              port: http
+          readinessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            tcpSocket:
+              port: http
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - sh
+                - -c
+                - sleep 15 && /usr/sbin/nginx -s quit
+          volumeMounts:
+            - name: tls-secret
+              mountPath: /usr/src/certs/tls.crt
+              subPath: tls.crt
+            - name: tls-secret
+              mountPath: /usr/src/certs/tls.key
+              subPath: tls.key
+        - name: router-metrics
+          image: gcr.io/carto-onprem-artifacts/router/router-metrics:2024.1.11
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 1000
+            runAsNonRoot: false
+            runAsUser: 1000
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - /docker-entrypoint.d/20-carto-templates.sh && /usr/share/logstash/bin/logstash
+          
+          env:
+          envFrom:
+            - configMapRef:
+                name: release-name-carto-router
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1464Mi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+          ports:
+            - name: http
+              containerPort: 5447
+          volumeMounts:
+            - name: gcp-default-service-account-key
+              mountPath: /usr/src/certs/gcp-default-service-account
+              readOnly: true
+      volumes:
+        - name: tls-secret
+          secret:
+            secretName: release-name-carto-tls
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: release-name-carto-gcp-default-service-account
+            items:
+              - key: key.json
+                path: key.json
+---
+# Source: carto/templates/sql-worker/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-carto-sql-worker
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: sql-worker
+spec:
+  # In order to publish the charts in official marketplaces, it's necessary that all components are able to start with default values without errors
+  # Components which needs other configuration requirements such as client specific parameters should not boot if these values ​​are not provided
+  replicas: 0
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carto
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: sql-worker
+  template:
+    metadata:
+      annotations:
+        checksum/config: d1afd1359244345a13e8afe490468df8c23b39388ec8507cc30499d0bb0f6a17
+        checksum/secret: bab3dca02a613097238d5ef957a69a1da7044028fbfb82494c08d5df80a09002
+      labels:
+        app.kubernetes.io/name: carto
+        helm.sh/chart: carto-1.77.1
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: sql-worker
+    spec:
+      serviceAccountName: carto-common-backend
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: carto
+                    app.kubernetes.io/instance: release-name
+                    app.kubernetes.io/component: sql-worker
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1000
+        supplementalGroups:
+        - 2345
+      initContainers:
+        
+        # NOTE: The value internalPostgresql.image is not available unless internalPostgresql.enabled is not set. We could change this to use bitnami-shell if
+        # it had the binary wait-for-port.
+        # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+        - name: wait-for-db
+          image: docker.io/bitnami/postgresql:13.5.0-debian-10-r84
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              #!/bin/bash
+        
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+        
+              . /opt/bitnami/scripts/libos.sh
+              . /opt/bitnami/scripts/liblog.sh
+              . /opt/bitnami/scripts/libpostgresql.sh
+        
+              check_postgresql_connection() {
+                  echo "SELECT 1" | postgresql_remote_execute "$POSTGRESQL_CLIENT_DATABASE_HOST" "$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER" "$POSTGRESQL_CLIENT_DATABASE_NAME" "$POSTGRESQL_CLIENT_POSTGRES_USER" "$POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD"
+              }
+        
+              info "Connecting to the PostgreSQL instance $POSTGRESQL_CLIENT_DATABASE_HOST:$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER"
+              if ! retry_while "check_postgresql_connection" 100; then
+                  error "Could not connect to the database server"
+                  exit 1
+              else
+                  info "Connected to the PostgreSQL instance"
+              fi
+          securityContext:
+                    allowPrivilegeEscalation: false
+                    capabilities:
+                      drop:
+                      - all
+                    runAsGroup: 1000
+                    runAsNonRoot: false
+                    runAsUser: 1000
+          resources:
+                    limits:
+                      cpu: "1"
+                      memory: 2048Mi
+                    requests:
+                      cpu: 250m
+                      memory: 512Mi
+          env:
+            - name: POSTGRESQL_CLIENT_DATABASE_HOST
+              value: "release-name-postgresql"
+            - name: POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: POSTGRESQL_CLIENT_POSTGRES_USER
+              value: "workspace_admin"
+            - name: POSTGRESQL_CLIENT_DATABASE_NAME
+              value: "workspace"
+      terminationGracePeriodSeconds: 300
+      containers:
+        - name: sql-worker
+          image: gcr.io/carto-onprem-artifacts/maps-api:2024.1.11
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 1000
+            runAsNonRoot: false
+            runAsUser: 1000
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js
+              /usr/src/app/dist/app/subscriber/index.js
+          
+          env:
+            - name: WORKSPACE_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-redis
+                  key: "redis-password"
+            
+          envFrom:
+            - configMapRef:
+                name: release-name-carto-sql-worker
+            - secretRef:
+                name: release-name-carto-sql-worker
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 2048Mi
+            requests:
+              cpu: 350m
+              memory: 1024Mi
+          volumeMounts:
+            - name: gcp-default-service-account-key
+              mountPath: /usr/src/certs/gcp-default-service-account
+              readOnly: true
+      volumes:
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: release-name-carto-gcp-default-service-account
+            items:
+              - key: key.json
+                path: key.json
+---
+# Source: carto/templates/workspace-api/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-carto-workspace-api
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: workspace-api
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carto
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: workspace-api
+  template:
+    metadata:
+      annotations:
+        checksum/config: 89ab7900fa2b1d87125f0743fc7d44ad7e81d1cfac33fe5d85919e03b78d8ece
+        checksum/secret: ef9d96f95452b99803be31e16a304421cd6e572ff32b1fd0901f5730f8f49a0f
+      labels:
+        app.kubernetes.io/name: carto
+        helm.sh/chart: carto-1.77.1
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: workspace-api
+    spec:
+      serviceAccountName: carto-common-backend
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: carto
+                    app.kubernetes.io/instance: release-name
+                    app.kubernetes.io/component: workspace-api
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1000
+        supplementalGroups:
+        - 2345
+      initContainers:
+        
+        # NOTE: The value internalPostgresql.image is not available unless internalPostgresql.enabled is not set. We could change this to use bitnami-shell if
+        # it had the binary wait-for-port.
+        # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+        - name: wait-for-db
+          image: docker.io/bitnami/postgresql:13.5.0-debian-10-r84
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              #!/bin/bash
+        
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+        
+              . /opt/bitnami/scripts/libos.sh
+              . /opt/bitnami/scripts/liblog.sh
+              . /opt/bitnami/scripts/libpostgresql.sh
+        
+              check_postgresql_connection() {
+                  echo "SELECT 1" | postgresql_remote_execute "$POSTGRESQL_CLIENT_DATABASE_HOST" "$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER" "$POSTGRESQL_CLIENT_DATABASE_NAME" "$POSTGRESQL_CLIENT_POSTGRES_USER" "$POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD"
+              }
+        
+              info "Connecting to the PostgreSQL instance $POSTGRESQL_CLIENT_DATABASE_HOST:$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER"
+              if ! retry_while "check_postgresql_connection"; then
+                  error "Could not connect to the database server"
+                  exit 1
+              else
+                  info "Connected to the PostgreSQL instance"
+              fi
+          securityContext:
+                    allowPrivilegeEscalation: false
+                    capabilities:
+                      drop:
+                      - all
+                    runAsGroup: 1000
+                    runAsNonRoot: false
+                    runAsUser: 1000
+          resources:
+                    limits:
+                      cpu: "1"
+                      memory: 2048Mi
+                    requests:
+                      cpu: 250m
+                      memory: 512Mi
+          env:
+            - name: POSTGRESQL_CLIENT_DATABASE_HOST
+              value: "release-name-postgresql"
+            - name: POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: postgres-password
+            - name: POSTGRESQL_CLIENT_POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRESQL_CLIENT_DATABASE_NAME
+              value: "postgres"
+        
+        # NOTE: The value redis.image is not available unless redis.enabled is not set. We could change this to use bitnami-shell if
+        # it had the binary wait-for-port.
+        # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+        - name: wait-for-redis
+          image: docker.io/bitnami/redis:6.2.7-debian-11-r11
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              #!/bin/bash
+        
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+        
+              . /opt/bitnami/scripts/libos.sh
+              . /opt/bitnami/scripts/liblog.sh
+              . /opt/bitnami/scripts/libredis.sh
+        
+              check_redis_connection() {
+                  echo "INFO" | redis-cli -a "$REDIS_CLIENT_PASSWORD" -p "$REDIS_CLIENT_PORT_NUMBER" -h "$REDIS_CLIENT_HOST"
+              }
+        
+              info "Connecting to the Redis instance $REDIS_CLIENT_HOST:$REDIS_CLIENT_PORT_NUMBER"
+              if ! retry_while "check_redis_connection"; then
+                  error "Could not connect to the Redis server"
+                  exit 1
+              else
+                  info "Connected to the Redis instance"
+              fi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 1000
+            runAsNonRoot: false
+            runAsUser: 1000
+          env:
+            - name: REDIS_CLIENT_HOST
+              value: release-name-redis
+            - name: REDIS_CLIENT_PORT_NUMBER
+              value: "6379"
+            - name: REDIS_CLIENT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-redis
+                  key: "redis-password"
+        - name: workspace-migrations
+          image: gcr.io/carto-onprem-artifacts/workspace-db:2024.1.11
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 1000
+            runAsNonRoot: false
+            runAsUser: 1000
+          resources:
+            limits:
+              cpu: "1"
+              memory: 2048Mi
+            requests:
+              cpu: 250m
+              memory: 512Mi
+          command:
+            - /bin/sh
+          args:
+            - -ec
+            - |
+              /usr/src/app/onprem-init-db.sh
+          env:
+            - name: POSTGRES_ADMIN_USER
+              value: "postgres"
+            - name: POSTGRES_LOGIN_USER
+              value: 
+            - name: POSTGRES_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: postgres-password
+            - name: POSTGRES_ADMIN_DB
+              value: "postgres"
+            - name: WORKSPACE_POSTGRES_INTERNAL_USER
+              value: workspace_admin
+            - name: WORKSPACE_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: WORKSPACE_POSTGRES_SSL_MODE
+              value: "disable"
+            
+          envFrom:
+            - configMapRef:
+                name: release-name-carto-workspace-api
+            - secretRef:
+                name: release-name-carto-workspace-api
+      terminationGracePeriodSeconds: 300
+      containers:
+        - name: workspace-api
+          image: gcr.io/carto-onprem-artifacts/workspace-api:2024.1.11
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 1000
+            runAsNonRoot: false
+            runAsUser: 1000
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js
+              /usr/src/app/dist/app/index.js
+          
+          env:
+            - name: WORKSPACE_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-redis
+                  key: "redis-password"
+            
+          envFrom:
+            - configMapRef:
+                name: release-name-carto-workspace-api
+            - secretRef:
+                name: release-name-carto-workspace-api
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1360Mi
+            requests:
+              cpu: 350m
+              memory: 768Mi
+          ports:
+            - name: http
+              containerPort: 8001
+          livenessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            httpGet:
+              path: /
+              port: http
+          volumeMounts:
+            - name: gcp-default-service-account-key
+              mountPath: /usr/src/certs/gcp-default-service-account
+              readOnly: true
+      volumes:
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: release-name-carto-gcp-default-service-account
+            items:
+              - key: key.json
+                path: key.json
+---
+# Source: carto/templates/workspace-subscriber/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-carto-workspace-subscriber
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: workspace-subscriber
+spec:
+  # In order to publish the charts in official marketplaces, it's necessary that all components are able to start with default values without errors
+  # Components which needs other configuration requirements such as client specific parameters should not boot if these values ​​are not provided
+  replicas: 0
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carto
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: workspace-subscriber
+  template:
+    metadata:
+      annotations:
+        checksum/config: f9320c667da883bd178fa769949ea5d8584a94293713f5272b5401d6240d8e4b
+        checksum/secret: 25c1992a7eee94c8d13b73922f5d363acd6185cf379342444b697d2a71b07203
+      labels:
+        app.kubernetes.io/name: carto
+        helm.sh/chart: carto-1.77.1
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: workspace-subscriber
+    spec:
+      serviceAccountName: carto-common-backend
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: carto
+                    app.kubernetes.io/instance: release-name
+                    app.kubernetes.io/component: workspace-subscriber
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1000
+        supplementalGroups:
+        - 2345
+      initContainers:
+        
+        # NOTE: The value internalPostgresql.image is not available unless internalPostgresql.enabled is not set. We could change this to use bitnami-shell if
+        # it had the binary wait-for-port.
+        # This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
+        - name: wait-for-db
+          image: docker.io/bitnami/postgresql:13.5.0-debian-10-r84
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              #!/bin/bash
+        
+              set -o errexit
+              set -o nounset
+              set -o pipefail
+        
+              . /opt/bitnami/scripts/libos.sh
+              . /opt/bitnami/scripts/liblog.sh
+              . /opt/bitnami/scripts/libpostgresql.sh
+        
+              check_postgresql_connection() {
+                  echo "SELECT 1" | postgresql_remote_execute "$POSTGRESQL_CLIENT_DATABASE_HOST" "$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER" "$POSTGRESQL_CLIENT_DATABASE_NAME" "$POSTGRESQL_CLIENT_POSTGRES_USER" "$POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD"
+              }
+        
+              info "Connecting to the PostgreSQL instance $POSTGRESQL_CLIENT_DATABASE_HOST:$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER"
+              if ! retry_while "check_postgresql_connection" 100; then
+                  error "Could not connect to the database server"
+                  exit 1
+              else
+                  info "Connected to the PostgreSQL instance"
+              fi
+          securityContext:
+                    allowPrivilegeEscalation: false
+                    capabilities:
+                      drop:
+                      - all
+                    runAsGroup: 1000
+                    runAsNonRoot: false
+                    runAsUser: 1000
+          resources:
+                    limits:
+                      cpu: "1"
+                      memory: 2048Mi
+                    requests:
+                      cpu: 250m
+                      memory: 512Mi
+          env:
+            - name: POSTGRESQL_CLIENT_DATABASE_HOST
+              value: "release-name-postgresql"
+            - name: POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: POSTGRESQL_CLIENT_POSTGRES_USER
+              value: "workspace_admin"
+            - name: POSTGRESQL_CLIENT_DATABASE_NAME
+              value: "workspace"
+      terminationGracePeriodSeconds: 300
+      containers:
+        - name: workspace-subscriber
+          image: gcr.io/carto-onprem-artifacts/workspace-api:2024.1.11
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 1000
+            runAsNonRoot: false
+            runAsUser: 1000
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js
+              /usr/src/app/dist/app/subscriber/index.js
+          
+          env:
+            - name: WORKSPACE_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-redis
+                  key: "redis-password"
+            
+          envFrom:
+            - configMapRef:
+                name: release-name-carto-workspace-subscriber
+            - secretRef:
+                name: release-name-carto-workspace-subscriber
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1024Mi
+            requests:
+              cpu: 200m
+              memory: 372Mi
+          volumeMounts:
+            - name: gcp-default-service-account-key
+              mountPath: /usr/src/certs/gcp-default-service-account
+              readOnly: true
+      volumes:
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: release-name-carto-gcp-default-service-account
+            items:
+              - key: key.json
+                path: key.json
+---
+# Source: carto/templates/workspace-www/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-carto-workspace-www
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: carto
+    helm.sh/chart: carto-1.77.1
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: workspace-www
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: carto
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: workspace-www
+  template:
+    metadata:
+      annotations:
+        checksum/config: 72f0034d2e6d7635abd47c832be3326d7552b8eb6943b325f897c8aad0597b07
+        checksum/secret: 4406cf5126082fd04b088d0223ce8e7c783e661ae7e6f42652754270e9b7cb5f
+      labels:
+        app.kubernetes.io/name: carto
+        helm.sh/chart: carto-1.77.1
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: workspace-www
+    spec:
+      serviceAccountName: release-name-carto-workspace-www
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: carto
+                    app.kubernetes.io/instance: release-name
+                    app.kubernetes.io/component: workspace-www
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 101
+        supplementalGroups:
+        - 2345
+      initContainers:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: workspace-www
+          image: gcr.io/carto-onprem-artifacts/workspace-www:2024.1.11
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 101
+            runAsNonRoot: false
+            runAsUser: 101
+          command:
+            - /bin/sh
+          args:
+            - -ec
+            - |
+              /docker-entrypoint.sh nginx -g "daemon off;"
+          env:
+            
+          envFrom:
+            - configMapRef:
+                name: release-name-carto-workspace-www
+            - secretRef:
+                name: release-name-carto-workspace-www
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1024Mi
+            requests:
+              cpu: 200m
+              memory: 768Mi
+          ports:
+            - name: http
+              containerPort: 8080
+          livenessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            failureThreshold: 5
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+            httpGet:
+              path: /
+              port: http
+---
+# Source: carto/charts/internalPostgresql/templates/primary/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: release-name-postgresql
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: postgresql
+    helm.sh/chart: internalPostgresql-11.9.13
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: primary
+  annotations:
+spec:
+  replicas: 1
+  serviceName: release-name-postgresql-hl
+  updateStrategy:
+    rollingUpdate: {}
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: primary
+  template:
+    metadata:
+      name: release-name-postgresql
+      labels:
+        app.kubernetes.io/name: postgresql
+        helm.sh/chart: internalPostgresql-11.9.13
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: primary
+      annotations:
+    spec:
+      serviceAccountName: default
+      
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: postgresql
+                    app.kubernetes.io/instance: release-name
+                    app.kubernetes.io/component: primary
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      securityContext:
+        fsGroup: 1001
+      hostNetwork: false
+      hostIPC: false
+      initContainers:
+      containers:
+        - name: postgresql
+          image: docker.io/bitnami/postgresql:13.5.0-debian-10-r84
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            runAsUser: 1001
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: POSTGRESQL_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_VOLUME_DIR
+              value: "/bitnami/postgresql"
+            - name: PGDATA
+              value: "/bitnami/postgresql/data"
+            # Authentication
+            - name: POSTGRES_USER
+              value: "workspace_admin"
+            - name: POSTGRES_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: postgres-password
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-postgresql
+                  key: password
+            - name: POSTGRES_DB
+              value: "workspace"
+            # Replication
+            # Initdb
+            # Standby
+            # LDAP
+            - name: POSTGRESQL_ENABLE_LDAP
+              value: "no"
+            # TLS
+            - name: POSTGRESQL_ENABLE_TLS
+              value: "no"
+            # Audit
+            - name: POSTGRESQL_LOG_HOSTNAME
+              value: "false"
+            - name: POSTGRESQL_LOG_CONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_LOG_DISCONNECTIONS
+              value: "false"
+            - name: POSTGRESQL_PGAUDIT_LOG_CATALOG
+              value: "off"
+            # Others
+            - name: POSTGRESQL_CLIENT_MIN_MESSAGES
+              value: "error"
+            - name: POSTGRESQL_SHARED_PRELOAD_LIBRARIES
+              value: "pgaudit"
+          ports:
+            - name: tcp-postgresql
+              containerPort: 5432
+          livenessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U "workspace_admin" -d "dbname=workspace" -h 127.0.0.1 -p 5432
+          readinessProbe:
+            failureThreshold: 6
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - -e
+                
+                - |
+                  exec pg_isready -U "workspace_admin" -d "dbname=workspace" -h 127.0.0.1 -p 5432
+                  [ -f /opt/bitnami/postgresql/tmp/.initialized ] || [ -f /bitnami/postgresql/.initialized ]
+          resources:
+            limits: {}
+            requests:
+              cpu: 250m
+              memory: 256Mi
+          volumeMounts:
+            - name: custom-init-scripts
+              mountPath: /docker-entrypoint-initdb.d/
+            - name: dshm
+              mountPath: /dev/shm
+            - name: data
+              mountPath: /bitnami/postgresql
+      volumes:
+        - name: custom-init-scripts
+          configMap:
+            name: release-name-postgresql-init-scripts
+        - name: dshm
+          emptyDir:
+            medium: Memory
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: "8Gi"
+---
+# Source: carto/charts/internalRedis/templates/master/application.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: release-name-redis-master
+  namespace: "default"
+  labels:
+    app.kubernetes.io/name: redis
+    helm.sh/chart: internalRedis-16.13.2
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redis
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: master
+  serviceName: release-name-redis-headless
+  updateStrategy:
+    rollingUpdate: {}
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: redis
+        helm.sh/chart: internalRedis-16.13.2
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: master
+      annotations:
+        checksum/configmap: 86bb0f8a262f51bd5c0117ba7b0d9f9587d53a72ca2ced2446a990be58a7aa62
+        checksum/health: 724642ea5a84ff9e6995a0d70ef5308b9220ccc86f37d2ead7a3014f7b0851c9
+        checksum/scripts: a85de230c430f618f64ba1f5191838924df391de0724b85aa795bd80ac1bdf4b
+        checksum/secret: ad7650e3777878721b6421651cf0566761b1de4bc70ab51460819a881d6aaaf4
+    spec:
+      
+      securityContext:
+        fsGroup: 1001
+      serviceAccountName: release-name-redis
+      affinity:
+        podAffinity:
+          
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: redis
+                    app.kubernetes.io/instance: release-name
+                    app.kubernetes.io/component: master
+                namespaces:
+                  - "default"
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+        nodeAffinity:
+          
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: redis
+          image: docker.io/bitnami/redis:6.2.7-debian-11-r11
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            runAsUser: 1001
+          command:
+            - /bin/bash
+          args:
+            - -c
+            - /opt/bitnami/scripts/start-scripts/start-master.sh
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: REDIS_REPLICATION_MODE
+              value: master
+            - name: ALLOW_EMPTY_PASSWORD
+              value: "no"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: release-name-redis
+                  key: redis-password
+            - name: REDIS_TLS_ENABLED
+              value: "no"
+            - name: REDIS_PORT
+              value: "6379"
+          ports:
+            - name: redis
+              containerPort: 6379
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            # One second longer than command timeout should prevent generation of zombie processes.
+            timeoutSeconds: 6
+            successThreshold: 1
+            failureThreshold: 5
+            exec:
+              command:
+                - sh
+                - -c
+                - /health/ping_liveness_local.sh 5
+          readinessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 5
+            exec:
+              command:
+                - sh
+                - -c
+                - /health/ping_readiness_local.sh 1
+          resources:
+            limits: {}
+            requests: {}
+          volumeMounts:
+            - name: start-scripts
+              mountPath: /opt/bitnami/scripts/start-scripts
+            - name: health
+              mountPath: /health
+            - name: redis-data
+              mountPath: /data
+              subPath: 
+            - name: config
+              mountPath: /opt/bitnami/redis/mounted-etc
+            - name: redis-tmp-conf
+              mountPath: /opt/bitnami/redis/etc/
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: start-scripts
+          configMap:
+            name: release-name-redis-scripts
+            defaultMode: 0755
+        - name: health
+          configMap:
+            name: release-name-redis-health
+            defaultMode: 0755
+        - name: config
+          configMap:
+            name: release-name-redis-configuration
+        - name: redis-tmp-conf
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        - name: redis-data
+          emptyDir: {}
+---
+# Source: carto/templates/pre-upgrade-check-versions-cm.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "release-name-pre-install-scripts"
+  labels:
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "release-name"
+    app.kubernetes.io/version: 2024.1.11
+    helm.sh/chart: "carto-1.77.1"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": hook-succeeded, before-hook-creation, hook-fail
+data :
+  check-version.sh: |
+    #!/bin/bash
+    printf 'Checking release version\n'
+    if [[ $(echo ${MINIMAL_VERSION} ${PACKAGE_VERSION} |tr ' ' '\n'| sort -V| head -n1) == ${MINIMAL_VERSION} ]];then
+      printf 'Release version is OK\n'
+      exit 0
+    else
+      printf 'Release version is outdated, please contact support team at support-team@carto.com.\n'
+      exit 1
+    fi
+---
+# Source: carto/templates/pre-upgrade-check-versions-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "release-name-pre-install"
+  labels:
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "release-name"
+    app.kubernetes.io/version: 2024.1.11
+    helm.sh/chart: "carto-1.77.1"
+  annotations:
+
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded, before-hook-creation, hook-fail
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      name: "release-name"
+      labels:
+        app.kubernetes.io/managed-by: "Helm"
+        app.kubernetes.io/instance: "release-name"
+        helm.sh/chart: "carto-1.77.1"
+    spec:
+      restartPolicy: Never
+      
+      volumes:
+        - name: scripts
+          configMap:
+            name: "release-name-pre-install-scripts"
+      securityContext:
+        fsGroup: 1000
+        supplementalGroups:
+        - 2345
+      containers:
+      - name: pre-upgrade-version-check
+        terminationMessagePolicy: FallbackToLogsOnError
+        image: gcr.io/carto-onprem-artifacts/router/router-http:2024.1.11
+        imagePullPolicy: IfNotPresent
+        securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsGroup: 1000
+            runAsNonRoot: false
+            runAsUser: 1000
+        volumeMounts: 
+          - name: scripts
+            mountPath: /opt/scripts
+        env:
+          - name: PACKAGE_VERSION
+            value: 
+          - name: MINIMAL_VERSION
+            value: 2023.10.25
+        resources:
+            limits:
+              cpu: 500m
+              memory: 256Mi
+            requests:
+              cpu: 250m
+              memory: 128Mi
+        command: ["sh"]
+        args: ["/opt/scripts/check-version.sh"]

@@ -956,7 +956,11 @@ importApi:
   command: ["/bin/bash"]
   ## @param importApi.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js",
+    ]
   ## @param importApi.hostAliases import-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1221,7 +1225,11 @@ importWorker:
   command: ["/bin/bash"]
   ## @param importWorker.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js"]
+  args:
+    [
+      "-c",
+      "node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js",
+    ]
   ## @param importWorker.hostAliases import-worker pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1500,7 +1508,11 @@ ldsApi:
   command: ["/bin/bash"]
   ## @param ldsApi.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js",
+    ]
   ## @param ldsApi.hostAliases lds-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1825,7 +1837,11 @@ mapsApi:
   command: ["/bin/bash"]
   ## @param mapsApi.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js",
+    ]
   ## @param mapsApi.hostAliases maps-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -2125,7 +2141,11 @@ sqlWorker:
   command: ["/bin/bash"]
   ## @param sqlWorker.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js",
+    ]
   ## @param sqlWorker.hostAliases sql-worker pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -2497,8 +2517,8 @@ router:
       exec:
         command:
           - sh
-          - '-c'
-          - 'sleep 15 && /usr/sbin/nginx -s quit'
+          - "-c"
+          - "sleep 15 && /usr/sbin/nginx -s quit"
   ## @param router.extraEnvVars Array with extra environment variables to add to router nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -2911,8 +2931,8 @@ httpCache:
       exec:
         command:
           - sh
-          - '-c'
-          - 'sleep 15 && kill -TERM $(pidof varnishd)'
+          - "-c"
+          - "sleep 15 && kill -TERM $(pidof varnishd)"
   ## @param httpCache.extraEnvVars Array with extra environment variables to add to http-cache nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -3495,7 +3515,11 @@ cdnInvalidatorSub:
   command: ["/bin/bash"]
   ## @param cdnInvalidatorSub.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "node -r /usr/src/app/cdn-invalidator-sub/tsconfig-paths-bootstrap.js /usr/src/app/cdn-invalidator-sub/dist/app/cdn-invalidator-sub/index.js"]
+  args:
+    [
+      "-c",
+      "node -r /usr/src/app/cdn-invalidator-sub/tsconfig-paths-bootstrap.js /usr/src/app/cdn-invalidator-sub/dist/app/cdn-invalidator-sub/index.js",
+    ]
   ## @param cdnInvalidatorSub.hostAliases cdnInvalidatorSub pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -3823,7 +3847,11 @@ workspaceApi:
 
   ## @param workspaceApi.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js",
+    ]
   ## @param workspaceApi.hostAliases workspace-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -4088,7 +4116,11 @@ workspaceSubscriber:
   command: ["/bin/bash"]
   ## @param workspaceSubscriber.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js",
+    ]
   ## @param workspaceSubscriber.hostAliases workspace-subscriber pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -4963,7 +4995,7 @@ upgradeCheck:
 ## @section router-metrics parameters
 routerMetrics:
   ## @param routerMetrics.enabled Enable routerMetrics container
-  enabled: true
+  enabled: false
   ## @section routerMetrics container parameters
   ## routerMetrics image
   ## @param routerMetrics.image.registry routerMetrics image registry
