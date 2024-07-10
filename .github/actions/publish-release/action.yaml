@@ -73,6 +73,7 @@ runs:
       shell: bash
       run: |
         helm repo add bitnami https://charts.bitnami.com/bitnami
+        helm repo add zitadel https://charts.zitadel.com
         helm dependency build chart
         helm package chart
 
