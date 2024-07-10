@@ -5579,3 +5579,6 @@ accountsMigrations:
     capabilities:
       drop:
         - all
+
+zitadel:
+  masterkey: "dummyvalue"
