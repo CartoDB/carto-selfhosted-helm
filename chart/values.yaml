@@ -5184,7 +5184,6 @@ gateway:
   ## @param gateway.annotations Additional annotations for the gateway resource.
   annotations: {}
 
-
 accountsApi:
   ## accounts-api image
   ## @param accountsApi.image.registry accounts-api image registry
@@ -5513,7 +5512,6 @@ accountsApi:
     ##
     extraPorts: []
 
-
 accountsMigrations:
   ## accounts-db image
   ## @param accountsMigrations.image.registry accounts-db image registry
@@ -5581,4 +5579,5 @@ accountsMigrations:
         - all
 
 zitadel:
-  masterkey: "dummyvalue"
+  zitadel:
+    masterkey: "dummyvalue"

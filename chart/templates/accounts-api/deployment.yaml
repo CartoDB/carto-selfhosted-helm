@@ -69,9 +69,6 @@ spec:
         {{- if .Values.internalPostgresql.enabled }}
         {{ include "carto.postgresql-init-container" (dict "context" $ "admin" "true") | nindent 8 }}
         {{- end }}
-        {{- if .Values.internalRedis.enabled }}
-        {{ include "carto.redis-init-container" . | nindent 8 }}
-        {{- end }}
         - name: accounts-migrations
           image: gcr.io/carto-onprem-artifacts/accounts-db
           imagePullPolicy: {{ .Values.accountsMigrations.image.pullPolicy }}
@@ -168,41 +165,8 @@ spec:
             - |
               npm run start:built
           {{- end }}
-          env:
-            - name: ACCOUNTS_POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "carto.postgresql.secretName" . }}
-                  key: {{ include "carto.postgresql.secret.key" . }}
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "carto.redis.secretName" . }}
-                  key: {{ include "carto.redis.existingsecret.key" . | quote }}
-            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
-              
-              ) "context" $ ) | nindent 12 }}
-            {{- if .Values.accountsApi.extraEnvVars }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraEnvVars "context" $) | nindent 12 }}
-            {{- end }}
-          envFrom:
-            - configMapRef:
-                name: {{ template "carto.accountsApi.configmapName" . }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
-              
-            ) "context" $ ) -}}
-            {{- if $secretContent }}
-            - secretRef:
-                name: {{ include "carto.accountsApi.secretName" . }}
-            {{- end }}
-            {{- if .Values.accountsApi.extraEnvVarsCM }}
-            - configMapRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraEnvVarsCM "context" $) }}
-            {{- end }}
-            {{- if .Values.accountsApi.extraEnvVarsSecret }}
-            - secretRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraEnvVarsSecret "context" $) }}
-            {{- end }}
+          env: {}
+          envFrom: {}
           {{- if .Values.accountsApi.resources }}
           resources: {{- toYaml .Values.accountsApi.resources | nindent 12 }}
           {{- end }}
@@ -252,11 +216,6 @@ spec:
               mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
               readOnly: true
             {{- end }}
-            {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
-            - name: redis-tls-ca
-              mountPath: {{ include "carto.redis.configMapMountDir" . }}
-              readOnly: true
-            {{- end }}
             {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
             - name: proxy-ssl-ca
               mountPath: {{ include "carto.proxy.configMapMountDir" . }}
@@ -287,11 +246,6 @@ spec:
         - name: postgresql-ssl-ca
           configMap:
             name: {{ include "carto.postgresql.configMapName" . }}
-        {{- end }}
-        {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
-        - name: redis-tls-ca
-          configMap:
-            name: {{ include "carto.redis.configMapName" . }}
         {{- end }}
         {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
         - name: proxy-ssl-ca
