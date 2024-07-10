@@ -64,8 +64,6 @@ spec:
       {{- if .Values.accountsApi.podSecurityContext.enabled }}
       securityContext: {{- omit .Values.accountsApi.podSecurityContext "enabled" | toYaml | nindent 8 }}
       {{- end }}
-      {{- if not .Values.diagnosticMode.enabled }}
-
       terminationGracePeriodSeconds: {{ .Values.accountsApi.terminationGracePeriodSeconds }}
       containers:
         - name: accounts-api
