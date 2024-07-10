@@ -20,9 +20,9 @@ dependencies:
     repository: oci://registry.replicated.com/library
     version: 1.0.0-beta.21
     condition: replicated.enabled
-  #- name: zitadel
-  # repository: https://charts.zitadel.com
-  # version: 8.0.0
+  - name: zitadel
+    repository: https://charts.zitadel.com
+    version: 8.0.0
 
 description: CARTO Location Intelligence Platform. Unlock the power of spatial analysis in the cloud
 engine: gotpl
