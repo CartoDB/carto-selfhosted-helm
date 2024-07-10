@@ -122,7 +122,7 @@ spec:
               {{- end }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "CARTO_SELFHOSTED_INSTANCE_ID"
-              "ENCRYPTION_SECRET_KEY"
+              
               ) "context" $ ) | nindent 12 }}
             {{- if .Values.accountsApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraEnvVars "context" $) | nindent 12 }}
@@ -132,7 +132,7 @@ spec:
                 name: {{ template "carto.accountsApi.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "CARTO_SELFHOSTED_INSTANCE_ID"
-              "ENCRYPTION_SECRET_KEY"
+              
               ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
@@ -180,8 +180,7 @@ spec:
                   name: {{ include "carto.redis.secretName" . }}
                   key: {{ include "carto.redis.existingsecret.key" . | quote }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
-              "ENCRYPTION_SECRET_KEY"
-              "ACCOUNTS_JWT_SECRET"
+              
               ) "context" $ ) | nindent 12 }}
             {{- if .Values.accountsApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraEnvVars "context" $) | nindent 12 }}
@@ -190,8 +189,7 @@ spec:
             - configMapRef:
                 name: {{ template "carto.accountsApi.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
-              "ENCRYPTION_SECRET_KEY"
-              "ACCOUNTS_JWT_SECRET"
+              
             ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
