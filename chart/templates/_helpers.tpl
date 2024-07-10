@@ -562,6 +562,61 @@ Return Carto workspace-api node options
 {{- end -}}
 {{- end -}}
 
+
+
+{{/*
+******************    ACCOUNTS-API ******************
+*/}}
+
+
+{{/*
+Return the proper Carto accounts-api full name
+*/}}
+{{- define "carto.accountsApi.fullname" -}}
+{{- printf "%s-accounts-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto accountsAPI image name
+*/}}
+{{- define "carto.accountsApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.accountsApi.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto accounts-api ConfigMap name
+*/}}
+{{- define "carto.accountsApi.configmapName" -}}
+{{- if .Values.accountsApi.existingConfigMap -}}
+{{- .Values.accountsApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.accountsApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto accounts-api Secret name
+*/}}
+{{- define "carto.accountsApi.secretName" -}}
+{{- if .Values.accountsApi.existingSecret -}}
+{{- .Values.accountsApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.accountsApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return Carto accounts-api node options
+*/}}
+{{- define "carto.accountsApi.nodeOptions" -}}
+{{- if eq (.Values.accountsApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "--max-old-space-size=%d" (div (mul (.Values.accountsApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.accountsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- else -}}
+{{- printf "--max-old-space-size=%d" .Values.accountsApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- end -}}
+{{- end -}}
+
+
 {{/*
 In case you're using an Azure Postgres as an external database you should add two additional parameters
 - internalUser: the same as regular user but without the "@db-name" suffix required by Azure connection
