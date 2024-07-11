@@ -2,10 +2,10 @@
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
-  name: {{ template "carto.accountsApi.fullname" . }}
+  name: {{ template "carto.accountsSub.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: accounts-api
+    app.kubernetes.io/component: accounts-subscriber
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -13,14 +13,20 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  replicas: 1
+  # In order to publish the charts in official marketplaces, it's necessary that all components are able to start with default values without errors
+  # Components which needs other configuration requirements such as client specific parameters should not boot if these values ​​are not provided
+  {{- if .Values.cartoConfigValues.selfHostedTenantId }}
   # replicas: {{ .Values.accountsApi.replicaCount }}
+  replicas: 1
+  {{- else }}
+  replicas: 0
+  {{- end }}
   {{- if .Values.accountsApi.updateStrategy }}
   strategy: {{- toYaml .Values.accountsApi.updateStrategy | nindent 4 }}
   {{- end }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
-      app.kubernetes.io/component: accounts-api
+      app.kubernetes.io/component: accounts-subscriber
   template:
     metadata:
       annotations:
@@ -30,7 +36,7 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
-        app.kubernetes.io/component: accounts-api
+        app.kubernetes.io/component: accounts-subscriber
         {{- if .Values.accountsApi.podLabels }}
         {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.podLabels "context" $) | nindent 8 }}
         {{- end }}
@@ -39,14 +45,6 @@ spec:
       {{- include "carto.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.accountsApi.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.hostAliases "context" $) | nindent 8 }}
-      {{- end }}
-      {{- if .Values.accountsApi.affinity }}
-      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.accountsApi.affinity "context" $) | nindent 8 }}
-      {{- else }}
-      affinity:
-        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.accountsApi.podAffinityPreset "component" "accounts-api" "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.accountsApi.podAntiAffinityPreset "component" "accounts-api" "context" $) | nindent 10 }}
-        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.accountsApi.nodeAffinityPreset.type "key" .Values.accountsApi.nodeAffinityPreset.key "values" .Values.accountsApi.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
       {{- if .Values.accountsApi.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.accountsApi.nodeSelector "context" $) | nindent 8 }}
@@ -65,7 +63,7 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.accountsApi.terminationGracePeriodSeconds }}
       containers:
-        - name: accounts-api
+        - name: accounts-subscriber
           image: {{ template "carto.accountsApi.image" . }}
           imagePullPolicy: {{ .Values.accountsApi.image.pullPolicy }}
           {{- if .Values.accountsApi.containerSecurityContext.enabled }}
@@ -73,21 +71,17 @@ spec:
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
-          {{- else if .Values.accountsApi.command }}
-          command: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.command "context" $) | nindent 12 }}
           {{- else }}
           command:
             - /bin/sh
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
-          {{- else if .Values.accountsApi.args }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.args "context" $) | nindent 12 }}
           {{ else }}
           args:
             - -ec
             - |
-              npm run start:built
+              npm run start:built:subscriber
           {{- end }}
           env:
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
@@ -103,38 +97,7 @@ spec:
           {{- if .Values.accountsApi.resources }}
           resources: {{- toYaml .Values.accountsApi.resources | nindent 12 }}
           {{- end }}
-          ports:
-            - name: http
-              containerPort: {{ .Values.accountsApi.containerPorts.http }}
-          {{- if not .Values.diagnosticMode.enabled }}
-          {{- if .Values.accountsApi.livenessProbe.enabled }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.accountsApi.livenessProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /
-              port: http
-          {{- else if .Values.accountsApi.customLivenessProbe }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.customLivenessProbe "context" $) | nindent 12 }}
-          {{- end }}
-          {{- if .Values.accountsApi.readinessProbe.enabled }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.accountsApi.readinessProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /
-              port: http
-          {{- else if .Values.accountsApi.customReadinessProbe }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.customReadinessProbe "context" $) | nindent 12 }}
-          {{- end }}
-          {{- if .Values.accountsApi.startupProbe.enabled }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.accountsApi.startupProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /health
-              port: http
-          {{- else if .Values.accountsApi.customStartupProbe }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.customStartupProbe "context" $) | nindent 12 }}
-          {{- end }}
-          {{- end }}
-          {{- if .Values.accountsApi.lifecycleHooks }}
-          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.lifecycleHooks "context" $) | nindent 12 }}
-          {{- end }}
+          
           volumeMounts:
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
@@ -152,9 +115,8 @@ spec:
           {{- if .Values.accountsApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
-        {{- if .Values.accountsApi.sidecars }}
-        {{- include "common.tplvalues.render" ( dict "value" .Values.accountsApi.sidecars "context" $) | nindent 8 }}
-        {{- end }}
+
+
       volumes:
         - name: gcp-default-service-account-key
           secret:
@@ -162,17 +124,5 @@ spec:
             items:
               - key: {{ include "carto.google.secretKey" . }}
                 path: {{ include "carto.google.secretMountFilename" . }}
-        {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
-        - name: postgresql-ssl-ca
-          configMap:
-            name: {{ include "carto.postgresql.configMapName" . }}
-        {{- end }}
-        {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
-        - name: proxy-ssl-ca
-          configMap:
-            name: {{ include "carto.proxy.configMapName" . }}
-        {{- end }}
-        {{- if .Values.accountsApi.extraVolumes }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraVolumes "context" $) | nindent 8 }}
-        {{- end }}
+
 {{- end }}

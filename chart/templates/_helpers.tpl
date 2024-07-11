@@ -572,6 +572,18 @@ Return Carto workspace-api node options
 {{- end -}}
 
 
+{{/*
+******************    ACCOUNTS-SUB ******************
+*/}}
+
+
+{{/*
+Return the proper Carto accounts-sub full name
+*/}}
+{{- define "carto.accountsSub.fullname" -}}
+{{- printf "%s-accounts-sub" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
 
 {{/*
 ******************    ACCOUNTS-API ******************
