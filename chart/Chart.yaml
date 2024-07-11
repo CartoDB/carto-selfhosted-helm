@@ -24,7 +24,7 @@ dependencies:
     repository: https://charts.zitadel.com
     version: 8.0.0
   - name: rabbitmq
-    repository: https://charts.bitnami.com/bitnami
+    repository: oci://registry-1.docker.io/bitnamicharts
     version: 14.5.0
 
 description: CARTO Location Intelligence Platform. Unlock the power of spatial analysis in the cloud
