@@ -78,6 +78,7 @@ CARTO_SELFHOSTED_INSTANCE_ID: cartoSecrets.instanceId
 ACCOUNTS_POSTGRES_USER: appSecrets.accountsPostgresUser
 ACCOUNTS_POSTGRES_PASSWORD: appSecrets.accountsPostgresPassword
 ACCOUNTS_ZITADEL_API_KEY: appSecrets.zitadelApiKey
+ACCOUNTS_HONEYCOMB_API_KEY: cartoSecrets.honeycombApiKey
 {{- end -}}
 
 {{/*

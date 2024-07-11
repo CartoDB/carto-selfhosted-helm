@@ -18,9 +18,9 @@ data:
   # ⬇️ change me
   ACCOUNTS_AUTH0_CLIENT_ID: "275509697556054314@carto_frontend"
   
-  ACCOUNTS_HONEYCOMB_UPLOAD_EVENTS: "false"
-  ACCOUNTS_HONEYCOMB_DATASET: "not_setted"
-  ACCOUNTS_HONEYCOMB_API_KEY: "not_setted"
+  ACCOUNTS_HONEYCOMB_UPLOAD_EVENTS: "true"
+  ACCOUNTS_HONEYCOMB_DATASET: "mlopez-personal"
+  # ACCOUNTS_HONEYCOMB_API_KEY: "not_setted"
 
   ACCOUNTS_BASE_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc"
   ACCOUNTS_VITE_BASE_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc"
