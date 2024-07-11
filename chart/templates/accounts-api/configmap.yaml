@@ -14,7 +14,7 @@ data:
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   ACCOUNTS_PORT: "{{ .Values.accountsApi.containerPorts.http }}"
   # ⬇️ change me
-  ACCOUNTS_REACT_APP_CLIENT_ID: ""
+  ACCOUNTS_REACT_APP_CLIENT_ID: "xyz"
   # ⬇️ change me
   ACCOUNTS_AUTH0_CLIENT_ID: "eiffmrkfEAeRJGmDJZsQqXKSN3GNg580"
   

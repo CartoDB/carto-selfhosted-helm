@@ -36,7 +36,7 @@ data:
   NODE_OPTIONS: {{ template "carto.workspaceApi.nodeOptions" . }}
   PUBSUB_MODE: "pull"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
-  RABBITMQ_CONNECTION_URL: "amqp://guest:guest@RABBITMQ_HOST_TO_BE_CHANGED:5672/"
+  RABBITMQ_CONNECTION_URL: amqp://guest:guest@{{ include "carto.rabbitMq.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5672/
   REDIS_CACHE_PREFIX: "onprem"
   REDIS_HOST: {{ include "carto.redis.host" . }}
   REDIS_PORT: {{ include "carto.redis.port" . }}
