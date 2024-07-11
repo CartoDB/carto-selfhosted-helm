@@ -75,8 +75,8 @@ WORKSPACE_THUMBNAILS_ACCESSKEYID: appSecrets.awsAccessKeyId
 WORKSPACE_THUMBNAILS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
 CARTO_SELFHOSTED_INSTANCE_ID: cartoSecrets.instanceId
-ACCOUNTS_POSTGRES_USER: appSecrets.accountsPostgresUser
-ACCOUNTS_POSTGRES_PASSWORD: appSecrets.accountsPostgresPassword
+ACCOUNTS_POSTGRES_USER: appSecrets.accountsPostgresUser.value
+ACCOUNTS_POSTGRES_PASSWORD: appSecrets.accountsPostgresPassword.value
 {{- end -}}
 
 {{/*
