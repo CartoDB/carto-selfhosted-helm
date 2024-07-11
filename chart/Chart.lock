@@ -14,5 +14,8 @@ dependencies:
 - name: zitadel
   repository: https://charts.zitadel.com
   version: 8.0.0
-digest: sha256:707f52c41a7e506b4eafe204fd56d49dc0dcadf07e2407fd0afec41c9c7d353d
-generated: "2024-07-10T15:22:43.107547+02:00"
+- name: rabbitmq
+  repository: https://charts.bitnami.com/bitnami
+  version: 14.5.0
+digest: sha256:5d9a4ffb8b2ee155fae4e787405576de2f12fab4541cb476a7f8923ea30705d5
+generated: "2024-07-11T09:28:18.321923+02:00"
