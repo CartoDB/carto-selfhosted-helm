@@ -134,6 +134,7 @@ spec:
           {{- if .Values.accountsApi.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
+          {{/*
           volumeMounts:
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
@@ -151,6 +152,7 @@ spec:
           {{- if .Values.accountsApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
+          */}}
         {{- if .Values.accountsApi.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.accountsApi.sidecars "context" $) | nindent 8 }}
         {{- end }}
