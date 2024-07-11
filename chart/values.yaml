@@ -298,6 +298,16 @@ appSecrets:
     existingSecret:
       name: ""
       key: ""
+  ## @extra appSecrets.zitadelApiKey If AWS is used in self-hosted, the AccessKey Secret.
+  zitadelApiKey:
+    ## @param appSecrets.zitadelApiKey.value Value of the secret `AccessKey Secret` (Only required if AWS is used). One of `appSecrets.zitadelApiKey.value` or `appSecrets.zitadelApiKey.existingSecret` could be defined.
+    value: ""
+    ## @param appSecrets.zitadelApiKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.zitadelApiKey.existingSecret.key`. If `appSecrets.zitadelApiKey.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.zitadelApiKey.existingSecret.key Key to find in `appSecrets.zitadelApiKey.existingSecret.name` where the value of `appSecrets.awsAccessKeySecret` is found. If `appSecrets.awsAccessKeySecret.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
 
 ## @section CARTO secrets
 ## Secrets provided by CARTO. Some of them could be customized by the client.

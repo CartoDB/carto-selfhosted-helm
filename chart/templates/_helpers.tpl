@@ -77,6 +77,7 @@ WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
 CARTO_SELFHOSTED_INSTANCE_ID: cartoSecrets.instanceId
 ACCOUNTS_POSTGRES_USER: appSecrets.accountsPostgresUser
 ACCOUNTS_POSTGRES_PASSWORD: appSecrets.accountsPostgresPassword
+ACCOUNTS_ZITADEL_API_KEY: appSecrets.zitadelApiKey
 {{- end -}}
 
 {{/*

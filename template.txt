@@ -630,7 +630,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: import-api
 data:
-  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_AUDIENCE: "275509697556054314@carto_frontend"
   AUTH0_DOMAIN: ""
   AUTH0_NAMESPACE: "http://app.carto.com"
   CARTO_SELFHOSTED_VERSION: "2024.1.11"
@@ -699,7 +699,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: lds-api
 data:
-  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_AUDIENCE: "275509697556054314@carto_frontend"
   AUTH0_DOMAIN: ""
   AUTH0_NAMESPACE: "http://app.carto.com"
   CARTO_SELFHOSTED_VERSION: "2024.1.11"
@@ -734,7 +734,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: maps-api
 data:
-  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_AUDIENCE: "275509697556054314@carto_frontend"
   AUTH0_DOMAIN: ""
   AUTH0_NAMESPACE: "http://app.carto.com"
   BIGQUERY_OAUTH2_CLIENT_ID: ""
@@ -834,7 +834,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: sql-worker
 data:
-  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_AUDIENCE: "275509697556054314@carto_frontend"
   AUTH0_DOMAIN: ""
   AUTH0_NAMESPACE: "http://app.carto.com"
   CARTO_SELFHOSTED_VERSION: "2024.1.11"
@@ -879,7 +879,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: workspace-api
 data:
-  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_AUDIENCE: "275509697556054314@carto_frontend"
   AUTH0_DOMAIN: ""
   AUTH0_NAMESPACE: "http://app.carto.com"
   BIGQUERY_OAUTH2_CLIENT_ID: ""
@@ -938,7 +938,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: workspace-subscriber
 data:
-  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_AUDIENCE: "275509697556054314@carto_frontend"
   AUTH0_DOMAIN: ""
   BIGQUERY_OAUTH2_CLIENT_ID: ""
   CARTO_SELFHOSTED_DOMAIN: "carto-selfhosted.lan"

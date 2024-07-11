@@ -94,6 +94,7 @@ spec:
               "LAUNCHDARKLY_SDK_KEY"
               "ACCOUNTS_POSTGRES_USER"
               "ACCOUNTS_POSTGRES_PASSWORD"
+              "ACCOUNTS_ZITADEL_API_KEY"
               ) "context" $ ) | nindent 12 }}
           envFrom:
             - configMapRef:
