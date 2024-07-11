@@ -152,6 +152,7 @@ spec:
         {{- if .Values.accountsApi.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.accountsApi.sidecars "context" $) | nindent 8 }}
         {{- end }}
+      {{/*
       volumes:
         - name: gcp-default-service-account-key
           secret:
@@ -180,4 +181,5 @@ spec:
         {{- if .Values.accountsApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
+        */}}
 {{- end }}
