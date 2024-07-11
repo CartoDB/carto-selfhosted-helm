@@ -24,10 +24,8 @@ spec:
   template:
     metadata:
       annotations:
-      {{/*
         checksum/config: {{ include (print $.Template.BasePath "/accounts-api/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/accounts-api/secret.yaml") . | sha256sum }}
-        */}}
         {{- if .Values.accountsApi.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
@@ -137,7 +135,6 @@ spec:
           {{- if .Values.accountsApi.lifecycleHooks }}
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
-          {{/*
           volumeMounts:
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
@@ -155,11 +152,9 @@ spec:
           {{- if .Values.accountsApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
-          */}}
         {{- if .Values.accountsApi.sidecars }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.accountsApi.sidecars "context" $) | nindent 8 }}
         {{- end }}
-      {{/*
       volumes:
         - name: gcp-default-service-account-key
           secret:
@@ -180,5 +175,4 @@ spec:
         {{- if .Values.accountsApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
-        */}}
 {{- end }}
