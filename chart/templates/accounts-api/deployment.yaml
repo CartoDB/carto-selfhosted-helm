@@ -99,6 +99,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "carto.accountsApi.fullname" . }}
+            - secretRef:
+                name: {{ include "carto.accountsApi.secretName" . }}
           {{- if .Values.accountsApi.resources }}
           resources: {{- toYaml .Values.accountsApi.resources | nindent 12 }}
           {{- end }}
