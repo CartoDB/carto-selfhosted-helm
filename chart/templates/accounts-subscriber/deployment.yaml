@@ -99,46 +99,16 @@ spec:
               npm run start:built:subscriber
           {{- end }}
           env:
-            - name: ACCOUNTS_POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "carto.postgresql.secretName" . }}
-                  key: {{ include "carto.postgresql.secret.key" . }}
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "carto.redis.secretName" . }}
-                  key: {{ include "carto.redis.existingsecret.key" . | quote }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
-             "BIGQUERY_OAUTH2_CLIENT_SECRET"
-             "CARTO_SELFHOSTED_INSTANCE_ID"
-             "ENCRYPTION_SECRET_KEY"
-             "ACCOUNTS_JWT_SECRET"
-             ) "context" $ ) | nindent 12 }}
-            {{- if .Values.accountsSubscriber.extraEnvVars }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.extraEnvVars "context" $) | nindent 12 }}
-            {{- end }}
+              "LAUNCHDARKLY_SDK_KEY"
+              "ACCOUNTS_POSTGRES_USER"
+              "ACCOUNTS_POSTGRES_PASSWORD"
+              ) "context" $ ) | nindent 12 }}
           envFrom:
             - configMapRef:
-                name: {{ template "carto.accountsSubscriber.configmapName" . }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
-             "BIGQUERY_OAUTH2_CLIENT_SECRET"
-             "CARTO_SELFHOSTED_INSTANCE_ID"
-             "ENCRYPTION_SECRET_KEY"
-             "ACCOUNTS_JWT_SECRET"
-             ) "context" $ ) -}}
-            {{- if $secretContent }}
+                name: {{ template "carto.accountsApi.fullname" . }}
             - secretRef:
-                name: {{ include "carto.accountsSubscriber.secretName" . }}
-            {{- end }}
-            {{- if .Values.accountsSubscriber.extraEnvVarsCM }}
-            - configMapRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.extraEnvVarsCM "context" $) }}
-            {{- end }}
-            {{- if .Values.accountsSubscriber.extraEnvVarsSecret }}
-            - secretRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.extraEnvVarsSecret "context" $) }}
-            {{- end }}
+                name: {{ include "carto.accountsApi.secretName" . }}
           {{- if .Values.accountsSubscriber.resources }}
           resources: {{- toYaml .Values.accountsSubscriber.resources | nindent 12 }}
           {{- end }}
