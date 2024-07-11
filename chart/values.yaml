@@ -5580,4 +5580,4 @@ accountsMigrations:
 
 zitadel:
   zitadel:
-    masterkey: "dummyvalue"
+    masterkey: "abcabcabcbabcabcabcaabcabcabccxx" # 32 bytes
