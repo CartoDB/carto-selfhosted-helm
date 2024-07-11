@@ -1,0 +1,209 @@
+{{- if and (include "carto.baseUrl" .) (not .Values.cartoConfigValues.onlyRunRouter) }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.accountsSubscriber.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: accounts-subscriber
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  # In order to publish the charts in official marketplaces, it's necessary that all components are able to start with default values without errors
+  # Components which needs other configuration requirements such as client specific parameters should not boot if these values ​​are not provided
+  {{- if .Values.cartoConfigValues.selfHostedTenantId }}
+  # replicas: {{ .Values.accountsSubscriber.replicaCount }}
+  replicas: 1
+  {{- else }}
+  replicas: 0
+  {{- end }}
+  {{- if .Values.accountsSubscriber.updateStrategy }}
+  strategy: {{- toYaml .Values.accountsSubscriber.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: accounts-subscriber
+  template:
+    metadata:
+      annotations:
+      {{/*
+        checksum/config: {{ include (print $.Template.BasePath "/accounts-subscriber/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/accounts-subscriber/secret.yaml") . | sha256sum }}
+        */}}
+        {{- if .Values.accountsSubscriber.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: accounts-subscriber
+        {{- if .Values.accountsSubscriber.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.accountsSubscriber.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.accountsSubscriber.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.accountsSubscriber.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.accountsSubscriber.podAffinityPreset "component" "accounts-subscriber" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.accountsSubscriber.podAntiAffinityPreset "component" "accounts-subscriber" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.accountsSubscriber.nodeAffinityPreset.type "key" .Values.accountsSubscriber.nodeAffinityPreset.key "values" .Values.accountsSubscriber.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.accountsSubscriber.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.accountsSubscriber.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.accountsSubscriber.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.accountsSubscriber.priorityClassName }}
+      priorityClassName: {{ .Values.accountsSubscriber.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.accountsSubscriber.schedulerName }}
+      schedulerName: {{ .Values.accountsSubscriber.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.accountsSubscriber.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.accountsSubscriber.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if not .Values.diagnosticMode.enabled }}
+      terminationGracePeriodSeconds: {{ .Values.accountsSubscriber.terminationGracePeriodSeconds }}
+      containers:
+        - name: accounts-subscriber
+          image: {{ template "carto.accountsSubscriber.image" . }}
+          imagePullPolicy: {{ .Values.accountsSubscriber.image.pullPolicy }}
+          {{- if .Values.accountsSubscriber.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.accountsSubscriber.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.accountsSubscriber.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.accountsSubscriber.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.args "context" $) | nindent 12 }}
+          {{ else }}
+          args:
+            - -ec
+            - |
+              npm run start:built:subscriber
+          {{- end }}
+          env:
+            - name: ACCOUNTS_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ include "carto.postgresql.secret.key" . }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.redis.secretName" . }}
+                  key: {{ include "carto.redis.existingsecret.key" . | quote }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+             "BIGQUERY_OAUTH2_CLIENT_SECRET"
+             "CARTO_SELFHOSTED_INSTANCE_ID"
+             "ENCRYPTION_SECRET_KEY"
+             "ACCOUNTS_JWT_SECRET"
+             ) "context" $ ) | nindent 12 }}
+            {{- if .Values.accountsSubscriber.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "carto.accountsSubscriber.configmapName" . }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+             "BIGQUERY_OAUTH2_CLIENT_SECRET"
+             "CARTO_SELFHOSTED_INSTANCE_ID"
+             "ENCRYPTION_SECRET_KEY"
+             "ACCOUNTS_JWT_SECRET"
+             ) "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.accountsSubscriber.secretName" . }}
+            {{- end }}
+            {{- if .Values.accountsSubscriber.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.accountsSubscriber.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.accountsSubscriber.resources }}
+          resources: {{- toYaml .Values.accountsSubscriber.resources | nindent 12 }}
+          {{- end }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.accountsSubscriber.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.accountsSubscriber.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.accountsSubscriber.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.accountsSubscriber.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: gcp-default-service-account-key
+              mountPath: {{ include "carto.google.secretMountDir" . }}
+              readOnly: true
+            {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+            - name: postgresql-ssl-ca
+              mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+            {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+            - name: redis-tls-ca
+              mountPath: {{ include "carto.redis.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+            {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+            - name: proxy-ssl-ca
+              mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+          {{- if .Values.accountsSubscriber.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.accountsSubscriber.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.accountsSubscriber.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: {{ include "carto.google.secretName" . }}
+            items:
+              - key: {{ include "carto.google.secretKey" . }}
+                path: {{ include "carto.google.secretMountFilename" . }}
+        {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+        - name: postgresql-ssl-ca
+          configMap:
+            name: {{ include "carto.postgresql.configMapName" . }}
+        {{- end }}
+        {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+        - name: redis-tls-ca
+          configMap:
+            name: {{ include "carto.redis.configMapName" . }}
+        {{- end }}
+        {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+        - name: proxy-ssl-ca
+          configMap:
+            name: {{ include "carto.proxy.configMapName" . }}
+        {{- end }}
+        {{- if .Values.accountsSubscriber.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+{{- end }}
