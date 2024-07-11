@@ -16,7 +16,7 @@ data:
   # ⬇️ change me
   ACCOUNTS_REACT_APP_CLIENT_ID: "275509697556054314@carto_frontend"
   # ⬇️ change me
-  ACCOUNTS_AUTH0_CLIENT_ID: "eiffmrkfEAeRJGmDJZsQqXKSN3GNg580"
+  ACCOUNTS_AUTH0_CLIENT_ID: "275509697556054314@carto_frontend"
   
   ACCOUNTS_HONEYCOMB_UPLOAD_EVENTS: "false"
   ACCOUNTS_HONEYCOMB_DATASET: "not_setted"
@@ -32,7 +32,7 @@ data:
   ACCOUNTS_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
   ACCOUNTS_POSTGRES_SSL_ENABLED: "false"
   ACCOUNTS_POSTGRES_DB: "accounts"
-  AUTH0_DOMAIN: "auth.dev.carto.com"
+  AUTH0_DOMAIN: "zitadel.mlr.carto.io"
   NODE_OPTIONS: "--max-old-space-size=768"
   PUBSUB_MODE: "pull"
   ACCOUNTS_ACTIVITY_DATA_BUCKET_NAME: "not_setted"
