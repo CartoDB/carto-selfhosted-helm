@@ -5580,4 +5580,4 @@ accountsMigrations:
 
 zitadel:
   zitadel:
-    masterkey: "a1b2c3d4e5f67890123456789abcdef0a1b2c3d4e5f67890123456789abcdef0" # 32 bytes
+    masterkey: "abcabcabcbabcabcabcaabcabcabccxx" # 32 bytes
