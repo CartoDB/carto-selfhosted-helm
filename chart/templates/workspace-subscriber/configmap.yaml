@@ -22,7 +22,7 @@ data:
   {{- if .Values.replicated.enabled }}
   CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "replicated:3000"
   {{- end }}
-  RABBITMQ_CONNECTION_URL: "amqp://guest:guest@RABBITMQ_HOST_TO_BE_CHANGED:5672/"
+  RABBITMQ_CONNECTION_URL: amqp://guest:guest@{{ include "carto.rabbitMq.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5672/
   COMPUTE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "data-updates-compute-sub"
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "event-bus-pub"

@@ -236,6 +236,13 @@ Create the name of the service account to use for Carto common deployments to co
 {{- end -}}
 
 {{/*
+Return the proper Carto rabbitmq full name
+*/}}
+{{- define "carto.rabbitMq.fullname" -}}
+{{- printf "%s-rabbitmq" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto lds-api full name
 */}}
 {{- define "carto.ldsApi.fullname" -}}

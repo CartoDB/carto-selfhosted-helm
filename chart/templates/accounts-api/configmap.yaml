@@ -52,7 +52,7 @@ data:
   GCLOUD_PROJECT: "not_setted"
   PUBSUB_DATA_UPDATES_ACCOUNTS_TOPIC: "data-updates-pub"
 
-  RABBITMQ_CONNECTION_URL: "amqp://guest:guest@RABBITMQ_HOST_TO_BE_CHANGED:5672/"
+  RABBITMQ_CONNECTION_URL: amqp://guest:guest@{{ include "carto.rabbitMq.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5672/
 
 # export ACCOUNTS_POSTGRES_HOST=localhost
 # export ACCOUNTS_POSTGRES_DB=accounts
