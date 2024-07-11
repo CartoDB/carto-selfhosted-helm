@@ -36,6 +36,7 @@ data:
   NODE_OPTIONS: {{ template "carto.workspaceApi.nodeOptions" . }}
   PUBSUB_MODE: "pull"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  RABBITMQ_CONNECTION_URL: "amqp://guest:guest@RABBITMQ_HOST_TO_BE_CHANGED:5672/"
   REDIS_CACHE_PREFIX: "onprem"
   REDIS_HOST: {{ include "carto.redis.host" . }}
   REDIS_PORT: {{ include "carto.redis.port" . }}
@@ -56,9 +57,9 @@ data:
   WORKSPACE_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
   {{- end }}
   IMPORT_AWS_CUSTOM_BUCKET_ROLE_ARN: {{ .Values.appConfigValues.importAwsRoleArn | quote }}
-  WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/data-updates-workspace-sub"
-  WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/data-updates"
-  WORKSPACE_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
+  WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "data-updates-workspace-sub"
+  WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC: "data-updates-pub"
+  WORKSPACE_PUBSUB_TENANT_BUS_TOPIC: "tenant-bus-pub"
   WORKSPACE_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   WORKSPACE_SYNC_DATA_ENABLED: "true"
   WORKSPACE_IMPORTS_BUCKET: {{ .Values.appConfigValues.workspaceImportsBucket | quote }}
