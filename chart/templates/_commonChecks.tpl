@@ -139,6 +139,8 @@ Return common collectors for preflights and support-bundle
             env:
               - name: PUBSUB_PROJECT_ID
                 value: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+              - name: RABBITMQ_CONNECTION_URL
+                value: amqp://guest:guest@{{ include "carto.rabbitMq.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5672/
               - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_TOPIC
                 value: projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus
               - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_SUBSCRIPTION

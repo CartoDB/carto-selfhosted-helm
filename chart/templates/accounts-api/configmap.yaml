@@ -92,3 +92,7 @@ data:
   ACCOUNTS_ASK_NICELY_API_SECRET: "not_setted"
   ACCOUNTS_PARTNER_CONNECT_SNOWFLAKE_PARTNER_ID: "not_setted"
 
+
+### Required by accounts-sub
+  PUBSUB_DATA_UPDATES_ACCOUNTS_SUBSCRIPTION: "data-updates-account-sub"
+  PUBSUB_COMMON_ACCOUNTS_SUBSCRIPTION: "commons-sub"
