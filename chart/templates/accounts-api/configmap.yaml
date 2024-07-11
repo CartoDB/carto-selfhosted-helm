@@ -18,9 +18,9 @@ data:
   # ⬇️ change me
   ACCOUNTS_AUTH0_CLIENT_ID: "eiffmrkfEAeRJGmDJZsQqXKSN3GNg580"
   
-  #ACCOUNTS_HONEYCOMB_UPLOAD_EVENTS: "true"
-  #ACCOUNTS_HONEYCOMB_DATASET: "cloud-native-dedicated-02"
-  #ACCOUNTS_HONEYCOMB_API_KEY: "not_setted"
+  ACCOUNTS_HONEYCOMB_UPLOAD_EVENTS: "false"
+  ACCOUNTS_HONEYCOMB_DATASET: "not_setted"
+  ACCOUNTS_HONEYCOMB_API_KEY: "not_setted"
 
   ACCOUNTS_BASE_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc"
   ACCOUNTS_VITE_BASE_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc"
@@ -53,6 +53,11 @@ data:
   PUBSUB_DATA_UPDATES_ACCOUNTS_TOPIC: "data-updates-pub"
 
   RABBITMQ_CONNECTION_URL: amqp://guest:guest@{{ include "carto.rabbitMq.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:5672/
+
+  ACCOUNTS_CARTO_DATAWAREHOUSE_ENVIRONMENT: "not_setted"
+  ACCOUNTS_CARTO_DATAWAREHOUSE_FOLDER_ID: "not_setted"
+  ACCOUNTS_CARTO_DATAWAREHOUSE_CUSTOMER_DATA: "false"
+
 
 # export ACCOUNTS_POSTGRES_HOST=localhost
 # export ACCOUNTS_POSTGRES_DB=accounts

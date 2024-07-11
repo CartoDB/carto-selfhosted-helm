@@ -13,7 +13,8 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ .Values.accountsApi.replicaCount }}
+  replicas: 1
+  # replicas: {{ .Values.accountsApi.replicaCount }}
   {{- if .Values.accountsApi.updateStrategy }}
   strategy: {{- toYaml .Values.accountsApi.updateStrategy | nindent 4 }}
   {{- end }}
