@@ -91,18 +91,10 @@ spec:
               npm run start:built
           {{- end }}
           env:
-            - name: WORKSPACE_POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "carto.postgresql.secretName" . }}
-                  key: {{ include "carto.postgresql.secret.key" . }}
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "carto.redis.secretName" . }}
-                  key: {{ include "carto.redis.existingsecret.key" . | quote }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "LAUNCHDARKLY_SDK_KEY"
+              "ACCOUNTS_POSTGRES_USER"
+              "ACCOUNTS_POSTGRES_PASSWORD"
               ) "context" $ ) | nindent 12 }}
           envFrom:
             - configMapRef:
@@ -146,11 +138,6 @@ spec:
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
-            {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
-            - name: gcp-buckets-service-account-key
-              mountPath: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountDir" . }}
-              readOnly: true
-            {{- end }}
             {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
             - name: postgresql-ssl-ca
               mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
@@ -175,14 +162,6 @@ spec:
             items:
               - key: {{ include "carto.google.secretKey" . }}
                 path: {{ include "carto.google.secretMountFilename" . }}
-        {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
-        - name: gcp-buckets-service-account-key
-          secret:
-            secretName: {{ include "carto.googleCloudStorageServiceAccountKey.secretName" . }}
-            items:
-              - key: {{ include "carto.googleCloudStorageServiceAccountKey.secretKey" . }}
-                path: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountFilename" . }}
-        {{- end }}
         {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
         - name: postgresql-ssl-ca
           configMap:

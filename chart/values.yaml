@@ -278,6 +278,26 @@ appSecrets:
     existingSecret:
       name: ""
       key: ""
+  ## @extra appSecrets.accountsPostgresUser If AWS is used in self-hosted, the AccessKey Secret.
+  accountsPostgresUser:
+    ## @param appSecrets.accountsPostgresUser.value Value of the secret `AccessKey Secret` (Only required if AWS is used). One of `appSecrets.accountsPostgresUser.value` or `appSecrets.accountsPostgresUser.existingSecret` could be defined.
+    value: ""
+    ## @param appSecrets.accountsPostgresUser.existingSecret.name Name of the pre-existent secret containing the `appSecrets.accountsPostgresUser.existingSecret.key`. If `appSecrets.accountsPostgresUser.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.accountsPostgresUser.existingSecret.key Key to find in `appSecrets.accountsPostgresUser.existingSecret.name` where the value of `appSecrets.awsAccessKeySecret` is found. If `appSecrets.awsAccessKeySecret.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra appSecrets.accountsPostgresPassword If AWS is used in self-hosted, the AccessKey Secret.
+  accountsPostgresPassword:
+    ## @param appSecrets.accountsPostgresPassword.value Value of the secret `AccessKey Secret` (Only required if AWS is used). One of `appSecrets.accountsPostgresPassword.value` or `appSecrets.accountsPostgresPassword.existingSecret` could be defined.
+    value: ""
+    ## @param appSecrets.accountsPostgresPassword.existingSecret.name Name of the pre-existent secret containing the `appSecrets.accountsPostgresPassword.existingSecret.key`. If `appSecrets.accountsPostgresPassword.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.accountsPostgresPassword.existingSecret.key Key to find in `appSecrets.accountsPostgresPassword.existingSecret.name` where the value of `appSecrets.awsAccessKeySecret` is found. If `appSecrets.awsAccessKeySecret.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
 
 ## @section CARTO secrets
 ## Secrets provided by CARTO. Some of them could be customized by the client.
@@ -5353,10 +5373,11 @@ accountsApi:
   ## @param accountsApi.args Override default container args (useful when using custom images)
   ##
   args:
-    [
-      "-c",
-      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js",
-    ]
+    []
+    # [
+    #   "-c",
+    #   "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js",
+    # ]
   ## @param accountsApi.hostAliases accounts-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##

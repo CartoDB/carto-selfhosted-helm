@@ -12,3 +12,78 @@ metadata:
   {{- end }}
 data:
   AUTH0_AUDIENCE: "carto-cloud-native-api"
+  ACCOUNTS_PORT: "{{ .Values.accountsApi.containerPorts.http }}"
+  # ⬇️ change me
+  ACCOUNTS_REACT_APP_CLIENT_ID: ""
+  # ⬇️ change me
+  ACCOUNTS_AUTH0_CLIENT_ID: "eiffmrkfEAeRJGmDJZsQqXKSN3GNg580"
+  
+  #ACCOUNTS_HONEYCOMB_UPLOAD_EVENTS: "true"
+  #ACCOUNTS_HONEYCOMB_DATASET: "cloud-native-dedicated-02"
+  #ACCOUNTS_HONEYCOMB_API_KEY: "not_setted"
+
+  ACCOUNTS_BASE_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc"
+  ACCOUNTS_VITE_BASE_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc"
+  WORKSPACE_VITE_URL_TEMPLATE: "https://{{ .Values.appConfigValues.selfHostedDomain }}"
+  ACCOUNTS_INVITE_URL_TEMPLATE: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/account/invite?code={code}"
+  ACCOUNTS_CARTO_DATAWAREHOUSE_ENABLED: "false"
+  BOBSLED_EXPORT_STORAGE_BUCKET: "not_setted"
+  AUTH0_NAMESPACE: "http://app.carto.com"
+  ACCOUNTS_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
+  ACCOUNTS_POSTGRES_SSL_ENABLED: "false"
+  ACCOUNTS_POSTGRES_DB: "accounts"
+  AUTH0_DOMAIN: "auth.dev.carto.com"
+  NODE_OPTIONS: "--max-old-space-size=768"
+  PUBSUB_MODE: "pull"
+  ACCOUNTS_ACTIVITY_DATA_BUCKET_NAME: "not_setted"
+  EVENT_BUS_TOPIC: "event-bus-pub"
+  ACCOUNTS_DO_PROJECT_ID: "carto-data-02-dev"
+  PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE: "data-updates-pub"
+
+  ACCOUNTS_PAYMENTS_RECURLY_SUBDOMAIN: "carto-development"
+  LOG_LEVEL: "debug"
+  BOBSLED_ENVIRONMENT_NAME: "carto"
+
+  PUBSUB_COMMON_ACCOUNTS_TOPIC: "commons-pub"
+  PUBSUB_PROJECT_ID: "not_setted"
+  ACCOUNTS_AUTH0_MANAGEMENT_AUDIENCE: "not_setted"
+  ACCOUNTS_ERROR_RESPONSE_STACK_TRACE: "true"
+  ACCOUNTS_CARTO_DATAWAREHOUSE_BILLING_ACCOUNT_NAME: "not_setted"
+  GCLOUD_PROJECT: "not_setted"
+  PUBSUB_DATA_UPDATES_ACCOUNTS_TOPIC: "data-updates-pub"
+
+  RABBITMQ_CONNECTION_URL: "amqp://guest:guest@RABBITMQ_HOST_TO_BE_CHANGED:5672/"
+
+# export ACCOUNTS_POSTGRES_HOST=localhost
+# export ACCOUNTS_POSTGRES_DB=accounts
+# export ACCOUNTS_POSTGRES_USER=
+# export ACCOUNTS_POSTGRES_PASSWORD=
+# export ACCOUNTS_POSTGRES_PORT=5432
+# export ACCOUNTS_POSTGRES_SSL_MODE=disable
+
+
+### Secrets setted
+  ACCOUNTS_INVITE_JWT_SECRET: "ajF0wiYg+KiJ"
+
+
+### Secrets not setted
+  ACCOUNTS_INCOMING_AUTH0_WEBHOOK_AUTH_USER: "not_setted"
+  ACCOUNTS_PARTNER_CONNECT_SNOWFLAKE_PARTNER_SECRET: "not_setted"
+  ACCOUNTS_INCOMING_AUTH0_WEBHOOK_AUTH_PASSWORD: "not_setted"
+  ACCOUNTS_BACKOFFICE_AUTH_USER: "not_setted"
+  ACCOUNTS_PAYMENTS_RECURLY_WEBHOOKS_AUTH_PASSWORD: "not_setted"
+  ACCOUNTS_PAYMENTS_RECURLY_API_KEY: "not_setted"
+  ACCOUNTS_PAYMENTS_RECURLY_WEBHOOKS_AUTH_USER: "not_setted"
+  REPLICATED_API_SERVICE_ACCOUNT: "not_setted"
+  BOBSLED_ACCOUNT_SECRET: "not_setted"
+
+  BOBSLED_CLIENT_ID: "not_setted"
+  ACCOUNTS_AUTH0_CLIENT_SECRET: "not_setted"
+  ACCOUNTS_SENDGRID_API_KEY: "not_setted"
+
+  BOBSLED_ACCOUNT_EMAIL: "not_setted"
+  ACCOUNTS_BACKOFFICE_AUTH_PASSWORD: "not_setted"
+
+  ACCOUNTS_ASK_NICELY_API_SECRET: "not_setted"
+  ACCOUNTS_PARTNER_CONNECT_SNOWFLAKE_PARTNER_ID: "not_setted"
+
