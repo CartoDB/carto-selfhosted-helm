@@ -24,6 +24,7 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/router/configmap.yaml") . | sha256sum }}
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.router.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.router.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
