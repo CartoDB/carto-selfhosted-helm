@@ -8,6 +8,8 @@ Return common collectors for preflights and support-bundle
       namespace: {{ .Release.Namespace | quote }}
       timeout: 180s
       podSpec:
+        annotations:
+          cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
         {{- end }}
