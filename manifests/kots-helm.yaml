@@ -24,8 +24,6 @@ spec:
         - name: '{{repl ImagePullSecretName }}'
       enabled: true
       platformDistribution: '{{repl ConfigOption "platformDistribution" }}'
-      images:
-        replicated-sdk: '{{repl LocalImageName "docker.io/replicated/replicated-sdk:v1.0.0-beta.21" }}'
 
     # License
     ## Carto Secrets
@@ -663,8 +661,8 @@ spec:
           create: false
           name: '{{repl ConfigOption "k8sWorkloadIdentityServiceAccountName" }}'
 
-    # Airgap mode AND Local Registry
-    - when: '{{repl and (IsAirgap) (HasLocalRegistry) }}'
+    # Local Registry
+    - when: '{{repl and (HasLocalRegistry) }}'
       recursiveMerge: true
       values:
         global:
@@ -674,6 +672,8 @@ spec:
         replicated:
           imagePullSecrets:
             - name: '{{repl ImagePullSecretName }}'
+          images:
+            replicated-sdk: '{{repl LocalImageName "docker.io/replicated/replicated-sdk:v1.0.0-beta.21" }}'
 
     # THIS SHOULD ALWAYS BE THE LAST OPTIONAL VALUE!!!!
     ## Advanced Tuning
