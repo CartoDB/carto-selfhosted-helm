@@ -215,12 +215,12 @@ spec:
   ## Values from Advanced Configuration
   optionalValues:
     ## TEMPORAL PATCHED IMAGED
-    - when: 'true'
-      recursiveMerge: true
-      values:
-        tenantRequirementsChecker:
-          image:
-            tag: 'feature_sc_402060_add_a_preflight_check_to_ensure_that_the'
+    # - when: 'true'
+    #   recursiveMerge: true
+    #   values:
+    #     tenantRequirementsChecker:
+    #       image:
+    #         tag: 'feature_sc_402060_add_a_preflight_check_to_ensure_that_the'
 
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
