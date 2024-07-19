@@ -394,7 +394,9 @@ spec:
             repl{{ ConfigOptionData "externalHttpsProxySslCa" | nindent 12 }}
         replicated:
           extraEnv:
-          - name: repl{{ if ConfigOptionEquals "externalProxyType" "http"}}HTTP_PROXYrepl{{ else }}HTTPS_PROXYrepl{{ end }}
+          - name: HTTP_PROXY
+            value: '{{repl ConfigOption "externalProxyHost" }}'
+          - name: HTTPS_PROXY
             value: '{{repl ConfigOption "externalProxyHost" }}'
           - name: NO_PROXY
             value: '{{repl ConfigOption "externalProxyExcludedDomains" }}'
