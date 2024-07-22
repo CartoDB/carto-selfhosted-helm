@@ -218,9 +218,9 @@ spec:
     # - when: 'true'
     #   recursiveMerge: true
     #   values:
-    #     tenantRequirementsChecker:
+    #     router:
     #       image:
-    #         tag: 'feature_sc_402060_add_a_preflight_check_to_ensure_that_the'
+    #         tag: "feature_sc_415629_add_ingress_debug_mode_in_carto_self_hosted"
 
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
@@ -391,7 +391,9 @@ spec:
             repl{{ ConfigOptionData "externalHttpsProxySslCa" | nindent 12 }}
         replicated:
           extraEnv:
-          - name: repl{{ if ConfigOptionEquals "externalProxyType" "http"}}HTTP_PROXYrepl{{ else }}HTTPS_PROXYrepl{{ end }}
+          - name: HTTP_PROXY
+            value: '{{repl ConfigOption "externalProxyHost" }}'
+          - name: HTTPS_PROXY
             value: '{{repl ConfigOption "externalProxyHost" }}'
           - name: NO_PROXY
             value: '{{repl ConfigOption "externalProxyExcludedDomains" }}'
