@@ -31,6 +31,7 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/workspace-subscriber/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/workspace-subscriber/secret.yaml") . | sha256sum }}
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.workspaceSubscriber.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.podAnnotations "context" $) | nindent 8 }}
         {{- end }}

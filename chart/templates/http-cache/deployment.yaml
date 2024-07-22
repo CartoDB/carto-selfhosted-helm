@@ -25,6 +25,7 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/http-cache/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/http-cache/secret.yaml") . | sha256sum }}
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.httpCache.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
