@@ -6,7 +6,7 @@ appConfigValues:
   ## @param appConfigValues.storageProvider Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob`
   storageProvider: "gcp"
   ## @param appConfigValues.httpCacheEnabled Enable the internal httpCache
-  httpCacheEnabled: "true"
+  httpCacheEnabled: true
   ## @param appConfigValues.importAwsRoleArn ARN Role to be used to import files from the bucket
   importAwsRoleArn: ""
   ## @param appConfigValues.exportAwsRoleArn ARN Role to be used to export files from the app
@@ -14,7 +14,7 @@ appConfigValues:
   ## @param appConfigValues.workspaceImportsBucket Bucket to be used to store metadata of the workspace
   workspaceImportsBucket: ""
   ## @param appConfigValues.workspaceImportsPublic Indicate if the imports could be accessed publicly
-  workspaceImportsPublic: "true"
+  workspaceImportsPublic: true
   ## @param appConfigValues.workspaceThumbnailsBucket Bucket to be used to store the thumbnails generated in the app
   workspaceThumbnailsBucket: ""
   ## @param appConfigValues.azureStorageAccount Azure storage account to be used in the app if Azure Blob is the storage provider
@@ -26,7 +26,7 @@ appConfigValues:
   ## @param appConfigValues.thumbnailsBucketExternalURL Bucket URL to be used to store the thumbnails generated in the app
   thumbnailsBucketExternalURL: ""
   ## @param appConfigValues.workspaceThumbnailsPublic Indicate if the thumbnails could be accessed publicly
-  workspaceThumbnailsPublic: "true"
+  workspaceThumbnailsPublic: true
   ## @param appConfigValues.googleCloudStorageProjectId If the bucket is GCP, the ProjectId to be used
   googleCloudStorageProjectId: ""
   ## @param appConfigValues.awsS3Region If the bucket is S3, the region to be used
@@ -34,7 +34,7 @@ appConfigValues:
   ## @param appConfigValues.bigqueryOauth2ClientId The Client ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key.
   bigqueryOauth2ClientId: ""
   ## @param appConfigValues.enableTrackJS By default, TrackJS will gather information about end-user browser, you can disable it setting this parameter to false
-  enableTrackJS: "true"
+  enableTrackJS: true
   ## @param appConfigValues.ssoOrganizationId SSO organization ID provided by CARTO used to configure the SSO in the app.
   ssoOrganizationId: ""
   defaultAtLocation:
@@ -87,7 +87,7 @@ replicated:
 ## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
 cartoConfigValues:
   ## @param cartoConfigValues.enableErrorResponseStackTrace Enable stack traces in the container responses
-  enableErrorResponseStackTrace: "false"
+  enableErrorResponseStackTrace: false
   ## @param cartoConfigValues.cartoAccApiDomain Domain of the Account API of Carto.
   cartoAccApiDomain: ""
   ## @param cartoConfigValues.cartoAccGcpProjectId GCP project ID of the Carto Accounts.
@@ -107,13 +107,13 @@ cartoConfigValues:
   ## @param cartoConfigValues.launchDarklyClientSideId LaunchDarkly ClientSideId (by www) used to enable/disable features.
   launchDarklyClientSideId: ""
   ## @param cartoConfigValues.cartoDataWarehouseEnabled Enable the Carto Data Warehouse for the self-hosted.
-  cartoDataWarehouseEnabled: "false"
+  cartoDataWarehouseEnabled: false
   ## @param cartoConfigValues.dataObservatoryProjectId GCP project ID of the Carto Data Observatory.
   dataObservatoryProjectId: ""
   ## @param cartoConfigValues.ingressTestingMode Enable router testing mode for the application. This will deploy the router in testing mode serving a simple page to check that it works without routing traffic to other components.
-  ingressTestingMode: "false"
+  ingressTestingMode: false
   ## @param cartoConfigValues.onlyRunRouter Enable only the router component in the installation. This will just deploy the router component. Useful to check the ingress layer together with the option `cartoConfigValues.ingressTestingMode`.
-  onlyRunRouter: "false"
+  onlyRunRouter: false
 
 ## @section App secret
 ## Global secrets to be edited by the client
@@ -1209,7 +1209,7 @@ importWorker:
     enabled: false
   ## @param importWorker.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
-  terminationGracePeriodSeconds: 3600
+  terminationGracePeriodSeconds: 600
   ## @param importWorker.existingConfigMap The name of an existing ConfigMap with your custom configuration for import-worker
   ##
   existingConfigMap: ""
