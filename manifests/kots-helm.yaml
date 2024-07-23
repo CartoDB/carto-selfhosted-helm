@@ -7,24 +7,21 @@ metadata:
 spec:
   chart:
     name: carto
-    chartVersion: 1.110.1
+    chartVersion: 1.117.7
   builder:
     replicated:
       enabled: true
     internalPostgresql:
       enabled: false
-
   values:
     global:
       imagePullSecrets:
         - '{{repl ImagePullSecretName }}'
-
     replicated:
       imagePullSecrets:
         - name: '{{repl ImagePullSecretName }}'
       enabled: true
       platformDistribution: '{{repl ConfigOption "platformDistribution" }}'
-
     # License
     ## Carto Secrets
     cartoSecrets:
@@ -58,7 +55,6 @@ spec:
       dataObservatoryProjectId: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "dataObservatoryProjectId" "" | Base64Decode }}'
       ingressTestingMode: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
       onlyRunRouter: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
-
     # Customizations
     ## App Secrets
     appSecrets:
@@ -74,7 +70,6 @@ spec:
         value: '{{repl ConfigOption "storageBucketsAzureAccessKey" }}'
       azureStorageAccount:
         value: '{{repl ConfigOption "storageBucketsAzureStorageAccount"}}'
-
     ## App Config Values
     appConfigValues:
       # domain
@@ -87,10 +82,8 @@ spec:
       workspaceThumbnailsPublic: repl{{ if ConfigOptionEquals "storageBucketsThumbnailsIsPublic" "1"}}truerepl{{ else }}falserepl{{ end }}
       googleCloudStorageProjectId: '{{repl ConfigOption "storageBucketsGcpProjectId" }}'
       awsS3Region: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
-
       # other config
       bigqueryOauth2ClientId: '{{repl ConfigOption "bigqueryOauthClientID" }}'
-
     ## Postgresql
     internalPostgresql:
       # Disable the internal Postgres
@@ -104,7 +97,6 @@ spec:
       sslEnabled: repl{{ if ConfigOptionEquals "metadataDBSSLMode" "1"}}truerepl{{ else }}falserepl{{ end }}
       sslCA: |
         repl{{- ConfigOptionData "metadataDBSSLCertificate" | nindent 8 }}
-
     ## Redis
     internalRedis:
       enabled: repl{{ if ConfigOptionEquals "externalRedisEnabled" "0"}}truerepl{{ else }}falserepl{{ end }}
@@ -117,14 +109,12 @@ spec:
       tlsEnabled: repl{{ if ConfigOptionEquals "externalRedisTLSBehaviour" "tls_enabled"}}truerepl{{ else }}falserepl{{ end }}
       tlsCA: |
         repl{{- ConfigOptionData "externalRedisTLSCertificate" | nindent 8 }}
-
     ## TLS Certs
     # FIXME: Deprecated in favor of router.tlsCertificates and gateway.tlsCertificates
     # Disable legacy tlsCerts
     tlsCerts:
       httpsEnabled: repl{{ if ConfigOptionEquals "cartoRouterHTTPSEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
       autoGenerate: false
-
     gateway:
       enabled: repl{{ if ConfigOptionEquals "kubernetesGatewayEnabled" "true"}}truerepl{{ else }}falserepl{{ end }}
       gatewayClassName: '{{repl fromJson (ConfigOption "loadBalancerSupportedKind") | dig "gatewayClassName" "" }}'
@@ -139,76 +129,58 @@ spec:
       staticIP:
         enabled: repl{{ if ConfigOptionEquals "accessToCartoGCPStaticIPName" ""}}falserepl{{ else }}truerepl{{ end }}
         value: '{{repl ConfigOption "accessToCartoGCPStaticIPName" }}'
-        
     accountsWww:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     importApi:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     importWorker:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     ldsApi:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     mapsApi:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     sqlWorker:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     router:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     httpCache:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     notifier:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     cdnInvalidatorSub:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     workspaceApi:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     workspaceSubscriber:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     workspaceWww:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     workspaceMigrations:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     tenantRequirementsChecker:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     routerMetrics:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
     upgradeCheck:
       enabled: false
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
@@ -227,7 +199,6 @@ spec:
         appSecrets:
           googleCloudStorageServiceAccountKey:
             value: '{{repl ConfigOption "cartoPlatformGoogleSA" }}'
-
     ## LDS configuration
     ### LDS Geocoding, Isoline and Routing providers
     - when: '{{repl not (empty (ConfigOption "ldsGeocodingProvider")) }}'
@@ -245,7 +216,6 @@ spec:
       values:
         appConfigValues:
           ldsRoutingProvider: '{{repl ConfigOption "ldsRoutingProvider" }}'
-
     ### LDS providers credentials
     - when: '{{repl not (empty (ConfigOption "ldsTomtomApiKey")) }}'
       recursiveMerge: true
@@ -283,7 +253,6 @@ spec:
         appSecrets:
           ldsGoogleApiKey:
             value: '{{repl ConfigOption "ldsGoogleApiKey" }}'
-
     ## BigQuery exports
     - when: '{{repl not (empty (ConfigOption "storageBucketsExportGcp"))}}'
       recursiveMerge: true
@@ -314,7 +283,6 @@ spec:
           exportAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
           awsExportBucket: '{{repl ConfigOption "storageBucketsExportAws" }}'
           awsExportBucketRegion: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
-
     ## ---- Router ----
     ## Terminate TLS at router
     ## Access to Carto
@@ -326,7 +294,6 @@ spec:
           tlsCertificates:
             certificateValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSCertFile" }}'
             privateKeyValueBase64: '{{repl ConfigOption "accessToCartoCustomTLSKeyFile" }}'
-
     ## Open the ports on all nodes
     - when: '{{repl ConfigOptionEquals "isEmbeddedCluster" "true" }}'
       recursiveMerge: true
@@ -337,7 +304,6 @@ spec:
             nodePorts:
               http: 80
               https: 443
-
     ## EKS
     - when: '{{repl and (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") (ConfigOptionEquals "platformDistribution" "eks") }}'
       recursiveMerge: true
@@ -353,7 +319,6 @@ spec:
               service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
             ports:
               httpsTargetPort: http
-
     # Assign static ip if specified
     - when: '{{repl and (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") (ConfigOptionEquals "platformDistribution" "eks") (not (empty (ConfigOption "accessToCartoAWSStaticIPName"))) }}'
       recursiveMerge: true
@@ -362,10 +327,10 @@ spec:
           service:
             annotations:
               service.beta.kubernetes.io/aws-load-balancer-eip-allocations: '{{repl ConfigOption "accessToCartoAWSStaticIPName" }}'
-    ## ---- End router ----
-
     # Workload Identity Connection
     - when: '{{repl ConfigOptionEquals "enableBigqueryWorkloadIdentityConnection" "1" }}'
+      ## ---- End router ----
+
       recursiveMerge: true
       values:
         appConfigValues:
@@ -375,7 +340,6 @@ spec:
             billingProject: '{{repl ConfigOption "bigqueryWorkloadIdentityConnectionBillingProject" }}'
             serviceAccountEmail: '{{repl ConfigOption "googleWorkloadIdentityEmail" }}'
             connectionOwner: '{{repl ConfigOption "bigqueryWorkloadIdentityConnectionOwnerId" }}'
-
     # Proxy
     - when: '{{repl and (ConfigOptionEquals "externalProxyEnabled" "1") (not (empty HTTPProxy)) }}'
       recursiveMerge: true
@@ -389,19 +353,17 @@ spec:
             repl{{ ConfigOptionData "externalHttpsProxySslCa" | nindent 12 }}
         replicated:
           extraEnv:
-          - name: HTTP_PROXY
-            value: '{{repl ConfigOption "externalProxyHost" }}'
-          - name: HTTPS_PROXY
-            value: '{{repl ConfigOption "externalProxyHost" }}'
-          - name: NO_PROXY
-            value: '{{repl ConfigOption "externalProxyExcludedDomains" }}'
-
+            - name: HTTP_PROXY
+              value: '{{repl ConfigOption "externalProxyHost" }}'
+            - name: HTTPS_PROXY
+              value: '{{repl ConfigOption "externalProxyHost" }}'
+            - name: NO_PROXY
+              value: '{{repl ConfigOption "externalProxyExcludedDomains" }}'
     - when: '{{repl ConfigOptionEquals "ssoEnabled" "1"}}'
       recursiveMerge: true
       values:
         appConfigValues:
           ssoOrganizationId: '{{repl ConfigOption "ssoOrganizationId" }}'
-
     # High Availability Enable
     - when: '{{repl ConfigOptionEquals "enablePlatformHighAvailability" "1" }}'
       recursiveMerge: true
@@ -423,8 +385,7 @@ spec:
             enabled: true
             minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
             maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
-
-        ldsApi: 
+        ldsApi:
           autoscaling: *highAvailabilityEnabled
           affinity:
             podAntiAffinity:
@@ -438,7 +399,6 @@ spec:
                           values:
                             - lds-api
                     topologyKey: "kubernetes.io/hostname"
-
         mapsApi:
           autoscaling: *highAvailabilityEnabled
           affinity:
@@ -453,8 +413,7 @@ spec:
                           values:
                             - maps-api
                     topologyKey: "kubernetes.io/hostname"
-
-        router: 
+        router:
           autoscaling: *highAvailabilityEnabled
           affinity:
             podAntiAffinity:
@@ -468,8 +427,7 @@ spec:
                           values:
                             - router
                     topologyKey: "kubernetes.io/hostname"
-
-        workspaceApi: 
+        workspaceApi:
           autoscaling: *highAvailabilityEnabled
           affinity:
             podAntiAffinity:
@@ -483,8 +441,7 @@ spec:
                           values:
                             - workspace-api
                     topologyKey: "kubernetes.io/hostname"
-
-        workspaceWww: 
+        workspaceWww:
           autoscaling: *highAvailabilityEnabled
           affinity:
             podAntiAffinity:
@@ -498,8 +455,7 @@ spec:
                           values:
                             - workspace-www
                     topologyKey: "kubernetes.io/hostname"
-
-        accountsWww: 
+        accountsWww:
           autoscaling: *highAvailabilityEnabled
           affinity:
             podAntiAffinity:
@@ -513,8 +469,7 @@ spec:
                           values:
                             - accounts-www
                     topologyKey: "kubernetes.io/hostname"
-
-        httpCache: 
+        httpCache:
           # Note that we calculate the varnish_size as 75% of the container requests.memory
           # We know that the limit should be the double value that the varnish_size
           # https://varnish-cache.org/docs/6.0/users-guide/sizing-your-cache.html
@@ -529,7 +484,6 @@ spec:
             requests:
               memory: '{{repl (ConfigOption "highAvailabilityCacheMemoryRequest") }}Mi'
               cpu: '{{repl (ConfigOption "highAvailabilityCacheCPURequest") }}m'
-
     ## Custom AT location
     - when: '{{repl not (empty (ConfigOption "defaultATLocationBigQuery")) }}'
       recursiveMerge: true
@@ -555,7 +509,6 @@ spec:
         appConfigValues:
           defaultAtLocation:
             postgres: '{{repl ConfigOption "defaultATLocationPostgres" }}'
-
     ## Custom DO location
     - when: '{{repl not (empty (ConfigOption "defaultDOLocationBigQuery")) }}'
       recursiveMerge: true
@@ -581,7 +534,6 @@ spec:
         appConfigValues:
           defaultDoLocation:
             postgres: '{{repl ConfigOption "defaultDOLocationPostgres" }}'
-
     # Debug mode
     - when: '{{repl ConfigOptionEquals "enablePlatformDebugMode" "1" }}'
       recursiveMerge: true
@@ -590,37 +542,30 @@ spec:
           extraEnvVars:
             - name: CARTO_TRACING_MODE
               value: "local"
-
         importWorker:
           extraEnvVars:
             - name: CARTO_TRACING_MODE
               value: "local"
-
         ldsApi:
           extraEnvVars:
             - name: CARTO_TRACING_MODE
               value: "local"
-
         mapsApi:
           extraEnvVars:
             - name: CARTO_TRACING_MODE
               value: "local"
-
         sqlWorker:
           extraEnvVars:
             - name: CARTO_TRACING_MODE
               value: "local"
-
         workspaceApi:
           extraEnvVars:
             - name: CARTO_TRACING_MODE
               value: "local"
-
         workspaceSubscriber:
           extraEnvVars:
             - name: CARTO_TRACING_MODE
               value: "local"
-
     ## Openshift
     - when: '{{repl ConfigOptionEquals "platformDistribution" "openShift" }}'
       recursiveMerge: true
@@ -649,7 +594,6 @@ spec:
         tenantRequirementsChecker: *customSecurityContext
         internalPostgresql: *customSecurityContext
         upgradeCheck: *customSecurityContext
-
     # GKE Workload Identity
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "1" }}'
       recursiveMerge: true
@@ -659,7 +603,6 @@ spec:
           # When enabling gke workload identity, the k8s SA should be created by the customer to be able to run preflights
           create: false
           name: '{{repl ConfigOption "k8sWorkloadIdentityServiceAccountName" }}'
-
     # Local Registry
     - when: '{{repl (HasLocalRegistry) }}'
       recursiveMerge: true
@@ -673,7 +616,6 @@ spec:
             - name: '{{repl ImagePullSecretName }}'
           images:
             replicated-sdk: '{{repl LocalImageName "docker.io/replicated/replicated-sdk:v1.0.0-beta.21" }}'
-
     # THIS SHOULD ALWAYS BE THE LAST OPTIONAL VALUE!!!!
     ## Advanced Tuning
     - when: '{{repl not (empty (ConfigOption "platformAdvancedTuningValues")) }}'
