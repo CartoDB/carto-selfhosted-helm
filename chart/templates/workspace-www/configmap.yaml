@@ -37,7 +37,6 @@ data:
   REACT_APP_WORKSPACE_WWW_ENABLE_TRACKJS: {{ .Values.appConfigValues.enableTrackJS | quote }}
   REACT_APP_WORKSPACE_WWW_ENABLE_EXPORTS: "false"
   REACT_APP_WORKSPACE_WWW_ENABLE_GENAI: "false"
-  REACT_APP_ASKNICELY_MIN_HOURS_ACCOUNT_OLD_ENOUGH: "1920"
   {{- if .Values.appConfigValues.ssoOrganizationId }}
   REACT_APP_ORGANIZATION_ID: {{ .Values.appConfigValues.ssoOrganizationId }}
   {{- end }}
