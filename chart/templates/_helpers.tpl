@@ -45,6 +45,7 @@ Association between env secret and path of the secret in values.yaml
 */}}
 {{- define "carto._utils.secretAssociation" -}}
 BIGQUERY_OAUTH2_CLIENT_SECRET: appSecrets.bigqueryOauth2ClientSecret
+CARTO_SELFHOSTED_INSTANCE_ID: cartoSecrets.instanceId
 ENCRYPTION_SECRET_KEY: cartoSecrets.encryptionSecretKey
 IMPORT_ACCESSKEYID: appSecrets.awsAccessKeyId
 IMPORT_AWS_ACCESS_KEY_ID: appSecrets.importAwsAccessKeyId
@@ -55,6 +56,7 @@ IMPORT_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
 GITBOOK_API_TOKEN: cartoSecrets.gitbookApiToken
 EXPORTS_S3_BUCKET_ACCESS_KEY_ID: appSecrets.exportAwsAccessKeyId
 EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY: appSecrets.exportAwsSecretAccessKey
+GOOGLE_MAPS_API_KEY: appSecrets.googleMapsApiKey
 LDS_JWT_SECRET: cartoSecrets.jwtApiSecret
 LDS_PROVIDER_HERE_API_KEY: appSecrets.ldsHereApiKey
 LDS_PROVIDER_MAPBOX_API_KEY: appSecrets.ldsMapboxApiKey
@@ -64,7 +66,7 @@ LDS_PROVIDER_TRAVELTIME_API_KEY: appSecrets.ldsTravelTimeApiKey
 LDS_PROVIDER_TRAVELTIME_APP_ID: appSecrets.ldsTravelTimeAppId
 LAUNCHDARKLY_SDK_KEY: cartoSecrets.launchDarklySdkKey
 MAPS_API_V3_JWT_SECRET: cartoSecrets.jwtApiSecret
-GOOGLE_MAPS_API_KEY: appSecrets.googleMapsApiKey
+REACT_APP_VITALLY_TOKEN: cartoSecrets.vitallyToken
 VARNISH_DEBUG_SECRET: cartoSecrets.varnishDebugSecret
 VARNISH_PURGE_SECRET: cartoSecrets.varnishPurgeSecret
 WORKSPACE_IMPORTS_ACCESSKEYID: appSecrets.awsAccessKeyId
@@ -74,7 +76,6 @@ WORKSPACE_JWT_SECRET: cartoSecrets.jwtApiSecret
 WORKSPACE_THUMBNAILS_ACCESSKEYID: appSecrets.awsAccessKeyId
 WORKSPACE_THUMBNAILS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
-CARTO_SELFHOSTED_INSTANCE_ID: cartoSecrets.instanceId
 {{- end -}}
 
 {{/*
