@@ -137,6 +137,11 @@ Return common collectors for preflights and support-bundle
             securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
             resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
             env:
+            {{- $featureFlags := .Files.Get "templates/feature-flags.yaml" | fromYaml }}
+            {{- range $index, $flag := $featureFlags.featureFlags }}
+              - name: FEATURE_FLAG_{{ $index }}
+                value: {{ $flag | quote }}
+            {{- end }}
               - name: PUBSUB_PROJECT_ID
                 value: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
               - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_TOPIC
