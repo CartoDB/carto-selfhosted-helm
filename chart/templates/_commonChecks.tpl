@@ -137,7 +137,7 @@ Return common collectors for preflights and support-bundle
             securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
             resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
             env:
-            {{- $featureFlags := .Files.Get "templates/feature-flags.yaml" | fromYaml }}
+            {{- $featureFlags := .Files.Get "feature-flags.yaml" | fromYaml }}
             {{- range $index, $flag := $featureFlags.featureFlags }}
               - name: FEATURE_FLAG_{{ $index }}
                 value: {{ $flag | quote }}
