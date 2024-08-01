@@ -4677,6 +4677,7 @@ tenantRequirementsChecker:
 ## Internal Redis &trade; chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/redis/values.yaml
 ## @param internalRedis.enabled Switch to enable or disable the Redis&trade; helm
+## @param internalRedis.image.tag Image tag used by Redis&trade; helm
 ## @param internalRedis.tlsEnabled Whether or not connect to Redis via TLS
 ## @param internalRedis.auth.enabled Switch to enable or disable authentication
 ## @param internalRedis.auth.password Redis&trade; password
