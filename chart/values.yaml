@@ -4687,6 +4687,8 @@ tenantRequirementsChecker:
 ##
 internalRedis:
   enabled: true
+  image:
+    tag: 6.2.14-debian-12-r23
   tlsEnabled: false
   ## @param internalRedis.nameOverride String to partially override common.names.fullname template (will maintain the release name)
   ##
