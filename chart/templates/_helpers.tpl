@@ -1401,11 +1401,10 @@ Return the absolute path where the proxy CA cert will be mounted
 {{- printf "%s/%s" (include "carto.proxy.configMapMountDir" .) (include "carto.proxy.configMapMountFilename" .) -}}
 {{- end -}}
 
-
 {{/*
 Get the feature flags config map name
 */}}
-{{- define "carto.featureFlags.configmapName" -}}
+{{- define "carto.featureFlags.configMapName" -}}
 {{- printf "%s-%s" .Release.Name "featureflags" -}}
 {{- end -}}
 
