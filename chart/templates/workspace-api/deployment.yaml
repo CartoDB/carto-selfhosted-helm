@@ -334,7 +334,7 @@ spec:
         {{- end }}
         - name: feature-flags
           configMap:
-            name: {{ template "carto.featureFlags.configmapName" . }}
+            name: {{ template "carto.featureFlags.configMapName" . }}
         {{- if .Values.workspaceApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
