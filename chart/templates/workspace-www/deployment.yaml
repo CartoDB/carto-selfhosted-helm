@@ -164,6 +164,10 @@ spec:
               mountPath: /tmp
             - name: nginx-shared-snippets
               mountPath: /etc/nginx/conf.d/shared-snippets
+            - name: feature-flags
+              mountPath: {{ include "carto.featureFlags.configMapMountDir" . }}
+              subPath: feature-flags.yaml
+              readOnly: true
           {{- if .Values.workspaceWww.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -179,6 +183,12 @@ spec:
             medium: Memory
         - name: tmp
           emptyDir: {}
+        - name: feature-flags
+          configMap:
+            name: {{ template "carto.featureFlags.configMapName" . }}
+            items:
+              - key: feature-flags.yaml
+                path: feature-flags.yaml
       {{- if .Values.workspaceWww.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraVolumes "context" $) | nindent 8 }}
       {{- end }}
