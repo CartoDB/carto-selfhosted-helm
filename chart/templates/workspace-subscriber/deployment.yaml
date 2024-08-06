@@ -181,6 +181,10 @@ spec:
               mountPath: {{ include "carto.proxy.configMapMountDir" . }}
               readOnly: true
             {{- end }}
+            - name: feature-flags
+              mountPath: {{ include "carto.featureFlags.configMapMountDir" . }}
+              subPath: feature-flags.yaml
+              readOnly: true
           {{- if .Values.workspaceSubscriber.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -209,6 +213,12 @@ spec:
           configMap:
             name: {{ include "carto.proxy.configMapName" . }}
         {{- end }}
+        - name: feature-flags
+          configMap:
+            name: {{ template "carto.featureFlags.configMapName" . }}
+            items:
+              - key: feature-flags.yaml
+                path: feature-flags.yaml
         {{- if .Values.workspaceSubscriber.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
