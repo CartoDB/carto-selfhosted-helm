@@ -192,7 +192,7 @@ spec:
       values:
         workspaceWww:
           image:
-            registry: gcr.io/carto-artifacts
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
             tag: "feature_sc_431460_inject_the_default_value_and_the_overrides"
 
     ## Specify service account if workload identity is disabled
