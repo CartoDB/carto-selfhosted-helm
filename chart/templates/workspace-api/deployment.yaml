@@ -295,6 +295,7 @@ spec:
             {{- end }}
             - name: feature-flags
               mountPath: {{ include "carto.featureFlags.configMapMountDir" . }}
+              subPath: feature-flags.yaml
               readOnly: true
           {{- if .Values.workspaceApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraVolumeMounts "context" $) | nindent 12 }}
@@ -335,7 +336,9 @@ spec:
         - name: feature-flags
           configMap:
             name: {{ template "carto.featureFlags.configMapName" . }}
-            subPath: feature-flags
+            items:
+              - key: feature-flags.yaml
+                path: feature-flags.yaml
         {{- if .Values.workspaceApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
