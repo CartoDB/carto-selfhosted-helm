@@ -1418,9 +1418,22 @@ Return the directory where the feature flags config file will be mounted
 {{/*
 Return the list of available feature flags as a comma-separated string
 */}}
-{{- define "carto.featureFlags.featureFlagNames" -}}
+{{- define "carto.featureFlags.featureFlags" -}}
 {{- $flags := .Files.Get "feature-flags.yaml" | fromYaml -}}
 {{- $featureFlags := $flags.featureFlags -}}
+{{- $ffNames := list -}}
+{{- range $featureFlags -}}
+  {{- $ffNames = append $ffNames .name -}}
+{{- end -}}
+{{- $nameList := join "," $ffNames -}}
+{{- $nameList -}}
+{{- end -}}
+
+{{/*
+Return the list of overridden feature flags as a comma-separated string
+*/}}
+{{- define "carto.featureFlags.overriddenFeatureFlags" -}}
+{{- $featureFlags := .Values.cartoConfigValues.featureFlagsOverrides | fromYaml -}}
 {{- $ffNames := list -}}
 {{- range $featureFlags -}}
   {{- $ffNames = append $ffNames .name -}}

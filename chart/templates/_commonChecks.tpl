@@ -138,7 +138,9 @@ Return common collectors for preflights and support-bundle
             resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
             env:
               - name: AVAILABLE_FEATURE_FLAGS
-                value: {{ include "carto.featureFlags.featureFlagNames" . | quote }}
+                value: {{ include "carto.featureFlags.featureFlags" . | quote }}
+              - name: OVERRIDDEN_FEATURE_FLAGS
+                value: {{ include "carto.featureFlags.overriddenFeatureFlags" . | quote }}
               - name: PUBSUB_PROJECT_ID
                 value: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
               - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_TOPIC
