@@ -114,6 +114,8 @@ cartoConfigValues:
   ingressTestingMode: false
   ## @param cartoConfigValues.onlyRunRouter Enable only the router component in the installation. This will just deploy the router component. Useful to check the ingress layer together with the option `cartoConfigValues.ingressTestingMode`.
   onlyRunRouter: false
+  ## @param cartoConfigValues.featureFlagsOverrides YAML configuration for overriding feature flags.
+  featureFlagsOverrides: []
 
 ## @section App secret
 ## Global secrets to be edited by the client
