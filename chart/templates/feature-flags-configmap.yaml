@@ -12,8 +12,8 @@ metadata:
   {{- end }}
 data:
   feature-flags.yaml: |-
-{{ .Files.Get "feature-flags.yaml" | indent 4 }}
 {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
     featureFlagsOverrides:
 {{ .Values.cartoConfigValues.featureFlagsOverrides | toYaml | indent 6 }}
 {{- end }}
+{{ .Files.Get "feature-flags.yaml" | indent 4 }}
