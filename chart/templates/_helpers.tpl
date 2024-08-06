@@ -1433,7 +1433,7 @@ Return the list of available feature flags as a comma-separated string
 Return the list of overridden feature flags as a comma-separated string
 */}}
 {{- define "carto.featureFlags.overriddenFeatureFlags" -}}
-{{- $featureFlags := .Values.cartoConfigValues.featureFlagsOverrides | fromYaml -}}
+{{- $featureFlags := .Values.cartoConfigValues.featureFlagsOverrides -}}
 {{- $ffNames := list -}}
 {{- range $featureFlags -}}
   {{- $ffNames = append $ffNames .name -}}
