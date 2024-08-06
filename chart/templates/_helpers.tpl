@@ -1414,3 +1414,13 @@ Return the directory where the feature flags config file will be mounted
 {{- define "carto.featureFlags.configMapMountDir" -}}
 {{- print "/tmp/feature-flags.yaml" -}}
 {{- end -}}
+
+{{/*
+Return the list of available feature flags as a comma-separated string
+*/}}
+{{- define "carto.featureFlags.featureFlagNames" -}}
+{{- $flags := .Files.Get "feature-flags.yaml" | fromYaml -}}
+{{- $names := pluck "name" $flags.featureFlags -}}
+{{- $nameList := join "," $names -}}
+{{- $nameList -}}
+{{- end -}}
