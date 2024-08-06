@@ -187,12 +187,13 @@ spec:
   ## Values from Advanced Configuration
   optionalValues:
     ## TEMPORAL PATCHED IMAGED
-    # - when: 'true'
-    #   recursiveMerge: true
-    #   values:
-    #     router:
-    #       image:
-    #         tag: "feature_sc_415629_add_ingress_debug_mode_in_carto_self_hosted"
+    - when: 'true'
+      recursiveMerge: true
+      values:
+        workspaceWww:
+          image:
+            registry: gcr.io/carto-artifacts
+            tag: "feature_sc_431460_inject_the_default_value_and_the_overrides"
 
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
