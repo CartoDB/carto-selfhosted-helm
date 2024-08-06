@@ -1421,7 +1421,10 @@ Return the list of available feature flags as a comma-separated string
 {{- define "carto.featureFlags.featureFlagNames" -}}
 {{- $flags := .Files.Get "feature-flags.yaml" | fromYaml -}}
 {{- $featureFlags := $flags.featureFlags -}}
-{{- $names := pluck "name" $featureFlags -}}
-{{- $nameList := join "," $names -}}
+{{- $ffNames := list -}}
+{{- range $featureFlags -}}
+  {{- $ffNames = append $ffNames .name -}}
+{{- end -}}
+{{- $nameList := join "," $ffNames -}}
 {{- $nameList -}}
 {{- end -}}
