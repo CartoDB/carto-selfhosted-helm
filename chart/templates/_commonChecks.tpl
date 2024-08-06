@@ -139,7 +139,7 @@ Return common collectors for preflights and support-bundle
             env:
               - name: AVAILABLE_FEATURE_FLAGS
                 value: {{ include "carto.featureFlags.featureFlags" . | quote }}
-              {{- if .Values.cartoConfigValues.overriddenFeatureFlags }}
+              {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
               - name: OVERRIDDEN_FEATURE_FLAGS
                 value: {{ include "carto.featureFlags.overriddenFeatureFlags" . | quote }}
               {{- end }}
