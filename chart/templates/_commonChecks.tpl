@@ -139,8 +139,10 @@ Return common collectors for preflights and support-bundle
             env:
               - name: AVAILABLE_FEATURE_FLAGS
                 value: {{ include "carto.featureFlags.featureFlags" . | quote }}
+              {{- if .Values.cartoConfigValues.overriddenFeatureFlags }}
               - name: OVERRIDDEN_FEATURE_FLAGS
                 value: {{ include "carto.featureFlags.overriddenFeatureFlags" . | quote }}
+              {{- end }}
               - name: PUBSUB_PROJECT_ID
                 value: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
               - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_TOPIC
