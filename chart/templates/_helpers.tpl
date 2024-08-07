@@ -1269,6 +1269,23 @@ Get the Redis credentials secret.
 {{- end -}}
 
 {{/*
+Get the Redis secret template reference.
+*/}}
+{{- define "carto.redis.secretPath" -}}
+{{- if and (.Values.internalRedis.enabled) (not .Values.internalRedis.existingSecret) -}}
+    {{- printf "carto/charts/internalRedis/templates/secret.yaml" -}}
+{{- else if and (.Values.internalRedis.enabled) (.Values.internalRedis.existingSecret) -}}
+    {{- printf "%s" .Values.internalRedis.existingSecret -}}
+{{- else }}
+    {{- if .Values.externalRedis.existingSecret -}}
+        {{- printf "%s" .Values.externalRedis.existingSecret -}}
+    {{- else -}}
+        {{ printf "%s-%s" .Release.Name "externalredis" }}
+    {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Get the Redis config map name
 */}}
 {{- define "carto.redis.configMapName" -}}
