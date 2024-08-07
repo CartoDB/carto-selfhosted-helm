@@ -878,7 +878,7 @@ importApi:
   ## @param importApi.startupProbe.successThreshold Success threshold for startupProbe
   ##
   startupProbe:
-    enabled: false
+    enabled: true
     initialDelaySeconds: 10
     periodSeconds: 30
     timeoutSeconds: 5
@@ -1747,7 +1747,7 @@ mapsApi:
   ## @param mapsApi.startupProbe.successThreshold Success threshold for startupProbe
   ##
   startupProbe:
-    enabled: false
+    enabled: true
     initialDelaySeconds: 10
     periodSeconds: 30
     timeoutSeconds: 5
@@ -3744,7 +3744,7 @@ workspaceApi:
   ## @param workspaceApi.startupProbe.successThreshold Success threshold for startupProbe
   ##
   startupProbe:
-    enabled: false
+    enabled: true
     initialDelaySeconds: 10
     periodSeconds: 30
     timeoutSeconds: 5
