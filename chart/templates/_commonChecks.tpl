@@ -248,6 +248,14 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
       "PubSubValidator" (list "Check_publish_and_listen_to_topic")
   }}
   {{/*
+  We push conditionally new analyzers for the feature flags if the customer defined overridden feature flags
+  */}}
+  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+  {{- $_ := set $preflightsDict "FeatureFlagsValidator" (list "Check_valid_feature_flags") -}}
+  {{- end }}
+  {{/*
+  */}}
+  {{/*
   We push conditionally new analyzers for the certs provided if they're provided for: Postgres, Redis and Router SSL
   */}}
   {{- $certChecks := list }}
