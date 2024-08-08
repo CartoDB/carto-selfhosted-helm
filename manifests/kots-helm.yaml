@@ -549,6 +549,10 @@ spec:
     - when: '{{repl ConfigOptionEquals "enablePlatformDebugMode" "1" }}'
       recursiveMerge: true
       values:
+        httpCache:
+          extraEnvVars:
+            - name: VARNISH_LOG_LEVEL
+              value: "debug"
         importApi:
           extraEnvVars:
             - name: CARTO_TRACING_MODE
