@@ -198,6 +198,10 @@ spec:
           image:
             registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
             tag: "feature_sc_431460_inject_the_default_value_and_the_overrides"
+        httpCache:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "feature_sc_423179_modify_varnish_dockerfile_so_that_it_allows"
 
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
@@ -545,6 +549,10 @@ spec:
     - when: '{{repl ConfigOptionEquals "enablePlatformDebugMode" "1" }}'
       recursiveMerge: true
       values:
+        httpCache:
+          extraEnvVars:
+            - name: VARNISH_LOG_LEVEL
+              value: "DEBUG"
         importApi:
           extraEnvVars:
             - name: CARTO_TRACING_MODE
