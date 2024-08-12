@@ -2508,9 +2508,9 @@ router:
     preStop:
       exec:
         command:
-          - sh
+          - /bin/sh
           - '-c'
-          - 'sleep 15 && /usr/sbin/nginx -s quit'
+          - 'sleep 60'
   ## @param router.extraEnvVars Array with extra environment variables to add to router nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
