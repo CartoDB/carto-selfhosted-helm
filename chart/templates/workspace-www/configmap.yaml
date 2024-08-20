@@ -13,7 +13,9 @@ metadata:
   {{- end }}
 data:
   CARTO_DATA_WAREHOUSE_ENABLED: {{ .Values.cartoConfigValues.cartoDataWarehouseEnabled | quote }}
+  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
   CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
+  {{- end }}
   {{- if $.Values.appConfigValues.bigqueryOauth2ClientId }}
   REACT_APP_BIGQUERY_OAUTH: "true"
   {{- else }}
