@@ -11,8 +11,7 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  feature-flags.yaml: |-
-{{ .Files.Get "feature-flags.yaml" | indent 4 }}
+  custom-feature-flags.yaml: |-
 {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
     featureFlagsOverrides:
 {{ .Values.cartoConfigValues.featureFlagsOverrides | toYaml | indent 6 }}

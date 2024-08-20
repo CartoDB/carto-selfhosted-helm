@@ -30,7 +30,7 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/sql-worker/configmap.yaml") . | sha256sum }}
-        checksum/feature-flags-config: {{ include (print $.Template.BasePath "/feature-flags-configmap.yaml") . | sha256sum }}
+        checksum/feature-flags-config: {{ include (print $.Template.BasePath "/custom-feature-flags-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/sql-worker/secret.yaml") . | sha256sum }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.sqlWorker.podAnnotations }}
@@ -181,7 +181,7 @@ spec:
             {{- end }}
             - name: feature-flags
               mountPath: {{ include "carto.featureFlags.configMapMountDir" . }}
-              subPath: feature-flags.yaml
+              subPath: custom-feature-flags.yaml
               readOnly: true
           {{- if .Values.sqlWorker.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.extraVolumeMounts "context" $) | nindent 12 }}
@@ -218,8 +218,8 @@ spec:
           configMap:
             name: {{ template "carto.featureFlags.configMapName" . }}
             items:
-              - key: feature-flags.yaml
-                path: feature-flags.yaml
+              - key: custom-feature-flags.yaml
+                path: custom-feature-flags.yaml
         {{- if .Values.sqlWorker.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
