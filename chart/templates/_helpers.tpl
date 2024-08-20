@@ -1402,34 +1402,6 @@ Return the absolute path where the proxy CA cert will be mounted
 {{- end -}}
 
 {{/*
-Get the feature flags config map name
-*/}}
-{{- define "carto.featureFlags.configMapName" -}}
-{{- printf "%s-%s" .Release.Name "featureflags" -}}
-{{- end -}}
-
-{{/*
-Return the directory where the feature flags config file will be mounted
-*/}}
-{{- define "carto.featureFlags.configMapMountDir" -}}
-{{- print "/tmp/feature-flags.yaml" -}}
-{{- end -}}
-
-{{/*
-Return the list of available feature flags as a comma-separated string
-*/}}
-{{- define "carto.featureFlags.featureFlags" -}}
-{{- $flags := .Files.Get "feature-flags.yaml" | fromYaml -}}
-{{- $featureFlags := $flags.featureFlags -}}
-{{- $ffNames := list -}}
-{{- range $featureFlags -}}
-  {{- $ffNames = append $ffNames .name -}}
-{{- end -}}
-{{- $nameList := join "," $ffNames -}}
-{{- $nameList -}}
-{{- end -}}
-
-{{/*
 Return the list of overridden feature flags as a comma-separated string
 */}}
 {{- define "carto.featureFlags.overriddenFeatureFlags" -}}
