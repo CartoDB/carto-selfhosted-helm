@@ -10,6 +10,6 @@ dependencies:
   version: 16.13.2
 - name: replicated
   repository: oci://registry.replicated.com/library
-  version: 1.0.0-beta.21
-digest: sha256:e5e9be5949b002165bed577fdbbef4b22b497542916ae544360f8b0da8394719
-generated: "2024-06-11T13:43:46.305989+02:00"
+  version: 1.0.0-beta.27
+digest: sha256:9c862fa3c5cf653ba48808f102964cf52c6e0a78d6e1c08e97cddfb4b3fdef11
+generated: "2024-08-21T09:58:10.6497+02:00"
