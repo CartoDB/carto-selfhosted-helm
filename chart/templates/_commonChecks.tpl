@@ -137,8 +137,6 @@ Return common collectors for preflights and support-bundle
             securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
             resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
             env:
-              - name: AVAILABLE_FEATURE_FLAGS
-                value: {{ include "carto.featureFlags.featureFlags" . | quote }}
               {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
               - name: OVERRIDDEN_FEATURE_FLAGS
                 value: {{ include "carto.featureFlags.overriddenFeatureFlags" . | quote }}
@@ -247,6 +245,14 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
       "EgressRequirementsValidator" (list "Check_CARTO_Auth_connectivity" "Check_PubSub_connectivity" "Check_Google_Storage_connectivity" "Check_release_channels_connectivity" "Check_Google_Storage_connectivity" "Check_CARTO_images_registry_connectivity" "Check_TomTom_connectivity" "Check_TravelTime_connectivity")
       "PubSubValidator" (list "Check_publish_and_listen_to_topic")
   }}
+  {{/*
+  We push conditionally new analyzers for the feature flags if the customer defined overridden feature flags
+  */}}
+  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+  {{- $_ := set $preflightsDict "FeatureFlagsValidator" (list "Check_valid_feature_flags") -}}
+  {{- end }}
+  {{/*
+  */}}
   {{/*
   We push conditionally new analyzers for the certs provided if they're provided for: Postgres, Redis and Router SSL
   */}}

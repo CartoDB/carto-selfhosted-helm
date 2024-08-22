@@ -7,7 +7,7 @@ metadata:
 spec:
   chart:
     name: carto
-    chartVersion: 1.121.1
+    chartVersion: 1.125.1
   builder:
     replicated:
       enabled: true
@@ -188,20 +188,12 @@ spec:
   optionalValues:
     ## TEMPORAL PATCHED IMAGED
     - when: 'true'
-      recursiveMerge: true
-      values:
-        routerMetrics:
-          image:
-            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
-            tag: "bug_sc_432423_router_pod_taking_too_much_time_to_be_deleted"
-        tenantRequirementsChecker:
-          image:
-            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
-            tag: "feature_sc_431441_add_a_new_checker_in_tenant_requirements"
-        workspaceWww:
-          image:
-            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
-            tag: "feature_sc_431460_inject_the_default_value_and_the_overrides"
+     recursiveMerge: true
+     values:
+       routerMetrics:
+        image:
+          registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+          tag: "bug_sc_432423_router_pod_taking_too_much_time_to_be_deleted"
 
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
@@ -549,6 +541,10 @@ spec:
     - when: '{{repl ConfigOptionEquals "enablePlatformDebugMode" "1" }}'
       recursiveMerge: true
       values:
+        httpCache:
+          extraEnvVars:
+            - name: VARNISH_LOG_LEVEL
+              value: "DEBUG"
         importApi:
           extraEnvVars:
             - name: CARTO_TRACING_MODE
