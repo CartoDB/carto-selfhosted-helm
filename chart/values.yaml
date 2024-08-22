@@ -2510,7 +2510,7 @@ router:
         command:
           - /bin/sh
           - '-c'
-          - 'sleep 15 && /usr/sbin/nginx -s quit'
+          - 'sleep 30 && /usr/sbin/nginx -s quit'
   ## @param router.extraEnvVars Array with extra environment variables to add to router nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -2924,7 +2924,7 @@ httpCache:
         command:
           - sh
           - '-c'
-          - 'sleep 15 && kill -TERM $(pidof varnishd)'
+          - 'sleep 30 && kill -TERM $(pidof varnishd)'
   ## @param httpCache.extraEnvVars Array with extra environment variables to add to http-cache nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -5113,16 +5113,6 @@ routerMetrics:
   ## @param routerMetrics.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
-  ## @skip routerMetrics.lifecycleHooks [object] for the router-metrics container(s) to automate configuration before or after startup
-  ## @skip routerMetrics.lifecycleHooks.preStop.exec.command
-  ##
-  # lifecycleHooks:
-  #   preStop:
-  #     exec:
-  #       command:
-  #         - /bin/sh
-  #         - '-c'
-  #         - 'sleep 15 && pkill -TERM -f logstash'
 
 gateway:
   ## @param gateway.enabled Enable gateway api.
