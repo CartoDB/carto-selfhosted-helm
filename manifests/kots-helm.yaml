@@ -190,6 +190,10 @@ spec:
     - when: 'true'
       recursiveMerge: true
       values:
+        routerMetrics:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "bug_sc_432423_router_pod_taking_too_much_time_to_be_deleted"
         tenantRequirementsChecker:
           image:
             registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
