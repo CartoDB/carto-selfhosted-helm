@@ -24,6 +24,7 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/maps-api/configmap.yaml") . | sha256sum }}
+        checksum/feature-flags-config: {{ include (print $.Template.BasePath "/custom-feature-flags-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/maps-api/secret.yaml") . | sha256sum }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.mapsApi.podAnnotations }}
@@ -207,6 +208,12 @@ spec:
               mountPath: {{ include "carto.proxy.configMapMountDir" . }}
               readOnly: true
             {{- end }}
+            {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+            - name: feature-flags
+              mountPath: {{ include "carto.featureFlags.configMapMountDir" . }}
+              subPath: custom-feature-flags.yaml
+              readOnly: true
+            {{- end }}
           {{- if .Values.mapsApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -242,6 +249,14 @@ spec:
         - name: proxy-ssl-ca
           configMap:
             name: {{ include "carto.proxy.configMapName" . }}
+        {{- end }}
+        {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+        - name: feature-flags
+          configMap:
+            name: {{ template "carto.featureFlags.configMapName" . }}
+            items:
+              - key: custom-feature-flags.yaml
+                path: custom-feature-flags.yaml
         {{- end }}
         {{- if .Values.mapsApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraVolumes "context" $) | nindent 8 }}

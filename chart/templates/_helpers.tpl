@@ -1402,6 +1402,20 @@ Return the absolute path where the proxy CA cert will be mounted
 {{- end -}}
 
 {{/*
+Get the custom feature flags config map name
+*/}}
+{{- define "carto.featureFlags.configMapName" -}}
+{{- printf "%s-%s" .Release.Name "custom-feature-flags" -}}
+{{- end -}}
+
+{{/*
+Return the directory where the custom feature flags config file will be mounted
+*/}}
+{{- define "carto.featureFlags.configMapMountDir" -}}
+{{- print "/tmp/custom-feature-flags.yaml" -}}
+{{- end -}}
+
+{{/*
 Return the list of overridden feature flags as a comma-separated string
 */}}
 {{- define "carto.featureFlags.overriddenFeatureFlags" -}}

@@ -24,6 +24,7 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/workspace-www/configmap.yaml") . | sha256sum }}
+        checksum/feature-flags-config: {{ include (print $.Template.BasePath "/custom-feature-flags-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/workspace-www/secret.yaml") . | sha256sum }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.workspaceWww.podAnnotations }}
@@ -164,6 +165,12 @@ spec:
               mountPath: /tmp
             - name: nginx-shared-snippets
               mountPath: /etc/nginx/conf.d/shared-snippets
+            {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+            - name: feature-flags
+              mountPath: {{ include "carto.featureFlags.configMapMountDir" . }}
+              subPath: custom-feature-flags.yaml
+              readOnly: true
+            {{- end }}
           {{- if .Values.workspaceWww.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -179,6 +186,14 @@ spec:
             medium: Memory
         - name: tmp
           emptyDir: {}
+        {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+        - name: feature-flags
+          configMap:
+            name: {{ template "carto.featureFlags.configMapName" . }}
+            items:
+              - key: custom-feature-flags.yaml
+                path: custom-feature-flags.yaml
+        {{- end }}
       {{- if .Values.workspaceWww.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.extraVolumes "context" $) | nindent 8 }}
       {{- end }}
