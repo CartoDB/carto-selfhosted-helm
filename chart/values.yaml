@@ -4711,10 +4711,15 @@ internalRedis:
       enabled: false
     ## Redis resource limits
     ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+    ## @param internalRedis.master.resources.requests.memory Container memory requests in MiB
+    ## @param internalRedis.master.resources.requests.cpu Container cpu requests in milliCPU cores
     ## @param internalRedis.master.resources.limits.memory Container memory limits in MiB
     ## @param internalRedis.master.resources.limits.cpu Container cpu limits in milliCPU cores
     ##
     resources:
+      requests:
+        memory: "512Mi"
+        cpu: "200m"
       limits:
         memory: "512Mi"
         cpu: "200m"
@@ -4749,10 +4754,15 @@ internalRedis:
       enabled: false
     ## Redis resource limits
     ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+    ## @param internalRedis.replica.resources.requests.memory Container memory requests in MiB
+    ## @param internalRedis.replica.resources.requests.cpu Container cpu requests in milliCPU cores
     ## @param internalRedis.replica.resources.limits.memory Container memory limits in MiB
     ## @param internalRedis.replica.resources.limits.cpu Container cpu limits in milliCPU cores
     ##
     resources:
+      requests:
+        memory: "512Mi"
+        cpu: "200m"
       limits:
         memory: "512Mi"
         cpu: "200m"
