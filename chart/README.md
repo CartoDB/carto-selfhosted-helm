@@ -1487,6 +1487,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `internalRedis.master.persistence.enabled`                                | Enable master persistent volumes                                                             | `false`                |
 | `internalRedis.replica.persistence.enabled`                               | Enable replica persistent volumes                                                            | `false`                |
 | `internalRedis.nameOverride`                                              | String to partially override common.names.fullname template (will maintain the release name) | `redis`                |
+| `internalRedis.master.resources.requests.memory`                          | Container memory requests in MiB                                                             | `512Mi`                |
+| `internalRedis.master.resources.requests.cpu`                             | Container cpu requests in milliCPU cores                                                     | `200m`                 |
 | `internalRedis.master.resources.limits.memory`                            | Container memory limits in MiB                                                               | `512Mi`                |
 | `internalRedis.master.resources.limits.cpu`                               | Container cpu limits in milliCPU cores                                                       | `200m`                 |
 | `internalRedis.master.podSecurityContext.fsGroup`                         | Set accounts-www pod's Security Context fsGroup                                              | `1000`                 |
@@ -1497,6 +1499,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `internalRedis.master.containerSecurityContext.allowPrivilegeEscalation`  | Set Redis containers' Security Context allowPrivilegeEscalation                              | `false`                |
 | `internalRedis.master.containerSecurityContext.readOnlyRootFilesystem`    | Set Redis containers' Security Context readOnlyRootFilesystem                                | `true`                 |
 | `internalRedis.master.containerSecurityContext.capabilities.drop`         | removes Redis containers' Security Context capabilities                                      | `["all"]`              |
+| `internalRedis.replica.resources.requests.memory`                         | Container memory requests in MiB                                                             | `512Mi`                |
+| `internalRedis.replica.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                                     | `200m`                 |
 | `internalRedis.replica.resources.limits.memory`                           | Container memory limits in MiB                                                               | `512Mi`                |
 | `internalRedis.replica.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                       | `200m`                 |
 | `internalRedis.replica.podSecurityContext.fsGroup`                        | Set accounts-www pod's Security Context fsGroup                                              | `1000`                 |
