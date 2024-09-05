@@ -614,6 +614,14 @@ spec:
           # When enabling gke workload identity, the k8s SA should be created by the customer to be able to run preflights
           create: false
           name: '{{repl ConfigOption "k8sWorkloadIdentityServiceAccountName" }}'
+    # EKS Pod Identity
+    - when: '{{repl ConfigOptionEquals "enableAWSEksPodIdentity" "1" }}'
+      recursiveMerge: true
+      values:
+        commonBackendServiceAccount:
+          # When enabling gke workload identity, the k8s SA should be created by the customer to be able to run preflights
+          create: false
+          name: '{{repl ConfigOption "eksPodIdentityServiceAccountName" }}'
     # Local Registry
     - when: '{{repl (HasLocalRegistry) }}'
       recursiveMerge: true
