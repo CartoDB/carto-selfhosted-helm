@@ -494,16 +494,33 @@ spec:
           default: repl{{ if ConfigOptionEquals "replicatedLicenseType" "dev"}}repl{{ ConfigOption "derivedSelfHostedGCPProjectId"}}repl{{ end }}
 
         # AWS
+        ## EKS Pod Identity
+        - name: enableAWSEksPodIdentity
+          title: AWS EKS Pod Identity
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+          help_text: |-
+            The CARTO APIs running on your infrastructure are going to use EKS Pod Identity to access to Amazon Web Services.
+            [More info](https://docs.carto.com/carto-self-hosted/guides/use-eks-pod-identity-in-aws).
+          type: bool
+          default: "0"
+        - name: eksPodIdentityServiceAccountName
+          title: Kubernetes EKS Pod Identity service account name
+          when: '{{repl (ConfigOptionEquals "enableAWSEksPodIdentity" "1") }}'
+          required: true
+          type: text
+          help_text: |-
+            Name of the kubernetes service account that you created in the namespace to configure EKS Pod Identity.
+            [More info](https://docs.carto.com/carto-self-hosted/guides/use-eks-pod-identity-in-aws).
         - name: storageBucketsAwsAccessKeyId
           title: The AccessKey ID for S3 buckets
           type: text
           required: true
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+          when: '{{repl and (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") (not ConfigOptionEquals "enableAWSEksPodIdentity" "1") }}'
         - name: storageBucketsAwsAccessKeySecret
           title: The AccessKey Secret for S3 buckets
           type: text
           required: true
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+          when: '{{repl and (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") (not ConfigOptionEquals "enableAWSEksPodIdentity" "1") }}'
         - name: storageBucketsAwsS3Region
           title: Buckets AWS S3 Region
           when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
@@ -789,25 +806,6 @@ spec:
           type: text
           help_text: |-
             The PostgreSQL schema where the DO is installed (i.e. `carto`)
-
-
-        ## EKS Pod Identity
-        - name: enableAWSEksPodIdentity
-          title: AWS EKS Pod Identity
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
-          help_text: |-
-            The CARTO APIs running on your infrastructure are going to use EKS Pod Identity to access to Amazon Web Services.
-            [More info](https://docs.carto.com/carto-self-hosted/guides/use-eks-pod-identity-in-aws).
-          type: bool
-          default: "0"
-        - name: eksPodIdentityServiceAccountName
-          title: Kubernetes EKS Pod Identity service account name
-          when: '{{repl (ConfigOptionEquals "enableAWSEksPodIdentity" "1") }}'
-          required: true
-          type: text
-          help_text: |-
-            Name of the kubernetes service account that you created in the namespace to configure EKS Pod Identity.
-            [More info](https://docs.carto.com/carto-self-hosted/guides/use-eks-pod-identity-in-aws).
 
         ## GKE Workload Identity
         - name: enableGoogleWorkloadIdentity
