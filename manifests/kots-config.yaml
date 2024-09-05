@@ -515,12 +515,12 @@ spec:
           title: The AccessKey ID for S3 buckets
           type: text
           required: true
-          when: '{{repl and (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") (not ConfigOptionEquals "enableAWSEksPodIdentity" "1") }}'
+          when: '{{repl and (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") (not (ConfigOptionEquals "enableAWSEksPodIdentity" "1")) }}'
         - name: storageBucketsAwsAccessKeySecret
           title: The AccessKey Secret for S3 buckets
           type: text
           required: true
-          when: '{{repl and (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") (not ConfigOptionEquals "enableAWSEksPodIdentity" "1") }}'
+          when: '{{repl and (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") (not (ConfigOptionEquals "enableAWSEksPodIdentity" "1")) }}'
         - name: storageBucketsAwsS3Region
           title: Buckets AWS S3 Region
           when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
