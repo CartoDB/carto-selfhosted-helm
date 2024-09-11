@@ -186,18 +186,18 @@ spec:
   # Optional Values
   ## Values from Advanced Configuration
   optionalValues:
-    ## TEMPORAL PATCHED IMAGED
-    - when: 'true'
-      recursiveMerge: true
-      values:
-        routerMetrics:
-          image:
-            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
-            tag: "latest"
-        httpCache:
-          image:
-            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
-            tag: "latest"
+    ## TEMPORAL PATCHED IMAGES
+    # - when: 'true'
+    #   recursiveMerge: true
+    #   values:
+    #     routerMetrics:
+    #       image:
+    #         registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+    #         tag: "latest"
+    #     httpCache:
+    #       image:
+    #         registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+    #         tag: "latest"
 
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
