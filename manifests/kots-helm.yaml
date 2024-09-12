@@ -49,7 +49,7 @@ spec:
       cartoAuth0ClientId: '{{repl LicenseFieldValue "cartoAuthClientId" }}'
       cartoAuth0CustomDomain: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "cartoAuth0CustomDomain" "" | Base64Decode }}'
       selfHostedTenantId: '{{repl LicenseFieldValue "selfHostedId" }}'
-      launchDarklyClientSideId: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "launchDarklyClientSideId" "" | Base64Decode }}'
+      launchDarklyClientSideId: '{{repl LicenseFieldValue "cartoFeaturesFlagSdkKey" }}'
       selfHostedGcpProjectId: '{{repl (ConfigOption "derivedSelfHostedGCPProjectId") }}'
       enableErrorResponseStackTrace: "false"
       cartoDataWarehouseEnabled: '{{repl ConfigOptionEquals "enableCDW" "1" }}'
