@@ -561,7 +561,7 @@ spec:
         - name: storageBucketsImportExportAwsArnRole
           title: AWS arn bucket role
           help_text: |-
-            A AWS arn role must be provided. Check the following instructions for [Redshift](https://docs.carto.com/carto-self-hosted/guides/configure-your-own-buckets/redshift) or [Snowflake](https://docs.carto.com/carto-self-hosted/guides/configure-your-own-buckets/snowflake) 
+            A AWS arn role must be provided. Check the following instructions for [Redshift](https://docs.carto.com/carto-self-hosted/guides/configure-your-own-buckets#configuration-for-redshift) or [Snowflake](https://docs.carto.com/carto-self-hosted/guides/configure-your-own-buckets#configuration-for-snowflake) 
            
           type: text
           when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
