@@ -85,7 +85,7 @@ Return common collectors for preflights and support-bundle
               - name: REDIS_TLS_CA__FILE_PATH
                 value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
               {{- end }}
-              {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+              {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmapName) }}
               - name: PROXY_SSL_CA__FILE_CONTENT
                 value: {{ .Values.externalProxy.sslCA | b64enc | quote }}
               - name: PROXY_SSL_CA__FILE_PATH
@@ -120,7 +120,7 @@ Return common collectors for preflights and support-bundle
                 mountPath: {{ include "carto.redis.configMapMountDir" . }}
                 readOnly: false
               {{- end }}
-              {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+              {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmapName) }}
               - name: proxy-ssl-ca
                 mountPath: {{ include "carto.proxy.configMapMountDir" . }}
                 readOnly: false
@@ -168,7 +168,7 @@ Return common collectors for preflights and support-bundle
                 mountPath: {{ include "carto.redis.configMapMountDir" . }}
                 readOnly: true
               {{- end }}
-              {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+              {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmapName) }}
               - name: proxy-ssl-ca
                 mountPath: {{ include "carto.proxy.configMapMountDir" . }}
                 readOnly: true
@@ -197,7 +197,7 @@ Return common collectors for preflights and support-bundle
             emptyDir:
               sizeLimit: 8Mi
           {{- end }}
-          {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+          {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmapName) }}
           - name: proxy-ssl-ca
             emptyDir:
               sizeLimit: 1Mi
