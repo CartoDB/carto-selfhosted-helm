@@ -7,7 +7,7 @@ metadata:
 spec:
   chart:
     name: carto
-    chartVersion: 1.131.1
+    chartVersion: 1.132.2
   builder:
     replicated:
       enabled: true
@@ -356,15 +356,8 @@ spec:
           connectionString: '{{repl ConfigOption "externalProxyHost" }}'
           excludedDomains: '{{repl ConfigOption "externalProxyExcludedDomains" }}'
           sslRejectUnauthorized: repl{{ if ConfigOptionEquals "externalHttpsProxySslCertificateCheck" "0"}}falserepl{{ else }}truerepl{{ end }}
-          sslCAConfigmapName: '{{repl ConfigOption PrivateCACert() }}'
-        replicated:
-          extraEnv:
-            - name: HTTP_PROXY
-              value: '{{repl ConfigOption "externalProxyHost" }}'
-            - name: HTTPS_PROXY
-              value: '{{repl ConfigOption "externalProxyHost" }}'
-            - name: NO_PROXY
-              value: '{{repl ConfigOption "externalProxyExcludedDomains" }}'
+          sslCA: |
+            repl{{ ConfigOptionData "externalHttpsProxySslCa" | nindent 12 }}
     - when: '{{repl ConfigOptionEquals "ssoEnabled" "1"}}'
       recursiveMerge: true
       values:
