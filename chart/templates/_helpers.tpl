@@ -1306,11 +1306,11 @@ Return the Redis secret template path name
 {{- define "carto.redis.secretPath" -}}
 {{- if .Values.internalRedis.enabled -}}
   {{- if not .Values.internalRedis.existingSecret }}
-    {{- print "%s" carto/charts/internalRedis/templates/secret.yaml -}}
+    {{- print "%s" "carto/charts/internalRedis/templates/secret.yaml" -}}
   {{- end -}}
 {{- else -}}
   {{- if not .Values.externalRedis.existingSecret }}
-    {{- print "%s" carto/templates/externalredis-secret.yaml -}}
+    {{- print "%s" "carto/templates/externalredis-secret.yaml" -}}
 {{- end -}}
 {{- end -}}
 
