@@ -1301,6 +1301,20 @@ Return the absolute path where the Redis CA cert will be mounted
 {{- end -}}
 
 {{/*
+Return the Redis secret template path name
+*/}}
+{{- define "carto.redis.secretPath" -}}
+{{- if .Values.internalRedis.enabled -}}
+  {{- if not .Values.internalRedis.existingSecret }}
+    {{- printf "%s/%s.yaml" $.Template.BasePath "secret" -}}
+  {{- end -}}
+{{- else -}}
+  {{- if not .Values.externalRedis.existingSecret }}
+    {{- printf "%s/%s.yaml" $.Template.BasePath externalredis-secret.yaml -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return YAML for the Redis init container
 */}}
 {{- define "carto.redis-init-container" -}}
