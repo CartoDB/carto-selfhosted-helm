@@ -26,12 +26,12 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/workspace-api/configmap.yaml") . | sha256sum }}
         checksum/feature-flags-config: {{ include (print $.Template.BasePath "/custom-feature-flags-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/workspace-api/secret.yaml") . | sha256sum }}
-        {{- if .Values.internalRedis.enabled -}}
+        {{- if .Values.internalRedis.enabled }}
         checksum/redis-secret: {{ print "carto/charts/internalRedis/templates/secret.yaml" | sha256sum }}
         {{- else -}}
         checksum/redis-secret: {{ include (print $.Template.BasePath "/externalredis-secret.yaml") . | sha256sum }}
         {{- end }}
-        {{- if .Values.internalPostgresql.enabled -}}
+        {{- if .Values.internalPostgresql.enabled }}
         checksum/postgresql-secret: {{ print "carto/charts/internalPostgresql/templates/secret.yaml" | sha256sum }}
         {{- else -}}
         checksum/postgresql-secret: {{ include (print $.Template.BasePath "/externalpostgresql-secret.yaml") . | sha256sum }}
