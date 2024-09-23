@@ -31,8 +31,8 @@ spec:
         {{- else -}}
         checksum/redis-secret: {{ include (print $.Template.BasePath "/externalredis-secret.yaml") . | sha256sum }}
         {{- end }}
-        {{- if .Values.internalPostgres.enabled -}}
-        checksum/postgresql-secret: {{ print "carto/charts/internalPostgres/templates/secret.yaml" | sha256sum }}
+        {{- if .Values.internalPostgresql.enabled -}}
+        checksum/postgresql-secret: {{ print "carto/charts/internalPostgresql/templates/secret.yaml" | sha256sum }}
         {{- else -}}
         checksum/postgresql-secret: {{ include (print $.Template.BasePath "/externalpostgresql-secret.yaml") . | sha256sum }}
         {{- end }}
