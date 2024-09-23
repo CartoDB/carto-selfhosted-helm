@@ -31,7 +31,11 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/import-worker/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/import-worker/secret.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/externalpostgresql-secret.yaml") . | sha256sum }}
+        {{- if .Values.internalPostgresql.enabled }}
+        checksum/postgresql-password: {{ (tpl (toYaml .Values.internalPostgresql.password) . | sha256sum ) }}
+        {{- else }}
+        checksum/postgresql-password: {{ (tpl (toYaml .Values.externalPostgresql.password) . | sha256sum ) }}
+        {{- end }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.importWorker.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.podAnnotations "context" $) | nindent 8 }}

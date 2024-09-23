@@ -25,7 +25,16 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/lds-api/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/lds-api/secret.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/externalpostgresql-secret.yaml") . | sha256sum }}
+        {{- if .Values.internalRedis.enabled }}
+        checksum/redis-password: {{ (tpl (toYaml .Values.internalRedis.auth.password) . | sha256sum ) }}
+        {{- else }}
+        checksum/redis-password: {{ (tpl (toYaml .Values.externalRedis.password) . | sha256sum ) }}
+        {{- end }}
+        {{- if .Values.internalPostgresql.enabled }}
+        checksum/postgresql-password: {{ (tpl (toYaml .Values.internalPostgresql.password) . | sha256sum ) }}
+        {{- else }}
+        checksum/postgresql-password: {{ (tpl (toYaml .Values.externalPostgresql.password) . | sha256sum ) }}
+        {{- end }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.ldsApi.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.podAnnotations "context" $) | nindent 8 }}
