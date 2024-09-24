@@ -661,6 +661,11 @@ spec:
           default: "0"
           help_text: |-
             Specify if CARTO Self-hosted should check if the proxy certificate is valid or not.
+        - name: externalProxyCAConfigmapName
+          hidden: true
+          type: text
+          value: 'repl{{ PrivateCACert }}'
+          readonly: true
 
         ## SSO
         - name: ssoEnabled
