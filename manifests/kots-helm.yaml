@@ -356,8 +356,7 @@ spec:
           connectionString: '{{repl ConfigOption "externalProxyHost" }}'
           excludedDomains: '{{repl ConfigOption "externalProxyExcludedDomains" }}'
           sslRejectUnauthorized: repl{{ if ConfigOptionEquals "externalHttpsProxySslCertificateCheck" "0"}}falserepl{{ else }}truerepl{{ end }}
-          # sslCAConfigmapName: '{{repl (PrivateCACert) }}'
-          sslCAConfigmapName: proxy-selfsigned-ca
+          sslCAConfigmapName: '{{repl PrivateCACert }}'
     - when: '{{repl ConfigOptionEquals "ssoEnabled" "1"}}'
       recursiveMerge: true
       values:
