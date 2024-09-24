@@ -26,6 +26,8 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/workspace-api/configmap.yaml") . | sha256sum }}
         checksum/feature-flags-config: {{ include (print $.Template.BasePath "/custom-feature-flags-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/workspace-api/secret.yaml") . | sha256sum }}
+        checksum/redis-password: {{ include "carto.redis.passwordChecksum" . }}
+        checksum/postgresql-password: {{ include "carto.postgresql.passwordChecksum" . }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.workspaceApi.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.podAnnotations "context" $) | nindent 8 }}
