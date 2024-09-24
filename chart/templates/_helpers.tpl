@@ -1027,10 +1027,10 @@ Get the Postgresql credentials secret.
 Return the Postgresql password sha256sum
 */}}
 {{- define "carto.postgresql.passwordChecksum" -}}
-{{- if .Values.internalPostgresql.enabled }}
-{{- print "%s" (tpl (toYaml .Values.internalPostgresql.password) . | sha256sum ) -}}
-{{- else }}
-{{- print "%s" (tpl (toYaml .Values.externalPostgresql.password) . | sha256sum ) -}}
+{{- if .Values.internalPostgresql.enabled -}}
+{{- print (tpl (toYaml .Values.internalPostgresql.password) . | sha256sum ) -}}
+{{- else -}}
+{{- print (tpl (toYaml .Values.externalPostgresql.password) . | sha256sum ) -}}
 {{- end -}}
 {{- end -}}
 
@@ -1316,9 +1316,9 @@ Return the Redis password sha256sum
 */}}
 {{- define "carto.redis.passwordChecksum" -}}
 {{- if .Values.internalRedis.enabled }}
-{{- print "%s" (tpl (toYaml .Values.internalRedis.auth.password) . | sha256sum ) -}}
+{{- print (tpl (toYaml .Values.internalRedis.auth.password) . | sha256sum ) -}}
 {{- else }}
-{{- print "%s" (tpl (toYaml .Values.externalRedis.password) . | sha256sum ) -}}
+{{- print (tpl (toYaml .Values.externalRedis.password) . | sha256sum ) -}}
 {{- end -}}
 {{- end -}}
 
