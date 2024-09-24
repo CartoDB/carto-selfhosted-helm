@@ -1024,6 +1024,17 @@ Get the Postgresql credentials secret.
 {{- end -}}
 
 {{/*
+Return the Postgresql password sha256sum
+*/}}
+{{- define "carto.postgresql.passwordChecksum" -}}
+{{- if .Values.internalPostgresql.enabled }}
+{{- print "%s" (tpl (toYaml .Values.internalPostgresql.password) . | sha256sum ) -}}
+{{- else }}
+{{- print "%s" (tpl (toYaml .Values.externalPostgresql.password) . | sha256sum ) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.host" -}}
@@ -1298,6 +1309,17 @@ Return the absolute path where the Redis CA cert will be mounted
 */}}
 {{- define "carto.redis.configMapMountAbsolutePath" -}}
 {{- printf "%s/%s" (include "carto.redis.configMapMountDir" .) (include "carto.redis.configMapMountFilename" .) -}}
+{{- end -}}
+
+{{/*
+Return the Redis password sha256sum
+*/}}
+{{- define "carto.redis.passwordChecksum" -}}
+{{- if .Values.internalRedis.enabled }}
+{{- print "%s" (tpl (toYaml .Values.internalRedis.auth.password) . | sha256sum ) -}}
+{{- else }}
+{{- print "%s" (tpl (toYaml .Values.externalRedis.password) . | sha256sum ) -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
