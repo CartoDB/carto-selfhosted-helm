@@ -197,10 +197,15 @@ Return common collectors for preflights and support-bundle
             emptyDir:
               sizeLimit: 8Mi
           {{- end }}
-          {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmapName) }}
+          {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
           - name: proxy-ssl-ca
             emptyDir:
               sizeLimit: 1Mi
+          {{- end }}
+          {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCAConfigmapName }}
+          - name: proxy-ssl-ca
+            configMap:
+              name: {{ include "carto.proxy.configMapName" . }}
           {{- end }}
           {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
           - name: router-tls-cert-and-key
@@ -499,7 +504,7 @@ Return customer values to use in preflights and support-bundle
   - name: no_proxy
     value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
-  {{- if .Values.externalProxy.sslCA }}
+  {{- if (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmapName) }}
   - name: NODE_EXTRA_CA_CERTS
     value: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
