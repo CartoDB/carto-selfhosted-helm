@@ -59,5 +59,9 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `Changes release to Replicated on channel ${{ steps.generate-channel-info.outputs.channel-name }}! Check the [Replicated Dashboard](https://vendor.replicated.com/apps/carto/channels) for more details.
-               If you need to test the changes, you can assign the channel to your customer and download the latest version from the Admin Console.`
+               If you need to test the changes, you can assign the channel to your customer and download the latest version from the Admin Console. Deploy the changes using the following command:
+               \`\`\` bash
+                kubectl kots install carto/${{ steps.generate-channel-info.outputs.channel-name }} -n <namespace>
+               \`\`\`
+              `
             })

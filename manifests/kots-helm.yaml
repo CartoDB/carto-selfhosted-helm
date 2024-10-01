@@ -163,7 +163,8 @@ spec:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     workspaceApi:
       image:
-        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts" }}'
+        tag: feature_sc_438178_adapt_backend_code_to_start_using_the_credentials
     workspaceSubscriber:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
@@ -175,7 +176,8 @@ spec:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     tenantRequirementsChecker:
       image:
-        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts" }}'
+        tag: feature_sc_438178_adapt_backend_code_to_start_using_the_credentials
     routerMetrics:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
@@ -606,6 +608,14 @@ spec:
           # When enabling gke workload identity, the k8s SA should be created by the customer to be able to run preflights
           create: false
           name: '{{repl ConfigOption "k8sWorkloadIdentityServiceAccountName" }}'
+    # EKS Pod Identity
+    - when: '{{repl ConfigOptionEquals "enableAWSEksPodIdentity" "1" }}'
+      recursiveMerge: true
+      values:
+        commonBackendServiceAccount:
+          # When enabling gke workload identity, the k8s SA should be created by the customer to be able to run preflights
+          create: false
+          name: '{{repl ConfigOption "eksPodIdentityServiceAccountName" }}'
     # Local Registry
     - when: '{{repl (HasLocalRegistry) }}'
       recursiveMerge: true
