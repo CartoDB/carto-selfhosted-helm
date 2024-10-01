@@ -366,22 +366,16 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
       checkName: The cluster should contain at least 6 cores
       outcomes:
         - fail:
-            when: "sum(cpuCapacity) < 5"
-            message: The cluster must contain at least 5 cores. ➡️ Ignore if you have auto-scale enabled in your cluster.
-        - warn:
             when: "sum(cpuCapacity) < 6"
-            message: The cluster should contain at least 6 cores. ➡️ Ignore if you have auto-scale enabled in your cluster.
+            message: The cluster must contain at least 6 cores. ➡️ Ignore if you have auto-scale enabled in your cluster.
         - pass:
             message: There are at least 6 cores in the cluster.
   - nodeResources:
-      checkName: The cluster should contain at least 16 Gi
+      checkName: The cluster should contain at least 16 Gi of RAM memory
       outcomes:
         - fail:
             when: "sum(memoryAllocatable) < 16Gi"
-            message: The cluster must contain at least 16Gi. ➡️ Ignore if you have auto-scale enabled in your cluster.
-        - warn:
-            when: "sum(memoryAllocatable) < 17Gi"
-            message: The cluster should contain at least 17Gi. ➡️ Ignore if you have auto-scale enabled in your cluster.
+            message: The cluster must contain at least 16Gi of RAM memory. ➡️ Ignore if you have auto-scale enabled in your cluster.
         - pass:
             message: There are at least 16 Gi in the cluster.
   {{- end }}
