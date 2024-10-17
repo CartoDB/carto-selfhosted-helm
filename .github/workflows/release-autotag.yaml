@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - fix-autotag
     paths:
       - VERSION
 jobs:
