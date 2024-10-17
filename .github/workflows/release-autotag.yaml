@@ -4,8 +4,8 @@ on:
     branches:
       - main
       - fix-autotag
-    paths:
-      - VERSION
+    # paths:
+    #   - VERSION
 jobs:
   create-tag:
     runs-on: ubuntu-20.04
