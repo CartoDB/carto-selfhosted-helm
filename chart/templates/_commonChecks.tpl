@@ -8,7 +8,7 @@ Return common collectors for preflights and support-bundle
       namespace: {{ .Release.Namespace | quote }}
       timeout: 180s
       podSpec:
-        {{- if .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+        {{- if .Values.commonBackendServiceAccount.name }}
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
         {{- end }}
         restartPolicy: Never
