@@ -1,0 +1,46 @@
+name: Trivy security scanning for Helm chart
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '30 0 * * 1-5' # From Monday to Friday (included), at 0:30 UTC
+
+permissions:
+  security-events: write # To upload sarif files
+
+jobs:
+  chart-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install helm
+        shell: bash
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.7' 
+
+      - name: Run Trivy vulnerability scanner in IaC mode
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          scan-type: 'config'
+          hide-progress: false
+          format: 'sarif'
+          scan-ref: 'chart'
+          output: 'trivy-results.sarif'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL'
+      
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'schedule'
+        with:
+          sarif_file: trivy-results.sarif
