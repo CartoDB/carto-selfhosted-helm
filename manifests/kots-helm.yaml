@@ -64,10 +64,6 @@ spec:
         value: '{{repl ConfigOption "googleMapsAPIKey" }}'
       bigqueryOauth2ClientSecret:
         value: '{{repl ConfigOption "bigqueryOauthClientSecret" }}'
-      awsAccessKeyId:
-        value: '{{repl ConfigOption "storageBucketsAwsAccessKeyId" }}'
-      awsAccessKeySecret:
-        value: '{{repl ConfigOption "storageBucketsAwsAccessKeySecret" }}'
       azureStorageAccessKey:
         value: '{{repl ConfigOption "storageBucketsAzureAccessKey" }}'
       azureStorageAccount:
@@ -208,6 +204,15 @@ spec:
         appSecrets:
           googleCloudStorageServiceAccountKey:
             value: '{{repl ConfigOption "cartoPlatformGoogleSA" }}'
+    ## Specify AWS Access Key if EKS pod identity is not enabled and the customer is using AWS
+    - when: '{{repl and (ConfigOptionEquals "enableAWSEksPodIdentity" "0") (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3")}}'
+      recursiveMerge: true
+      values:
+        appSecrets:
+          awsAccessKeyId:
+            value: '{{repl ConfigOption "storageBucketsAwsAccessKeyId" }}'
+          awsAccessKeySecret:
+            value: '{{repl ConfigOption "storageBucketsAwsAccessKeySecret" }}'
     ## LDS configuration
     ### LDS Geocoding, Isoline and Routing providers
     - when: '{{repl not (empty (ConfigOption "ldsGeocodingProvider")) }}'
