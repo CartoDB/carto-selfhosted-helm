@@ -58,6 +58,10 @@ data:
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
   WORKSPACE_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
   {{- end }}
+  {{- if .Values.externalPostgresql.eksPodIdentityEnabled }}
+  CARTO_SELFHOSTED_AWS_RDS_METADATA_REGION: {{ .Values.externalPostgresql.rdsRegion | quote }}
+  CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED: {{ .Values.externalPostgresql.eksPodIdentityEnabled | quote }}
+  {{- end }}
   IMPORT_AWS_CUSTOM_BUCKET_ROLE_ARN: {{ .Values.appConfigValues.importAwsRoleArn | quote }}
   WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/data-updates-workspace-sub"
   WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/data-updates"
@@ -88,6 +92,9 @@ data:
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}
   WORKSPACE_THUMBNAILS_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
   WORKSPACE_IMPORTS_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
+  {{- if .Values.appConfigValues.awsEksPodIdentityBucketsEnabled }}
+  CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_S3_ENABLED: {{ .Values.appConfigValues.awsEksPodIdentityBucketsEnabled | quote }}
+  {{- end }}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
   WORKSPACE_THUMBNAILS_STORAGE_ACCOUNT: {{ .Values.appConfigValues.azureStorageAccount | quote }}

@@ -31,6 +31,8 @@ appConfigValues:
   googleCloudStorageProjectId: ""
   ## @param appConfigValues.awsS3Region If the bucket is S3, the region to be used
   awsS3Region: ""
+  ## @param appConfigValues.awsEksPodIdentityBucketsEnabled If the bucket is S3, the region to be used
+  awsEksPodIdentityBucketsEnabled: false
   ## @param appConfigValues.bigqueryOauth2ClientId The Client ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key.
   bigqueryOauth2ClientId: ""
   ## @param appConfigValues.enableTrackJS By default, TrackJS will gather information about end-user browser, you can disable it setting this parameter to false
@@ -4873,6 +4875,8 @@ internalPostgresql:
 ## @param externalPostgresql.port Database port number
 ## @param externalPostgresql.sslEnabled Whether or not connect to CARTO Postgresql via TLS
 ## @param externalPostgresql.sslCA CA certificate in case CARTO Postgresql TLS cert it's selfsigned
+## @param externalPostgresql.eksPodIdentityEnabled
+## @param externalPostgresql.rdsRegion
 ##
 externalPostgresql:
   host: localhost
@@ -4890,6 +4894,8 @@ externalPostgresql:
   port: 5432
   sslEnabled: false
   sslCA: ""
+  eksPodIdentityEnabled: false
+  rdsRegion: ""
 
 ## @section External proxy configuration
 ## Configuration for an external proxy provided by the client. Only HTTP and HTTPS proxies are supported
