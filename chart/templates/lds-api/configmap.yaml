@@ -50,9 +50,9 @@ data:
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA  }}
   WORKSPACE_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
   {{- end }}
-  {{- if .Values.externalPostgresql.eksPodIdentityEnabled }}
-  CARTO_SELFHOSTED_AWS_RDS_METADATA_REGION: {{ .Values.externalPostgresql.rdsRegion | quote }}
-  CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED: {{ .Values.externalPostgresql.eksPodIdentityEnabled | quote }}
+  {{- if .Values.externalPostgresql.awsEksPodIdentityEnabled }}
+  CARTO_SELFHOSTED_AWS_RDS_METADATA_REGION: {{ .Values.externalPostgresql.awsRdsRegion | quote }}
+  CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED: {{ .Values.externalPostgresql.awsEksPodIdentityEnabled | quote }}
   {{- end }}
   LDS_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   {{- if .Values.externalProxy.enabled }}
