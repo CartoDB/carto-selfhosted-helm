@@ -4875,8 +4875,8 @@ internalPostgresql:
 ## @param externalPostgresql.port Database port number
 ## @param externalPostgresql.sslEnabled Whether or not connect to CARTO Postgresql via TLS
 ## @param externalPostgresql.sslCA CA certificate in case CARTO Postgresql TLS cert it's selfsigned
-## @param externalPostgresql.awsEksPodIdentityEnabled
-## @param externalPostgresql.awsRdsRegion
+## @param externalPostgresql.awsEksPodIdentityEnabled Enable EKS Pod Identity authentication for the external postgresql
+## @param externalPostgresql.awsRdsRegion Region of the RDS PostgreSQL database in AWS. Needed when EKS Pod Identity is enabled
 ##
 externalPostgresql:
   host: localhost
