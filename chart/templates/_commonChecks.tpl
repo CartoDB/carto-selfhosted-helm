@@ -516,14 +516,22 @@ Return customer secrets to use in preflights and support-bundle
     value: {{ .Values.externalRedis.password | quote }}
   - name: LAUNCHDARKLY_SDK_KEY
     value: {{ .Values.cartoSecrets.launchDarklySdkKey.value | quote }}
-    {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
-                "WORKSPACE_THUMBNAILS_ACCESSKEYID"
-                "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
-                "WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY"
-                "WORKSPACE_IMPORTS_ACCESSKEYID"
-                "WORKSPACE_IMPORTS_SECRETACCESSKEY"
-                "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY"
-                ) "context" $ ) }}
+  {{- if eq .Values.appConfigValues.storageProvider "s3" }}
+  - name: WORKSPACE_THUMBNAILS_ACCESSKEYID
+    value: {{ .Values.appSecrets.awsAccessKeyId | quote }}
+  - name: WORKSPACE_IMPORTS_ACCESSKEYID
+    value: {{ .Values.appSecrets.awsAccessKeyId | quote }}
+  - name: WORKSPACE_THUMBNAILS_SECRETACCESSKEY
+    value: {{ .Values.appSecrets.awsAccessKeySecret | quote }}
+  - name: WORKSPACE_IMPORTS_SECRETACCESSKEY
+    value: {{ .Values.appSecrets.awsAccessKeySecret | quote }}
+  {{- end }}
+  {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
+  - name: WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY
+    value: {{ .Values.appSecrets.azureStorageAccessKey | quote }}
+  - name: WORKSPACE_IMPORTS_STORAGE_ACCESSKEY
+    value: {{ .Values.appSecrets.azureStorageAccessKey | quote }}
+  {{- end }}
 {{- end -}}
 
 
