@@ -70,8 +70,6 @@ spec:
         value: '{{repl ConfigOption "storageBucketsAwsAccessKeySecret" }}'
       azureStorageAccessKey:
         value: '{{repl ConfigOption "storageBucketsAzureAccessKey" }}'
-      azureStorageAccount:
-        value: '{{repl ConfigOption "storageBucketsAzureStorageAccount"}}'
     ## App Config Values
     appConfigValues:
       # domain
@@ -84,6 +82,7 @@ spec:
       workspaceThumbnailsPublic: repl{{ if ConfigOptionEquals "storageBucketsThumbnailsIsPublic" "1"}}truerepl{{ else }}falserepl{{ end }}
       googleCloudStorageProjectId: '{{repl ConfigOption "storageBucketsGcpProjectId" }}'
       awsS3Region: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
+      azureStorageAccount: '{{repl ConfigOption "storageBucketsAzureStorageAccount"}}'
       # other config
       bigqueryOauth2ClientId: '{{repl ConfigOption "bigqueryOauthClientID" }}'
     ## Postgresql
