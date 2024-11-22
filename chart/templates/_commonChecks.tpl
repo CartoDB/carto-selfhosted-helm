@@ -518,19 +518,19 @@ Return customer secrets to use in preflights and support-bundle
     value: {{ .Values.cartoSecrets.launchDarklySdkKey.value | quote }}
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}
   - name: WORKSPACE_THUMBNAILS_ACCESSKEYID
-    value: {{ .Values.appSecrets.awsAccessKeyId | quote }}
+    value: {{ .Values.appSecrets.awsAccessKeyId.value | quote }}
   - name: WORKSPACE_IMPORTS_ACCESSKEYID
-    value: {{ .Values.appSecrets.awsAccessKeyId | quote }}
+    value: {{ .Values.appSecrets.awsAccessKeyId.value | quote }}
   - name: WORKSPACE_THUMBNAILS_SECRETACCESSKEY
-    value: {{ .Values.appSecrets.awsAccessKeySecret | quote }}
+    value: {{ .Values.appSecrets.awsAccessKeySecret.value | quote }}
   - name: WORKSPACE_IMPORTS_SECRETACCESSKEY
-    value: {{ .Values.appSecrets.awsAccessKeySecret | quote }}
+    value: {{ .Values.appSecrets.awsAccessKeySecret.value | quote }}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
   - name: WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY
-    value: {{ .Values.appSecrets.azureStorageAccessKey | quote }}
+    value: {{ .Values.appSecrets.azureStorageAccessKey.value | quote }}
   - name: WORKSPACE_IMPORTS_STORAGE_ACCESSKEY
-    value: {{ .Values.appSecrets.azureStorageAccessKey | quote }}
+    value: {{ .Values.appSecrets.azureStorageAccessKey.value | quote }}
   {{- end }}
 {{- end -}}
 
