@@ -78,8 +78,8 @@ appConfigValues:
 ## @section CARTO Replicated parameters
 ## Global configuration for installations using Replicated. If you change something from this section probably your self-hosted is going to stop working.
 replicated:
-  ## @param replicated.enabled Enable Carto replicated
-  ## @param replicated.platformDistribution Platform distribution to deploy Carto Selfhosted with Replicated
+  ## @param replicated.enabled Enable CARTO replicated
+  ## @param replicated.platformDistribution Platform distribution to deploy CARTO Selfhosted with Replicated
   enabled: false
   platformDistribution: ""
 
@@ -88,27 +88,31 @@ replicated:
 cartoConfigValues:
   ## @param cartoConfigValues.enableErrorResponseStackTrace Enable stack traces in the container responses
   enableErrorResponseStackTrace: false
-  ## @param cartoConfigValues.cartoAccApiDomain Domain of the Account API of Carto.
+  ## @param cartoConfigValues.cartoAccApiDomain Domain of the Account API of CARTO.
   cartoAccApiDomain: ""
-  ## @param cartoConfigValues.cartoAccGcpProjectId GCP project ID of the Carto Accounts.
+  ## @param cartoConfigValues.cartoAccGcpProjectId GCP project ID of the CARTO Accounts.
   cartoAccGcpProjectId: ""
-  ## @param cartoConfigValues.cartoAccGcpProjectRegion GCP project region of the Carto Accounts.
+  ## @param cartoConfigValues.cartoAccGcpProjectRegion GCP project region of the CARTO Accounts.
   cartoAccGcpProjectRegion: ""
+  ## @param cartoConfigValues.cartoDoApiDomain Domain of the Data Observatory API of CARTO.
+  cartoDoApiDomain: ""
+  ## @param cartoConfigValues.cartoDoAssetsDomain Domain of the Data Observatory Assets bucket of CARTO.
+  cartoDoAssetsDomain: ""
   ## @param cartoConfigValues.cartoAuth0ClientId Client ID of Auth0.
   cartoAuth0ClientId: ""
   ## @param cartoConfigValues.cartoAuth0CustomDomain Custom Domain of Auth0.
   cartoAuth0CustomDomain: ""
-  ## @param cartoConfigValues.cartoSelfhostedDwLocation Location of the Carto Data Warehouse.
+  ## @param cartoConfigValues.cartoSelfhostedDwLocation Location of the CARTO Data Warehouse.
   cartoSelfhostedDwLocation: ""
   ## @param cartoConfigValues.selfHostedGcpProjectId GCP project ID used in the installation.
   selfHostedGcpProjectId: ""
-  ## @param cartoConfigValues.selfHostedTenantId Carto internal tenantId used in the installation.
+  ## @param cartoConfigValues.selfHostedTenantId CARTO internal tenantId used in the installation.
   selfHostedTenantId: ""
   ## @param cartoConfigValues.launchDarklyClientSideId LaunchDarkly ClientSideId (by www) used to enable/disable features.
   launchDarklyClientSideId: ""
-  ## @param cartoConfigValues.cartoDataWarehouseEnabled Enable the Carto Data Warehouse for the self-hosted.
+  ## @param cartoConfigValues.cartoDataWarehouseEnabled Enable the CARTO Data Warehouse for the self-hosted.
   cartoDataWarehouseEnabled: false
-  ## @param cartoConfigValues.dataObservatoryProjectId GCP project ID of the Carto Data Observatory.
+  ## @param cartoConfigValues.dataObservatoryProjectId GCP project ID of the CARTO Data Observatory.
   dataObservatoryProjectId: ""
   ## @param cartoConfigValues.ingressTestingMode Enable router testing mode for the application. This will deploy the router in testing mode serving a simple page to check that it works without routing traffic to other components.
   ingressTestingMode: false
@@ -284,9 +288,9 @@ appSecrets:
 ## @section CARTO secrets
 ## Secrets provided by CARTO. Some of them could be customized by the client.
 cartoSecrets:
-  ## @extra cartoSecrets.encryptionSecretKey The secret used to encrypt the clients Carto connections stored in the database.
+  ## @extra cartoSecrets.encryptionSecretKey The secret used to encrypt the clients CARTO connections stored in the database.
   encryptionSecretKey:
-    ## @param cartoSecrets.encryptionSecretKey.value Value of the secret used to encrypt the clients Carto connections stored in the database. One of `cartoSecrets.encryptionSecretKey.value` or `cartoSecrets.encryptionSecretKey.existingSecret` could be defined.
+    ## @param cartoSecrets.encryptionSecretKey.value Value of the secret used to encrypt the clients CARTO connections stored in the database. One of `cartoSecrets.encryptionSecretKey.value` or `cartoSecrets.encryptionSecretKey.existingSecret` could be defined.
     value: ""
     ## @param cartoSecrets.encryptionSecretKey.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.encryptionSecretKey.existingSecret.key`. If `cartoSecrets.encryptionSecretKey.value` is defined, this value is going to be ignored and not used.
     ## @param cartoSecrets.encryptionSecretKey.existingSecret.key Key to find in `cartoSecrets.encryptionSecretKey.existingSecret.name` where the value of `cartoSecrets.encryptionSecretKey` is found. If `cartoSecrets.encryptionSecretKey.value` is defined, this value is going to be ignored and not used.
@@ -2609,7 +2613,7 @@ router:
     extraPorts: []
   ## FIXME: Deprecated in favor of ingress instead of router.ingress
   ## Configure the ingress resource that allows you to access the
-  ## Carto installation. Set up the URL
+  ## CARTO installation. Set up the URL
   ## ref: https://kubernetes.io/docs/user-guide/ingress/
   ##
   ingress:
