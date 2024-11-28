@@ -19,7 +19,6 @@ dependencies:
   - name: replicated
     repository: oci://registry.replicated.com/library
     version: 1.0.0-beta.30
-    condition: replicated.enabled
 description: CARTO Location Intelligence Platform. Unlock the power of spatial analysis in the cloud
 engine: gotpl
 home: https://github.com/CartoDB/carto-selfhosted-helm/tree/main/chart
@@ -34,4 +33,4 @@ sources:
   - https://carto.com/
 annotations:
   minVersion: "2023.10.25"
-version: 1.143.1
+version: 1.143.2
