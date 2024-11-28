@@ -28,6 +28,8 @@ data:
   REACT_APP_API_BASE_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api"
   REACT_APP_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   REACT_APP_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
+  REACT_APP_DO_API_URL: "https://{{ .Values.cartoConfigValues.cartoDoApiDomain }}"
+  REACT_APP_DO_ASSETS_URL: "https://{{ .Values.cartoConfigValues.cartoDoAssetsDomain }}"
   REACT_APP_HUBSPOT_ID: "474999"
   REACT_APP_HUBSPOT_LIMIT_FORM_ID: "cd9486fa-5766-4bac-81b9-d8c6cd029b3b"
   REACT_APP_HUBSPOT_REQUEST_SUBSCRIPTION_FORM_ID: "49d53632-80f9-4720-b4be-bf623a527af4"
