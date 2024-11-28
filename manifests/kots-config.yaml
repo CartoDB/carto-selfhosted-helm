@@ -41,12 +41,16 @@ spec:
             repl{{    $_ := set $result "cartoAccApiDomain" "YWNjb3VudHMuYXBwLmNhcnRvLmNvbQ==" }}
             repl{{    $_ := set $result "cartoAccGcpProjectId" "Y2FydG8tYWNjLXVzLWVhc3QxLTE=" }}
             repl{{    $_ := set $result "cartoAccGcpProjectRegion" "dXMtZWFzdDEtMQ==" }}
+            repl{{    $_ := set $result "cartoDoApiDomain" "c3BhdGlhbC1kYXRhLWNhdGFsb2cuYXBwLmNhcnRvLmNvbQ==" }}
+            repl{{    $_ := set $result "cartoDoAssetsDomain" "c3BhdGlhbC1kYXRhLWNhdGFsb2ctYXNzZXRzLmNhcnRvLmNvbQ==" }}
             repl{{    $_ := set $result "cartoAuth0CustomDomain" "YXV0aC5jYXJ0by5jb20=" }}
             repl{{    $_ := set $result "dataObservatoryProjectId" "Y2FydG8tZGF0YQ==" }}
             repl{{ else if eq $environment "staging" }}
             repl{{    $_ := set $result "cartoAccApiDomain" "YWNjb3VudHMuc3RhZy5hcHAuY2FydG8uY29t" }}
             repl{{    $_ := set $result "cartoAccGcpProjectId" "Y2FydG8tYWNjLXVzLWVhc3QxLTEtc3RhZw==" }}
             repl{{    $_ := set $result "cartoAccGcpProjectRegion" "dXMtZWFzdDEtMS1zdGFn" }}
+            repl{{    $_ := set $result "cartoDoApiDomain" "c3BhdGlhbC1kYXRhLWNhdGFsb2cuc3RhZy5hcHAuY2FydG8uY29t" }}
+            repl{{    $_ := set $result "cartoDoAssetsDomain" "c3BhdGlhbC1kYXRhLWNhdGFsb2ctYXNzZXRzLnN0YWcuY2FydG8uY29t" }}
             repl{{    $_ := set $result "cartoAuth0CustomDomain" "YXV0aC5zdGFnLmNhcnRvLmNvbQ==" }}
             repl{{    $_ := set $result "dataObservatoryProjectId" "Y2FydG8tZGF0YS1zdGFn" }}
             repl{{ end }}

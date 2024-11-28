@@ -46,6 +46,8 @@ spec:
       cartoAccApiDomain: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "cartoAccApiDomain" "" | Base64Decode }}'
       cartoAccGcpProjectId: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "cartoAccGcpProjectId" "" | Base64Decode }}'
       cartoAccGcpProjectRegion: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "cartoAccGcpProjectRegion" "" | Base64Decode }}'
+      cartoDoApiDomain: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "cartoDoApiDomain" "" | Base64Decode }}'
+      cartoDoAssetsDomain: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "cartoDoAssetsDomain" "" | Base64Decode }}'
       cartoAuth0ClientId: '{{repl LicenseFieldValue "cartoAuthClientId" }}'
       cartoAuth0CustomDomain: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "cartoAuth0CustomDomain" "" | Base64Decode }}'
       selfHostedTenantId: '{{repl LicenseFieldValue "selfHostedId" }}'

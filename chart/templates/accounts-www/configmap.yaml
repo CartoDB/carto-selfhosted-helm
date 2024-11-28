@@ -22,6 +22,8 @@ data:
   REACT_APP_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   REACT_APP_CUSTOM_TENANT: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   REACT_APP_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
+  REACT_APP_DO_API_URL: "https://{{ .Values.cartoConfigValues.cartoDoApiDomain }}"
+  REACT_APP_DO_ASSETS_URL: "https://{{ .Values.cartoConfigValues.cartoDoAssetsDomain }}"
   THUMBNAILS_BUCKET_EXTERNAL_URL: {{ .Values.appConfigValues.thumbnailsBucketExternalURL | quote }}
   REACT_APP_ACCOUNTS_WWW_ENABLE_TRACKJS: {{ .Values.appConfigValues.enableTrackJS | quote }}
   {{- if .Values.appConfigValues.ssoOrganizationId }}
