@@ -31,6 +31,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.workspaceThumbnailsPublic`                        | Indicate if the thumbnails could be accessed publicly                                                                  | `true`                 |
 | `appConfigValues.googleCloudStorageProjectId`                      | If the bucket is GCP, the ProjectId to be used                                                                         | `""`                   |
 | `appConfigValues.awsS3Region`                                      | If the bucket is S3, the region to be used                                                                             | `""`                   |
+| `appConfigValues.awsEksPodIdentityBucketsEnabled`                  | If the bucket is S3, the region to be used                                                                             | `false`                |
 | `appConfigValues.bigqueryOauth2ClientId`                           | The Client ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key. | `""`                   |
 | `appConfigValues.enableTrackJS`                                    | By default, TrackJS will gather information about end-user browser, you can disable it setting this parameter to false | `true`                 |
 | `appConfigValues.ssoOrganizationId`                                | SSO organization ID provided by CARTO used to configure the SSO in the app.                                            | `""`                   |
@@ -1560,6 +1561,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `externalPostgresql.port`                           | Database port number                                                                                                                   | `5432`            |
 | `externalPostgresql.sslEnabled`                     | Whether or not connect to CARTO Postgresql via TLS                                                                                     | `false`           |
 | `externalPostgresql.sslCA`                          | CA certificate in case CARTO Postgresql TLS cert it's selfsigned                                                                       | `""`              |
+| `externalPostgresql.awsEksPodIdentityEnabled`       | Enable EKS Pod Identity authentication for the external postgresql                                                                     | `false`           |
+| `externalPostgresql.awsRdsRegion`                   | Region of the RDS PostgreSQL database in AWS. Needed when EKS Pod Identity is enabled                                                  | `""`              |
 
 ### External proxy configuration
 
