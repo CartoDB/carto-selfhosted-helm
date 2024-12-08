@@ -16,7 +16,6 @@ data:
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   HTTP_CACHE_ENABLED: {{ .Values.appConfigValues.httpCacheEnabled | quote }}
-  LS_JAVA_OPTS: {{ template "carto.routerMetrics.jvmOptions" . }}
   NGINX_CLIENT_MAX_BODY_SIZE: {{ .Values.router.nginxConfig.client_max_body_size | quote }}
   NGINX_GZIP_MIN_LENGTH: {{ .Values.router.nginxConfig.gzip_min_length | quote }}
   NGINX_GZIP_BUFFERS: {{ .Values.router.nginxConfig.gzip_buffers | quote }}
