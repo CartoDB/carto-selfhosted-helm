@@ -39,6 +39,7 @@ data:
   ROUTER_METRICS_PUBSUB_TOPIC: "data-updates"
   ROUTER_METRICS_HOST: "localhost"
   ROUTER_METRICS_PUBSUB_SUBSCRIPTION_FILTER: "aggregated-selfhosted-metrics"
+  ROUTER_METRICS_EVENTS_TIMEOUT: "300000"
   ROUTER_INGRESS_TESTING_MODE: {{ .Values.cartoConfigValues.ingressTestingMode | quote }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
