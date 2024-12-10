@@ -251,7 +251,7 @@ spec:
               port: http
               httpHeaders:
                 - name: Carto-Monitoring
-                  value: "1"
+                  value: "True"
           {{- else if .Values.workspaceApi.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
@@ -262,7 +262,7 @@ spec:
               port: http
               httpHeaders:
                 - name: Carto-Monitoring
-                  value: "1"
+                  value: "True"
           {{- else if .Values.workspaceApi.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
@@ -273,7 +273,7 @@ spec:
               port: http
               httpHeaders:
                 - name: Carto-Monitoring
-                  value: "1"
+                  value: "True"
           {{- else if .Values.workspaceApi.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
