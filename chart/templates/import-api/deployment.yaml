@@ -162,24 +162,33 @@ spec:
           {{- if .Values.importApi.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.livenessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /
+              path: /health
               port: http
+              httpHeaders:
+                - name: Carto-Monitoring
+                  value: "1"
           {{- else if .Values.importApi.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.importApi.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.readinessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /
+              path: /health
               port: http
+              httpHeaders:
+                - name: Carto-Monitoring
+                  value: "1"
           {{- else if .Values.importApi.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.importApi.startupProbe.enabled }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.startupProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /
+              path: /health
               port: http
+              httpHeaders:
+                - name: Carto-Monitoring
+                  value: "1"
           {{- else if .Values.importApi.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
