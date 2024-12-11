@@ -25,7 +25,7 @@ Validate log level
 */}}
 {{- define "carto.validateValues.logLevel" -}}
 {{- $validLevels := list "info" "debug" "error" -}}
-{{- if not (has $validLevels .Values.appConfigValues.logLevel) -}}
+{{- if not (has .Values.appConfigValues.logLevel $validLevels) -}}
 {{- printf "Invalid logLevel: %s. Must be one of %v" .Values.appConfigValues.logLevel $validLevels -}}
 {{- end -}}
 {{- end -}}
