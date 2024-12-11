@@ -21,12 +21,23 @@ If internalPostgresql.enabled=false you need to specify the host of an external 
 {{- end -}}
 
 {{/*
+Validate log level
+*/}}
+{{- define "carto.validateValues.logLevel" -}}
+{{- $validLevels := list "info" "debug" "error" -}}
+{{- if not (has $validLevels .Values.appConfigValues.logLevel) -}}
+{{- printf "Invalid logLevel: %s. Must be one of %v" .Values.appConfigValues.logLevel $validLevels -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Compile all warnings into a single message, and call fail.
 */}}
 {{- define "carto.validateValues" -}}
 {{- $messages := list -}}
 {{- $messages := append $messages (include "carto.validateValues.redis" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.postgresql" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.logLevel" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 
