@@ -188,13 +188,13 @@ spec:
   ## Values from Advanced Configuration
   optionalValues:
     ## TEMPORAL PATCHED IMAGES
-    - when: 'true'
-      recursiveMerge: true
-      values:
-        httpCache:
-          image:
-            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
-            tag: "feature_sc_457242_add_an_easier_approach_for_enabling_the_debug"
+    # - when: 'true'
+    #   recursiveMerge: true
+    #   values:
+    #     httpCache:
+    #       image:
+    #         registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+    #         tag: "feature_sc_457242_add_an_easier_approach_for_enabling_the_debug"
     #     httpCache:
     #       image:
     #         registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
