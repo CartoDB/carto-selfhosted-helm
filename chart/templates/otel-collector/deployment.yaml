@@ -1,0 +1,41 @@
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: otel-collector
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: otel-collector
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: opentelemetry
+      component: otel-collector
+  template:
+    metadata:
+      labels:
+        app: opentelemetry
+        component: otel-collector
+    spec:
+      containers:
+      - name: otel-collector
+        image: otel/opentelemetry-collector-contrib:0.115.1
+        resources:
+          limits:
+            cpu: 100m
+            memory: 200Mi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        volumeMounts:
+        - mountPath: /etc/otelcol-contrib/config.yaml
+          name: data
+          subPath: config.yaml
+          readOnly: true
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: data
+        configMap:
+          name: otel-collector-config
