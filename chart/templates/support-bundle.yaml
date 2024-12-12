@@ -43,7 +43,7 @@ stringData:
             outcomes:
               - fail:
                   when: "false"
-                  message: The debug mode is not enabled. Please follow the [documentation](https://docs.carto.com/carto-self-hosted/maintenance/monitoring#enable-debug-mode-in-carto-self-hosted-deployment) to enable it!
+                  message: The debug mode is not enabled. Please follow the [documentation](https://docs.carto.com/carto-self-hosted/maintenance/monitoring#enable-debug-mode-in-carto-self-hosted-deployment) to enable it before sending the support bundle!
               - pass:
                   when: "true"
                   message: The debug mode is enabled.
