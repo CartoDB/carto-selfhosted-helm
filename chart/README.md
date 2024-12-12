@@ -1619,11 +1619,9 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `routerMetrics.image.pullSecrets`                                 | routerMetrics image pull secrets                                           | `[]`                            |
 | `routerMetrics.command`                                           | Override default container command (useful when using custom images)       | `[]`                            |
 | `routerMetrics.args`                                              | Override default container args (useful when using custom images)          | `[]`                            |
-| `routerMetrics.jvmProcessMaxMemoryAllocationPercentage`           | Percentage for JVM max memory allocation inside the container memory limit | `70`                            |
-| `routerMetrics.defaultJvmProcessMaxMemoryAllocation`              | Default value for JVM max memory allocation                                | `1024`                          |
-| `routerMetrics.resources.limits.memory`                           | Container memory limits in MiB                                             | `1464Mi`                        |
+| `routerMetrics.resources.limits.memory`                           | Container memory limits in MiB                                             | `1024Mi`                        |
 | `routerMetrics.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                     | `500m`                          |
-| `routerMetrics.resources.requests.memory`                         | Container memory requests in MiB                                           | `512Mi`                         |
+| `routerMetrics.resources.requests.memory`                         | Container memory requests in MiB                                           | `256Mi`                         |
 | `routerMetrics.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                   | `250m`                          |
 | `routerMetrics.containerSecurityContext.enabled`                  | Enabled router-metrics containers' Security Context                        | `true`                          |
 | `routerMetrics.containerSecurityContext.runAsUser`                | Set router-metrics containers' Security Context runAsUser                  | `1000`                          |
