@@ -5040,7 +5040,7 @@ routerMetrics:
   ##
   resources:
     limits:
-      memory: "1024Mi"
+      memory: "512Mi"
       cpu: "500m"
     requests:
       memory: "256Mi"
