@@ -14,7 +14,7 @@ metadata:
 data:
   CARTO_DATA_WAREHOUSE_ENABLED: {{ .Values.cartoConfigValues.cartoDataWarehouseEnabled | quote }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
-  LOG_LEVEL: "debug"
+  LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   PORT: {{ .Values.accountsWww.containerPorts.http | quote }}
   REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
   REACT_APP_ACCOUNTS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/"
