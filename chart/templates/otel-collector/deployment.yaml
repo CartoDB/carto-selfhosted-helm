@@ -19,6 +19,10 @@ spec:
         app: opentelemetry
         component: otel-collector
     spec:
+      securityContext:
+        fsGroup: 101
+        supplementalGroups:
+        - 2345
       containers:
       - name: otel-collector
         image: otel/opentelemetry-collector-contrib:0.115.1
@@ -29,6 +33,15 @@ spec:
           requests:
             cpu: 100m
             memory: 200Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - all
+          readOnlyRootFilesystem: true
+          runAsGroup: 101
+          runAsNonRoot: false
+          runAsUser: 101
         volumeMounts:
         - mountPath: /etc/otelcol-contrib/config.yaml
           name: data
