@@ -10,8 +10,10 @@ metadata:
     {{- end }}
 spec:
   ports:
-  - name: metrics # Default endpoint for querying metrics.
+  - name: metrics
     port: 4318
+    protocol: TCP
+    targetPort: metrics
   selector:
     {{- include "common.labels.matchLabels" . | nindent 4 }}
     app.kubernetes.io/component: otel-collector

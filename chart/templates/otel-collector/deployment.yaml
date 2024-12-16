@@ -10,14 +10,15 @@ metadata:
     {{- end }}
 spec:
   selector:
-    matchLabels:
-      app: opentelemetry
-      component: otel-collector
+    matchLabels: matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: otel-collector
   template:
     metadata:
-      labels:
-        app: opentelemetry
-        component: otel-collector
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/otel-collector/configmap.yaml") . | sha256sum }}
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: otel-collector
     spec:
       securityContext:
         fsGroup: 101
@@ -25,6 +26,10 @@ spec:
         - 2345
       containers:
       - name: otel-collector
+        ports:
+        - containerPort: 4318
+          name: metrics
+          protocol: TCP
         image: otel/opentelemetry-collector-contrib:0.115.1
         resources:
           limits:

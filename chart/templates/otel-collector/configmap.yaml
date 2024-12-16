@@ -23,7 +23,7 @@ data:
 
     service:
       pipelines:
-        logs:
+        traces:
           receivers: [otlp]
           processors: [memory_limiter]
-          exporters: [exporters]
+          exporters: [debug]
