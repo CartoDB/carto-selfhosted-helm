@@ -20,10 +20,14 @@ data:
     exporters:
       debug:
         verbosity: detailed
+      otlp:
+        endpoint: 34.135.42.102:4317
+        tls:
+          insecure: true
 
     service:
       pipelines:
         traces:
           receivers: [otlp]
           processors: [memory_limiter]
-          exporters: [debug]
+          exporters: [debug, otlp]
