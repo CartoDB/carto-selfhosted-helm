@@ -62,13 +62,29 @@ Return common collectors for preflights and support-bundle
                 done
             env:
               {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+              {{- if eq .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name "" -}}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
                 value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | b64enc | quote }}
+              {{- else -}}
+              - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name | quote }}
+                    key: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.key | quote }}
+              {{- end -}}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.google.secretMountAbsolutePath" . }}
               {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
+              {{- if eq .Values.appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name "" -}}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_CONTENT
                 value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | b64enc | quote }}
+              {{- else -}}
+              - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_CONTENT
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name | quote }}
+                    key: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.existingSecret.key | quote }}
+              {{- end -}}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
               {{- end }}
@@ -510,27 +526,73 @@ Return customer values to use in preflights and support-bundle
 Return customer secrets to use in preflights and support-bundle
 */}}
 {{- define "carto.replicated.tenantRequirementsChecker.customerSecrets" }}
+  {{- if eq .Values.externalPostgresql.existingSecret "" }}
   - name: WORKSPACE_POSTGRES_PASSWORD
     value: {{ .Values.externalPostgresql.password | quote }}
+  {{- else }}
+  - name: WORKSPACE_POSTGRES_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: {{ include "carto.postgresql.secretName" . }}
+        key: {{ include "carto.postgresql.secret.key" . }}
+  {{- end -}}
+
+  {{- if eq .Values.externalRedis.existingSecret "" -}}
   - name: REDIS_PASSWORD
     value: {{ .Values.externalRedis.password | quote }}
+  {{- else }}
+  - name: REDIS_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: {{ include "carto.redis.secretName" . }}
+        key: {{ include "carto.redis.existingsecret.key" . | quote }}
+  {{- end -}}
+
+  {{- if eq .Values.cartoSecrets.launchDarklySdkKey.existingSecret.name "" -}}
   - name: LAUNCHDARKLY_SDK_KEY
     value: {{ .Values.cartoSecrets.launchDarklySdkKey.value | quote }}
+  {{- else -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "LAUNCHDARKLY_SDK_KEY" "context" .) | nindent 2 }}
+  {{- end -}}
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}
+  {{- if eq .Values.appSecrets.awsAccessKeyId.existingSecret.name "" -}}
   - name: WORKSPACE_THUMBNAILS_ACCESSKEYID
     value: {{ .Values.appSecrets.awsAccessKeyId.value | quote }}
+  {{- else -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_THUMBNAILS_ACCESSKEYID" "context" .) | nindent 2 }}
+  {{- end -}}
+  {{- if eq .Values.appSecrets.awsAccessKeyId.existingSecret.name "" -}}
   - name: WORKSPACE_IMPORTS_ACCESSKEYID
     value: {{ .Values.appSecrets.awsAccessKeyId.value | quote }}
+  {{- else -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_ACCESSKEYID" "context" .) | nindent 2 }}
+  {{- end -}}
+  {{- if eq .Values.appSecrets.awsAccessKeySecret.existingSecret.name "" -}}
   - name: WORKSPACE_THUMBNAILS_SECRETACCESSKEY
     value: {{ .Values.appSecrets.awsAccessKeySecret.value | quote }}
+  {{- else -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_THUMBNAILS_SECRETACCESSKEY" "context" .) | nindent 2 }}
+  {{- end -}}
+  {{- if eq .Values.appSecrets.awsAccessKeySecret.existingSecret.name "" -}}
   - name: WORKSPACE_IMPORTS_SECRETACCESSKEY
     value: {{ .Values.appSecrets.awsAccessKeySecret.value | quote }}
+  {{- else -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_SECRETACCESSKEY" "context" .) | nindent 2 }}
+  {{- end -}}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
+  {{- if eq .Values.appSecrets.azureStorageAccessKey.existingSecret.name "" -}}
   - name: WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY
     value: {{ .Values.appSecrets.azureStorageAccessKey.value | quote }}
+  {{- else -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY" "context" .) | nindent 2 }}
+  {{- end -}}
+  {{- if eq .Values.appSecrets.azureStorageAccessKey.existingSecret.name "" -}}
   - name: WORKSPACE_IMPORTS_STORAGE_ACCESSKEY
     value: {{ .Values.appSecrets.azureStorageAccessKey.value | quote }}
+  {{- else -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY" "context" .) | nindent 2 }}
+  {{- end -}}
   {{- end }}
 {{- end -}}
 
