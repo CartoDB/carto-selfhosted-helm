@@ -191,10 +191,10 @@ spec:
     # - when: 'true'
     #   recursiveMerge: true
     #   values:
-    #     routerMetrics:
+    #     httpCache:
     #       image:
     #         registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
-    #         tag: "latest"
+    #         tag: "feature_sc_457242_add_an_easier_approach_for_enabling_the_debug"
     #     httpCache:
     #       image:
     #         registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
@@ -538,38 +538,8 @@ spec:
     - when: '{{repl ConfigOptionEquals "enablePlatformDebugMode" "1" }}'
       recursiveMerge: true
       values:
-        httpCache:
-          extraEnvVars:
-            - name: VARNISH_LOG_LEVEL
-              value: "DEBUG"
-        importApi:
-          extraEnvVars:
-            - name: CARTO_TRACING_MODE
-              value: "local"
-        importWorker:
-          extraEnvVars:
-            - name: CARTO_TRACING_MODE
-              value: "local"
-        ldsApi:
-          extraEnvVars:
-            - name: CARTO_TRACING_MODE
-              value: "local"
-        mapsApi:
-          extraEnvVars:
-            - name: CARTO_TRACING_MODE
-              value: "local"
-        sqlWorker:
-          extraEnvVars:
-            - name: CARTO_TRACING_MODE
-              value: "local"
-        workspaceApi:
-          extraEnvVars:
-            - name: CARTO_TRACING_MODE
-              value: "local"
-        workspaceSubscriber:
-          extraEnvVars:
-            - name: CARTO_TRACING_MODE
-              value: "local"
+        appConfigValues:
+          logLevel: "debug"
     ## Openshift
     - when: '{{repl ConfigOptionEquals "platformDistribution" "openShift" }}'
       recursiveMerge: true

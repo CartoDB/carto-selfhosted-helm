@@ -76,6 +76,8 @@ appConfigValues:
   ldsRoutingProvider: ""
   ## @param appConfigValues.ldsIsolineProvider The default LDS provider for isolines
   ldsIsolineProvider: ""
+  ## @param appConfigValues.logLevel The log level used in CARTO application
+  logLevel: "info"
 
 ## @section CARTO Replicated parameters
 ## Global configuration for installations using Replicated. If you change something from this section probably your self-hosted is going to stop working.
