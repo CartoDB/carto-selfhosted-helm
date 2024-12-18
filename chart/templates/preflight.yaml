@@ -1,4 +1,3 @@
-{{- if .Values.replicated.enabled }}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -18,4 +17,3 @@ stringData:
     {{- include "carto.replicated.commonChecks.collectors" . | indent 6 }}
       analyzers:
     {{- include "carto.replicated.commonChecks.analyzers" . | indent 6 }}
-{{- end }}
