@@ -163,8 +163,8 @@ Return common collectors for preflights and support-bundle
                 value: projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus
               - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_SUBSCRIPTION
                 value: projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-tenant-requirements-checker-sub
-            {{- include "carto.replicated.tenantRequirementsChecker.customerValues" . | indent 12 }}
-            {{- include "carto.replicated.tenantRequirementsChecker.customerSecrets" . | indent 12 }}
+            {{- include "carto.replicated.tenantRequirementsChecker.customerValues" . | nindent 12 }}
+            {{- include "carto.replicated.tenantRequirementsChecker.customerSecrets" . | nindent 12 }}
             volumeMounts:
               - name: gcp-default-service-account-key
                 mountPath: {{ include "carto.google.secretMountDir" . }}
@@ -526,7 +526,7 @@ Return customer values to use in preflights and support-bundle
 Return customer secrets to use in preflights and support-bundle
 */}}
 {{- define "carto.replicated.tenantRequirementsChecker.customerSecrets" }}
-  {{- if eq .Values.externalPostgresql.existingSecret "" -}}
+  {{- if eq .Values.externalPostgresql.existingSecret "" }}
   - name: WORKSPACE_POSTGRES_PASSWORD
     value: {{ .Values.externalPostgresql.password | quote }}
   {{- else }}
