@@ -5033,12 +5033,6 @@ routerMetrics:
   ## @param routerMetrics.args Override default container args (useful when using custom images)
   ##
   args: []
-  ## @param routerMetrics.jvmProcessMaxMemoryAllocationPercentage Percentage for JVM max memory allocation inside the container memory limit
-  ##
-  jvmProcessMaxMemoryAllocationPercentage: 70
-  ## @param routerMetrics.defaultJvmProcessMaxMemoryAllocation Default value for JVM max memory allocation
-  ##
-  defaultJvmProcessMaxMemoryAllocation: 1024
   ## routerMetrics resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param routerMetrics.resources.limits.memory Container memory limits in MiB
@@ -5048,10 +5042,10 @@ routerMetrics:
   ##
   resources:
     limits:
-      memory: "1464Mi"
+      memory: "512Mi"
       cpu: "500m"
     requests:
-      memory: "512Mi"
+      memory: "256Mi"
       cpu: "250m"
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
