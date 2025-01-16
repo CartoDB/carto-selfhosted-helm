@@ -5,13 +5,14 @@ on:
       - main
   schedule:
     - cron: '30 0 * * 1-5' # From Monday to Friday (included), at 0:30 UTC
+  workflow_dispatch:
 
 permissions:
   security-events: write # To upload sarif files
 
 jobs:
   chart-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,10 +26,10 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.7' 
+          python-version: '3.13' 
 
       - name: Run Trivy vulnerability scanner in IaC mode
-        uses: aquasecurity/trivy-action@0.20.0
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           scan-type: 'config'
           hide-progress: false
