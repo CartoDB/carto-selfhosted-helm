@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - bug/sc-462750/action-to-run-trivy-in-the-helm-chart-is
   schedule:
     - cron: '30 0 * * 1-5' # From Monday to Friday (included), at 0:30 UTC
   workflow_dispatch:
