@@ -1530,18 +1530,18 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### Internal PostgreSQL subchart parameters
 
-| Name                                        | Description                                                                                     | Value                  |
-| ------------------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------- |
-| `internalPostgresql.enabled`                | Switch to enable or disable the PostgreSQL helm chart                                           | `true`                 |
-| `internalPostgresql.auth.username`          | CARTO Postgresql username                                                                       | `workspace_admin`      |
-| `internalPostgresql.auth.password`          | CARTO Postgresql password                                                                       | `""`                   |
-| `internalPostgresql.auth.postgresPassword`  | CARTO Postgresql password for the postgres user                                                 | `""`                   |
-| `internalPostgresql.auth.database`          | CARTO Postgresql database                                                                       | `workspace`            |
-| `internalPostgresql.sslEnabled`             | Whether or not connect to CARTO Postgresql via TLS                                              | `false`                |
-| `internalPostgresql.auth.existingSecret`    | Name of an existing secret containing the CARTO Postgresql password ('postgresql-password' key) | `""`                   |
-| `internalPostgresql.image.tag`              | Tag of the PostgreSQL image                                                                     | `13.5.0-debian-10-r84` |
-| `internalPostgresql.nameOverride`           | String to partially override common.names.fullname template (will maintain the release name)    | `postgresql`           |
-| `internalPostgresql.primary.initdb.scripts` | Scripts for initializing the database                                                           | `[]`                   |
+| Name                                        | Description                                                                     | Value                  |
+| ------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------- |
+| `internalPostgresql.enabled`                | # DEPRECATED: This option is deprecated and will be removed in a future release | `true`                 |
+| `internalPostgresql.auth.username`          | # DEPRECATED: This option is deprecated and will be removed in a future release | `workspace_admin`      |
+| `internalPostgresql.auth.password`          | # DEPRECATED: This option is deprecated and will be removed in a future release | `""`                   |
+| `internalPostgresql.auth.postgresPassword`  | # DEPRECATED: This option is deprecated and will be removed in a future release | `""`                   |
+| `internalPostgresql.auth.database`          | # DEPRECATED: This option is deprecated and will be removed in a future release | `workspace`            |
+| `internalPostgresql.sslEnabled`             | # DEPRECATED: This option is deprecated and will be removed in a future release | `false`                |
+| `internalPostgresql.auth.existingSecret`    | # DEPRECATED: This option is deprecated and will be removed in a future release | `""`                   |
+| `internalPostgresql.image.tag`              | # DEPRECATED: This option is deprecated and will be removed in a future release | `13.5.0-debian-10-r84` |
+| `internalPostgresql.nameOverride`           | # DEPRECATED: This option is deprecated and will be removed in a future release | `postgresql`           |
+| `internalPostgresql.primary.initdb.scripts` | # DEPRECATED: This option is deprecated and will be removed in a future release | `[]`                   |
 
 ### External PostgreSQL parameters
 
