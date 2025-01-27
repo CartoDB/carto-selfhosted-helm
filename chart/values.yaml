@@ -4824,22 +4824,22 @@ externalRedis:
 ## @section Internal PostgreSQL subchart parameters
 ## Internal PostgreSQL chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/postgresql/values.yaml
-## @param internalPostgresql.enabled Switch to enable or disable the PostgreSQL helm chart
-## @param internalPostgresql.auth.username CARTO Postgresql username
-## @param internalPostgresql.auth.password CARTO Postgresql password
-## @param internalPostgresql.auth.postgresPassword CARTO Postgresql password for the postgres user
-## @param internalPostgresql.auth.database CARTO Postgresql database
-## @param internalPostgresql.sslEnabled Whether or not connect to CARTO Postgresql via TLS
-## @param internalPostgresql.auth.existingSecret Name of an existing secret containing the CARTO Postgresql password ('postgresql-password' key)
+## @param internalPostgresql.enabled # DEPRECATED: This option is deprecated and will be removed in a future release
+## @param internalPostgresql.auth.username # DEPRECATED: This option is deprecated and will be removed in a future release
+## @param internalPostgresql.auth.password # DEPRECATED: This option is deprecated and will be removed in a future release
+## @param internalPostgresql.auth.postgresPassword # DEPRECATED: This option is deprecated and will be removed in a future release
+## @param internalPostgresql.auth.database # DEPRECATED: This option is deprecated and will be removed in a future release
+## @param internalPostgresql.sslEnabled # DEPRECATED: This option is deprecated and will be removed in a future release
+## @param internalPostgresql.auth.existingSecret # DEPRECATED: This option is deprecated and will be removed in a future release
 ##
 internalPostgresql:
   enabled: true
   sslEnabled: false
-  ## @param internalPostgresql.image.tag Tag of the PostgreSQL image
+  ## @param internalPostgresql.image.tag # DEPRECATED: This option is deprecated and will be removed in a future release
   ##
   image:
     tag: "13.5.0-debian-10-r84"
-  ## @param internalPostgresql.nameOverride String to partially override common.names.fullname template (will maintain the release name)
+  ## @param internalPostgresql.nameOverride # DEPRECATED: This option is deprecated and will be removed in a future release
   ##
   nameOverride: "postgresql"
   auth:
@@ -4850,7 +4850,7 @@ internalPostgresql:
     ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
     ##
     existingSecret: ""
-  ## @param internalPostgresql.primary.initdb.scripts [array] Scripts for initializing the database
+  ## @param internalPostgresql.primary.initdb.scripts [array] # DEPRECATED: This option is deprecated and will be removed in a future release
   ##
   primary:
     initdb:

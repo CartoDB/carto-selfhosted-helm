@@ -6,11 +6,12 @@ APP VERSION: {{ .Chart.AppVersion }}
 
 {{- if .Values.internalPostgresql.enabled }}
 
- +-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
- |N||O||T| |F||O||R| |P||R||O||D||U||C||T||I||O||N|
- +-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
++-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
+|      INTERNAL POSTGRESQL IS DEPRECATED           |
++-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
 
-WARNING: You are using a non-production installation, please follow the production mode guide in the documentation. You can find the link below
+WARNING: The internal PostgreSQL chart is deprecated and will be removed in a future release.
+It's no longer supported and you should use an external PostgreSQL instance instead.
 
 {{- end }}
 
