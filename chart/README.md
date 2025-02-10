@@ -1479,42 +1479,42 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### Internal Redis&trade; subchart parameters
 
-| Name                                                                      | Description                                                                                  | Value                  |
-| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------- |
-| `internalRedis.enabled`                                                   | Switch to enable or disable the Redis&trade; helm                                            | `true`                 |
-| `internalRedis.image.tag`                                                 | Image tag used by Redis&trade; helm                                                          | `6.2.14-debian-12-r23` |
-| `internalRedis.tlsEnabled`                                                | Whether or not connect to Redis via TLS                                                      | `false`                |
-| `internalRedis.auth.enabled`                                              | Switch to enable or disable authentication                                                   | `true`                 |
-| `internalRedis.auth.password`                                             | Redis&trade; password                                                                        | `""`                   |
-| `internalRedis.auth.existingSecret`                                       | Name of existing secret object containing the password                                       | `""`                   |
-| `internalRedis.architecture`                                              | Cluster settings                                                                             | `standalone`           |
-| `internalRedis.master.persistence.enabled`                                | Enable master persistent volumes                                                             | `false`                |
-| `internalRedis.replica.persistence.enabled`                               | Enable replica persistent volumes                                                            | `false`                |
-| `internalRedis.nameOverride`                                              | String to partially override common.names.fullname template (will maintain the release name) | `redis`                |
-| `internalRedis.master.resources.requests.memory`                          | Container memory requests in MiB                                                             | `512Mi`                |
-| `internalRedis.master.resources.requests.cpu`                             | Container cpu requests in milliCPU cores                                                     | `200m`                 |
-| `internalRedis.master.resources.limits.memory`                            | Container memory limits in MiB                                                               | `512Mi`                |
-| `internalRedis.master.resources.limits.cpu`                               | Container cpu limits in milliCPU cores                                                       | `200m`                 |
-| `internalRedis.master.podSecurityContext.fsGroup`                         | Set accounts-www pod's Security Context fsGroup                                              | `1000`                 |
-| `internalRedis.master.podSecurityContext.supplementalGroups[0]`           | Set accounts-www pod's Security Context supplementalGroups                                   | `2345`                 |
-| `internalRedis.master.containerSecurityContext.runAsUser`                 | Set Redis containers' Security Context runAsUser                                             | `1000`                 |
-| `internalRedis.master.containerSecurityContext.runAsGroup`                | Set Redis containers' Security Context runAsGroup                                            | `1000`                 |
-| `internalRedis.master.containerSecurityContext.runAsNonRoot`              | Set Redis containers' Security Context runAsNonRoot                                          | `false`                |
-| `internalRedis.master.containerSecurityContext.allowPrivilegeEscalation`  | Set Redis containers' Security Context allowPrivilegeEscalation                              | `false`                |
-| `internalRedis.master.containerSecurityContext.readOnlyRootFilesystem`    | Set Redis containers' Security Context readOnlyRootFilesystem                                | `true`                 |
-| `internalRedis.master.containerSecurityContext.capabilities.drop`         | removes Redis containers' Security Context capabilities                                      | `["all"]`              |
-| `internalRedis.replica.resources.requests.memory`                         | Container memory requests in MiB                                                             | `512Mi`                |
-| `internalRedis.replica.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                                     | `200m`                 |
-| `internalRedis.replica.resources.limits.memory`                           | Container memory limits in MiB                                                               | `512Mi`                |
-| `internalRedis.replica.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                       | `200m`                 |
-| `internalRedis.replica.podSecurityContext.fsGroup`                        | Set accounts-www pod's Security Context fsGroup                                              | `1000`                 |
-| `internalRedis.replica.podSecurityContext.supplementalGroups[0]`          | Set accounts-www pod's Security Context supplementalGroups                                   | `2345`                 |
-| `internalRedis.replica.containerSecurityContext.runAsUser`                | Set Redis replica containers' Security Context runAsUser                                     | `1000`                 |
-| `internalRedis.replica.containerSecurityContext.runAsGroup`               | Set Redis replica containers' Security Context runAsGroup                                    | `1000`                 |
-| `internalRedis.replica.containerSecurityContext.runAsNonRoot`             | Set Redis replica containers' Security Context runAsNonRoot                                  | `false`                |
-| `internalRedis.replica.containerSecurityContext.allowPrivilegeEscalation` | Set Redis replica containers' Security Context allowPrivilegeEscalation                      | `false`                |
-| `internalRedis.replica.containerSecurityContext.readOnlyRootFilesystem`   | Set Redis containers' Security Context readOnlyRootFilesystem                                | `true`                 |
-| `internalRedis.replica.containerSecurityContext.capabilities.drop`        | removes Redis replica containers' Security Context capabilities                              | `["all"]`              |
+| Name                                                                      | Description                                                                                  | Value                 |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------- |
+| `internalRedis.enabled`                                                   | Switch to enable or disable the Redis&trade; helm                                            | `true`                |
+| `internalRedis.image.tag`                                                 | Image tag used by Redis&trade; helm                                                          | `6.2.16-debian-12-r3` |
+| `internalRedis.tlsEnabled`                                                | Whether or not connect to Redis via TLS                                                      | `false`               |
+| `internalRedis.auth.enabled`                                              | Switch to enable or disable authentication                                                   | `true`                |
+| `internalRedis.auth.password`                                             | Redis&trade; password                                                                        | `""`                  |
+| `internalRedis.auth.existingSecret`                                       | Name of existing secret object containing the password                                       | `""`                  |
+| `internalRedis.architecture`                                              | Cluster settings                                                                             | `standalone`          |
+| `internalRedis.master.persistence.enabled`                                | Enable master persistent volumes                                                             | `false`               |
+| `internalRedis.replica.persistence.enabled`                               | Enable replica persistent volumes                                                            | `false`               |
+| `internalRedis.nameOverride`                                              | String to partially override common.names.fullname template (will maintain the release name) | `redis`               |
+| `internalRedis.master.resources.requests.memory`                          | Container memory requests in MiB                                                             | `512Mi`               |
+| `internalRedis.master.resources.requests.cpu`                             | Container cpu requests in milliCPU cores                                                     | `200m`                |
+| `internalRedis.master.resources.limits.memory`                            | Container memory limits in MiB                                                               | `512Mi`               |
+| `internalRedis.master.resources.limits.cpu`                               | Container cpu limits in milliCPU cores                                                       | `200m`                |
+| `internalRedis.master.podSecurityContext.fsGroup`                         | Set accounts-www pod's Security Context fsGroup                                              | `1000`                |
+| `internalRedis.master.podSecurityContext.supplementalGroups[0]`           | Set accounts-www pod's Security Context supplementalGroups                                   | `2345`                |
+| `internalRedis.master.containerSecurityContext.runAsUser`                 | Set Redis containers' Security Context runAsUser                                             | `1000`                |
+| `internalRedis.master.containerSecurityContext.runAsGroup`                | Set Redis containers' Security Context runAsGroup                                            | `1000`                |
+| `internalRedis.master.containerSecurityContext.runAsNonRoot`              | Set Redis containers' Security Context runAsNonRoot                                          | `false`               |
+| `internalRedis.master.containerSecurityContext.allowPrivilegeEscalation`  | Set Redis containers' Security Context allowPrivilegeEscalation                              | `false`               |
+| `internalRedis.master.containerSecurityContext.readOnlyRootFilesystem`    | Set Redis containers' Security Context readOnlyRootFilesystem                                | `true`                |
+| `internalRedis.master.containerSecurityContext.capabilities.drop`         | removes Redis containers' Security Context capabilities                                      | `["all"]`             |
+| `internalRedis.replica.resources.requests.memory`                         | Container memory requests in MiB                                                             | `512Mi`               |
+| `internalRedis.replica.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                                     | `200m`                |
+| `internalRedis.replica.resources.limits.memory`                           | Container memory limits in MiB                                                               | `512Mi`               |
+| `internalRedis.replica.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                       | `200m`                |
+| `internalRedis.replica.podSecurityContext.fsGroup`                        | Set accounts-www pod's Security Context fsGroup                                              | `1000`                |
+| `internalRedis.replica.podSecurityContext.supplementalGroups[0]`          | Set accounts-www pod's Security Context supplementalGroups                                   | `2345`                |
+| `internalRedis.replica.containerSecurityContext.runAsUser`                | Set Redis replica containers' Security Context runAsUser                                     | `1000`                |
+| `internalRedis.replica.containerSecurityContext.runAsGroup`               | Set Redis replica containers' Security Context runAsGroup                                    | `1000`                |
+| `internalRedis.replica.containerSecurityContext.runAsNonRoot`             | Set Redis replica containers' Security Context runAsNonRoot                                  | `false`               |
+| `internalRedis.replica.containerSecurityContext.allowPrivilegeEscalation` | Set Redis replica containers' Security Context allowPrivilegeEscalation                      | `false`               |
+| `internalRedis.replica.containerSecurityContext.readOnlyRootFilesystem`   | Set Redis containers' Security Context readOnlyRootFilesystem                                | `true`                |
+| `internalRedis.replica.containerSecurityContext.capabilities.drop`        | removes Redis replica containers' Security Context capabilities                              | `["all"]`             |
 
 ### External Redis parameters
 
