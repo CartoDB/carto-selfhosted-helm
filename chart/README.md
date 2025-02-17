@@ -82,6 +82,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cartoConfigValues.ingressTestingMode`            | Enable router testing mode for the application. This will deploy the router in testing mode serving a simple page to check that it works without routing traffic to other components.                | `false` |
 | `cartoConfigValues.onlyRunRouter`                 | Enable only the router component in the installation. This will just deploy the router component. Useful to check the ingress layer together with the option `cartoConfigValues.ingressTestingMode`. | `false` |
 | `cartoConfigValues.featureFlagsOverrides`         | YAML configuration for overriding feature flags.                                                                                                                                                     | `[]`    |
+| `cartoConfigValues.usePubSubRestApi`              | Enable the usage of PubSub via REST API instead of gRPC.                                                                                                                                             | `false` |
 
 ### App secret
 
