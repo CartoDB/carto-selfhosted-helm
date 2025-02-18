@@ -26,7 +26,7 @@ inputs:
     default: https://helm.carto.com/
   chart-bucket:
     description: "Google Cloud Storage bucket where the Helm chart is stored"
-    default: gs://carto-selfhosted-helm-repository
+    default: carto-selfhosted-helm-repository
   chart-gcp-project-id:
     description: "Google Cloud project ID where the Helm chart is stored"
     default: carto-onprem-artifacts
@@ -85,12 +85,12 @@ runs:
       if: inputs.trigger-action == 'released' || inputs.trigger-action == 'prereleased'
       run: |
         mkdir packages-selfhosted-charts
-        gsutil cp -r "${CHARTS_BUCKET}" .
+        gsutil cp -r "gs://${CHARTS_BUCKET}" .
         mv ${CHARTS_BUCKET}/*.tgz packages-selfhosted-charts/
         cp carto-${{ inputs.version }}*.tgz packages-selfhosted-charts/
         helm repo index packages-selfhosted-charts --url "${CHARTS_REPOSITORY}"
-        gsutil -h "Cache-Control:public,max-age=3600,s-maxage=3600" -m rsync -x "^index.yaml$" -d packages-selfhosted-charts/ "${CHARTS_BUCKET}"
-        gsutil -h "Cache-Control:public,max-age=180,s-maxage=30" cp packages-selfhosted-charts/index.yaml "${CHARTS_BUCKET}"
+        gsutil -h "Cache-Control:public,max-age=3600,s-maxage=3600" -m rsync -x "^index.yaml$" -d packages-selfhosted-charts/ "gs://${CHARTS_BUCKET}"
+        gsutil -h "Cache-Control:public,max-age=180,s-maxage=30" cp packages-selfhosted-charts/index.yaml "gs://${CHARTS_BUCKET}"
 
     # Step 7: Upload to Replicated
     - name: Upload release to Replicated
