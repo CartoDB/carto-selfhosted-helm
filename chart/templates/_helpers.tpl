@@ -275,9 +275,9 @@ Return Carto lds-api node options
 */}}
 {{- define "carto.ldsApi.nodeOptions" -}}
 {{- if eq (.Values.ldsApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.ldsApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.ldsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.ldsApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.ldsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.ldsApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.ldsApi.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -322,9 +322,9 @@ Return Carto import-worker node options
 */}}
 {{- define "carto.importWorker.nodeOptions" -}}
 {{- if eq (.Values.importWorker.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.importWorker.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.importWorker.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.importWorker.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.importWorker.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.importWorker.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.importWorker.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -369,9 +369,9 @@ Return Carto import-api node options
 */}}
 {{- define "carto.importApi.nodeOptions" -}}
 {{- if eq (.Values.importApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.importApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.importApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.importApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.importApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.importApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.importApi.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -416,9 +416,9 @@ Return Carto maps-api node options
 */}}
 {{- define "carto.mapsApi.nodeOptions" -}}
 {{- if eq (.Values.mapsApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.mapsApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.mapsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.mapsApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.mapsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.mapsApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.mapsApi.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -463,9 +463,9 @@ Return Carto sql-worker node options
 */}}
 {{- define "carto.sqlWorker.nodeOptions" -}}
 {{- if eq (.Values.sqlWorker.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.sqlWorker.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.sqlWorker.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.sqlWorker.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.sqlWorker.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.sqlWorker.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.sqlWorker.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -510,9 +510,9 @@ Return Carto workspace-subscriber node options
 */}}
 {{- define "carto.workspaceSubscriber.nodeOptions" -}}
 {{- if eq (.Values.workspaceSubscriber.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.workspaceSubscriber.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.workspaceSubscriber.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.workspaceSubscriber.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.workspaceSubscriber.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.workspaceSubscriber.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.workspaceSubscriber.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -557,9 +557,9 @@ Return Carto workspace-api node options
 */}}
 {{- define "carto.workspaceApi.nodeOptions" -}}
 {{- if eq (.Values.workspaceApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.workspaceApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.workspaceApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.workspaceApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.workspaceApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.workspaceApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.workspaceApi.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -856,9 +856,9 @@ Return Carto cdn-invalidator-sub node options
 */}}
 {{- define "carto.cdnInvalidatorSub.nodeOptions" -}}
 {{- if eq (.Values.cdnInvalidatorSub.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.cdnInvalidatorSub.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.cdnInvalidatorSub.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.cdnInvalidatorSub.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.cdnInvalidatorSub.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.cdnInvalidatorSub.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.cdnInvalidatorSub.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
