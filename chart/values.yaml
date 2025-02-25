@@ -290,6 +290,16 @@ appSecrets:
     existingSecret:
       name: ""
       key: ""
+  ## @extra appSecrets.aiProviderApiKey The API Key to be used for the AI provider.
+  aiProviderApiKey:
+    ## @param appSecrets.aiProviderApiKey.value Value of the secret `WORKSPACE_AI_PROVIDER_API_KEY`
+    value: ""
+    ## @param appSecrets.aiProviderApiKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.aiProviderApiKey.existingSecret.key`. If `appSecrets.aiProviderApiKey.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.aiProviderApiKey.existingSecret.key Key to find in `appSecrets.aiProviderApiKey.existingSecret.name` where the value of `appSecrets.aiProviderApiKey` is found. If `appSecrets.aiProviderApiKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
 
 ## @section CARTO secrets
 ## Secrets provided by CARTO. Some of them could be customized by the client.
@@ -978,7 +988,11 @@ importApi:
   command: ["/bin/bash"]
   ## @param importApi.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js",
+    ]
   ## @param importApi.hostAliases import-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1243,7 +1257,11 @@ importWorker:
   command: ["/bin/bash"]
   ## @param importWorker.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js"]
+  args:
+    [
+      "-c",
+      "node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js",
+    ]
   ## @param importWorker.hostAliases import-worker pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1522,7 +1540,11 @@ ldsApi:
   command: ["/bin/bash"]
   ## @param ldsApi.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js",
+    ]
   ## @param ldsApi.hostAliases lds-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1847,7 +1869,11 @@ mapsApi:
   command: ["/bin/bash"]
   ## @param mapsApi.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js",
+    ]
   ## @param mapsApi.hostAliases maps-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -2147,7 +2173,11 @@ sqlWorker:
   command: ["/bin/bash"]
   ## @param sqlWorker.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js",
+    ]
   ## @param sqlWorker.hostAliases sql-worker pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -2519,8 +2549,8 @@ router:
       exec:
         command:
           - /bin/sh
-          - '-c'
-          - 'sleep 30 && /usr/sbin/nginx -s quit'
+          - "-c"
+          - "sleep 30 && /usr/sbin/nginx -s quit"
   ## @param router.extraEnvVars Array with extra environment variables to add to router nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -2933,8 +2963,8 @@ httpCache:
       exec:
         command:
           - sh
-          - '-c'
-          - 'sleep 30 && kill -TERM $(pidof varnishd)'
+          - "-c"
+          - "sleep 30 && kill -TERM $(pidof varnishd)"
   ## @param httpCache.extraEnvVars Array with extra environment variables to add to http-cache nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -3517,7 +3547,11 @@ cdnInvalidatorSub:
   command: ["/bin/bash"]
   ## @param cdnInvalidatorSub.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "node -r /usr/src/app/cdn-invalidator-sub/tsconfig-paths-bootstrap.js /usr/src/app/cdn-invalidator-sub/dist/app/cdn-invalidator-sub/index.js"]
+  args:
+    [
+      "-c",
+      "node -r /usr/src/app/cdn-invalidator-sub/tsconfig-paths-bootstrap.js /usr/src/app/cdn-invalidator-sub/dist/app/cdn-invalidator-sub/index.js",
+    ]
   ## @param cdnInvalidatorSub.hostAliases cdnInvalidatorSub pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -3845,7 +3879,11 @@ workspaceApi:
 
   ## @param workspaceApi.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js",
+    ]
   ## @param workspaceApi.hostAliases workspace-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -4110,7 +4148,11 @@ workspaceSubscriber:
   command: ["/bin/bash"]
   ## @param workspaceSubscriber.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js",
+    ]
   ## @param workspaceSubscriber.hostAliases workspace-subscriber pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
