@@ -290,16 +290,6 @@ appSecrets:
     existingSecret:
       name: ""
       key: ""
-  ## @extra appSecrets.aiProviderApiKey The API Key to be used for the AI provider.
-  aiProviderApiKey:
-    ## @param appSecrets.aiProviderApiKey.value Value of the secret `WORKSPACE_OPENAI_API_KEY`
-    value: ""
-    ## @param appSecrets.aiProviderApiKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.aiProviderApiKey.existingSecret.key`. If `appSecrets.aiProviderApiKey.value` is defined, this value is going to be ignored and not used.
-    ## @param appSecrets.aiProviderApiKey.existingSecret.key Key to find in `appSecrets.aiProviderApiKey.existingSecret.name` where the value of `appSecrets.aiProviderApiKey` is found. If `appSecrets.aiProviderApiKey.value` is defined, this value is going to be ignored and not used.
-    ##
-    existingSecret:
-      name: ""
-      key: ""
 
 ## @section CARTO secrets
 ## Secrets provided by CARTO. Some of them could be customized by the client.
@@ -390,6 +380,16 @@ cartoSecrets:
     value: ""
     ## @param cartoSecrets.instanceId.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.instanceId.existingSecret.key`. If `cartoSecrets.instanceId.value` is defined, this value is going to be ignored and not used.
     ## @param cartoSecrets.instanceId.existingSecret.key Key to find in `cartoSecrets.instanceId.existingSecret.name` where the value of `cartoSecrets.instanceId` is found. If `cartoSecrets.instanceId.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+    ## @extra cartoSecrets.openAiApiKey The API Key to be used for the AI provider.
+  openAiApiKey:
+    ## @param cartoSecrets.openAiApiKey.value Value of the secret `WORKSPACE_OPENAI_API_KEY`
+    value: ""
+    ## @param cartoSecrets.openAiApiKey.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.openAiApiKey.existingSecret.key`. If `cartoSecrets.openAiApiKey.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.openAiApiKey.existingSecret.key Key to find in `cartoSecrets.openAiApiKey.existingSecret.name` where the value of `cartoSecrets.openAiApiKey` is found. If `cartoSecrets.openAiApiKey.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""
