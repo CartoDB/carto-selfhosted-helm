@@ -2,7 +2,7 @@ name: Lint codebase
 on: [pull_request]
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
 
@@ -25,7 +25,7 @@ jobs:
           FILTER_REGEX_EXCLUDE: ".*doc/.*|.*github/.*"
 
   check-helm-resources-changed:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
@@ -54,7 +54,7 @@ jobs:
             :warning: Helm Chart resources have changed. Please make sure to update the documentation accordingly. You can find more information [here](https://cartodb.getoutline.com/doc/helm-chart-yJ3vxi6icN#h-deployment-resources).
 
   helm-readme-generator:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
