@@ -68,12 +68,6 @@ spec:
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
-        {{- if .Values.internalPostgresql.enabled }}
-        {{ include "carto.postgresql-init-container" (dict "context" $ "admin" "true") | nindent 8 }}
-        {{- end }}
-        {{- if .Values.internalRedis.enabled }}
-        {{ include "carto.redis-init-container" . | nindent 8 }}
-        {{- end }}
         - name: workspace-migrations
           image: {{ template "carto.workspaceMigrations.image" . }}
           imagePullPolicy: {{ .Values.workspaceMigrations.image.pullPolicy }}
@@ -102,11 +96,13 @@ spec:
               value: {{ include "carto.postgresql.adminUser" . }}
             - name: POSTGRES_LOGIN_USER
               value: {{ include "carto.postgresql.internalAdminUser" . }}
+            {{- if .Values.internalPostgresql.enabled }}
             - name: POSTGRES_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.adminKey" . }}
+            {{- end }}
             - name: POSTGRES_ADMIN_DB
               value: {{ include "carto.postgresql.adminDatabase" . }}
             - name: WORKSPACE_POSTGRES_INTERNAL_USER
