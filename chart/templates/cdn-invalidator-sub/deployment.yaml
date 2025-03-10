@@ -72,9 +72,6 @@ spec:
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
-        {{- if .Values.internalPostgresql.enabled }}
-        {{ include "carto.postgresql-init-container" (dict "context" $) | nindent 8 }}
-        {{- end }}
         {{- if .Values.cdnInvalidatorSub.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.initContainers "context" $) | nindent 8 }}
         {{- end }}
