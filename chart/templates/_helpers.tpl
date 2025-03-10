@@ -69,6 +69,7 @@ MAPS_API_V3_JWT_SECRET: cartoSecrets.jwtApiSecret
 REACT_APP_VITALLY_TOKEN: cartoSecrets.vitallyToken
 VARNISH_DEBUG_SECRET: cartoSecrets.varnishDebugSecret
 VARNISH_PURGE_SECRET: cartoSecrets.varnishPurgeSecret
+WORKSPACE_OPENAI_API_KEY: cartoSecrets.openAiApiKey
 WORKSPACE_IMPORTS_ACCESSKEYID: appSecrets.awsAccessKeyId
 WORKSPACE_IMPORTS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 WORKSPACE_IMPORTS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
