@@ -34,4 +34,4 @@ sources:
   - https://carto.com/
 annotations:
   minVersion: "2023.10.25"
-version: 1.0.1
+version: 1.162.2
