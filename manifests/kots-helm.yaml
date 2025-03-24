@@ -42,7 +42,7 @@ spec:
       vitallyToken:
         value: '{{repl LicenseFieldValue "vitallyToken" }}'
       openAiApiKey:
-        value: '{{repl ConfigOptionEquals "customOpenAIAPIKeyEnabled" "1" | ternary (ConfigOption "customOpenAIAPIKey") (LicenseFieldValue "openAiApiKey") }}'
+        value: '{{repl ConfigOptionEquals "customOpenAIAPIKeyEnabled" "1"}}'
     # Carto Config Values
     cartoConfigValues:
       cartoAccApiDomain: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "cartoAccApiDomain" "" | Base64Decode }}'
