@@ -3,7 +3,7 @@ force:
   major: 1
   minor: 0
   patch: 1
-  commit: c5bb6f83d58b1175cb4357f860ce15857c13be91
+  # commit: c5bb6f83d58b1175cb4357f860ce15857c13be91
   existing: true
   strict: false
 wording:
