@@ -64,9 +64,6 @@ spec:
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
-        {{- if .Values.internalPostgresql.enabled }}
-        {{ include "carto.postgresql-init-container" (dict "context" $) | nindent 8 }}
-        {{- end }}
         {{- if .Values.router.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.router.initContainers "context" $) | nindent 8 }}
         {{- end }}
@@ -228,12 +225,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: logstash-config
-              mountPath: /usr/share/logstash/config
-            - name: logstash-pipeline
-              mountPath: /usr/share/logstash/pipeline
-            - name: logstash-data
-              mountPath: /usr/share/logstash/data
             - name: tmp
               mountPath: /tmp
               subPath: router-metrics-tmp-dir
@@ -249,15 +240,6 @@ spec:
         {{- end }}
       volumes:
         - name: nginx
-          emptyDir:
-            medium: Memory
-        - name: logstash-config
-          emptyDir:
-            medium: Memory
-        - name: logstash-pipeline
-          emptyDir:
-            medium: Memory
-        - name: logstash-data
           emptyDir:
             medium: Memory
         - name: tmp

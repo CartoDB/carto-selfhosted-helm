@@ -31,6 +31,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.workspaceThumbnailsPublic`                        | Indicate if the thumbnails could be accessed publicly                                                                  | `true`                 |
 | `appConfigValues.googleCloudStorageProjectId`                      | If the bucket is GCP, the ProjectId to be used                                                                         | `""`                   |
 | `appConfigValues.awsS3Region`                                      | If the bucket is S3, the region to be used                                                                             | `""`                   |
+| `appConfigValues.awsEksPodIdentityBucketsEnabled`                  | If the bucket is S3, the region to be used                                                                             | `false`                |
 | `appConfigValues.bigqueryOauth2ClientId`                           | The Client ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key. | `""`                   |
 | `appConfigValues.enableTrackJS`                                    | By default, TrackJS will gather information about end-user browser, you can disable it setting this parameter to false | `true`                 |
 | `appConfigValues.ssoOrganizationId`                                | SSO organization ID provided by CARTO used to configure the SSO in the app.                                            | `""`                   |
@@ -51,33 +52,38 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.ldsGeocodingProvider`                             | The default LDS provider for geocoding                                                                                 | `""`                   |
 | `appConfigValues.ldsRoutingProvider`                               | The default LDS provider for routing                                                                                   | `""`                   |
 | `appConfigValues.ldsIsolineProvider`                               | The default LDS provider for isolines                                                                                  | `""`                   |
+| `appConfigValues.logLevel`                                         | The log level used in CARTO application                                                                                | `info`                 |
 
 ### CARTO Replicated parameters
 
-| Name                              | Description                                                      | Value   |
-| --------------------------------- | ---------------------------------------------------------------- | ------- |
-| `replicated.enabled`              | Enable Carto replicated                                          | `false` |
-| `replicated.platformDistribution` | Platform distribution to deploy Carto Selfhosted with Replicated | `""`    |
+| Name                              | Description                                                      | Value                              |
+| --------------------------------- | ---------------------------------------------------------------- | ---------------------------------- |
+| `replicated.enabled`              | Enable CARTO replicated                                          | `false`                            |
+| `replicated.platformDistribution` | Platform distribution to deploy CARTO Selfhosted with Replicated | `""`                               |
+| `replicated.replicatedAppDomain`  | Domain of Replicated app                                         | `replicated.self-hosted.carto.com` |
 
 ### CARTO config parameters
 
 | Name                                              | Description                                                                                                                                                                                          | Value   |
 | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
 | `cartoConfigValues.enableErrorResponseStackTrace` | Enable stack traces in the container responses                                                                                                                                                       | `false` |
-| `cartoConfigValues.cartoAccApiDomain`             | Domain of the Account API of Carto.                                                                                                                                                                  | `""`    |
-| `cartoConfigValues.cartoAccGcpProjectId`          | GCP project ID of the Carto Accounts.                                                                                                                                                                | `""`    |
-| `cartoConfigValues.cartoAccGcpProjectRegion`      | GCP project region of the Carto Accounts.                                                                                                                                                            | `""`    |
+| `cartoConfigValues.cartoAccApiDomain`             | Domain of the Account API of CARTO.                                                                                                                                                                  | `""`    |
+| `cartoConfigValues.cartoAccGcpProjectId`          | GCP project ID of the CARTO Accounts.                                                                                                                                                                | `""`    |
+| `cartoConfigValues.cartoAccGcpProjectRegion`      | GCP project region of the CARTO Accounts.                                                                                                                                                            | `""`    |
+| `cartoConfigValues.cartoDoApiDomain`              | Domain of the Data Observatory API of CARTO.                                                                                                                                                         | `""`    |
+| `cartoConfigValues.cartoDoAssetsDomain`           | Domain of the Data Observatory Assets bucket of CARTO.                                                                                                                                               | `""`    |
 | `cartoConfigValues.cartoAuth0ClientId`            | Client ID of Auth0.                                                                                                                                                                                  | `""`    |
 | `cartoConfigValues.cartoAuth0CustomDomain`        | Custom Domain of Auth0.                                                                                                                                                                              | `""`    |
-| `cartoConfigValues.cartoSelfhostedDwLocation`     | Location of the Carto Data Warehouse.                                                                                                                                                                | `""`    |
+| `cartoConfigValues.cartoSelfhostedDwLocation`     | Location of the CARTO Data Warehouse.                                                                                                                                                                | `""`    |
 | `cartoConfigValues.selfHostedGcpProjectId`        | GCP project ID used in the installation.                                                                                                                                                             | `""`    |
-| `cartoConfigValues.selfHostedTenantId`            | Carto internal tenantId used in the installation.                                                                                                                                                    | `""`    |
+| `cartoConfigValues.selfHostedTenantId`            | CARTO internal tenantId used in the installation.                                                                                                                                                    | `""`    |
 | `cartoConfigValues.launchDarklyClientSideId`      | LaunchDarkly ClientSideId (by www) used to enable/disable features.                                                                                                                                  | `""`    |
-| `cartoConfigValues.cartoDataWarehouseEnabled`     | Enable the Carto Data Warehouse for the self-hosted.                                                                                                                                                 | `false` |
-| `cartoConfigValues.dataObservatoryProjectId`      | GCP project ID of the Carto Data Observatory.                                                                                                                                                        | `""`    |
+| `cartoConfigValues.cartoDataWarehouseEnabled`     | Enable the CARTO Data Warehouse for the self-hosted.                                                                                                                                                 | `false` |
+| `cartoConfigValues.dataObservatoryProjectId`      | GCP project ID of the CARTO Data Observatory.                                                                                                                                                        | `""`    |
 | `cartoConfigValues.ingressTestingMode`            | Enable router testing mode for the application. This will deploy the router in testing mode serving a simple page to check that it works without routing traffic to other components.                | `false` |
 | `cartoConfigValues.onlyRunRouter`                 | Enable only the router component in the installation. This will just deploy the router component. Useful to check the ingress layer together with the option `cartoConfigValues.ingressTestingMode`. | `false` |
 | `cartoConfigValues.featureFlagsOverrides`         | YAML configuration for overriding feature flags.                                                                                                                                                     | `[]`    |
+| `cartoConfigValues.usePubSubRestApi`              | Enable the usage of PubSub via REST API instead of gRPC.                                                                                                                                             | `false` |
 
 ### App secret
 
@@ -152,8 +158,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 | Name                                                           | Description                                                                                                                                                                                                                                                           | Value |
 | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
-| `cartoSecrets.encryptionSecretKey`                             | The secret used to encrypt the clients Carto connections stored in the database.                                                                                                                                                                                      |       |
-| `cartoSecrets.encryptionSecretKey.value`                       | Value of the secret used to encrypt the clients Carto connections stored in the database. One of `cartoSecrets.encryptionSecretKey.value` or `cartoSecrets.encryptionSecretKey.existingSecret` could be defined.                                                      | `""`  |
+| `cartoSecrets.encryptionSecretKey`                             | The secret used to encrypt the clients CARTO connections stored in the database.                                                                                                                                                                                      |       |
+| `cartoSecrets.encryptionSecretKey.value`                       | Value of the secret used to encrypt the clients CARTO connections stored in the database. One of `cartoSecrets.encryptionSecretKey.value` or `cartoSecrets.encryptionSecretKey.existingSecret` could be defined.                                                      | `""`  |
 | `cartoSecrets.encryptionSecretKey.existingSecret.name`         | Name of the pre-existent secret containing the `cartoSecrets.encryptionSecretKey.existingSecret.key`. If `cartoSecrets.encryptionSecretKey.value` is defined, this value is going to be ignored and not used.                                                         | `""`  |
 | `cartoSecrets.encryptionSecretKey.existingSecret.key`          | Key to find in `cartoSecrets.encryptionSecretKey.existingSecret.name` where the value of `cartoSecrets.encryptionSecretKey` is found. If `cartoSecrets.encryptionSecretKey.value` is defined, this value is going to be ignored and not used.                         | `""`  |
 | `cartoSecrets.jwtApiSecret`                                    | The secret used to encrypt the jwt token for API components                                                                                                                                                                                                           |       |
@@ -188,6 +194,10 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cartoSecrets.instanceId.value`                                | Value of the secret used to define the instance ID for the active installation. One of `cartoSecrets.instanceId.value` or `cartoSecrets.instanceId.existingSecret` could be defined.                                                                                  | `""`  |
 | `cartoSecrets.instanceId.existingSecret.name`                  | Name of the pre-existent secret containing the `cartoSecrets.instanceId.existingSecret.key`. If `cartoSecrets.instanceId.value` is defined, this value is going to be ignored and not used.                                                                           | `""`  |
 | `cartoSecrets.instanceId.existingSecret.key`                   | Key to find in `cartoSecrets.instanceId.existingSecret.name` where the value of `cartoSecrets.instanceId` is found. If `cartoSecrets.instanceId.value` is defined, this value is going to be ignored and not used.                                                    | `""`  |
+| `cartoSecrets.openAiApiKey`                                    | The API Key to be used for the AI provider.                                                                                                                                                                                                                           |       |
+| `cartoSecrets.openAiApiKey.value`                              | Value of the secret `WORKSPACE_OPENAI_API_KEY`                                                                                                                                                                                                                        | `""`  |
+| `cartoSecrets.openAiApiKey.existingSecret.name`                | Name of the pre-existent secret containing the `cartoSecrets.openAiApiKey.existingSecret.key`. If `cartoSecrets.openAiApiKey.value` is defined, this value is going to be ignored and not used.                                                                       | `""`  |
+| `cartoSecrets.openAiApiKey.existingSecret.key`                 | Key to find in `cartoSecrets.openAiApiKey.existingSecret.name` where the value of `cartoSecrets.openAiApiKey` is found. If `cartoSecrets.openAiApiKey.value` is defined, this value is going to be ignored and not used.                                              | `""`  |
 
 ### TLS parameters
 
@@ -1475,42 +1485,42 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### Internal Redis&trade; subchart parameters
 
-| Name                                                                      | Description                                                                                  | Value                  |
-| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------- |
-| `internalRedis.enabled`                                                   | Switch to enable or disable the Redis&trade; helm                                            | `true`                 |
-| `internalRedis.image.tag`                                                 | Image tag used by Redis&trade; helm                                                          | `6.2.14-debian-12-r23` |
-| `internalRedis.tlsEnabled`                                                | Whether or not connect to Redis via TLS                                                      | `false`                |
-| `internalRedis.auth.enabled`                                              | Switch to enable or disable authentication                                                   | `true`                 |
-| `internalRedis.auth.password`                                             | Redis&trade; password                                                                        | `""`                   |
-| `internalRedis.auth.existingSecret`                                       | Name of existing secret object containing the password                                       | `""`                   |
-| `internalRedis.architecture`                                              | Cluster settings                                                                             | `standalone`           |
-| `internalRedis.master.persistence.enabled`                                | Enable master persistent volumes                                                             | `false`                |
-| `internalRedis.replica.persistence.enabled`                               | Enable replica persistent volumes                                                            | `false`                |
-| `internalRedis.nameOverride`                                              | String to partially override common.names.fullname template (will maintain the release name) | `redis`                |
-| `internalRedis.master.resources.requests.memory`                          | Container memory requests in MiB                                                             | `512Mi`                |
-| `internalRedis.master.resources.requests.cpu`                             | Container cpu requests in milliCPU cores                                                     | `200m`                 |
-| `internalRedis.master.resources.limits.memory`                            | Container memory limits in MiB                                                               | `512Mi`                |
-| `internalRedis.master.resources.limits.cpu`                               | Container cpu limits in milliCPU cores                                                       | `200m`                 |
-| `internalRedis.master.podSecurityContext.fsGroup`                         | Set accounts-www pod's Security Context fsGroup                                              | `1000`                 |
-| `internalRedis.master.podSecurityContext.supplementalGroups[0]`           | Set accounts-www pod's Security Context supplementalGroups                                   | `2345`                 |
-| `internalRedis.master.containerSecurityContext.runAsUser`                 | Set Redis containers' Security Context runAsUser                                             | `1000`                 |
-| `internalRedis.master.containerSecurityContext.runAsGroup`                | Set Redis containers' Security Context runAsGroup                                            | `1000`                 |
-| `internalRedis.master.containerSecurityContext.runAsNonRoot`              | Set Redis containers' Security Context runAsNonRoot                                          | `false`                |
-| `internalRedis.master.containerSecurityContext.allowPrivilegeEscalation`  | Set Redis containers' Security Context allowPrivilegeEscalation                              | `false`                |
-| `internalRedis.master.containerSecurityContext.readOnlyRootFilesystem`    | Set Redis containers' Security Context readOnlyRootFilesystem                                | `true`                 |
-| `internalRedis.master.containerSecurityContext.capabilities.drop`         | removes Redis containers' Security Context capabilities                                      | `["all"]`              |
-| `internalRedis.replica.resources.requests.memory`                         | Container memory requests in MiB                                                             | `512Mi`                |
-| `internalRedis.replica.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                                     | `200m`                 |
-| `internalRedis.replica.resources.limits.memory`                           | Container memory limits in MiB                                                               | `512Mi`                |
-| `internalRedis.replica.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                       | `200m`                 |
-| `internalRedis.replica.podSecurityContext.fsGroup`                        | Set accounts-www pod's Security Context fsGroup                                              | `1000`                 |
-| `internalRedis.replica.podSecurityContext.supplementalGroups[0]`          | Set accounts-www pod's Security Context supplementalGroups                                   | `2345`                 |
-| `internalRedis.replica.containerSecurityContext.runAsUser`                | Set Redis replica containers' Security Context runAsUser                                     | `1000`                 |
-| `internalRedis.replica.containerSecurityContext.runAsGroup`               | Set Redis replica containers' Security Context runAsGroup                                    | `1000`                 |
-| `internalRedis.replica.containerSecurityContext.runAsNonRoot`             | Set Redis replica containers' Security Context runAsNonRoot                                  | `false`                |
-| `internalRedis.replica.containerSecurityContext.allowPrivilegeEscalation` | Set Redis replica containers' Security Context allowPrivilegeEscalation                      | `false`                |
-| `internalRedis.replica.containerSecurityContext.readOnlyRootFilesystem`   | Set Redis containers' Security Context readOnlyRootFilesystem                                | `true`                 |
-| `internalRedis.replica.containerSecurityContext.capabilities.drop`        | removes Redis replica containers' Security Context capabilities                              | `["all"]`              |
+| Name                                                                      | Description                                                                                  | Value                 |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------- |
+| `internalRedis.enabled`                                                   | Switch to enable or disable the Redis&trade; helm                                            | `true`                |
+| `internalRedis.image.tag`                                                 | Image tag used by Redis&trade; helm                                                          | `6.2.16-debian-12-r3` |
+| `internalRedis.tlsEnabled`                                                | Whether or not connect to Redis via TLS                                                      | `false`               |
+| `internalRedis.auth.enabled`                                              | Switch to enable or disable authentication                                                   | `true`                |
+| `internalRedis.auth.password`                                             | Redis&trade; password                                                                        | `""`                  |
+| `internalRedis.auth.existingSecret`                                       | Name of existing secret object containing the password                                       | `""`                  |
+| `internalRedis.architecture`                                              | Cluster settings                                                                             | `standalone`          |
+| `internalRedis.master.persistence.enabled`                                | Enable master persistent volumes                                                             | `false`               |
+| `internalRedis.replica.persistence.enabled`                               | Enable replica persistent volumes                                                            | `false`               |
+| `internalRedis.nameOverride`                                              | String to partially override common.names.fullname template (will maintain the release name) | `redis`               |
+| `internalRedis.master.resources.requests.memory`                          | Container memory requests in MiB                                                             | `512Mi`               |
+| `internalRedis.master.resources.requests.cpu`                             | Container cpu requests in milliCPU cores                                                     | `200m`                |
+| `internalRedis.master.resources.limits.memory`                            | Container memory limits in MiB                                                               | `512Mi`               |
+| `internalRedis.master.resources.limits.cpu`                               | Container cpu limits in milliCPU cores                                                       | `200m`                |
+| `internalRedis.master.podSecurityContext.fsGroup`                         | Set accounts-www pod's Security Context fsGroup                                              | `1000`                |
+| `internalRedis.master.podSecurityContext.supplementalGroups[0]`           | Set accounts-www pod's Security Context supplementalGroups                                   | `2345`                |
+| `internalRedis.master.containerSecurityContext.runAsUser`                 | Set Redis containers' Security Context runAsUser                                             | `1000`                |
+| `internalRedis.master.containerSecurityContext.runAsGroup`                | Set Redis containers' Security Context runAsGroup                                            | `1000`                |
+| `internalRedis.master.containerSecurityContext.runAsNonRoot`              | Set Redis containers' Security Context runAsNonRoot                                          | `false`               |
+| `internalRedis.master.containerSecurityContext.allowPrivilegeEscalation`  | Set Redis containers' Security Context allowPrivilegeEscalation                              | `false`               |
+| `internalRedis.master.containerSecurityContext.readOnlyRootFilesystem`    | Set Redis containers' Security Context readOnlyRootFilesystem                                | `true`                |
+| `internalRedis.master.containerSecurityContext.capabilities.drop`         | removes Redis containers' Security Context capabilities                                      | `["all"]`             |
+| `internalRedis.replica.resources.requests.memory`                         | Container memory requests in MiB                                                             | `512Mi`               |
+| `internalRedis.replica.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                                     | `200m`                |
+| `internalRedis.replica.resources.limits.memory`                           | Container memory limits in MiB                                                               | `512Mi`               |
+| `internalRedis.replica.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                       | `200m`                |
+| `internalRedis.replica.podSecurityContext.fsGroup`                        | Set accounts-www pod's Security Context fsGroup                                              | `1000`                |
+| `internalRedis.replica.podSecurityContext.supplementalGroups[0]`          | Set accounts-www pod's Security Context supplementalGroups                                   | `2345`                |
+| `internalRedis.replica.containerSecurityContext.runAsUser`                | Set Redis replica containers' Security Context runAsUser                                     | `1000`                |
+| `internalRedis.replica.containerSecurityContext.runAsGroup`               | Set Redis replica containers' Security Context runAsGroup                                    | `1000`                |
+| `internalRedis.replica.containerSecurityContext.runAsNonRoot`             | Set Redis replica containers' Security Context runAsNonRoot                                  | `false`               |
+| `internalRedis.replica.containerSecurityContext.allowPrivilegeEscalation` | Set Redis replica containers' Security Context allowPrivilegeEscalation                      | `false`               |
+| `internalRedis.replica.containerSecurityContext.readOnlyRootFilesystem`   | Set Redis containers' Security Context readOnlyRootFilesystem                                | `true`                |
+| `internalRedis.replica.containerSecurityContext.capabilities.drop`        | removes Redis replica containers' Security Context capabilities                              | `["all"]`             |
 
 ### External Redis parameters
 
@@ -1526,18 +1536,18 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### Internal PostgreSQL subchart parameters
 
-| Name                                        | Description                                                                                     | Value                  |
-| ------------------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------- |
-| `internalPostgresql.enabled`                | Switch to enable or disable the PostgreSQL helm chart                                           | `true`                 |
-| `internalPostgresql.auth.username`          | CARTO Postgresql username                                                                       | `workspace_admin`      |
-| `internalPostgresql.auth.password`          | CARTO Postgresql password                                                                       | `""`                   |
-| `internalPostgresql.auth.postgresPassword`  | CARTO Postgresql password for the postgres user                                                 | `""`                   |
-| `internalPostgresql.auth.database`          | CARTO Postgresql database                                                                       | `workspace`            |
-| `internalPostgresql.sslEnabled`             | Whether or not connect to CARTO Postgresql via TLS                                              | `false`                |
-| `internalPostgresql.auth.existingSecret`    | Name of an existing secret containing the CARTO Postgresql password ('postgresql-password' key) | `""`                   |
-| `internalPostgresql.image.tag`              | Tag of the PostgreSQL image                                                                     | `13.5.0-debian-10-r84` |
-| `internalPostgresql.nameOverride`           | String to partially override common.names.fullname template (will maintain the release name)    | `postgresql`           |
-| `internalPostgresql.primary.initdb.scripts` | Scripts for initializing the database                                                           | `[]`                   |
+| Name                                        | Description                                                                     | Value                  |
+| ------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------- |
+| `internalPostgresql.enabled`                | # DEPRECATED: This option is deprecated and will be removed in a future release | `true`                 |
+| `internalPostgresql.auth.username`          | # DEPRECATED: This option is deprecated and will be removed in a future release | `workspace_admin`      |
+| `internalPostgresql.auth.password`          | # DEPRECATED: This option is deprecated and will be removed in a future release | `""`                   |
+| `internalPostgresql.auth.postgresPassword`  | # DEPRECATED: This option is deprecated and will be removed in a future release | `""`                   |
+| `internalPostgresql.auth.database`          | # DEPRECATED: This option is deprecated and will be removed in a future release | `workspace`            |
+| `internalPostgresql.sslEnabled`             | # DEPRECATED: This option is deprecated and will be removed in a future release | `false`                |
+| `internalPostgresql.auth.existingSecret`    | # DEPRECATED: This option is deprecated and will be removed in a future release | `""`                   |
+| `internalPostgresql.image.tag`              | # DEPRECATED: This option is deprecated and will be removed in a future release | `13.5.0-debian-10-r84` |
+| `internalPostgresql.nameOverride`           | # DEPRECATED: This option is deprecated and will be removed in a future release | `postgresql`           |
+| `internalPostgresql.primary.initdb.scripts` | # DEPRECATED: This option is deprecated and will be removed in a future release | `[]`                   |
 
 ### External PostgreSQL parameters
 
@@ -1558,6 +1568,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `externalPostgresql.port`                           | Database port number                                                                                                                   | `5432`            |
 | `externalPostgresql.sslEnabled`                     | Whether or not connect to CARTO Postgresql via TLS                                                                                     | `false`           |
 | `externalPostgresql.sslCA`                          | CA certificate in case CARTO Postgresql TLS cert it's selfsigned                                                                       | `""`              |
+| `externalPostgresql.awsEksPodIdentityEnabled`       | Enable EKS Pod Identity authentication for the external postgresql                                                                     | `false`           |
+| `externalPostgresql.awsRdsRegion`                   | Region of the RDS PostgreSQL database in AWS. Needed when EKS Pod Identity is enabled                                                  | `""`              |
 
 ### External proxy configuration
 
@@ -1615,11 +1627,9 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `routerMetrics.image.pullSecrets`                                 | routerMetrics image pull secrets                                           | `[]`                            |
 | `routerMetrics.command`                                           | Override default container command (useful when using custom images)       | `[]`                            |
 | `routerMetrics.args`                                              | Override default container args (useful when using custom images)          | `[]`                            |
-| `routerMetrics.jvmProcessMaxMemoryAllocationPercentage`           | Percentage for JVM max memory allocation inside the container memory limit | `70`                            |
-| `routerMetrics.defaultJvmProcessMaxMemoryAllocation`              | Default value for JVM max memory allocation                                | `1024`                          |
-| `routerMetrics.resources.limits.memory`                           | Container memory limits in MiB                                             | `1464Mi`                        |
+| `routerMetrics.resources.limits.memory`                           | Container memory limits in MiB                                             | `512Mi`                         |
 | `routerMetrics.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                     | `500m`                          |
-| `routerMetrics.resources.requests.memory`                         | Container memory requests in MiB                                           | `512Mi`                         |
+| `routerMetrics.resources.requests.memory`                         | Container memory requests in MiB                                           | `256Mi`                         |
 | `routerMetrics.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                   | `250m`                          |
 | `routerMetrics.containerSecurityContext.enabled`                  | Enabled router-metrics containers' Security Context                        | `true`                          |
 | `routerMetrics.containerSecurityContext.runAsUser`                | Set router-metrics containers' Security Context runAsUser                  | `1000`                          |

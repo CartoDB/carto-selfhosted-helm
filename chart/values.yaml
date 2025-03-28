@@ -31,6 +31,8 @@ appConfigValues:
   googleCloudStorageProjectId: ""
   ## @param appConfigValues.awsS3Region If the bucket is S3, the region to be used
   awsS3Region: ""
+  ## @param appConfigValues.awsEksPodIdentityBucketsEnabled If the bucket is S3, the region to be used
+  awsEksPodIdentityBucketsEnabled: false
   ## @param appConfigValues.bigqueryOauth2ClientId The Client ID used in BigQuery OAuth connections using Sign in with Google instead of providing a service account key.
   bigqueryOauth2ClientId: ""
   ## @param appConfigValues.enableTrackJS By default, TrackJS will gather information about end-user browser, you can disable it setting this parameter to false
@@ -74,41 +76,49 @@ appConfigValues:
   ldsRoutingProvider: ""
   ## @param appConfigValues.ldsIsolineProvider The default LDS provider for isolines
   ldsIsolineProvider: ""
+  ## @param appConfigValues.logLevel The log level used in CARTO application
+  logLevel: "info"
 
 ## @section CARTO Replicated parameters
 ## Global configuration for installations using Replicated. If you change something from this section probably your self-hosted is going to stop working.
 replicated:
-  ## @param replicated.enabled Enable Carto replicated
-  ## @param replicated.platformDistribution Platform distribution to deploy Carto Selfhosted with Replicated
+  ## @param replicated.enabled Enable CARTO replicated
+  ## @param replicated.platformDistribution Platform distribution to deploy CARTO Selfhosted with Replicated
+  ## @param replicated.replicatedAppDomain Domain of Replicated app
   enabled: false
   platformDistribution: ""
+  replicatedAppDomain: "replicated.self-hosted.carto.com"
 
 ## @section CARTO config parameters
 ## Global configuration provided by CARTO. If you changed something from this section probably your self-hosted is going to stop working.
 cartoConfigValues:
   ## @param cartoConfigValues.enableErrorResponseStackTrace Enable stack traces in the container responses
   enableErrorResponseStackTrace: false
-  ## @param cartoConfigValues.cartoAccApiDomain Domain of the Account API of Carto.
+  ## @param cartoConfigValues.cartoAccApiDomain Domain of the Account API of CARTO.
   cartoAccApiDomain: ""
-  ## @param cartoConfigValues.cartoAccGcpProjectId GCP project ID of the Carto Accounts.
+  ## @param cartoConfigValues.cartoAccGcpProjectId GCP project ID of the CARTO Accounts.
   cartoAccGcpProjectId: ""
-  ## @param cartoConfigValues.cartoAccGcpProjectRegion GCP project region of the Carto Accounts.
+  ## @param cartoConfigValues.cartoAccGcpProjectRegion GCP project region of the CARTO Accounts.
   cartoAccGcpProjectRegion: ""
+  ## @param cartoConfigValues.cartoDoApiDomain Domain of the Data Observatory API of CARTO.
+  cartoDoApiDomain: ""
+  ## @param cartoConfigValues.cartoDoAssetsDomain Domain of the Data Observatory Assets bucket of CARTO.
+  cartoDoAssetsDomain: ""
   ## @param cartoConfigValues.cartoAuth0ClientId Client ID of Auth0.
   cartoAuth0ClientId: ""
   ## @param cartoConfigValues.cartoAuth0CustomDomain Custom Domain of Auth0.
   cartoAuth0CustomDomain: ""
-  ## @param cartoConfigValues.cartoSelfhostedDwLocation Location of the Carto Data Warehouse.
+  ## @param cartoConfigValues.cartoSelfhostedDwLocation Location of the CARTO Data Warehouse.
   cartoSelfhostedDwLocation: ""
   ## @param cartoConfigValues.selfHostedGcpProjectId GCP project ID used in the installation.
   selfHostedGcpProjectId: ""
-  ## @param cartoConfigValues.selfHostedTenantId Carto internal tenantId used in the installation.
+  ## @param cartoConfigValues.selfHostedTenantId CARTO internal tenantId used in the installation.
   selfHostedTenantId: ""
   ## @param cartoConfigValues.launchDarklyClientSideId LaunchDarkly ClientSideId (by www) used to enable/disable features.
   launchDarklyClientSideId: ""
-  ## @param cartoConfigValues.cartoDataWarehouseEnabled Enable the Carto Data Warehouse for the self-hosted.
+  ## @param cartoConfigValues.cartoDataWarehouseEnabled Enable the CARTO Data Warehouse for the self-hosted.
   cartoDataWarehouseEnabled: false
-  ## @param cartoConfigValues.dataObservatoryProjectId GCP project ID of the Carto Data Observatory.
+  ## @param cartoConfigValues.dataObservatoryProjectId GCP project ID of the CARTO Data Observatory.
   dataObservatoryProjectId: ""
   ## @param cartoConfigValues.ingressTestingMode Enable router testing mode for the application. This will deploy the router in testing mode serving a simple page to check that it works without routing traffic to other components.
   ingressTestingMode: false
@@ -116,6 +126,8 @@ cartoConfigValues:
   onlyRunRouter: false
   ## @param cartoConfigValues.featureFlagsOverrides YAML configuration for overriding feature flags.
   featureFlagsOverrides: []
+  ## @param cartoConfigValues.usePubSubRestApi Enable the usage of PubSub via REST API instead of gRPC.
+  usePubSubRestApi: false
 
 ## @section App secret
 ## Global secrets to be edited by the client
@@ -284,9 +296,9 @@ appSecrets:
 ## @section CARTO secrets
 ## Secrets provided by CARTO. Some of them could be customized by the client.
 cartoSecrets:
-  ## @extra cartoSecrets.encryptionSecretKey The secret used to encrypt the clients Carto connections stored in the database.
+  ## @extra cartoSecrets.encryptionSecretKey The secret used to encrypt the clients CARTO connections stored in the database.
   encryptionSecretKey:
-    ## @param cartoSecrets.encryptionSecretKey.value Value of the secret used to encrypt the clients Carto connections stored in the database. One of `cartoSecrets.encryptionSecretKey.value` or `cartoSecrets.encryptionSecretKey.existingSecret` could be defined.
+    ## @param cartoSecrets.encryptionSecretKey.value Value of the secret used to encrypt the clients CARTO connections stored in the database. One of `cartoSecrets.encryptionSecretKey.value` or `cartoSecrets.encryptionSecretKey.existingSecret` could be defined.
     value: ""
     ## @param cartoSecrets.encryptionSecretKey.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.encryptionSecretKey.existingSecret.key`. If `cartoSecrets.encryptionSecretKey.value` is defined, this value is going to be ignored and not used.
     ## @param cartoSecrets.encryptionSecretKey.existingSecret.key Key to find in `cartoSecrets.encryptionSecretKey.existingSecret.name` where the value of `cartoSecrets.encryptionSecretKey` is found. If `cartoSecrets.encryptionSecretKey.value` is defined, this value is going to be ignored and not used.
@@ -370,6 +382,16 @@ cartoSecrets:
     value: ""
     ## @param cartoSecrets.instanceId.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.instanceId.existingSecret.key`. If `cartoSecrets.instanceId.value` is defined, this value is going to be ignored and not used.
     ## @param cartoSecrets.instanceId.existingSecret.key Key to find in `cartoSecrets.instanceId.existingSecret.name` where the value of `cartoSecrets.instanceId` is found. If `cartoSecrets.instanceId.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+    ## @extra cartoSecrets.openAiApiKey The API Key to be used for the AI provider.
+  openAiApiKey:
+    ## @param cartoSecrets.openAiApiKey.value Value of the secret `WORKSPACE_OPENAI_API_KEY`
+    value: ""
+    ## @param cartoSecrets.openAiApiKey.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.openAiApiKey.existingSecret.key`. If `cartoSecrets.openAiApiKey.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.openAiApiKey.existingSecret.key Key to find in `cartoSecrets.openAiApiKey.existingSecret.name` where the value of `cartoSecrets.openAiApiKey` is found. If `cartoSecrets.openAiApiKey.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""
@@ -968,7 +990,11 @@ importApi:
   command: ["/bin/bash"]
   ## @param importApi.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js",
+    ]
   ## @param importApi.hostAliases import-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1233,7 +1259,11 @@ importWorker:
   command: ["/bin/bash"]
   ## @param importWorker.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js"]
+  args:
+    [
+      "-c",
+      "node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js",
+    ]
   ## @param importWorker.hostAliases import-worker pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1512,7 +1542,11 @@ ldsApi:
   command: ["/bin/bash"]
   ## @param ldsApi.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js",
+    ]
   ## @param ldsApi.hostAliases lds-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -1837,7 +1871,11 @@ mapsApi:
   command: ["/bin/bash"]
   ## @param mapsApi.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js",
+    ]
   ## @param mapsApi.hostAliases maps-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -2137,7 +2175,11 @@ sqlWorker:
   command: ["/bin/bash"]
   ## @param sqlWorker.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js",
+    ]
   ## @param sqlWorker.hostAliases sql-worker pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -2509,8 +2551,8 @@ router:
       exec:
         command:
           - /bin/sh
-          - '-c'
-          - 'sleep 30 && /usr/sbin/nginx -s quit'
+          - "-c"
+          - "sleep 30 && /usr/sbin/nginx -s quit"
   ## @param router.extraEnvVars Array with extra environment variables to add to router nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -2609,7 +2651,7 @@ router:
     extraPorts: []
   ## FIXME: Deprecated in favor of ingress instead of router.ingress
   ## Configure the ingress resource that allows you to access the
-  ## Carto installation. Set up the URL
+  ## CARTO installation. Set up the URL
   ## ref: https://kubernetes.io/docs/user-guide/ingress/
   ##
   ingress:
@@ -2923,8 +2965,8 @@ httpCache:
       exec:
         command:
           - sh
-          - '-c'
-          - 'sleep 30 && kill -TERM $(pidof varnishd)'
+          - "-c"
+          - "sleep 30 && kill -TERM $(pidof varnishd)"
   ## @param httpCache.extraEnvVars Array with extra environment variables to add to http-cache nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -3507,7 +3549,11 @@ cdnInvalidatorSub:
   command: ["/bin/bash"]
   ## @param cdnInvalidatorSub.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "node -r /usr/src/app/cdn-invalidator-sub/tsconfig-paths-bootstrap.js /usr/src/app/cdn-invalidator-sub/dist/app/cdn-invalidator-sub/index.js"]
+  args:
+    [
+      "-c",
+      "node -r /usr/src/app/cdn-invalidator-sub/tsconfig-paths-bootstrap.js /usr/src/app/cdn-invalidator-sub/dist/app/cdn-invalidator-sub/index.js",
+    ]
   ## @param cdnInvalidatorSub.hostAliases cdnInvalidatorSub pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -3835,7 +3881,11 @@ workspaceApi:
 
   ## @param workspaceApi.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/index.js",
+    ]
   ## @param workspaceApi.hostAliases workspace-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -4100,7 +4150,11 @@ workspaceSubscriber:
   command: ["/bin/bash"]
   ## @param workspaceSubscriber.args Override default container args (useful when using custom images)
   ##
-  args: ["-c", "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js"]
+  args:
+    [
+      "-c",
+      "npm run ready-to-run:built && exec node -r /usr/src/app/tsconfig-paths-bootstrap.js /usr/src/app/dist/app/subscriber/index.js",
+    ]
   ## @param workspaceSubscriber.hostAliases workspace-subscriber pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
@@ -4691,7 +4745,7 @@ tenantRequirementsChecker:
 internalRedis:
   enabled: true
   image:
-    tag: 6.2.14-debian-12-r23
+    tag: 6.2.16-debian-12-r3
   tlsEnabled: false
   ## @param internalRedis.nameOverride String to partially override common.names.fullname template (will maintain the release name)
   ##
@@ -4816,22 +4870,22 @@ externalRedis:
 ## @section Internal PostgreSQL subchart parameters
 ## Internal PostgreSQL chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/postgresql/values.yaml
-## @param internalPostgresql.enabled Switch to enable or disable the PostgreSQL helm chart
-## @param internalPostgresql.auth.username CARTO Postgresql username
-## @param internalPostgresql.auth.password CARTO Postgresql password
-## @param internalPostgresql.auth.postgresPassword CARTO Postgresql password for the postgres user
-## @param internalPostgresql.auth.database CARTO Postgresql database
-## @param internalPostgresql.sslEnabled Whether or not connect to CARTO Postgresql via TLS
-## @param internalPostgresql.auth.existingSecret Name of an existing secret containing the CARTO Postgresql password ('postgresql-password' key)
+## @param internalPostgresql.enabled # DEPRECATED: This option is deprecated and will be removed in a future release
+## @param internalPostgresql.auth.username # DEPRECATED: This option is deprecated and will be removed in a future release
+## @param internalPostgresql.auth.password # DEPRECATED: This option is deprecated and will be removed in a future release
+## @param internalPostgresql.auth.postgresPassword # DEPRECATED: This option is deprecated and will be removed in a future release
+## @param internalPostgresql.auth.database # DEPRECATED: This option is deprecated and will be removed in a future release
+## @param internalPostgresql.sslEnabled # DEPRECATED: This option is deprecated and will be removed in a future release
+## @param internalPostgresql.auth.existingSecret # DEPRECATED: This option is deprecated and will be removed in a future release
 ##
 internalPostgresql:
   enabled: true
   sslEnabled: false
-  ## @param internalPostgresql.image.tag Tag of the PostgreSQL image
+  ## @param internalPostgresql.image.tag # DEPRECATED: This option is deprecated and will be removed in a future release
   ##
   image:
     tag: "13.5.0-debian-10-r84"
-  ## @param internalPostgresql.nameOverride String to partially override common.names.fullname template (will maintain the release name)
+  ## @param internalPostgresql.nameOverride # DEPRECATED: This option is deprecated and will be removed in a future release
   ##
   nameOverride: "postgresql"
   auth:
@@ -4842,7 +4896,7 @@ internalPostgresql:
     ## This secret is used in case of postgresql.enabled=true and we would like to specify password for newly created postgresql instance
     ##
     existingSecret: ""
-  ## @param internalPostgresql.primary.initdb.scripts [array] Scripts for initializing the database
+  ## @param internalPostgresql.primary.initdb.scripts [array] # DEPRECATED: This option is deprecated and will be removed in a future release
   ##
   primary:
     initdb:
@@ -4873,6 +4927,8 @@ internalPostgresql:
 ## @param externalPostgresql.port Database port number
 ## @param externalPostgresql.sslEnabled Whether or not connect to CARTO Postgresql via TLS
 ## @param externalPostgresql.sslCA CA certificate in case CARTO Postgresql TLS cert it's selfsigned
+## @param externalPostgresql.awsEksPodIdentityEnabled Enable EKS Pod Identity authentication for the external postgresql
+## @param externalPostgresql.awsRdsRegion Region of the RDS PostgreSQL database in AWS. Needed when EKS Pod Identity is enabled
 ##
 externalPostgresql:
   host: localhost
@@ -4890,6 +4946,8 @@ externalPostgresql:
   port: 5432
   sslEnabled: false
   sslCA: ""
+  awsEksPodIdentityEnabled: false
+  awsRdsRegion: ""
 
 ## @section External proxy configuration
 ## Configuration for an external proxy provided by the client. Only HTTP and HTTPS proxies are supported
@@ -5023,12 +5081,6 @@ routerMetrics:
   ## @param routerMetrics.args Override default container args (useful when using custom images)
   ##
   args: []
-  ## @param routerMetrics.jvmProcessMaxMemoryAllocationPercentage Percentage for JVM max memory allocation inside the container memory limit
-  ##
-  jvmProcessMaxMemoryAllocationPercentage: 70
-  ## @param routerMetrics.defaultJvmProcessMaxMemoryAllocation Default value for JVM max memory allocation
-  ##
-  defaultJvmProcessMaxMemoryAllocation: 1024
   ## routerMetrics resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param routerMetrics.resources.limits.memory Container memory limits in MiB
@@ -5038,10 +5090,10 @@ routerMetrics:
   ##
   resources:
     limits:
-      memory: "1464Mi"
+      memory: "512Mi"
       cpu: "500m"
     requests:
-      memory: "512Mi"
+      memory: "256Mi"
       cpu: "250m"
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod

@@ -41,12 +41,16 @@ spec:
             repl{{    $_ := set $result "cartoAccApiDomain" "YWNjb3VudHMuYXBwLmNhcnRvLmNvbQ==" }}
             repl{{    $_ := set $result "cartoAccGcpProjectId" "Y2FydG8tYWNjLXVzLWVhc3QxLTE=" }}
             repl{{    $_ := set $result "cartoAccGcpProjectRegion" "dXMtZWFzdDEtMQ==" }}
+            repl{{    $_ := set $result "cartoDoApiDomain" "c3BhdGlhbC1kYXRhLWNhdGFsb2cuYXBwLmNhcnRvLmNvbQ==" }}
+            repl{{    $_ := set $result "cartoDoAssetsDomain" "c3BhdGlhbC1kYXRhLWNhdGFsb2ctYXNzZXRzLmNhcnRvLmNvbQ==" }}
             repl{{    $_ := set $result "cartoAuth0CustomDomain" "YXV0aC5jYXJ0by5jb20=" }}
             repl{{    $_ := set $result "dataObservatoryProjectId" "Y2FydG8tZGF0YQ==" }}
             repl{{ else if eq $environment "staging" }}
             repl{{    $_ := set $result "cartoAccApiDomain" "YWNjb3VudHMuc3RhZy5hcHAuY2FydG8uY29t" }}
             repl{{    $_ := set $result "cartoAccGcpProjectId" "Y2FydG8tYWNjLXVzLWVhc3QxLTEtc3RhZw==" }}
             repl{{    $_ := set $result "cartoAccGcpProjectRegion" "dXMtZWFzdDEtMS1zdGFn" }}
+            repl{{    $_ := set $result "cartoDoApiDomain" "c3BhdGlhbC1kYXRhLWNhdGFsb2cuc3RhZy5hcHAuY2FydG8uY29t" }}
+            repl{{    $_ := set $result "cartoDoAssetsDomain" "c3BhdGlhbC1kYXRhLWNhdGFsb2ctYXNzZXRzLnN0YWcuY2FydG8uY29t" }}
             repl{{    $_ := set $result "cartoAuth0CustomDomain" "YXV0aC5zdGFnLmNhcnRvLmNvbQ==" }}
             repl{{    $_ := set $result "dataObservatoryProjectId" "Y2FydG8tZGF0YS1zdGFn" }}
             repl{{ end }}
@@ -435,7 +439,7 @@ spec:
           title: Ingress testing mode
           when: '{{repl or (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") (ConfigOptionEquals "accessToCartoModeK8sNotFullySupported" "accessToCartoModeK8sCustom") (ConfigOptionEquals "isEmbeddedCluster" "true") }}'
           help_text: |-
-            Enable if you want to turn on ingress testing mode. This will deploy the CARTO router in testing mod, showing a static page to check that the layers you place on top of CARTO work.
+            Enable if you want to turn on ingress testing mode. This will deploy the CARTO router in testing mode, showing a static page to check that the layers you place on top of CARTO work.
           type: bool
           default: "0"
 
@@ -646,7 +650,7 @@ spec:
           readonly: true
           validation:
             regex:
-              pattern: ^(http|https):\/\/([a-zA-Z0-9_\-.]+)+[a-zA-Z]{1,}(:[0-9]+)?$
+              pattern: ^(https?:\/\/)([a-zA-Z0-9.-]+)(:\d+)?(\/[^\s]*)?$
               message: "The proxy host should contain the protocol used to connect to it. Please check that you executed the installation using a valid proxy host. The protocol should be http or https."
         - name: externalProxyExcludedDomains
           title: Excluded domains
@@ -702,6 +706,19 @@ spec:
           title: Google Maps API Key
           type: text
           when: '{{repl (ConfigOptionEquals "googleBasemapsEnabled" "1") }}'
+          required: true
+
+        ## Custom OpenAI API Key
+        - name: customOpenAIAPIKeyEnabled
+          title: Custom OpenAI API Key
+          help_text: |
+            Enable if you want to use your custom OpenAI API Key.
+          type: bool
+          default: "0"
+        - name: customOpenAIAPIKey
+          title: OpenAI API Key
+          type: text
+          when: '{{repl (ConfigOptionEquals "customOpenAIAPIKeyEnabled" "1") }}'
           required: true
 
         ## BigQuery Oauth

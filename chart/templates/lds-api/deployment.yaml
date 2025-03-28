@@ -67,12 +67,6 @@ spec:
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
-        {{- if .Values.internalPostgresql.enabled }}
-        {{ include "carto.postgresql-init-container" (dict "context" $) | nindent 8 }}
-        {{- end }}
-        {{- if .Values.internalRedis.enabled }}
-        {{ include "carto.redis-init-container" . | nindent 8 }}
-        {{- end }}
         {{- if .Values.ldsApi.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.initContainers "context" $) | nindent 8 }}
         {{- end }}
@@ -162,24 +156,33 @@ spec:
           {{- if .Values.ldsApi.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.ldsApi.livenessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /v3/lds/
+              path: /v3/lds/health
               port: http
+              httpHeaders:
+                - name: Carto-Monitoring
+                  value: "True"
           {{- else if .Values.ldsApi.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.ldsApi.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.ldsApi.readinessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /v3/lds/
+              path: /v3/lds/health
               port: http
+              httpHeaders:
+                - name: Carto-Monitoring
+                  value: "True"
           {{- else if .Values.ldsApi.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.ldsApi.startupProbe.enabled }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.ldsApi.startupProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /v3/lds/
+              path: /v3/lds/health
               port: http
+              httpHeaders:
+                - name: Carto-Monitoring
+                  value: "True"
           {{- else if .Values.ldsApi.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}

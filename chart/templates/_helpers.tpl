@@ -69,6 +69,7 @@ MAPS_API_V3_JWT_SECRET: cartoSecrets.jwtApiSecret
 REACT_APP_VITALLY_TOKEN: cartoSecrets.vitallyToken
 VARNISH_DEBUG_SECRET: cartoSecrets.varnishDebugSecret
 VARNISH_PURGE_SECRET: cartoSecrets.varnishPurgeSecret
+WORKSPACE_OPENAI_API_KEY: cartoSecrets.openAiApiKey
 WORKSPACE_IMPORTS_ACCESSKEYID: appSecrets.awsAccessKeyId
 WORKSPACE_IMPORTS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 WORKSPACE_IMPORTS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
@@ -275,9 +276,9 @@ Return Carto lds-api node options
 */}}
 {{- define "carto.ldsApi.nodeOptions" -}}
 {{- if eq (.Values.ldsApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.ldsApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.ldsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.ldsApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.ldsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.ldsApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.ldsApi.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -322,9 +323,9 @@ Return Carto import-worker node options
 */}}
 {{- define "carto.importWorker.nodeOptions" -}}
 {{- if eq (.Values.importWorker.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.importWorker.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.importWorker.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.importWorker.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.importWorker.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.importWorker.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.importWorker.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -369,9 +370,9 @@ Return Carto import-api node options
 */}}
 {{- define "carto.importApi.nodeOptions" -}}
 {{- if eq (.Values.importApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.importApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.importApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.importApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.importApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.importApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.importApi.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -416,9 +417,9 @@ Return Carto maps-api node options
 */}}
 {{- define "carto.mapsApi.nodeOptions" -}}
 {{- if eq (.Values.mapsApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.mapsApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.mapsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.mapsApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.mapsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.mapsApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.mapsApi.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -463,9 +464,9 @@ Return Carto sql-worker node options
 */}}
 {{- define "carto.sqlWorker.nodeOptions" -}}
 {{- if eq (.Values.sqlWorker.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.sqlWorker.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.sqlWorker.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.sqlWorker.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.sqlWorker.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.sqlWorker.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.sqlWorker.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -510,9 +511,9 @@ Return Carto workspace-subscriber node options
 */}}
 {{- define "carto.workspaceSubscriber.nodeOptions" -}}
 {{- if eq (.Values.workspaceSubscriber.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.workspaceSubscriber.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.workspaceSubscriber.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.workspaceSubscriber.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.workspaceSubscriber.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.workspaceSubscriber.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.workspaceSubscriber.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -557,9 +558,9 @@ Return Carto workspace-api node options
 */}}
 {{- define "carto.workspaceApi.nodeOptions" -}}
 {{- if eq (.Values.workspaceApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.workspaceApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.workspaceApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.workspaceApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.workspaceApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.workspaceApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.workspaceApi.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -689,17 +690,6 @@ Return the proper Carto router-metrics image name
 */}}
 {{- define "carto.routerMetrics.image" -}}
 {{- include "carto.images.image" (dict "imageRoot" .Values.routerMetrics.image "global" .Values.global "Chart" .Chart) -}}
-{{- end -}}
-
-{{/*
-Return Carto router-metrics jvm options
-*/}}
-{{- define "carto.routerMetrics.jvmOptions" -}}
-{{- if eq (.Values.routerMetrics.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "-Xms%sm -Xmx%dm" (.Values.routerMetrics.resources.requests.memory | toString | regexFind "[0-9.]+") (div (mul (.Values.routerMetrics.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.routerMetrics.jvmProcessMaxMemoryAllocationPercentage) 100) | quote -}}
-{{- else -}}
-{{- printf "-Xms%sm -Xmx%sm" (.Values.routerMetrics.resources.requests.memory | toString | regexFind "[0-9.]+") (.Values.routerMetrics.defaultJvmProcessMaxMemoryAllocation | toString) | quote -}}
-{{- end -}}
 {{- end -}}
 
 {{/*
@@ -867,9 +857,9 @@ Return Carto cdn-invalidator-sub node options
 */}}
 {{- define "carto.cdnInvalidatorSub.nodeOptions" -}}
 {{- if eq (.Values.cdnInvalidatorSub.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
-{{- printf "--max-old-space-size=%d" (div (mul (.Values.cdnInvalidatorSub.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.cdnInvalidatorSub.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.cdnInvalidatorSub.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.cdnInvalidatorSub.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- printf "--max-old-space-size=%d" .Values.cdnInvalidatorSub.defaultNodeProcessMaxOldSpace | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.cdnInvalidatorSub.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -1147,81 +1137,6 @@ Return the absolute path where the Postgresql CA cert will be mounted
 {{- end -}}
 
 {{/*
-Return YAML for the PostgreSQL init container
-Usage:
-Non-admin user
-{{ include "carto.postgresql-init-container" (dict "context" $) }}
-Admin user
-{{ include "carto.postgresql-init-container" (dict "context" $ "admin" "true") }}
-*/}}
-{{- define "carto.postgresql-init-container" -}}
-# NOTE: The value internalPostgresql.image is not available unless internalPostgresql.enabled is not set. We could change this to use bitnami-shell if
-# it had the binary wait-for-port.
-# This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
-- name: wait-for-db
-  image: {{ include "common.images.image" (dict "imageRoot" .context.Values.internalPostgresql.image "global" .context.Values.global) }}
-  imagePullPolicy: {{ .context.Values.internalPostgresql.image.pullPolicy  }}
-  command:
-    - /bin/bash
-  args:
-    - -ec
-    - |
-      #!/bin/bash
-
-      set -o errexit
-      set -o nounset
-      set -o pipefail
-
-      . /opt/bitnami/scripts/libos.sh
-      . /opt/bitnami/scripts/liblog.sh
-      . /opt/bitnami/scripts/libpostgresql.sh
-
-      check_postgresql_connection() {
-          echo "SELECT 1" | postgresql_remote_execute "$POSTGRESQL_CLIENT_DATABASE_HOST" "$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER" "$POSTGRESQL_CLIENT_DATABASE_NAME" "$POSTGRESQL_CLIENT_POSTGRES_USER" "$POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD"
-      }
-
-      info "Connecting to the PostgreSQL instance $POSTGRESQL_CLIENT_DATABASE_HOST:$POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER"
-      if ! retry_while "check_postgresql_connection" {{- if not .admin }} 100{{- end }}; then
-          error "Could not connect to the database server"
-          exit 1
-      else
-          info "Connected to the PostgreSQL instance"
-      fi
-  {{- if .context.Values.workspaceMigrations.containerSecurityContext.enabled }}
-  securityContext: {{- omit .context.Values.workspaceMigrations.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-  {{- end }}
-  {{- if .context.Values.workspaceMigrations.resources }}
-  resources: {{- toYaml .context.Values.workspaceMigrations.resources | nindent 12 }}
-  {{- end }}
-  env:
-    - name: POSTGRESQL_CLIENT_DATABASE_HOST
-      value: {{ include "carto.postgresql.host" .context }}
-    - name: POSTGRESQL_CLIENT_DATABASE_PORT_NUMBER
-      value: {{ include "carto.postgresql.port" .context }}
-    {{- if .admin }}
-    - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: {{ include "carto.postgresql.secretName" .context }}
-          key: {{ include "carto.postgresql.secret.adminKey" .context }}
-    - name: POSTGRESQL_CLIENT_POSTGRES_USER
-      value: {{ include "carto.postgresql.adminUser" .context }}
-    - name: POSTGRESQL_CLIENT_DATABASE_NAME
-      value: "postgres"
-    {{- else }}
-    - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: {{ include "carto.postgresql.secretName" .context }}
-          key: {{ include "carto.postgresql.secret.key" .context  }}
-    - name: POSTGRESQL_CLIENT_POSTGRES_USER
-      value: {{ include "carto.postgresql.user" .context }}
-    - name: POSTGRESQL_CLIENT_DATABASE_NAME
-      value: {{ include "carto.postgresql.databaseName" .context }}
-    {{- end }}
-{{- end -}}
-
-{{/*
 Create a default fully qualified redis name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
@@ -1320,61 +1235,6 @@ Return the Redis password sha256sum
 {{- else }}
 {{- print (tpl (toYaml .Values.externalRedis.password) . | sha256sum ) -}}
 {{- end -}}
-{{- end -}}
-
-{{/*
-Return YAML for the Redis init container
-*/}}
-{{- define "carto.redis-init-container" -}}
-# NOTE: The value redis.image is not available unless redis.enabled is not set. We could change this to use bitnami-shell if
-# it had the binary wait-for-port.
-# This init container is for avoiding CrashLoopback errors in the main container because the PostgreSQL container is not ready
-- name: wait-for-redis
-  image: {{ include "common.images.image" (dict "imageRoot" .Values.internalRedis.image "global" .Values.global) }}
-  imagePullPolicy: {{ .Values.internalRedis.image.pullPolicy  }}
-  command:
-    - /bin/bash
-  args:
-    - -ec
-    - |
-      #!/bin/bash
-
-      set -o errexit
-      set -o nounset
-      set -o pipefail
-
-      . /opt/bitnami/scripts/libos.sh
-      . /opt/bitnami/scripts/liblog.sh
-      . /opt/bitnami/scripts/libredis.sh
-
-      check_redis_connection() {
-          echo "INFO" | redis-cli -a "$REDIS_CLIENT_PASSWORD" -p "$REDIS_CLIENT_PORT_NUMBER" -h "$REDIS_CLIENT_HOST"
-      }
-
-      info "Connecting to the Redis instance $REDIS_CLIENT_HOST:$REDIS_CLIENT_PORT_NUMBER"
-      if ! retry_while "check_redis_connection"; then
-          error "Could not connect to the Redis server"
-          exit 1
-      else
-          info "Connected to the Redis instance"
-      fi
-  {{- if .Values.workspaceMigrations.containerSecurityContext.enabled }}
-  securityContext: {{- omit .Values.workspaceMigrations.containerSecurityContext "enabled" | toYaml | nindent 4 }}
-  {{- end }}
-  resources:
-    limits:
-      memory: 256Mi
-      cpu: 100m
-  env:
-    - name: REDIS_CLIENT_HOST
-      value: {{ ternary (include "carto.redis.fullname" .) .Values.externalRedis.host .Values.internalRedis.enabled }}
-    - name: REDIS_CLIENT_PORT_NUMBER
-      value: {{ ternary "6379" .Values.externalRedis.port .Values.internalRedis.enabled | quote }}
-    - name: REDIS_CLIENT_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: {{ include "carto.redis.secretName" . }}
-          key: "redis-password"
 {{- end -}}
 
 {{/*

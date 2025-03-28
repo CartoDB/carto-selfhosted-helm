@@ -1,7 +1,10 @@
 apiVersion: embeddedcluster.replicated.com/v1beta1
 kind: Config
 spec:
-  version: 1.10.0+k8s-1.29
+  version: 2.2.0+k8s-1.30
+  domains:
+    proxyRegistryDomain: registry.self-hosted.carto.com
+    replicatedAppDomain: replicated.self-hosted.carto.com
   unsupportedOverrides:
     k0s: |
       config:

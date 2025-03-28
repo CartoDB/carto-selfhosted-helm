@@ -68,12 +68,6 @@ spec:
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
-        {{- if .Values.internalPostgresql.enabled }}
-        {{ include "carto.postgresql-init-container" (dict "context" $ "admin" "true") | nindent 8 }}
-        {{- end }}
-        {{- if .Values.internalRedis.enabled }}
-        {{ include "carto.redis-init-container" . | nindent 8 }}
-        {{- end }}
         - name: workspace-migrations
           image: {{ template "carto.workspaceMigrations.image" . }}
           imagePullPolicy: {{ .Values.workspaceMigrations.image.pullPolicy }}
@@ -102,11 +96,13 @@ spec:
               value: {{ include "carto.postgresql.adminUser" . }}
             - name: POSTGRES_LOGIN_USER
               value: {{ include "carto.postgresql.internalAdminUser" . }}
+            {{- if .Values.internalPostgresql.enabled }}
             - name: POSTGRES_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.adminKey" . }}
+            {{- end }}
             - name: POSTGRES_ADMIN_DB
               value: {{ include "carto.postgresql.adminDatabase" . }}
             - name: WORKSPACE_POSTGRES_INTERNAL_USER
@@ -128,6 +124,7 @@ spec:
               "IMPORT_AWS_ACCESS_KEY_ID"
               "IMPORT_AWS_SECRET_ACCESS_KEY"
               "LAUNCHDARKLY_SDK_KEY"
+              "WORKSPACE_OPENAI_API_KEY"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"
               "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_ACCESSKEYID"
@@ -145,6 +142,7 @@ spec:
               "IMPORT_AWS_ACCESS_KEY_ID"
               "IMPORT_AWS_SECRET_ACCESS_KEY"
               "LAUNCHDARKLY_SDK_KEY"
+              "WORKSPACE_OPENAI_API_KEY"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"
               "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_ACCESSKEYID"
@@ -200,6 +198,7 @@ spec:
               "ENCRYPTION_SECRET_KEY"
               "LAUNCHDARKLY_SDK_KEY"
               "WORKSPACE_JWT_SECRET"
+              "WORKSPACE_OPENAI_API_KEY"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"
               "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
               "WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY"
@@ -218,6 +217,7 @@ spec:
               "ENCRYPTION_SECRET_KEY"
               "LAUNCHDARKLY_SDK_KEY"
               "WORKSPACE_JWT_SECRET"
+              "WORKSPACE_OPENAI_API_KEY"
               "WORKSPACE_THUMBNAILS_ACCESSKEYID"
               "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
               "WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY"
@@ -247,16 +247,22 @@ spec:
           {{- if .Values.workspaceApi.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceApi.livenessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /
+              path: /health
               port: http
+              httpHeaders:
+                - name: Carto-Monitoring
+                  value: "True"
           {{- else if .Values.workspaceApi.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.workspaceApi.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceApi.readinessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /
+              path: /health
               port: http
+              httpHeaders:
+                - name: Carto-Monitoring
+                  value: "True"
           {{- else if .Values.workspaceApi.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
@@ -265,6 +271,9 @@ spec:
             httpGet:
               path: /health
               port: http
+              httpHeaders:
+                - name: Carto-Monitoring
+                  value: "True"
           {{- else if .Values.workspaceApi.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
