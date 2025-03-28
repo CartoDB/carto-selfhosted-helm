@@ -56,10 +56,11 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### CARTO Replicated parameters
 
-| Name                              | Description                                                      | Value   |
-| --------------------------------- | ---------------------------------------------------------------- | ------- |
-| `replicated.enabled`              | Enable CARTO replicated                                          | `false` |
-| `replicated.platformDistribution` | Platform distribution to deploy CARTO Selfhosted with Replicated | `""`    |
+| Name                              | Description                                                      | Value                              |
+| --------------------------------- | ---------------------------------------------------------------- | ---------------------------------- |
+| `replicated.enabled`              | Enable CARTO replicated                                          | `false`                            |
+| `replicated.platformDistribution` | Platform distribution to deploy CARTO Selfhosted with Replicated | `""`                               |
+| `replicated.replicatedAppDomain`  | Domain of Replicated app                                         | `replicated.self-hosted.carto.com` |
 
 ### CARTO config parameters
 
