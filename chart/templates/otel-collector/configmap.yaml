@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-config
+data:
+  config.yaml: |-
+    receivers:
+      otlp:
+        protocols:
+          http:
+            endpoint: 0.0.0.0:4318
+
+    processors:
+      # Data sources: traces, metrics, logs
+      memory_limiter:
+        check_interval: 5s
+        limit_mib: 4000
+        spike_limit_mib: 500
+
+    exporters:
+      debug:
+        verbosity: detailed
+      otlp:
+        endpoint: 34.135.42.102:4317
+        tls:
+          insecure: true
+
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [memory_limiter]
+          exporters: [debug, otlp]
