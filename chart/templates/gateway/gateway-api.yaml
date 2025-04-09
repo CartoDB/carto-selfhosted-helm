@@ -53,6 +53,8 @@ spec:
   - matches:
     - path:
         value: {{ .Values.gateway.path }}
+    timeouts:
+      request: 605s
     backendRefs:
     - name: {{ template "carto.router.fullname" . }}
       {{- if .Values.tlsCerts.httpsEnabled }}
