@@ -282,6 +282,8 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: wif-credentials
+              mountPath: /tmp/wif-credentials
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
@@ -318,6 +320,8 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceApi.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
+        - name: wif-credentials
+          emptyDir: {}
         - name: gcp-default-service-account-key
           secret:
             secretName: {{ include "carto.google.secretName" . }}
