@@ -261,6 +261,26 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
       "EgressRequirementsValidator" (list "Check_CARTO_Auth_connectivity" "Check_PubSub_connectivity" "Check_Google_Storage_connectivity" "Check_release_channels_connectivity" "Check_Google_Storage_connectivity" "Check_CARTO_images_registry_connectivity" "Check_TomTom_connectivity" "Check_TravelTime_connectivity")
       "PubSubValidator" (list "Check_publish_and_listen_to_topic")
   }}
+{{/* Add optional analyzers to the preflightsDict */}}
+
+{{- $preflightOptionalList := list }}
+
+{{- if not .Values.TravelTime.ldsTravelTimeApiKey }}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_TravelTime_connectivity" }}
+{{- end }}
+
+{{- if not .Values.TomTom.ldsTomTomApiKey }}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_TomTom_connectivity" }}
+{{- end }}
+
+{{- if not .Values.appConfigValues.workspaceImportsBucket }}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_temp_bucket" }}
+{{- end }}
+
+{{- if not .Values.appConfigValues.workspaceThumbnailsBucket }}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_assets_bucket" }}
+{{- end }}
+
   {{/*
   We push conditionally new analyzers for the feature flags if the customer defined overridden feature flags
   */}}
@@ -300,12 +320,18 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
       value: |
         "passed"
       outcomes:
-        - fail:
-            when: "false"
-            message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
         - pass:
             when: "true"
             message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
+      {{- if has $preflightCheckName $preflightOptionalList}}
+        - warn:
+            when: "false"
+            message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
+      {{- else }}
+        - fail:
+            when: "false"
+            message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
+      {{- end }}  
   {{- end }}
   {{- end }}
   {{/*
