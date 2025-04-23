@@ -4690,8 +4690,8 @@ tenantRequirementsChecker:
   ##
   resources:
     limits:
-      memory: "512Mi"
       cpu: "500m"
+      memory: "512Mi"
     requests:
       memory: "128Mi"
       cpu: "250m"
@@ -4729,143 +4729,166 @@ tenantRequirementsChecker:
       drop:
         - all
 
-## @section Internal Redis&trade; subchart parameters
-## Internal Redis &trade; chart configuration
-## ref: https://github.com/bitnami/charts/blob/master/bitnami/redis/values.yaml
-## @param internalRedis.enabled Switch to enable or disable the Redis&trade; helm
-## @param internalRedis.image.tag Image tag used by Redis&trade; helm
-## @param internalRedis.tlsEnabled Whether or not connect to Redis via TLS
-## @param internalRedis.auth.enabled Switch to enable or disable authentication
-## @param internalRedis.auth.password Redis&trade; password
-## @param internalRedis.auth.existingSecret Name of existing secret object containing the password
-## @param internalRedis.architecture Cluster settings
-## @param internalRedis.master.persistence.enabled Enable master persistent volumes
-## @param internalRedis.replica.persistence.enabled Enable replica persistent volumes
+## @section internalRedis Deployment Parameters
 ##
 internalRedis:
-  enabled: true
-  image:
-    tag: 6.2.16-debian-12-r3
-  tlsEnabled: false
-  ## @param internalRedis.nameOverride String to partially override common.names.fullname template (will maintain the release name)
+  ## internal-redis image
+  ## @param internalRedis.image.registry internal-redis image registry
+  ## @param internalRedis.image.repository internal-redis image repository
+  ## @param internalRedis.image.tag internal-redis image tag (immutable tags are recommended)
+  ## @param internalRedis.image.pullPolicy internal-redis image pull policy
+  ## @param internalRedis.image.pullSecrets internal-redis image pull secrets
   ##
-  nameOverride: "redis"
-  auth:
-    enabled: true
-    ## Redis&trade; password (both master and slave). Defaults to a random 10-character alphanumeric string if not set and auth.enabled is true.
-    ## It should always be set using the password value or in the existingSecret to avoid issues
-    ## with CARTO.
-    ## The password value is ignored if existingSecret is set
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: redis
+    ## Specify a custom image tag
+    tag: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
     ##
-    password: ""
-    existingSecret: ""
-  architecture: standalone
-  master:
-    persistence:
-      enabled: false
-    ## Redis resource limits
-    ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-    ## @param internalRedis.master.resources.requests.memory Container memory requests in MiB
-    ## @param internalRedis.master.resources.requests.cpu Container cpu requests in milliCPU cores
-    ## @param internalRedis.master.resources.limits.memory Container memory limits in MiB
-    ## @param internalRedis.master.resources.limits.cpu Container cpu limits in milliCPU cores
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
     ##
-    resources:
-      requests:
-        memory: "512Mi"
-        cpu: "200m"
-      limits:
-        memory: "512Mi"
-        cpu: "200m"
-    ## Configure Pods Security Context
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-    ## @param internalRedis.master.podSecurityContext.fsGroup Set accounts-www pod's Security Context fsGroup
-    ## @param internalRedis.master.podSecurityContext.supplementalGroups[0] Set accounts-www pod's Security Context supplementalGroups
-    ##
-    podSecurityContext:
-      fsGroup: 1000
-      supplementalGroups: [2345]
-    ## Configure Container Security Context
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-    ## @param internalRedis.master.containerSecurityContext.runAsUser Set Redis containers' Security Context runAsUser
-    ## @param internalRedis.master.containerSecurityContext.runAsGroup Set Redis containers' Security Context runAsGroup
-    ## @param internalRedis.master.containerSecurityContext.runAsNonRoot Set Redis containers' Security Context runAsNonRoot
-    ## @param internalRedis.master.containerSecurityContext.allowPrivilegeEscalation Set Redis containers' Security Context allowPrivilegeEscalation
-    ## @param internalRedis.master.containerSecurityContext.readOnlyRootFilesystem Set Redis containers' Security Context readOnlyRootFilesystem
-    ## @param internalRedis.master.containerSecurityContext.capabilities.drop removes Redis containers' Security Context capabilities
-    ##
-    containerSecurityContext:
-      runAsUser: 1000
-      runAsGroup: 1000
-      runAsNonRoot: false
-      allowPrivilegeEscalation: false
-      readOnlyRootFilesystem: true
-      capabilities:
-        drop:
-          - all
-  replica:
-    persistence:
-      enabled: false
-    ## Redis resource limits
-    ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-    ## @param internalRedis.replica.resources.requests.memory Container memory requests in MiB
-    ## @param internalRedis.replica.resources.requests.cpu Container cpu requests in milliCPU cores
-    ## @param internalRedis.replica.resources.limits.memory Container memory limits in MiB
-    ## @param internalRedis.replica.resources.limits.cpu Container cpu limits in milliCPU cores
-    ##
-    resources:
-      requests:
-        memory: "512Mi"
-        cpu: "200m"
-      limits:
-        memory: "512Mi"
-        cpu: "200m"
-    ## Configure Pods Security Context
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-    ## @param internalRedis.replica.podSecurityContext.fsGroup Set accounts-www pod's Security Context fsGroup
-    ## @param internalRedis.replica.podSecurityContext.supplementalGroups[0] Set accounts-www pod's Security Context supplementalGroups
-    ##
-    podSecurityContext:
-      fsGroup: 1000
-      supplementalGroups: [2345]
-    ## Configure Container Security Context
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-    ## @param internalRedis.replica.containerSecurityContext.runAsUser Set Redis replica containers' Security Context runAsUser
-    ## @param internalRedis.replica.containerSecurityContext.runAsGroup Set Redis replica containers' Security Context runAsGroup
-    ## @param internalRedis.replica.containerSecurityContext.runAsNonRoot Set Redis replica containers' Security Context runAsNonRoot
-    ## @param internalRedis.replica.containerSecurityContext.allowPrivilegeEscalation Set Redis replica containers' Security Context allowPrivilegeEscalation
-    ## @param internalRedis.replica.containerSecurityContext.readOnlyRootFilesystem Set Redis containers' Security Context readOnlyRootFilesystem
-    ## @param internalRedis.replica.containerSecurityContext.capabilities.drop removes Redis replica containers' Security Context capabilities
-    ##
-    containerSecurityContext:
-      runAsUser: 1000
-      runAsGroup: 1000
-      runAsNonRoot: false
-      allowPrivilegeEscalation: false
-      readOnlyRootFilesystem: true
-      capabilities:
-        drop:
-          - all
+    pullSecrets: []
 
-## @section External Redis parameters
-## External Redis configuration
-## All of these values are only used when redis.enabled is set to false
-## @param externalRedis.host Redis host
-## @param externalRedis.port Redis port number
-## @param externalRedis.password Redis password
-## @param externalRedis.tlsEnabled Whether or not connect to Redis via TLS
-## @param externalRedis.tlsCA CA certificate in case Redis TLS cert it's selfsigned
-## @param externalRedis.existingSecret Name of an existing secret resource containing the Redis password in a 'redis-password' key
-## @param externalRedis.existingSecretPasswordKey Key of the existing secret
-##
-externalRedis:
-  host: localhost
-  port: 6379
-  password: ""
-  tlsEnabled: false
-  tlsCA: ""
-  existingSecret: ""
-  existingSecretPasswordKey: ""
+  ## @param internalRedis.replicaCount Number of internal-redis replicas to deploy
+  ##
+  replicaCount: 1
+
+  ## @param internalRedis.containerPorts.redis internal-redis TCP port
+  ##
+  containerPorts:
+    redis: 6379
+
+  ## internal-redis autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param internalRedis.autoscaling.enabled Enable autoscaling for the internal-redis containers
+  ## @param internalRedis.autoscaling.minReplicas The minimal number of containers for the internal-redis deployment
+  ## @param internalRedis.autoscaling.maxReplicas The maximum number of containers for the internal-redis deployment
+  ## @param internalRedis.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale-up
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
+
+  ## internal-redis resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ##
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu:    "500m"
+    requests:
+      memory: "256Mi"
+      cpu:    "100m"
+
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param internalRedis.podSecurityContext.enabled Enable internal-redis pods' Security Context
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1000
+    supplementalGroups: [2345]
+  ## Configure Container Security Context
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: false
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
+
+  ## @param internalRedis.podDisruptionBudget.enabled defines disruption budget for internal-redis
+  ##
+  podDisruptionBudget:
+    enabled: false
+  ## @param internalRedis.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 60
+
+  existingConfigMap: ""
+  existingSecret:     ""
+
+  command: []
+  args:    []
+
+  hostAliases: []
+  podLabels:  {}
+  podAnnotations: {}
+
+  podAffinityPreset:     ""
+  podAntiAffinityPreset: soft
+  nodeAffinityPreset:
+    type:   ""
+    key:    ""
+    values: []
+  affinity:     {}
+  nodeSelector: {}
+  tolerations:  []
+
+  updateStrategy:
+    type: RollingUpdate
+  priorityClassName: ""
+  schedulerName:     ""
+
+  lifecycleHooks: {}
+
+  extraEnvVars:       []
+  extraEnvVarsCM:     ""
+  extraEnvVarsSecret: ""
+
+  extraVolumes:      []
+  extraVolumeMounts: []
+
+  sidecars:      {}
+  initContainers: {}
+
+  ## @section internalRedis Service Parameters
+  ##
+  service:
+    ## @param internalRedis.service.type internal-redis service type
+    ##
+    type: ClusterIP
+    ## @param internalRedis.service.ports.redis internal-redis service port
+    ##
+    ports:
+      redis: 6379
+    ## Node ports to expose (only for NodePort service type)
+    ##
+    nodePorts:
+      redis: ""
+    clusterIP:              ""
+    loadBalancerIP:         ""
+    labelSelectorsOverride: {}
+    loadBalancerSourceRanges: []
+    externalTrafficPolicy:  Cluster
+    annotations:            {}
+    extraPorts:             []
+
+  ## @section internalRedis ServiceAccount configuration
+  ##
+  serviceAccount:
+    ## @param internalRedis.serviceAccount.create Specifies whether a ServiceAccount should be created
+    ##
+    create: true
+    ## @param internalRedis.serviceAccount.name The name of the ServiceAccount to use.
+    ## If not set and create is true, a name is generated using the common.names.fullname template
+    ##
+    name: ""
+    ## @param internalRedis.serviceAccount.automountServiceAccountToken Mount service account token in the deployment
+    ##
+    automountServiceAccountToken: false
 
 ## @section Internal PostgreSQL subchart parameters
 ## Internal PostgreSQL chart configuration

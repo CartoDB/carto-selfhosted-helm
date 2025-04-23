@@ -1,0 +1,29 @@
+{{- if and .Values.internalRedis.podDisruptionBudget.enabled}}
+---
+apiVersion: {{ .Values.global.kubernetesPolicyVersion }}
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "carto.redis.fullname" . }}-pdb
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+    {{- if .Values.commonLabels }}
+      {{- include "common.tplvalues.render" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.internalRedis.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.internalRedis.podDisruptionBudget.minAvailable }}
+  {{- end }}
+  {{- if .Values.internalRedis.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.internalRedis.podDisruptionBudget.maxUnavailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: redis
+{{- end }}

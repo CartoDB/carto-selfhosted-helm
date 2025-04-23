@@ -1,0 +1,139 @@
+{{- /*
+  Redis Deployment
+  Rendered only when we ship an in-cluster Redis
+  (i.e. `.Values.internalRedis.enabled && !.Values.externalRedis.enabled`).
+*/ -}}
+{{- if and .Values.internalRedis.enabled (not .Values.externalRedis.enabled) }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.redis.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.internalRedis.replicaCount }}
+  {{- if .Values.internalRedis.updateStrategy }}
+  strategy: {{- toYaml .Values.internalRedis.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: redis
+  template:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+        {{- if .Values.internalRedis.podAnnotations }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.internalRedis.podAnnotations "context" $ ) | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: redis
+        {{- if .Values.internalRedis.podLabels }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.internalRedis.podLabels "context" $ ) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+
+      {{- if .Values.internalRedis.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+
+      {{- if .Values.internalRedis.affinity }}
+      affinity: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity:     {{- include "common.affinities.pods" (dict "type" .Values.internalRedis.podAffinityPreset     "component" "redis" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.internalRedis.podAntiAffinityPreset "component" "redis" "context" $) | nindent 10 }}
+        nodeAffinity:    {{- include "common.affinities.nodes" (dict "type" .Values.internalRedis.nodeAffinityPreset.type "key" .Values.internalRedis.nodeAffinityPreset.key "values" .Values.internalRedis.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+
+      {{- if .Values.internalRedis.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.internalRedis.nodeSelector "context" $ ) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.internalRedis.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" ( dict "value" .Values.internalRedis.tolerations "context" $ ) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.internalRedis.priorityClassName }}
+      priorityClassName: {{ .Values.internalRedis.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.internalRedis.schedulerName }}
+      schedulerName: {{ .Values.internalRedis.schedulerName | quote }}
+      {{- end }}
+
+      {{- if .Values.internalRedis.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.internalRedis.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.internalRedis.terminationGracePeriodSeconds }}
+
+      containers:
+        - name: redis
+          image: {{ template "carto.redis.image" . }}
+          imagePullPolicy: {{ .Values.internalRedis.image.pullPolicy }}
+
+          {{- if .Values.internalRedis.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.internalRedis.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+
+          {{- if .Values.internalRedis.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.internalRedis.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.args "context" $) | nindent 12 }}
+          {{- end }}
+
+          ports:
+            - name: redis
+              containerPort: {{ .Values.internalRedis.containerPorts.redis }}
+
+          {{- if .Values.internalRedis.livenessProbe.enabled }}
+          livenessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.internalRedis.livenessProbe "enabled") "context" $) | nindent 12 }}
+            tcpSocket:
+              port: redis
+          {{- end }}
+          {{- if .Values.internalRedis.readinessProbe.enabled }}
+          readinessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.internalRedis.readinessProbe "enabled") "context" $) | nindent 12 }}
+            tcpSocket:
+              port: redis
+          {{- end }}
+          {{- if .Values.internalRedis.startupProbe.enabled }}
+          startupProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.internalRedis.startupProbe "enabled") "context" $) | nindent 12 }}
+            tcpSocket:
+              port: redis
+          {{- end }}
+
+          {{- if .Values.internalRedis.extraEnvVars }}
+          env: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.extraEnvVars "context" $) | nindent 12 }}
+          {{- end }}
+
+          {{- if .Values.internalRedis.resources }}
+          resources: {{- toYaml .Values.internalRedis.resources | nindent 12 }}
+          {{- end }}
+
+          volumeMounts:
+            {{- if .Values.internalRedis.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+
+      volumes:
+        {{- if .Values.internalRedis.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+
+      {{- if .Values.internalRedis.sidecars }}
+      {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.sidecars "context" $) | nindent 6 }}
+      {{- end }}
+{{- end }}
