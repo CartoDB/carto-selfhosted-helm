@@ -1,4 +1,4 @@
-{{- if .Values.internalRedis.autoscaling.enabled }}
+{{- if (.Values.internalRedis.autoscaling.enabled) }}
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
