@@ -4991,6 +4991,7 @@ upgradeCheck:
     ## pullSecrets:
     ##   - myRegistryKeySecretName
     ##
+    ## @param internalRedis.image.pullSecrets Image-pull secrets for private registries
     pullSecrets: []
   ## Upgrade Check pre-hook resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
