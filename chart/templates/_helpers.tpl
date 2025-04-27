@@ -1148,7 +1148,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 Create carto Image full name for Redis
 */}}
 {{- define "carto.redis.image" -}}
-{{ include "carto.imageRegistry" . }} / {{ .Values.internalRedis.image.repository }} : {{ .Values.internalRedis.image.tag | default .Chart.AppVersion }}
+{{- include "carto.images.image" (dict "imageRoot" .Values.internalRedis.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{/*

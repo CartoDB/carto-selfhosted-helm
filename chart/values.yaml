@@ -4739,8 +4739,13 @@ internalRedis:
   ## @param internalRedis.image.tag internal-redis image tag (immutable tags are recommended)
   ## @param internalRedis.image.pullPolicy internal-redis image pull policy
   ## @param internalRedis.image.pullSecrets internal-redis image pull secrets
-  ##
   enabled: true
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: redis
+    tag: ""
+    pullPolicy: IfNotPresent
+    pullSecrets: []
   resources:
     limits:
       ## @param internalRedis.resources.limits.memory Container memory limits in MiB
