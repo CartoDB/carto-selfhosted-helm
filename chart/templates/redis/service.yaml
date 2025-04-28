@@ -9,6 +9,7 @@ metadata:
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
     {{- end }}
+  {{- if or .Values.commonAnnotations .Values.internalRedis.service.annotations }}
   annotations:
     {{- if .Values.commonAnnotations }}
     {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" $) | nindent 4 }}
@@ -16,6 +17,7 @@ metadata:
     {{- if .Values.internalRedis.service.annotations }}
     {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.service.annotations "context" $) | nindent 4 }}
     {{- end }}
+  {{- end }}
 spec:
   type: {{ .Values.internalRedis.service.type }}
   {{- if and .Values.internalRedis.service.clusterIP (eq .Values.internalRedis.service.type "ClusterIP") }}

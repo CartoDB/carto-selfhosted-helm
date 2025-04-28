@@ -396,7 +396,16 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
-
+  ## @extra cartoSecrets.redisPassword The password for the Redis instance.
+  redisPassword:
+    ## @param cartoSecrets.redisPassword.value Value of the secret used to define the password for the Redis instance. One of `cartoSecrets.redisPassword.value` or `cartoSecrets.redisPassword.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.redisPassword.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.redisPassword.existingSecret.key`. If `cartoSecrets.redisPassword.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.redisPassßword.existingSecret.key Key to find in `cartoSecrets.redisPassword.existingSecret.name` where the value of `cartoSecrets.redisPassword` is found. If `cartoSecrets.redisPassword.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
 ## FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 ## @section TLS parameters
 ## Global TLS parameters
