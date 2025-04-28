@@ -7,16 +7,15 @@ metadata:
     {{- include "common.labels.standard" . | nindent 4 }}
     app.kubernetes.io/component: redis
     {{- if .Values.commonLabels }}
-      {{- include "common.tplvalues.render" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
     {{- end }}
-  {{- if .Values.commonAnnotations }}
   annotations:
+    {{- if .Values.commonAnnotations }}
     {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" $) | nindent 4 }}
-  {{- end }}
-  {{- if .Values.internalRedis.service.annotations }}
-  annotations:
+    {{- end }}
+    {{- if .Values.internalRedis.service.annotations }}
     {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.service.annotations "context" $) | nindent 4 }}
-  {{- end }}
+    {{- end }}
 spec:
   type: {{ .Values.internalRedis.service.type }}
   {{- if and .Values.internalRedis.service.clusterIP (eq .Values.internalRedis.service.type "ClusterIP") }}
@@ -36,8 +35,8 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
-      {{- if and (or (eq .Values.internalRedis.service.type "NodePort") (eq .Values.internalRedis.service.type "LoadBalancer")) .Values.internalRedis.service.nodePorts.http }}
-      nodePort: {{ .Values.internalRedis.service.nodePorts.http }}
+      {{- if and (or (eq .Values.internalRedis.service.type "NodePort") (eq .Values.internalRedis.service.type "LoadBalancer")) .Values.internalRedis.service.nodePorts.redis }}
+      nodePort: {{ .Values.internalRedis.service.nodePorts.redis }}
       {{- else if eq .Values.internalRedis.service.type "ClusterIP" }}
       nodePort: null
       {{- end }}
@@ -46,8 +45,8 @@ spec:
     {{- end }}
   selector:
     {{- if .Values.internalRedis.service.labelSelectorsOverride }}
-      {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.service.labelSelectorsOverride "context" $) | nindent 4 }}
     {{- else }}
-      {{- include "common.labels.matchLabels" . | nindent 4 }}
-      app.kubernetes.io/component: redis
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: redis
     {{- end }}

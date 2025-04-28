@@ -4733,12 +4733,13 @@ tenantRequirementsChecker:
 ##
 internalRedis:
   ## internal-redis image
-  ## @param internalRedis.enabled Whether to enable internal-redis
+  ## @param internalRedis.enabled Enable internal-redis deployment
   ## @param internalRedis.image.registry internal-redis image registry
   ## @param internalRedis.image.repository internal-redis image repository
   ## @param internalRedis.image.tag internal-redis image tag (immutable tags are recommended)
   ## @param internalRedis.image.pullPolicy internal-redis image pull policy
   ## @param internalRedis.image.pullSecrets internal-redis image pull secrets
+  ##
   enabled: true
   image:
     registry: gcr.io/carto-onprem-artifacts
@@ -4746,127 +4747,321 @@ internalRedis:
     tag: ""
     pullPolicy: IfNotPresent
     pullSecrets: []
+
+  ## @param internalRedis.auth.enabled Enable password authentication on internal-redis
+  ## @param internalRedis.auth.password Password for Redis authentication
+  ##
+  auth:
+    enabled: true
+    password: ""
+
+  ## @param internalRedis.server.customConfig.enabled Enable custom Redis configuration
+  ## @param internalRedis.server.customConfig.content Content for custom redis.conf
+  server:
+    customConfig:
+      enabled: false
+      content: ""
+
+  ## @param internalRedis.replicaCount Number of internal-redis replicas to deploy
+  ##
+  replicaCount: 1
+
+  ## @param internalRedis.containerPorts.redis internal-redis container port
+  ##
+  containerPorts:
+    redis: 6379
+
+  ## Configure extra options for internal-redis containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param internalRedis.livenessProbe.enabled Enable livenessProbe on internal-redis containers
+  ## @param internalRedis.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param internalRedis.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param internalRedis.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param internalRedis.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param internalRedis.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+
+  ## @param internalRedis.readinessProbe.enabled Enable readinessProbe on internal-redis containers
+  ## @param internalRedis.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param internalRedis.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param internalRedis.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param internalRedis.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param internalRedis.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+
+  ## @param internalRedis.startupProbe.enabled Enable startupProbe on internal-redis containers
+  ## @param internalRedis.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param internalRedis.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param internalRedis.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param internalRedis.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param internalRedis.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+
+  ## @param internalRedis.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+
+  ## @param internalRedis.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+
+  ## @param internalRedis.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+
+  ## internal-redis autoscaling configuration (not used, placeholder if needed later)
+  ## @param internalRedis.autoscaling.enabled Enable autoscaling for the internal-redis containers
+  ## @param internalRedis.autoscaling.minReplicas The minimal number of containers for the internal-redis deployment
+  ## @param internalRedis.autoscaling.maxReplicas The maximum number of containers for the internal-redis deployment
+  ## @param internalRedis.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in internal-redis deployment
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
+
+  ## internal-redis resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param internalRedis.resources.limits.memory Container memory limits in MiB
+  ## @param internalRedis.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param internalRedis.resources.requests.memory Container memory requests in MiB
+  ## @param internalRedis.resources.requests.cpu Container cpu requests in milliCPU cores
+  ##
   resources:
     limits:
-      ## @param internalRedis.resources.limits.memory Container memory limits in MiB
       memory: "1024Mi"
-      ## @param internalRedis.resources.limits.cpu Container CPU limits in milliCPU cores
       cpu: "500m"
     requests:
-      ## @param internalRedis.resources.requests.memory Container memory requests in MiB
       memory: "256Mi"
-      ## @param internalRedis.resources.requests.cpu Container CPU requests in milliCPU cores
       cpu: "100m"
 
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param internalRedis.podSecurityContext.enabled Enabled internal-redis pods' Security Context
+  ## @param internalRedis.podSecurityContext.fsGroup Set internal-redis pod's Security Context fsGroup
+  ## @param internalRedis.podSecurityContext.supplementalGroups[0] Set internal-redis pod's Security Context supplementalGroups
+  ##
   podSecurityContext:
-    ## @param internalRedis.podSecurityContext.fsGroup FS group for mounted volumes
+    enabled: true
     fsGroup: 1000
-    ## @param internalRedis.podSecurityContext.supplementalGroups[0] Supplemental groups for the pod
     supplementalGroups: [2345]
 
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+  ## @param internalRedis.containerSecurityContext.enabled Enabled internal-redis containers' Security Context
+  ## @param internalRedis.containerSecurityContext.runAsUser Set internal-redis containers' Security Context runAsUser
+  ## @param internalRedis.containerSecurityContext.runAsGroup Set internal-redis containers' Security Context runAsGroup
+  ## @param internalRedis.containerSecurityContext.runAsNonRoot Set internal-redis containers' Security Context runAsNonRoot
+  ## @param internalRedis.containerSecurityContext.allowPrivilegeEscalation Set internal-redis containers' Security Context allowPrivilegeEscalation
+  ## @param internalRedis.containerSecurityContext.readOnlyRootFilesystem Set internal-redis containers' Security Context readOnlyRootFilesystem
+  ## @param internalRedis.containerSecurityContext.capabilities.drop Removes internal-redis containers' Security Context capabilities
+  ##
   containerSecurityContext:
-    ## @param internalRedis.containerSecurityContext.enabled Enable container security context
     enabled: true
-    ## @param internalRedis.containerSecurityContext.runAsUser User ID to run the container
     runAsUser: 1000
-    ## @param internalRedis.containerSecurityContext.runAsGroup Group ID to run the container
     runAsGroup: 1000
-    ## @param internalRedis.containerSecurityContext.runAsNonRoot Force the container to run as non-root
     runAsNonRoot: true
-    ## @param internalRedis.containerSecurityContext.allowPrivilegeEscalation Allow privilege escalation
     allowPrivilegeEscalation: false
-    ## @param internalRedis.containerSecurityContext.readOnlyRootFilesystem Mount root filesystem read-only
     readOnlyRootFilesystem: true
-    ## @param internalRedis.containerSecurityContext.capabilities.drop Linux capabilities to drop
     capabilities:
       drop:
         - all
 
-  ## @param internalRedis.existingConfigMap Name of an existing ConfigMap with custom redis.conf
+  ## @param internalRedis.podDisruptionBudget.enabled defines disruption budget for internal-redis
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
+    maxUnavailable: 1
+
+  ## @param internalRedis.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 60
+
+  ## @param internalRedis.existingConfigMap The name of an existing ConfigMap with your custom configuration for internal-redis
+  ##
   existingConfigMap: ""
-  ## @param internalRedis.existingSecret Name of an existing Secret with credentials
+
+  ## @param internalRedis.existingSecret The name of an existing Secret with your custom password for internal-redis
+  ##
   existingSecret: ""
 
-  ## @param internalRedis.command Override default container command
+  ## @param internalRedis.command Override default container command (useful when using custom images)
+  ##
   command: []
-  ## @param internalRedis.args Override default container args
+
+  ## @param internalRedis.args Override default container args (useful when using custom images)
+  ##
   args: []
-  ## @param internalRedis.hostAliases Host aliases for the Redis pods
+
+  ## @param internalRedis.hostAliases internal-redis pods host aliases
+  ##
   hostAliases: []
 
-  ## @param internalRedis.podLabels Extra labels for Redis pods
+  ## @param internalRedis.podLabels Extra labels for internal-redis pods
+  ##
   podLabels: {}
-  ## @param internalRedis.podAnnotations Extra annotations for Redis pods
+
+  ## @param internalRedis.podAnnotations Annotations for internal-redis pods
+  ##
   podAnnotations: {}
 
-  ## @param internalRedis.podAffinityPreset Pod affinity preset (soft|hard)
+  ## @param internalRedis.podAffinityPreset Pod affinity preset. Ignored if `internalRedis.affinity` is set. Allowed values: `soft` or `hard`
+  ##
   podAffinityPreset: ""
-  ## @param internalRedis.podAntiAffinityPreset Pod anti-affinity preset (soft|hard)
+
+  ## @param internalRedis.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `internalRedis.affinity` is set. Allowed values: `soft` or `hard`
+  ##
   podAntiAffinityPreset: soft
 
+  ## internal-redis affinity preset
+  ##
   nodeAffinityPreset:
-    ## @param internalRedis.nodeAffinityPreset.type Node affinity type (soft|hard)
+    ## @param internalRedis.nodeAffinityPreset.type Node affinity preset type. Ignored if `internalRedis.affinity` is set
+    ##
     type: ""
-    ## @param internalRedis.nodeAffinityPreset.key Node label key to match
+    ## @param internalRedis.nodeAffinityPreset.key Node label key to match. Ignored if `internalRedis.affinity` is set
+    ##
     key: ""
-    ## @param internalRedis.nodeAffinityPreset.values Node label values to match
+    ## @param internalRedis.nodeAffinityPreset.values Node label values to match. Ignored if `internalRedis.affinity` is set
+    ##
     values: []
 
-  ## @param internalRedis.affinity Full affinity rules (overrides presets)
+  ## @param internalRedis.affinity Affinity for internal-redis pods assignment
+  ##
   affinity: {}
-  ## @param internalRedis.nodeSelector Node selector for Redis pods
+
+  ## @param internalRedis.nodeSelector Node labels for internal-redis pods assignment
+  ##
   nodeSelector: {}
-  ## @param internalRedis.tolerations Tolerations for Redis pods
+
+  ## @param internalRedis.tolerations Tolerations for internal-redis pods assignment
+  ##
   tolerations: []
 
+  ## @param internalRedis.updateStrategy.type internal-redis deployment strategy type
+  ##
   updateStrategy:
-    ## @param internalRedis.updateStrategy.type StatefulSet update strategy (RollingUpdate|OnDelete)
     type: RollingUpdate
 
-  ## @param internalRedis.priorityClassName Priority class for Redis pods
+  ## @param internalRedis.priorityClassName internal-redis pods' priorityClassName
+  ##
   priorityClassName: ""
-  ## @param internalRedis.schedulerName Alternate scheduler name
+
+  ## @param internalRedis.schedulerName Name of the k8s scheduler (other than default) for internal-redis pods
+  ##
   schedulerName: ""
 
-  ## @param internalRedis.lifecycleHooks Container lifecycle hooks
+  ## @param internalRedis.lifecycleHooks Lifecycle hooks for internal-redis container(s)
+  ##
   lifecycleHooks: {}
 
-  ## @param internalRedis.extraEnvVars Extra environment variables
+  ## @param internalRedis.extraEnvVars Extra environment variables for internal-redis pods
+  ##
   extraEnvVars: []
+
   ## @param internalRedis.extraEnvVarsCM Name of existing ConfigMap with extra env vars
+  ##
   extraEnvVarsCM: ""
+
   ## @param internalRedis.extraEnvVarsSecret Name of existing Secret with extra env vars
+  ##
   extraEnvVarsSecret: ""
 
-  ## @param internalRedis.extraVolumes Additional volumes for the pod
+  ## @param internalRedis.extraVolumes Optionally specify extra volumes for internal-redis pod(s)
+  ##
   extraVolumes: []
-  ## @param internalRedis.extraVolumeMounts Additional volume mounts for the container
+
+  ## @param internalRedis.extraVolumeMounts Optionally specify extra volumeMounts for internal-redis container(s)
+  ##
   extraVolumeMounts: []
 
-  ## @param internalRedis.sidecars Sidecar containers for the pod
+  ## @param internalRedis.sidecars Add additional sidecar containers to internal-redis pod(s)
+  ##
   sidecars: {}
-  ## @param internalRedis.initContainers Init containers for the pod
+
+  ## @param internalRedis.initContainers Add additional init containers to internal-redis pod(s)
+  ##
   initContainers: {}
 
+  ## @section internalRedis Service Parameters
+  ##
   service:
+    ## @param internalRedis.service.type internal-redis service type
+    ##
+    type: LoadBalancer
+    ## @param internalRedis.service.ports.http internal-redis service HTTP port
+    ##
+    ports:
+      http: 6379
+    ## @param internalRedis.service.nodePorts.redis Node port for internal-redis service
+    ##
     nodePorts:
-      ## @param internalRedis.service.nodePorts.redis NodePort to expose Redis (leave blank to disable)
       redis: ""
-    ## @param internalRedis.service.clusterIP Cluster-IP for the service
+    ## @param internalRedis.service.clusterIP internal-redis service ClusterIP
+    ##
     clusterIP: ""
-    ## @param internalRedis.service.loadBalancerIP LoadBalancer IP (when type is LoadBalancer)
+    ## @param internalRedis.service.loadBalancerIP internal-redis service LoadBalancer IP
+    ##
     loadBalancerIP: ""
-    ## @param internalRedis.service.labelSelectorsOverride Additional selector labels
+    ## @param internalRedis.service.labelSelectorsOverride Label selectors override for internal-redis service
+    ##
     labelSelectorsOverride: {}
-    ## @param internalRedis.service.loadBalancerSourceRanges Allowed source ranges for LB
+    ## @param internalRedis.service.loadBalancerSourceRanges internal-redis service LoadBalancer source ranges
+    ##
     loadBalancerSourceRanges: []
-    ## @param internalRedis.service.externalTrafficPolicy ExternalTrafficPolicy for the service
+    ## @param internalRedis.service.externalTrafficPolicy internal-redis service external traffic policy
+    ##
     externalTrafficPolicy: Cluster
-    ## @param internalRedis.service.annotations Extra annotations for the service
+    ## @param internalRedis.service.annotations Additional annotations for internal-redis service
+    ##
     annotations: {}
-    ## @param internalRedis.service.extraPorts Extra ports to expose
+    ## @param internalRedis.service.extraPorts Extra ports for internal-redis service
+    ##
     extraPorts: []
 
+## @section External Redis parameters
+## External Redis configuration
+## All of these values are only used when redis.enabled is set to false
+## @param externalRedis.host Redis host
+## @param externalRedis.port Redis port number
+## @param externalRedis.password Redis password
+## @param externalRedis.tlsEnabled Whether or not connect to Redis via TLS
+## @param externalRedis.tlsCA CA certificate in case Redis TLS cert it's selfsigned
+## @param externalRedis.existingSecret Name of an existing secret resource containing the Redis password in a 'redis-password' key
+## @param externalRedis.existingSecretPasswordKey Key of the existing secret
+##
+externalRedis:
+  host: localhost
+  port: 6379
+  password: ""
+  tlsEnabled: false
+  tlsCA: ""
+  existingSecret: ""
+  existingSecretPasswordKey: ""
 
 ## @section Internal PostgreSQL subchart parameters
 ## Internal PostgreSQL chart configuration
@@ -4910,6 +5105,7 @@ internalPostgresql:
           DROP DATABASE "{{ .Values.auth.database }}";
           DROP USER "{{ .Values.auth.username }}";
           EOF
+
 ## @section External PostgreSQL parameters
 ## External PostgreSQL configuration
 ## All of these values are only used when postgresql.enabled is set to false

@@ -1144,7 +1144,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- include "common.names.dependency.fullname" (dict "chartName" "redis" "chartValues" .Values.internalRedis "context" $) -}}
 {{- end -}}
 
-{{ /* 
+{{/* 
 Create carto Image full name for Redis
 */}}
 {{- define "carto.redis.image" -}}
@@ -1233,16 +1233,16 @@ Return the absolute path where the Redis CA cert will be mounted
 {{- printf "%s/%s" (include "carto.redis.configMapMountDir" .) (include "carto.redis.configMapMountFilename" .) -}}
 {{- end -}}
 
-{{/*
-Return the Redis password sha256sum
-*/}}
-{{- define "carto.redis.passwordChecksum" -}}
-{{- if .Values.internalRedis.enabled }}
-{{- print (tpl (toYaml .Values.internalRedis.auth.password) . | sha256sum ) -}}
-{{- else }}
-{{- print (tpl (toYaml .Values.externalRedis.password) . | sha256sum ) -}}
-{{- end -}}
-{{- end -}}
+# {{/*
+# Return the Redis password sha256sum
+# */}}
+# {{- define "carto.redis.passwordChecksum" -}}
+# {{- if .Values.internalRedis.enabled }}
+# {{- print (tpl (toYaml .Values.internalRedis.auth.password) . | sha256sum ) -}}
+# {{- else }}
+# {{- print (tpl (toYaml .Values.externalRedis.password) . | sha256sum ) -}}
+# {{- end -}}
+# {{- end -}}
 
 {{/*
 Return the proper Carto upgrade check image name
