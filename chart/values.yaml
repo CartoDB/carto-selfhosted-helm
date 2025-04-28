@@ -4890,6 +4890,8 @@ internalRedis:
         - all
 
   ## @param internalRedis.podDisruptionBudget.enabled defines disruption budget for internal-redis
+  ## @param internalRedis.podDisruptionBudget.minAvailable Minimum number of available pods
+  ## @param internalRedis.podDisruptionBudget.maxUnavailable Maximum number of unavailable pods
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ##
   podDisruptionBudget:
