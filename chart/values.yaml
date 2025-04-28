@@ -405,7 +405,7 @@ cartoSecrets:
     ##
     existingSecret:
       name: ""
-      key: ""
+      key: "redis-password"
 ## FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 ## @section TLS parameters
 ## Global TLS parameters

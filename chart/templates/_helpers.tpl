@@ -1171,19 +1171,23 @@ Add environment variables to configure Redis values
 */}}
 {{- define "carto.redis.existingsecret.key" -}}
 {{- if .Values.internalRedis.enabled -}}
+  {{- if .Values.cartoSecrets.redisPassword.existingSecret.name -}}
+    {{- print .Values.cartoSecrets.redisPassword.existingSecret.key -}}
+  {{- else -}}
     {{- print "redis-password" -}}
+  {{- end }}
 {{- else -}}
-    {{- if .Values.externalRedis.existingSecret -}}
-        {{- if .Values.externalRedis.existingSecretPasswordKey -}}
-            {{- printf "%s" .Values.externalRedis.existingSecretPasswordKey -}}
-        {{- else -}}
-            {{- print "redis-password" -}}
-        {{- end -}}
+  {{- if .Values.externalRedis.existingSecret -}}
+    {{- if .Values.externalRedis.existingSecretPasswordKey -}}
+      {{- printf "%s" .Values.externalRedis.existingSecretPasswordKey -}}
     {{- else -}}
-        {{- print "redis-password" -}}
-    {{- end -}}
-{{- end -}}
-{{- end -}}
+      {{- print "redis-password" -}}
+    {{- end }}
+  {{- else -}}
+    {{- print "redis-password" -}}
+  {{- end }}
+{{- end }}
+{{- end }}
 
 {{/*
 Get the Redis credentials secret.
