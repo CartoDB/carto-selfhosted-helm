@@ -173,7 +173,7 @@ spec:
               mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
               readOnly: true
             {{- end }}
-            {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+            {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmapName) }}
             - name: proxy-ssl-ca
               mountPath: {{ include "carto.proxy.configMapMountDir" . }}
               readOnly: true
@@ -210,7 +210,7 @@ spec:
           configMap:
             name: {{ include "carto.postgresql.configMapName" . }}
         {{- end }}
-        {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+        {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmapName) }}
         - name: proxy-ssl-ca
           configMap:
             name: {{ include "carto.proxy.configMapName" . }}
