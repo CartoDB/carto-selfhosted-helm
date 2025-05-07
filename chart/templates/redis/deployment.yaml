@@ -20,10 +20,7 @@ metadata:
     {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" $) | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ .Values.internalRedis.replicaCount }}
-  {{- if .Values.internalRedis.updateStrategy }}
-  strategy: {{- toYaml .Values.internalRedis.updateStrategy | nindent 4 }}
-  {{- end }}
+  replicas: 1
   selector:
     matchLabels:
       {{- include "common.labels.matchLabels" . | nindent 6 }}

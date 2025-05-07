@@ -4771,10 +4771,6 @@ internalRedis:
       enabled: false
       content: ""
 
-  ## @param internalRedis.replicaCount Number of internal-redis replicas to deploy
-  ##
-  replicaCount: 1
-
   ## @param internalRedis.containerPorts.redis internal-redis container port
   ##
   containerPorts:
@@ -4839,18 +4835,6 @@ internalRedis:
   ##
   customStartupProbe: {}
 
-  ## internal-redis autoscaling configuration (not used, placeholder if needed later)
-  ## @param internalRedis.autoscaling.enabled Enable autoscaling for the internal-redis containers
-  ## @param internalRedis.autoscaling.minReplicas The minimal number of containers for the internal-redis deployment
-  ## @param internalRedis.autoscaling.maxReplicas The maximum number of containers for the internal-redis deployment
-  ## @param internalRedis.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in internal-redis deployment
-  ##
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 2
-    targetCPUUtilizationPercentage: 75
-
   ## internal-redis resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param internalRedis.resources.limits.memory Container memory limits in MiB
@@ -4897,16 +4881,6 @@ internalRedis:
     capabilities:
       drop:
         - all
-
-  ## @param internalRedis.podDisruptionBudget.enabled defines disruption budget for internal-redis
-  ## @param internalRedis.podDisruptionBudget.minAvailable Minimum number of available pods
-  ## @param internalRedis.podDisruptionBudget.maxUnavailable Maximum number of unavailable pods
-  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
-  ##
-  podDisruptionBudget:
-    enabled: false
-    minAvailable: 1
-    maxUnavailable: 1
 
   ## @param internalRedis.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
@@ -4973,10 +4947,6 @@ internalRedis:
   ##
   tolerations: []
 
-  ## @param internalRedis.updateStrategy.type internal-redis deployment strategy type
-  ##
-  updateStrategy:
-    type: RollingUpdate
 
   ## @param internalRedis.priorityClassName internal-redis pods' priorityClassName
   ##
@@ -5023,7 +4993,7 @@ internalRedis:
   service:
     ## @param internalRedis.service.type internal-redis service type
     ##
-    type: LoadBalancer
+    type: ClusterIP
     ## @param internalRedis.service.ports.http internal-redis service HTTP port
     ##
     ports:
