@@ -77,11 +77,9 @@ spec:
         - name: redis
           image: {{ template "carto.redis.image" . }}
           imagePullPolicy: {{ .Values.internalRedis.image.pullPolicy }}
-
           {{- if .Values.internalRedis.containerSecurityContext.enabled }}
           securityContext: {{- omit .Values.internalRedis.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
-
           {{- if .Values.internalRedis.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.command "context" $) | nindent 12 }}
           {{- end }}
@@ -112,10 +110,16 @@ spec:
               port: redis
           {{- end }}
 
-          {{- if .Values.internalRedis.extraEnvVars }}
-          env: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.extraEnvVars "context" $) | nindent 12 }}
-          {{- end }}
-
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.redis.secretName" . }}
+                  key: {{ include "carto.redis.existingsecret.key" . | quote }}
+            {{- if .Values.internalRedis.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+            
           {{- if .Values.internalRedis.resources }}
           resources: {{- toYaml .Values.internalRedis.resources | nindent 12 }}
           {{- end }}

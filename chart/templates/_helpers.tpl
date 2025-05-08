@@ -77,7 +77,6 @@ WORKSPACE_JWT_SECRET: cartoSecrets.jwtApiSecret
 WORKSPACE_THUMBNAILS_ACCESSKEYID: appSecrets.awsAccessKeyId
 WORKSPACE_THUMBNAILS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
-REDIS_PASSWORD: cartoSecrets.redisPassword
 {{- end -}}
 
 {{/*
@@ -1242,12 +1241,12 @@ Return the absolute path where the Redis CA cert will be mounted
 Return the Redis password sha256sum
 */}}
 {{- define "carto.redis.passwordChecksum" -}}
-{{- if and .Values.internalRedis.enabled (not .Values.cartoSecrets.redisPassword.existingSecret.name) }}
-  {{- print (tpl (toYaml .Values.cartoSecrets.redisPassword.value) . | sha256sum) }}
-{{- else }}
-  {{- print "" }}
-{{- end }}
-{{- end }}
+{{- if .Values.internalRedis.enabled -}}
+{{- print (tpl (toYaml .Values.internalRedis.password) . | sha256sum ) -}}
+{{- else -}}
+{{- print (tpl (toYaml .Values.internalRedisß.password) . | sha256sum ) -}}
+{{- end -}}
+{{- end -}}
 
 {{/*
 Return the proper Carto upgrade check image name
