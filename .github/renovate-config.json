@@ -4,9 +4,10 @@
   "requireConfig": "optional",
   "platform": "github",
   "forkProcessing": "enabled",
-  "reviewers": ["CartoDB/self-hosted-team"],
+  "reviewers": ["team:self-hosted-team"],
   "repositories": ["CartoDB/carto-selfhosted-helm"],
   "enabledManagers": ["regex", "helmv3"],
+  "commitMessageExtra": "from {{currentVersion}} to {{newVersion}}",
   "customManagers": [
     {
       "customType": "regex",
