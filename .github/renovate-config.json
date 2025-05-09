@@ -10,6 +10,7 @@
   "commitMessageExtra": "from {{currentVersion}} to {{newVersion}}",
   "branchConcurrentLimit": 0,
   "prConcurrentLimit": 0,
+  "prHourlyLimit": 0,
   "customManagers": [
     {
       "customType": "regex",
