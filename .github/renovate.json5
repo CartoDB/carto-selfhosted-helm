@@ -1,6 +1,7 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   repositories: ["CartoDB/carto-selfhosted-helm"],
+  "enabledManagers": ["custom.regex"],
   customManagers: [
     {
       customType: "regex",
