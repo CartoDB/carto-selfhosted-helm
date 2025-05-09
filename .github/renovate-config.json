@@ -1,6 +1,7 @@
 {
   "branchPrefix": "renovate-dep/",
   "onboarding": false,
+  "requireConfig": "optional",
   "platform": "github",
   "forkProcessing": "enabled",
   "repositories": ["CartoDB/carto-selfhosted-helm"],
