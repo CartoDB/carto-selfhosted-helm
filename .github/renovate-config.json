@@ -11,15 +11,14 @@
       "customType": "regex",
       "managerFilePatterns": ["manifests/embbeded-cluster.yaml"],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s\\S+?:(?<currentValue>\\S+)\\s+\\S+:.+",
-        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s\\S+?:\\S+\\s+\\S+:(?<currentValue>\\S+)"
+        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s\\S+?:(?<currentValue>\\S+)\\s+\\S+:.+"
       ],
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
     },
     {
       "customType": "regex",
       "managerFilePatterns": ["manifests/embbeded-cluster.yaml"],
-      "matchStrings": ["version:\\s*\"(?<currentValue>\\d+\\.\\d+\\.\\d+\\+k8s-\\d+\\.\\d+)\""],
+      "matchStrings": ["version:\\s*(?<currentValue>\\d+\\.\\d+\\.\\d+\\+k8s-\\d+\\.\\d+)"],
       "depNameTemplate": "replicatedhq/embedded-cluster",
       "datasourceTemplate": "github-tags"
     }
