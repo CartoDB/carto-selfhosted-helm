@@ -5,7 +5,7 @@
   "platform": "github",
   "forkProcessing": "enabled",
   "repositories": ["CartoDB/carto-selfhosted-helm"],
-  // "enabledManagers": ["regex", "helm"],
+  "enabledManagers": ["regex", "helmv3"],
   "customManagers": [
     {
       "customType": "regex",
@@ -16,6 +16,18 @@
       "depNameTemplate": "replicatedhq/embedded-cluster",
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "loose"
+    }
+  ],
+  "packageRules": [
+    {
+      "managers": ["helmv3"],
+      "matchPackageNames": ["replicated"],
+      "enabled": true
+    },
+    {
+      "managers": ["helmv3"],
+      "excludePackageNames": ["replicated"],
+      "enabled": false
     }
   ]
 }
