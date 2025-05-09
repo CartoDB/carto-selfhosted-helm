@@ -20,14 +20,9 @@
   ],
   "packageRules": [
     {
-      "managers": ["helmv3"],
+      "matchManagers": ["helmv3"],
       "matchPackageNames": ["replicated"],
       "enabled": true
-    },
-    {
-      "managers": ["helmv3"],
-      "excludePackageNames": ["replicated"],
-      "enabled": false
     }
   ]
 }
