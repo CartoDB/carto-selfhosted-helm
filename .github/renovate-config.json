@@ -5,7 +5,7 @@
   "platform": "github",
   "forkProcessing": "enabled",
   "repositories": ["CartoDB/carto-selfhosted-helm"],
-  "enabledManagers": ["regex"],
+  "enabledManagers": ["regex", "helm"],
   "customManagers": [
     {
       "customType": "regex",
