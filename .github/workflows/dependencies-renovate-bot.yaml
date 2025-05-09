@@ -1,0 +1,30 @@
+name: Dependencies
+on:
+  # Uncomment for development purpose
+  pull_request:
+    paths:
+      - .github/workflows/dependencies-renovate-bot.yml
+
+  schedule:
+    # Runs every 8 hours
+    - cron: "0 */8 * * *"
+
+  workflow_dispatch:
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    name: "Dependencies Renovate"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v42.0.1
+        # Uncomment for development purpose
+        env:
+          LOG_FORMAT: json
+          LOG_LEVEL: debug
+        with:
+          configurationFile: .github/renovate.json5
+          token: ${{ secrets.X_GITHUB_CARTOFANTE }}

@@ -1,0 +1,14 @@
+{
+  regexManagers: [
+    {
+      fileMatch: ["^manifests/embbeded-cluster.yaml$"],
+      matchStrings: [
+        'version\s*:\s*(?<currentValue>\d+\.\d+\.\d+\+k8s-\d+\.\d+)',
+      ],
+      datasourceTemplate: "github-tags",
+      depNameTemplate: "replicatedhq/embedded-cluster",
+      versioningTemplate: "semver",
+      extractVersion: "^v?(?<version>\d+\.\d+\.\d+)\+k8s-(?<k8s>\d+\.\d+)$",
+    },
+  ],
+}
