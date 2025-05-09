@@ -1,0 +1,16 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  repositories: ["CartoDB/carto-selfhosted-helm"],
+  "enabledManagers": ["custom.regex"],
+  customManagers: [
+    {
+      customType: "regex",
+      managerFilePatterns: ["^manifests/embbeded-cluster.yaml$"],
+      matchStrings: ["versions*:s*(?<currentValue>d+.d+.d++k8s-d+.d+)"],
+      datasourceTemplate: "github-tags",
+      depNameTemplate: "replicatedhq/embedded-cluster",
+      versioningTemplate: "semver",
+      extractVersion: "^v?(?<version>d+.d+.d+)+k8s-(?<k8s>d+.d+)$",
+    },
+  ],
+}
