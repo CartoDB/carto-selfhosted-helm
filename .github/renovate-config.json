@@ -14,7 +14,7 @@
         "version:\\s*(?<currentValue>\\d+\\.\\d+\\.\\d+\\+k8s-\\d+\\.\\d+)"
       ],
       "depNameTemplate": "replicatedhq/embedded-cluster",
-      "datasourceTemplate": "github-tags"
+      "datasourceTemplate": "github-releases"
     }
   ]
 }
