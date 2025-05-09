@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/dependencies-renovate-bot.yml
+  push:
 
   schedule:
     # Runs every 8 hours
