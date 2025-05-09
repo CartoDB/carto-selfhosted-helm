@@ -4,6 +4,7 @@
   "requireConfig": "optional",
   "platform": "github",
   "forkProcessing": "enabled",
+  "reviewers": ["CartoDB/self-hosted-team"],
   "repositories": ["CartoDB/carto-selfhosted-helm"],
   "enabledManagers": ["regex", "helmv3"],
   "customManagers": [
@@ -23,6 +24,11 @@
       "matchManagers": ["helmv3"],
       "matchPackageNames": ["replicated"],
       "enabled": true
+    },
+    {
+      "matchManagers": ["helmv3"],
+      "matchPackageNames": ["common", "postgresql", "redis"],
+      "enabled": false
     }
   ]
 }
