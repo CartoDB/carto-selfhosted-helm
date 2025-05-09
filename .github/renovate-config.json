@@ -1,0 +1,20 @@
+{
+  "branchPrefix": "renovate-dep/",
+  "onboarding": false,
+  "platform": "github",
+  "forkProcessing": "enabled",
+  "repositories": ["CartoDB/carto-selfhosted-helm"],
+  "regexManagers": [
+    {
+      "description": "Track replicatedhq/embedded-cluster releases",
+      "fileMatch": ["^manifests/embbeded-cluster.yaml$"],
+      "matchStrings": [
+        "version:\\s*\"(?<currentValue>\\d+\\.\\d+\\.\\d+\\+k8s-\\d+\\.\\d+)\""
+      ],
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "replicatedhq/embedded-cluster",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v?(?<version>\\d+\\.\\d+\\.\\d+)\\+k8s-(?<k8s>\\d+\\.\\d+)$"
+    }
+  ]
+}
