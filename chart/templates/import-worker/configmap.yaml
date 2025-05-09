@@ -13,6 +13,9 @@ metadata:
   {{- end }}
 data:
   BIGQUERY_OAUTH2_CLIENT_ID: {{ .Values.appConfigValues.bigqueryOauth2ClientId | quote }}
+  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+  CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
+  {{- end }}
   {{- if .Values.replicated.enabled }}
   CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "replicated.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:3000"
   {{- end }}

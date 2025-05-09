@@ -118,6 +118,7 @@ spec:
               "IMPORT_ACCESSKEYID"
               "IMPORT_SECRETACCESSKEY"
               "IMPORT_STORAGE_ACCESSKEY"
+              "LAUNCHDARKLY_SDK_KEY"
             ) "context" $ ) | nindent 12 }}
             {{- if .Values.importWorker.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVars "context" $) | nindent 12 }}
@@ -135,6 +136,7 @@ spec:
               "IMPORT_ACCESSKEYID"
               "IMPORT_SECRETACCESSKEY"
               "IMPORT_STORAGE_ACCESSKEY"
+              "LAUNCHDARKLY_SDK_KEY"
             ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
