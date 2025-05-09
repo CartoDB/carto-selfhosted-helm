@@ -5,7 +5,7 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     tags:
       - bitnami-common
-    version: 1.x.x
+    version: 2.x
   - condition: internalPostgresql.enabled
     name: postgresql
     alias: internalPostgresql

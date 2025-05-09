@@ -1,7 +1,7 @@
 dependencies:
 - name: common
   repository: https://charts.bitnami.com/bitnami
-  version: 1.17.1
+  version: 2.31.1
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
   version: 11.9.13
@@ -11,5 +11,5 @@ dependencies:
 - name: replicated
   repository: oci://registry.replicated.com/library
   version: 1.3.0
-digest: sha256:f924a3a7c98d85ef865408f526c381d7960a46558dcef9ca49cc636c250ceddc
-generated: "2025-03-28T10:18:16.92408+01:00"
+digest: sha256:2c7c9afb181c6b966f46c181e4cf88ee50378179211b0218f31d55fc4af67365
+generated: "2025-05-09T12:05:36.404634112Z"
