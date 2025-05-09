@@ -1,18 +1,4 @@
 {
-  $schema: "https://docs.renovatebot.com/renovate-schema.json",
-  repositories: ["CartoDB/carto-selfhosted-helm"],
-  printConfig: true,
-  branchPrefix: "dependencies/",
-  branchConcurrentLimit: 0,
-  labels: ["dependencies"],
-  extends: [":dependencyDashboard"],
-  commitMessageExtra: "from {{currentVersion}} to {{newVersion}}",
-  rebaseWhen: "behind-base-branch",
-  rangeStrategy: "bump",
-  prConcurrentLimit: 0,
-  prCreation: "immediate",
-  reviewers: ["CartoDB/self-hosted-team"],
-  baseBranches: ["main"],
   customManagers: [
     {
       customType: "regex",
