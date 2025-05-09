@@ -191,6 +191,12 @@ spec:
               mountPath: {{ include "carto.proxy.configMapMountDir" . }}
               readOnly: true
             {{- end }}
+            {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+            - name: feature-flags
+              mountPath: {{ include "carto.featureFlags.configMapMountDir" . }}
+              subPath: custom-feature-flags.yaml
+              readOnly: true
+            {{- end }}
           {{- if .Values.importWorker.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -223,6 +229,14 @@ spec:
         - name: proxy-ssl-ca
           configMap:
             name: {{ include "carto.proxy.configMapName" . }}
+        {{- end }}
+        {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+        - name: feature-flags
+          configMap:
+            name: {{ template "carto.featureFlags.configMapName" . }}
+            items:
+              - key: custom-feature-flags.yaml
+                path: custom-feature-flags.yaml
         {{- end }}
         {{- if .Values.importWorker.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.extraVolumes "context" $) | nindent 8 }}
