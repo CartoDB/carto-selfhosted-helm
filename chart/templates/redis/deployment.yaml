@@ -116,14 +116,24 @@ spec:
           resources: {{- toYaml .Values.internalRedis.resources | nindent 12 }}
           {{- end }}
           volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: data
+              mountPath: /data
             {{- if .Values.internalRedis.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
+        {{- if .Values.internalRedis.sidecars }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.sidecars "context" $) | nindent 8 }}
+        {{- end }}
       volumes:
+        - name: tmp
+          emptyDir:
+            medium: Memory
+        - name: data
+          emptyDir: {}
         {{- if .Values.internalRedis.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
-      {{- if .Values.internalRedis.sidecars }}
-      {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.sidecars "context" $) | nindent 6 }}
-      {{- end }}
+
 {{- end }}
