@@ -267,8 +267,6 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   {{- $preflightOptionalList := list
       "Check_TravelTime_connectivity"
       "Check_TomTom_connectivity"
-      "Check_temp_bucket"
-      "Check_assets_bucket"
   }}
 
   {{/*
