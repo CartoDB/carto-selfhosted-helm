@@ -591,7 +591,7 @@ spec:
           imagePullSecrets:
             - name: "{{repl ImagePullSecretName }}"
           images:
-            replicated-sdk: '{{repl LocalImageName "docker.io/replicated/replicated-sdk:v1.0.0-beta.30" }}'
+            replicated-sdk: '{{repl LocalImageName "registry.replicated.com/library/replicated-sdk-image:1.5.2" }}'
     # THIS SHOULD ALWAYS BE THE LAST OPTIONAL VALUE!!!!
     ## Advanced Tuning
     - when: '{{repl not (empty (ConfigOption "platformAdvancedTuningValues")) }}'
