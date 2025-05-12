@@ -4764,13 +4764,6 @@ internalRedis:
     enabled: true
     password: ""
 
-  ## @param internalRedis.server.customConfig.enabled Enable custom Redis configuration
-  ## @param internalRedis.server.customConfig.content Content for custom redis.conf
-  server:
-    customConfig:
-      enabled: false
-      content: ""
-
   ## @param internalRedis.containerPorts.redis internal-redis container port
   ##
   containerPorts:
