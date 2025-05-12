@@ -1,4 +1,4 @@
-{{- if .Values.internalRedis.enabled }}
+{{- if .Values.internalRedis.enabled and .Values.internalRedis.server.customConfig.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
