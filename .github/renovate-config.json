@@ -1,0 +1,35 @@
+{
+  "branchPrefix": "renovate-dep/",
+  "onboarding": false,
+  "requireConfig": "optional",
+  "platform": "github",
+  "forkProcessing": "enabled",
+  "reviewers": ["team:self-hosted-team"],
+  "repositories": ["CartoDB/carto-selfhosted-helm"],
+  "enabledManagers": ["regex", "helmv3"],
+  "commitMessageExtra": "from {{currentVersion}} to {{newVersion}}",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["manifests/embbeded-cluster.yaml"],
+      "matchStrings": [
+        "version:\\s*(?<currentValue>\\d+\\.\\d+\\.\\d+\\+k8s-\\d+\\.\\d+)"
+      ],
+      "depNameTemplate": "replicatedhq/embedded-cluster",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "loose"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["helmv3"],
+      "matchPackageNames": ["replicated"],
+      "enabled": true
+    },
+    {
+      "matchManagers": ["helmv3"],
+      "matchPackageNames": ["common", "postgresql", "redis"],
+      "enabled": false
+    }
+  ]
+}
