@@ -117,6 +117,7 @@ spec:
               "IMPORT_ACCESSKEYID"
               "IMPORT_SECRETACCESSKEY"
               "IMPORT_STORAGE_ACCESSKEY"
+              "LAUNCHDARKLY_SDK_KEY"
             ) "context" $ ) | nindent 12 }}
             {{- if .Values.importApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraEnvVars "context" $) | nindent 12 }}
@@ -133,6 +134,7 @@ spec:
               "IMPORT_ACCESSKEYID"
               "IMPORT_SECRETACCESSKEY"
               "IMPORT_STORAGE_ACCESSKEY"
+              "LAUNCHDARKLY_SDK_KEY"
             ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
@@ -214,6 +216,12 @@ spec:
               mountPath: {{ include "carto.proxy.configMapMountDir" . }}
               readOnly: true
             {{- end }}
+            {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+            - name: feature-flags
+              mountPath: {{ include "carto.featureFlags.configMapMountDir" . }}
+              subPath: custom-feature-flags.yaml
+              readOnly: true
+            {{- end }}
           {{- if .Values.importApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -249,6 +257,14 @@ spec:
         - name: proxy-ssl-ca
           configMap:
             name: {{ include "carto.proxy.configMapName" . }}
+        {{- end }}
+        {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+        - name: feature-flags
+          configMap:
+            name: {{ template "carto.featureFlags.configMapName" . }}
+            items:
+              - key: custom-feature-flags.yaml
+                path: custom-feature-flags.yaml
         {{- end }}
         {{- if .Values.importApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraVolumes "context" $) | nindent 8 }}
