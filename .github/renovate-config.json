@@ -8,6 +8,7 @@
   "repositories": ["CartoDB/carto-selfhosted-helm"],
   "enabledManagers": ["regex", "helmv3"],
   "commitMessageExtra": "from {{currentVersion}} to {{newVersion}}",
+  "addLabels": ["release-changes"],
   "customManagers": [
     {
       "customType": "regex",
