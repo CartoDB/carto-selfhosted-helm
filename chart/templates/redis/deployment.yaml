@@ -118,7 +118,7 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
-            - name: data
+            - name: redis-data
               mountPath: /data
             {{- if .Values.internalRedis.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.extraVolumeMounts "context" $) | nindent 12 }}
