@@ -95,7 +95,7 @@ spec:
           args:
             - -ec
             - |
-              npm run start:built
+              yarn run start:built
           {{- end }}
           env:
             - name: WORKSPACE_POSTGRES_PASSWORD
