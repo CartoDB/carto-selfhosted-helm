@@ -40,7 +40,7 @@ spec:
         {{- end }}
     spec:
       serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
-      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- include "carto.redis.imagePullSecrets" . | nindent 6 }}
 
       {{- if .Values.internalRedis.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.hostAliases "context" $) | nindent 8 }}

@@ -885,6 +885,13 @@ Return the proper Docker Image Registry Secret Names
 {{- end -}}
 
 {{/*
+Return the proper Docker Image Registry Secret Names for Redis (not working with common.images.pullSecrets)
+*/}}
+{{- define "carto.redis.imagePullSecrets" -}}
+{{- include "common.images.renderPullSecrets" (dict "images"  (list .Values.internalRedis.image) "context" $) -}}
+{{- end -}}
+
+{{/*
 Google Secret => Default Google Service Account
 */}}
 
