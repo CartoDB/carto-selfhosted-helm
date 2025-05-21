@@ -17,9 +17,9 @@ metadata:
     {{- end }}
   {{- if .Values.commonAnnotations }}
   annotations:
+    checksum/redis-password: {{ include "carto.redis.passwordChecksum" . | trunc 63 }}
     {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" $) | nindent 4 }}
   {{- end }}
-    checksum/redis-password: {{ include "carto.redis.passwordChecksum" . | trunc 63 }}
 spec:
   replicas: 1
   selector:
@@ -42,7 +42,7 @@ spec:
         {{- end }}
     spec:
       serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
-      {{- include "carto.redis.imagePullSecrets" . | nindent 6 }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.internalRedis.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.hostAliases "context" $) | nindent 8 }}
       {{- end }}
