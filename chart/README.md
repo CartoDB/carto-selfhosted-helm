@@ -1497,16 +1497,17 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `internalRedis.image.tag`                                         | internal-redis image tag (immutable tags are recommended)                                              | `""`                            |
 | `internalRedis.image.pullPolicy`                                  | internal-redis image pull policy                                                                       | `IfNotPresent`                  |
 | `internalRedis.image.pullSecrets`                                 | internal-redis image pull secrets                                                                      | `[]`                            |
+| `internalRedis.image.pullSecrets`                                 | Image-pull secrets for private registries                                                              | `[]`                            |
 | `internalRedis.auth.enabled`                                      | Enable password authentication on internal-redis                                                       | `true`                          |
 | `internalRedis.auth.password`                                     | Password for Redis authentication                                                                      | `""`                            |
 | `internalRedis.containerPorts.redis`                              | internal-redis container port                                                                          | `6379`                          |
-| `internalRedis.livenessProbe.enabled`                             | Enable livenessProbe on internal-redis containers                                                      | `false`                         |
+| `internalRedis.livenessProbe.enabled`                             | Enable livenessProbe on internal-redis containers                                                      | `true`                          |
 | `internalRedis.livenessProbe.initialDelaySeconds`                 | Initial delay seconds for livenessProbe                                                                | `10`                            |
 | `internalRedis.livenessProbe.periodSeconds`                       | Period seconds for livenessProbe                                                                       | `30`                            |
 | `internalRedis.livenessProbe.timeoutSeconds`                      | Timeout seconds for livenessProbe                                                                      | `5`                             |
 | `internalRedis.livenessProbe.failureThreshold`                    | Failure threshold for livenessProbe                                                                    | `5`                             |
 | `internalRedis.livenessProbe.successThreshold`                    | Success threshold for livenessProbe                                                                    | `1`                             |
-| `internalRedis.readinessProbe.enabled`                            | Enable readinessProbe on internal-redis containers                                                     | `false`                         |
+| `internalRedis.readinessProbe.enabled`                            | Enable readinessProbe on internal-redis containers                                                     | `true`                          |
 | `internalRedis.readinessProbe.initialDelaySeconds`                | Initial delay seconds for readinessProbe                                                               | `10`                            |
 | `internalRedis.readinessProbe.periodSeconds`                      | Period seconds for readinessProbe                                                                      | `30`                            |
 | `internalRedis.readinessProbe.timeoutSeconds`                     | Timeout seconds for readinessProbe                                                                     | `5`                             |
@@ -1536,7 +1537,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `internalRedis.containerSecurityContext.readOnlyRootFilesystem`   | Set internal-redis containers' Security Context readOnlyRootFilesystem                                 | `true`                          |
 | `internalRedis.containerSecurityContext.capabilities.drop`        | Removes internal-redis containers' Security Context capabilities                                       | `["all"]`                       |
 | `internalRedis.terminationGracePeriodSeconds`                     | Time to wait before force killing the container                                                        | `60`                            |
-| `internalRedis.existingConfigMap`                                 | The name of an existing ConfigMap with your custom configuration for internal-redis                    | `""`                            |
 | `internalRedis.existingSecret`                                    | The name of an existing Secret with your custom password for internal-redis                            | `""`                            |
 | `internalRedis.command`                                           | Override default container command (useful when using custom images)                                   | `[]`                            |
 | `internalRedis.args`                                              | Override default container args (useful when using custom images)                                      | `[]`                            |
@@ -1649,7 +1649,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `upgradeCheck.image.tag`                                         | upgradeCheck image tag (immutable tags are recommended)                          | `""`                            |
 | `upgradeCheck.image.pullPolicy`                                  | upgradeCheck image pull policy                                                   | `IfNotPresent`                  |
 | `upgradeCheck.image.pullSecrets`                                 | upgradeCheck image pull secrets                                                  | `[]`                            |
-| `internalRedis.image.pullSecrets`                                | Image-pull secrets for private registries                                        | `[]`                            |
 | `upgradeCheck.resources.limits.memory`                           | Container memory limits in MiB                                                   | `256Mi`                         |
 | `upgradeCheck.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                           | `500m`                          |
 | `upgradeCheck.resources.requests.memory`                         | Container memory requests in MiB                                                 | `128Mi`                         |
