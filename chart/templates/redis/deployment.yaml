@@ -19,6 +19,7 @@ metadata:
   annotations:
     {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" $) | nindent 4 }}
   {{- end }}
+    checksum/redis-password: {{ include "carto.redis.passwordChecksum" . | trunc 63 }}
 spec:
   replicas: 1
   selector:
@@ -29,6 +30,7 @@ spec:
     metadata:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+        checksum/redis-password: {{ include "carto.redis.passwordChecksum" . }}
         {{- if .Values.internalRedis.podAnnotations }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.internalRedis.podAnnotations "context" $ ) | nindent 8 }}
         {{- end }}
@@ -41,7 +43,6 @@ spec:
     spec:
       serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
       {{- include "carto.redis.imagePullSecrets" . | nindent 6 }}
-
       {{- if .Values.internalRedis.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.hostAliases "context" $) | nindent 8 }}
       {{- end }}
@@ -85,19 +86,31 @@ spec:
           ports:
             - name: redis
               containerPort: {{ .Values.internalRedis.service.ports.http }}
-          {{- if .Values.internalRedis.livenessProbe.enabled }}
+          {{- if .Values.internalRedis.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.master.customLivenessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.internalRedis.livenessProbe.enabled }}
           livenessProbe:
             {{- include "common.tplvalues.render" (dict "value" (omit .Values.internalRedis.livenessProbe "enabled") "context" $) | nindent 12 }}
-            tcpSocket:
-              port: redis
+            exec:
+              command:
+                - /bin/sh
+                - -ec
+                - /health/ping_liveness_local.sh {{ .Values.internalRedis.livenessProbe.timeoutSeconds }}
           {{- end }}
-          {{- if .Values.internalRedis.readinessProbe.enabled }}
+          {{- if .Values.internalRedis.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.customReadinessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.internalRedis.readinessProbe.enabled }}
           readinessProbe:
             {{- include "common.tplvalues.render" (dict "value" (omit .Values.internalRedis.readinessProbe "enabled") "context" $) | nindent 12 }}
-            tcpSocket:
-              port: redis
+            exec:
+              command:
+                - /bin/sh
+                - -ec
+                - /health/ping_readiness_local.sh {{ .Values.internalRedis.readinessProbe.timeoutSeconds }}          
           {{- end }}
-          {{- if .Values.internalRedis.startupProbe.enabled }}
+          {{- if .Values.internalRedis.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.customStartupProbe "context" $) | nindent 12 }}
+          {{- else if .Values.internalRedis.startupProbe.enabled }}
           startupProbe:
             {{- include "common.tplvalues.render" (dict "value" (omit .Values.internalRedis.startupProbe "enabled") "context" $) | nindent 12 }}
             tcpSocket:
@@ -120,6 +133,8 @@ spec:
               mountPath: /tmp
             - name: redis-data
               mountPath: /data
+            - name: health
+              mountPath: /health
             {{- if .Values.internalRedis.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
@@ -134,6 +149,10 @@ spec:
           emptyDir: {}
         {{- if .Values.internalRedis.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.extraVolumes "context" $) | nindent 8 }}
-        {{- end }}
+        {{- end }}  
+        - name: health
+          configMap:
+            name: {{ printf "%s-health" (include "carto.redis.fullname" .) }}
+            defaultMode: 0755
 
 {{- end }}

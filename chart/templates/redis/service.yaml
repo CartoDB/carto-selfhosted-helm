@@ -33,10 +33,10 @@ spec:
   loadBalancerSourceRanges: {{- toYaml .Values.internalRedis.service.loadBalancerSourceRanges | nindent 4 }}
   {{- end }}
   ports:
-    - port: {{ .Values.internalRedis.service.ports.http }}
-      targetPort: http
+    - port: {{ .Values.internalRedis.service.ports.http }}   
+      targetPort: redis                                     
       protocol: TCP
-      name: http
+      name: redis
       {{- if and (or (eq .Values.internalRedis.service.type "NodePort") (eq .Values.internalRedis.service.type "LoadBalancer")) .Values.internalRedis.service.nodePorts.redis }}
       nodePort: {{ .Values.internalRedis.service.nodePorts.redis }}
       {{- else if eq .Values.internalRedis.service.type "ClusterIP" }}

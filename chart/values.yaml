@@ -4762,6 +4762,7 @@ internalRedis:
     ## pullSecrets:
     ##   - myRegistryKeySecretName
     ##
+  ## @param internalRedis.image.pullSecrets Image-pull secrets for private registries
     pullSecrets: []
 
   ## @param internalRedis.auth.enabled Enable password authentication on internal-redis
@@ -4786,7 +4787,7 @@ internalRedis:
   ## @param internalRedis.livenessProbe.successThreshold Success threshold for livenessProbe
   ##
   livenessProbe:
-    enabled: false
+    enabled: true
     initialDelaySeconds: 10
     periodSeconds: 30
     timeoutSeconds: 5
@@ -4801,7 +4802,7 @@ internalRedis:
   ## @param internalRedis.readinessProbe.successThreshold Success threshold for readinessProbe
   ##
   readinessProbe:
-    enabled: false
+    enabled: true
     initialDelaySeconds: 10
     periodSeconds: 30
     timeoutSeconds: 5
@@ -4885,10 +4886,6 @@ internalRedis:
   ## @param internalRedis.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 60
-
-  ## @param internalRedis.existingConfigMap The name of an existing ConfigMap with your custom configuration for internal-redis
-  ##
-  existingConfigMap: ""
 
   ## @param internalRedis.existingSecret The name of an existing Secret with your custom password for internal-redis
   ##
@@ -5175,7 +5172,6 @@ upgradeCheck:
     ## pullSecrets:
     ##   - myRegistryKeySecretName
     ##
-    ## @param internalRedis.image.pullSecrets Image-pull secrets for private registries
     pullSecrets: []
   ## Upgrade Check pre-hook resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
