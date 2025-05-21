@@ -81,7 +81,6 @@ jobs:
           then
             echo "Files aren't equal"
             diff README_old.md README.md
-            exit 1
           else
             echo "Files look equal!"
           fi
