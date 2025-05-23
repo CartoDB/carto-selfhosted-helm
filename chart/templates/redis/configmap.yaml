@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-health" (include "carto.redis.fullname" .) }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+data:
+  ping_readiness_local.sh: |-
+    #!/bin/sh
+
+    [ -n "$REDIS_PASSWORD" ] && export REDISCLI_AUTH="$REDIS_PASSWORD"
+
+    REDIS_PORT=${REDIS_PORT:-6379}
+
+    response=$(
+      timeout "$1" \
+      redis-cli -h 127.0.0.1 -p "$REDIS_PORT" PING
+    )
+
+    if [ $? -eq 124 ]; then
+      echo "Timed out"
+      exit 1
+    fi
+
+    if [ "$response" != "PONG" ]; then
+      echo "$response"
+      exit 1
+    fi
+  ping_liveness_local.sh: |-
+    #!/bin/sh
+
+    [ -n "$REDIS_PASSWORD" ] && export REDISCLI_AUTH="$REDIS_PASSWORD"
+    REDIS_PORT=${REDIS_PORT:-6379}
+
+    response=$(
+      timeout "$1" \
+      redis-cli -h 127.0.0.1 -p "$REDIS_PORT" PING
+    )
+
+    if [ $? -eq 124 ]; then
+      echo "Timed out"
+      exit 1
+    fi
+
+    first_word=$(echo "$response" | awk '{print $1}')
+    if [ "$response" != "PONG" ] && \
+       [ "$first_word" != "LOADING" ] && \
+       [ "$first_word" != "MASTERDOWN" ]; then
+      echo "$response"
+      exit 1
+    fi
