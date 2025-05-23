@@ -4885,7 +4885,7 @@ internalRedis:
 
   ## @param internalRedis.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
-  terminationGracePeriodSeconds: 60
+  terminationGracePeriodSeconds: 10
 
   ## @param internalRedis.existingSecret The name of an existing Secret with your custom password for internal-redis
   ##
