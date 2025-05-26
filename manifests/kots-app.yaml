@@ -23,9 +23,7 @@ spec:
     - deployment/carto-workspace-api
     - deployment/carto-workspace-subscriber
     - deployment/carto-workspace-www
-      repl{{ if not (LicenseFieldValue "externalRedis") }}
-      repl{{ include "- deployment/carto-redis" | indent 2 }}
-      repl{{ end }}
+      repl{{ if not (LicenseFieldValue "externalRedis") }}- deployment/carto-redis{{repl end }}
   minKotsVersion: 1.107.4
   additionalImages:
     - gcr.io/carto-onprem-artifacts/tenant-requirements-checker:2024.4.17-rc.7
