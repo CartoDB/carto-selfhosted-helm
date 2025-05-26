@@ -133,8 +133,6 @@ spec:
               mountPath: /tmp
             - name: redis-data
               mountPath: /data
-            - name: health
-              mountPath: /health
             {{- if .Values.internalRedis.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
@@ -150,9 +148,4 @@ spec:
         {{- if .Values.internalRedis.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.extraVolumes "context" $) | nindent 8 }}
         {{- end }}  
-        - name: health
-          configMap:
-            name: {{ printf "%s-health" (include "carto.redis.fullname" .) }}
-            defaultMode: 0755
-
 {{- end }}
