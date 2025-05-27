@@ -4699,8 +4699,8 @@ tenantRequirementsChecker:
   ##
   resources:
     limits:
-      cpu: "500m"
       memory: "512Mi"
+      cpu: "500m"
     requests:
       memory: "128Mi"
       cpu: "250m"
@@ -4720,7 +4720,7 @@ tenantRequirementsChecker:
   ## @param tenantRequirementsChecker.containerSecurityContext.runAsUser Set init tenant-requirements-checker container's Security Context runAsUser
   ## @param tenantRequirementsChecker.containerSecurityContext.runAsGroup Set init tenant-requirements-checker container's Security Context runAsGroup
   ## @param tenantRequirementsChecker.containerSecurityContext.runAsNonRoot Force the init tenant-requirements-checker container to run as non root
-  ## @param tenantRequirementsChecker.containerSecurityContext.allowPrivilegeEscalation Set init tenant-requirements-checker container's Security Context allowPrivilegeEscalation
+  ## @param tenantRefquirementsChecker.containerSecurityContext.allowPrivilegeEscalation Set init tenant-requirements-checker container's Security Context allowPrivilegeEscalation
   ## @param tenantRequirementsChecker.containerSecurityContext.readOnlyRootFilesystem Set init tenant-requirements-checker containers' Security Context readOnlyRootFilesystem
   ## @param tenantRequirementsChecker.containerSecurityContext.capabilities.drop removes tenant-requirements-checker containers' Security Context capabilities
   ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
@@ -4844,12 +4844,12 @@ internalRedis:
   ## @param internalRedis.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
-    limits:
-      memory: "1024Mi"
-      cpu: "500m"
     requests:
-      memory: "256Mi"
-      cpu: "100m"
+      memory: "512Mi"
+      cpu: "200m"
+    limits:
+      memory: "512Mi"
+      cpu: "200m"
 
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
