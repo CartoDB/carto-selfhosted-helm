@@ -4720,7 +4720,7 @@ tenantRequirementsChecker:
   ## @param tenantRequirementsChecker.containerSecurityContext.runAsUser Set init tenant-requirements-checker container's Security Context runAsUser
   ## @param tenantRequirementsChecker.containerSecurityContext.runAsGroup Set init tenant-requirements-checker container's Security Context runAsGroup
   ## @param tenantRequirementsChecker.containerSecurityContext.runAsNonRoot Force the init tenant-requirements-checker container to run as non root
-  ## @param tenantRefquirementsChecker.containerSecurityContext.allowPrivilegeEscalation Set init tenant-requirements-checker container's Security Context allowPrivilegeEscalation
+  ## @param tenantRequirementsChecker.containerSecurityContext.allowPrivilegeEscalation Set init tenant-requirements-checker container's Security Context allowPrivilegeEscalation
   ## @param tenantRequirementsChecker.containerSecurityContext.readOnlyRootFilesystem Set init tenant-requirements-checker containers' Security Context readOnlyRootFilesystem
   ## @param tenantRequirementsChecker.containerSecurityContext.capabilities.drop removes tenant-requirements-checker containers' Security Context capabilities
   ## NOTE: when runAsUser is set to special value "auto", init container will try to chown the
