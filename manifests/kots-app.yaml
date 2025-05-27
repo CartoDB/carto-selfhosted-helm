@@ -10,6 +10,9 @@ spec:
   supportMinimalRBACPrivileges: true
   statusInformers:
     # TODO: Add ingress, gateway or router service
+      repl{{ if ConfigOptionEquals "externalRedisEnabled" "0" }}
+    - deployment/carto-redis
+      repl{{ end }}
     - deployment/carto-accounts-www
     - deployment/carto-cdn-invalidator-sub
     - deployment/carto-http-cache
@@ -23,9 +26,6 @@ spec:
     - deployment/carto-workspace-api
     - deployment/carto-workspace-subscriber
     - deployment/carto-workspace-www
-repl{{ if ConfigOptionEquals "externalRedisEnabled" "0" }}
-    - deployment/carto-redis
-repl{{ end }}
 
   minKotsVersion: 1.107.4
   additionalImages:
