@@ -23,9 +23,9 @@ spec:
     - deployment/carto-workspace-api
     - deployment/carto-workspace-subscriber
     - deployment/carto-workspace-www
-      repl{{ if ConfigOptionEquals "externalRedisEnabled" "0" }}
+repl{{ if ConfigOptionEquals "externalRedisEnabled" "0" }}
     - deployment/carto-redis
-      repl{{ end }}
+repl{{ end }}
   minKotsVersion: 1.107.4
   additionalImages:
     - gcr.io/carto-onprem-artifacts/tenant-requirements-checker:2024.4.17-rc.7
