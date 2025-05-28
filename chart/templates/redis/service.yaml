@@ -1,4 +1,4 @@
-{{- if .Values.internalRedis.enabled }}
+{{- if and .Values.internalRedis.enabled (not .Values.externalRedis.enabled) }}
 apiVersion: v1
 kind: Service
 metadata:
