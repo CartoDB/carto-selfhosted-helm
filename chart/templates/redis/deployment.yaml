@@ -3,7 +3,7 @@
   Rendered only when we ship an in-cluster Redis
   (i.e. `.Values.internalRedis.enabled && !.Values.externalRedis.enabled`).
 */ -}}
-{{- if and .Values.internalRedis.enabled (not .Values.externalRedis.enabled) }}
+{{- if .Values.internalRedis.enabled }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:

@@ -1152,10 +1152,12 @@ Create carto Image full name for Redis
 {{- end -}}
 
 {{/*
-Add environment variables to configure database values
+Add environment variables to configure database values.
+Return the hostname that the rest of the CARTO components should use
+to reach Redis.
 */}}
 {{- define "carto.redis.host" -}}
-{{- ternary (printf "%s-master" (include "carto.redis.fullname" .)) .Values.externalRedis.host .Values.internalRedis.enabled | quote -}}
+{{- ternary (include "carto.redis.fullname" .) .Values.externalRedis.host .Values.internalRedis.enabled | quote -}}
 {{- end -}}
 
 {{/*
