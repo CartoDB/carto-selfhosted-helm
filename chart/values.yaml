@@ -4742,7 +4742,7 @@ tenantRequirementsChecker:
 ##
 internalRedis:
   ## internal-redis image
-  ## @param internalRedis.enabled Enable internal-redis deployment
+  ## @param internalRedis.enabled Switch value between internal-redis deployment and external-redis deployment
   ## @param internalRedis.image.registry internal-redis image registry
   ## @param internalRedis.image.repository internal-redis image repository
   ## @param internalRedis.image.tag internal-redis image tag (immutable tags are recommended)

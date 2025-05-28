@@ -1491,7 +1491,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 | Name                                                              | Description                                                                                            | Value                           |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------- |
-| `internalRedis.enabled`                                           | Enable internal-redis deployment                                                                       | `true`                          |
+| `internalRedis.enabled`                                           | Switch value between internal-redis deployment and external-redis deployment                           | `true`                          |
 | `internalRedis.image.registry`                                    | internal-redis image registry                                                                          | `gcr.io/carto-onprem-artifacts` |
 | `internalRedis.image.repository`                                  | internal-redis image repository                                                                        | `redis`                         |
 | `internalRedis.image.tag`                                         | internal-redis image tag (immutable tags are recommended)                                              | `""`                            |
