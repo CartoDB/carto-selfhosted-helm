@@ -881,7 +881,7 @@ Return the proper Carto tenant-requirements-checker image name
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.pullSecrets" (dict "images" (dict .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image) "global" .Values.global) -}}
+{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image) "context" $) -}}
 {{- end -}}
 
 {{/*
@@ -1144,11 +1144,20 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- include "common.names.dependency.fullname" (dict "chartName" "redis" "chartValues" .Values.internalRedis "context" $) -}}
 {{- end -}}
 
+{{/* 
+Create carto Image full name for Redis
+*/}}
+{{- define "carto.redis.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.internalRedis.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
 {{/*
-Add environment variables to configure database values
+Add environment variables to configure database values.
+Return the hostname that the rest of the CARTO components should use
+to reach Redis.
 */}}
 {{- define "carto.redis.host" -}}
-{{- ternary (printf "%s-master" (include "carto.redis.fullname" .)) .Values.externalRedis.host .Values.internalRedis.enabled | quote -}}
+{{- ternary (include "carto.redis.fullname" .) .Values.externalRedis.host .Values.internalRedis.enabled | quote -}}
 {{- end -}}
 
 {{/*
@@ -1163,19 +1172,23 @@ Add environment variables to configure Redis values
 */}}
 {{- define "carto.redis.existingsecret.key" -}}
 {{- if .Values.internalRedis.enabled -}}
+  {{- if .Values.cartoSecrets.redisPassword.existingSecret.name -}}
+    {{- print .Values.cartoSecrets.redisPassword.existingSecret.key -}}
+  {{- else -}}
     {{- print "redis-password" -}}
+  {{- end }}
 {{- else -}}
-    {{- if .Values.externalRedis.existingSecret -}}
-        {{- if .Values.externalRedis.existingSecretPasswordKey -}}
-            {{- printf "%s" .Values.externalRedis.existingSecretPasswordKey -}}
-        {{- else -}}
-            {{- print "redis-password" -}}
-        {{- end -}}
+  {{- if .Values.externalRedis.existingSecret -}}
+    {{- if .Values.externalRedis.existingSecretPasswordKey -}}
+      {{- printf "%s" .Values.externalRedis.existingSecretPasswordKey -}}
     {{- else -}}
-        {{- print "redis-password" -}}
-    {{- end -}}
-{{- end -}}
-{{- end -}}
+      {{- print "redis-password" -}}
+    {{- end }}
+  {{- else -}}
+    {{- print "redis-password" -}}
+  {{- end }}
+{{- end }}
+{{- end }}
 
 {{/*
 Get the Redis credentials secret.
@@ -1230,9 +1243,9 @@ Return the absolute path where the Redis CA cert will be mounted
 Return the Redis password sha256sum
 */}}
 {{- define "carto.redis.passwordChecksum" -}}
-{{- if .Values.internalRedis.enabled }}
+{{- if .Values.internalRedis.enabled -}}
 {{- print (tpl (toYaml .Values.internalRedis.auth.password) . | sha256sum ) -}}
-{{- else }}
+{{- else -}}
 {{- print (tpl (toYaml .Values.externalRedis.password) . | sha256sum ) -}}
 {{- end -}}
 {{- end -}}
