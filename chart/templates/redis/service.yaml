@@ -1,0 +1,56 @@
+{{- if .Values.internalRedis.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "carto.redis.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
+    {{- end }}
+  {{- if or .Values.commonAnnotations .Values.internalRedis.service.annotations }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" $) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.internalRedis.service.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.service.annotations "context" $) | nindent 4 }}
+    {{- end }}
+  {{- end }}
+spec:
+  type: {{ .Values.internalRedis.service.type }}
+  {{- if and .Values.internalRedis.service.clusterIP (eq .Values.internalRedis.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.internalRedis.service.clusterIP }}
+  {{- end }}
+  {{- if and .Values.internalRedis.service.externalTrafficPolicy (ne .Values.internalRedis.service.type "ClusterIP") }}
+  externalTrafficPolicy: {{ .Values.internalRedis.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- if and .Values.internalRedis.service.loadBalancerIP (eq .Values.internalRedis.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.internalRedis.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq .Values.internalRedis.service.type "LoadBalancer") .Values.internalRedis.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml .Values.internalRedis.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.internalRedis.service.ports.http }}   
+      targetPort: redis                                     
+      protocol: TCP
+      name: redis
+      {{- if and (or (eq .Values.internalRedis.service.type "NodePort") (eq .Values.internalRedis.service.type "LoadBalancer")) .Values.internalRedis.service.nodePorts.redis }}
+      nodePort: {{ .Values.internalRedis.service.nodePorts.redis }}
+      {{- else if eq .Values.internalRedis.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- if .Values.internalRedis.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  selector:
+    {{- if .Values.internalRedis.service.labelSelectorsOverride }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- else }}
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+    {{- end }}
+{{- end }}
