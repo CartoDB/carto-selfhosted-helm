@@ -636,7 +636,7 @@ accountsWww:
     enabled: true
     runAsUser: 101
     runAsGroup: 101
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -974,7 +974,7 @@ importApi:
     enabled: true
     runAsUser: 1000
     runAsGroup: 1000
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -1243,7 +1243,7 @@ importWorker:
     enabled: true
     runAsUser: 1000
     runAsGroup: 1000
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -1526,7 +1526,7 @@ ldsApi:
     enabled: true
     runAsUser: 1000
     runAsGroup: 1000
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -1855,7 +1855,7 @@ mapsApi:
     enabled: true
     runAsUser: 1000
     runAsGroup: 1000
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -2159,7 +2159,7 @@ sqlWorker:
     enabled: true
     runAsUser: 1000
     runAsGroup: 1000
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -2461,7 +2461,7 @@ router:
     enabled: true
     runAsUser: 101
     runAsGroup: 101
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -2875,7 +2875,7 @@ httpCache:
     enabled: true
     runAsUser: 101
     runAsGroup: 101
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -3204,7 +3204,7 @@ notifier:
     enabled: true
     runAsUser: 101
     runAsGroup: 101
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -3533,7 +3533,7 @@ cdnInvalidatorSub:
     enabled: true
     runAsUser: 1000
     runAsGroup: 1000
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -3864,7 +3864,7 @@ workspaceApi:
     enabled: true
     runAsUser: 1000
     runAsGroup: 1000
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -4134,7 +4134,7 @@ workspaceSubscriber:
     enabled: true
     runAsUser: 1000
     runAsGroup: 1000
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -4411,7 +4411,7 @@ workspaceWww:
     enabled: true
     runAsUser: 101
     runAsGroup: 101
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -4666,7 +4666,7 @@ workspaceMigrations:
     enabled: true
     runAsUser: 1000
     runAsGroup: 1000
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -4731,7 +4731,7 @@ tenantRequirementsChecker:
     enabled: true
     runAsUser: 1000
     runAsGroup: 1000
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -5211,7 +5211,7 @@ upgradeCheck:
     enabled: true
     runAsUser: 1000
     runAsGroup: 1000
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
@@ -5282,7 +5282,7 @@ routerMetrics:
     enabled: true
     runAsUser: 1000
     runAsGroup: 1000
-    runAsNonRoot: false
+    runAsNonRoot: true
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
     capabilities:
