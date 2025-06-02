@@ -100,7 +100,7 @@ spec:
           args:
             - -ec
             - |
-              yarn run start:built
+              exec node -r ./tsconfig-paths-bootstrap.js dist/app/index.js
           {{- end }}
           env:
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
