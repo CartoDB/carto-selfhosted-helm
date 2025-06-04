@@ -180,7 +180,7 @@ spec:
           args:
             - -ec
             - |
-              npm run start:built
+              exec node -r ./tsconfig-paths-bootstrap.js dist/app/index.js
           {{- end }}
           env:
             - name: WORKSPACE_POSTGRES_PASSWORD
