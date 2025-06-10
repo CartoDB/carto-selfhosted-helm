@@ -95,11 +95,13 @@ Return common collectors for preflights and support-bundle
               - name: POSTGRES_SSL_CA__FILE_PATH
                 value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
               {{- end }}
+              {{- if not .Values.internalRedis.enabled }}
               {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
               - name: REDIS_TLS_CA__FILE_CONTENT
                 value: {{ .Values.externalRedis.tlsCA | b64enc | quote }}
               - name: REDIS_TLS_CA__FILE_PATH
                 value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
+              {{- end }}
               {{- end }}
               {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
               - name: PROXY_SSL_CA__FILE_CONTENT
@@ -131,10 +133,12 @@ Return common collectors for preflights and support-bundle
                 mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
                 readOnly: false
               {{- end }}
+              {{- if not .Values.internalRedis.enabled }}
               {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
               - name: redis-tls-ca
                 mountPath: {{ include "carto.redis.configMapMountDir" . }}
                 readOnly: false
+              {{- end }}
               {{- end }}
               {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
               - name: proxy-ssl-ca
@@ -179,10 +183,12 @@ Return common collectors for preflights and support-bundle
                 mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
                 readOnly: true
               {{- end }}
+              {{- if not .Values.internalRedis.enabled }}
               {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
               - name: redis-tls-ca
                 mountPath: {{ include "carto.redis.configMapMountDir" . }}
                 readOnly: true
+              {{- end }}
               {{- end }}
               {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
               - name: proxy-ssl-ca
@@ -208,10 +214,12 @@ Return common collectors for preflights and support-bundle
             emptyDir:
               sizeLimit: 8Mi
           {{- end }}
+          {{- if not .Values.internalRedis.enabled }}
           {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
           - name: redis-tls-ca
             emptyDir:
               sizeLimit: 8Mi
+          {{- end }}
           {{- end }}
           {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
           - name: proxy-ssl-ca
@@ -287,8 +295,10 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
   {{- $certChecks = append $certChecks "Check_Postgres_certificate" }}
   {{- end }}
+  {{- if not .Values.internalRedis.enabled }}
   {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
   {{- $certChecks = append $certChecks "Check_Redis_certificate" }}
+  {{- end }}
   {{- end }}
   {{- if gt (len $certChecks) 0 }}
   {{- $_ := set $preflightsDict "CertificatesValidator" $certChecks -}}
@@ -425,6 +435,7 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
 Return customer values to use in preflights and support-bundle
 */}}
 {{- define "carto.replicated.tenantRequirementsChecker.customerValues" }}
+{{- if not .Values.internalRedis.enabled }}
   - name: REDIS_CACHE_PREFIX 
     value: "onprem"
   - name: REDIS_HOST
@@ -437,6 +448,7 @@ Return customer values to use in preflights and support-bundle
   - name: REDIS_TLS_CA
     value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
   {{- end }}
+{{- end }}
   - name: WORKSPACE_POSTGRES_HOST
     value: {{ include "carto.postgresql.host" . }}
   - name: WORKSPACE_POSTGRES_PORT
@@ -550,6 +562,7 @@ Return customer secrets to use in preflights and support-bundle
         name: {{ include "carto.postgresql.secretName" . }}
         key: {{ include "carto.postgresql.secret.key" . }}
   {{- end -}}
+{{- if not .Values.internalRedis.enabled }}
   {{- if eq .Values.externalRedis.existingSecret "" }}
   - name: REDIS_PASSWORD
     value: {{ .Values.externalRedis.password | quote }}
@@ -560,6 +573,7 @@ Return customer secrets to use in preflights and support-bundle
         name: {{ include "carto.redis.secretName" . }}
         key: {{ include "carto.redis.existingsecret.key" . | quote }}
   {{- end -}}
+{{- end }}
   {{- if eq .Values.cartoSecrets.launchDarklySdkKey.existingSecret.name "" }}
   - name: LAUNCHDARKLY_SDK_KEY
     value: {{ .Values.cartoSecrets.launchDarklySdkKey.value | quote }}
