@@ -1731,6 +1731,103 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `gateway.address.type`                                            | AddressType defines how a network address is represented as a text string. | `NamedAddress`                  |
 | `gateway.annotations`                                             | Additional annotations for the gateway resource.                           | `{}`                            |
 
+### ai-api Deployment Parameters
+
+| Name                                                      | Description                                                                                                                       | Value                           |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `aiApi.enabled`                                           | Enable ai-api                                                                                                                     | `false`                         |
+| `aiApi.image.registry`                                    | ai-api image registry                                                                                                             | `gcr.io/carto-onprem-artifacts` |
+| `aiApi.image.repository`                                  | ai-api image repository                                                                                                           | `ai-api`                        |
+| `aiApi.image.tag`                                         | ai-api image tag (immutable tags are recommended)                                                                                 | `""`                            |
+| `aiApi.image.pullPolicy`                                  | ai-api image pull policy                                                                                                          | `IfNotPresent`                  |
+| `aiApi.image.pullSecrets`                                 | ai-api image pull secrets                                                                                                         | `[]`                            |
+| `aiApi.replicaCount`                                      | Number of ai-api replicas to deploy                                                                                               | `1`                             |
+| `aiApi.containerPorts.http`                               | ai-api HTTP container port                                                                                                        | `nil`                           |
+| `aiApi.nodeProcessMaxOldSpacePercentage`                  | Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes | `75`                            |
+| `aiApi.defaultNodeProcessMaxOldSpace`                     | Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes    | `768`                           |
+| `aiApi.livenessProbe.enabled`                             | Enable livenessProbe on ai-api containers                                                                                         | `true`                          |
+| `aiApi.livenessProbe.initialDelaySeconds`                 | Initial delay seconds for livenessProbe                                                                                           | `10`                            |
+| `aiApi.livenessProbe.periodSeconds`                       | Period seconds for livenessProbe                                                                                                  | `30`                            |
+| `aiApi.livenessProbe.timeoutSeconds`                      | Timeout seconds for livenessProbe                                                                                                 | `5`                             |
+| `aiApi.livenessProbe.failureThreshold`                    | Failure threshold for livenessProbe                                                                                               | `5`                             |
+| `aiApi.livenessProbe.successThreshold`                    | Success threshold for livenessProbe                                                                                               | `1`                             |
+| `aiApi.readinessProbe.enabled`                            | Enable readinessProbe on ai-api containers                                                                                        | `true`                          |
+| `aiApi.readinessProbe.initialDelaySeconds`                | Initial delay seconds for readinessProbe                                                                                          | `10`                            |
+| `aiApi.readinessProbe.periodSeconds`                      | Period seconds for readinessProbe                                                                                                 | `30`                            |
+| `aiApi.readinessProbe.timeoutSeconds`                     | Timeout seconds for readinessProbe                                                                                                | `5`                             |
+| `aiApi.readinessProbe.failureThreshold`                   | Failure threshold for readinessProbe                                                                                              | `5`                             |
+| `aiApi.readinessProbe.successThreshold`                   | Success threshold for readinessProbe                                                                                              | `1`                             |
+| `aiApi.startupProbe.enabled`                              | Enable startupProbe on ai-api containers                                                                                          | `false`                         |
+| `aiApi.startupProbe.initialDelaySeconds`                  | Initial delay seconds for startupProbe                                                                                            | `10`                            |
+| `aiApi.startupProbe.periodSeconds`                        | Period seconds for startupProbe                                                                                                   | `30`                            |
+| `aiApi.startupProbe.timeoutSeconds`                       | Timeout seconds for startupProbe                                                                                                  | `5`                             |
+| `aiApi.startupProbe.failureThreshold`                     | Failure threshold for startupProbe                                                                                                | `5`                             |
+| `aiApi.startupProbe.successThreshold`                     | Success threshold for startupProbe                                                                                                | `1`                             |
+| `aiApi.customLivenessProbe`                               | Custom livenessProbe that overrides the default one                                                                               | `{}`                            |
+| `aiApi.customReadinessProbe`                              | Custom readinessProbe that overrides the default one                                                                              | `{}`                            |
+| `aiApi.customStartupProbe`                                | Custom startupProbe that overrides the default one                                                                                | `{}`                            |
+| `aiApi.autoscaling.enabled`                               | Enable autoscaling for the ai-api containers                                                                                      | `false`                         |
+| `aiApi.autoscaling.minReplicas`                           | The minimal number of containers for the ai-api deployment                                                                        | `1`                             |
+| `aiApi.autoscaling.maxReplicas`                           | The maximum number of containers for the ai-api deployment                                                                        | `3`                             |
+| `aiApi.autoscaling.targetCPUUtilizationPercentage`        | The CPU utilization percentage used for scale up containers in ai-api deployment                                                  | `75`                            |
+| `aiApi.resources.limits.memory`                           | Container memory limits in MiB                                                                                                    | `1024Mi`                        |
+| `aiApi.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                                                            | `1000m`                         |
+| `aiApi.resources.requests.memory`                         | Container memory requests in MiB                                                                                                  | `512Mi`                         |
+| `aiApi.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                                                                          | `250m`                          |
+| `aiApi.podSecurityContext.enabled`                        | Enabled ai-api pods' Security Context                                                                                             | `true`                          |
+| `aiApi.podSecurityContext.fsGroup`                        | Set ai-api pod's Security Context fsGroup                                                                                         | `1000`                          |
+| `aiApi.podSecurityContext.supplementalGroups[0]`          | Set ai-api pod's Security Context supplementalGroups                                                                              | `2345`                          |
+| `aiApi.containerSecurityContext.enabled`                  | Enabled ai-api containers' Security Context                                                                                       | `true`                          |
+| `aiApi.containerSecurityContext.runAsUser`                | Set ai-api containers' Security Context runAsUser                                                                                 | `1000`                          |
+| `aiApi.containerSecurityContext.runAsGroup`               | Set ai-api containers' Security Context runAsGroup                                                                                | `1000`                          |
+| `aiApi.containerSecurityContext.runAsNonRoot`             | Set ai-api containers' Security Context runAsNonRoot                                                                              | `true`                          |
+| `aiApi.containerSecurityContext.allowPrivilegeEscalation` | Set ai-api containers' Security Context allowPrivilegeEscalation                                                                  | `false`                         |
+| `aiApi.containerSecurityContext.readOnlyRootFilesystem`   | Set ai-api containers' Security Context readOnlyRootFilesystem                                                                    | `true`                          |
+| `aiApi.containerSecurityContext.capabilities.drop`        | removes ai-api containers' Security Context capabilities                                                                          | `["all"]`                       |
+| `aiApi.podDisruptionBudget.enabled`                       | defines disruption budget for ai-api                                                                                              | `false`                         |
+| `aiApi.terminationGracePeriodSeconds`                     | Time to wait before force killing the container                                                                                   | `300`                           |
+| `aiApi.existingConfigMap`                                 | The name of an existing ConfigMap with your custom configuration for ai-api                                                       | `""`                            |
+| `aiApi.existingSecret`                                    | The name of an existing ConfigMap with your custom configuration for ai-api                                                       | `""`                            |
+| `aiApi.command`                                           | Override default container command (useful when using custom images)                                                              | `["/bin/bash"]`                 |
+| `aiApi.args`                                              | Override default container args (useful when using custom images)                                                                 | `[]`                            |
+| `aiApi.hostAliases`                                       | ai-api pods host aliases                                                                                                          | `[]`                            |
+| `aiApi.podLabels`                                         | Extra labels for ai-api pods                                                                                                      | `{}`                            |
+| `aiApi.podAnnotations`                                    | Annotations for ai-api pods                                                                                                       | `{}`                            |
+| `aiApi.podAffinityPreset`                                 | Pod affinity preset. Ignored if `aiApi.affinity` is set. Allowed values: `soft` or `hard`                                         | `""`                            |
+| `aiApi.podAntiAffinityPreset`                             | Pod anti-affinity preset. Ignored if `aiApi.affinity` is set. Allowed values: `soft` or `hard`                                    | `soft`                          |
+| `aiApi.nodeAffinityPreset.type`                           | Node.js affinity preset type. Ignored if `aiApi.affinity` is set. Allowed values: `soft` or `hard`                                | `""`                            |
+| `aiApi.nodeAffinityPreset.key`                            | Node.js label key to match. Ignored if `aiApi.affinity` is set                                                                    | `""`                            |
+| `aiApi.nodeAffinityPreset.values`                         | Node.js label values to match. Ignored if `aiApi.affinity` is set                                                                 | `[]`                            |
+| `aiApi.affinity`                                          | Affinity for ai-api pods assignment                                                                                               | `{}`                            |
+| `aiApi.nodeSelector`                                      | Node.js labels for ai-api pods assignment                                                                                         | `{}`                            |
+| `aiApi.tolerations`                                       | Tolerations for ai-api pods assignment                                                                                            | `[]`                            |
+| `aiApi.updateStrategy.type`                               | ai-api statefulset strategy type                                                                                                  | `RollingUpdate`                 |
+| `aiApi.priorityClassName`                                 | ai-api pods' priorityClassName                                                                                                    | `""`                            |
+| `aiApi.schedulerName`                                     | Name of the k8s scheduler (other than default) for ai-api pods                                                                    | `""`                            |
+| `aiApi.lifecycleHooks`                                    | for the ai-api container(s) to automate configuration before or after startup                                                     | `{}`                            |
+| `aiApi.extraEnvVars`                                      | Array with extra environment variables to add to ai-api nodes ([More info](#additional-environment-variables))                    | `[]`                            |
+| `aiApi.extraEnvVarsCM`                                    | Name of existing ConfigMap containing extra env vars for ai-api nodes ([More info](#additional-environment-variables))            | `""`                            |
+| `aiApi.extraEnvVarsSecret`                                | Name of existing Secret containing extra env vars for ai-api nodes ([More info](#additional-environment-variables))               | `""`                            |
+| `aiApi.extraVolumes`                                      | Optionally specify extra list of additional volumes for the ai-api pod(s)                                                         | `[]`                            |
+| `aiApi.extraVolumeMounts`                                 | Optionally specify extra list of additional volumeMounts for the ai-api container(s)                                              | `[]`                            |
+| `aiApi.sidecars`                                          | Add additional sidecar containers to the ai-api pod(s)                                                                            | `{}`                            |
+| `aiApi.initContainers`                                    | Add additional init containers to the ai-api pod(s)                                                                               | `{}`                            |
+
+### ai-api Service Parameters
+
+| Name                                     | Description                                                                       | Value       |
+| ---------------------------------------- | --------------------------------------------------------------------------------- | ----------- |
+| `aiApi.service.type`                     | ai-api service type                                                               | `ClusterIP` |
+| `aiApi.service.ports.http`               | ai-api service HTTP port                                                          | `80`        |
+| `aiApi.service.nodePorts.http`           | Node.js port for HTTP                                                             | `""`        |
+| `aiApi.service.clusterIP`                | ai-api service Cluster IP                                                         | `""`        |
+| `aiApi.service.loadBalancerIP`           | ai-api service Load Balancer IP                                                   | `""`        |
+| `aiApi.service.labelSelectorsOverride`   | Selector for ai-api service                                                       | `{}`        |
+| `aiApi.service.loadBalancerSourceRanges` | ai-api service Load Balancer sources                                              | `[]`        |
+| `aiApi.service.externalTrafficPolicy`    | ai-api service external traffic policy                                            | `Cluster`   |
+| `aiApi.service.annotations`              | Additional custom annotations for ai-api service                                  | `{}`        |
+| `aiApi.service.extraPorts`               | Extra ports to expose in ai-api service (normally used with the `sidecars` value) | `[]`        |
+
 
 ## Configuration and installation details
 
