@@ -1,0 +1,29 @@
+{{- if and (.Values.aiApi.enabled) (not .Values.aiApi.existingConfigMap) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "carto.aiApi.fullname" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: ai-api
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  #TODO: review environment variables
+  {{- if .Values.externalProxy.enabled }}
+  HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  HTTPS_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  https_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  GRPC_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  grpc_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
+  {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
+  NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }} 

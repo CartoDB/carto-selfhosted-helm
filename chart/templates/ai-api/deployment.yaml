@@ -1,0 +1,172 @@
+{{- if and (.Values.aiApi.enabled) (not .Values.cartoConfigValues.onlyRunRouter) }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.aiApi.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: ai-api
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.aiApi.replicaCount }}
+  {{- if .Values.aiApi.updateStrategy }}
+  strategy: {{- toYaml .Values.aiApi.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: ai-api
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/ai-api/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/ai-api/secret.yaml") . | sha256sum }}
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+        {{- if .Values.aiApi.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: ai-api
+        {{- if .Values.aiApi.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.aiApi.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.aiApi.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.aiApi.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.aiApi.podAffinityPreset "component" "ai-api" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.aiApi.podAntiAffinityPreset "component" "ai-api" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.aiApi.nodeAffinityPreset.type "key" .Values.aiApi.nodeAffinityPreset.key "values" .Values.aiApi.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.aiApi.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.aiApi.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.aiApi.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.aiApi.priorityClassName }}
+      priorityClassName: {{ .Values.aiApi.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.aiApi.schedulerName }}
+      schedulerName: {{ .Values.aiApi.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.aiApi.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.aiApi.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if not .Values.diagnosticMode.enabled }}
+      initContainers:
+        {{- if .Values.aiApi.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.aiApi.terminationGracePeriodSeconds }}
+      containers:
+        - name: ai-api
+          image: {{ template "carto.aiApi.image" . }}
+          imagePullPolicy: {{ .Values.aiApi.image.pullPolicy }}
+          {{- if .Values.aiApi.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.aiApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.aiApi.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.aiApi.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.args "context" $) | nindent 12 }}
+          {{ else }}
+          args:
+            - -ec
+            - |
+              #TODO: add args for ai-api
+          {{- end }}
+          env:
+            {{/* TODO: add secret for ai-api */}}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+             ) "context" $ ) | nindent 12 }}
+            {{- if .Values.aiApi.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "carto.aiApi.configmapName" . }}
+            {{/* TODO: add secret for ai-api */}}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+             "CARTO_SELFHOSTED_INSTANCE_ID"
+             ) "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.aiApi.secretName" . }}
+            {{- end }}
+            {{- if .Values.aiApi.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.aiApi.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.aiApi.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.aiApi.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.aiApi.resources }}
+          resources: {{- toYaml .Values.aiApi.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.aiApi.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.aiApi.livenessProbe.enabled }}
+          {{/* TODO: Review liveness probe for ai-api */}}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.aiApi.livenessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.aiApi.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.aiApi.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.aiApi.readinessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.aiApi.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.aiApi.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.aiApi.startupProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+          {{- else if .Values.aiApi.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.aiApi.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            {{- if .Values.aiApi.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+        {{- if .Values.aiApi.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.aiApi.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        {{/* TODO: review volumes to add for ai-api */}}
+        {{- if .Values.aiApi.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+{{- end }} 

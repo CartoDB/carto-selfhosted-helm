@@ -815,7 +815,6 @@ Create the name of the service account to use for the notifier deployment
 {{- end -}}
 {{- end -}}
 
-
 {{/*
 Return the proper Carto cdn-invalidator-sub full name
 */}}
@@ -1321,4 +1320,56 @@ Return the list of overridden feature flags as a comma-separated string
 {{- end -}}
 {{- $nameList := join "," $ffNames -}}
 {{- $nameList -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified ai-api name.
+*/}}
+{{- define "carto.aiApi.fullname"-}}
+{{- printf "%s-ai-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/* 
+Create carto Image full name for aiApi
+*/}}
+{{- define "carto.aiApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.aiApi.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Create the name of the aiApi configmap
+*/}}
+{{- define "carto.aiApi.configmapName" -}}
+{{- if .Values.aiApi.existingConfigMap -}}
+{{- .Values.aiApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.aiApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the aiApi secret
+*/}}
+{{- define "carto.aiApi.secretName" -}}
+{{- if .Values.aiApi.existingSecret -}}
+{{- .Values.aiApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.aiApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create aiApi Node options
+*/}}
+{{- define "carto.aiApi.nodeOptions" -}}
+{{- $result := "" -}}
+{{- $memRequest := .Values.aiApi.resources.requests.memory | default "512Mi" -}}
+{{- $memRequestNum := regexReplaceAll "[^0-9]" $memRequest "" | int -}}
+{{- $memMaxOldSpace := mul $memRequestNum .Values.aiApi.nodeProcessMaxOldSpacePercentage | div 100 -}}
+{{- if ge $memMaxOldSpace .Values.aiApi.defaultNodeProcessMaxOldSpace -}}
+{{- $result = printf "--max-old-space-size=%d" $memMaxOldSpace -}}
+{{- else -}}
+{{- $result = printf "--max-old-space-size=%d" .Values.aiApi.defaultNodeProcessMaxOldSpace -}}
+{{- end -}}
+{{- printf "%s" $result -}}
 {{- end -}}
