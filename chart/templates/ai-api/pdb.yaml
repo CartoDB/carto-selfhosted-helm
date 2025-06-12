@@ -5,7 +5,14 @@ kind: PodDisruptionBudget
 metadata:
   name: {{ template "carto.aiApi.fullname" . }}-pdb
   namespace: {{ .Release.Namespace | quote }}
-  labels:
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: ai-api
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
 spec:
 {{- if .Values.aiApi.podDisruptionBudget.minAvailable }}
   minAvailable: {{ .Values.aiApi.podDisruptionBudget.minAvailable }}
@@ -14,6 +21,6 @@ spec:
   maxUnavailable: {{ .Values.aiApi.podDisruptionBudget.maxUnavailable }}
 {{- end }}
   selector:
-    matchLabels:
-      app.kubernetes.io/name: {{ include "carto.aiApi.fullname" . }}
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: ai-api
 {{- end }} 

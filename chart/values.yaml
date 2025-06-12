@@ -5559,9 +5559,13 @@ aiApi:
         - all
   ## @param aiApi.podDisruptionBudget.enabled defines disruption budget for ai-api
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ## @param aiApi.podDisruptionBudget.minAvailable Minimum number of pods that must be available during the update
+  ## @param aiApi.podDisruptionBudget.maxUnavailable Maximum number of pods that can be unavailable during the update
   ##
   podDisruptionBudget:
     enabled: false
+    minAvailable: 1
+    maxUnavailable: 0
   ## @param aiApi.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 300
