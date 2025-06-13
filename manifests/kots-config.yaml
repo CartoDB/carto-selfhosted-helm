@@ -577,11 +577,11 @@ spec:
       description: |-
         Fine-tune your self-hosted environment with advanced configuration.
       items:
-        ## AI API
+        ## AiApi
         - name: aiApiEnabled
           title: AI API
           help_text: |-
-            Enable the AI API.
+            Enable the AI API. [More info](https://docs.carto.com/carto-self-hosted/guides/enable-the-ai-api).
           type: bool
           default: "0"
         - name: litellmRedisHost
