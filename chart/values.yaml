@@ -5772,7 +5772,7 @@ litellm:
   ## @param litellm.containerPorts.http litellm HTTP container port
   ##
   containerPorts:
-    http: 
+    http: 4000
   ## @param litellm.redis.host Litellm Redis host
   ## @param litellm.redis.port Litellm Redis port
   ## @param litellm.redis.password Litellm Redis password
@@ -6046,7 +6046,7 @@ litellm:
     ## @param litellm.service.ports.http ai-api service HTTP port
     ##
     ports:
-      http: 80
+      http: 4000
     ## Node.js ports to expose
     ## @param litellm.service.nodePorts.http Node.js port for HTTP
     ## NOTE: choose port between <30000-32767>

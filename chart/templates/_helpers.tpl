@@ -77,6 +77,11 @@ WORKSPACE_JWT_SECRET: cartoSecrets.jwtApiSecret
 WORKSPACE_THUMBNAILS_ACCESSKEYID: appSecrets.awsAccessKeyId
 WORKSPACE_THUMBNAILS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
+{{/*
+TODO: ADD CREATE LITELLM_POSTREGS and REDIS ENV VARS for Litellm
+LITELLM_POSTGRES_PASSWORD: cartoSecrets.litellmPostgresPassword
+LITELLM_REDIS_PASSWORD: cartoSecrets.litellmRedisPassword
+*/}}
 {{- end -}}
 
 {{/*

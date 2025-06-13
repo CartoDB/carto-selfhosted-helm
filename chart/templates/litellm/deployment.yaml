@@ -96,9 +96,15 @@ spec:
               #TODO: add args for litellm
           {{- end }}
           env:
+            - name: LITELLM_MIGRATION_DIR
+              value: /tmp/prisma/migrations    
             {{/* TODO: add secret for litellm */}}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
-             ) "context" $ ) | nindent 12 }}
+              "CARTO_SELFHOSTED_INSTANCE_ID"
+              "ENCRYPTION_SECRET_KEY"
+              "EXPORTS_S3_BUCKET_ACCESS_KEY_ID"
+              "EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY"
+              "MAPS_API_V3_JWT_SECRET"             ) "context" $ ) | nindent 12 }}
             {{- if .Values.litellm.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.litellm.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
@@ -107,7 +113,11 @@ spec:
                 name: {{ template "carto.litellm.configmapName" . }}
             {{/* TODO: add secret for litellm */}}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
-             "CARTO_SELFHOSTED_INSTANCE_ID"
+              "CARTO_SELFHOSTED_INSTANCE_ID"
+              "ENCRYPTION_SECRET_KEY"
+              "EXPORTS_S3_BUCKET_ACCESS_KEY_ID"
+              "EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY"
+              "MAPS_API_V3_JWT_SECRET"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
@@ -158,6 +168,11 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+          - name: config-volume
+            mountPath: /app/proxy_server_config.yaml
+            subPath: config.yaml
+          - name: litellm-migration-dir
+            mountPath: /tmp/prisma/migrations
             {{- if .Values.litellm.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.litellm.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
@@ -165,6 +180,12 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.litellm.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
+        - name: config-volume
+          configMap:
+            name: litellm-config-file
+        # Required for read-only filesystem
+        - name: litellm-migration-dir
+          emptyDir: {}
         {{/* TODO: review volumes to add for litellm */}}
         {{- if .Values.litellm.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.litellm.extraVolumes "context" $) | nindent 8 }}

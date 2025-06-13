@@ -93,11 +93,19 @@ spec:
           args:
             - -ec
             - |
-              #TODO: add args for ai-api
+              exec node -r ./tsconfig-paths-bootstrap.js dist/app/index.js
           {{- end }}
           env:
             {{/* TODO: add secret for ai-api */}}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+              "BIGQUERY_OAUTH2_CLIENT_SECRET"
+              "CARTO_SELFHOSTED_INSTANCE_ID"
+              "IMPORT_AWS_ACCESS_KEY_ID"
+              "IMPORT_AWS_SECRET_ACCESS_KEY"
+              "WORKSPACE_JWT_SECRET"
+              "WORKSPACE_OPENAI_API_KEY"
+              "GITBOOK_API_TOKEN"
+              "LAUNCHDARKLY_SDK_KEY"
              ) "context" $ ) | nindent 12 }}
             {{- if .Values.aiApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.extraEnvVars "context" $) | nindent 12 }}
