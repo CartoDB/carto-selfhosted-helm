@@ -5773,6 +5773,21 @@ litellm:
   ##
   containerPorts:
     http: 
+  ## @param litellm.redis.host Litellm Redis host
+  ## @param litellm.redis.port Litellm Redis port
+  ## @param litellm.redis.password Litellm Redis password
+  ##
+  redis:
+    host: ""
+    port: ""
+    password: ""
+  ## @param litellm.database.host Litellm database host
+  ## @param litellm.database.port Litellm database port
+  ## @param litellm.database.password Litellm database password
+  database:
+    host: ""
+    port: ""
+    password: ""
   ## @param litellm.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
   nodeProcessMaxOldSpacePercentage: 1875
