@@ -102,6 +102,20 @@ spec:
       sslEnabled: repl{{ if ConfigOptionEquals "metadataDBSSLMode" "1"}}truerepl{{ else }}falserepl{{ end }}
       sslCA: |
         repl{{- ConfigOptionData "metadataDBSSLCertificate" | nindent 8 }}
+    ## AiApi
+    aiApi: 
+      enabled: repl{{ if ConfigOptionEquals "aiApiEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
+    ## Litellm
+    litellm:
+      enabled: repl{{ if ConfigOptionEquals "aiApiEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
+      redis:
+        host: '{{repl ConfigOption "litellmRedisHost" }}'
+        port: '{{repl ConfigOption "litellmRedisPort" }}'
+        password: '{{repl ConfigOption "litellmRedisPassword" }}'
+      database:
+        host: '{{repl ConfigOption "litellmDatabaseHost" }}'
+        port: '{{repl ConfigOption "litellmDatabasePort" }}'
+        password: '{{repl ConfigOption "litellmDatabasePassword" }}'
     ## Redis
     internalRedis:
       enabled: repl{{ if ConfigOptionEquals "externalRedisEnabled" "0"}}truerepl{{ else }}falserepl{{ end }}
