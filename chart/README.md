@@ -1735,7 +1735,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 | Name                                                      | Description                                                                                                                       | Value                           |
 | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `aiApi.enabled`                                           | Enable ai-api                                                                                                                     | `false`                         |
+| `aiApi.enabled`                                           | Enable ai-api                                                                                                                     | `true`                          |
 | `aiApi.image.registry`                                    | ai-api image registry                                                                                                             | `gcr.io/carto-onprem-artifacts` |
 | `aiApi.image.repository`                                  | ai-api image repository                                                                                                           | `ai-api`                        |
 | `aiApi.image.tag`                                         | ai-api image tag (immutable tags are recommended)                                                                                 | `""`                            |
@@ -1829,6 +1829,105 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `aiApi.service.externalTrafficPolicy`    | ai-api service external traffic policy                                            | `Cluster`   |
 | `aiApi.service.annotations`              | Additional custom annotations for ai-api service                                  | `{}`        |
 | `aiApi.service.extraPorts`               | Extra ports to expose in ai-api service (normally used with the `sidecars` value) | `[]`        |
+
+### litellm Deployment Parameters
+
+| Name                                                        | Description                                                                                                                       | Value                           |
+| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `litellm.enabled`                                           | Enable litellm                                                                                                                    | `true`                          |
+| `litellm.image.registry`                                    | litellm image registry                                                                                                            | `gcr.io/carto-onprem-artifacts` |
+| `litellm.image.repository`                                  | litellm image repository                                                                                                          | `litellm`                       |
+| `litellm.image.tag`                                         | litellm image tag (immutable tags are recommended)                                                                                | `""`                            |
+| `litellm.image.pullPolicy`                                  | litellm image pull policy                                                                                                         | `IfNotPresent`                  |
+| `litellm.image.pullSecrets`                                 | litellm image pull secrets                                                                                                        | `[]`                            |
+| `litellm.replicaCount`                                      | Number of litellm replicas to deploy                                                                                              | `1`                             |
+| `litellm.containerPorts.http`                               | litellm HTTP container port                                                                                                       | `nil`                           |
+| `litellm.nodeProcessMaxOldSpacePercentage`                  | Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes | `1875`                          |
+| `litellm.defaultNodeProcessMaxOldSpace`                     | Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes    | `1875`                          |
+| `litellm.livenessProbe.enabled`                             | Enable livenessProbe on ai-api containers                                                                                         | `true`                          |
+| `litellm.livenessProbe.initialDelaySeconds`                 | Initial delay seconds for livenessProbe                                                                                           | `10`                            |
+| `litellm.livenessProbe.periodSeconds`                       | Period seconds for livenessProbe                                                                                                  | `30`                            |
+| `litellm.livenessProbe.timeoutSeconds`                      | Timeout seconds for livenessProbe                                                                                                 | `5`                             |
+| `litellm.livenessProbe.failureThreshold`                    | Failure threshold for livenessProbe                                                                                               | `5`                             |
+| `litellm.livenessProbe.successThreshold`                    | Success threshold for livenessProbe                                                                                               | `1`                             |
+| `litellm.readinessProbe.enabled`                            | Enable readinessProbe on ai-api containers                                                                                        | `true`                          |
+| `litellm.readinessProbe.initialDelaySeconds`                | Initial delay seconds for readinessProbe                                                                                          | `10`                            |
+| `litellm.readinessProbe.periodSeconds`                      | Period seconds for readinessProbe                                                                                                 | `30`                            |
+| `litellm.readinessProbe.timeoutSeconds`                     | Timeout seconds for readinessProbe                                                                                                | `5`                             |
+| `litellm.readinessProbe.failureThreshold`                   | Failure threshold for readinessProbe                                                                                              | `5`                             |
+| `litellm.readinessProbe.successThreshold`                   | Success threshold for readinessProbe                                                                                              | `1`                             |
+| `litellm.startupProbe.enabled`                              | Enable startupProbe on ai-api containers                                                                                          | `false`                         |
+| `litellm.startupProbe.initialDelaySeconds`                  | Initial delay seconds for startupProbe                                                                                            | `10`                            |
+| `litellm.startupProbe.periodSeconds`                        | Period seconds for startupProbe                                                                                                   | `30`                            |
+| `litellm.startupProbe.timeoutSeconds`                       | Timeout seconds for startupProbe                                                                                                  | `5`                             |
+| `litellm.startupProbe.failureThreshold`                     | Failure threshold for startupProbe                                                                                                | `5`                             |
+| `litellm.startupProbe.successThreshold`                     | Success threshold for startupProbe                                                                                                | `1`                             |
+| `litellm.customLivenessProbe`                               | Custom livenessProbe that overrides the default one                                                                               | `{}`                            |
+| `litellm.customReadinessProbe`                              | Custom readinessProbe that overrides the default one                                                                              | `{}`                            |
+| `litellm.customStartupProbe`                                | Custom startupProbe that overrides the default one                                                                                | `{}`                            |
+| `litellm.autoscaling.enabled`                               | Enable autoscaling for the ai-api containers                                                                                      | `false`                         |
+| `litellm.autoscaling.minReplicas`                           | The minimal number of containers for the ai-api deployment                                                                        | `1`                             |
+| `litellm.autoscaling.maxReplicas`                           | The maximum number of containers for the ai-api deployment                                                                        | `3`                             |
+| `litellm.autoscaling.targetCPUUtilizationPercentage`        | The CPU utilization percentage used for scale up containers in ai-api deployment                                                  | `75`                            |
+| `litellm.resources.limits.memory`                           | Container memory limits in MiB                                                                                                    | `1024Mi`                        |
+| `litellm.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                                                            | `1000m`                         |
+| `litellm.resources.requests.memory`                         | Container memory requests in MiB                                                                                                  | `512Mi`                         |
+| `litellm.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                                                                          | `250m`                          |
+| `litellm.podSecurityContext.enabled`                        | Enabled ai-api pods' Security Context                                                                                             | `true`                          |
+| `litellm.podSecurityContext.fsGroup`                        | Set ai-api pod's Security Context fsGroup                                                                                         | `1000`                          |
+| `litellm.podSecurityContext.supplementalGroups[0]`          | Set ai-api pod's Security Context supplementalGroups                                                                              | `2345`                          |
+| `litellm.containerSecurityContext.enabled`                  | Enabled ai-api containers' Security Context                                                                                       | `true`                          |
+| `litellm.containerSecurityContext.runAsUser`                | Set ai-api containers' Security Context runAsUser                                                                                 | `1000`                          |
+| `litellm.containerSecurityContext.runAsGroup`               | Set ai-api containers' Security Context runAsGroup                                                                                | `1000`                          |
+| `litellm.containerSecurityContext.runAsNonRoot`             | Set ai-api containers' Security Context runAsNonRoot                                                                              | `true`                          |
+| `litellm.containerSecurityContext.allowPrivilegeEscalation` | Set ai-api containers' Security Context allowPrivilegeEscalation                                                                  | `false`                         |
+| `litellm.containerSecurityContext.readOnlyRootFilesystem`   | Set ai-api containers' Security Context readOnlyRootFilesystem                                                                    | `true`                          |
+| `litellm.containerSecurityContext.capabilities.drop`        | removes ai-api containers' Security Context capabilities                                                                          | `["all"]`                       |
+| `litellm.podDisruptionBudget.enabled`                       | defines disruption budget for ai-api                                                                                              | `false`                         |
+| `litellm.podDisruptionBudget.minAvailable`                  | Minimum number of pods that must be available during the update                                                                   | `1`                             |
+| `litellm.podDisruptionBudget.maxUnavailable`                | Maximum number of pods that can be unavailable during the update                                                                  | `0`                             |
+| `litellm.terminationGracePeriodSeconds`                     | Time to wait before force killing the container                                                                                   | `300`                           |
+| `litellm.existingConfigMap`                                 | The name of an existing ConfigMap with your custom configuration for ai-api                                                       | `""`                            |
+| `litellm.existingSecret`                                    | The name of an existing ConfigMap with your custom configuration for ai-api                                                       | `""`                            |
+| `litellm.command`                                           | Override default container command (useful when using custom images)                                                              | `["/bin/bash"]`                 |
+| `litellm.args`                                              | Override default container args (useful when using custom images)                                                                 | `[]`                            |
+| `litellm.hostAliases`                                       | ai-api pods host aliases                                                                                                          | `[]`                            |
+| `litellm.podLabels`                                         | Extra labels for ai-api pods                                                                                                      | `{}`                            |
+| `litellm.podAnnotations`                                    | Annotations for ai-api pods                                                                                                       | `{}`                            |
+| `litellm.podAffinityPreset`                                 | Pod affinity preset. Ignored if `litellm.affinity` is set. Allowed values: `soft` or `hard`                                       | `""`                            |
+| `litellm.podAntiAffinityPreset`                             | Pod anti-affinity preset. Ignored if `litellm.affinity` is set. Allowed values: `soft` or `hard`                                  | `soft`                          |
+| `litellm.nodeAffinityPreset.type`                           | Node.js affinity preset type. Ignored if `litellm.affinity` is set. Allowed values: `soft` or `hard`                              | `""`                            |
+| `litellm.nodeAffinityPreset.key`                            | Node.js label key to match. Ignored if `litellm.affinity` is set                                                                  | `""`                            |
+| `litellm.nodeAffinityPreset.values`                         | Node.js label values to match. Ignored if `litellm.affinity` is set                                                               | `[]`                            |
+| `litellm.affinity`                                          | Affinity for ai-api pods assignment                                                                                               | `{}`                            |
+| `litellm.nodeSelector`                                      | Node.js labels for ai-api pods assignment                                                                                         | `{}`                            |
+| `litellm.tolerations`                                       | Tolerations for ai-api pods assignment                                                                                            | `[]`                            |
+| `litellm.updateStrategy.type`                               | ai-api statefulset strategy type                                                                                                  | `RollingUpdate`                 |
+| `litellm.priorityClassName`                                 | ai-api pods' priorityClassName                                                                                                    | `""`                            |
+| `litellm.schedulerName`                                     | Name of the k8s scheduler (other than default) for ai-api pods                                                                    | `""`                            |
+| `litellm.lifecycleHooks`                                    | for the ai-api container(s) to automate configuration before or after startup                                                     | `{}`                            |
+| `litellm.extraEnvVars`                                      | Array with extra environment variables to add to ai-api nodes ([More info](#additional-environment-variables))                    | `[]`                            |
+| `litellm.extraEnvVarsCM`                                    | Name of existing ConfigMap containing extra env vars for ai-api nodes ([More info](#additional-environment-variables))            | `""`                            |
+| `litellm.extraEnvVarsSecret`                                | Name of existing Secret containing extra env vars for ai-api nodes ([More info](#additional-environment-variables))               | `""`                            |
+| `litellm.extraVolumes`                                      | Optionally specify extra list of additional volumes for the ai-api pod(s)                                                         | `[]`                            |
+| `litellm.extraVolumeMounts`                                 | Optionally specify extra list of additional volumeMounts for the ai-api container(s)                                              | `[]`                            |
+| `litellm.sidecars`                                          | Add additional sidecar containers to the ai-api pod(s)                                                                            | `{}`                            |
+| `litellm.initContainers`                                    | Add additional init containers to the ai-api pod(s)                                                                               | `{}`                            |
+
+### ai-api Service Parameters
+
+| Name                                       | Description                                                                       | Value       |
+| ------------------------------------------ | --------------------------------------------------------------------------------- | ----------- |
+| `litellm.service.type`                     | ai-api service type                                                               | `ClusterIP` |
+| `litellm.service.ports.http`               | ai-api service HTTP port                                                          | `80`        |
+| `litellm.service.nodePorts.http`           | Node.js port for HTTP                                                             | `""`        |
+| `litellm.service.clusterIP`                | ai-api service Cluster IP                                                         | `""`        |
+| `litellm.service.loadBalancerIP`           | ai-api service Load Balancer IP                                                   | `""`        |
+| `litellm.service.labelSelectorsOverride`   | Selector for ai-api service                                                       | `{}`        |
+| `litellm.service.loadBalancerSourceRanges` | ai-api service Load Balancer sources                                              | `[]`        |
+| `litellm.service.externalTrafficPolicy`    | ai-api service external traffic policy                                            | `Cluster`   |
+| `litellm.service.annotations`              | Additional custom annotations for ai-api service                                  | `{}`        |
+| `litellm.service.extraPorts`               | Extra ports to expose in ai-api service (normally used with the `sidecars` value) | `[]`        |
 
 
 ## Configuration and installation details

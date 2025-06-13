@@ -1,14 +1,14 @@
-{{- if and (.Values.aiApi.enabled) (not .Values.aiApi.existingConfigMap) }}
+{{- if and (.Values.litellm.enabled) (not .Values.litellm.existingConfigMap) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "carto.aiApi.fullname" . }}
+  name: {{ template "carto.litellm.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
-    app.kubernetes.io/component: ai-api
+    app.kubernetes.io/component: litellm
   {{- if .Values.commonAnnotations }}
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}

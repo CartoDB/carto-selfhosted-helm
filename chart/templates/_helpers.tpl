@@ -1325,7 +1325,7 @@ Return the list of overridden feature flags as a comma-separated string
 {{/*
 Create a default fully qualified ai-api name.
 */}}
-{{- define "carto.aiApi.fullname"-}}
+{{- define "carto.aiApi.fullname" -}}
 {{- printf "%s-ai-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -1370,6 +1370,58 @@ Create aiApi Node options
 {{- $result = printf "--max-old-space-size=%d" $memMaxOldSpace -}}
 {{- else -}}
 {{- $result = printf "--max-old-space-size=%d" .Values.aiApi.defaultNodeProcessMaxOldSpace -}}
+{{- end -}}
+{{- printf "%s" $result -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified litellm name.
+*/}}
+{{- define "carto.litellm.fullname" -}}
+{{- printf "%s-litellm" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/* 
+Create carto Image full name for litellm
+*/}}
+{{- define "carto.litellm.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.litellm.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Create the name of the litellm configmap
+*/}}
+{{- define "carto.litellm.configmapName" -}}
+{{- if .Values.litellm.existingConfigMap -}}
+{{- .Values.litellm.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.litellm.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the litellm secret
+*/}}
+{{- define "carto.litellm.secretName" -}}
+{{- if .Values.litellm.existingSecret -}}
+{{- .Values.litellm.existingSecret -}}
+{{- else -}}
+{{- include "carto.litellm.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create litellm Node options
+*/}}
+{{- define "carto.litellm.nodeOptions" -}}
+{{- $result := "" -}}
+{{- $memRequest := .Values.litellm.resources.requests.memory | default "512Mi" -}}
+{{- $memRequestNum := regexReplaceAll "[^0-9]" $memRequest "" | int -}}
+{{- $memMaxOldSpace := mul $memRequestNum .Values.litellm.nodeProcessMaxOldSpacePercentage | div 100 -}}
+{{- if ge $memMaxOldSpace .Values.litellm.defaultNodeProcessMaxOldSpace -}}
+{{- $result = printf "--max-old-space-size=%d" $memMaxOldSpace -}}
+{{- else -}}
+{{- $result = printf "--max-old-space-size=%d" .Values.litellm.defaultNodeProcessMaxOldSpace -}}
 {{- end -}}
 {{- printf "%s" $result -}}
 {{- end -}}
