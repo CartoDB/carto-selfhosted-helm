@@ -92,7 +92,7 @@ spec:
           {{ else }}
           args:
             - "--config"
-            - "/app/proxy_server_config.yaml"
+            - "/app/config.yaml"
           {{- end }}
           env:
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
@@ -170,9 +170,6 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-          - name: config-volume
-            mountPath: /app/proxy_server_config.yaml
-            subPath: config.yaml
           - name: litellm-migration-dir
             mountPath: /tmp/prisma/migrations
             {{- if .Values.litellm.extraVolumeMounts }}
@@ -182,9 +179,6 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.litellm.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        - name: config-volume
-          configMap:
-            name: litellm-config-file
         # Required for read-only filesystem
         - name: litellm-migration-dir
           emptyDir: {}
