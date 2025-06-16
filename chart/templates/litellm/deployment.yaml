@@ -91,33 +91,35 @@ spec:
           args: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.args "context" $) | nindent 12 }}
           {{ else }}
           args:
-            - -ec
-            - |
-              #TODO: add args for litellm
+            - "--config"
+            - "/app/proxy_server_config.yaml"
           {{- end }}
           env:
-            - name: LITELLM_MIGRATION_DIR
-              value: /tmp/prisma/migrations    
-            {{/* TODO: add secret for litellm */}}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "CARTO_SELFHOSTED_INSTANCE_ID"
               "ENCRYPTION_SECRET_KEY"
               "EXPORTS_S3_BUCKET_ACCESS_KEY_ID"
               "EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY"
-              "MAPS_API_V3_JWT_SECRET"             ) "context" $ ) | nindent 12 }}
+              "MAPS_API_V3_JWT_SECRET"
+              "LITELLM_MASTER_KEY"
+              "LITELLM_SALT_KEY"
+              "LITELLM_LICENSE"
+             ) "context" $ ) | nindent 12 }}
             {{- if .Values.litellm.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.litellm.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ template "carto.litellm.configmapName" . }}
-            {{/* TODO: add secret for litellm */}}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "CARTO_SELFHOSTED_INSTANCE_ID"
               "ENCRYPTION_SECRET_KEY"
               "EXPORTS_S3_BUCKET_ACCESS_KEY_ID"
               "EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY"
               "MAPS_API_V3_JWT_SECRET"
+              "LITELLM_MASTER_KEY"
+              "LITELLM_SALT_KEY"
+              "LITELLM_LICENSE"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
@@ -142,7 +144,7 @@ spec:
           {{/* TODO: Review liveness probe for litellm */}}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.litellm.livenessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /health/liveliness
               port: http
           {{- else if .Values.litellm.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customLivenessProbe "context" $) | nindent 12 }}
@@ -150,7 +152,7 @@ spec:
           {{- if .Values.litellm.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.litellm.readinessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /health/readiness
               port: http
           {{- else if .Values.litellm.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customReadinessProbe "context" $) | nindent 12 }}
@@ -158,7 +160,7 @@ spec:
           {{- if .Values.litellm.startupProbe.enabled }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.litellm.startupProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /health/liveliness
               port: http
           {{- else if .Values.litellm.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customStartupProbe "context" $) | nindent 12 }}

@@ -406,6 +406,36 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: "redis-password"
+  ## @extra cartoSecrets.litellmLicense The license for the Litellm instance.
+  litellmLicense:
+    ## @param cartoSecrets.litellmLicense.value Value of the secret used to define the license for the Litellm instance. One of `cartoSecrets.litellmLicense.value` or `cartoSecrets.litellmLicense.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.litellmLicense.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.litellmLicense.existingSecret.key`. If `cartoSecrets.litellmLicense.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.litellmLicense.existingSecret.key Key to find in `cartoSecrets.litellmLicense.existingSecret.name` where the value of `cartoSecrets.litellmLicense` is found. If `cartoSecrets.litellmLicense.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra cartoSecrets.litellmMasterKey The master key for the Litellm instance.
+  litellmMasterKey:
+    ## @param cartoSecrets.litellmMasterKey.value Value of the secret used to define the master key for the Litellm instance. One of `cartoSecrets.litellmMasterKey.value` or `cartoSecrets.litellmMasterKey.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.litellmMasterKey.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.litellmMasterKey.existingSecret.key`. If `cartoSecrets.litellmMasterKey.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.litellmMasterKey.existingSecret.key Key to find in `cartoSecrets.litellmMasterKey.existingSecret.name` where the value of `cartoSecrets.litellmMasterKey` is found. If `cartoSecrets.litellmMasterKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra cartoSecrets.litellmSaltKey The salt key for the Litellm instance.
+  litellmSaltKey:
+    ## @param cartoSecrets.litellmSaltKey.value Value of the secret used to define the salt key for the Litellm instance. One of `cartoSecrets.litellmSaltKey.value` or `cartoSecrets.litellmSaltKey.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.litellmSaltKey.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.litellmSaltKey.existingSecret.key`. If `cartoSecrets.litellmSaltKey.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.litellmSaltKey.existingSecret.key Key to find in `cartoSecrets.litellmSaltKey.existingSecret.name` where the value of `cartoSecrets.litellmSaltKey` is found. If `cartoSecrets.litellmSaltKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
 ## FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 ## @section TLS parameters
 ## Global TLS parameters
@@ -5776,18 +5806,26 @@ litellm:
   ## @param litellm.redis.host Litellm Redis host
   ## @param litellm.redis.port Litellm Redis port
   ## @param litellm.redis.password Litellm Redis password
+  ## @param litellm.redis.db Litellm Redis db
+  ## @param litellm.redis.sslCertReqs Litellm Redis ssl cert reqs
   ##
   redis:
     host: ""
-    port: ""
+    port: "6379"
     password: ""
+    db: "litellm"
+    sslCertReqs: "none"
   ## @param litellm.database.host Litellm database host
   ## @param litellm.database.port Litellm database port
   ## @param litellm.database.password Litellm database password
+  ## @param litellm.database.db Litellm database db
+  ##
   database:
     host: ""
-    port: ""
+    port: "5432"
     password: ""
+    db: "litellm"
+    sslMode: "require"
   ## @param litellm.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
   nodeProcessMaxOldSpacePercentage: 1875

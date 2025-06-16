@@ -113,14 +113,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "carto.aiApi.configmapName" . }}
-            {{/* TODO: add secret for ai-api */}}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
-             "CARTO_SELFHOSTED_INSTANCE_ID"
-             ) "context" $ ) -}}
-            {{- if $secretContent }}
             - secretRef:
-                name: {{ include "carto.aiApi.secretName" . }}
-            {{- end }}
+                name: {{ template "carto.aiApi.secretName" . }}
             {{- if .Values.aiApi.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.aiApi.extraEnvVarsCM "context" $) }}

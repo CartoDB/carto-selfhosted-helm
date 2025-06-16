@@ -14,6 +14,8 @@ metadata:
   {{- end }}
 data:
   #TODO: review environment variables
+  LOG_LEVEL: "debug"
+  CARTO_AI_OPENAI_ENDPOINT: {{ include "carto.litellm.internalUrl" . | quote }}
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
@@ -89,4 +91,4 @@ data:
   NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   {{- end }}
-{{- end }} 
+{{- end }}

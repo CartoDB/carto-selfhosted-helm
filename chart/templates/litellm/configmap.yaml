@@ -1,30 +1,30 @@
-{{- if and (.Values.litellm.enabled) (not .Values.litellm.existingConfigMap) }}
+{{- if and (.Values.litellm.enabled) (not .Values.cartoConfigValues.onlyRunRouter) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "carto.litellm.fullname" . }}
+  name: {{ template "carto.litellm.configmapName" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: litellm
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
-    app.kubernetes.io/component: litellm
   {{- if .Values.commonAnnotations }}
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  #TODO: review environment variables
-  {{- if .Values.externalProxy.enabled }}
-  HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
-  http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
-  HTTPS_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
-  https_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
-  GRPC_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
-  grpc_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
-  NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
-  {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
-  NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
-  no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
-  {{- end }}
-  {{- end }}
+  LITELLM_MODE: "PRODUCTION"
+  LITELLM_LOG_LEVEL: "INFO"
+  USE_PRISMA_MIGRATE: "True"
+  LITELLM_LOCAL_MODEL_COST_MAP: "True"
+  LITELLM_MIGRATION_DIR: "/tmp/prisma/migrations"
+  LITELLM_DATABASE_HOST: {{ include "carto.litellm.databaseHost" . }}
+  LITELLM_DATABASE_USER: "litellm_admin"
+  LITELLM_DATABASE_DB: {{ include "carto.litellm.databaseDb" . }}
+  LITELLM_DATABASE_PORT: {{ include "carto.litellm.databasePort" . }}
+  LITELLM_DATABASE_URL: {{ include "carto.litellm.databaseUrl" . }}
+  LITELLM_REDIS_HOST: {{ include "carto.litellm.redisHost" . }}
+  LITELLM_REDIS_PORT: {{ include "carto.litellm.redisPort" . }}
+  LITELLM_REDIS_DB: {{ include "carto.litellm.redisDb" . }}
+  LITELLM_REDIS_URL: {{ include "carto.litellm.redisUrl" . }}
 {{- end }} 

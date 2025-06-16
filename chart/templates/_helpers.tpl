@@ -77,11 +77,11 @@ WORKSPACE_JWT_SECRET: cartoSecrets.jwtApiSecret
 WORKSPACE_THUMBNAILS_ACCESSKEYID: appSecrets.awsAccessKeyId
 WORKSPACE_THUMBNAILS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
-{{/*
-TODO: ADD CREATE LITELLM_POSTREGS and REDIS ENV VARS for Litellm
-LITELLM_POSTGRES_PASSWORD: cartoSecrets.litellmPostgresPassword
-LITELLM_REDIS_PASSWORD: cartoSecrets.litellmRedisPassword
-*/}}
+LITELLM_MASTER_KEY: cartoSecrets.litellmMasterKey
+LITELLM_SALT_KEY: cartoSecrets.litellmSaltKey
+LITELLM_LICENSE: cartoSecrets.litellmLicense
+CARTO_AI_OPENAI_API_KEY: cartoSecrets.litellmMasterKey
+{{/* TODO: Check LITELLM Secrets */}}
 {{- end -}}
 
 {{/*
@@ -1142,7 +1142,6 @@ Return the absolute path where the Postgresql CA cert will be mounted
 
 {{/*
 Create a default fully qualified redis name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "carto.redis.fullname" -}}
 {{- include "common.names.dependency.fullname" (dict "chartName" "redis" "chartValues" .Values.internalRedis "context" $) -}}
@@ -1429,4 +1428,118 @@ Create litellm Node options
 {{- $result = printf "--max-old-space-size=%d" .Values.litellm.defaultNodeProcessMaxOldSpace -}}
 {{- end -}}
 {{- printf "%s" $result -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm database host
+*/}}
+{{- define "carto.litellm.databaseHost" -}}
+{{- .Values.litellm.database.host | quote -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm database port
+*/}}
+{{- define "carto.litellm.databasePort" -}}
+{{- .Values.litellm.database.port | quote -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm database password
+*/}}
+{{- define "carto.litellm.databasePassword" -}}
+{{- .Values.litellm.database.password | quote -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm database db
+*/}}
+{{- define "carto.litellm.databaseDb" -}}
+{{- .Values.litellm.database.db | quote -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm database URL
+*/}}
+{{- define "carto.litellm.databaseUrl" -}}
+{{- $sslMode := default "require" .Values.litellm.database.sslMode -}}
+{{- printf "postgresql://litellm_admin:%s@%s:%s/%s?sslmode=%s" (include "carto.litellm.databasePassword" .) (include "carto.litellm.databaseHost" .) (include "carto.litellm.databasePort" .) (include "carto.litellm.databaseDb" .) $sslMode | quote -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm redis host
+*/}}
+{{- define "carto.litellm.redisHost" -}}
+{{- .Values.litellm.redis.host | quote -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm redis port
+*/}}
+{{- define "carto.litellm.redisPort" -}}
+{{- .Values.litellm.redis.port | quote -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm redis db
+*/}}
+{{- define "carto.litellm.redisDb" -}}
+{{- .Values.litellm.redis.db | quote -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm redis URL
+*/}}
+{{- define "carto.litellm.redisUrl" -}}
+{{- $sslCertReqs := default "none" .Values.litellm.redis.sslCertReqs -}}
+{{- printf "rediss://:%s@%s:%s/%s?ssl_cert_reqs=%s" (include "carto.litellm.redisPassword" .) (include "carto.litellm.redisHost" .) (include "carto.litellm.redisPort" .) (include "carto.litellm.redisDb" .) $sslCertReqs | quote -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm redis password
+*/}}
+{{- define "carto.litellm.redisPassword" -}}
+{{- .Values.litellm.redis.password | quote -}}
+{{- end -}}
+
+{{/*
+Return the litellm database URL checksum
+*/}}
+{{- define "carto.litellm.databaseUrlChecksum" -}}
+{{- include "carto.litellm.databaseUrl" . | sha256sum -}}
+{{- end -}}
+
+{{/*
+Return the litellm redis URL checksum
+*/}}
+{{- define "carto.litellm.redisUrlChecksum" -}}
+{{- include "carto.litellm.redisUrl" . | sha256sum -}}
+{{- end -}}
+
+{{/*
+Return the litellm license checksum
+*/}}
+{{- define "carto.litellm.licenseChecksum" -}}
+{{- .Values.cartoSecrets.litellmLicense.value | sha256sum -}}
+{{- end -}}
+
+{{/*
+Return the litellm master key checksum
+*/}}
+{{- define "carto.litellm.masterKeyChecksum" -}}
+{{- .Values.cartoSecrets.litellmMasterKey.value | sha256sum -}}
+{{- end -}}
+
+{{/*
+Return the litellm salt key checksum
+*/}}
+{{- define "carto.litellm.saltKeyChecksum" -}}
+{{- .Values.cartoSecrets.litellmSaltKey.value | sha256sum -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm internal URL for other components to use
+*/}}
+{{- define "carto.litellm.internalUrl" -}}
+{{- printf "http://%s:%d/v1" (include "carto.litellm.fullname" .) .Values.litellm.service.ports.http -}}
 {{- end -}}
