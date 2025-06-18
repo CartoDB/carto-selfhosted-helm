@@ -20,8 +20,8 @@ data:
   USE_PRISMA_MIGRATE: "True"
   LITELLM_LOCAL_MODEL_COST_MAP: "True"
   LITELLM_MIGRATION_DIR: "/tmp/prisma/migrations"
-  XDG_CACHE_HOME: "/tmp/prisma-cache" # for prisma cache...
-  PRISMA_HOME: "/tmp/prisma-cache" # for prisma cache...
+  XDG_CACHE_HOME: "/tmp/prisma-cache" 
+  PRISMA_HOME: "/tmp/prisma-cache" 
   LITELLM_DATABASE_HOST: {{ include "carto.litellm.databaseHost" . | quote }}
   LITELLM_DATABASE_USER: {{ include "carto.litellm.databaseUser" . | quote }}
   LITELLM_DATABASE_DB: {{ include "carto.litellm.databaseDb" . | quote }}
