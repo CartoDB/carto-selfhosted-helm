@@ -77,6 +77,8 @@ WORKSPACE_JWT_SECRET: cartoSecrets.jwtApiSecret
 WORKSPACE_THUMBNAILS_ACCESSKEYID: appSecrets.awsAccessKeyId
 WORKSPACE_THUMBNAILS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
+LITELLM_MASTER_KEY: cartoSecrets.litellmMasterKey
+LITELLM_SALT_KEY: cartoSecrets.litellmSaltKey
 {{- end -}}
 
 {{/*
@@ -815,7 +817,6 @@ Create the name of the service account to use for the notifier deployment
 {{- end -}}
 {{- end -}}
 
-
 {{/*
 Return the proper Carto cdn-invalidator-sub full name
 */}}
@@ -881,7 +882,7 @@ Return the proper Carto tenant-requirements-checker image name
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image) "context" $) -}}
+{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.litellm.image) "context" $) -}}
 {{- end -}}
 
 {{/*
@@ -1138,7 +1139,6 @@ Return the absolute path where the Postgresql CA cert will be mounted
 
 {{/*
 Create a default fully qualified redis name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "carto.redis.fullname" -}}
 {{- include "common.names.dependency.fullname" (dict "chartName" "redis" "chartValues" .Values.internalRedis "context" $) -}}
@@ -1321,4 +1321,214 @@ Return the list of overridden feature flags as a comma-separated string
 {{- end -}}
 {{- $nameList := join "," $ffNames -}}
 {{- $nameList -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified ai-api name.
+*/}}
+{{- define "carto.aiApi.fullname" -}}
+{{- printf "%s-ai-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/* 
+Create carto Image full name for aiApi
+*/}}
+{{- define "carto.aiApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.aiApi.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Create the name of the aiApi configmap
+*/}}
+{{- define "carto.aiApi.configmapName" -}}
+{{- if .Values.aiApi.existingConfigMap -}}
+{{- .Values.aiApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.aiApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the aiApi secret
+*/}}
+{{- define "carto.aiApi.secretName" -}}
+{{- if .Values.aiApi.existingSecret -}}
+{{- .Values.aiApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.aiApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create aiApi Node options
+*/}}
+{{- define "carto.aiApi.nodeOptions" -}}
+{{- $result := "" -}}
+{{- $memRequest := .Values.aiApi.resources.requests.memory | default "512Mi" -}}
+{{- $memRequestNum := regexReplaceAll "[^0-9]" $memRequest "" | int -}}
+{{- $memMaxOldSpace := mul $memRequestNum .Values.aiApi.nodeProcessMaxOldSpacePercentage | div 100 -}}
+{{- if ge $memMaxOldSpace .Values.aiApi.defaultNodeProcessMaxOldSpace -}}
+{{- $result = printf "--max-old-space-size=%d" $memMaxOldSpace -}}
+{{- else -}}
+{{- $result = printf "--max-old-space-size=%d" .Values.aiApi.defaultNodeProcessMaxOldSpace -}}
+{{- end -}}
+{{- printf "%s" $result -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified litellm name.
+*/}}
+{{- define "carto.litellm.fullname" -}}
+{{- printf "%s-litellm" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/* 
+Create carto Image full name for litellm
+*/}}
+{{- define "carto.litellm.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.litellm.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Create the name of the litellm configmap
+*/}}
+{{- define "carto.litellm.configmapName" -}}
+{{- if .Values.litellm.existingConfigMap -}}
+{{- .Values.litellm.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.litellm.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the litellm secret
+*/}}
+{{- define "carto.litellm.secretName" -}}
+{{- if .Values.litellm.existingSecret -}}
+{{- .Values.litellm.existingSecret -}}
+{{- else -}}
+{{- include "carto.litellm.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create litellm Node options
+*/}}
+{{- define "carto.litellm.nodeOptions" -}}
+{{- $result := "" -}}
+{{- $memRequest := .Values.litellm.resources.requests.memory | default "512Mi" -}}
+{{- $memRequestNum := regexReplaceAll "[^0-9]" $memRequest "" | int -}}
+{{- $memMaxOldSpace := mul $memRequestNum .Values.litellm.nodeProcessMaxOldSpacePercentage | div 100 -}}
+{{- if ge $memMaxOldSpace .Values.litellm.defaultNodeProcessMaxOldSpace -}}
+{{- $result = printf "--max-old-space-size=%d" $memMaxOldSpace -}}
+{{- else -}}
+{{- $result = printf "--max-old-space-size=%d" .Values.litellm.defaultNodeProcessMaxOldSpace -}}
+{{- end -}}
+{{- printf "%s" $result -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm database host
+*/}}
+{{- define "carto.litellm.databaseHost" -}}
+{{- .Values.litellm.database.host -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm database port
+*/}}
+{{- define "carto.litellm.databasePort" -}}
+{{- .Values.litellm.database.port -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm database password
+*/}}
+{{- define "carto.litellm.databasePassword" -}}
+{{- .Values.litellm.database.password  -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm database db
+*/}}
+{{- define "carto.litellm.databaseDb" -}}
+{{- .Values.litellm.database.db -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm database dbUser
+*/}}
+{{- define "carto.litellm.databaseUser" -}}
+{{- .Values.litellm.database.dbUser -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm database URL
+*/}}
+{{- define "carto.litellm.databaseUrl" -}}
+{{- $sslMode := default "require" .Values.litellm.database.sslMode -}}
+{{- printf "postgresql://%s:%s@%s:%s/%s?sslmode=%s" (include "carto.litellm.databaseUser" .) (include "carto.litellm.databasePassword" .) (include "carto.litellm.databaseHost" .) (include "carto.litellm.databasePort" .) (include "carto.litellm.databaseDb" .) $sslMode  -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm redis host
+*/}}
+{{- define "carto.litellm.redisHost" -}}
+{{- .Values.litellm.redis.host -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm redis port
+*/}}
+{{- define "carto.litellm.redisPort" -}}
+{{- .Values.litellm.redis.port -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm redis db
+*/}}
+{{- define "carto.litellm.redisDb" -}}
+{{- .Values.litellm.redis.db  -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm redis URL
+*/}}
+{{- define "carto.litellm.redisUrl" -}}
+{{- printf "redis://:%s@%s:%s/%s" (include "carto.litellm.redisPassword" .) (include "carto.litellm.redisHost" .) (include "carto.litellm.redisPort" .) (include "carto.litellm.redisDb" .) -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm redis password
+*/}}
+{{- define "carto.litellm.redisPassword" -}}
+{{- .Values.litellm.redis.password -}}
+{{- end -}}
+
+{{/*
+Return the litellm database URL checksum
+*/}}
+{{- define "carto.litellm.databaseUrlChecksum" -}}
+{{- include "carto.litellm.databaseUrl" . | sha256sum -}}
+{{- end -}}
+
+{{/*
+Return the litellm redis URL checksum
+*/}}
+{{- define "carto.litellm.redisUrlChecksum" -}}
+{{- include "carto.litellm.redisUrl" . | sha256sum -}}
+{{- end -}}
+
+{{/*
+Return the litellm master key checksum
+*/}}
+{{- define "carto.litellm.masterKeyChecksum" -}}
+{{- .Values.cartoSecrets.litellmMasterKey.value | sha256sum -}}
+{{- end -}}
+
+{{/*
+Return the litellm salt key checksum
+*/}}
+{{- define "carto.litellm.saltKeyChecksum" -}}
+{{- .Values.cartoSecrets.litellmSaltKey.value | sha256sum -}}
 {{- end -}}
