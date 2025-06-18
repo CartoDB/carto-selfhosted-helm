@@ -13,9 +13,6 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  #TODO: review environment variables
-  LOG_LEVEL: "debug"
-  CARTO_AI_OPENAI_ENDPOINT: {{ include "carto.litellm.internalUrl" . | quote }}
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
@@ -29,20 +26,34 @@ data:
   {{- if eq .Values.appConfigValues.logLevel "debug" }}
   CARTO_TRACING_MODE: "local"
   {{- end }}
-  IMPORT_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
-  IMPORT_PORT: {{ .Values.importApi.containerPorts.http | quote }}
-  PUBSUB_USE_REST_API: {{ .Values.cartoConfigValues.usePubSubRestApi | quote }}
-  IMPORT_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-import-sub"
-  IMPORT_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
-  IMPORT_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  IMPORT_WORKER_PROCESSING_DIR: "/tmp/import-worker"
-  LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
-  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
-  PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  EXPORTS_GCS_BUCKET_NAME: {{ .Values.appConfigValues.workspaceExportsBucket | quote }}
+  EXPORTS_S3_BUCKET_NAME: {{ .Values.appConfigValues.awsExportBucket | quote }}
+  EXPORTS_S3_BUCKET_REGION: {{ .Values.appConfigValues.awsExportBucketRegion | quote }}
+  EXPORTS_S3_BUCKET_ROLE_ARN: {{ .Values.appConfigValues.exportAwsRoleArn | quote }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
-  NODE_OPTIONS: {{ template "carto.importApi.nodeOptions" . }}
+  LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
+  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
+  MAPS_API_V3_COMPONENT_NAME: "sql-worker"
+  MAPS_API_V3_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
+  MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: {{ .Values.appConfigValues.selfHostedDomain | quote }}
+  MAPS_API_V3_RESOURCE_URL_HOST: {{ .Values.appConfigValues.selfHostedDomain | quote }}
+  MAPS_API_V3_RESOURCE_URL_TEMPLATE_NEW: 'https://${host}/api/${path}'
+  MAPS_API_V3_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  MAPS_API_V3_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-sql-worker-sub"
+  MAPS_API_V3_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
+  NODE_OPTIONS: {{ template "carto.sqlWorker.nodeOptions" . }}
+  PUBSUB_MODE: "pull"
+  PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  PUBSUB_USE_REST_API: {{ .Values.cartoConfigValues.usePubSubRestApi | quote }}
+  REDIS_CACHE_PREFIX: "onprem"
+  REDIS_HOST: {{ include "carto.redis.host" . }}
+  REDIS_PORT: {{ include "carto.redis.port" . }}
+  REDIS_TLS_ENABLED: {{ .Values.externalRedis.tlsEnabled | quote }}
+  {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+  REDIS_TLS_CA: {{ .Values.externalRedis.tlsCA | quote }}
+  {{- end }}
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
   WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . }}
@@ -55,26 +66,7 @@ data:
   CARTO_SELFHOSTED_AWS_RDS_METADATA_REGION: {{ .Values.externalPostgresql.awsRdsRegion | quote }}
   CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED: {{ .Values.externalPostgresql.awsEksPodIdentityEnabled | quote }}
   {{- end }}
-  IMPORT_AWS_CUSTOM_BUCKET_ROLE_ARN: {{ .Values.appConfigValues.importAwsRoleArn | quote }}
-  IMPORT_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
-  {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
-  {{- if .Values.appConfigValues.googleCloudStorageProjectId }}
-  IMPORT_PROJECTID: {{ .Values.appConfigValues.googleCloudStorageProjectId | quote }}
-  {{- end }}
-  {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
-  IMPORT_KEYFILENAME: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
-  {{- else }}
-  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
-  IMPORT_KEYFILENAME: {{ include "carto.google.secretMountAbsolutePath" . }}
-  {{- end }}
-  {{- end }}
-  {{- end }}
-  {{- if eq .Values.appConfigValues.storageProvider "s3" }}
-  IMPORT_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
-  {{- end }}
-  {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
-  IMPORT_STORAGE_ACCOUNT: {{ .Values.appConfigValues.azureStorageAccount | quote }}
-  {{- end }}
+  WORKSPACE_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}

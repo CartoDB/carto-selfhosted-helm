@@ -81,18 +81,19 @@ spec:
           command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
           {{- else if .Values.litellm.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.command "context" $) | nindent 12 }}
+            {{- if .Values.litellm.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.args "context" $) | nindent 12 }}
+            {{- else }}
+          args:
+            - "-c"
+            - "exec litellm --config /app/config.yaml --host 0.0.0.0 --port {{ .Values.litellm.containerPorts.http }}"
+            {{- end }}
           {{- else }}
           command:
-            - /bin/sh
-          {{- end }}
-          {{- if .Values.diagnosticMode.enabled }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
-          {{- else if .Values.litellm.args }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.args "context" $) | nindent 12 }}
-          {{ else }}
+            - /bin/bash
           args:
-            - "--config"
-            - "/app/config.yaml"
+            - "-c"
+            - "exec litellm --config /app/config.yaml --host 0.0.0.0 --port {{ .Values.litellm.containerPorts.http }}"
           {{- end }}
           env:
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
@@ -103,7 +104,6 @@ spec:
               "MAPS_API_V3_JWT_SECRET"
               "LITELLM_MASTER_KEY"
               "LITELLM_SALT_KEY"
-              "LITELLM_LICENSE"
              ) "context" $ ) | nindent 12 }}
             {{- if .Values.litellm.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.litellm.extraEnvVars "context" $) | nindent 12 }}
@@ -119,7 +119,6 @@ spec:
               "MAPS_API_V3_JWT_SECRET"
               "LITELLM_MASTER_KEY"
               "LITELLM_SALT_KEY"
-              "LITELLM_LICENSE"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
@@ -141,11 +140,13 @@ spec:
               containerPort: {{ .Values.litellm.containerPorts.http }}
           {{- if not .Values.diagnosticMode.enabled }}
           {{- if .Values.litellm.livenessProbe.enabled }}
-          {{/* TODO: Review liveness probe for litellm */}}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.litellm.livenessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
               path: /health/liveliness
               port: http
+              httpHeaders:
+                - name: Authorization
+                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
           {{- else if .Values.litellm.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
@@ -154,6 +155,9 @@ spec:
             httpGet:
               path: /health/readiness
               port: http
+              httpHeaders:
+              - name: Authorization
+                value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
           {{- else if .Values.litellm.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
@@ -162,6 +166,9 @@ spec:
             httpGet:
               path: /health/liveliness
               port: http
+              httpHeaders:
+              - name: Authorization
+                value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
           {{- else if .Values.litellm.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
@@ -170,8 +177,12 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-          - name: litellm-migration-dir
-            mountPath: /tmp/prisma/migrations
+            - name: npm-cache-dir
+              mountPath: /.npm
+            - name: tmp-dir
+              mountPath: /tmp
+            - name: prisma-cache
+              mountPath: /.cache
             {{- if .Values.litellm.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.litellm.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
@@ -180,9 +191,12 @@ spec:
         {{- end }}
       volumes:
         # Required for read-only filesystem
-        - name: litellm-migration-dir
+        - name: npm-cache-dir
           emptyDir: {}
-        {{/* TODO: review volumes to add for litellm */}}
+        - name: prisma-cache
+          emptyDir: {}
+        - name: tmp-dir
+          emptyDir: {}
         {{- if .Values.litellm.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.litellm.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

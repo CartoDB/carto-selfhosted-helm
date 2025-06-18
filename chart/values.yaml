@@ -406,16 +406,6 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: "redis-password"
-  ## @extra cartoSecrets.litellmLicense The license for the Litellm instance.
-  litellmLicense:
-    ## @param cartoSecrets.litellmLicense.value Value of the secret used to define the license for the Litellm instance. One of `cartoSecrets.litellmLicense.value` or `cartoSecrets.litellmLicense.existingSecret` could be defined.
-    value: ""
-    ## @param cartoSecrets.litellmLicense.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.litellmLicense.existingSecret.key`. If `cartoSecrets.litellmLicense.value` is defined, this value is going to be ignored and not used.
-    ## @param cartoSecrets.litellmLicense.existingSecret.key Key to find in `cartoSecrets.litellmLicense.existingSecret.name` where the value of `cartoSecrets.litellmLicense` is found. If `cartoSecrets.litellmLicense.value` is defined, this value is going to be ignored and not used.
-    ##
-    existingSecret:
-      name: ""
-      key: ""
   ## @extra cartoSecrets.litellmMasterKey The master key for the Litellm instance.
   litellmMasterKey:
     ## @param cartoSecrets.litellmMasterKey.value Value of the secret used to define the master key for the Litellm instance. One of `cartoSecrets.litellmMasterKey.value` or `cartoSecrets.litellmMasterKey.existingSecret` could be defined.
@@ -5449,7 +5439,7 @@ aiApi:
   ##
   image:
     registry: gcr.io/carto-onprem-artifacts
-    repository: ai-api
+    repository: carto-ai-api
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -5471,7 +5461,7 @@ aiApi:
   ## @param aiApi.containerPorts.http ai-api HTTP container port
   ##
   containerPorts:
-    http: 
+    http: 3000
   ## @param aiApi.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
   nodeProcessMaxOldSpacePercentage: 75
@@ -5813,19 +5803,22 @@ litellm:
     host: ""
     port: "6379"
     password: ""
-    db: "litellm"
+    db: 0
     sslCertReqs: "none"
   ## @param litellm.database.host Litellm database host
   ## @param litellm.database.port Litellm database port
   ## @param litellm.database.password Litellm database password
   ## @param litellm.database.db Litellm database db
+  ## @param litellm.database.dbUser Litellm database dbUser
+  ## @param litellm.database.sslMode Litellm database ssl mode
   ##
   database:
     host: ""
     port: "5432"
     password: ""
     db: "litellm"
-    sslMode: "require"
+    dbUser: "litellm"
+    sslMode: "none"
   ## @param litellm.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
   nodeProcessMaxOldSpacePercentage: 1875

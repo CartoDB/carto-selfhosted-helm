@@ -113,8 +113,19 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "carto.aiApi.configmapName" . }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+              "CARTO_SELFHOSTED_INSTANCE_ID"
+              "IMPORT_AWS_ACCESS_KEY_ID"
+              "IMPORT_AWS_SECRET_ACCESS_KEY"
+              "WORKSPACE_JWT_SECRET"
+              "WORKSPACE_OPENAI_API_KEY"
+              "GITBOOK_API_TOKEN" 
+              "LAUNCHDARKLY_SDK_KEY"
+             ) "context" $ ) -}}
+            {{- if $secretContent }}
             - secretRef:
-                name: {{ template "carto.aiApi.secretName" . }}
+                name: {{ include "carto.aiApi.secretName" . }}
+            {{- end }}
             {{- if .Values.aiApi.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.aiApi.extraEnvVarsCM "context" $) }}
@@ -134,7 +145,7 @@ spec:
           {{/* TODO: Review liveness probe for ai-api */}}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.aiApi.livenessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /
               port: http
           {{- else if .Values.aiApi.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.customLivenessProbe "context" $) | nindent 12 }}
@@ -142,7 +153,7 @@ spec:
           {{- if .Values.aiApi.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.aiApi.readinessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /
               port: http
           {{- else if .Values.aiApi.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.customReadinessProbe "context" $) | nindent 12 }}
@@ -150,7 +161,7 @@ spec:
           {{- if .Values.aiApi.startupProbe.enabled }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.aiApi.startupProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /health
+              path: /
               port: http
           {{- else if .Values.aiApi.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.customStartupProbe "context" $) | nindent 12 }}
