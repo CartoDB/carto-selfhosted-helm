@@ -146,7 +146,7 @@ spec:
               port: http
               httpHeaders:
                 - name: Authorization
-                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
+                  value: "Bearer $(LITELLM_MASTER_KEY)"
           {{- else if .Values.litellm.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
@@ -157,7 +157,7 @@ spec:
               port: http
               httpHeaders:
               - name: Authorization
-                value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
+                value: "Bearer $(LITELLM_MASTER_KEY)"
           {{- else if .Values.litellm.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
@@ -168,7 +168,7 @@ spec:
               port: http
               httpHeaders:
               - name: Authorization
-                value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
+                value: "Bearer $(LITELLM_MASTER_KEY)"
           {{- else if .Values.litellm.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}

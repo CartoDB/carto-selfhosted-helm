@@ -1467,7 +1467,7 @@ Return the proper litellm database URL
 */}}
 {{- define "carto.litellm.databaseUrl" -}}
 {{- $sslMode := default "require" .Values.litellm.database.sslMode -}}
-{{- printf "postgresql://%s:%s@%s:%s/%s?sslmode=%s" (include "carto.litellm.databaseUser" .) (include "carto.litellm.databasePassword" .) (include "carto.litellm.databaseHost" .) (include "carto.litellm.databasePort" .) (include "carto.litellm.databaseDb" .) $sslMode  -}}
+{{- printf "postgresql://%s:%s@%s:%s/%s" (include "carto.litellm.databaseUser" .) (include "carto.litellm.databasePassword" .) (include "carto.litellm.databaseHost" .) (include "carto.litellm.databasePort" .) (include "carto.litellm.databaseDb" .)  -}}
 {{- end -}}
 
 {{/*

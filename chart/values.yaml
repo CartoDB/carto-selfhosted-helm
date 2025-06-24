@@ -5818,14 +5818,11 @@ litellm:
     password: ""
     db: "litellm"
     dbUser: "litellm"
-    sslMode: "none"
-  ## @param litellm.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+    sslMode: "require"
+  ## @param litellm.serverRootPath Litellm server root path
   ##
-  nodeProcessMaxOldSpacePercentage: 1875
-  ## @param litellm.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
-  ##
-  defaultNodeProcessMaxOldSpace: 1875
-  ## Configure extra options for ai-api containers' liveness and readiness probes
+  serverRootPath: "/litellm"
+  ## Configure extra options for litellm containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param litellm.livenessProbe.enabled Enable livenessProbe on ai-api containers
   ## @param litellm.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe

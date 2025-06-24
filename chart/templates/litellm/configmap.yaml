@@ -22,13 +22,18 @@ data:
   LITELLM_MIGRATION_DIR: "/tmp/prisma/migrations"
   XDG_CACHE_HOME: "/tmp/prisma-cache" 
   PRISMA_HOME: "/tmp/prisma-cache" 
-  LITELLM_DATABASE_HOST: {{ include "carto.litellm.databaseHost" . | quote }}
-  LITELLM_DATABASE_USER: {{ include "carto.litellm.databaseUser" . | quote }}
-  LITELLM_DATABASE_DB: {{ include "carto.litellm.databaseDb" . | quote }}
-  LITELLM_DATABASE_PORT: {{ include "carto.litellm.databasePort" . | quote }}
-  LITELLM_REDIS_HOST: {{ include "carto.litellm.redisHost" . | quote }}
-  LITELLM_REDIS_PORT: {{ include "carto.litellm.redisPort" . | quote }}
-  LITELLM_REDIS_DB: {{ include "carto.litellm.redisDb" . | quote }}
-  REDIS_URL: {{ include "carto.litellm.redisUrl" . | quote }}
+  PRISMA_BINARY_CACHE_DIR: "/tmp/prisma-cache"
+  PRISMA_CLI_CACHE_DIR: "/tmp/prisma-cache"
+  DATABASE_HOST: {{ include "carto.litellm.databaseHost" . | quote }}
+  DATABASE_USERNAME: {{ include "carto.litellm.databaseUser" . | quote }}
+  DATABASE_NAME: {{ include "carto.litellm.databaseDb" . | quote }}
+  DATABASE_PORT: {{ include "carto.litellm.databasePort" . | quote }}
+  DATABASE_PASSWORD: {{ include "carto.litellm.databasePassword" . | quote }}
   DATABASE_URL: {{ include "carto.litellm.databaseUrl" . | quote }}
+  REDIS_HOST: {{ include "carto.litellm.redisHost" . | quote }}
+  REDIS_PORT: {{ include "carto.litellm.redisPort" . | quote }}
+  REDIS_DB: {{ include "carto.litellm.redisDb" . | quote }}
+  REDIS_URL: {{ include "carto.litellm.redisUrl" . | quote }}
+  REDIS_PASSWORD: {{ include "carto.litellm.redisPassword" . | quote }}
+  SERVER_ROOT_PATH: {{ .Values.litellm.serverRootPath | quote }}
 {{- end }} 
