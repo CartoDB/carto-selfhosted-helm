@@ -5797,8 +5797,7 @@ litellm:
   ## @param litellm.externalRedis.port Litellm Redis port
   ## @param litellm.externalRedis.password Litellm Redis password
   ## @param litellm.externalRedis.db Litellm Redis db
-  ## @param litellm.redis.sslCertReqs Litellm Redis ssl cert reqs
-  ## @param litellm.externalRedis.existingSecret Litellm Redis existing secret
+  ## @param litellm.externalRedis.sslCertReqs Litellm Redis ssl cert reqs
   ## @param litellm.externalRedis.existingSecret.existingSecretName Litellm Redis existing secret name
   ## @param litellm.externalRedis.existingSecret.existingSecretPasswordKey Litellm Redis existing secret password key
   ## @param litellm.externalRedis.existingSecret.existingSecretUrlKey Litellm Redis existing secret url key
@@ -5819,7 +5818,6 @@ litellm:
   ## @param litellm.database.db Litellm database db
   ## @param litellm.database.dbUser Litellm database dbUser
   ## @param litellm.database.sslMode Litellm database ssl mode
-  ## @param litellm.database.existingSecret Litellm database existing secret
   ## @param litellm.database.existingSecret.existingSecretName Litellm database existing secret name
   ## @param litellm.database.existingSecret.existingSecretPasswordKey Litellm database existing secret password key
   ## @param litellm.database.existingSecret.existingSecretUrlKey Litellm database existing secret url key
