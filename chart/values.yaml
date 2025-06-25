@@ -5793,24 +5793,36 @@ litellm:
   ##
   containerPorts:
     http: 4000
-  ## @param litellm.redis.host Litellm Redis host
-  ## @param litellm.redis.port Litellm Redis port
-  ## @param litellm.redis.password Litellm Redis password
-  ## @param litellm.redis.db Litellm Redis db
+  ## @param litellm.externalRedis.host Litellm Redis host
+  ## @param litellm.externalRedis.port Litellm Redis port
+  ## @param litellm.externalRedis.password Litellm Redis password
+  ## @param litellm.externalRedis.db Litellm Redis db
   ## @param litellm.redis.sslCertReqs Litellm Redis ssl cert reqs
+  ## @param litellm.externalRedis.existingSecret Litellm Redis existing secret
+  ## @param litellm.externalRedis.existingSecret.existingSecretName Litellm Redis existing secret name
+  ## @param litellm.externalRedis.existingSecret.existingSecretPasswordKey Litellm Redis existing secret password key
+  ## @param litellm.externalRedis.existingSecret.existingSecretUrlKey Litellm Redis existing secret url key
   ##
-  redis:
+  externalRedis:
     host: ""
     port: "6379"
     password: ""
     db: 0
     sslCertReqs: "none"
+    existingSecret:
+      existingSecretName: ""
+      existingSecretPasswordKey: ""
+      existingSecretUrlKey: ""
   ## @param litellm.database.host Litellm database host
   ## @param litellm.database.port Litellm database port
   ## @param litellm.database.password Litellm database password
   ## @param litellm.database.db Litellm database db
   ## @param litellm.database.dbUser Litellm database dbUser
   ## @param litellm.database.sslMode Litellm database ssl mode
+  ## @param litellm.database.existingSecret Litellm database existing secret
+  ## @param litellm.database.existingSecret.existingSecretName Litellm database existing secret name
+  ## @param litellm.database.existingSecret.existingSecretPasswordKey Litellm database existing secret password key
+  ## @param litellm.database.existingSecret.existingSecretUrlKey Litellm database existing secret url key
   ##
   database:
     host: ""
@@ -5819,6 +5831,10 @@ litellm:
     db: "litellm"
     dbUser: "litellm"
     sslMode: "require"
+    existingSecret:
+      existingSecretName: ""
+      existingSecretPasswordKey: ""
+      existingSecretUrlKey: ""
   ## @param litellm.serverRootPath Litellm server root path
   ##
   serverRootPath: "/litellm"
@@ -5862,10 +5878,10 @@ litellm:
   startupProbe:
     enabled: false
     initialDelaySeconds: 10
-    periodSeconds: 30
+    periodSeconds: 10
     timeoutSeconds: 5
     successThreshold: 1
-    failureThreshold: 5
+    failureThreshold: 30
   ## @param litellm.customLivenessProbe Custom livenessProbe that overrides the default one
   ##
   customLivenessProbe: {}
@@ -5951,7 +5967,7 @@ litellm:
   existingSecret: ""
   ## @param litellm.command Override default container command (useful when using custom images)
   ##
-  command: ["/bin/bash"]
+  command: []
   ## @param litellm.args Override default container args (useful when using custom images)
   ##
   args:

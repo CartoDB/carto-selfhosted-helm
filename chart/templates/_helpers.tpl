@@ -1019,7 +1019,7 @@ Return the Postgresql password sha256sum
 */}}
 {{- define "carto.postgresql.passwordChecksum" -}}
 {{- if .Values.internalPostgresql.enabled -}}
-{{- print (tpl (toYaml .Values.internalPostgresql.password) . | sha256sum ) -}}
+{{- print (tpl (toYaml .Values.internalPostgresql.auth.postgresPassword) . | sha256sum ) -}}
 {{- else -}}
 {{- print (tpl (toYaml .Values.externalPostgresql.password) . | sha256sum ) -}}
 {{- end -}}
@@ -1172,21 +1172,21 @@ Add environment variables to configure Redis values
 */}}
 {{- define "carto.redis.existingsecret.key" -}}
 {{- if .Values.internalRedis.enabled -}}
-  {{- if .Values.cartoSecrets.redisPassword.existingSecret.name -}}
-    {{- print .Values.cartoSecrets.redisPassword.existingSecret.key -}}
-  {{- else -}}
-    {{- print "redis-password" -}}
-  {{- end }}
+{{- if .Values.cartoSecrets.redisPassword.existingSecret.name -}}
+{{- print .Values.cartoSecrets.redisPassword.existingSecret.key -}}
 {{- else -}}
-  {{- if .Values.externalRedis.existingSecret -}}
-    {{- if .Values.externalRedis.existingSecretPasswordKey -}}
-      {{- printf "%s" .Values.externalRedis.existingSecretPasswordKey -}}
-    {{- else -}}
-      {{- print "redis-password" -}}
-    {{- end }}
-  {{- else -}}
-    {{- print "redis-password" -}}
-  {{- end }}
+{{- print "redis-password" -}}
+{{- end }}
+{{- else -}}
+{{- if .Values.externalRedis.existingSecret -}}
+{{- if .Values.externalRedis.existingSecretPasswordKey -}}
+{{- printf "%s" .Values.externalRedis.existingSecretPasswordKey -}}
+{{- else -}}
+{{- print "redis-password" -}}
+{{- end }}
+{{- else -}}
+{{- print "redis-password" -}}
+{{- end }}
 {{- end }}
 {{- end }}
 
@@ -1195,15 +1195,15 @@ Get the Redis credentials secret.
 */}}
 {{- define "carto.redis.secretName" -}}
 {{- if and (.Values.internalRedis.enabled) (not .Values.internalRedis.existingSecret) -}}
-    {{- printf "%s" (include "carto.redis.fullname" .) -}}
+{{- printf "%s" (include "carto.redis.fullname" .) -}}
 {{- else if and (.Values.internalRedis.enabled) (.Values.internalRedis.existingSecret) -}}
-    {{- printf "%s" .Values.internalRedis.existingSecret -}}
+{{- printf "%s" .Values.internalRedis.existingSecret -}}
 {{- else }}
-    {{- if .Values.externalRedis.existingSecret -}}
-        {{- printf "%s" .Values.externalRedis.existingSecret -}}
-    {{- else -}}
-        {{ printf "%s-%s" .Release.Name "externalredis" }}
-    {{- end -}}
+{{- if .Values.externalRedis.existingSecret -}}
+{{- printf "%s" .Values.externalRedis.existingSecret -}}
+{{- else -}}
+{{ printf "%s-%s" .Release.Name "externalredis" }}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -1363,16 +1363,11 @@ Create the name of the aiApi secret
 Create aiApi Node options
 */}}
 {{- define "carto.aiApi.nodeOptions" -}}
-{{- $result := "" -}}
-{{- $memRequest := .Values.aiApi.resources.requests.memory | default "512Mi" -}}
-{{- $memRequestNum := regexReplaceAll "[^0-9]" $memRequest "" | int -}}
-{{- $memMaxOldSpace := mul $memRequestNum .Values.aiApi.nodeProcessMaxOldSpacePercentage | div 100 -}}
-{{- if ge $memMaxOldSpace .Values.aiApi.defaultNodeProcessMaxOldSpace -}}
-{{- $result = printf "--max-old-space-size=%d" $memMaxOldSpace -}}
+{{- if eq (.Values.aiApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.aiApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.aiApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
 {{- else -}}
-{{- $result = printf "--max-old-space-size=%d" .Values.aiApi.defaultNodeProcessMaxOldSpace -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.aiApi.defaultNodeProcessMaxOldSpace | quote -}}
 {{- end -}}
-{{- printf "%s" $result -}}
 {{- end -}}
 
 {{/*
@@ -1412,22 +1407,6 @@ Create the name of the litellm secret
 {{- end -}}
 
 {{/*
-Create litellm Node options
-*/}}
-{{- define "carto.litellm.nodeOptions" -}}
-{{- $result := "" -}}
-{{- $memRequest := .Values.litellm.resources.requests.memory | default "512Mi" -}}
-{{- $memRequestNum := regexReplaceAll "[^0-9]" $memRequest "" | int -}}
-{{- $memMaxOldSpace := mul $memRequestNum .Values.litellm.nodeProcessMaxOldSpacePercentage | div 100 -}}
-{{- if ge $memMaxOldSpace .Values.litellm.defaultNodeProcessMaxOldSpace -}}
-{{- $result = printf "--max-old-space-size=%d" $memMaxOldSpace -}}
-{{- else -}}
-{{- $result = printf "--max-old-space-size=%d" .Values.litellm.defaultNodeProcessMaxOldSpace -}}
-{{- end -}}
-{{- printf "%s" $result -}}
-{{- end -}}
-
-{{/*
 Return the proper litellm database host
 */}}
 {{- define "carto.litellm.databaseHost" -}}
@@ -1438,14 +1417,14 @@ Return the proper litellm database host
 Return the proper litellm database port
 */}}
 {{- define "carto.litellm.databasePort" -}}
-{{- .Values.litellm.database.port -}}
+{{- .Values.litellm.database.port | int -}}
 {{- end -}}
 
 {{/*
 Return the proper litellm database password
 */}}
 {{- define "carto.litellm.databasePassword" -}}
-{{- .Values.litellm.database.password  -}}
+{{- .Values.litellm.database.password -}}
 {{- end -}}
 
 {{/*
@@ -1461,7 +1440,6 @@ Return the proper litellm database dbUser
 {{- define "carto.litellm.databaseUser" -}}
 {{- .Values.litellm.database.dbUser -}}
 {{- end -}}
-
 {{/*
 Return the proper litellm database URL
 */}}
@@ -1474,35 +1452,55 @@ Return the proper litellm database URL
 Return the proper litellm redis host
 */}}
 {{- define "carto.litellm.redisHost" -}}
-{{- .Values.litellm.redis.host -}}
+{{- if .Values.litellm.externalRedis.host -}}
+{{- .Values.litellm.externalRedis.host -}}
+{{- else -}}
+{{- include "carto.redis.fullname" . -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
 Return the proper litellm redis port
 */}}
 {{- define "carto.litellm.redisPort" -}}
-{{- .Values.litellm.redis.port -}}
+{{- if .Values.litellm.externalRedis.host -}}
+{{- .Values.litellm.externalRedis.port | int -}}
+{{- else -}}
+{{- ternary "6379" .Values.externalRedis.port .Values.internalRedis.enabled | int -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
-Return the proper litellm redis db
+Return the proper litellm redis db if externalRedis.host is set, otherwise use internalRedis logical database 1
 */}}
 {{- define "carto.litellm.redisDb" -}}
-{{- .Values.litellm.redis.db  -}}
+{{- if .Values.litellm.externalRedis.host -}}
+{{- .Values.litellm.externalRedis.db -}}
+{{- else -}}
+1
+{{- end -}}
 {{- end -}}
 
 {{/*
 Return the proper litellm redis URL
 */}}
 {{- define "carto.litellm.redisUrl" -}}
+{{- if .Values.litellm.externalRedis.host -}}
 {{- printf "redis://:%s@%s:%s/%s" (include "carto.litellm.redisPassword" .) (include "carto.litellm.redisHost" .) (include "carto.litellm.redisPort" .) (include "carto.litellm.redisDb" .) -}}
+{{- else -}}
+{{- printf "redis://:%s@%s:%s/1" (include "carto.litellm.redisPassword" .) (include "carto.litellm.redisHost" .) (include "carto.litellm.redisPort" .) -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
 Return the proper litellm redis password
 */}}
 {{- define "carto.litellm.redisPassword" -}}
-{{- .Values.litellm.redis.password -}}
+{{- if .Values.litellm.externalRedis.host -}}
+{{- .Values.litellm.externalRedis.password -}}
+{{- else -}}
+{{- .Values.internalRedis.auth.password -}}
+{{- end -}}
 {{- end -}}
 
 {{/*

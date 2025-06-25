@@ -81,21 +81,31 @@ spec:
           command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
           {{- else if .Values.litellm.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.command "context" $) | nindent 12 }}
-            {{- if .Values.litellm.args }}
+          {{- end }}
+          {{- if .Values.litellm.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.args "context" $) | nindent 12 }}
-            {{- else }}
-          args:
-            - "-c"
-            - "exec litellm --config /app/config.yaml --host 0.0.0.0 --port {{ .Values.litellm.containerPorts.http }}"
-            {{- end }}
-          {{- else }}
-          command:
-            - /bin/bash
-          args:
-            - "-c"
-            - "exec litellm --config /app/config.yaml --host 0.0.0.0 --port {{ .Values.litellm.containerPorts.http }}"
           {{- end }}
           env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.litellm.database.existingSecret.existingSecretName }}{{ .Values.litellm.database.existingSecret.existingSecretName }}{{ else }}{{ include "carto.litellm.secretName" . }}{{ end }}
+                  key: {{ if .Values.litellm.database.existingSecret.existingSecretName }}{{ .Values.litellm.database.existingSecret.existingSecretUrlKey }}{{ else }}{{ "DATABASE_URL" }}{{ end }}
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.litellm.externalRedis.existingSecret.existingSecretName }}{{ .Values.litellm.externalRedis.existingSecret.existingSecretName }}{{ else }}{{ include "carto.litellm.secretName" . }}{{ end }}
+                  key: {{ if .Values.litellm.externalRedis.existingSecret.existingSecretName }}{{ .Values.litellm.externalRedis.existingSecret.existingSecretUrlKey }}{{ else }}{{ "REDIS_URL" }}{{ end }}
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.litellm.database.existingSecret.existingSecretName }}{{ .Values.litellm.database.existingSecret.existingSecretName }}{{ else }}{{ include "carto.litellm.secretName" . }}{{ end }}
+                  key: {{ if .Values.litellm.database.existingSecret.existingSecretName }}{{ .Values.litellm.database.existingSecret.existingSecretPasswordKey }}{{ else }}{{ "DATABASE_PASSWORD" }}{{ end }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ if .Values.litellm.externalRedis.existingSecret.existingSecretName }}{{ .Values.litellm.externalRedis.existingSecret.existingSecretName }}{{ else }}{{ include "carto.litellm.secretName" . }}{{ end }}
+                  key: {{ if .Values.litellm.externalRedis.existingSecret.existingSecretPasswordKey }}{{ .Values.litellm.externalRedis.existingSecret.existingSecretPasswordKey }}{{ else }}{{ "REDIS_PASSWORD" }}{{ end }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "CARTO_SELFHOSTED_INSTANCE_ID"
               "ENCRYPTION_SECRET_KEY"
@@ -146,7 +156,7 @@ spec:
               port: http
               httpHeaders:
                 - name: Authorization
-                  value: "Bearer $(LITELLM_MASTER_KEY)"
+                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
           {{- else if .Values.litellm.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
@@ -156,8 +166,8 @@ spec:
               path: /health/readiness
               port: http
               httpHeaders:
-              - name: Authorization
-                value: "Bearer $(LITELLM_MASTER_KEY)"
+                - name: Authorization
+                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
           {{- else if .Values.litellm.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
@@ -167,8 +177,8 @@ spec:
               path: /health/liveliness
               port: http
               httpHeaders:
-              - name: Authorization
-                value: "Bearer $(LITELLM_MASTER_KEY)"
+                - name: Authorization
+                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
           {{- else if .Values.litellm.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
