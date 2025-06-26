@@ -29,12 +29,12 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
 {{- $port := "" -}}
 {{- $servicePortString := printf "%v" .Values.router.service.ports.http -}}
 {{- if and (ne $servicePortString "80") (ne $servicePortString "443") -}}
-  {{- $port = printf ":%s" $servicePortString -}}
+{{- $port = printf ":%s" $servicePortString -}}
 {{- end -}}
 
 {{- $defaultUrl := "" -}}
 {{- if $host -}}
-  {{- $defaultUrl = printf "%s%s" $host $port -}}
+{{- $defaultUrl = printf "%s%s" $host $port -}}
 {{- end -}}
 
 {{- default $defaultUrl (printf "%s" .Values.appConfigValues.selfHostedDomain) -}}
@@ -137,10 +137,10 @@ Generate the secret def of one secret to be used in pods definitions
 */}}
 {{- if $secretExistingName }}
 - name: {{ $var }}
-  valueFrom:
-    secretKeyRef:
-      name: {{ $secretExistingName | quote }}  # {{ $key }}.existingSecret.name
-      key: {{ $secretExistingKey | quote }}    # {{ $key }}.existingSecret.key
+valueFrom:
+secretKeyRef:
+name: {{ $secretExistingName | quote }}  # {{ $key }}.existingSecret.name
+key: {{ $secretExistingKey | quote }}    # {{ $key }}.existingSecret.key
 {{- end }}
 {{- end -}}
 
@@ -163,9 +163,9 @@ As a replacement for "common.images.image" that forces you to set image.tag valu
 {{- $repositoryName := .imageRoot.repository -}}
 {{- $tag := (coalesce .imageRoot.tag .Chart.AppVersion) | toString -}}
 {{- if .global }}
-    {{- if .global.imageRegistry }}
-     {{- $registryName = .global.imageRegistry -}}
-    {{- end -}}
+{{- if .global.imageRegistry }}
+{{- $registryName = .global.imageRegistry -}}
+{{- end -}}
 {{- end -}}
 {{- if $registryName }}
 {{- printf "%s/%s:%s" $registryName $repositoryName $tag -}}
@@ -943,7 +943,7 @@ TODO: We have to regenerate the secret if the private key changes
 {{- .Values.tlsCerts.existingSecret.name -}}
 {{- else if (empty .Values.router.tlsCertificates.certificateValueBase64) -}}
 {{/*
-     Preserved the original behaviour in case someone use the default secret name without explicitly define that parameter
+Preserved the original behaviour in case someone use the default secret name without explicitly define that parameter
 */}}
 {{- printf "%s-tls" (include "common.names.fullname" .) -}}
 {{- else -}}
@@ -1002,15 +1002,15 @@ Get the Postgresql credentials secret.
 */}}
 {{- define "carto.postgresql.secretName" -}}
 {{- if and (.Values.internalPostgresql.enabled) (not .Values.internalPostgresql.auth.existingSecret) -}}
-    {{- printf "%s" (include "carto.postgresql.fullname" .) -}}
+{{- printf "%s" (include "carto.postgresql.fullname" .) -}}
 {{- else if and (.Values.internalPostgresql.enabled) (.Values.internalPostgresql.auth.existingSecret) -}}
-    {{- printf "%s" .Values.internalPostgresql.auth.existingSecret -}}
+{{- printf "%s" .Values.internalPostgresql.auth.existingSecret -}}
 {{- else }}
-    {{- if .Values.externalPostgresql.existingSecret -}}
-        {{- printf "%s" .Values.externalPostgresql.existingSecret -}}
-    {{- else -}}
-        {{ printf "%s-%s" .Release.Name "externalpostgresql" }}
-    {{- end -}}
+{{- if .Values.externalPostgresql.existingSecret -}}
+{{- printf "%s" .Values.externalPostgresql.existingSecret -}}
+{{- else -}}
+{{ printf "%s-%s" .Release.Name "externalpostgresql" }}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -1065,17 +1065,17 @@ Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.secret.key" -}}
 {{- if .Values.internalPostgresql.enabled -}}
-    {{- printf "%s" "password" -}}
+{{- printf "%s" "password" -}}
 {{- else -}}
-    {{- if .Values.externalPostgresql.existingSecret -}}
-        {{- if .Values.externalPostgresql.existingSecretPasswordKey -}}
-            {{- printf "%s" .Values.externalPostgresql.existingSecretPasswordKey -}}
-        {{- else -}}
-            {{- printf "%s" "db-password" -}}
-        {{- end -}}
-    {{- else -}}
-        {{- printf "%s" "db-password" -}}
-    {{- end -}}
+{{- if .Values.externalPostgresql.existingSecret -}}
+{{- if .Values.externalPostgresql.existingSecretPasswordKey -}}
+    {{- printf "%s" .Values.externalPostgresql.existingSecretPasswordKey -}}
+{{- else -}}
+    {{- printf "%s" "db-password" -}}
+{{- end -}}
+{{- else -}}
+{{- printf "%s" "db-password" -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -1084,17 +1084,17 @@ Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.secret.adminKey" -}}
 {{- if .Values.internalPostgresql.enabled -}}
-    {{- print "postgres-password" -}}
+{{- print "postgres-password" -}}
 {{- else -}}
-    {{- if .Values.externalPostgresql.existingSecret -}}
-        {{- if .Values.externalPostgresql.existingSecretAdminPasswordKey -}}
-            {{- printf "%s" .Values.externalPostgresql.existingSecretAdminPasswordKey -}}
-        {{- else -}}
-            {{- print "db-admin-password" -}}
-        {{- end -}}
-    {{- else -}}
-        {{- print "db-admin-password" -}}
-    {{- end -}}
+{{- if .Values.externalPostgresql.existingSecret -}}
+{{- if .Values.externalPostgresql.existingSecretAdminPasswordKey -}}
+    {{- printf "%s" .Values.externalPostgresql.existingSecretAdminPasswordKey -}}
+{{- else -}}
+    {{- print "db-admin-password" -}}
+{{- end -}}
+{{- else -}}
+{{- print "db-admin-password" -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -1110,9 +1110,9 @@ Get the Postgresql config map name
 */}}
 {{- define "carto.postgresql.configMapName" -}}
 {{- if .Values.internalPostgresql.enabled -}}
-  {{- include "carto.postgresql.fullname" . -}}
+{{- include "carto.postgresql.fullname" . -}}
 {{- else }}
-  {{- printf "%s-%s" .Release.Name "externalpostgresql" -}}
+{{- printf "%s-%s" .Release.Name "externalpostgresql" -}}
 {{- end -}}
 {{- end -}}
 
@@ -1157,7 +1157,7 @@ Return the hostname that the rest of the CARTO components should use
 to reach Redis.
 */}}
 {{- define "carto.redis.host" -}}
-{{- ternary (include "carto.redis.fullname" .) .Values.externalRedis.host .Values.internalRedis.enabled | quote -}}
+{{- ternary (include "carto.redis.fullname" .) .Values.externalRedis.host .Values.internalRedis.enabled -}}
 {{- end -}}
 
 {{/*
@@ -1212,9 +1212,9 @@ Get the Redis config map name
 */}}
 {{- define "carto.redis.configMapName" -}}
 {{- if .Values.internalRedis.enabled -}}
-  {{- include "carto.redis.fullname" . -}}
+{{- include "carto.redis.fullname" . -}}
 {{- else }}
-  {{- printf "%s-%s" .Release.Name "externalredis" -}}
+{{- printf "%s-%s" .Release.Name "externalredis" -}}
 {{- end -}}
 {{- end -}}
 
@@ -1317,7 +1317,7 @@ Return the list of overridden feature flags as a comma-separated string
 {{- $featureFlags := .Values.cartoConfigValues.featureFlagsOverrides -}}
 {{- $ffNames := list -}}
 {{- range $featureFlags -}}
-  {{- $ffNames = append $ffNames .name -}}
+{{- $ffNames = append $ffNames .name -}}
 {{- end -}}
 {{- $nameList := join "," $ffNames -}}
 {{- $nameList -}}
@@ -1410,21 +1410,45 @@ Create the name of the litellm secret
 Return the proper litellm database host
 */}}
 {{- define "carto.litellm.databaseHost" -}}
+{{- if .Values.litellm.database.host -}}
 {{- .Values.litellm.database.host -}}
+{{- else -}}
+{{- include "carto.postgresql.host" . -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
 Return the proper litellm database port
 */}}
 {{- define "carto.litellm.databasePort" -}}
+{{- if .Values.litellm.database.host -}}
 {{- .Values.litellm.database.port | int -}}
+{{- else -}}
+{{- include "carto.postgresql.port" . | int -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
 Return the proper litellm database password
 */}}
 {{- define "carto.litellm.databasePassword" -}}
+{{- if .Values.litellm.database.host -}}
+{{- /* Litellm has its own database config */ -}}
+{{- if not .Values.litellm.database.existingSecret.existingSecretName -}}
 {{- .Values.litellm.database.password -}}
+{{- end -}}
+{{- else -}}
+{{- /* Litellm uses global database config */ -}}
+{{- if and .Values.internalPostgresql.enabled (not .Values.internalPostgresql.auth.existingSecret) -}}
+{{- /* Use internal PostgreSQL password */ -}}
+{{- .Values.internalPostgresql.auth.password -}}
+{{- else -}}
+{{- /* Use external PostgreSQL password */ -}}
+{{- if not .Values.externalPostgresql.existingSecret -}}
+{{- .Values.externalPostgresql.password -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -1438,24 +1462,46 @@ Return the proper litellm database db
 Return the proper litellm database dbUser
 */}}
 {{- define "carto.litellm.databaseUser" -}}
+{{- if .Values.litellm.database.host -}}
 {{- .Values.litellm.database.dbUser -}}
+{{- else -}}
+{{- if .Values.internalPostgresql.enabled -}}
+{{- .Values.internalPostgresql.auth.username -}}
+{{- else -}}
+{{- if not .Values.externalPostgresql.existingSecret -}}
+{{- .Values.externalPostgresql.user -}}
 {{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
 {{/*
-Return the proper litellm database URL
+Return the proper litellm database ssl mode
 */}}
-{{- define "carto.litellm.databaseUrl" -}}
-{{- $sslMode := default "require" .Values.litellm.database.sslMode -}}
-{{- printf "postgresql://%s:%s@%s:%s/%s" (include "carto.litellm.databaseUser" .) (include "carto.litellm.databasePassword" .) (include "carto.litellm.databaseHost" .) (include "carto.litellm.databasePort" .) (include "carto.litellm.databaseDb" .)  -}}
+{{- define "carto.litellm.databaseSslMode" -}}
+{{- if .Values.litellm.database.host -}}
+{{- .Values.litellm.database.sslMode -}}
+{{- else -}}
+{{- if .Values.internalPostgresql.enabled -}}
+{{- .Values.litellm.database.sslMode -}}
+{{- else -}}
+{{- if .Values.externalPostgresql.sslEnabled -}}
+{{- "require" -}}
+{{- else -}}
+{{- "disable" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
 Return the proper litellm redis host
 */}}
 {{- define "carto.litellm.redisHost" -}}
-{{- if .Values.litellm.externalRedis.host -}}
-{{- .Values.litellm.externalRedis.host -}}
+{{- if .Values.litellm.redis.host -}}
+{{- .Values.litellm.redis.host -}}
 {{- else -}}
-{{- include "carto.redis.fullname" . -}}
+{{- include "carto.redis.host" . -}}
 {{- end -}}
 {{- end -}}
 
@@ -1463,10 +1509,10 @@ Return the proper litellm redis host
 Return the proper litellm redis port
 */}}
 {{- define "carto.litellm.redisPort" -}}
-{{- if .Values.litellm.externalRedis.host -}}
-{{- .Values.litellm.externalRedis.port | int -}}
+{{- if .Values.litellm.redis.host -}}
+{{- .Values.litellm.redis.port | int -}}
 {{- else -}}
-{{- ternary "6379" .Values.externalRedis.port .Values.internalRedis.enabled | int -}}
+{{- include "carto.redis.port" . | int -}}
 {{- end -}}
 {{- end -}}
 
@@ -1474,21 +1520,10 @@ Return the proper litellm redis port
 Return the proper litellm redis db if externalRedis.host is set, otherwise use internalRedis logical database 1
 */}}
 {{- define "carto.litellm.redisDb" -}}
-{{- if .Values.litellm.externalRedis.host -}}
-{{- .Values.litellm.externalRedis.db -}}
+{{- if .Values.litellm.redis.host -}}
+{{- .Values.litellm.redis.db -}}
 {{- else -}}
 1
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the proper litellm redis URL
-*/}}
-{{- define "carto.litellm.redisUrl" -}}
-{{- if .Values.litellm.externalRedis.host -}}
-{{- printf "redis://:%s@%s:%s/%s" (include "carto.litellm.redisPassword" .) (include "carto.litellm.redisHost" .) (include "carto.litellm.redisPort" .) (include "carto.litellm.redisDb" .) -}}
-{{- else -}}
-{{- printf "redis://:%s@%s:%s/1" (include "carto.litellm.redisPassword" .) (include "carto.litellm.redisHost" .) (include "carto.litellm.redisPort" .) -}}
 {{- end -}}
 {{- end -}}
 
@@ -1496,25 +1531,11 @@ Return the proper litellm redis URL
 Return the proper litellm redis password
 */}}
 {{- define "carto.litellm.redisPassword" -}}
-{{- if .Values.litellm.externalRedis.host -}}
-{{- .Values.litellm.externalRedis.password -}}
+{{- if .Values.litellm.redis.host -}}
+{{- .Values.litellm.redis.password -}}
 {{- else -}}
 {{- .Values.internalRedis.auth.password -}}
 {{- end -}}
-{{- end -}}
-
-{{/*
-Return the litellm database URL checksum
-*/}}
-{{- define "carto.litellm.databaseUrlChecksum" -}}
-{{- include "carto.litellm.databaseUrl" . | sha256sum -}}
-{{- end -}}
-
-{{/*
-Return the litellm redis URL checksum
-*/}}
-{{- define "carto.litellm.redisUrlChecksum" -}}
-{{- include "carto.litellm.redisUrl" . | sha256sum -}}
 {{- end -}}
 
 {{/*

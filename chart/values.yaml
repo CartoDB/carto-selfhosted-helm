@@ -5793,31 +5793,34 @@ litellm:
   ##
   containerPorts:
     http: 4000
-  ## @param litellm.externalRedis.host Litellm Redis host
-  ## @param litellm.externalRedis.port Litellm Redis port
-  ## @param litellm.externalRedis.password Litellm Redis password
-  ## @param litellm.externalRedis.db Litellm Redis db
-  ## @param litellm.externalRedis.sslCertReqs Litellm Redis ssl cert reqs
-  ## @param litellm.externalRedis.existingSecret.existingSecretName Litellm Redis existing secret name
-  ## @param litellm.externalRedis.existingSecret.existingSecretPasswordKey Litellm Redis existing secret password key
-  ## @param litellm.externalRedis.existingSecret.existingSecretUrlKey Litellm Redis existing secret url key
+  ## @param litellm.redis.host Litellm Redis host
+  ## @param litellm.redis.port Litellm Redis port
+  ## @param litellm.redis.password Litellm Redis password
+  ## @param litellm.redis.db Litellm Redis db
+  ## @param litellm.redis.sslCertReqs Litellm Redis ssl cert reqs. Can be "none", "required" or "optional"
+  ## @param litellm.redis.existingSecret.existingSecretName Litellm Redis existing secret name
+  ## @param litellm.redis.existingSecret.existingSecretPasswordKey Litellm Redis existing secret password key
+  ## @param litellm.redis.existingSecret.existingSecretUrlKey Litellm Redis existing secret url key
   ##
-  externalRedis:
+  redis:
     host: ""
     port: "6379"
     password: ""
-    db: 0
+    db: 1
     sslCertReqs: "none"
     existingSecret:
       existingSecretName: ""
       existingSecretPasswordKey: ""
       existingSecretUrlKey: ""
-  ## @param litellm.database.host Litellm database host
+  ## @param litellm.database.host Litellm database host. If not specified, will use externalPostgres configuration
   ## @param litellm.database.port Litellm database port
-  ## @param litellm.database.password Litellm database password
+  ## @param litellm.database.password Litellm database password. If not specified and using externalPostgres, will use externalPostgres.password or externalPostgres.existingSecret
   ## @param litellm.database.db Litellm database db
-  ## @param litellm.database.dbUser Litellm database dbUser
-  ## @param litellm.database.sslMode Litellm database ssl mode
+  ## @param litellm.database.dbUser Litellm database dbUser. If not specified and using externalPostgres, will use externalPostgres.user
+  ## @param litellm.database.sslMode Litellm database ssl mode. If not specified and using externalPostgres, will use externalPostgres.sslEnabled setting
+  ## @param litellm.database.sslCA.enabled Litellm database ssl ca enabled
+  ## @param litellm.database.sslCA.secretName Litellm database ssl ca secret name
+  ## @param litellm.database.sslCA.secretKey Litellm database ssl ca secret key
   ## @param litellm.database.existingSecret.existingSecretName Litellm database existing secret name
   ## @param litellm.database.existingSecret.existingSecretPasswordKey Litellm database existing secret password key
   ## @param litellm.database.existingSecret.existingSecretUrlKey Litellm database existing secret url key
@@ -5828,7 +5831,11 @@ litellm:
     password: ""
     db: "litellm"
     dbUser: "litellm"
-    sslMode: "require"
+    sslMode: "disable"
+    sslCA:
+      enabled: false
+      secretName: ""
+      secretKey: ""
     existingSecret:
       existingSecretName: ""
       existingSecretPasswordKey: ""
