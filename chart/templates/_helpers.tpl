@@ -1473,6 +1473,7 @@ Return the proper litellm database dbUser
 Return the proper litellm database ssl mode
 */}}
 {{- define "carto.litellm.databaseSslMode" -}}
+{{- if .Values.litellm.database.sslEnabled -}}
 {{- if .Values.litellm.database.host -}}
 {{- .Values.litellm.database.sslMode -}}
 {{- else -}}
@@ -1485,6 +1486,9 @@ Return the proper litellm database ssl mode
 {{- "disable" -}}
 {{- end -}}
 {{- end -}}
+{{- end -}}
+{{- else -}}
+{{- "disable" -}}
 {{- end -}}
 {{- end -}}
 
@@ -1604,4 +1608,44 @@ Return the proper litellm redis password secret key
 {{- else -}}
 {{- "REDIS_PASSWORD" -}}
 {{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper litellm database ssl ca
+*/}}
+{{- define "carto.litellm.database.sslCA" -}}
+{{- if and (.Values.litellm.database.sslEnabled) (.Values.litellm.database.sslCA) -}}
+{{- .Values.litellm.database.sslCA -}}
+{{- else if and (.Values.litellm.database.sslEnabled) (not .Values.litellm.database.sslCA) (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) -}}
+{{- .Values.externalPostgresql.sslCA -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the directory where the LiteLLM database CA cert will be mounted
+*/}}
+{{- define "carto.litellm.database.sslCA.configMapMountDir" -}}
+{{- if and (.Values.litellm.database.sslEnabled) (.Values.litellm.database.sslCA) -}}
+{{- print "/usr/src/certs/litellm-database-ssl-ca" -}}
+{{- else if and (.Values.litellm.database.sslEnabled) (not .Values.litellm.database.sslCA) (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) -}}
+{{- include "carto.postgresql.configMapMountDir" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the filename where the LiteLLM database CA will be mounted
+*/}}
+{{- define "carto.litellm.database.sslCA.configMapMountFilename" -}}
+{{- if and (.Values.litellm.database.sslEnabled) (.Values.litellm.database.sslCA) -}}
+{{- print "ca.crt" -}}
+{{- else if and (.Values.litellm.database.sslEnabled) (not .Values.litellm.database.sslCA) (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) -}}
+{{- include "carto.postgresql.configMapMountFilename" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the absolute path where the LiteLLM database CA cert will be mounted
+*/}}
+{{- define "carto.litellm.database.sslCA.configMapMountAbsolutePath" -}}
+{{- printf "%s/%s" (include "carto.litellm.database.sslCA.configMapMountDir" .) (include "carto.litellm.database.sslCA.configMapMountFilename" .) -}}
 {{- end -}}

@@ -5797,6 +5797,7 @@ litellm:
   ## @param litellm.redis.port Litellm Redis port
   ## @param litellm.redis.password Litellm Redis password
   ## @param litellm.redis.db Litellm Redis db
+  ## @param litellm.redis.enableTls Litellm Redis enable tls
   ## @param litellm.redis.sslCertReqs Litellm Redis ssl cert reqs. Can be "none", "required" or "optional"
   ## @param litellm.redis.existingSecret.existingSecretName Litellm Redis existing secret name
   ## @param litellm.redis.existingSecret.existingSecretPasswordKey Litellm Redis existing secret password key
@@ -5817,11 +5818,10 @@ litellm:
   ## @param litellm.database.port Litellm database port
   ## @param litellm.database.password Litellm database password. If not specified and using externalPostgres, will use externalPostgres.password or externalPostgres.existingSecret
   ## @param litellm.database.db Litellm database db
+  ## @param litellm.database.sslEnabled Litellm database ssl enabled
   ## @param litellm.database.dbUser Litellm database dbUser. If not specified and using externalPostgres, will use externalPostgres.user
   ## @param litellm.database.sslMode Litellm database ssl mode. If not specified and using externalPostgres, will use externalPostgres.sslEnabled setting
-  ## @param litellm.database.sslCA.enabled Litellm database ssl ca enabled
-  ## @param litellm.database.sslCA.secretName Litellm database ssl ca secret name
-  ## @param litellm.database.sslCA.secretKey Litellm database ssl ca secret key
+  ## @param litellm.database.sslCA Litellm database ssl ca. If not specified and using externalPostgres, will use externalPostgres.sslCA setting
   ## @param litellm.database.existingSecret.existingSecretName Litellm database existing secret name
   ## @param litellm.database.existingSecret.existingSecretPasswordKey Litellm database existing secret password key
   ## @param litellm.database.existingSecret.existingSecretUrlKey Litellm database existing secret url key
@@ -5833,10 +5833,8 @@ litellm:
     db: "litellm"
     dbUser: "litellm"
     sslMode: "disable"
-    sslCA:
-      enabled: false
-      secretName: ""
-      secretKey: ""
+    sslEnabled: false
+    sslCA: ""
     existingSecret:
       existingSecretName: ""
       existingSecretPasswordKey: ""
