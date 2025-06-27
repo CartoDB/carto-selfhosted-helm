@@ -5807,6 +5807,7 @@ litellm:
     port: "6379"
     password: ""
     db: 1
+    enableTls: false
     sslCertReqs: "none"
     existingSecret:
       existingSecretName: ""

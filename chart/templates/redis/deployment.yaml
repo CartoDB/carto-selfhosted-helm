@@ -117,7 +117,7 @@ spec:
           {{- end }}
           env:
             - name: REDIS_PORT
-              value: {{ include "carto.redis.port" . }}
+              value: {{ include "carto.redis.port" . | quote }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:

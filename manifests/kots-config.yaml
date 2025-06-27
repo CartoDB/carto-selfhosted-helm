@@ -587,31 +587,37 @@ spec:
         - name: litellmRedisHost
           title: Litellm Redis Host
           type: text
+          optional: true
           when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
           required: true
         - name: litellmRedisPort
           title: Litellm Redis Port
           type: text
+          optional: true
           when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
           required: true
         - name: litellmRedisPassword
           title: Litellm Redis Password
           type: password
+          optional: true
           when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
           required: true
         - name: litellmDatabaseHost
           title: Litellm Database Host
           type: text
+          optional: true
           when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
           required: true
         - name: litellmDatabasePort
           title: Litellm Database Port
           type: text
+          optional: true
           when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
           required: true
         - name: litellmDatabasePassword
           title: Litellm Database Password
           type: password
+          optional: true
           when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
           required: true
 
