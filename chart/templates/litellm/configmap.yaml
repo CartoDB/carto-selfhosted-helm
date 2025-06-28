@@ -1,0 +1,41 @@
+{{- if and (.Values.litellm.enabled) (not .Values.cartoConfigValues.onlyRunRouter) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "carto.litellm.configmapName" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: litellm
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  PORT: {{ .Values.litellm.containerPorts.http | quote }}
+  STORE_MODEL_IN_DB: "True"
+  LITELLM_MODE: "PRODUCTION"
+  LITELLM_LOG_LEVEL: "INFO"
+  USE_PRISMA_MIGRATE: "True"
+  LITELLM_LOCAL_MODEL_COST_MAP: "True"
+  LITELLM_MIGRATION_DIR: "/tmp/prisma/migrations"
+  XDG_CACHE_HOME: "/tmp/prisma-cache" 
+  PRISMA_HOME: "/tmp/prisma-cache" 
+  PRISMA_BINARY_CACHE_DIR: "/tmp/prisma-cache"
+  PRISMA_CLI_CACHE_DIR: "/tmp/prisma-cache"
+  DATABASE_HOST: {{ include "carto.litellm.databaseHost" . | quote }}
+  DATABASE_USERNAME: {{ include "carto.litellm.databaseUser" . | quote }}
+  DATABASE_NAME: {{ include "carto.litellm.databaseDb" . | quote }}
+  DATABASE_PORT: {{ include "carto.litellm.databasePort" . | quote }}
+  REDIS_HOST: {{ include "carto.litellm.redisHost" . | quote }}
+  REDIS_PORT: {{ include "carto.litellm.redisPort" . | quote }}
+  REDIS_DB: {{ include "carto.litellm.redisDb" . | quote }}
+  SERVER_ROOT_PATH: {{ .Values.litellm.serverRootPath | quote }}
+  # Callback configurations to prevent None values
+  LITELLM_CALLBACKS: ""
+  LITELLM_CALLBACK_LIST: ""
+  {{- if and .Values.litellm.database.sslEnabled}}
+  {{ include "carto.litellm.database.sslCA.configMapMountFilename" . }}: {{ include "carto.litellm.database.sslCA" . | quote }}
+  {{- end }}
+{{- end }} 
