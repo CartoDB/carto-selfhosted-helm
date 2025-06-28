@@ -103,19 +103,31 @@ spec:
       sslCA: |
         repl{{- ConfigOptionData "metadataDBSSLCertificate" | nindent 8 }}
     ## AiApi
-    aiApi: 
+    aiApi:
       enabled: repl{{ if ConfigOptionEquals "aiApiEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     ## Litellm
     litellm:
       enabled: repl{{ if ConfigOptionEquals "aiApiEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
       redis:
         host: '{{repl ConfigOption "litellmRedisHost" }}'
         port: '{{repl ConfigOption "litellmRedisPort" }}'
         password: '{{repl ConfigOption "litellmRedisPassword" }}'
+        enableTls: repl{{ if ConfigOptionEquals "litellmRedisEnableTLS" "1"}}truerepl{{ else }}falserepl{{ end }}
+        sslCertReqs: '{{repl ConfigOption "litellmRedisSSLCertReqs" }}'
       database:
         host: '{{repl ConfigOption "litellmDatabaseHost" }}'
         port: '{{repl ConfigOption "litellmDatabasePort" }}'
         password: '{{repl ConfigOption "litellmDatabasePassword" }}'
+        db: '{{repl ConfigOption "litellmDatabaseName" }}'
+        dbUser: '{{repl ConfigOption "litellmDatabaseUser" }}'
+        sslEnabled: repl{{ if ConfigOptionEquals "litellmDatabaseSSLEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
+        sslMode: '{{repl ConfigOption "litellmDatabaseSSLMode" }}'
+        sslCA: |
+          repl{{- ConfigOptionData "litellmDatabaseSSLCertificate" | nindent 10 }}
     ## Redis
     internalRedis:
       enabled: repl{{ if ConfigOptionEquals "externalRedisEnabled" "0"}}truerepl{{ else }}falserepl{{ end }}
