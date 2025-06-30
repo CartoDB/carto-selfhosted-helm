@@ -44,20 +44,25 @@ Return common collectors for preflights and support-bundle
                   fi
                 done
 
-                # Transform the variables in files
+                # Transform the variables into files
                 for PREFIX in $PREFIXES; do
-                  FILE_PATH=$(env | grep ${PREFIX}__FILE_PATH | awk -F= '{print $2}')
+                  FILE_PATH=$(env | grep "${PREFIX}__FILE_PATH" | awk -F= '{print $2}')
                   FILE_CONTENT=""
+
                   if [ "$(env | grep -c "${PREFIX}__FILE_CONTENT")" -eq 1 ]; then
                     FILE_CONTENT_VAR="${PREFIX}__FILE_CONTENT"
                     FILE_CONTENT=$(eval "echo \$$FILE_CONTENT_VAR")
-                    echo "$FILE_CONTENT" | base64 -d > "$FILE_PATH"
                   else
-                    # The file is divided in multiple variables, we need to concatenate them
                     for VAR_NAME in $(env | grep "${PREFIX}__FILE_CONTENT" | awk -F= '{print $1}' | sort -V); do
                       FILE_CONTENT="${FILE_CONTENT}$(eval "echo \$$VAR_NAME")"
                     done
+                  fi
+
+                  # Try decoding the content; if it succeeds, write decoded; else write raw
+                  if echo "$FILE_CONTENT" | base64 -d >/dev/null 2>&1; then
                     echo "$FILE_CONTENT" | base64 -d > "$FILE_PATH"
+                  else
+                    echo "$FILE_CONTENT" > "$FILE_PATH"
                   fi
                 done
             env:
