@@ -218,8 +218,9 @@ spec:
             - name: tmp-dir
               mountPath: /tmp
             {{- if include "carto.litellm.database.sslCA" . }}
-            - name: database-ssl-ca
-              mountPath: {{ include "carto.litellm.database.sslCA.configMapMountDir" . }}
+            - name: postgresql-ssl-ca
+              mountPath: {{ include "carto.litellm.database.sslCA.configMapMountAbsolutePath" . }}
+              subPath: {{ include "carto.litellm.database.sslCA.configMapMountFilename" . }}
               readOnly: true
             {{- end }}
             {{- if .Values.litellm.extraVolumeMounts }}
@@ -237,9 +238,9 @@ spec:
         - name: tmp-dir
           emptyDir: {}
         {{- if include "carto.litellm.database.sslCA" . }}
-        - name: database-ssl-ca
+        - name: postgresql-ssl-ca
           configMap:
-            name: {{ include "carto.litellm.fullname" . }}
+            name: {{ include "carto.litellm.configmapName" . }}
             items:
               - key: {{ include "carto.litellm.database.sslCA.configMapMountFilename" . }}
                 path: {{ include "carto.litellm.database.sslCA.configMapMountFilename" . }}
