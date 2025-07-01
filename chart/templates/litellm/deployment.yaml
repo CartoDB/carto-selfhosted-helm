@@ -90,7 +90,7 @@ spec:
             - -c
             - |
               # Construct DATABASE_URL from the individual environment variables
-              export DATABASE_URL="postgresql://$DATABASE_USERNAME:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME?sslmode=${DATABASE_SSL_MODE}{{- if .Values.litellm.database.sslEnabled }}&sslrootcert=${DATABASE_SSL_PATH}{{- end }}"
+              export DATABASE_URL="postgresql://$DATABASE_USERNAME:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME?sslmode=${DATABASE_SSL_MODE}{{- if include "carto.litellm.database.sslCA" . }}&sslrootcert=${DATABASE_SSL_PATH}{{- end }}"
               # Construct REDIS_URL from the individual environment variable
               export REDIS_URL="{{- if .Values.litellm.redis.enableTls -}}rediss{{- else -}}redis{{- end -}}://:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT/$REDIS_DB{{ if .Values.litellm.redis.enableTls }}&ssl_cert_reqs={{ .Values.litellm.redis.sslCertReqs }}{{ end }}"
               # Start the litellm application with config
@@ -110,7 +110,7 @@ spec:
               value: {{ include "carto.litellm.databasePort" . | quote }}
             - name: DATABASE_SSL_MODE
               value: {{ include "carto.litellm.databaseSslMode" . | quote }}
-            {{- if and .Values.litellm.database.sslEnabled }}
+            {{- if include "carto.litellm.database.sslCA" . }}
             - name: DATABASE_SSL_PATH
               value: {{ include "carto.litellm.database.sslCA.configMapMountAbsolutePath" . | quote }}
             {{- end }}
@@ -217,7 +217,7 @@ spec:
               mountPath: /.cache
             - name: tmp-dir
               mountPath: /tmp
-            {{- if and .Values.litellm.database.sslEnabled }}
+            {{- if include "carto.litellm.database.sslCA" . }}
             - name: database-ssl-ca
               mountPath: {{ include "carto.litellm.database.sslCA.configMapMountDir" . }}
               readOnly: true
@@ -236,7 +236,7 @@ spec:
           emptyDir: {}
         - name: tmp-dir
           emptyDir: {}
-        {{- if and .Values.litellm.database.sslEnabled .Values.litellm.database.sslCA }}
+        {{- if include "carto.litellm.database.sslCA" . }}
         - name: database-ssl-ca
           configMap:
             name: {{ include "carto.litellm.fullname" . }}

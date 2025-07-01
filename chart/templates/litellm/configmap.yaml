@@ -35,7 +35,7 @@ data:
   # Callback configurations to prevent None values
   LITELLM_CALLBACKS: ""
   LITELLM_CALLBACK_LIST: ""
-  {{- if and .Values.litellm.database.sslEnabled}}
+  {{- if include "carto.litellm.database.sslCA" . }}
   {{ include "carto.litellm.database.sslCA.configMapMountFilename" . }}: {{ include "carto.litellm.database.sslCA" . | quote }}
   {{- end }}
 {{- end }} 
