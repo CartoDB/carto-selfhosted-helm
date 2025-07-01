@@ -5439,7 +5439,7 @@ aiApi:
   ##
   image:
     registry: gcr.io/carto-onprem-artifacts
-    repository: carto-ai-api
+    repository: ai-api
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
