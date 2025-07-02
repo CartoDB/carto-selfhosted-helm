@@ -94,6 +94,8 @@ spec:
               # Construct REDIS_URL from the individual environment variable
               export REDIS_URL="{{- if .Values.litellm.redis.enableTls -}}rediss{{- else -}}redis{{- end -}}://:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT/$REDIS_DB{{ if .Values.litellm.redis.enableTls }}&ssl_cert_reqs={{ .Values.litellm.redis.sslCertReqs }}{{ end }}"
               # Start the litellm application with config
+              echo "DATABASE_URL: $DATABASE_URL" >> /tmp/env_vars.log
+              echo "REDIS_URL: $REDIS_URL" >> /tmp/env_vars.log
               exec litellm --config /app/config.yaml
           {{- end }}
           {{- if .Values.litellm.args }}

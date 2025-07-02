@@ -31,8 +31,11 @@ data:
   REDIS_HOST: {{ include "carto.litellm.redisHost" . | quote }}
   REDIS_PORT: {{ include "carto.litellm.redisPort" . | quote }}
   REDIS_DB: {{ include "carto.litellm.redisDb" . | quote }}
+  {{- if .Values.litellm.serverRootPath }}
   SERVER_ROOT_PATH: {{ .Values.litellm.serverRootPath | quote }}
+  {{- end }}
   # Callback configurations to prevent None values
+  LITELLM_LOG: {{ .Values.litellm.logLevel | quote }}
   LITELLM_CALLBACKS: ""
   LITELLM_CALLBACK_LIST: ""
   {{- if include "carto.litellm.database.sslCA" . }}
