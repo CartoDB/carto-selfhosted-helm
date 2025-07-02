@@ -16,7 +16,7 @@ data:
   AI_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   AI_OPENAI_API_KEY: {{ .Values.cartoSecrets.litellmMasterKey | quote }}
   AI_OPENAI_ENDPOINT: "http://{{ include "carto.litellm.fullname" . }}:{{ .Values.litellm.containerPorts.http }}/v1"
-  AI_SQL_API_URL: ""
+  AI_SQL_API_URL: "http://{{ include "carto.mapsApi.fullname" . }}:{{ .Values.mapsApi.containerPorts.http }}"  
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
