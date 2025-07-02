@@ -5773,7 +5773,13 @@ aiApi:
   honeycombDataset: ""
   ## @param aiApi.honeycombApiKey ai-api honeycomb api key
   ##
-  honeycombApiKey: ""
+  honeycombApiKey: "dummy-key"
+  ## @param aiApi.openTelemetryEnabled Enable OpenTelemetry tracing for ai-api
+  ##
+  openTelemetryEnabled: true
+  ## @param aiApi.openTelemetryTracesEndpoint OpenTelemetry traces endpoint for ai-api
+  ##
+  openTelemetryTracesEndpoint: "https://api.honeycomb.io/v1/traces"
 ## @section litellm Deployment Parameters
 ##
 litellm:
