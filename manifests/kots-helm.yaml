@@ -112,22 +112,6 @@ spec:
       enabled: repl{{ if ConfigOptionEquals "aiApiEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-      redis:
-        host: '{{repl ConfigOption "litellmRedisHost" }}'
-        port: '{{repl ConfigOption "litellmRedisPort" }}'
-        password: '{{repl ConfigOption "litellmRedisPassword" }}'
-        enableTls: repl{{ if ConfigOptionEquals "litellmRedisEnableTLS" "1"}}truerepl{{ else }}falserepl{{ end }}
-        sslCertReqs: '{{repl ConfigOption "litellmRedisSSLCertReqs" }}'
-      database:
-        host: '{{repl ConfigOption "litellmDatabaseHost" }}'
-        port: '{{repl ConfigOption "litellmDatabasePort" }}'
-        password: '{{repl ConfigOption "litellmDatabasePassword" }}'
-        db: '{{repl ConfigOption "litellmDatabaseName" }}'
-        dbUser: '{{repl ConfigOption "litellmDatabaseUser" }}'
-        sslEnabled: repl{{ if ConfigOptionEquals "litellmDatabaseSSLEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
-        sslMode: '{{repl ConfigOption "litellmDatabaseSSLMode" }}'
-        sslCA: |
-          repl{{- ConfigOptionData "litellmDatabaseSSLCertificate" | nindent 10 }}
     ## Redis
     internalRedis:
       enabled: repl{{ if ConfigOptionEquals "externalRedisEnabled" "0"}}truerepl{{ else }}falserepl{{ end }}
@@ -295,6 +279,87 @@ spec:
       values:
         appConfigValues:
           workspaceExportsBucket: '{{repl ConfigOption "storageBucketsExportGcp" }}'
+    ## LiteLLM Database Configuration
+    - when: '{{repl not (empty (ConfigOption "litellmDatabaseHost")) }}'
+      recursiveMerge: true
+      values:
+        litellm:
+          database:
+            host: '{{repl ConfigOption "litellmDatabaseHost" }}'
+    - when: '{{repl not (empty (ConfigOption "litellmDatabasePort")) }}'
+      recursiveMerge: true
+      values:
+        litellm:
+          database:
+            port: '{{repl ConfigOption "litellmDatabasePort" }}'
+    - when: '{{repl not (empty (ConfigOption "litellmDatabasePassword")) }}'
+      recursiveMerge: true
+      values:
+        litellm:
+          database:
+            password: '{{repl ConfigOption "litellmDatabasePassword" }}'
+    - when: '{{repl not (empty (ConfigOption "litellmDatabaseName")) }}'
+      recursiveMerge: true
+      values:
+        litellm:
+          database:
+            db: '{{repl ConfigOption "litellmDatabaseName" }}'
+    - when: '{{repl not (empty (ConfigOption "litellmDatabaseUser")) }}'
+      recursiveMerge: true
+      values:
+        litellm:
+          database:
+            dbUser: '{{repl ConfigOption "litellmDatabaseUser" }}'
+    - when: '{{repl ConfigOptionEquals "litellmDatabaseSSLEnabled" "1" }}'
+      recursiveMerge: true
+      values:
+        litellm:
+          database:
+            sslEnabled: true
+    - when: '{{repl not (empty (ConfigOption "litellmDatabaseSSLMode")) }}'
+      recursiveMerge: true
+      values:
+        litellm:
+          database:
+            sslMode: '{{repl ConfigOption "litellmDatabaseSSLMode" }}'
+    - when: '{{repl not (empty (ConfigOptionData "litellmDatabaseSSLCertificate")) }}'
+      recursiveMerge: true
+      values:
+        litellm:
+          database:
+            sslCA: |
+              repl{{- ConfigOptionData "litellmDatabaseSSLCertificate" | nindent 14 }}
+    ## LiteLLM Redis Configuration
+    - when: '{{repl not (empty (ConfigOption "litellmRedisHost")) }}'
+      recursiveMerge: true
+      values:
+        litellm:
+          redis:
+            host: '{{repl ConfigOption "litellmRedisHost" }}'
+    - when: '{{repl not (empty (ConfigOption "litellmRedisPort")) }}'
+      recursiveMerge: true
+      values:
+        litellm:
+          redis:
+            port: '{{repl ConfigOption "litellmRedisPort" }}'
+    - when: '{{repl not (empty (ConfigOption "litellmRedisPassword")) }}'
+      recursiveMerge: true
+      values:
+        litellm:
+          redis:
+            password: '{{repl ConfigOption "litellmRedisPassword" }}'
+    - when: '{{repl ConfigOptionEquals "litellmRedisEnableTLS" "1" }}'
+      recursiveMerge: true
+      values:
+        litellm:
+          redis:
+            enableTls: true
+    - when: '{{repl not (empty (ConfigOption "litellmRedisSSLCertReqs")) }}'
+      recursiveMerge: true
+      values:
+        litellm:
+          redis:
+            sslCertReqs: '{{repl ConfigOption "litellmRedisSSLCertReqs" }}'
     ## Redshift imports
     - when: '{{repl not (empty (ConfigOption "storageBucketsImportExportAwsArnRole")) }}'
       recursiveMerge: true
