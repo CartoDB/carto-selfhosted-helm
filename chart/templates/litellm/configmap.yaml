@@ -66,6 +66,7 @@ data:
   {{- end }}
   STORE_MODEL_IN_DB: "True"
   USE_PRISMA_MIGRATE: "True"
+  PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
   XDG_CACHE_HOME: "/tmp/prisma-cache"
   {{- if include "carto.litellm.database.sslCA" . }}
   {{ include "carto.litellm.database.sslCA.configMapMountFilename" . }}: {{ include "carto.litellm.database.sslCA" . | quote }}
