@@ -1837,6 +1837,12 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `aiApi.service.externalTrafficPolicy`    | ai-api service external traffic policy                                            | `Cluster`   |
 | `aiApi.service.annotations`              | Additional custom annotations for ai-api service                                  | `{}`        |
 | `aiApi.service.extraPorts`               | Extra ports to expose in ai-api service (normally used with the `sidecars` value) | `[]`        |
+| `aiApi.requestTimeoutMs`                 | ai-api request timeout in milliseconds                                            | `60000`     |
+| `aiApi.maxResponseLength`                | ai-api max response length in bytes                                               | `10485760`  |
+| `aiApi.bodyJsonLimit`                    | ai-api body json limit                                                            | `5mb`       |
+| `aiApi.healthCheckServiceTimeout`        | ai-api health check service timeout in milliseconds                               | `60000`     |
+| `aiApi.honeycombDataset`                 | ai-api honeycomb dataset                                                          | `""`        |
+| `aiApi.honeycombApiKey`                  | ai-api honeycomb api key                                                          | `""`        |
 
 ### litellm Deployment Parameters
 

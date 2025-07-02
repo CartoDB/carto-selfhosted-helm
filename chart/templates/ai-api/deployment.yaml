@@ -96,7 +96,11 @@ spec:
               exec node -r ./tsconfig-paths-bootstrap.js dist/app/index.js
           {{- end }}
           env:
-            {{/* TODO: add secret for ai-api */}}
+            - name: WORKSPACE_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ include "carto.postgresql.secret.key" . }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "BIGQUERY_OAUTH2_CLIENT_SECRET"
               "CARTO_SELFHOSTED_INSTANCE_ID"
