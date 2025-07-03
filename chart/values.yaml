@@ -400,6 +400,12 @@ cartoSecrets:
   redisPassword:
     ## @param cartoSecrets.redisPassword.value Value of the secret used to define the password for the Redis instance. One of `cartoSecrets.redisPassword.value` or `cartoSecrets.redisPassword.existingSecret` could be defined.
     value: ""
+    ## @param cartoSecrets.redisPassword.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.redisPassword.existingSecret.key`. If `cartoSecrets.redisPassword.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.redisPassword.existingSecret.key Key to find in `cartoSecrets.redisPassword.existingSecret.name` where the value of `cartoSecrets.redisPassword` is found. If `cartoSecrets.redisPassword.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: "redis-password"
 ## FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 ## @section TLS parameters
 ## Global TLS parameters
@@ -4758,6 +4764,13 @@ internalRedis:
     ##
   ## @param internalRedis.image.pullSecrets Image-pull secrets for private registries
     pullSecrets: []
+
+  ## @param internalRedis.auth.enabled Enable password authentication on internal-redis
+  ## @param internalRedis.auth.password Password for Redis authentication
+  ##
+  auth:
+    enabled: true
+    password: ""
 
   ## @param internalRedis.containerPorts.redis internal-redis container port
   ##

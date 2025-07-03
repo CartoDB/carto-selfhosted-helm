@@ -1172,7 +1172,11 @@ Add environment variables to configure Redis values
 */}}
 {{- define "carto.redis.existingsecret.key" -}}
 {{- if .Values.internalRedis.enabled -}}
-  {{- print "redis-password" -}}
+  {{- if .Values.cartoSecrets.redisPassword.existingSecret.name -}}
+    {{- print .Values.cartoSecrets.redisPassword.existingSecret.key -}}
+  {{- else -}}
+    {{- print "redis-password" -}}
+  {{- end }}
 {{- else -}}
   {{- if .Values.externalRedis.existingSecret -}}
     {{- if .Values.externalRedis.existingSecretPasswordKey -}}
@@ -1240,7 +1244,7 @@ Return the Redis password sha256sum
 */}}
 {{- define "carto.redis.passwordChecksum" -}}
 {{- if .Values.internalRedis.enabled -}}
-{{- print (tpl (toYaml .Values.cartoSecrets.redisPassword.value) . | sha256sum ) -}}
+{{- print (tpl (toYaml .Values.internalRedis.auth.password) . | sha256sum ) -}}
 {{- else -}}
 {{- print (tpl (toYaml .Values.externalRedis.password) . | sha256sum ) -}}
 {{- end -}}
