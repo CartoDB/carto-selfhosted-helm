@@ -1244,7 +1244,7 @@ Return the Redis password sha256sum
 */}}
 {{- define "carto.redis.passwordChecksum" -}}
 {{- if .Values.internalRedis.enabled -}}
-{{- print (tpl (toYaml .Values.internalRedis.auth.password) . | sha256sum ) -}}
+{{- print (tpl (toYaml (default .Values.internalRedis.auth.password .Values.cartoSecrets.redisPassword.value)) . | sha256sum ) -}}
 {{- else -}}
 {{- print (tpl (toYaml .Values.externalRedis.password) . | sha256sum ) -}}
 {{- end -}}
