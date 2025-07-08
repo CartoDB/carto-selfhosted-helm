@@ -65,13 +65,12 @@ repos:
               --readme README.md \
               --values values.yaml; then
               
-              print_status "README.md generated successfully!"
+              print_warning "README.md has been updated!"
               
               # Check if README.md was actually modified
               if git diff --quiet "$README_FILE"; then
                   print_status "README.md is up to date."
               else
-                  print_warning "README.md has been updated!"
                   print_status "📝 Next steps:"
                   print_status "   1. Review changes: git diff $README_FILE"
                   print_status "   2. Stage the file: git add $README_FILE"
