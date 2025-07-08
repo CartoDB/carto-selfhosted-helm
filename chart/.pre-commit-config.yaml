@@ -11,6 +11,7 @@ repos:
           RED="\033[0;31m"
           GREEN="\033[0;32m"
           YELLOW="\033[1;33m"
+          GREY="\033[90m"      
           NC="\033[0m"
           
           # Function to print colored output
@@ -26,6 +27,13 @@ repos:
               echo -e "${RED}[ERROR]${NC} $1"
           }
           
+          # helper to indent + grey any incoming stream
+          indent_grey() {
+              while IFS= read -r line; do
+                  echo -e "  ${GREY}${line}${NC}"
+              done
+          }
+
           # Check if Docker is installed
           if ! command -v docker &> /dev/null; then
               print_error "Docker is not installed. Please install Docker to use this pre-commit hook."
@@ -63,15 +71,14 @@ repos:
               "$IMAGE_NAME" \
               readme-generator \
               --readme README.md \
-              --values values.yaml; then
+              --values values.yaml 2>&1 | indent_grey; then
               
-              print_status "README.md generated successfully!"
+              print_warning "README.md has been updated!"
               
               # Check if README.md was actually modified
               if git diff --quiet "$README_FILE"; then
                   print_status "README.md is up to date."
               else
-                  print_warning "README.md has been updated!"
                   print_status "📝 Next steps:"
                   print_status "   1. Review changes: git diff $README_FILE"
                   print_status "   2. Stage the file: git add $README_FILE"
