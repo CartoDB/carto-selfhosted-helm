@@ -128,6 +128,8 @@ cartoConfigValues:
   featureFlagsOverrides: []
   ## @param cartoConfigValues.usePubSubRestApi Enable the usage of PubSub via REST API instead of gRPC.
   usePubSubRestApi: false
+  ## @param cartoConfigValues.enableLitellmEndpoint Enable the Litellm endpoint in the router.
+  enableLitellmEndpoint: false
 
 ## @section App secret
 ## Global secrets to be edited by the client
