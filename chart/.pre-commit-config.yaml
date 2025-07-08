@@ -71,8 +71,14 @@ repos:
               if git diff --quiet "$README_FILE"; then
                   print_status "README.md is up to date."
               else
-                  print_warning "README.md has been updated. Please review the changes and commit them."
-                  print_status "You can run \"git diff $README_FILE\" to see the changes."
+                  print_warning "README.md has been updated!"
+                  print_status "📝 Next steps:"
+                  print_status "   1. Review changes: git diff $README_FILE"
+                  print_status "   2. Stage the file: git add $README_FILE"
+                  print_status "   3. Commit again: git commit -m \"your message\""
+                  print_status ""
+                  print_status "The commit was blocked to ensure README changes are reviewed."
+                  exit 1
               fi
           else
               print_error "Failed to generate README.md. Please check the error messages above."
