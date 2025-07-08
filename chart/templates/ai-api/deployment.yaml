@@ -96,6 +96,11 @@ spec:
               exec node -r ./tsconfig-paths-bootstrap.js dist/app/index.js
           {{- end }}
           env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.redis.secretName" . }}
+                  key: {{ include "carto.redis.existingsecret.key" . | quote }}
             - name: WORKSPACE_POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
