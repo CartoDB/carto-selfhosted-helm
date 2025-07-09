@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 - Use 2 spaces for indentation, never tabs.
 - No trailing whitespace.

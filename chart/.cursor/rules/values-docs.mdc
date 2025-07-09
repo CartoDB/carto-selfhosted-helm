@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 - Every value in `values.yaml` must have a documentation comment (`## @param ...`) for README.md generation.
 - Keep parameter documentation up to date with any changes.

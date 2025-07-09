@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 - Always support both internal and external Redis deployments via values.yaml.
 - Never hardcode Redis passwords; use the secret association system.
