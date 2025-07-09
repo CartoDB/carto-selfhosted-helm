@@ -1,5 +1,10 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
+- Always support both internal and external Redis deployments via values.yaml.
+- Never hardcode Redis passwords; use the secret association system.
+- Ensure Redis password fallback logic is robust and documented.
+- Document all Redis-related values and secrets in README.md and values.yaml.
+- Validate that Redis secret management works for both internal and external modes.

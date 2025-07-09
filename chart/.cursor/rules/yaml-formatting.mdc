@@ -1,5 +1,7 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
+- Use 2 spaces for indentation, never tabs.
+- No trailing whitespace.
