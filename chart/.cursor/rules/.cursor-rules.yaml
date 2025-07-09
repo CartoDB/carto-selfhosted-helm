@@ -1,0 +1,66 @@
+rules:
+  - name: "YAML formatting"
+    applies_to: ["*.yaml", "*.yml"]
+    description: "YAML files must use 2 spaces for indentation, no tabs allowed."
+    check: |
+      grep -P '\t' {file} && echo "Tabs found in {file}" && exit 1 || exit 0
+
+  - name: "No hardcoded secrets"
+    applies_to: ["*.yaml", "*.tpl"]
+    description: "Do not commit hardcoded secrets, passwords, or tokens. Use the secret association system."
+    check: |
+      grep -E '(password:|secret:|token:).*[A-Za-z0-9]+' {file} && echo "Hardcoded secret found in {file}" && exit 1 || exit 0
+
+  - name: "Helm template syntax"
+    applies_to: ["chart/templates/**/*.yaml", "chart/templates/**/*.tpl"]
+    description: "Helm template files must use valid Go templating syntax."
+    check: |
+      grep -E '{{[^}]*}}' {file} || (echo "No Helm template syntax found in {file}" && exit 1)
+
+  - name: "No trailing whitespace"
+    applies_to: ["*.yaml", "*.tpl"]
+    description: "No trailing whitespace allowed."
+    check: |
+      grep -n '[[:blank:]]$' {file} && echo "Trailing whitespace found in {file}" && exit 1 || exit 0
+
+  - name: "README up to date"
+    applies_to: ["chart/values.yaml"]
+    description: "README.md must be updated if values.yaml changes."
+    check: |
+      git diff --name-only HEAD~1 | grep 'chart/values.yaml' && git diff --name-only HEAD~1 | grep 'chart/README.md' || (echo "README.md not updated with values.yaml changes" && exit 1)
+
+  - name: "Document all values.yaml parameters"
+    applies_to: ["chart/values.yaml"]
+    description: "Every value in values.yaml must have a documentation comment (## @param ...) for README.md generation."
+    check: |
+      grep -q '@param' {file} || (echo "Missing documentation comments for values.yaml parameters in {file}" && exit 1)
+
+  - name: "Use secret association system"
+    applies_to: ["chart/templates/**/*.yaml", "chart/templates/**/*.tpl"]
+    description: "All secret references must use the centralized secret association system (carto._utils.secretAssociation)."
+    check: |
+      grep -E 'secretKeyRef|existingSecret' {file} | grep -v 'carto._utils.secretAssociation' && echo "Direct secret reference found, use secret association system." && exit 1 || exit 0
+
+  - name: "Support external secrets"
+    applies_to: ["chart/templates/**/*.yaml", "chart/templates/**/*.tpl"]
+    description: "All secrets must support externalSecret references (external K8s secrets)."
+    check: |
+      grep -q 'existingSecret' {file} || (echo "No externalSecret support found in {file}" && exit 1)
+
+  - name: "Checksum annotations for config/secret changes"
+    applies_to: ["chart/templates/**/*.yaml"]
+    description: "All Deployments must include checksum annotations for config and secret changes to trigger rolling updates."
+    check: |
+      grep -q 'checksum/config:' {file} && grep -q 'checksum/secret:' {file} || (echo "Missing checksum annotations in {file}" && exit 1)
+
+  - name: "Principle of least privilege for secrets"
+    applies_to: ["chart/templates/**/*.yaml", "chart/templates/**/*.tpl"]
+    description: "Only inject the secrets each component actually needs. No bulk secret injection."
+    check: |
+      grep -q 'envFrom:' {file} && grep -q 'secretRef:' {file} && grep -q 'name:' {file} && echo "Check that only required secrets are injected in {file}" || exit 0
+
+  - name: "Document secret usage"
+    applies_to: ["chart/values.yaml", "chart/README.md"]
+    description: "All secrets and their usage must be documented in values.yaml and README.md."
+    check: |
+      grep -q 'cartoSecrets' {file} || grep -q 'appSecrets' {file} || (echo "No secret documentation found in {file}" && exit 1) 
