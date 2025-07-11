@@ -3,5 +3,219 @@ description:
 globs: 
 alwaysApply: true
 ---
-- Every value in `values.yaml` must have a documentation comment (`## @param ...`) for README.md generation.
-- Keep parameter documentation up to date with any changes.
+---
+title: "Values.yaml Documentation Standards"
+tags: ["helm", "documentation", "values", "readme"]
+description: "Comprehensive guidelines for documenting values.yaml parameters in CARTO Helm charts for automated README generation and user clarity"
+alwaysApply: true
+---
+
+# Values.yaml Documentation Standards
+
+## Documentation Comment Requirements
+
+### Parameter Documentation Format
+- **ALWAYS** use `## @param` comments for every value in `values.yaml` for automated README.md generation
+- Follow the exact format: `## @param path.to.parameter Description of the parameter`
+- Place documentation comments directly above the parameter they describe
+- Use clear, concise descriptions that explain the parameter's purpose and impact
+- Include default values and valid options when applicable
+
+### Documentation Comment Structure
+```yaml
+## @param component.enabled Enable/disable the component
+component:
+  enabled: true
+  
+## @param component.replicaCount Number of replicas for the component
+  replicaCount: 1
+  
+## @param component.image.repository Component container image repository
+## @param component.image.tag Component container image tag
+## @param component.image.pullPolicy Component container image pull policy
+  image:
+    repository: carto/component
+    tag: "latest"
+    pullPolicy: IfNotPresent
+```
+
+### Complex Parameter Documentation
+- For nested objects, document both the parent and child parameters
+- Use hierarchical descriptions that build context from parent to child
+- Include examples for complex configuration objects
+- Document relationships between related parameters
+
+## Documentation Categories and Patterns
+
+### Component Configuration Documentation
+- **Component Enable/Disable**: `## @param component.enabled Enable/disable [component name] component`
+- **Replica Count**: `## @param component.replicaCount Number of [component name] replicas`
+- **Image Configuration**: Document repository, tag, and pullPolicy separately
+- **Resource Limits**: `## @param component.resources.limits Resource limits for [component name]`
+- **Service Configuration**: Document service type, ports, and exposure settings
+
+### Secret and Configuration Documentation
+- **Secret Values**: `## @param cartoSecrets.secretName.value Direct value for [secret purpose]`
+- **External Secrets**: `## @param cartoSecrets.secretName.existingSecret.name Name of existing secret containing [secret purpose]`
+- **ConfigMap Values**: `## @param appConfigValues.parameter Configuration parameter for [specific purpose]`
+- **Environment Variables**: Document purpose and impact of each environment variable
+
+### Infrastructure Component Documentation
+- **Database Configuration**: Document host, port, credentials, and connection parameters
+- **Redis Configuration**: Document both internal and external Redis options
+- **Storage Configuration**: Document persistent volume settings and storage classes
+- **Network Configuration**: Document ingress, service mesh, and proxy settings
+
+## Documentation Best Practices
+
+### Description Writing Guidelines
+- Use active voice and present tense
+- Start with a verb when describing actions (e.g., "Enable", "Configure", "Set")
+- Be specific about the parameter's impact on the system
+- Include units for numeric values (e.g., "Memory limit in MB", "Timeout in seconds")
+- Mention dependencies and relationships with other parameters
+
+### Parameter Grouping and Organization
+- Group related parameters together with section comments
+- Use consistent naming patterns across similar components
+- Document parameter hierarchies clearly
+- Include examples for complex configurations
+- Separate required from optional parameters
+
+### Version and Compatibility Documentation
+- Document version-specific parameters and their compatibility
+- Include deprecation warnings for parameters being phased out
+- Document breaking changes and migration paths
+- Specify minimum required versions for certain features
+
+## Automated README Generation
+
+### README.md Generation Process
+- Use helm-readme-generator tool for automated documentation
+- Ensure all `@param` comments are properly formatted for parsing
+- Validate generated README.md for completeness and accuracy
+- Update README.md whenever values.yaml changes are made
+- Review generated documentation for clarity and usefulness
+
+### Pre-commit Hook Integration
+- Configure pre-commit hooks to validate documentation completeness
+- Automatically generate README.md when values.yaml changes
+- Fail CI/CD pipeline if documentation is missing or malformed
+- Provide clear error messages for documentation issues
+
+### Documentation Validation
+- Verify all parameters have corresponding `@param` comments
+- Check that parameter paths match actual values.yaml structure
+- Validate that descriptions are meaningful and helpful
+- Ensure examples and default values are accurate
+
+## Component-Specific Documentation Patterns
+
+### API Component Documentation
+```yaml
+## @param mapsApi.enabled Enable/disable Maps API component
+## @param mapsApi.replicaCount Number of Maps API replicas
+## @param mapsApi.image.repository Maps API container image repository
+## @param mapsApi.image.tag Maps API container image tag
+## @param mapsApi.resources.requests.memory Memory request for Maps API pods
+## @param mapsApi.resources.limits.memory Memory limit for Maps API pods
+```
+
+### Database Component Documentation
+```yaml
+## @param internalPostgresql.enabled Enable internal PostgreSQL deployment
+## @param internalPostgresql.auth.database PostgreSQL database name
+## @param internalPostgresql.auth.username PostgreSQL username
+## @param externalPostgresql.host External PostgreSQL host address
+## @param externalPostgresql.port External PostgreSQL port number
+```
+
+### Redis Component Documentation
+```yaml
+## @param internalRedis.enabled Enable internal Redis deployment
+## @param internalRedis.auth.enabled Enable Redis authentication
+## @param internalRedis.auth.password Redis authentication password
+## @param externalRedis.host External Redis host address
+## @param externalRedis.port External Redis port number
+```
+
+## Secret Documentation Standards
+
+### Secret Parameter Documentation
+- Document both direct values and external secret references
+- Explain the purpose and scope of each secret
+- Include security considerations and best practices
+- Document secret rotation and management procedures
+
+### Secret Documentation Examples
+```yaml
+## @param cartoSecrets.jwtApiSecret.value JWT API secret for authentication (leave empty to use existingSecret)
+## @param cartoSecrets.jwtApiSecret.existingSecret.name Name of existing secret containing JWT API secret
+## @param cartoSecrets.jwtApiSecret.existingSecret.key Key within existing secret containing JWT API secret
+```
+
+### Configuration vs Secret Documentation
+- Clearly distinguish between configuration and secret parameters
+- Document which parameters are sensitive and require protection
+- Explain the relationship between configuration and secret parameters
+- Provide guidance on production vs development configurations
+
+## Advanced Documentation Patterns
+
+### Conditional Parameter Documentation
+- Document parameters that are only relevant under certain conditions
+- Explain dependencies between parameters
+- Include conditional logic explanations
+- Document feature flag impacts on parameter usage
+
+### KOTS Integration Documentation
+- Document how parameters map to KOTS configuration options
+- Explain the relationship between Helm values and KOTS UI
+- Include KOTS-specific parameter requirements
+- Document Replicated channel and version dependencies
+
+### Migration and Upgrade Documentation
+- Document parameters that change between versions
+- Include migration paths for deprecated parameters
+- Explain breaking changes and their impact
+- Provide upgrade guidance for complex configurations
+
+## Documentation Maintenance
+
+### Regular Review Process
+- Review documentation during code reviews
+- Update documentation when parameter behavior changes
+- Validate documentation accuracy during testing
+- Keep documentation synchronized with implementation
+
+### Documentation Quality Checks
+- Verify all new parameters have documentation
+- Check that documentation matches actual parameter behavior
+- Ensure examples and default values are current
+- Validate that documentation is user-friendly and helpful
+
+### User Experience Considerations
+- Write documentation from the user's perspective
+- Include troubleshooting information for common issues
+- Provide examples for typical use cases
+- Explain the impact of parameter changes on system behavior
+
+## Documentation Tools and Automation
+
+### Helm Documentation Tools
+- Use helm-readme-generator for automated README generation
+- Configure documentation templates for consistent formatting
+- Implement validation tools for documentation completeness
+- Integrate documentation generation into CI/CD pipelines
+
+### Documentation Validation Scripts
+- Create scripts to validate @param comment completeness
+- Check for orphaned parameters without documentation
+- Verify parameter path accuracy
+- Validate documentation formatting and structure
+
+### Integration with Development Workflow
+- Include documentation checks in pull request reviews
+- Automatically generate documentation previews
+- Provide feedback on documentation quality
+- Ensure documentation updates are part of feature development

@@ -3,8 +3,197 @@ description:
 globs: 
 alwaysApply: true
 ---
-- Always support both internal and external Redis deployments via values.yaml.
-- Never hardcode Redis passwords; use the secret association system.
-- Ensure Redis password fallback logic is robust and documented.
-- Document all Redis-related values and secrets in README.md and values.yaml.
-- Validate that Redis secret management works for both internal and external modes.
+---
+title: "Redis Best Practices for CARTO Helm Chart"
+tags: ["redis", "helm", "database", "caching"]
+description: "Comprehensive Redis configuration and management guidelines for CARTO Self-Hosted Helm chart following internal Redis implementation patterns"
+alwaysApply: true
+---
+
+# Redis Best Practices for CARTO Helm Chart
+
+## Redis Architecture and Deployment Patterns
+
+### Internal vs External Redis Configuration
+- **ALWAYS** support both internal and external Redis deployments via values.yaml configuration
+- Use `internalRedis.enabled` and `externalRedis.enabled` flags to control Redis deployment mode
+- Internal Redis creates Kubernetes Deployment, Service, and Secret resources within the cluster
+- External Redis references existing Redis instances outside the cluster
+- **NEVER** enable both internal and external Redis simultaneously - implement proper validation
+
+### Redis Image and Container Management
+- Use CARTO's custom Redis image from the cloud-native repository
+- Reference Redis image via `carto.redis.image` helper function in `_helpers.tpl`
+- Support image registry overrides for air-gapped environments
+- Mount `/tmp` as `emptyDir` for Redis temporary files, sentinel, and debugging operations
+- Mount `/data` as `emptyDir` to comply with Redis Docker image default directory structure
+
+### Redis Service Configuration
+- Deploy Redis as `ClusterIP` service by default for internal cluster communication
+- Use port `6379` as the standard Redis port
+- Label Redis service with `app.kubernetes.io/component: redis` for proper identification
+- Support `LoadBalancer` service type for external access when needed
+- Implement proper service discovery using helper functions
+
+## Redis Authentication and Security
+
+### Password Management
+- **NEVER** hardcode Redis passwords in templates or configuration files
+- Use the centralized secret association system for Redis password management
+- Support both direct password values and external secret references
+- Implement robust password fallback logic with proper error handling
+- Pattern: `cartoSecrets.redisPassword.value` or `cartoSecrets.redisPassword.existingSecret`
+
+### Secret Generation and Management
+- Generate Redis secrets automatically when direct values are provided
+- Reference external secrets when `existingSecret.name` and `existingSecret.key` are configured
+- Use `carto.redis.secretName` helper function for consistent secret naming
+- Implement `carto.redis.passwordChecksum` for automatic pod restarts on password changes
+- Base64 encode password values in generated Kubernetes secrets
+
+### Authentication Configuration
+- Enable Redis authentication with `requirepass` when `internalRedis.auth.enabled: true`
+- Pass `REDIS_PASSWORD` environment variable to Redis container from secret
+- Validate authentication configuration during deployment
+- Support password rotation through checksum-based pod restarts
+
+## Redis Connection and Helper Functions
+
+### Connection Helper Functions
+- Use `carto.redis.host` helper function for consistent Redis host resolution
+- Implement `carto.redis.port` helper for Redis port configuration
+- Create `carto.redis.secretName` helper for secret name resolution
+- Support both internal service names and external host configurations
+- Pattern: `{{ include "carto.redis.host" . }}:{{ include "carto.redis.port" . }}`
+
+### Service Discovery Patterns
+- Internal Redis: Use Kubernetes service DNS names for connection
+- External Redis: Use configured external host and port values
+- Implement connection string builders for complex Redis configurations
+- Support Redis Sentinel configurations for high availability setups
+- Validate connection parameters during template rendering
+
+### Environment Variable Injection
+- Use `CARTO_REDIS_HOST` and `CARTO_REDIS_PORT` environment variables consistently
+- Inject Redis password via `REDIS_PASSWORD` environment variable from secrets
+- Support Redis database selection with `REDIS_DB` environment variable
+- Implement Redis connection timeout and retry configurations
+- Use `envFrom` pattern for bulk Redis configuration loading
+
+## Redis Deployment and Resource Management
+
+### Resource Configuration
+- Define appropriate CPU and memory limits for Redis containers
+- Configure resource requests based on expected Redis workload
+- Support resource overrides through values.yaml configuration
+- Implement proper resource quotas for Redis deployments
+- Monitor Redis memory usage and configure `maxmemory` settings appropriately
+
+### High Availability and Scaling
+- Support Redis clustering for high availability deployments
+- Implement Redis Sentinel for automatic failover capabilities
+- Configure anti-affinity rules to distribute Redis instances across nodes
+- Support Redis read replicas for read-heavy workloads
+- Implement proper backup and restore mechanisms for Redis data
+
+### Persistence and Data Management
+- Mount `/data` volume for Redis persistence when required
+- Support persistent volumes for Redis data in production environments
+- Configure Redis RDB and AOF persistence options
+- Implement proper data backup strategies for Redis
+- Handle Redis data migration during upgrades
+
+## Redis Monitoring and Troubleshooting
+
+### Health Checks and Probes
+- Implement liveness probes for Redis container health monitoring
+- Configure readiness probes to ensure Redis is ready to accept connections
+- Use startup probes for Redis initialization validation
+- Set appropriate probe timeouts and failure thresholds
+- Monitor Redis connection pool status and performance
+
+### Logging and Debugging
+- Configure Redis logging levels appropriately for environment
+- Use structured logging for Redis operations and errors
+- Implement Redis slow query logging for performance monitoring
+- Support Redis debug mode for troubleshooting connection issues
+- Monitor Redis key expiration and memory usage patterns
+
+### Performance Optimization
+- Configure Redis `maxmemory` settings based on available resources
+- Implement Redis key eviction policies for memory management
+- Monitor Redis command execution times and optimize slow operations
+- Configure Redis connection pooling for efficient resource usage
+- Implement Redis pipelining for bulk operations
+
+## Redis Configuration Best Practices
+
+### Values.yaml Structure
+- Group Redis configuration under `internalRedis` and `externalRedis` sections
+- Provide sensible defaults for Redis configuration parameters
+- Support environment-specific Redis configuration overrides
+- Document all Redis configuration options with clear descriptions
+- Implement validation for Redis configuration parameters
+
+### Template Organization
+- Separate Redis templates into dedicated directory: `redis/deployment.yaml`, `redis/service.yaml`, `redis/secret.yaml`
+- Use conditional rendering based on `internalRedis.enabled` flag
+- Implement proper template dependencies and ordering
+- Support Redis configuration through ConfigMaps when needed
+- Maintain consistency with other component template patterns
+
+### Migration and Upgrade Strategies
+- Support migration from Bitnami Redis to internal Redis implementation
+- Implement backward compatibility for existing Redis configurations
+- Provide clear upgrade paths for Redis version changes
+- Support Redis data migration during chart upgrades
+- Validate Redis compatibility during deployment
+
+## Redis Integration Patterns
+
+### Component Integration
+- Use consistent Redis connection patterns across all components
+- Implement Redis connection pooling for efficient resource usage
+- Support Redis database separation for different components
+- Configure Redis key prefixes for component isolation
+- Implement Redis connection retry logic with exponential backoff
+
+### Caching Strategies
+- Use Redis for HTTP response caching in `http-cache` component
+- Implement session storage using Redis for stateful applications
+- Configure Redis TTL settings for different data types
+- Support Redis pub/sub for real-time communication between components
+- Implement Redis-based rate limiting for API endpoints
+
+### Data Consistency
+- Implement proper Redis transaction handling for data consistency
+- Use Redis atomic operations for critical data updates
+- Configure Redis persistence settings for data durability
+- Implement Redis backup and restore procedures
+- Monitor Redis data integrity and consistency
+
+## Troubleshooting and Validation
+
+### Common Redis Issues
+- **Connection refused**: Verify Redis service is running and accessible
+- **Authentication failed**: Check Redis password configuration and secret references
+- **Memory issues**: Monitor Redis memory usage and configure appropriate limits
+- **Performance problems**: Analyze Redis slow query logs and optimize operations
+- **Pod restart loops**: Verify Redis configuration and resource limits
+
+### Validation Checklist
+- [ ] Redis password is managed through secret association system
+- [ ] Both internal and external Redis modes are supported
+- [ ] Redis helper functions are used consistently
+- [ ] Resource limits and requests are configured appropriately
+- [ ] Health checks and probes are implemented
+- [ ] Checksum annotations trigger pod restarts on configuration changes
+- [ ] Redis service discovery works correctly
+- [ ] Authentication is properly configured and tested
+
+### Testing Strategies
+- Test Redis deployment in both internal and external modes
+- Validate Redis password rotation and secret management
+- Verify Redis connection from all dependent components
+- Test Redis failover and recovery scenarios
+- Validate Redis performance under expected load conditions

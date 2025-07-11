@@ -3,5 +3,323 @@ description:
 globs: 
 alwaysApply: true
 ---
-- Use 2 spaces for indentation, never tabs.
-- No trailing whitespace.
+---
+title: "YAML Formatting Standards for CARTO Helm Charts"
+tags: ["yaml", "formatting", "helm", "style"]
+description: "Comprehensive YAML formatting and style guidelines for CARTO Helm charts ensuring consistency, readability, and maintainability"
+alwaysApply: true
+---
+
+# YAML Formatting Standards for CARTO Helm Charts
+
+## Basic YAML Formatting Rules
+
+### Indentation and Spacing
+- **ALWAYS** use 2 spaces for indentation, never tabs
+- Use consistent indentation throughout all YAML files
+- Align nested elements properly with their parent elements
+- Use spaces around colons and after commas in inline arrays/objects
+- **NEVER** use trailing whitespace at the end of lines
+
+### Line Length and Wrapping
+- Keep lines under 120 characters when possible
+- Break long lines at logical points (after commas, before operators)
+- Use multi-line YAML constructs for complex values
+- Indent continuation lines appropriately
+- Use block scalar styles for long text values
+
+### File Structure and Organization
+- Start each YAML file with `---` document separator when appropriate
+- End files with a single newline character
+- Group related sections together with blank lines for readability
+- Use consistent ordering of keys within similar objects
+- Place comments before the elements they describe
+
+## Helm Template Formatting
+
+### Template Directive Formatting
+- Use consistent spacing around template directives: `{{ .Values.component.enabled }}`
+- Align template conditionals and loops for readability
+- Use proper indentation for nested template blocks
+- Break complex template expressions across multiple lines
+- Use meaningful whitespace to separate template logic
+
+### Template Conditional Formatting
+```yaml
+{{- if .Values.component.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "carto.component.fullname" . }}
+{{- end }}
+```
+
+### Template Loop Formatting
+```yaml
+{{- range .Values.component.extraEnvVars }}
+- name: {{ .name }}
+  value: {{ .value | quote }}
+{{- end }}
+```
+
+### Helper Function Calls
+- Use consistent formatting for helper function calls
+- Align parameters when calling functions with multiple arguments
+- Use proper indentation for nested function calls
+- Break complex function calls across multiple lines for readability
+
+## Kubernetes Manifest Formatting
+
+### Resource Definition Structure
+- Follow consistent ordering of Kubernetes resource fields
+- Group related fields together (metadata, spec, status)
+- Use proper indentation for nested resource specifications
+- Align array elements consistently
+- Use meaningful names for resources and labels
+
+### Standard Field Ordering
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "carto.component.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "carto.component.labels" . | nindent 4 }}
+  annotations:
+    {{- include "carto.component.annotations" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.component.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "carto.component.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "carto.component.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: {{ include "carto.component.image" . }}
+```
+
+### Container and Pod Specifications
+- Use consistent indentation for container specifications
+- Align environment variables and volume mounts
+- Group related container settings together
+- Use proper formatting for resource limits and requests
+- Align port definitions and health check configurations
+
+## Values.yaml Formatting
+
+### Configuration Structure
+- Group related configuration values together
+- Use consistent naming conventions for similar parameters
+- Align values at the same indentation level
+- Use meaningful section comments to organize configuration
+- Maintain consistent ordering across similar components
+
+### Component Configuration Pattern
+```yaml
+## Component Configuration
+component:
+  enabled: true
+  replicaCount: 1
+  
+  ## Image Configuration
+  image:
+    repository: carto/component
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  
+  ## Resource Configuration
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+  
+  ## Service Configuration
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+```
+
+### Secret and Configuration Values
+- Use consistent formatting for secret configurations
+- Align secret values and external secret references
+- Group platform secrets separately from component secrets
+- Use proper indentation for nested secret objects
+- Maintain consistent ordering of secret parameters
+
+## Comment and Documentation Formatting
+
+### Inline Comments
+- Use `#` for inline comments with a space after the hash
+- Align comments consistently when used in blocks
+- Keep comments concise and meaningful
+- Use comments to explain complex logic or non-obvious configurations
+- Avoid redundant comments that simply restate the obvious
+
+### Documentation Comments
+- Use `## @param` format for parameter documentation
+- Align documentation comments with the parameters they describe
+- Use consistent formatting for all documentation comments
+- Include clear descriptions and examples when helpful
+- Group related documentation comments together
+
+### Section Comments
+```yaml
+##
+## Component Configuration
+##
+component:
+  enabled: true
+
+##
+## Database Configuration
+##
+database:
+  host: localhost
+```
+
+## Advanced YAML Formatting Patterns
+
+### Multi-line String Formatting
+- Use `|` (literal) for multi-line strings that preserve line breaks
+- Use `>` (folded) for multi-line strings that fold line breaks
+- Use `|-` or `>-` to strip trailing newlines
+- Indent multi-line string content consistently
+- Use appropriate scalar styles for different content types
+
+### Array and Object Formatting
+- Use consistent formatting for arrays (flow vs block style)
+- Align array elements at the same indentation level
+- Use block style for complex nested objects
+- Use flow style for simple arrays and objects
+- Maintain consistent spacing in flow-style constructs
+
+### Complex Value Formatting
+```yaml
+# Block style for complex objects
+envVars:
+  - name: DATABASE_URL
+    value: "postgresql://user:pass@host:5432/db"
+  - name: REDIS_URL
+    value: "redis://host:6379"
+
+# Flow style for simple arrays
+ports: [8080, 8443, 9090]
+
+# Mixed style when appropriate
+resources:
+  limits: {memory: "512Mi", cpu: "500m"}
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+```
+
+## Template-Specific Formatting
+
+### Conditional Rendering
+- Use consistent indentation for conditional blocks
+- Align `if`, `else`, and `end` statements
+- Use proper whitespace control with `{{-` and `-}}`
+- Break complex conditions across multiple lines
+- Use meaningful variable names in conditions
+
+### Loop and Range Formatting
+- Use consistent formatting for range loops
+- Align loop variables and content
+- Use proper indentation for nested loops
+- Break complex loop expressions across multiple lines
+- Use meaningful variable names in loops
+
+### Include and Template Calls
+- Use consistent formatting for include statements
+- Align template parameters when multiple are used
+- Use proper indentation for nested template calls
+- Break complex template expressions for readability
+- Use meaningful names for template variables
+
+## File Organization and Structure
+
+### Directory Structure
+- Organize templates in logical directories by component
+- Use consistent naming conventions for template files
+- Group related templates together
+- Maintain parallel structure across similar components
+- Use descriptive file names that indicate purpose
+
+### Template File Structure
+```yaml
+{{/*
+Template Description and Usage
+*/}}
+{{- if .Values.component.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "carto.component.fullname" . }}
+  # ... metadata configuration
+spec:
+  # ... specification configuration
+{{- end }}
+```
+
+### Helper Template Organization
+- Group related helper templates together
+- Use consistent naming conventions for helpers
+- Document helper template parameters and usage
+- Organize helpers by functionality or component
+- Use meaningful names that indicate helper purpose
+
+## Validation and Quality Assurance
+
+### YAML Syntax Validation
+- Use YAML linters to validate syntax and formatting
+- Configure linters to enforce consistent style rules
+- Validate template rendering with different value combinations
+- Check for common YAML formatting issues
+- Ensure all YAML files are well-formed and parseable
+
+### Template Validation
+- Validate Helm templates with `helm template` command
+- Test template rendering with various value configurations
+- Check for template syntax errors and warnings
+- Validate generated Kubernetes manifests
+- Ensure templates produce valid YAML output
+
+### Style Consistency Checks
+- Use automated tools to check formatting consistency
+- Implement pre-commit hooks for YAML formatting
+- Review formatting during code reviews
+- Maintain style guides and documentation
+- Train team members on formatting standards
+
+## Tools and Automation
+
+### YAML Formatting Tools
+- Use `yamllint` for YAML syntax and style checking
+- Configure `prettier` or similar tools for automatic formatting
+- Use `helm lint` for Helm-specific validation
+- Implement automated formatting in CI/CD pipelines
+- Use editor plugins for real-time formatting feedback
+
+### CI/CD Integration
+- Include YAML formatting checks in pull request validation
+- Automatically format YAML files when possible
+- Fail builds on formatting violations
+- Provide clear feedback on formatting issues
+- Integrate formatting tools with development workflow
+
+### Development Environment Setup
+- Configure editors with YAML formatting plugins
+- Set up consistent indentation and formatting rules
+- Use syntax highlighting for better readability
+- Configure automatic formatting on save
+- Provide team-wide editor configuration files
