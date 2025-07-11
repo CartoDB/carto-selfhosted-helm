@@ -34,6 +34,7 @@ data:
   ROUTER_SSL_CERTIFICATE_PATH: /usr/src/certs/{{ template "carto.tlsCerts.secretCertKey" . }}
   ROUTER_WORKSPACE_API_INTERNAL_URL: {{ include "carto.workspaceApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_WORKSPACE_WWW_INTERNAL_URL: {{ include "carto.workspaceWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+  ROUTER_AI_API_INTERNAL_URL: {{ include "carto.aiApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_ENABLE_HTTPS: {{ .Values.tlsCerts.httpsEnabled | quote }}
   ROUTER_METRICS_PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   ROUTER_METRICS_PUBSUB_TOPIC: "data-updates"

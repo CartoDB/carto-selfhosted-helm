@@ -1,0 +1,41 @@
+{{- if not .Values.litellm.existingConfigMap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "carto.litellm.fullname" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: litellm
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  PORT: {{ .Values.litellm.containerPorts.http | quote }}
+  LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
+  CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
+  {{- if eq .Values.appConfigValues.logLevel "debug" }}
+  CARTO_TRACING_MODE: "local"
+  {{- end }}
+  # Redis Configuration
+  REDIS_HOST: {{ include "carto.redis.host" . }}
+  REDIS_PORT: {{ include "carto.redis.port" . }}
+  REDIS_DB: "1"
+  # Database Configuration
+  DATABASE_URL: "postgresql://{{ include "carto.postgresql.user" . }}:@{{ include "carto.postgresql.host" . }}:{{ include "carto.postgresql.port" . }}/litellm"
+  # LiteLLM Configuration
+  LITELLM_UPPER_BOUND_KEY_GENERATE_PARAMS: "max_completion_tokens,max_tokens,max_output_tokens"
+  LITELLM_LOWER_BOUND_KEY_GENERATE_PARAMS: "max_completion_tokens,max_tokens,max_output_tokens"
+  LITELLM_LOG: "INFO"
+  LITELLM_MASTER_KEY: "sk-1234"
+  LITELLM_SALT_KEY: "sk-1234"
+  {{- if .Values.externalProxy.enabled }}
+  HTTPS_PROXY: {{ include "carto.proxy.computedConnectionString" . }}
+  HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . }}
+  {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
+  NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }} 

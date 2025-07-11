@@ -1,0 +1,35 @@
+{{- if .Values.aiApi.autoscaling.enabled }}
+apiVersion: {{ include "common.capabilities.hpa.apiVersion" . }}
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "carto.aiApi.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: ai-api
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  scaleTargetRef:
+    apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+    kind: Deployment
+    name: {{ template "carto.aiApi.fullname" . }}
+  minReplicas: {{ .Values.aiApi.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.aiApi.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.aiApi.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.aiApi.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.aiApi.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.aiApi.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }} 

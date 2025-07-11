@@ -406,6 +406,26 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: "redis-password"
+  ## @extra cartoSecrets.litellmLicense The license key for LiteLLM service.
+  litellmLicense:
+    ## @param cartoSecrets.litellmLicense.value Value of the secret used to define the license key for LiteLLM service. One of `cartoSecrets.litellmLicense.value` or `cartoSecrets.litellmLicense.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.litellmLicense.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.litellmLicense.existingSecret.key`. If `cartoSecrets.litellmLicense.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.litellmLicense.existingSecret.key Key to find in `cartoSecrets.litellmLicense.existingSecret.name` where the value of `cartoSecrets.litellmLicense` is found. If `cartoSecrets.litellmLicense.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra cartoSecrets.geminiApiKey The API key for Google Gemini model.
+  geminiApiKey:
+    ## @param cartoSecrets.geminiApiKey.value Value of the secret used to define the API key for Google Gemini model. One of `cartoSecrets.geminiApiKey.value` or `cartoSecrets.geminiApiKey.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.geminiApiKey.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.geminiApiKey.existingSecret.key`. If `cartoSecrets.geminiApiKey.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.geminiApiKey.existingSecret.key Key to find in `cartoSecrets.geminiApiKey.existingSecret.name` where the value of `cartoSecrets.geminiApiKey` is found. If `cartoSecrets.geminiApiKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
 ## FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 ## @section TLS parameters
 ## Global TLS parameters
@@ -5403,3 +5423,633 @@ gateway:
     type: NamedAddress
   ## @param gateway.annotations Additional annotations for the gateway resource.
   annotations: {}
+
+## @section ai-api Deployment Parameters
+##
+aiApi:
+  ## ai-api image
+  ## @param aiApi.image.registry ai-api image registry
+  ## @param aiApi.image.repository ai-api image repository
+  ## @param aiApi.image.tag ai-api image tag (immutable tags are recommended)
+  ## @param aiApi.image.pullPolicy ai-api image pull policy
+  ## @param aiApi.image.pullSecrets ai-api image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: ai-api
+    ## Specify a custom image tag
+    tag: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param aiApi.replicaCount Number of ai-api replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param aiApi.containerPorts.http ai-api HTTP container port
+  ##
+  containerPorts:
+    http: 3000
+  ## @param aiApi.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeProcessMaxOldSpacePercentage: 75
+  ## @param aiApi.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  defaultNodeProcessMaxOldSpace: 512
+  ## Configure extra options for ai-api containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param aiApi.livenessProbe.enabled Enable livenessProbe on ai-api containers
+  ## @param aiApi.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param aiApi.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param aiApi.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param aiApi.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param aiApi.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param aiApi.readinessProbe.enabled Enable readinessProbe on ai-api containers
+  ## @param aiApi.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param aiApi.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param aiApi.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param aiApi.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param aiApi.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param aiApi.startupProbe.enabled Enable startupProbe on ai-api containers
+  ## @param aiApi.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param aiApi.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param aiApi.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param aiApi.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param aiApi.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param aiApi.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param aiApi.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param aiApi.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## ai-api autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param aiApi.autoscaling.enabled Enable autoscaling for the ai-api containers
+  ## @param aiApi.autoscaling.minReplicas The minimal number of containers for the ai-api deployment
+  ## @param aiApi.autoscaling.maxReplicas The maximum number of containers for the ai-api deployment
+  ## @param aiApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in ai-api deployment
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 75
+  ## ai-api resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param aiApi.resources.limits.memory Container memory limits in MiB
+  ## @param aiApi.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param aiApi.resources.requests.memory Container memory requests in MiB
+  ## @param aiApi.resources.requests.cpu Container cpu requests in milliCPU cores
+  ##
+  resources:
+    limits:
+      memory: "680Mi"
+      cpu: "500m"
+    requests:
+      memory: "384Mi"
+      cpu: "200m"
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param aiApi.podSecurityContext.enabled Enabled ai-api pods' Security Context
+  ## @param aiApi.podSecurityContext.fsGroup Set ai-api pod's Security Context fsGroup
+  ## @param aiApi.podSecurityContext.supplementalGroups[0] Set ai-api pod's Security Context supplementalGroups
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1000
+    supplementalGroups: [2345]
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param aiApi.containerSecurityContext.enabled Enabled ai-api containers' Security Context
+  ## @param aiApi.containerSecurityContext.runAsUser Set ai-api containers' Security Context runAsUser
+  ## @param aiApi.containerSecurityContext.runAsGroup Set ai-api containers' Security Context runAsGroup
+  ## @param aiApi.containerSecurityContext.runAsNonRoot Set ai-api containers' Security Context runAsNonRoot
+  ## @param aiApi.containerSecurityContext.allowPrivilegeEscalation Set ai-api containers' Security Context allowPrivilegeEscalation
+  ## @param aiApi.containerSecurityContext.readOnlyRootFilesystem Set ai-api containers' Security Context readOnlyRootFilesystem
+  ## @param aiApi.containerSecurityContext.capabilities.drop removes ai-api containers' Security Context capabilities
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
+  ## @param aiApi.podDisruptionBudget.enabled defines disruption budget for ai-api
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
+  ## @param aiApi.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 60
+  ## @param aiApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for ai-api
+  ##
+  existingConfigMap: ""
+  ## @param aiApi.existingSecret The name of an existing ConfigMap with your custom configuration for ai-api
+  ##
+  existingSecret: ""
+  ## @param aiApi.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param aiApi.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param aiApi.hostAliases ai-api pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param aiApi.podLabels Extra labels for ai-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param aiApi.podAnnotations Annotations for ai-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param aiApi.podAffinityPreset Pod affinity preset. Ignored if `aiApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param aiApi.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `aiApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node aiApi.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param aiApi.nodeAffinityPreset.type Node affinity preset type. Ignored if `aiApi.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param aiApi.nodeAffinityPreset.key Node label key to match. Ignored if `aiApi.affinity` is set
+    ##
+    key: ""
+    ## @param aiApi.nodeAffinityPreset.values Node label values to match. Ignored if `aiApi.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param aiApi.affinity Affinity for ai-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `aiApi.podAffinityPreset`, `aiApi.podAntiAffinityPreset`, and `aiApi.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param aiApi.nodeSelector Node labels for ai-api pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param aiApi.tolerations Tolerations for ai-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param aiApi.updateStrategy.type ai-api deployment strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ##
+  updateStrategy:
+    ## StrategyType
+    ##
+    type: RollingUpdate
+  ## @param aiApi.priorityClassName ai-api pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param aiApi.schedulerName Name of the k8s scheduler (other than default) for ai-api pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param aiApi.lifecycleHooks for the ai-api container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param aiApi.extraEnvVars Array with extra environment variables to add to ai-api nodes ([More info](#additional-environment-variables))
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param aiApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for ai-api nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsCM: ""
+  ## @param aiApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for ai-api nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsSecret: ""
+  ## @param aiApi.extraVolumes Optionally specify extra list of additional volumes for the ai-api pod(s)
+  ##
+  extraVolumes: []
+  ## @param aiApi.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the ai-api container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param aiApi.sidecars Add additional sidecar containers to the ai-api pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param aiApi.initContainers Add additional init containers to the ai-api pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section ai-api Service Parameters
+  ##
+  ##
+  service:
+    ## @param aiApi.service.type ai-api service type
+    ##
+    type: ClusterIP
+    ## @param aiApi.service.ports.http ai-api service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node ports to expose
+    ## @param aiApi.service.nodePorts.http Node port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param aiApi.service.clusterIP ai-api service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param aiApi.service.loadBalancerIP ai-api service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param aiApi.service.labelSelectorsOverride Selector for ai-api service
+    ##
+    labelSelectorsOverride: {}
+    ## @param aiApi.service.loadBalancerSourceRanges ai-api service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param aiApi.service.externalTrafficPolicy ai-api service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param aiApi.service.annotations Additional custom annotations for ai-api service
+    ##
+    annotations: {}
+    ## @param aiApi.service.extraPorts Extra ports to expose in ai-api service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+
+## @section litellm Deployment Parameters
+##
+litellm:
+  ## litellm image
+  ## @param litellm.image.registry litellm image registry
+  ## @param litellm.image.repository litellm image repository
+  ## @param litellm.image.tag litellm image tag (immutable tags are recommended)
+  ## @param litellm.image.pullPolicy litellm image pull policy
+  ## @param litellm.image.pullSecrets litellm image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: litellm
+    ## Specify a custom image tag
+    tag: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param litellm.replicaCount Number of litellm replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param litellm.containerPorts.http litellm HTTP container port
+  ##
+  containerPorts:
+    http: 4000
+  ## Configure extra options for litellm containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param litellm.livenessProbe.enabled Enable livenessProbe on litellm containers
+  ## @param litellm.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param litellm.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param litellm.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param litellm.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param litellm.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 10
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param litellm.readinessProbe.enabled Enable readinessProbe on litellm containers
+  ## @param litellm.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param litellm.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param litellm.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param litellm.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param litellm.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 10
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param litellm.startupProbe.enabled Enable startupProbe on litellm containers
+  ## @param litellm.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param litellm.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param litellm.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param litellm.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param litellm.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 10
+    successThreshold: 1
+    failureThreshold: 30
+  ## @param litellm.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param litellm.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param litellm.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## litellm resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param litellm.resources.limits.memory Container memory limits in MiB
+  ## @param litellm.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param litellm.resources.requests.memory Container memory requests in MiB
+  ## @param litellm.resources.requests.cpu Container cpu requests in milliCPU cores
+  ##
+  resources:
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+    requests:
+      memory: "256Mi"
+      cpu: "200m"
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param litellm.podSecurityContext.enabled Enabled litellm pods' Security Context
+  ## @param litellm.podSecurityContext.fsGroup Set litellm pod's Security Context fsGroup
+  ## @param litellm.podSecurityContext.supplementalGroups[0] Set litellm pod's Security Context supplementalGroups
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1000
+    supplementalGroups: [2345]
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param litellm.containerSecurityContext.enabled Enabled litellm containers' Security Context
+  ## @param litellm.containerSecurityContext.runAsUser Set litellm containers' Security Context runAsUser
+  ## @param litellm.containerSecurityContext.runAsGroup Set litellm containers' Security Context runAsGroup
+  ## @param litellm.containerSecurityContext.runAsNonRoot Set litellm containers' Security Context runAsNonRoot
+  ## @param litellm.containerSecurityContext.allowPrivilegeEscalation Set litellm containers' Security Context allowPrivilegeEscalation
+  ## @param litellm.containerSecurityContext.readOnlyRootFilesystem Set litellm containers' Security Context readOnlyRootFilesystem
+  ## @param litellm.containerSecurityContext.capabilities.drop removes litellm containers' Security Context capabilities
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
+  ## @param litellm.podDisruptionBudget.enabled defines disruption budget for litellm
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
+  ## @param litellm.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 60
+  ## @param litellm.existingConfigMap The name of an existing ConfigMap with your custom configuration for litellm
+  ##
+  existingConfigMap: ""
+  ## @param litellm.existingSecret The name of an existing ConfigMap with your custom configuration for litellm
+  ##
+  existingSecret: ""
+  ## @param litellm.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param litellm.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param litellm.hostAliases litellm pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param litellm.podLabels Extra labels for litellm pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param litellm.podAnnotations Annotations for litellm pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param litellm.podAffinityPreset Pod affinity preset. Ignored if `litellm.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param litellm.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `litellm.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node litellm.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param litellm.nodeAffinityPreset.type Node affinity preset type. Ignored if `litellm.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param litellm.nodeAffinityPreset.key Node label key to match. Ignored if `litellm.affinity` is set
+    ##
+    key: ""
+    ## @param litellm.nodeAffinityPreset.values Node label values to match. Ignored if `litellm.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param litellm.affinity Affinity for litellm pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `litellm.podAffinityPreset`, `litellm.podAntiAffinityPreset`, and `litellm.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param litellm.nodeSelector Node labels for litellm pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param litellm.tolerations Tolerations for litellm pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param litellm.updateStrategy.type litellm deployment strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  ##
+  updateStrategy:
+    ## StrategyType
+    ##
+    type: RollingUpdate
+  ## @param litellm.priorityClassName litellm pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param litellm.schedulerName Name of the k8s scheduler (other than default) for litellm pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param litellm.lifecycleHooks for the litellm container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param litellm.extraEnvVars Array with extra environment variables to add to litellm nodes ([More info](#additional-environment-variables))
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param litellm.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for litellm nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsCM: ""
+  ## @param litellm.extraEnvVarsSecret Name of existing Secret containing extra env vars for litellm nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsSecret: ""
+  ## @param litellm.extraVolumes Optionally specify extra list of additional volumes for the litellm pod(s)
+  ##
+  extraVolumes: []
+  ## @param litellm.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the litellm container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param litellm.sidecars Add additional sidecar containers to the litellm pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param litellm.initContainers Add additional init containers to the litellm pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section litellm Service Parameters
+  ##
+  ##
+  service:
+    ## @param litellm.service.type litellm service type
+    ##
+    type: ClusterIP
+    ## @param litellm.service.ports.http litellm service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node ports to expose
+    ## @param litellm.service.nodePorts.http Node port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param litellm.service.clusterIP litellm service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param litellm.service.loadBalancerIP litellm service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param litellm.service.labelSelectorsOverride Selector for litellm service
+    ##
+    labelSelectorsOverride: {}
+    ## @param litellm.service.loadBalancerSourceRanges litellm service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param litellm.service.externalTrafficPolicy litellm service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param litellm.service.annotations Additional custom annotations for litellm service
+    ##
+    annotations: {}
+    ## @param litellm.service.extraPorts Extra ports to expose in litellm service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []

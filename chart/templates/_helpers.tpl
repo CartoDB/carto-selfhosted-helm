@@ -77,6 +77,9 @@ WORKSPACE_JWT_SECRET: cartoSecrets.jwtApiSecret
 WORKSPACE_THUMBNAILS_ACCESSKEYID: appSecrets.awsAccessKeyId
 WORKSPACE_THUMBNAILS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
+LITELLM_LICENSE: cartoSecrets.litellmLicense
+GEMINI_API_KEY: cartoSecrets.geminiApiKey
+AI_API_JWT_SECRET: cartoSecrets.jwtApiSecret
 {{- end -}}
 
 {{/*
@@ -1321,4 +1324,94 @@ Return the list of overridden feature flags as a comma-separated string
 {{- end -}}
 {{- $nameList := join "," $ffNames -}}
 {{- $nameList -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto ai-api full name
+*/}}
+{{- define "carto.aiApi.fullname" -}}
+{{- printf "%s-ai-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto ai-api image name
+*/}}
+{{- define "carto.aiApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.aiApi.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto ai-api ConfigMap name
+*/}}
+{{- define "carto.aiApi.configmapName" -}}
+{{- if .Values.aiApi.existingConfigMap -}}
+{{- .Values.aiApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.aiApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto ai-api Secret name
+*/}}
+{{- define "carto.aiApi.secretName" -}}
+{{- if .Values.aiApi.existingSecret -}}
+{{- .Values.aiApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.aiApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return Carto ai-api node options
+*/}}
+{{- define "carto.aiApi.nodeOptions" -}}
+{{- if eq (.Values.aiApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.aiApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.aiApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- else -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.aiApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto litellm full name
+*/}}
+{{- define "carto.litellm.fullname" -}}
+{{- printf "%s-litellm" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto litellm image name
+*/}}
+{{- define "carto.litellm.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.litellm.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto litellm ConfigMap name
+*/}}
+{{- define "carto.litellm.configmapName" -}}
+{{- if .Values.litellm.existingConfigMap -}}
+{{- .Values.litellm.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.litellm.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto litellm Secret name
+*/}}
+{{- define "carto.litellm.secretName" -}}
+{{- if .Values.litellm.existingSecret -}}
+{{- .Values.litellm.existingSecret -}}
+{{- else -}}
+{{- include "carto.litellm.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the internal LiteLLM URL for AI API
+*/}}
+{{- define "carto.litellm.internalUrl" -}}
+{{- printf "http://%s.%s.svc.%s" (include "carto.litellm.fullname" .) .Release.Namespace .Values.clusterDomain -}}
 {{- end -}}

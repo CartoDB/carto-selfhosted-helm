@@ -1,0 +1,48 @@
+{{- if not .Values.aiApi.existingConfigMap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "carto.aiApi.fullname" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: ai-api
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
+  AUTH0_NAMESPACE: "http://app.carto.com"
+  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+  CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
+  {{- end }}
+  CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
+  {{- if .Values.replicated.enabled }}
+  CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "replicated.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:3000"
+  {{- end }}
+  {{- if eq .Values.appConfigValues.logLevel "debug" }}
+  CARTO_TRACING_MODE: "local"
+  {{- end }}
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
+  {{- end }}
+  LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
+  AI_API_PORT: {{ .Values.aiApi.containerPorts.http | quote }}
+  AI_API_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
+  CARTO_AI_OPENAI_ENDPOINT: {{ include "carto.litellm.internalUrl" . | quote }}
+  CARTO_SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
+  CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
+  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
+  {{- if .Values.externalProxy.enabled }}
+  HTTPS_PROXY: {{ include "carto.proxy.computedConnectionString" . }}
+  HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . }}
+  {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
+  NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }} 
