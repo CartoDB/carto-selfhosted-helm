@@ -18,18 +18,16 @@ data:
   {{- if eq .Values.appConfigValues.logLevel "debug" }}
   CARTO_TRACING_MODE: "local"
   {{- end }}
-  # Redis Configuration
+  # Production Environment Variables (following official LiteLLM documentation)
+  {{- range $key, $value := .Values.litellm.environment }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  # Redis Configuration (individual params for 80 RPS improvement)
   REDIS_HOST: {{ include "carto.redis.host" . }}
   REDIS_PORT: {{ include "carto.redis.port" . }}
   REDIS_DB: "1"
   # Database Configuration
   DATABASE_URL: "postgresql://{{ include "carto.postgresql.user" . }}:@{{ include "carto.postgresql.host" . }}:{{ include "carto.postgresql.port" . }}/litellm"
-  # LiteLLM Configuration
-  LITELLM_UPPER_BOUND_KEY_GENERATE_PARAMS: "max_completion_tokens,max_tokens,max_output_tokens"
-  LITELLM_LOWER_BOUND_KEY_GENERATE_PARAMS: "max_completion_tokens,max_tokens,max_output_tokens"
-  LITELLM_LOG: "INFO"
-  LITELLM_MASTER_KEY: "sk-1234"
-  LITELLM_SALT_KEY: "sk-1234"
   {{- if .Values.externalProxy.enabled }}
   HTTPS_PROXY: {{ include "carto.proxy.computedConnectionString" . }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . }}
@@ -37,5 +35,24 @@ data:
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
+  {{- end }}
+  {{- if .Values.litellm.config.enabled }}
+  # LiteLLM Production Configuration File
+  config.yaml: |
+    model_list:
+    {{- range .Values.litellm.config.models }}
+    - model_name: {{ .model_name }}
+      litellm_params:
+        {{- toYaml .litellm_params | nindent 8 }}
+    {{- end }}
+    
+    litellm_settings:
+      {{- toYaml .Values.litellm.config.litellm_settings | nindent 6 }}
+    
+    general_settings:
+      {{- toYaml .Values.litellm.config.general_settings | nindent 6 }}
+    
+    router_settings:
+      {{- toYaml .Values.litellm.config.router_settings | nindent 6 }}
   {{- end }}
 {{- end }} 

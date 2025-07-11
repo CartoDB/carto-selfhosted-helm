@@ -114,26 +114,29 @@ spec:
           {{- if .Values.litellm.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customLivenessProbe "context" $) | nindent 12 }}
           {{- else if .Values.litellm.livenessProbe.enabled }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.litellm.livenessProbe "enabled") "context" $) | nindent 12 }}
+          livenessProbe:
             httpGet:
-              path: /health
+              path: {{ default "/health/liveliness" .Values.litellm.livenessProbe.path }}
               port: http
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.litellm.livenessProbe "enabled" "path") "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.litellm.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customReadinessProbe "context" $) | nindent 12 }}
           {{- else if .Values.litellm.readinessProbe.enabled }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.litellm.readinessProbe "enabled") "context" $) | nindent 12 }}
+          readinessProbe:
             httpGet:
-              path: /health
+              path: {{ default "/health/readiness" .Values.litellm.readinessProbe.path }}
               port: http
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.litellm.readinessProbe "enabled" "path") "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.litellm.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customStartupProbe "context" $) | nindent 12 }}
           {{- else if .Values.litellm.startupProbe.enabled }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.litellm.startupProbe "enabled") "context" $) | nindent 12 }}
+          startupProbe:
             httpGet:
-              path: /health
+              path: {{ default "/health" .Values.litellm.startupProbe.path }}
               port: http
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.litellm.startupProbe "enabled" "path") "context" $) | nindent 12 }}
           {{- end }}
           {{- end }}
           {{- if .Values.litellm.lifecycleHooks }}
@@ -142,6 +145,12 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
+            {{- if .Values.litellm.config.enabled }}
+            - name: config
+              mountPath: /app/config.yaml
+              subPath: config.yaml
+              readOnly: true
+            {{- end }}
           {{- if .Values.litellm.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.litellm.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -151,6 +160,14 @@ spec:
       volumes:
         - name: tmp
           emptyDir: {}
+        {{- if .Values.litellm.config.enabled }}
+        - name: config
+          configMap:
+            name: {{ template "carto.litellm.configmapName" . }}
+            items:
+            - key: config.yaml
+              path: config.yaml
+        {{- end }}
       {{- if .Values.litellm.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.litellm.extraVolumes "context" $) | nindent 8 }}
       {{- end }}

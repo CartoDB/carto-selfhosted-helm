@@ -5784,6 +5784,7 @@ litellm:
   containerPorts:
     http: 4000
   ## Configure extra options for litellm containers' liveness and readiness probes
+  ## Following LiteLLM official health check endpoints: /health/liveliness, /health/readiness, /health
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param litellm.livenessProbe.enabled Enable livenessProbe on litellm containers
   ## @param litellm.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
@@ -5794,11 +5795,12 @@ litellm:
   ##
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 30
+    initialDelaySeconds: 60    # Increased for LiteLLM startup time
     periodSeconds: 30
     timeoutSeconds: 10
     successThreshold: 1
-    failureThreshold: 5
+    failureThreshold: 3        # Reduced for faster detection
+    path: "/health/liveliness" # Official LiteLLM endpoint
   ## @param litellm.readinessProbe.enabled Enable readinessProbe on litellm containers
   ## @param litellm.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
   ## @param litellm.readinessProbe.periodSeconds Period seconds for readinessProbe
@@ -5808,11 +5810,12 @@ litellm:
   ##
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 30
+    initialDelaySeconds: 60    # Increased for LiteLLM startup time
+    periodSeconds: 15          # More frequent checks for readiness
     timeoutSeconds: 10
     successThreshold: 1
-    failureThreshold: 5
+    failureThreshold: 3        # Reduced for faster detection
+    path: "/health/readiness"  # Official LiteLLM endpoint
   ## @param litellm.startupProbe.enabled Enable startupProbe on litellm containers
   ## @param litellm.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
   ## @param litellm.startupProbe.periodSeconds Period seconds for startupProbe
@@ -5822,11 +5825,12 @@ litellm:
   ##
   startupProbe:
     enabled: true
-    initialDelaySeconds: 30
-    periodSeconds: 10
-    timeoutSeconds: 10
+    initialDelaySeconds: 120   # Longer delay for complete initialization
+    periodSeconds: 60         # Check every minute during startup
+    timeoutSeconds: 30        # Longer timeout for model health checks
     successThreshold: 1
-    failureThreshold: 30
+    failureThreshold: 5       # Allow more failures during startup
+    path: "/health"           # Full health check including model status
   ## @param litellm.customLivenessProbe Custom livenessProbe that overrides the default one
   ##
   customLivenessProbe: {}
@@ -5836,20 +5840,113 @@ litellm:
   ## @param litellm.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
-  ## litellm resource requests and limits
+  ## litellm resource requests and limits (Updated for production recommendations)
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param litellm.resources.limits.memory Container memory limits in MiB
+  ## @param litellm.resources.limits.memory Container memory limits in MiB (Increased for production workloads)
   ## @param litellm.resources.limits.cpu Container cpu limits in milliCPU cores
   ## @param litellm.resources.requests.memory Container memory requests in MiB
   ## @param litellm.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: "2Gi"  # Increased for production workloads
+      cpu: "1000m"   # Increased for better performance
     requests:
-      memory: "256Mi"
-      cpu: "200m"
+      memory: "1Gi"  # Increased for stable operation
+      cpu: "500m"    # Increased for better responsiveness
+  
+  ## Production configuration for LiteLLM following official best practices
+  ## @section litellm Production Configuration
+  config:
+    ## @param litellm.config.enabled Enable production configuration for LiteLLM
+    enabled: true
+    ## @param litellm.config.source Configuration source: configmap, s3, gcs, external
+    source: "configmap"
+    ## External configuration for S3/GCS bucket support
+    ## @param litellm.config.external.bucketName S3/GCS bucket name for configuration
+    ## @param litellm.config.external.objectKey Object key for configuration file
+    ## @param litellm.config.external.bucketType Bucket type: s3 or gcs
+    external:
+      bucketName: ""
+      objectKey: "litellm-config.yaml" 
+      bucketType: ""
+    ## Model configuration - Override with your actual models
+    ## @param litellm.config.models List of model configurations
+    models:
+      - model_name: "gpt-3.5-turbo"
+        litellm_params:
+          model: "openai/gpt-3.5-turbo"
+          api_key: "os.environ/OPENAI_API_KEY"
+          request_timeout: 600
+    ## Production LiteLLM settings following official recommendations
+    ## @param litellm.config.litellm_settings LiteLLM library configuration
+    litellm_settings:
+      request_timeout: 600           # 10 minutes instead of default 6000
+      set_verbose: false            # Disable debug logging in production
+      json_logs: true              # Structured logging for production
+      cache: true                  # Enable caching
+      cache_params:
+        type: "redis"
+        # Use individual params instead of redis_url for 80 RPS improvement
+        host: "os.environ/REDIS_HOST"
+        port: "os.environ/REDIS_PORT"  
+        password: "os.environ/REDIS_PASSWORD"
+        supported_call_types: ["acompletion", "atext_completion", "aembedding", "atranscription"]
+        ttl: 600                   # 10 minute cache TTL
+    ## General settings for production deployment
+    ## @param litellm.config.general_settings General proxy settings
+    general_settings:
+      master_key: "os.environ/LITELLM_MASTER_KEY"
+      database_connection_pool_limit: 10      # Recommended for production
+      database_connection_timeout: 60
+      proxy_batch_write_at: 60                # Batch write spend updates every 60s
+      background_health_checks: true
+      health_check_interval: 300              # 5 minute health checks
+      allow_requests_on_db_unavailable: true  # Graceful degradation for VPC deployments
+      disable_spend_logs: false               # Keep spend tracking enabled
+      max_parallel_requests: 100
+      alerting: []                            # Configure for Slack alerts if needed
+    ## Router settings for load balancing
+    ## @param litellm.config.router_settings Router and load balancing configuration
+    router_settings:
+      routing_strategy: "usage-based-routing-v2"  # Best strategy for production
+      # Use individual Redis params for better performance (80 RPS improvement)
+      redis_host: "os.environ/REDIS_HOST"
+      redis_port: "os.environ/REDIS_PORT"
+      redis_password: "os.environ/REDIS_PASSWORD"
+      enable_pre_call_checks: true
+      allowed_fails: 3
+      cooldown_time: 30
+      retry_policy:
+        AuthenticationErrorRetries: 3
+        TimeoutErrorRetries: 3
+        RateLimitErrorRetries: 3
+        ContentPolicyViolationErrorRetries: 4
+        InternalServerErrorRetries: 4
+  
+  ## Production environment variables following official recommendations
+  ## @param litellm.environment Environment variables for production deployment
+  environment:
+    LITELLM_MODE: "PRODUCTION"                # Disables load_dotenv for production
+    LITELLM_LOG: "ERROR"                     # Reduce FastAPI default logs
+    USE_PRISMA_MIGRATE: "True"               # Use prisma migrate deploy for production
+    DISABLE_SCHEMA_UPDATE: "true"            # Disable auto-migrations in pods
+    LITELLM_SALT_KEY: "os.environ/LITELLM_SALT_KEY"        # Encryption salt key
+    LITELLM_MASTER_KEY: "os.environ/LITELLM_MASTER_KEY"    # Master authentication key
+    DATABASE_URL: "os.environ/DATABASE_URL"                # Database connection
+    # Redis connection using individual params for performance
+    REDIS_HOST: "os.environ/REDIS_HOST"
+    REDIS_PORT: "os.environ/REDIS_PORT"
+    REDIS_PASSWORD: "os.environ/REDIS_PASSWORD"
+  
+  ## Production startup command (1 Uvicorn worker recommended for Kubernetes)
+  ## @param litellm.command Override container command for production
+  command:
+    - "--port"
+    - "4000"
+    - "--config" 
+    - "/app/config.yaml"
+    # DO NOT set num_workers or run_gunicorn in Kubernetes per official docs
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param litellm.podSecurityContext.enabled Enabled litellm pods' Security Context
@@ -5894,9 +5991,6 @@ litellm:
   ## @param litellm.existingSecret The name of an existing ConfigMap with your custom configuration for litellm
   ##
   existingSecret: ""
-  ## @param litellm.command Override default container command (useful when using custom images)
-  ##
-  command: []
   ## @param litellm.args Override default container args (useful when using custom images)
   ##
   args: []
@@ -6050,6 +6144,28 @@ litellm:
     ## @param litellm.service.annotations Additional custom annotations for litellm service
     ##
     annotations: {}
-    ## @param litellm.service.extraPorts Extra ports to expose in litellm service (normally used with the `sidecars` value)
+      ## @param litellm.service.extraPorts Extra ports to expose in litellm service (normally used with the `sidecars` value)
+  ##
+  extraPorts: []
+
+  ## @section litellm Autoscaling Parameters
+  ##
+  ## litellm Horizontal Pod Autoscaler configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ##
+  autoscaling:
+    ## @param litellm.autoscaling.enabled Enable HPA for litellm
     ##
-    extraPorts: []
+    enabled: true
+    ## @param litellm.autoscaling.minReplicas Minimum replicas for the HPA
+    ##
+    minReplicas: 1
+    ## @param litellm.autoscaling.maxReplicas Maximum replicas for the HPA
+    ##
+    maxReplicas: 5
+    ## @param litellm.autoscaling.targetCPU Target CPU utilization percentage
+    ##
+    targetCPU: 70
+    ## @param litellm.autoscaling.targetMemory Target Memory utilization percentage
+    ##
+    targetMemory: 80

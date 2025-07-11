@@ -1,0 +1,47 @@
+{{- if and .Values.litellm.autoscaling.enabled (include "carto.baseUrl" .) (not .Values.cartoConfigValues.onlyRunRouter) }}
+apiVersion: {{ include "common.capabilities.hpa.apiVersion" ( dict "context" $ ) }}
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "carto.litellm.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: litellm
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  scaleTargetRef:
+    apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+    kind: Deployment
+    name: {{ template "carto.litellm.fullname" . }}
+  minReplicas: {{ .Values.litellm.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.litellm.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.litellm.autoscaling.targetCPU }}
+    - type: Resource
+      resource:
+        name: cpu
+        {{- if semverCompare ">=1.23-0" (include "common.capabilities.kubeVersion" .) }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.litellm.autoscaling.targetCPU }}
+        {{- else }}
+        targetAverageUtilization: {{ .Values.litellm.autoscaling.targetCPU }}
+        {{- end }}
+    {{- end }}
+    {{- if .Values.litellm.autoscaling.targetMemory }}
+    - type: Resource
+      resource:
+        name: memory
+        {{- if semverCompare ">=1.23-0" (include "common.capabilities.kubeVersion" .) }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.litellm.autoscaling.targetMemory }}
+        {{- else }}
+        targetAverageUtilization: {{ .Values.litellm.autoscaling.targetMemory }}
+        {{- end }}
+    {{- end }}
+{{- end }} 
