@@ -223,7 +223,7 @@ Return common collectors for preflights and support-bundle
             configMap:
               name: {{ .Values.externalProxy.sslCAConfigmapName }}
           {{- end }}
-          {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmapName) }}
+          {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
           - name: proxy-ssl-ca
             emptyDir:
               sizeLimit: 1Mi
