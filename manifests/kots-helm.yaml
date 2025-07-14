@@ -18,6 +18,8 @@ spec:
       imagePullSecrets:
         - "{{repl ImagePullSecretName }}"
     replicated:
+      image:
+        registry: 'registry.self-hosted.carto.com'
       imagePullSecrets:
         - name: "{{repl ImagePullSecretName }}"
       enabled: true
