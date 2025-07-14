@@ -170,7 +170,7 @@ spec:
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
-            {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+            {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmapName) }}
             - name: proxy-ssl-ca
               mountPath: {{ include "carto.proxy.configMapMountDir" . }}
               readOnly: true
@@ -188,7 +188,7 @@ spec:
             items:
               - key: {{ include "carto.google.secretKey" . }}
                 path: {{ include "carto.google.secretMountFilename" . }}
-        {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+        {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmapName) }}
         - name: proxy-ssl-ca
           configMap:
             name: {{ include "carto.proxy.configMapName" . }}

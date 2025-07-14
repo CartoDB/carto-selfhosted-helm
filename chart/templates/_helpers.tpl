@@ -1272,7 +1272,11 @@ Return the proxy connection string if the config does not include the complete U
 Get the proxy config map name
 */}}
 {{- define "carto.proxy.configMapName" -}}
+{{- if .Values.externalProxy.sslCA -}}
 {{- printf "%s-%s" .Release.Name "externalproxy" -}}
+{{- else if .Values.externalProxy.sslCAConfigmapName -}}
+{{- printf "%s" .Values.externalProxy.sslCAConfigmapName -}}
+{{- end -}}
 {{- end -}}
 
 {{/*

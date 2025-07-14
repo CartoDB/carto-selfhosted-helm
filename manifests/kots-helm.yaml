@@ -359,8 +359,7 @@ spec:
           connectionString: '{{repl ConfigOption "externalProxyHost" }}'
           excludedDomains: '{{repl ConfigOption "externalProxyExcludedDomains" }}'
           sslRejectUnauthorized: repl{{ if ConfigOptionEquals "externalHttpsProxySslCertificateCheck" "0"}}falserepl{{ else }}truerepl{{ end }}
-          sslCA: |
-            repl{{ ConfigOptionData "externalHttpsProxySslCa" | nindent 12 }}
+          sslCAConfigmapName: '{{repl ConfigOption "externalProxyCAConfigmapName" }}'
     - when: '{{repl ConfigOptionEquals "ssoEnabled" "1"}}'
       recursiveMerge: true
       values:
@@ -590,8 +589,8 @@ spec:
         replicated:
           imagePullSecrets:
             - name: "{{repl ImagePullSecretName }}"
-          images:
-            replicated-sdk: '{{repl LocalImageName "docker.io/replicated/replicated-sdk:v1.0.0-beta.30" }}'
+          image:
+            registry: "{{repl LocalRegistryHost }}"
     # THIS SHOULD ALWAYS BE THE LAST OPTIONAL VALUE!!!!
     ## Advanced Tuning
     - when: '{{repl not (empty (ConfigOption "platformAdvancedTuningValues")) }}'
