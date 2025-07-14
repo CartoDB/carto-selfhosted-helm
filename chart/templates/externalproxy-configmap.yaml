@@ -1,4 +1,4 @@
-{{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmapName) }}
+{{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
