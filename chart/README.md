@@ -1637,6 +1637,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `externalProxy.excludedDomains`       | List of domains that should not be proxied                                               | `[]`    |
 | `externalProxy.sslRejectUnauthorized` | Whether or not verify the HTTPS proxy SSL certificate                                    | `true`  |
 | `externalProxy.sslCA`                 | CA for the proxy SSL certificate in case is self-signed or signed by a not well-known CA | `""`    |
+| `externalProxy.sslCAConfigmapName`    | Name of the ConfigMap containing the CA certificate for the proxy SSL certificate        | `""`    |
 | `externalProxy.connectionString`      | Connection string to the proxy                                                           | `""`    |
 
 ### Upgrade Check pre hook parameters
