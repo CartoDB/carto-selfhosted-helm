@@ -79,6 +79,7 @@ WORKSPACE_THUMBNAILS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
 LITELLM_MASTER_KEY: cartoSecrets.litellmMasterKey
 LITELLM_SALT_KEY: cartoSecrets.litellmSaltKey
+GEMINI_API_KEY: cartoSecrets.geminiApiKey
 {{- end -}}
 
 {{/*

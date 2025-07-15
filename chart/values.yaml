@@ -428,6 +428,16 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
+  geminiApiKey:
+    ## @param cartoSecrets.geminiApiKey.value Value of the secret used to define the API key for the Gemini instance. One of `cartoSecrets.geminiApiKey.value` or `cartoSecrets.geminiApiKey.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.geminiApiKey.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.geminiApiKey.existingSecret.key`. If `cartoSecrets.geminiApiKey.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.geminiApiKey.existingSecret.key Key to find in `cartoSecrets.geminiApiKey.existingSecret.name` where the value of `cartoSecrets.geminiApiKey` is found. If `cartoSecrets.geminiApiKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+
 ## FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 ## @section TLS parameters
 ## Global TLS parameters
