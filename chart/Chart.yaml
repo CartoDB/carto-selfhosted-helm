@@ -13,7 +13,7 @@ dependencies:
     version: 11.x.x
   - name: replicated
     repository: oci://registry.replicated.com/library
-    version: 1.3.0
+    version: 1.7.1
     condition: replicated.enabled
 description: CARTO Location Intelligence Platform. Unlock the power of spatial analysis in the cloud
 engine: gotpl

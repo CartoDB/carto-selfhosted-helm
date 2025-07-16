@@ -189,7 +189,7 @@ Return common collectors for preflights and support-bundle
                 mountPath: {{ include "carto.redis.configMapMountDir" . }}
                 readOnly: true
               {{- end }}
-              {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+              {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
               - name: proxy-ssl-ca
                 mountPath: {{ include "carto.proxy.configMapMountDir" . }}
                 readOnly: true
@@ -217,6 +217,11 @@ Return common collectors for preflights and support-bundle
           - name: redis-tls-ca
             emptyDir:
               sizeLimit: 8Mi
+          {{- end }}
+          {{- if .Values.externalProxy.sslCAConfigmap.name }}
+          - name: proxy-ssl-ca
+            configMap:
+              name: {{ .Values.externalProxy.sslCAConfigmap.name }}
           {{- end }}
           {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
           - name: proxy-ssl-ca
@@ -528,7 +533,7 @@ Return customer values to use in preflights and support-bundle
   - name: no_proxy
     value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
-  {{- if .Values.externalProxy.sslCA }}
+  {{- if (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
   - name: NODE_EXTRA_CA_CERTS
     value: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}

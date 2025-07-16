@@ -302,7 +302,7 @@ spec:
               mountPath: {{ include "carto.redis.configMapMountDir" . }}
               readOnly: true
             {{- end }}
-            {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+            {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
             - name: proxy-ssl-ca
               mountPath: {{ include "carto.proxy.configMapMountDir" . }}
               readOnly: true
@@ -346,7 +346,7 @@ spec:
           configMap:
             name: {{ include "carto.redis.configMapName" . }}
         {{- end }}
-        {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+        {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
         - name: proxy-ssl-ca
           configMap:
             name: {{ include "carto.proxy.configMapName" . }}

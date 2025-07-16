@@ -5141,6 +5141,11 @@ externalProxy:
   sslRejectUnauthorized: true
   ## @param externalProxy.sslCA CA for the proxy SSL certificate in case is self-signed or signed by a not well-known CA
   sslCA: ""
+  ## @param externalProxy.sslCAConfigmap.name Name of the pre-existent ConfigMap containing the `externalProxy.sslCAConfigmap.key`.
+  ## @param externalProxy.sslCAConfigmap.key Key to find in `externalProxy.sslCAConfigmap.name` where the custom CA certificate is stored.
+  sslCAConfigmap:
+    name: ""
+    key: ""
   ## @param externalProxy.connectionString Connection string to the proxy
   connectionString: ""
 
