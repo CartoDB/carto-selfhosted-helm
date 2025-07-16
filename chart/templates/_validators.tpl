@@ -24,10 +24,10 @@ If internalPostgresql.enabled=false you need to specify the host of an external 
 Validate external Proxy config
 */}}
 {{- define "carto.validateValues.proxy" -}}
-{{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmapName -}}
+{{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name -}}
 CARTO: Duplicated SSL CA
 
-If externalProxy.enabled=true you need to specify either externalProxy.sslCA or externalProxy.sslCAConfigmapName, not both.
+If externalProxy.enabled=true you need to specify either externalProxy.sslCA or externalProxy.sslCAConfigmap, not both.
 {{- end -}}
 {{- end -}}
 

@@ -1274,8 +1274,8 @@ Get the proxy config map name
 {{- define "carto.proxy.configMapName" -}}
 {{- if .Values.externalProxy.sslCA -}}
 {{- printf "%s-%s" .Release.Name "externalproxy" -}}
-{{- else if .Values.externalProxy.sslCAConfigmapName -}}
-{{- printf "%s" .Values.externalProxy.sslCAConfigmapName -}}
+{{- else if .Values.externalProxy.sslCAConfigmap.name -}}
+{{- printf "%s" .Values.externalProxy.sslCAConfigmap.name -}}
 {{- end -}}
 {{- end -}}
 
