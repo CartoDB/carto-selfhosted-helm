@@ -141,7 +141,7 @@ Return common collectors for preflights and support-bundle
                 mountPath: {{ include "carto.redis.configMapMountDir" . }}
                 readOnly: false
               {{- end }}
-              {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
+              {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
               - name: proxy-ssl-ca
                 mountPath: {{ include "carto.proxy.configMapMountDir" . }}
                 readOnly: false
