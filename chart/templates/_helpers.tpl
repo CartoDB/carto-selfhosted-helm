@@ -1292,6 +1292,7 @@ Return the filename where the proxy CA will be mounted when injecting the CA val
 {{- define "carto.proxy.configMapMountFilename" -}}
 {{- print "ca.crt" -}}
 {{- end -}}
+
 {{/*
 Return the absolute path where the proxy CA cert will be mounted
 */}}
