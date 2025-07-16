@@ -534,8 +534,8 @@ Return customer values to use in preflights and support-bundle
     value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
   {{- if (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmapName) }}
-  - name: NODE_EXTRA_CA_CERTS
-    value: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
+  - name: SSL_CERT_DIR
+    value: {{ include "carto.proxy.configMapMountDir" . | quote }}
   {{- end }}
   {{- end }}
   {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}

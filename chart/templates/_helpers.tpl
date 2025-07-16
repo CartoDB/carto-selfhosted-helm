@@ -1287,16 +1287,12 @@ Return the directory where the proxy CA cert will be mounted
 {{- end -}}
 
 {{/*
-Return the filename where the proxy CA will be mounted
+Return the filename where the proxy CA will be mounted when injecting the CA value directly
 */}}
 {{- define "carto.proxy.configMapMountFilename" -}}
 {{- if .Values.externalProxy.sslCA -}}
 {{- print "ca.crt" -}}
-{{- else if .Values.externalProxy.sslCAConfigmapName -}}
-{{- print "ca_0.crt" -}}
 {{- end -}}
-{{- end -}}
-
 {{/*
 Return the absolute path where the proxy CA cert will be mounted
 */}}
