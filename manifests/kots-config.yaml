@@ -1096,6 +1096,28 @@ spec:
           type: bool
           default: "0"
 
+        ## Litellm
+        - name: litellmMasterKey
+          title: Litellm master key
+          type: password
+          when: '{{repl (ConfigOptionEquals "enableLitellm" "1") }}'
+          required: true
+          default: 'sk-{{repl randomString 22 }}'
+        - name: litellmSaltKey
+          title: Litellm salt key
+          type: password
+          when: '{{repl (ConfigOptionEquals "enableLitellm" "1") }}'
+          required: true
+          default: 'sk-{{repl randomString 22 }}'
+
+        ## Gemini
+        - name: geminiApiKey
+          title: Gemini API key
+          type: password
+          when: '{{repl (ConfigOptionEquals "enableGemini" "1") }}'
+          required: true
+          default: '{{repl LicenseFieldValue "geminiApiKey" }}'
+
     # Custom configuration
     - name: platformAdvancedTuning
       title: Custom Configuration

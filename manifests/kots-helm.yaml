@@ -43,6 +43,15 @@ spec:
         value: '{{repl LicenseFieldValue "vitallyToken" }}'
       openAiApiKey:
         value: '{{repl ConfigOptionEquals "customOpenAIAPIKeyEnabled" "1" | ternary (ConfigOption "customOpenAIAPIKey") (LicenseFieldValue "openAiApiKey") }}'
+      litellmMasterKey:
+        value: '{{repl ConfigOption "litellmMasterKey" }}'
+      litellmSaltKey:
+        value: '{{repl ConfigOption "litellmSaltKey" }}'
+      geminiApiKey:
+        value: '{{repl ConfigOption "geminiApiKey" }}'
+      litellmJwtSecret:
+        value: '{{repl ConfigOption "jwtEncryptionKey" }}'
+        
     # Carto Config Values
     cartoConfigValues:
       cartoAccApiDomain: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "cartoAccApiDomain" "" | Base64Decode }}'
