@@ -63,7 +63,6 @@ spec:
       dataObservatoryProjectId: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "dataObservatoryProjectId" "" | Base64Decode }}'
       ingressTestingMode: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
       onlyRunRouter: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
-      deploymentType: repl{{ if ConfigOptionEquals "isEmbeddedCluster" "true"}}embedded-clusterrepl{{ else }}kotsrepl{{ end }}
     # Customizations
     ## App Secrets
     appSecrets:
@@ -92,6 +91,7 @@ spec:
       azureStorageAccount: '{{repl ConfigOption "storageBucketsAzureStorageAccount"}}'
       # other config
       bigqueryOauth2ClientId: '{{repl ConfigOption "bigqueryOauthClientID" }}'
+      deploymentType: repl{{ if ConfigOptionEquals "isEmbeddedCluster" "true"}}embedded-clusterrepl{{ else }}kotsrepl{{ end }}
     ## Postgresql
     internalPostgresql:
       # Disable the internal Postgres
