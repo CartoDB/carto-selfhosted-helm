@@ -53,6 +53,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.ldsRoutingProvider`                               | The default LDS provider for routing                                                                                   | `""`                   |
 | `appConfigValues.ldsIsolineProvider`                               | The default LDS provider for isolines                                                                                  | `""`                   |
 | `appConfigValues.logLevel`                                         | The log level used in CARTO application                                                                                | `info`                 |
+| `appConfigValues.deploymentType`                                   | The deployment type used in CARTO application                                                                          | `helm`                 |
 
 ### CARTO Replicated parameters
 
