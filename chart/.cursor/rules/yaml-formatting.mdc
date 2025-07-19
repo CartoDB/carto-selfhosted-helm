@@ -1,9 +1,4 @@
 ---
-description: 
-globs: 
-alwaysApply: true
----
----
 title: "YAML Formatting Standards for CARTO Helm Charts"
 tags: ["yaml", "formatting", "helm", "style"]
 description: "Comprehensive YAML formatting and style guidelines for CARTO Helm charts ensuring consistency, readability, and maintainability"

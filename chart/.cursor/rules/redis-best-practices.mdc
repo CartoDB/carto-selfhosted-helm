@@ -1,9 +1,4 @@
 ---
-description: 
-globs: 
-alwaysApply: true
----
----
 title: "Redis Best Practices for CARTO Helm Chart"
 tags: ["redis", "helm", "database", "caching"]
 description: "Comprehensive Redis configuration and management guidelines for CARTO Self-Hosted Helm chart following internal Redis implementation patterns"

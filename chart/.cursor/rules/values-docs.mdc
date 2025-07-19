@@ -1,9 +1,4 @@
 ---
-description: 
-globs: 
-alwaysApply: true
----
----
 title: "Values.yaml Documentation Standards"
 tags: ["helm", "documentation", "values", "readme"]
 description: "Comprehensive guidelines for documenting values.yaml parameters in CARTO Helm charts for automated README generation and user clarity"
