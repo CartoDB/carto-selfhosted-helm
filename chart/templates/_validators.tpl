@@ -21,6 +21,17 @@ If internalPostgresql.enabled=false you need to specify the host of an external 
 {{- end -}}
 
 {{/*
+Validate external Proxy config
+*/}}
+{{- define "carto.validateValues.proxy" -}}
+{{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name -}}
+CARTO: Duplicated SSL CA
+
+If externalProxy.enabled=true you need to specify either externalProxy.sslCA or externalProxy.sslCAConfigmap, not both.
+{{- end -}}
+{{- end -}}
+
+{{/*
 Validate log level
 */}}
 {{- define "carto.validateValues.logLevel" -}}
@@ -78,6 +89,7 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := list -}}
 {{- $messages := append $messages (include "carto.validateValues.redis" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.postgresql" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.proxy" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.logLevel" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.aiApi" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.litellm" .) -}}

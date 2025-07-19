@@ -783,12 +783,6 @@ spec:
           when: '{{repl and (ConfigOptionEquals "externalProxyEnabled" "1") (not (empty HTTPProxy)) }}'
           value: "repl{{ NoProxy }}"
           readonly: true
-        - name: externalHttpsProxySslCa
-          title: Proxy SSL CA
-          when: '{{repl and (ConfigOptionEquals "externalProxyEnabled" "1") (ConfigOptionEquals "externalProxyType" "https") }}'
-          type: file
-          help_text: |-
-            If the proxy certificate is signed by a custom CA, such CA must be included here, but if it's signed by a well known CA, there is no need to add it here.
         - name: externalHttpsProxySslCertificateCheck
           title: SSL certificate checks
           type: bool
@@ -796,6 +790,11 @@ spec:
           default: "0"
           help_text: |-
             Specify if CARTO Self-hosted should check if the proxy certificate is valid or not.
+        - name: externalProxyCAConfigmapName
+          hidden: true
+          type: text
+          value: 'repl{{ PrivateCACert }}'
+          readonly: true
 
         ## SSO
         - name: ssoEnabled

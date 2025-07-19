@@ -1637,16 +1637,18 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### External proxy configuration
 
-| Name                                  | Description                                                                              | Value   |
-| ------------------------------------- | ---------------------------------------------------------------------------------------- | ------- |
-| `externalProxy.enabled`               | Whether the APIs will use an external proxy or not                                       | `false` |
-| `externalProxy.host`                  | Proxy host                                                                               | `""`    |
-| `externalProxy.port`                  | Proxy port                                                                               | `""`    |
-| `externalProxy.type`                  | Proxy type. Only HTTP and HTTPS proxies are supported                                    | `""`    |
-| `externalProxy.excludedDomains`       | List of domains that should not be proxied                                               | `[]`    |
-| `externalProxy.sslRejectUnauthorized` | Whether or not verify the HTTPS proxy SSL certificate                                    | `true`  |
-| `externalProxy.sslCA`                 | CA for the proxy SSL certificate in case is self-signed or signed by a not well-known CA | `""`    |
-| `externalProxy.connectionString`      | Connection string to the proxy                                                           | `""`    |
+| Name                                  | Description                                                                                   | Value   |
+| ------------------------------------- | --------------------------------------------------------------------------------------------- | ------- |
+| `externalProxy.enabled`               | Whether the APIs will use an external proxy or not                                            | `false` |
+| `externalProxy.host`                  | Proxy host                                                                                    | `""`    |
+| `externalProxy.port`                  | Proxy port                                                                                    | `""`    |
+| `externalProxy.type`                  | Proxy type. Only HTTP and HTTPS proxies are supported                                         | `""`    |
+| `externalProxy.excludedDomains`       | List of domains that should not be proxied                                                    | `[]`    |
+| `externalProxy.sslRejectUnauthorized` | Whether or not verify the HTTPS proxy SSL certificate                                         | `true`  |
+| `externalProxy.sslCA`                 | CA for the proxy SSL certificate in case is self-signed or signed by a not well-known CA      | `""`    |
+| `externalProxy.sslCAConfigmap.name`   | Name of the pre-existent ConfigMap containing the `externalProxy.sslCAConfigmap.key`.         | `""`    |
+| `externalProxy.sslCAConfigmap.key`    | Key to find in `externalProxy.sslCAConfigmap.name` where the custom CA certificate is stored. | `""`    |
+| `externalProxy.connectionString`      | Connection string to the proxy                                                                | `""`    |
 
 ### Upgrade Check pre hook parameters
 

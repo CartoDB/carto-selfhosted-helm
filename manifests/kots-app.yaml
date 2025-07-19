@@ -26,9 +26,9 @@ spec:
     - '{{repl if ConfigOptionEquals "externalRedisEnabled" "0" }}deployment/carto-redis{{repl else}}{{repl end }}'
     - '{{repl if ConfigOptionEquals "aiApiEnabled" "1" }}deployment/carto-ai-api{{repl else}}{{repl end }}'
     - '{{repl if ConfigOptionEquals "aiApiEnabled" "1" }}deployment/carto-litellm{{repl else}}{{repl end }}'
-  minKotsVersion: 1.107.4
+  minKotsVersion: 1.117.3
   additionalImages:
-    - gcr.io/carto-onprem-artifacts/tenant-requirements-checker:2024.4.17-rc.7
+    - gcr.io/carto-onprem-artifacts/tenant-requirements-checker:2025.6.10
 ---
 apiVersion: app.k8s.io/v1beta1
 kind: Application

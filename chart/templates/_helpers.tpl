@@ -1246,7 +1246,7 @@ Return the Redis password sha256sum
 */}}
 {{- define "carto.redis.passwordChecksum" -}}
 {{- if .Values.internalRedis.enabled -}}
-{{- print (tpl (toYaml .Values.internalRedis.auth.password) . | sha256sum ) -}}
+{{- print (tpl (toYaml (default .Values.internalRedis.auth.password .Values.cartoSecrets.redisPassword.value)) . | sha256sum ) -}}
 {{- else -}}
 {{- print (tpl (toYaml .Values.externalRedis.password) . | sha256sum ) -}}
 {{- end -}}
@@ -1274,7 +1274,11 @@ Return the proxy connection string if the config does not include the complete U
 Get the proxy config map name
 */}}
 {{- define "carto.proxy.configMapName" -}}
+{{- if .Values.externalProxy.sslCA -}}
 {{- printf "%s-%s" .Release.Name "externalproxy" -}}
+{{- else if .Values.externalProxy.sslCAConfigmap.name -}}
+{{- printf "%s" .Values.externalProxy.sslCAConfigmap.name -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -1285,10 +1289,14 @@ Return the directory where the proxy CA cert will be mounted
 {{- end -}}
 
 {{/*
-Return the filename where the proxy CA will be mounted
+Return the filename where the proxy CA will be mounted when injecting the CA value directly
 */}}
 {{- define "carto.proxy.configMapMountFilename" -}}
+{{- if .Values.externalProxy.sslCAConfigmap.key -}}
+{{- printf "%s" .Values.externalProxy.sslCAConfigmap.key -}}
+{{- else -}}
 {{- print "ca.crt" -}}
+{{- end -}}
 {{- end -}}
 
 {{/*

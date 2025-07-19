@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: 2025.6.10
+appVersion: 2025.7.16-rc.5
 dependencies:
   - name: common
     repository: https://charts.bitnami.com/bitnami
@@ -13,7 +13,7 @@ dependencies:
     version: 11.x.x
   - name: replicated
     repository: oci://registry.replicated.com/library
-    version: 1.3.0
+    version: 1.7.1
     condition: replicated.enabled
 description: CARTO Location Intelligence Platform. Unlock the power of spatial analysis in the cloud
 engine: gotpl
@@ -29,4 +29,4 @@ sources:
   - https://carto.com/
 annotations:
   minVersion: "2025.4.21"
-version: 1.188.1
+version: 1.192.1
