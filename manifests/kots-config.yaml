@@ -584,6 +584,7 @@ spec:
             Enable the AI API. [More info](https://docs.carto.com/carto-self-hosted/guides/enable-the-ai-api).
           type: bool
           default: "0"
+        # Litellm
         - name: litellmInstanceInfo
           type: label
           when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
