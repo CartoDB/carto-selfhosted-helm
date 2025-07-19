@@ -695,6 +695,12 @@ spec:
               title: Optional
             - name: required
               title: Required
+        - name: enableLitellmEndpoint
+          title: Enable Litellm endpoint
+          help_text: |-
+            Enable the Litellm endpoint.
+          type: bool
+          default: "0"
 
         ## Redis
         - name: externalRedisEnabled

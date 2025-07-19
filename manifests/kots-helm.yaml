@@ -51,7 +51,7 @@ spec:
         value: '{{repl ConfigOption "geminiApiKey" }}'
       litellmJwtSecret:
         value: '{{repl ConfigOption "jwtEncryptionKey" }}'
-        
+
     # Carto Config Values
     cartoConfigValues:
       cartoAccApiDomain: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "cartoAccApiDomain" "" | Base64Decode }}'
@@ -70,6 +70,8 @@ spec:
       dataObservatoryProjectId: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "dataObservatoryProjectId" "" | Base64Decode }}'
       ingressTestingMode: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
       onlyRunRouter: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
+      enableLitellmEndpoint: repl{{ if ConfigOptionEquals "enableLitellmEndpoint" "1"}}truerepl{{ else }}falserepl{{ end }}
+
     # Customizations
     ## App Secrets
     appSecrets:
