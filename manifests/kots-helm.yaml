@@ -91,7 +91,7 @@ spec:
       azureStorageAccount: '{{repl ConfigOption "storageBucketsAzureStorageAccount"}}'
       # other config
       bigqueryOauth2ClientId: '{{repl ConfigOption "bigqueryOauthClientID" }}'
-      deploymentType: repl{{ if ConfigOptionEquals "isEmbeddedCluster" "true"}}embedded-clusterrepl{{ else }}kotsrepl{{ end }}
+      deploymentType: repl{{ if ConfigOptionEquals "isEmbeddedCluster" "true"}}singleVM-kotsrepl{{ else }}k8s-kotsrepl{{ end }}
     ## Postgresql
     internalPostgresql:
       # Disable the internal Postgres
