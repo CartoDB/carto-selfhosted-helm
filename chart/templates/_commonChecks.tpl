@@ -355,11 +355,11 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
       outcomes:
         - fail:
             when: "< 1.29.0"
-            message: The application requires Kubernetes 1.29.0 or later, and recommends 1.32.0 or later.
+            message: The application requires Kubernetes 1.29.0 or later, and recommends 1.30.0 or later.
             uri: https://kubernetes.io/releases
         - warn:
             when: "< 1.30.0"
-            message: Your cluster meets the minimum version of Kubernetes, but we recommend you update to 1.32.0 or later.
+            message: Your cluster meets the minimum version of Kubernetes, but we recommend you update to 1.30.0 or later.
             uri: https://kubernetes.io/releases
         - pass:
             message: Your cluster meets the recommended and required versions of Kubernetes.
