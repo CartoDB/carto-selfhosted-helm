@@ -177,7 +177,7 @@ spec:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     workspaceWww:
       image:
-        tag: "2025.7.16-patch1"
+        tag: "2025.7.16-patch1" #https://app.shortcut.com/cartoteam/story/502436/create-2025-7-16-patch1-for-waltmart-and-telus
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     workspaceMigrations:
       image:
