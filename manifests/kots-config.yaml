@@ -578,6 +578,7 @@ spec:
         Fine-tune your self-hosted environment with advanced configuration.
       items:
         ## AiApi
+        ## TODO: replace the links to the docs with the new ones
         - name: aiApiEnabled
           title: AI API
           help_text: |-

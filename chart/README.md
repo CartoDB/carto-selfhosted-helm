@@ -1753,7 +1753,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 | Name                                                      | Description                                                                                                                       | Value                           |
 | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `aiApi.enabled`                                           | Enable ai-api                                                                                                                     | `true`                          |
+| `aiApi.enabled`                                           | Enable ai-api                                                                                                                     | `false`                         |
 | `aiApi.image.registry`                                    | ai-api image registry                                                                                                             | `gcr.io/carto-onprem-artifacts` |
 | `aiApi.image.repository`                                  | ai-api image repository                                                                                                           | `ai-api`                        |
 | `aiApi.image.tag`                                         | ai-api image tag (immutable tags are recommended)                                                                                 | `""`                            |
@@ -1860,7 +1860,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 | Name                                                        | Description                                                                                                                                   | Value                           |
 | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `litellm.enabled`                                           | Enable litellm                                                                                                                                | `true`                          |
+| `litellm.enabled`                                           | Enable litellm                                                                                                                                | `false`                         |
 | `litellm.image.registry`                                    | litellm image registry                                                                                                                        | `gcr.io/carto-onprem-artifacts` |
 | `litellm.image.repository`                                  | litellm image repository                                                                                                                      | `litellm`                       |
 | `litellm.image.tag`                                         | litellm image tag (immutable tags are recommended)                                                                                            | `""`                            |

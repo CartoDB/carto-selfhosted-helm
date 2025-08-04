@@ -5456,7 +5456,7 @@ gateway:
 aiApi:
   ## @param aiApi.enabled Enable ai-api
   ##
-  enabled: true
+  enabled: false
   ## ai-api image
   ## @param aiApi.image.registry ai-api image registry
   ## @param aiApi.image.repository ai-api image repository
@@ -5812,7 +5812,7 @@ aiApi:
 litellm:
   ## @param litellm.enabled Enable litellm
   ##
-  enabled: true
+  enabled: false
   ## @param litellm.image.registry litellm image registry
   ## @param litellm.image.repository litellm image repository
   ## @param litellm.image.tag litellm image tag (immutable tags are recommended)
