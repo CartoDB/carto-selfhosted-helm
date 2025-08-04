@@ -44,43 +44,43 @@ Validate log level
 {{/*
 Validate ai-api dependencies
 */}}
-# {{- define "carto.validateValues.aiApi" -}}
-# {{- if .Values.aiApi.enabled -}}
-# {{- if not .Values.litellm.enabled -}}
-# CARTO: AI API dependency error
+{{- define "carto.validateValues.aiApi" -}}
+{{- if .Values.aiApi.enabled -}}
+{{- if not .Values.litellm.enabled -}}
+CARTO: AI API dependency error
 
-# When aiApi.enabled=true, litellm.enabled must also be true. The AI API depends on LiteLLM as its OpenAI endpoint proxy.
-# {{- end -}}
-# {{- if and (eq .Values.cartoSecrets.litellmMasterKey.value "") (eq .Values.cartoSecrets.litellmMasterKey.existingSecret.name "") -}}
-# CARTO: Missing LiteLLM Master Key
+When aiApi.enabled=true, litellm.enabled must also be true. The AI API depends on LiteLLM as its OpenAI endpoint proxy.
+{{- end -}}
+{{- if and (eq .Values.cartoSecrets.litellmMasterKey.value "") (eq .Values.cartoSecrets.litellmMasterKey.existingSecret.name "") -}}
+CARTO: Missing LiteLLM Master Key
 
-# When aiApi.enabled=true, you must provide cartoSecrets.litellmMasterKey.value or configure cartoSecrets.litellmMasterKey.existingSecret with a valid secret reference.
-# {{- end -}}
-# {{- end -}}
-# {{- end -}}
+When aiApi.enabled=true, you must provide cartoSecrets.litellmMasterKey.value or configure cartoSecrets.litellmMasterKey.existingSecret with a valid secret reference.
+{{- end -}}
+{{- end -}}
+{{- end -}}
 
-# {{/*
-# Validate litellm configuration
-# */}}
-# {{- define "carto.validateValues.litellm" -}}
-# {{- if .Values.litellm.enabled -}}
-# {{- if and (eq .Values.cartoSecrets.litellmMasterKey.value "") (eq .Values.cartoSecrets.litellmMasterKey.existingSecret.name "") -}}
-# CARTO: Missing LiteLLM Master Key
+{{/*
+Validate litellm configuration
+*/}}
+{{- define "carto.validateValues.litellm" -}}
+{{- if .Values.litellm.enabled -}}
+{{- if and (eq .Values.cartoSecrets.litellmMasterKey.value "") (eq .Values.cartoSecrets.litellmMasterKey.existingSecret.name "") -}}
+CARTO: Missing LiteLLM Master Key
 
-# When litellm.enabled=true, you must provide cartoSecrets.litellmMasterKey.value or configure cartoSecrets.litellmMasterKey.existingSecret with a valid secret reference.
-# {{- end -}}
-# {{- if and .Values.litellm.redis.host (not .Values.litellm.redis.port) -}}
-# CARTO: Incomplete LiteLLM Redis configuration
+When litellm.enabled=true, you must provide cartoSecrets.litellmMasterKey.value or configure cartoSecrets.litellmMasterKey.existingSecret with a valid secret reference.
+{{- end -}}
+{{- if and .Values.litellm.redis.host (not .Values.litellm.redis.port) -}}
+CARTO: Incomplete LiteLLM Redis configuration
 
-# When litellm.redis.host is specified, litellm.redis.port must also be provided.
-# {{- end -}}
-# {{- if and .Values.litellm.database.host (not .Values.litellm.database.port) -}}
-# CARTO: Incomplete LiteLLM Database configuration
+When litellm.redis.host is specified, litellm.redis.port must also be provided.
+{{- end -}}
+{{- if and .Values.litellm.database.host (not .Values.litellm.database.port) -}}
+CARTO: Incomplete LiteLLM Database configuration
 
-# When litellm.database.host is specified, litellm.database.port must also be provided.
-# {{- end -}}
-# {{- end -}}
-# {{- end -}}
+When litellm.database.host is specified, litellm.database.port must also be provided.
+{{- end -}}
+{{- end -}}
+{{- end -}}
 
 {{/*
 Compile all warnings into a single message, and call fail.
