@@ -722,7 +722,6 @@ spec:
           title: Gemini API key
           type: password
           when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
-          required: true
           default: '{{repl LicenseFieldValue "geminiApiKey" }}'
 
         ## Redis
