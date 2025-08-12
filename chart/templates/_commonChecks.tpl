@@ -164,6 +164,8 @@ Return common collectors for preflights and support-bundle
               {{- end }}
               - name: PUBSUB_PROJECT_ID
                 value: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+              - name: PUBSUB_PROXY_HOST
+                value: {{ .Values.cartoConfigValues.pubsubHost | quote }}
               - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_TOPIC
                 value: projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus
               - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_SUBSCRIPTION
@@ -435,6 +437,8 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
 Return customer values to use in preflights and support-bundle
 */}}
 {{- define "carto.replicated.tenantRequirementsChecker.customerValues" }}
+  - name: CARTO_SELFHOSTED_VERSION
+    value: {{ .Chart.AppVersion | quote }}
   - name: REDIS_CACHE_PREFIX 
     value: "onprem"
   - name: REDIS_HOST
