@@ -93,9 +93,9 @@ spec:
           {{- end }}
           env:
             - name: POSTGRES_ADMIN_USER
-              value: {{ include "carto.postgresql.adminUser" . }}
+              value: {{ include "carto.postgresql.adminUser" . | quote }}
             - name: POSTGRES_LOGIN_USER
-              value: {{ include "carto.postgresql.internalAdminUser" . }}
+              value: {{ include "carto.postgresql.internalAdminUser" . | quote }}
             {{- if .Values.internalPostgresql.enabled }}
             - name: POSTGRES_ADMIN_PASSWORD
               valueFrom:
@@ -104,9 +104,9 @@ spec:
                   key: {{ include "carto.postgresql.secret.adminKey" . }}
             {{- end }}
             - name: POSTGRES_ADMIN_DB
-              value: {{ include "carto.postgresql.adminDatabase" . }}
+              value: {{ include "carto.postgresql.adminDatabase" . | quote }}
             - name: WORKSPACE_POSTGRES_INTERNAL_USER
-              value: {{ include "carto.postgresql.internalUser" . }}
+              value: {{ include "carto.postgresql.internalUser" . | quote }}
             - name: WORKSPACE_POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
