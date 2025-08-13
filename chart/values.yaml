@@ -78,6 +78,8 @@ appConfigValues:
   ldsIsolineProvider: ""
   ## @param appConfigValues.logLevel The log level used in CARTO application
   logLevel: "info"
+  ## @param appConfigValues.deploymentType The deployment type used in CARTO application
+  deploymentType: "helm"
 
 ## @section CARTO Replicated parameters
 ## Global configuration for installations using Replicated. If you change something from this section probably your self-hosted is going to stop working.
@@ -4764,7 +4766,7 @@ internalRedis:
     ## pullSecrets:
     ##   - myRegistryKeySecretName
     ##
-  ## @param internalRedis.image.pullSecrets Image-pull secrets for private registries
+    ## @param internalRedis.image.pullSecrets Image-pull secrets for private registries
     pullSecrets: []
 
   ## @param internalRedis.auth.enabled Enable password authentication on internal-redis
@@ -4945,7 +4947,6 @@ internalRedis:
   ## @param internalRedis.tolerations Tolerations for internal-redis pods assignment
   ##
   tolerations: []
-
 
   ## @param internalRedis.priorityClassName internal-redis pods' priorityClassName
   ##
