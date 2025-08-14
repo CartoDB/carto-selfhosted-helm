@@ -164,8 +164,8 @@ Return common collectors for preflights and support-bundle
               {{- end }}
               - name: PUBSUB_PROJECT_ID
                 value: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
-              - name: PUBSUB_PROXY_HOST
-                value: {{ .Values.cartoConfigValues.pubsubHost | quote }}
+              - name: PUBSUB_CUSTOM_DOMAIN
+                value: {{ .Values.cartoConfigValues.pubsubDomain | quote }}
               - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_TOPIC
                 value: projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus
               - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_SUBSCRIPTION
