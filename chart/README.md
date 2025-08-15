@@ -18,6 +18,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- | ---------------------- |
 | `appConfigValues.selfHostedDomain`                                 | Domain that is going to be used to access to the CARTO self-hosted.                                                    | `carto-selfhosted.lan` |
 | `appConfigValues.storageProvider`                                  | Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob`                             | `gcp`                  |
+| `appConfigValues.aiFeaturesEnabled`                                | Enable the AI features                                                                                                 | `false`                |
 | `appConfigValues.httpCacheEnabled`                                 | Enable the internal httpCache                                                                                          | `true`                 |
 | `appConfigValues.importAwsRoleArn`                                 | ARN Role to be used to import files from the bucket                                                                    | `""`                   |
 | `appConfigValues.exportAwsRoleArn`                                 | ARN Role to be used to export files from the app                                                                       | `""`                   |
@@ -1753,7 +1754,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 | Name                                                      | Description                                                                                                                       | Value                           |
 | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `aiApi.enabled`                                           | Enable ai-api                                                                                                                     | `false`                         |
 | `aiApi.image.registry`                                    | ai-api image registry                                                                                                             | `gcr.io/carto-onprem-artifacts` |
 | `aiApi.image.repository`                                  | ai-api image repository                                                                                                           | `ai-api`                        |
 | `aiApi.image.tag`                                         | ai-api image tag (immutable tags are recommended)                                                                                 | `""`                            |
@@ -1860,7 +1860,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 | Name                                                        | Description                                                                                                                                   | Value                           |
 | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `litellm.enabled`                                           | Enable litellm                                                                                                                                | `false`                         |
 | `litellm.image.registry`                                    | litellm image registry                                                                                                                        | `gcr.io/carto-onprem-artifacts` |
 | `litellm.image.repository`                                  | litellm image repository                                                                                                                      | `litellm`                       |
 | `litellm.image.tag`                                         | litellm image tag (immutable tags are recommended)                                                                                            | `""`                            |

@@ -1,4 +1,4 @@
-{{- if and (.Values.aiApi.enabled) (not .Values.aiApi.existingConfigMap) }}
+{{- if and (.Values.appConfigValues.aiFeaturesEnabled) (not .Values.aiApi.existingConfigMap) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
