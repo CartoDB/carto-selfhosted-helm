@@ -1417,21 +1417,21 @@ Create the name of the litellm secret
 {{- end -}}
 
 {{/*
-Return the litellm database host (uses existing postgresql config)
+Return the litellm database host
 */}}
 {{- define "carto.litellm.databaseHost" -}}
 {{- include "carto.postgresql.host" . -}}
 {{- end -}}
 
 {{/*
-Return the litellm database port (uses existing postgresql config)
+Return the litellm database port
 */}}
 {{- define "carto.litellm.databasePort" -}}
 {{- include "carto.postgresql.port" . -}}
 {{- end -}}
 
 {{/*
-Return the litellm database password (uses existing postgresql config)
+Return the litellm database password
 */}}
 {{- define "carto.litellm.databasePassword" -}}
 {{- if and .Values.internalPostgresql.enabled (not .Values.internalPostgresql.auth.existingSecret) -}}
@@ -1444,21 +1444,14 @@ Return the litellm database password (uses existing postgresql config)
 {{- end -}}
 
 {{/*
-Return the litellm database name (hardcoded to "litellm")
-*/}}
-{{- define "carto.litellm.databaseDb" -}}
-litellm
-{{- end -}}
-
-{{/*
-Return the litellm database user (uses existing postgresql config)
+Return the litellm database user
 */}}
 {{- define "carto.litellm.databaseUser" -}}
 {{- include "carto.postgresql.user" . -}}
 {{- end -}}
 
 {{/*
-Return the litellm database ssl mode (uses existing postgresql config)
+Return the litellm database ssl mode
 */}}
 {{- define "carto.litellm.databaseSslMode" -}}
 {{- if .Values.externalPostgresql.sslEnabled -}}
@@ -1469,28 +1462,21 @@ disable
 {{- end -}}
 
 {{/*
-Return the litellm redis host (uses existing redis config)
+Return the litellm redis host
 */}}
 {{- define "carto.litellm.redisHost" -}}
 {{- include "carto.redis.host" . -}}
 {{- end -}}
 
 {{/*
-Return the litellm redis port (uses existing redis config)
+Return the litellm redis port
 */}}
 {{- define "carto.litellm.redisPort" -}}
 {{- include "carto.redis.port" . -}}
 {{- end -}}
 
 {{/*
-Return the litellm redis db (hardcoded to database 1)
-*/}}
-{{- define "carto.litellm.redisDb" -}}
-1
-{{- end -}}
-
-{{/*
-Return the litellm redis password (uses existing redis config)
+Return the litellm redis password
 */}}
 {{- define "carto.litellm.redisPassword" -}}
 {{- if and ( .Values.internalRedis.enabled ) (not .Values.internalRedis.existingSecret) -}}
@@ -1517,35 +1503,35 @@ Return the litellm salt key checksum
 {{- end -}}
 
 {{/*
-Return the litellm database password secret name (uses existing postgresql config)
+Return the litellm database password secret name
 */}}
 {{- define "carto.litellm.databasePasswordSecretName" -}}
 {{- include "carto.postgresql.secretName" . -}}
 {{- end -}}
 
 {{/*
-Return the litellm database password secret key (uses existing postgresql config)
+Return the litellm database password secret key
 */}}
 {{- define "carto.litellm.databasePasswordSecretKey" -}}
 {{- include "carto.postgresql.secret.key" . -}}
 {{- end -}}
 
 {{/*
-Return the litellm redis password secret name (uses existing redis config)
+Return the litellm redis password secret name
 */}}
 {{- define "carto.litellm.redisPasswordSecretName" -}}
 {{- include "carto.redis.secretName" . -}}
 {{- end -}}
 
 {{/*
-Return the litellm redis password secret key (uses existing redis config)
+Return the litellm redis password secret key
 */}}
 {{- define "carto.litellm.redisPasswordSecretKey" -}}
 {{- include "carto.redis.existingsecret.key" . -}}
 {{- end -}}
 
 {{/*
-Return the litellm database ssl ca (uses existing postgresql config)
+Return the litellm database ssl ca
 */}}
 {{- define "carto.litellm.database.sslCA" -}}
 {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) -}}
@@ -1554,7 +1540,7 @@ Return the litellm database ssl ca (uses existing postgresql config)
 {{- end -}}
 
 {{/*
-Return the directory where the LiteLLM database CA cert will be mounted (uses existing postgresql config)
+Return the directory where the LiteLLM database CA cert will be mounted
 */}}
 {{- define "carto.litellm.database.sslCA.configMapMountDir" -}}
 {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) -}}
@@ -1563,7 +1549,7 @@ Return the directory where the LiteLLM database CA cert will be mounted (uses ex
 {{- end -}}
 
 {{/*
-Return the filename where the LiteLLM database CA will be mounted (uses existing postgresql config)
+Return the filename where the LiteLLM database CA will be mounted
 */}}
 {{- define "carto.litellm.database.sslCA.configMapMountFilename" -}}
 {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) -}}
@@ -1572,7 +1558,7 @@ Return the filename where the LiteLLM database CA will be mounted (uses existing
 {{- end -}}
 
 {{/*
-Return the absolute path where the LiteLLM database CA cert will be mounted (uses existing postgresql config)
+Return the absolute path where the LiteLLM database CA cert will be mounted
 */}}
 {{- define "carto.litellm.database.sslCA.configMapMountAbsolutePath" -}}
 {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) -}}
