@@ -51,8 +51,7 @@ data:
   LITELLM_CALLBACKS: ""
   LITELLM_CALLBACK_LIST: ""
   LITELLM_LOCAL_MODEL_COST_MAP: "True"
-  LITELLM_LOG: {{ .Values.litellm.logLevel | quote }}
-  LITELLM_LOG_LEVEL: "INFO"
+  LITELLM_LOG: "INFO"
   LITELLM_MIGRATION_DIR: "/tmp/prisma/migrations"
   LITELLM_MODE: "PRODUCTION"
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
