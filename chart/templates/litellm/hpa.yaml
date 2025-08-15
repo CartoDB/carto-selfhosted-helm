@@ -1,4 +1,4 @@
-{{- if and (.Values.litellm.enabled) (.Values.litellm.autoscaling.enabled) }}
+{{- if and (.Values.appConfigValues.aiFeaturesEnabled) (.Values.litellm.autoscaling.enabled) }}
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
