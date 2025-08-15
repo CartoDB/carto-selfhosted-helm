@@ -107,14 +107,10 @@ spec:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.key" . }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
-              "BIGQUERY_OAUTH2_CLIENT_SECRET"
-              "CARTO_SELFHOSTED_INSTANCE_ID"
-              "IMPORT_AWS_ACCESS_KEY_ID"
-              "IMPORT_AWS_SECRET_ACCESS_KEY"
               "WORKSPACE_JWT_SECRET"
-              "WORKSPACE_OPENAI_API_KEY"
-              "GITBOOK_API_TOKEN"
-              "LAUNCHDARKLY_SDK_KEY"
+              "LATITUDE_API_KEY"
+              "LITELLM_MASTER_KEY"
+              "LITELLM_SALT_KEY"
              ) "context" $ ) | nindent 12 }}
             {{- if .Values.aiApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.extraEnvVars "context" $) | nindent 12 }}
@@ -123,18 +119,14 @@ spec:
             - configMapRef:
                 name: {{ template "carto.aiApi.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
-              "CARTO_SELFHOSTED_INSTANCE_ID"
-              "IMPORT_AWS_ACCESS_KEY_ID"
-              "IMPORT_AWS_SECRET_ACCESS_KEY"
               "WORKSPACE_JWT_SECRET"
-              "WORKSPACE_OPENAI_API_KEY"
-              "GITBOOK_API_TOKEN" 
-              "LAUNCHDARKLY_SDK_KEY"
+              "LATITUDE_API_KEY"
+              "LITELLM_MASTER_KEY"
+              "LITELLM_SALT_KEY"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.aiApi.secretName" . }}
-            {{- end }}
             {{- if .Values.aiApi.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.aiApi.extraEnvVarsCM "context" $) }}

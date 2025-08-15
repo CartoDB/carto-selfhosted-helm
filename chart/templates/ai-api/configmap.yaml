@@ -62,6 +62,8 @@ data:
   {{- end }}
   NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
   {{- end }}
+  LATITUDE_API_KEY: {{ .Values.cartoSecrets.latitudeApiKey | default "dummy-key" | quote }}
+  LATITUDE_PROJECT_ID: "15291"
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   MAPS_API_V3_COMPONENT_NAME: "sql-worker"
   MAPS_API_V3_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}

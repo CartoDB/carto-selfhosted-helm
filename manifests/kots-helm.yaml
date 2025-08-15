@@ -53,6 +53,8 @@ spec:
         value: '{{repl ConfigOption "geminiApiKey" }}'
       litellmJwtSecret:
         value: '{{repl ConfigOption "jwtEncryptionKey" }}'
+      latitudeApiKey:
+        value: '{{repl ConfigOption "latitudeApiKey" }}'
 
     # Carto Config Values
     cartoConfigValues:

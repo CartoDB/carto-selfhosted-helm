@@ -724,6 +724,13 @@ spec:
           when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
           default: '{{repl LicenseFieldValue "geminiApiKey" }}'
 
+        ## Latitude
+        - name: latitudeApiKey
+          title: Latitude API key
+          type: password
+          when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
+          default: '{{repl LicenseFieldValue "latitudeApiKey" }}'
+
         ## Redis
         - name: externalRedisEnabled
           title: Redis
