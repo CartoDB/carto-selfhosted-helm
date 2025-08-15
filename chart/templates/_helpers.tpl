@@ -1488,6 +1488,19 @@ Return the litellm redis password
 {{- end -}}
 {{- end -}}
 
+{{/* Define Litellm redis TLS behavior */}}
+{{- define "carto.litellm.redis.tls" -}}
+{{- if .Values.internalRedis.enabled -}}
+{{- false -}}
+{{- else -}}
+{{- if and ( .Values.externalRedis.host ) ( .Values.externalRedis.tlsEnabled) -}}
+{{- true -}}
+{{- else -}}
+{{- false -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
 {{/*
 Return the litellm master key checksum
 */}}
