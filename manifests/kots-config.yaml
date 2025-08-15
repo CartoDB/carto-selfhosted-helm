@@ -577,127 +577,16 @@ spec:
       description: |-
         Fine-tune your self-hosted environment with advanced configuration.
       items:
-        ## AiApi
+        ## Ai Features
         ## TODO: replace the links to the docs with the new ones
-        - name: aiApiEnabled
+        - name: aiFeaturesEnabled
           title: AI API
           help_text: |-
             Enable the AI API. [More info](https://docs.carto.com/carto-self-hosted/guides/enable-the-ai-api).
           type: bool
           default: "0"
-          
-        # Litellm
-        - name: litellmInstanceInfo
-          type: label
-          when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
-          title: |-
-            By default, LiteLLM will use the same database and Redis instances as the main Metadata Database. You can configure custom instances below to override this.
-        - name: litellmRedisHost
-          title: Litellm Redis Host
-          type: text
-          optional: true
-          when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
-          help_text: |-
-            The host of the Redis instance to use for LiteLLM. If left blank, the default Redis instance (externalRedisHost or internalRedisHost) will be used.
-        - name: litellmRedisPort
-          title: Litellm Redis Port
-          type: text
-          optional: true
-          when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
-          help_text: |-
-            The port of the Redis instance to use for LiteLLM. If left blank, the default Redis port (externalRedisPort or internalRedisPort) will be used.
-        - name: litellmRedisPassword
-          title: Litellm Redis Password
-          type: password
-          optional: true
-          when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
-          help_text: |-
-            The password of the Redis instance to be used by LiteLLM. If left blank, the default Redis password (externalRedisPassword or internalRedisPassword) will be used.
-        - name: litellmDatabaseHost
-          title: Litellm Database Host
-          type: text
-          optional: true
-          when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
-          help_text: |-
-            The host of the database instance to use for LiteLLM. If left blank, the default database host (metadataDBHost) will be used.
-        - name: litellmDatabasePort
-          title: Litellm Database Port
-          type: text
-          optional: true
-          when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
-          help_text: |-
-            The port of the database instance to use for LiteLLM. If left blank, the default database port (metadataDBPort) will be used.
-        - name: litellmDatabasePassword
-          title: Litellm Database Password
-          type: password
-          optional: true
-          when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
-          help_text: |-
-            The password of the database instance to be used by LiteLLM. If left blank, the default database password (metadataDBPassword) will be used.
-        - name: litellmDatabaseName
-          title: Litellm Database Name
-          type: text
-          optional: true
-          when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
-          help_text: |-
-            The name of the database instance to be used by LiteLLM. If left blank, the default database name "litellm" will be used. If you want to configure you own, override the default value.
-        - name: litellmDatabaseUser
-          title: Litellm Database User
-          type: text
-          optional: true
-          when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
-          help_text: |-
-            The user of the database instance to be used by LiteLLM. If left blank, the default database user (metadataDBUser) will be used.
-        - name: litellmDatabaseSSLModeInfo
-          type: label
-          when: '{{repl and (ConfigOptionEquals "aiApiEnabled" "1") (ConfigOptionEquals "litellmDatabaseSSLEnabled" "1") }}'
-          title: |-
-            If you didn't confgure your own host and enable the SSL (SSLEnabled for the Litellm Database), by default, LiteLLM will use the same SSL certificate as the main Metadata Database. You can upload a custom certificate below to override this.
-        - name: litellmDatabaseSSLEnabled
-          title: LiteLLM Database SSL
-          help_text: |-
-            Enable SSL for LiteLLM database connections. This will inherit SSL configuration from external PostgreSQL if not using a custom database.
-          optional: true
-          type: bool
-          when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
-        - name: litellmDatabaseSSLMode
-          title: LiteLLM Database SSL Mode
-          type: text
-          optional: true
-          when: '{{repl and (ConfigOptionEquals "aiApiEnabled" "1") (ConfigOptionEquals "litellmDatabaseSSLEnabled" "1") }}'
-          items:
-            - name: disable
-              title: Disable
-            - name: require
-              title: Require
-            - name: verify-ca
-              title: Verify CA
-            - name: verify-full
-              title: Verify Full
-        - name: litellmDatabaseSSLCertificate
-          title: LiteLLM Database SSL CA Certificate
-          type: text
-          optional: true
-          when: '{{repl and (ConfigOptionEquals "aiApiEnabled" "1") (ConfigOptionEquals "litellmDatabaseSSLEnabled" "1") }}'
-          help_text: |-
-            Custom CA certificate for LiteLLM database SSL connections. Leave empty to use the main database's SSL configuration.
-        - name: litellmRedisEnableTLS
-          title: LiteLLM Redis SSL/TLS
-          type: bool
-          optional: true
-          when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
-        - name: litellmRedisSSLCertReqs
-          title: LiteLLM Redis SSL Certificate Requirements
-          type: text
-          optional: true
-          when: '{{repl and (ConfigOptionEquals "aiApiEnabled" "1") (ConfigOptionEquals "litellmRedisEnableTLS" "1") }}'
-          items:
-            - name: none
-              title: None
-            - name: optional
-              title: Optional
-            - name: required
-              title: Required
+
+        ## Litellm
         - name: enableLitellmEndpoint
           title: Enable Litellm endpoint
           help_text: |-
