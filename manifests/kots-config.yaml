@@ -596,13 +596,13 @@ spec:
         - name: litellmMasterKey
           title: Litellm master key
           type: password
-          when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
           required: true
           default: 'sk-{{repl RandomString 16 "[A-Za-z0-9]" }}'
         - name: litellmSaltKey
           title: Litellm salt key
           type: password
-          when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
           required: true
           default: 'sk-{{repl RandomString 16 "[A-Za-z0-9]" }}'
 
@@ -610,7 +610,7 @@ spec:
         - name: geminiApiKey
           title: Gemini API key
           type: password
-          when: '{{repl (ConfigOptionEquals "aiApiEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
           default: '{{repl LicenseFieldValue "geminiApiKey" }}'
 
         ## Redis
