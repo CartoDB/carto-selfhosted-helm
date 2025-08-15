@@ -127,6 +127,7 @@ spec:
             {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.aiApi.secretName" . }}
+            {{- end }}
             {{- if .Values.aiApi.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.aiApi.extraEnvVarsCM "context" $) }}
