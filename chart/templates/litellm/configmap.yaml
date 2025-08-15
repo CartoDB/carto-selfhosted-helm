@@ -65,9 +65,7 @@ data:
   REDIS_DB: "1"
   REDIS_HOST: {{ include "carto.litellm.redisHost" . | quote }}
   REDIS_PORT: {{ include "carto.litellm.redisPort" . | quote }}
-  {{- if .Values.litellm.serverRootPath }}
-  SERVER_ROOT_PATH: {{ .Values.litellm.serverRootPath | quote }}
-  {{- end }}
+  SERVER_ROOT_PATH: "/litellm"
   STORE_MODEL_IN_DB: "True"
   USE_PRISMA_MIGRATE: "True"
   PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"

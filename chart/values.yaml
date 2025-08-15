@@ -5843,12 +5843,6 @@ litellm:
   ##
   containerPorts:
     http: 4000
-  ## @param litellm.logLevel Litellm log level
-  ##
-  logLevel: "INFO"
-  ## @param litellm.serverRootPath Litellm server root path
-  ##
-  serverRootPath: "/litellm"
   ## Configure extra options for litellm containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param litellm.livenessProbe.enabled Enable livenessProbe on ai-api containers
