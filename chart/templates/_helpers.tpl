@@ -1529,52 +1529,7 @@ Return the litellm database password secret key
 {{- include "carto.postgresql.secret.key" . -}}
 {{- end -}}
 
-{{/*
-Return the litellm redis password secret name
-*/}}
-{{- define "carto.litellm.redisPasswordSecretName" -}}
-{{- include "carto.redis.secretName" . -}}
-{{- end -}}
 
-{{/*
-Return the litellm redis password secret key
-*/}}
-{{- define "carto.litellm.redisPasswordSecretKey" -}}
-{{- include "carto.redis.existingsecret.key" . -}}
-{{- end -}}
 
-{{/*
-Return the litellm database ssl ca
-*/}}
-{{- define "carto.litellm.database.sslCA" -}}
-{{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) -}}
-{{- .Values.externalPostgresql.sslCA -}}
-{{- end -}}
-{{- end -}}
 
-{{/*
-Return the directory where the LiteLLM database CA cert will be mounted
-*/}}
-{{- define "carto.litellm.database.sslCA.configMapMountDir" -}}
-{{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) -}}
-{{- include "carto.postgresql.configMapMountDir" . -}}
-{{- end -}}
-{{- end -}}
 
-{{/*
-Return the filename where the LiteLLM database CA will be mounted
-*/}}
-{{- define "carto.litellm.database.sslCA.configMapMountFilename" -}}
-{{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) -}}
-{{- include "carto.postgresql.configMapMountFilename" . -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the absolute path where the LiteLLM database CA cert will be mounted
-*/}}
-{{- define "carto.litellm.database.sslCA.configMapMountAbsolutePath" -}}
-{{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) -}}
-{{- include "carto.postgresql.configMapMountAbsolutePath" . -}}
-{{- end -}}
-{{- end -}}
