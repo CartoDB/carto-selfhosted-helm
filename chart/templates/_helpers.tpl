@@ -1246,9 +1246,15 @@ Return the Redis password sha256sum
 */}}
 {{- define "carto.redis.passwordChecksum" -}}
 {{- if .Values.internalRedis.enabled -}}
-{{- print (tpl (toYaml (default .Values.internalRedis.auth.password .Values.cartoSecrets.redisPassword.value)) . | sha256sum ) -}}
+{{- if and (.Values.cartoSecrets) (.Values.cartoSecrets.redisPassword) (.Values.cartoSecrets.redisPassword.value) -}}
+{{- print (tpl (toYaml .Values.cartoSecrets.redisPassword.value) . | sha256sum ) -}}
 {{- else -}}
+{{- print (tpl (toYaml .Values.internalRedis.auth.password) . | sha256sum ) -}}
+{{- end -}}
+{{- else -}}
+{{- if not .Values.externalRedis.existingSecret -}}
 {{- print (tpl (toYaml .Values.externalRedis.password) . | sha256sum ) -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -1417,20 +1423,6 @@ Create the name of the litellm secret
 {{- end -}}
 
 {{/*
-Return the litellm database host
-*/}}
-{{- define "carto.litellm.databaseHost" -}}
-{{- include "carto.postgresql.host" . -}}
-{{- end -}}
-
-{{/*
-Return the litellm database port
-*/}}
-{{- define "carto.litellm.databasePort" -}}
-{{- include "carto.postgresql.port" . -}}
-{{- end -}}
-
-{{/*
 Return the litellm database password
 */}}
 {{- define "carto.litellm.databasePassword" -}}
@@ -1441,13 +1433,6 @@ Return the litellm database password
 {{- .Values.externalPostgresql.password -}}
 {{- end -}}
 {{- end -}}
-{{- end -}}
-
-{{/*
-Return the litellm database user
-*/}}
-{{- define "carto.litellm.databaseUser" -}}
-{{- include "carto.postgresql.user" . -}}
 {{- end -}}
 
 {{/*
@@ -1462,20 +1447,6 @@ disable
 {{- end -}}
 
 {{/*
-Return the litellm redis host
-*/}}
-{{- define "carto.litellm.redisHost" -}}
-{{- include "carto.redis.host" . -}}
-{{- end -}}
-
-{{/*
-Return the litellm redis port
-*/}}
-{{- define "carto.litellm.redisPort" -}}
-{{- include "carto.redis.port" . -}}
-{{- end -}}
-
-{{/*
 Return the litellm redis password
 */}}
 {{- define "carto.litellm.redisPassword" -}}
@@ -1484,19 +1455,6 @@ Return the litellm redis password
 {{- else -}}
 {{- if not .Values.externalRedis.existingSecret -}}
 {{- .Values.externalRedis.password -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-
-{{/* Define Litellm redis TLS behavior */}}
-{{- define "carto.litellm.redis.tls" -}}
-{{- if .Values.internalRedis.enabled -}}
-{{- false -}}
-{{- else -}}
-{{- if and ( .Values.externalRedis.host ) ( .Values.externalRedis.tlsEnabled) -}}
-{{- true -}}
-{{- else -}}
-{{- false -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
@@ -1528,8 +1486,4 @@ Return the litellm database password secret key
 {{- define "carto.litellm.databasePasswordSecretKey" -}}
 {{- include "carto.postgresql.secret.key" . -}}
 {{- end -}}
-
-
-
-
 
