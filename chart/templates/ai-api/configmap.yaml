@@ -13,7 +13,6 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  AI_COMPONENT_NAME: "ai-api"
   AI_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
   AI_HONEYCOMB_API_KEY: {{ .Values.aiApi.honeycombApiKey | quote }}
   AI_HONEYCOMB_DATASET: {{ .Values.aiApi.honeycombDataset | quote }}
