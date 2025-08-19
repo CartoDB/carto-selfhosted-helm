@@ -14,8 +14,6 @@ metadata:
   {{- end }}
 data:
   AI_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
-  AI_HONEYCOMB_API_KEY: {{ .Values.aiApi.honeycombApiKey | quote }}
-  AI_HONEYCOMB_DATASET: {{ .Values.aiApi.honeycombDataset | quote }}
   AI_OPENAI_API_KEY: {{ .Values.cartoSecrets.litellmMasterKey | quote }}
   AI_OPENAI_ENDPOINT: "http://{{ include "carto.litellm.fullname" . }}:{{ .Values.litellm.containerPorts.http }}/v1"
   AI_PORT: {{ .Values.aiApi.containerPorts.http | quote }}
@@ -72,8 +70,6 @@ data:
   MAPS_API_V3_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   MAX_RESPONSE_LENGTH: {{ .Values.aiApi.maxResponseLength | quote }}
   NODE_OPTIONS: {{ template "carto.aiApi.nodeOptions" . }}
-  OPEN_TELEMETRY_ENABLED: {{ .Values.aiApi.openTelemetryEnabled | quote }}
-  OPEN_TELEMETRY_TRACES_ENDPOINT: {{ .Values.aiApi.openTelemetryTracesEndpoint | quote }}
   PUBSUB_MODE: "pull"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   PUBSUB_USE_REST_API: {{ .Values.cartoConfigValues.usePubSubRestApi | quote }}
