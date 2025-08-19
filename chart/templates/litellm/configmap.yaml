@@ -32,9 +32,6 @@ data:
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
-  {{- if .Values.externalProxy.sslCA }}
-  NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
-  {{- end }}
   {{- end }}
   LITELLM_CALLBACKS: ""
   LITELLM_CALLBACK_LIST: ""
@@ -44,12 +41,9 @@ data:
   LITELLM_MIGRATION_DIR: "/tmp/prisma/migrations"
   LITELLM_MODE: "PRODUCTION"
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
-  PORT: {{ .Values.litellm.containerPorts.http | quote }}
   PRISMA_BINARY_CACHE_DIR: "/tmp/prisma-cache"
   PRISMA_CLI_CACHE_DIR: "/tmp/prisma-cache"
   PRISMA_HOME: "/tmp/prisma-cache"
-  PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
-  PUBSUB_USE_REST_API: {{ .Values.cartoConfigValues.usePubSubRestApi | quote }}
   REDIS_DB: {{ include "carto.litellm.redisDb" . | quote }}
   REDIS_HOST: {{ include "carto.litellm.redisHost" . | quote }}
   REDIS_PORT: {{ include "carto.litellm.redisPort" . | quote }}
