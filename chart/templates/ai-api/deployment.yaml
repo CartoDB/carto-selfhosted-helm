@@ -108,7 +108,6 @@ spec:
                   key: {{ include "carto.postgresql.secret.key" . }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "WORKSPACE_JWT_SECRET"
-              "LATITUDE_API_KEY"
               "LITELLM_MASTER_KEY"
               "LITELLM_SALT_KEY"
              ) "context" $ ) | nindent 12 }}
@@ -120,7 +119,6 @@ spec:
                 name: {{ template "carto.aiApi.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "WORKSPACE_JWT_SECRET"
-              "LATITUDE_API_KEY"
               "LITELLM_MASTER_KEY"
               "LITELLM_SALT_KEY"
              ) "context" $ ) -}}
