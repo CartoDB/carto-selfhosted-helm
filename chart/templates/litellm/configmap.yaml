@@ -13,21 +13,10 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
-  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
-  CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
-  {{- end }}
-  {{- if eq .Values.appConfigValues.logLevel "debug" }}
-  CARTO_TRACING_MODE: "local"
-  {{- end }}
   DATABASE_HOST: {{ include "carto.litellm.databaseHost" . | quote }}
   DATABASE_NAME: {{ include "carto.litellm.databaseDb" . | quote }}
   DATABASE_PORT: {{ include "carto.litellm.databasePort" . | quote }}
   DATABASE_USERNAME: {{ include "carto.litellm.databaseUser" . | quote }}
-  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
-  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
-  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
-  {{- end }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
