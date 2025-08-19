@@ -22,9 +22,11 @@ data:
   NGINX_PROXY_BUFFERS: {{ .Values.router.nginxConfig.proxy_buffers | quote }}
   NGINX_PROXY_BUFFER_SIZE: {{ .Values.router.nginxConfig.proxy_buffer_size | quote }}
   NGINX_PROXY_BUSY_BUFFERS_SIZE: {{ .Values.router.nginxConfig.proxy_busy_buffers_size | quote }}
+  {{- if .Values.appConfigValues.aiFeaturesEnabled }}
   ROUTER_AI_API_INTERNAL_URL: {{ include "carto.aiApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_AI_ENABLE_LITELLM_ENDPOINT: {{ .Values.cartoConfigValues.enableLitellmEndpoint | quote }}
   ROUTER_AI_LITELLM_INTERNAL_URL: {{ include "carto.litellm.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}/litellm
+  {{- end }}
   ROUTER_ACCOUNTS_WWW_INTERNAL_URL: {{ include "carto.accountsWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_HTTP_CACHE_INTERNAL_URL: {{ include "carto.httpCache.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_NOTIFIER_INTERNAL_URL: {{ include "carto.notifier.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}

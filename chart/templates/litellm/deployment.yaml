@@ -86,6 +86,10 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.litellm.command "context" $) | nindent 10 }}
           {{- else }}
           command: ["/bin/sh"]
+          {{- end }}
+          {{- if .Values.litellm.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.args "context" $) | nindent 12 }}
+          {{- else if not (.Values.diagnosticMode.enabled or .Values.litellm.command) }}
           args:
             - -c
             - |
@@ -102,8 +106,8 @@ spec:
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "carto.litellm.carto" . }}
-                  key: {{ include "carto.litellm.databasePasswordSecretKey" . }}
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ include "carto.postgresql.secret.key" . }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -219,7 +223,7 @@ spec:
         {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
         - name: postgresql-ssl-ca
           configMap:
-            name: {{ include "carto.postgresql.configmapName" . }}
+            name: {{ include "carto.postgresql.configMapName" . }}
             items:
               - key: {{ include "carto.postgresql.configMapMountFilename" . }}
                 path: {{ include "carto.postgresql.configMapMountFilename" . }}
