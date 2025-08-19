@@ -13,6 +13,9 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
+  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
+  AI_API_URL: "http://{{ include "carto.aiApi.fullname" . }}:{{ .Values.aiApi.service.ports.http }}"
   DATABASE_HOST: {{ include "carto.litellm.databaseHost" . | quote }}
   DATABASE_NAME: {{ include "carto.litellm.databaseDb" . | quote }}
   DATABASE_PORT: {{ include "carto.litellm.databasePort" . | quote }}
