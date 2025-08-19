@@ -1,4 +1,4 @@
-{{- if and (.Values.appConfigValues.aiFeaturesEnabled) (not .Values.cartoConfigValues.onlyRunRouter) }}
+{{- if and (.Values.litellm.enabled) (not .Values.cartoConfigValues.onlyRunRouter) }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
@@ -90,46 +90,25 @@ spec:
             - -c
             - |
               # Construct DATABASE_URL from the individual environment variables
-              export DATABASE_URL="postgresql://$DATABASE_USERNAME:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME?sslmode=${DATABASE_SSL_MODE}"{{- if include "carto.litellm.database.sslCA" . }}&sslrootcert=${DATABASE_SSL_PATH}{{- end }}""
-              # Construct REDIS_URL from the individual environment variable
-              export REDIS_URL="{{- if .Values.litellm.redis.enableTls -}}rediss{{- else -}}redis{{- end -}}://:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT/$REDIS_DB{{ if .Values.litellm.redis.enableTls }}&ssl_cert_reqs={{ .Values.litellm.redis.sslCertReqs }}{{ end }}"
-              # Start the litellm application with config
+              export DATABASE_URL="postgresql://$DATABASE_USERNAME:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME?sslmode=${DATABASE_SSL_MODE}"{{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}&sslrootcert=${DATABASE_SSL_PATH}{{- end }}""
+              # Construct REDIS_URL from the individual environment variables
+              export REDIS_URL="{{- if a( .Values.externalRedis.host ) ( .Values.externalRedis.tlsEnabled) -}}rediss{{- else -}}redis{{- end -}}://:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT/$REDIS_DB{{- if and ( .Values.externalRedis.host ) ( .Values.externalRedis.tlsEnabled) -}}&ssl_cert_reqs=none{{- end -}}"
               exec litellm --config /app/config.yaml
           {{- end }}
           {{- if .Values.litellm.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.args "context" $) | nindent 12 }}
           {{- end }}
           env:
-            - name: DATABASE_HOST
-              value: {{ include "carto.litellm.databaseHost" . | quote }}
-            - name: DATABASE_USERNAME
-              value: {{ include "carto.litellm.databaseUser" . | quote }}
-            - name: DATABASE_NAME
-              value: {{ include "carto.litellm.databaseDb" . | quote }}
-            - name: DATABASE_PORT
-              value: {{ include "carto.litellm.databasePort" . | quote }}
-            - name: DATABASE_SSL_MODE
-              value: {{ include "carto.litellm.databaseSslMode" . | quote }}
-            {{- if include "carto.litellm.database.sslCA" . }}
-            - name: DATABASE_SSL_PATH
-              value: {{ include "carto.litellm.database.sslCA.configMapMountAbsolutePath" . | quote }}
-            {{- end }}
-            - name: REDIS_HOST
-              value: {{ include "carto.litellm.redisHost" . | quote }}
-            - name: REDIS_PORT
-              value: {{ include "carto.litellm.redisPort" . | quote }}
-            - name: REDIS_DB
-              value: {{ include "carto.litellm.redisDb" . | quote }}
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "carto.litellm.databasePasswordSecretName" . }}
+                  name: {{ include "carto.litellm.carto" . }}
                   key: {{ include "carto.litellm.databasePasswordSecretKey" . }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "carto.litellm.redisPasswordSecretName" . }}
-                  key: {{ include "carto.litellm.redisPasswordSecretKey" . }}
+                  name: {{ include "carto.redis.secretName" . }}
+                  key: {{ include "carto.redis.existingsecret.key" . }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "CARTO_SELFHOSTED_INSTANCE_ID"
               "ENCRYPTION_SECRET_KEY"
@@ -217,10 +196,10 @@ spec:
               mountPath: /.cache
             - name: tmp-dir
               mountPath: /tmp
-            {{- if include "carto.litellm.database.sslCA" . }}
+            {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
             - name: postgresql-ssl-ca
-              mountPath: {{ include "carto.litellm.database.sslCA.configMapMountAbsolutePath" . }}
-              subPath: {{ include "carto.litellm.database.sslCA.configMapMountFilename" . }}
+              mountPath: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
+              subPath: {{ include "carto.postgresql.configMapMountFilename" . }}
               readOnly: true
             {{- end }}
             {{- if .Values.litellm.extraVolumeMounts }}
@@ -237,13 +216,13 @@ spec:
           emptyDir: {}
         - name: tmp-dir
           emptyDir: {}
-        {{- if include "carto.litellm.database.sslCA" . }}
+        {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
         - name: postgresql-ssl-ca
           configMap:
-            name: {{ include "carto.litellm.configmapName" . }}
+            name: {{ include "carto.postgresql.configmapName" . }}
             items:
-              - key: {{ include "carto.litellm.database.sslCA.configMapMountFilename" . }}
-                path: {{ include "carto.litellm.database.sslCA.configMapMountFilename" . }}
+              - key: {{ include "carto.postgresql.configMapMountFilename" . }}
+                path: {{ include "carto.postgresql.configMapMountFilename" . }}
         {{- end }}
         {{- if .Values.litellm.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.litellm.extraVolumes "context" $) | nindent 8 }}
