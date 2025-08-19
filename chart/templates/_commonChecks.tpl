@@ -257,10 +257,6 @@ Return common collectors for preflights and support-bundle
         - {{ template "carto.workspaceSubscriber.image" . }}
         - {{ template "carto.workspaceWww.image" . }}
         - {{ template "carto.tenantRequirementsChecker.image" . }}
-        {{- if .Values.aiApi.enabled }}
-        - {{ template "carto.aiApi.image" . }}
-        - {{ template "carto.litellm.image" . }}
-        {{- end }}
 {{- end -}}
 
 {{/*
@@ -312,15 +308,6 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   */}}
   {{- if not .Values.internalRedis.enabled }}
   {{- $_ := set $preflightsDict "RedisValidator" (list "Check_redis_connection") }}
-  {{- end }}
-  {{/*
-  We conditionally add AI API and LiteLLM validators if they're enabled
-  */}}
-  {{- if .Values.litellm.enabled }}
-  {{- $_ := set $preflightsDict "LitellmValidator" (list "Check_litellm_configuration" "Check_litellm_master_key" "Check_litellm_database_connection" "Check_litellm_redis_connection") }}
-  {{- end }}
-  {{- if .Values.aiApi.enabled }}
-  {{- $_ := set $preflightsDict "AiApiValidator" (list "Check_ai_api_dependencies" "Check_ai_api_litellm_connectivity") }}
   {{- end }}
   {{- range $preflight, $preflightChecks  := $preflightsDict }}
   {{- range $preflightCheckName := $preflightChecks }}
@@ -557,35 +544,6 @@ Return customer values to use in preflights and support-bundle
   - name: ROUTER_SSL_CERT_KEY
     value: "/etc/ssl/certs/cert.key"
   {{- end }}
-  {{- if .Values.aiApi.enabled }}
-  - name: LITELLM_ENABLED
-    value: {{ .Values.litellm.enabled | quote }}
-  - name: LITELLM_DATABASE_HOST
-    value: {{ include "carto.litellm.databaseHost" . | quote }}
-  - name: LITELLM_DATABASE_PORT
-    value: {{ include "carto.litellm.databasePort" . | quote }}
-  - name: LITELLM_DATABASE_NAME
-    value: {{ include "carto.litellm.databaseDb" . | quote }}
-  - name: LITELLM_DATABASE_USER
-    value: {{ include "carto.litellm.databaseUser" . | quote }}
-  {{- if .Values.litellm.redis.host }}
-  - name: LITELLM_REDIS_HOST
-    value: {{ .Values.litellm.redis.host | quote }}
-  - name: LITELLM_REDIS_PORT
-    value: {{ .Values.litellm.redis.port | quote }}
-  {{- else }}
-  - name: LITELLM_REDIS_HOST
-    value: {{ include "carto.redis.host" . | quote }}
-  - name: LITELLM_REDIS_PORT
-    value: {{ include "carto.redis.port" . | quote }}
-  {{- end }}
-  - name: AI_API_ENABLED
-    value: {{ .Values.aiApi.enabled | quote }}
-  - name: AI_API_LITELLM_DEPENDENCY
-    value: {{ .Values.litellm.enabled | quote }}
-  - name: AI_API_LITELLM_ENDPOINT
-    value: "http://{{ include "carto.litellm.fullname" . }}:{{ .Values.litellm.containerPorts.http }}/v1"
-  {{- end }}
 {{- end -}}
 
 {{/*
@@ -656,48 +614,6 @@ Return customer secrets to use in preflights and support-bundle
     value: {{ .Values.appSecrets.azureStorageAccessKey.value | quote }}
   {{- else -}}
   {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY" "context" .) | nindent 2 }}
-  {{- end -}}
-  {{- end -}}
-  {{- if .Values.aiApi.enabled }}
-  {{- if eq .Values.cartoSecrets.litellmMasterKey.existingSecret.name "" }}
-  - name: LITELLM_MASTER_KEY
-    value: {{ .Values.cartoSecrets.litellmMasterKey.value | quote }}
-  {{- else -}}
-  - name: LITELLM_MASTER_KEY
-    valueFrom:
-      secretKeyRef:
-        name: {{ .Values.cartoSecrets.litellmMasterKey.existingSecret.name | quote }}
-        key: {{ .Values.cartoSecrets.litellmMasterKey.existingSecret.key | quote }}
-  {{- end -}}
-  {{- if .Values.litellm.redis.password }}
-  - name: LITELLM_REDIS_PASSWORD
-    value: {{ .Values.litellm.redis.password | quote }}
-  {{- else }}
-  {{- if eq .Values.externalRedis.existingSecret "" }}
-  - name: LITELLM_REDIS_PASSWORD
-    value: {{ .Values.externalRedis.password | quote }}
-  {{- else }}
-  - name: LITELLM_REDIS_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: {{ include "carto.redis.secretName" . }}
-        key: {{ include "carto.redis.existingsecret.key" . | quote }}
-  {{- end -}}
-  {{- end -}}
-  {{- if .Values.litellm.database.password }}
-  - name: LITELLM_DATABASE_PASSWORD
-    value: {{ .Values.litellm.database.password | quote }}
-  {{- else }}
-  {{- if eq .Values.externalPostgresql.existingSecret "" }}
-  - name: LITELLM_DATABASE_PASSWORD
-    value: {{ .Values.externalPostgresql.password | quote }}
-  {{- else }}
-  - name: LITELLM_DATABASE_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: {{ include "carto.postgresql.secretName" . }}
-        key: {{ include "carto.postgresql.secret.key" . }}
-  {{- end -}}
   {{- end -}}
   {{- end -}}
 {{- end -}}
