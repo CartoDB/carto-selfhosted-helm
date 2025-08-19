@@ -19,9 +19,6 @@ data:
   AI_OPENAI_ENDPOINT: "http://{{ include "carto.litellm.fullname" . }}:{{ .Values.litellm.containerPorts.http }}/v1"
   AI_SQL_API_URL: "http://{{ include "carto.mapsApi.fullname" . }}:{{ .Values.mapsApi.containerPorts.http }}"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
-  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
-  CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
-  {{- end }}
   {{- if eq .Values.appConfigValues.logLevel "debug" }}
   CARTO_TRACING_MODE: "local"
   {{- end }}
