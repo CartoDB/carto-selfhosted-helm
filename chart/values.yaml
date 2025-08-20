@@ -5747,7 +5747,7 @@ aiApi:
     ## @param aiApi.service.ports.http ai-api service HTTP port
     ##
     ports:
-      http: 80
+      http: 3000
     ## Node.js ports to expose
     ## @param aiApi.service.nodePorts.http Node.js port for HTTP
     ## NOTE: choose port between <30000-32767>
@@ -5946,7 +5946,7 @@ litellm:
   ## @param litellm.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
-  ## ai-api autoscaling configuration
+  ## litellm autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param litellm.autoscaling.enabled Enable autoscaling for the ai-api containers
   ## @param litellm.autoscaling.minReplicas The minimal number of containers for the ai-api deployment
@@ -5958,7 +5958,7 @@ litellm:
     minReplicas: 1
     maxReplicas: 3
     targetCPUUtilizationPercentage: 75
-  ## ai-api resource requests and limits
+  ## litellm resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param litellm.resources.limits.memory Container memory limits in MiB
   ## @param litellm.resources.limits.cpu Container cpu limits in milliCPU cores
