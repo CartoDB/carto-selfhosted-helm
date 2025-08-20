@@ -51,20 +51,13 @@ data:
   LITELLM_CALLBACKS: ""
   LITELLM_CALLBACK_LIST: ""
   LITELLM_LOCAL_MODEL_COST_MAP: "True"
-  {{- if eq .Values.appConfigValues.logLevel "debug" }}
-  LITELLM_LOG_LEVEL: "DEBUG"
-  {{- else }}
-  LITELLM_LOG_LEVEL: "INFO"
-  {{- end }}
+  LITELLM_LOG_LEVEL: {{ ternary "DEBUG" "INFO" .Values.appConfigValues.logLevel | quote }}
   LITELLM_MIGRATION_DIR: "/tmp/prisma/migrations"
   LITELLM_MODE: "PRODUCTION"
-  LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   PORT: {{ .Values.litellm.containerPorts.http | quote }}
   PRISMA_BINARY_CACHE_DIR: "/tmp/prisma-cache"
   PRISMA_CLI_CACHE_DIR: "/tmp/prisma-cache"
   PRISMA_HOME: "/tmp/prisma-cache"
-  PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
-  PUBSUB_USE_REST_API: {{ .Values.cartoConfigValues.usePubSubRestApi | quote }}
   REDIS_DB: "1"
   REDIS_HOST: {{ include "carto.redis.host" . | quote }}
   REDIS_PORT: {{ include "carto.redis.port" . | quote }}
