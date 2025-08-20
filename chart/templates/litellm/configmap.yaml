@@ -73,7 +73,4 @@ data:
   USE_PRISMA_MIGRATE: "True"
   PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
   XDG_CACHE_HOME: "/tmp/prisma-cache"
-  {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
-  {{ include "carto.postgresql.configMapMountFilename" . }}: {{ .Values.externalPostgresql.sslCA | quote }}
-  {{- end }}
 {{- end }} 
