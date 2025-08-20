@@ -22,5 +22,5 @@ spec:
 {{- end }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
-      app.kubernetes.io/component: litellm
+      app.kubernetes.io/name: litellm
 {{- end }} 

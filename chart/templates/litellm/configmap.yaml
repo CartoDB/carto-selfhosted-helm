@@ -13,25 +13,14 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
-  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
-  CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
-  {{- end }}
-  {{- if eq .Values.appConfigValues.logLevel "debug" }}
-  CARTO_TRACING_MODE: "local"
-  {{- end }}
-  DATABASE_HOST: {{ include "carto.postgresql.host" . | quote }}
-  DATABASE_NAME: "litellm"
-  DATABASE_PORT: {{ include "carto.postgresql.port" . | quote }}
-  DATABASE_SSL_MODE: {{ include "carto.litellm.databaseSslMode" . | quote }}
-  DATABASE_USERNAME: {{ include "carto.postgresql.user" . | quote }}
-  {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
-  DATABASE_SSL_PATH: {{ include "carto.postgresql.configMapMountAbsolutePath" . | quote }}
-  {{- end }}
-  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
-  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
-  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
-  {{- end }}
+  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
+  AI_API_URL: "http://{{ include "carto.aiApi.fullname" . }}:{{ .Values.aiApi.service.ports.http }}"
+  DATABASE_HOST: {{ include "carto.litellm.databaseHost" . | quote }}
+  DATABASE_NAME: {{ include "carto.litellm.databaseDb" . | quote }}
+  DATABASE_PORT: {{ include "carto.litellm.databasePort" . | quote }}
+  DATABASE_USERNAME: {{ include "carto.litellm.databaseUser" . | quote }}
+
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
@@ -44,9 +33,6 @@ data:
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
-  {{- if .Values.externalProxy.sslCA }}
-  NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
-  {{- end }}
   {{- end }}
   LITELLM_CALLBACKS: ""
   LITELLM_CALLBACK_LIST: ""
@@ -54,14 +40,16 @@ data:
   LITELLM_LOG_LEVEL: {{ ternary "DEBUG" "INFO" .Values.appConfigValues.logLevel | quote }}
   LITELLM_MIGRATION_DIR: "/tmp/prisma/migrations"
   LITELLM_MODE: "PRODUCTION"
-  PORT: {{ .Values.litellm.containerPorts.http | quote }}
+  LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   PRISMA_BINARY_CACHE_DIR: "/tmp/prisma-cache"
   PRISMA_CLI_CACHE_DIR: "/tmp/prisma-cache"
   PRISMA_HOME: "/tmp/prisma-cache"
-  REDIS_DB: "1"
-  REDIS_HOST: {{ include "carto.redis.host" . | quote }}
-  REDIS_PORT: {{ include "carto.redis.port" . | quote }}
-  SERVER_ROOT_PATH: "/litellm"
+  REDIS_DB: {{ include "carto.litellm.redisDb" . | quote }}
+  REDIS_HOST: {{ include "carto.litellm.redisHost" . | quote }}
+  REDIS_PORT: {{ include "carto.litellm.redisPort" . | quote }}
+  {{- if .Values.litellm.serverRootPath }}
+  SERVER_ROOT_PATH: {{ .Values.litellm.serverRootPath | quote }}
+  {{- end }}
   STORE_MODEL_IN_DB: "True"
   USE_PRISMA_MIGRATE: "True"
   PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"

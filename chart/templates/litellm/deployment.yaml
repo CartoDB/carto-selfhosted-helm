@@ -86,13 +86,17 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.litellm.command "context" $) | nindent 10 }}
           {{- else }}
           command: ["/bin/sh"]
+          {{- end }}
+          {{- if .Values.litellm.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.args "context" $) | nindent 12 }}
+          {{- else if not (.Values.diagnosticMode.enabled or .Values.litellm.command) }}
           args:
             - -c
             - |
               # Construct DATABASE_URL from the individual environment variables
               export DATABASE_URL="postgresql://$DATABASE_USERNAME:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME?sslmode=${DATABASE_SSL_MODE}"{{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}&sslrootcert=${DATABASE_SSL_PATH}{{- end }}""
               # Construct REDIS_URL from the individual environment variables
-              export REDIS_URL="{{- if and ( .Values.externalRedis.host ) ( .Values.externalRedis.tlsEnabled) -}}rediss{{- else -}}redis{{- end -}}://:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT/$REDIS_DB{{- if and ( .Values.externalRedis.host ) ( .Values.externalRedis.tlsEnabled) -}}&ssl_cert_reqs=none{{- end -}}"
+              export REDIS_URL="{{- if a( .Values.externalRedis.host ) ( .Values.externalRedis.tlsEnabled) -}}rediss{{- else -}}redis{{- end -}}://:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT/$REDIS_DB{{- if and ( .Values.externalRedis.host ) ( .Values.externalRedis.tlsEnabled) -}}&ssl_cert_reqs=none{{- end -}}"
               exec litellm --config /app/config.yaml
           {{- end }}
           {{- if .Values.litellm.args }}
@@ -219,7 +223,7 @@ spec:
         {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
         - name: postgresql-ssl-ca
           configMap:
-            name: {{ include "carto.postgresql.configmapName" . }}
+            name: {{ include "carto.postgresql.configMapName" . }}
             items:
               - key: {{ include "carto.postgresql.configMapMountFilename" . }}
                 path: {{ include "carto.postgresql.configMapMountFilename" . }}

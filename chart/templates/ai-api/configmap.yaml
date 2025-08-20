@@ -13,39 +13,18 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  AI_COMPONENT_NAME: "ai-api"
   AI_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
-  AI_HONEYCOMB_API_KEY: {{ .Values.aiApi.honeycombApiKey | quote }}
-  AI_HONEYCOMB_DATASET: {{ .Values.aiApi.honeycombDataset | quote }}
-  AI_OPENAI_API_KEY: {{ .Values.cartoSecrets.litellmMasterKey | quote }}
+  # AI_OPENAI_ENDPOINT points to LiteLLM proxy service, not directly to OpenAI
+  # LiteLLM acts as a unified gateway that can route to various AI providers
   AI_OPENAI_ENDPOINT: "http://{{ include "carto.litellm.fullname" . }}:{{ .Values.litellm.containerPorts.http }}/v1"
-  AI_PORT: {{ .Values.aiApi.containerPorts.http | quote }}
-  AI_REQUEST_TIMEOUT_MS: {{ .Values.aiApi.requestTimeoutMs | quote }}
   AI_SQL_API_URL: "http://{{ include "carto.mapsApi.fullname" . }}:{{ .Values.mapsApi.containerPorts.http }}"
-  AI_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
-  BODY_JSON_LIMIT: {{ .Values.aiApi.bodyJsonLimit | quote }}
-  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
-  CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
-  {{- end }}
   {{- if eq .Values.appConfigValues.logLevel "debug" }}
   CARTO_TRACING_MODE: "local"
   {{- end }}
-  {{- if .Values.replicated.enabled }}
-  CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "replicated.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:3000"
-  {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
-  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
-  EXPORTS_GCS_BUCKET_NAME: {{ .Values.appConfigValues.workspaceExportsBucket | quote }}
-  EXPORTS_S3_BUCKET_NAME: {{ .Values.appConfigValues.awsExportBucket | quote }}
-  EXPORTS_S3_BUCKET_REGION: {{ .Values.appConfigValues.awsExportBucketRegion | quote }}
-  EXPORTS_S3_BUCKET_ROLE_ARN: {{ .Values.appConfigValues.exportAwsRoleArn | quote }}
-  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
-  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
-  {{- end }}
-  HEALTH_CHECK_SERVICE_TIMEOUT: {{ .Values.aiApi.healthCheckServiceTimeout | quote }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
@@ -63,21 +42,7 @@ data:
   NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
   {{- end }}
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
-  MAPS_API_V3_COMPONENT_NAME: "sql-worker"
-  MAPS_API_V3_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
-  MAPS_API_V3_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-sql-worker-sub"
-  MAPS_API_V3_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
-  MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: {{ .Values.appConfigValues.selfHostedDomain | quote }}
-  MAPS_API_V3_RESOURCE_URL_HOST: {{ .Values.appConfigValues.selfHostedDomain | quote }}
-  MAPS_API_V3_RESOURCE_URL_TEMPLATE_NEW: 'https://${host}/api/${path}'
-  MAPS_API_V3_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  MAX_RESPONSE_LENGTH: {{ .Values.aiApi.maxResponseLength | quote }}
   NODE_OPTIONS: {{ template "carto.aiApi.nodeOptions" . }}
-  OPEN_TELEMETRY_ENABLED: {{ .Values.aiApi.openTelemetryEnabled | quote }}
-  OPEN_TELEMETRY_TRACES_ENDPOINT: {{ .Values.aiApi.openTelemetryTracesEndpoint | quote }}
-  PUBSUB_MODE: "pull"
-  PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
-  PUBSUB_USE_REST_API: {{ .Values.cartoConfigValues.usePubSubRestApi | quote }}
   REDIS_CACHE_PREFIX: "onprem"
   REDIS_HOST: {{ include "carto.redis.host" . | quote }}
   REDIS_PORT: {{ include "carto.redis.port" . | quote }}
@@ -85,17 +50,16 @@ data:
   {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
   REDIS_TLS_CA: {{ .Values.externalRedis.tlsCA | quote }}
   {{- end }}
-  {{- if .Values.externalPostgresql.awsEksPodIdentityEnabled }}
-  CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED: {{ .Values.externalPostgresql.awsEksPodIdentityEnabled | quote }}
-  CARTO_SELFHOSTED_AWS_RDS_METADATA_REGION: {{ .Values.externalPostgresql.awsRdsRegion | quote }}
-  {{- end }}
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . | quote }}
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . | quote }}
   WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . | quote }}
+  WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . | quote }}
   WORKSPACE_POSTGRES_SSL_ENABLED: {{ .Values.externalPostgresql.sslEnabled | quote }}
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA  }}
   WORKSPACE_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
   {{- end }}
-  WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . | quote }}
-  WORKSPACE_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  {{- if .Values.externalPostgresql.awsEksPodIdentityEnabled }}
+  CARTO_SELFHOSTED_AWS_RDS_METADATA_REGION: {{ .Values.externalPostgresql.awsRdsRegion | quote }}
+  CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED: {{ .Values.externalPostgresql.awsEksPodIdentityEnabled | quote }}
+  {{- end }}
 {{- end }}

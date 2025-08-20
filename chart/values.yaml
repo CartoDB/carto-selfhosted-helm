@@ -5783,30 +5783,7 @@ aiApi:
     ## @param aiApi.service.extraPorts Extra ports to expose in ai-api service (normally used with the `sidecars` value)
     ##
     extraPorts: []
-    ## @param aiApi.requestTimeoutMs ai-api request timeout in milliseconds
-    ##
-  requestTimeoutMs: 60000
-  ## @param aiApi.maxResponseLength ai-api max response length in bytes
-  ##
-  maxResponseLength: 10485760
-  ## @param aiApi.bodyJsonLimit ai-api body json limit
-  ##
-  bodyJsonLimit: "5mb"
-  ## @param aiApi.healthCheckServiceTimeout ai-api health check service timeout in milliseconds
-  ##
-  healthCheckServiceTimeout: 60000
-  ## @param aiApi.honeycombDataset ai-api honeycomb dataset
-  ##
-  honeycombDataset: ""
-  ## @param aiApi.honeycombApiKey ai-api honeycomb api key
-  ##
-  honeycombApiKey: "dummy-key"
-  ## @param aiApi.openTelemetryEnabled Enable OpenTelemetry tracing for ai-api
-  ##
-  openTelemetryEnabled: true
-  ## @param aiApi.openTelemetryTracesEndpoint OpenTelemetry traces endpoint for ai-api
-  ##
-  openTelemetryTracesEndpoint: "https://api.honeycomb.io/v1/traces"
+
 ## @section litellm Deployment Parameters
 ##
 litellm:
