@@ -20,6 +20,7 @@ data:
   DATABASE_NAME: {{ include "carto.litellm.databaseDb" . | quote }}
   DATABASE_PORT: {{ include "carto.litellm.databasePort" . | quote }}
   DATABASE_USERNAME: {{ include "carto.litellm.databaseUser" . | quote }}
+
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
@@ -36,8 +37,7 @@ data:
   LITELLM_CALLBACKS: ""
   LITELLM_CALLBACK_LIST: ""
   LITELLM_LOCAL_MODEL_COST_MAP: "True"
-  LITELLM_LOG: {{ .Values.litellm.logLevel | quote }}
-  LITELLM_LOG_LEVEL: "INFO"
+  LITELLM_LOG_LEVEL: {{ ternary "DEBUG" "INFO" .Values.appConfigValues.logLevel | quote }}
   LITELLM_MIGRATION_DIR: "/tmp/prisma/migrations"
   LITELLM_MODE: "PRODUCTION"
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
@@ -54,7 +54,4 @@ data:
   USE_PRISMA_MIGRATE: "True"
   PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
   XDG_CACHE_HOME: "/tmp/prisma-cache"
-  {{- if include "carto.litellm.database.sslCA" . }}
-  {{ include "carto.litellm.database.sslCA.configMapMountFilename" . }}: {{ include "carto.litellm.database.sslCA" . | quote }}
-  {{- end }}
 {{- end }} 

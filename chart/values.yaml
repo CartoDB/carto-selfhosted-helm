@@ -5747,7 +5747,7 @@ aiApi:
     ## @param aiApi.service.ports.http ai-api service HTTP port
     ##
     ports:
-      http: 80
+      http: 3000
     ## Node.js ports to expose
     ## @param aiApi.service.nodePorts.http Node.js port for HTTP
     ## NOTE: choose port between <30000-32767>
@@ -5818,58 +5818,6 @@ litellm:
   ##
   containerPorts:
     http: 4000
-  ## @param litellm.logLevel Litellm log level
-  ##
-  logLevel: "INFO"
-  ## @param litellm.redis.host Litellm Redis host
-  ## @param litellm.redis.port Litellm Redis port
-  ## @param litellm.redis.password Litellm Redis password
-  ## @param litellm.redis.db Litellm Redis db
-  ## @param litellm.redis.enableTls Litellm Redis enable tls
-  ## @param litellm.redis.sslCertReqs Litellm Redis ssl cert reqs. Can be "none", "required" or "optional"
-  ## @param litellm.redis.existingSecret.existingSecretName Litellm Redis existing secret name
-  ## @param litellm.redis.existingSecret.existingSecretPasswordKey Litellm Redis existing secret password key
-  ## @param litellm.redis.existingSecret.existingSecretUrlKey Litellm Redis existing secret url key
-  ##
-  redis:
-    host: ""
-    port: "6379"
-    password: ""
-    db: 1
-    enableTls: false
-    sslCertReqs: "none"
-    existingSecret:
-      existingSecretName: ""
-      existingSecretPasswordKey: ""
-      existingSecretUrlKey: ""
-  ## @param litellm.database.host Litellm database host. If not specified, will use externalPostgres configuration
-  ## @param litellm.database.port Litellm database port
-  ## @param litellm.database.password Litellm database password. If not specified and using externalPostgres, will use externalPostgres.password or externalPostgres.existingSecret
-  ## @param litellm.database.db Litellm database db
-  ## @param litellm.database.sslEnabled Litellm database ssl enabled
-  ## @param litellm.database.dbUser Litellm database dbUser. If not specified and using externalPostgres, will use externalPostgres.user
-  ## @param litellm.database.sslMode Litellm database ssl mode. If not specified and using externalPostgres, will use externalPostgres.sslEnabled setting
-  ## @param litellm.database.sslCA Litellm database ssl ca. If not specified and using externalPostgres, will use externalPostgres.sslCA setting
-  ## @param litellm.database.existingSecret.existingSecretName Litellm database existing secret name
-  ## @param litellm.database.existingSecret.existingSecretPasswordKey Litellm database existing secret password key
-  ## @param litellm.database.existingSecret.existingSecretUrlKey Litellm database existing secret url key
-  ##
-  database:
-    host: ""
-    port: "5432"
-    password: ""
-    db: "litellm"
-    dbUser: "litellm"
-    sslMode: "disable"
-    sslEnabled: false
-    sslCA: ""
-    existingSecret:
-      existingSecretName: ""
-      existingSecretPasswordKey: ""
-      existingSecretUrlKey: ""
-  ## @param litellm.serverRootPath Litellm server root path
-  ##
-  serverRootPath: "/litellm"
   ## Configure extra options for litellm containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param litellm.livenessProbe.enabled Enable livenessProbe on ai-api containers
@@ -5923,7 +5871,7 @@ litellm:
   ## @param litellm.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
-  ## ai-api autoscaling configuration
+  ## litellm autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param litellm.autoscaling.enabled Enable autoscaling for the ai-api containers
   ## @param litellm.autoscaling.minReplicas The minimal number of containers for the ai-api deployment
@@ -5935,7 +5883,7 @@ litellm:
     minReplicas: 1
     maxReplicas: 3
     targetCPUUtilizationPercentage: 75
-  ## ai-api resource requests and limits
+  ## litellm resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param litellm.resources.limits.memory Container memory limits in MiB
   ## @param litellm.resources.limits.cpu Container cpu limits in milliCPU cores
