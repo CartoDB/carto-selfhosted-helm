@@ -558,33 +558,16 @@ Return customer values to use in preflights and support-bundle
     value: "/etc/ssl/certs/cert.key"
   {{- end }}
   {{- if .Values.aiApi.enabled }}
-  - name: LITELLM_ENABLED
-    value: {{ .Values.litellm.enabled | quote }}
   - name: LITELLM_DATABASE_HOST
-    value: {{ include "carto.litellm.databaseHost" . | quote }}
+    value: {{ include "carto.postgresql.host" . | quote }}
   - name: LITELLM_DATABASE_PORT
-    value: {{ include "carto.litellm.databasePort" . | quote }}
-  - name: LITELLM_DATABASE_NAME
-    value: {{ include "carto.litellm.databaseDb" . | quote }}
+    value: {{ include "carto.postgresql.port" . | quote }}
   - name: LITELLM_DATABASE_USER
-    value: {{ include "carto.litellm.databaseUser" . | quote }}
-  {{- if .Values.litellm.redis.host }}
-  - name: LITELLM_REDIS_HOST
-    value: {{ .Values.litellm.redis.host | quote }}
-  - name: LITELLM_REDIS_PORT
-    value: {{ .Values.litellm.redis.port | quote }}
-  {{- else }}
+    value: {{ include "carto.postgresql.user" . | quote }}
   - name: LITELLM_REDIS_HOST
     value: {{ include "carto.redis.host" . | quote }}
   - name: LITELLM_REDIS_PORT
     value: {{ include "carto.redis.port" . | quote }}
-  {{- end }}
-  - name: AI_API_ENABLED
-    value: {{ .Values.aiApi.enabled | quote }}
-  - name: AI_API_LITELLM_DEPENDENCY
-    value: {{ .Values.litellm.enabled | quote }}
-  - name: AI_API_LITELLM_ENDPOINT
-    value: "http://{{ include "carto.litellm.fullname" . }}:{{ .Values.litellm.containerPorts.http }}/v1"
   {{- end }}
 {{- end -}}
 

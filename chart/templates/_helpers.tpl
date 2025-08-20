@@ -1246,9 +1246,15 @@ Return the Redis password sha256sum
 */}}
 {{- define "carto.redis.passwordChecksum" -}}
 {{- if .Values.internalRedis.enabled -}}
-{{- print (tpl (toYaml (default .Values.internalRedis.auth.password .Values.cartoSecrets.redisPassword.value)) . | sha256sum ) -}}
+{{- if and (.Values.cartoSecrets) (.Values.cartoSecrets.redisPassword) (.Values.cartoSecrets.redisPassword.value) -}}
+{{- print (tpl (toYaml .Values.cartoSecrets.redisPassword.value) . | sha256sum ) -}}
 {{- else -}}
+{{- print (tpl (toYaml .Values.internalRedis.auth.password) . | sha256sum ) -}}
+{{- end -}}
+{{- else -}}
+{{- if not .Values.externalRedis.existingSecret -}}
 {{- print (tpl (toYaml .Values.externalRedis.password) . | sha256sum ) -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -1417,139 +1423,38 @@ Create the name of the litellm secret
 {{- end -}}
 
 {{/*
-Return the proper litellm database host
-*/}}
-{{- define "carto.litellm.databaseHost" -}}
-{{- if .Values.litellm.database.host -}}
-{{- .Values.litellm.database.host -}}
-{{- else -}}
-{{- include "carto.postgresql.host" . -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the proper litellm database port
-*/}}
-{{- define "carto.litellm.databasePort" -}}
-{{- if .Values.litellm.database.host -}}
-{{- .Values.litellm.database.port -}}
-{{- else -}}
-{{- include "carto.postgresql.port" . -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the proper litellm database password
+Return the litellm database password
 */}}
 {{- define "carto.litellm.databasePassword" -}}
-{{- if .Values.litellm.database.host -}}
-{{- /* Litellm has its own database config */ -}}
-{{- if not .Values.litellm.database.existingSecret.existingSecretName -}}
-{{- .Values.litellm.database.password -}}
-{{- end -}}
-{{- else -}}
-{{- /* Litellm uses global database config */ -}}
 {{- if and .Values.internalPostgresql.enabled (not .Values.internalPostgresql.auth.existingSecret) -}}
-{{- /* Use internal PostgreSQL password */ -}}
 {{- .Values.internalPostgresql.auth.password -}}
 {{- else -}}
-{{- /* Use external PostgreSQL password */ -}}
 {{- if not .Values.externalPostgresql.existingSecret -}}
 {{- .Values.externalPostgresql.password -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
-{{- end -}}
 
 {{/*
-Return the proper litellm database db
-*/}}
-{{- define "carto.litellm.databaseDb" -}}
-{{- .Values.litellm.database.db -}}
-{{- end -}}
-
-{{/*
-Return the proper litellm database dbUser
-*/}}
-{{- define "carto.litellm.databaseUser" -}}
-{{- if .Values.litellm.database.host -}}
-{{- .Values.litellm.database.dbUser -}}
-{{- else -}}
-{{- include "carto.postgresql.user" . -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the proper litellm database ssl mode
+Return the litellm database ssl mode
 */}}
 {{- define "carto.litellm.databaseSslMode" -}}
-{{- if .Values.litellm.database.sslEnabled -}}
-{{- if .Values.litellm.database.host -}}
-{{- .Values.litellm.database.sslMode -}}
-{{- else -}}
-{{- if .Values.internalPostgresql.enabled -}}
-{{- .Values.litellm.database.sslMode -}}
-{{- else -}}
 {{- if .Values.externalPostgresql.sslEnabled -}}
-{{- "require" -}}
+require
 {{- else -}}
-{{- "disable" -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-{{- else -}}
-{{- "disable" -}}
+disable
 {{- end -}}
 {{- end -}}
 
 {{/*
-Return the proper litellm redis host
-*/}}
-{{- define "carto.litellm.redisHost" -}}
-{{- if .Values.litellm.redis.host -}}
-{{- .Values.litellm.redis.host -}}
-{{- else -}}
-{{- include "carto.redis.host" . -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the proper litellm redis port
-*/}}
-{{- define "carto.litellm.redisPort" -}}
-{{- if .Values.litellm.redis.host -}}
-{{- .Values.litellm.redis.port -}}
-{{- else -}}
-{{- include "carto.redis.port" . -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the proper litellm redis db if externalRedis.host is set, otherwise use internalRedis logical database 1
-*/}}
-{{- define "carto.litellm.redisDb" -}}
-{{- if .Values.litellm.redis.host -}}
-{{- .Values.litellm.redis.db -}}
-{{- else -}}
-1
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the proper litellm redis password
+Return the litellm redis password
 */}}
 {{- define "carto.litellm.redisPassword" -}}
-{{- if .Values.litellm.redis.host -}}
-{{- if not .Values.litellm.redis.existingSecret.existingSecretName -}}
-{{- .Values.litellm.redis.password -}}
-{{- end -}}
-{{- else -}}
 {{- if and ( .Values.internalRedis.enabled ) (not .Values.internalRedis.existingSecret) -}}
 {{- .Values.internalRedis.auth.password -}}
 {{- else -}}
 {{- if not .Values.externalRedis.existingSecret -}}
 {{- .Values.externalRedis.password -}}
-{{- end -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
@@ -1569,93 +1474,16 @@ Return the litellm salt key checksum
 {{- end -}}
 
 {{/*
-Return the proper litellm database password secret name
+Return the litellm database password secret name
 */}}
 {{- define "carto.litellm.databasePasswordSecretName" -}}
-{{- if and (.Values.litellm.database.host) (.Values.litellm.database.existingSecret.existingSecretName) -}}
-{{- .Values.litellm.database.existingSecret.existingSecretName -}}
-{{- else if not .Values.litellm.database.host -}}
 {{- include "carto.postgresql.secretName" . -}}
-{{- else -}}
-{{- include "carto.litellm.secretName" . -}}
-{{- end -}}
 {{- end -}}
 
 {{/*
-Return the proper litellm database password secret key
+Return the litellm database password secret key
 */}}
 {{- define "carto.litellm.databasePasswordSecretKey" -}}
-{{- if and (.Values.litellm.database.host) (.Values.litellm.database.existingSecret.existingSecretName) -}}
-{{- .Values.litellm.database.existingSecret.existingSecretPasswordKey -}}
-{{- else if not .Values.litellm.database.host -}}
 {{- include "carto.postgresql.secret.key" . -}}
-{{- else -}}
-{{- "DATABASE_PASSWORD" -}}
-{{- end -}}
 {{- end -}}
 
-{{/*
-Return the proper litellm redis password secret name
-*/}}
-{{- define "carto.litellm.redisPasswordSecretName" -}}
-{{- if and (.Values.litellm.redis.host) (.Values.litellm.redis.existingSecret.existingSecretName) -}}
-{{- .Values.litellm.redis.existingSecret.existingSecretName -}}
-{{- else if not .Values.litellm.redis.host -}}
-{{- include "carto.redis.secretName" . -}}
-{{- else -}}
-{{- include "carto.litellm.secretName" . -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the proper litellm redis password secret key
-*/}}
-{{- define "carto.litellm.redisPasswordSecretKey" -}}
-{{- if and (.Values.litellm.redis.host) (.Values.litellm.redis.existingSecret.existingSecretName) -}}
-{{- .Values.litellm.redis.existingSecret.existingSecretPasswordKey -}}
-{{- else if not .Values.litellm.redis.host -}}
-{{- include "carto.redis.existingsecret.key" . -}}
-{{- else -}}
-{{- "REDIS_PASSWORD" -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the proper litellm database ssl ca
-*/}}
-{{- define "carto.litellm.database.sslCA" -}}
-{{- if and (.Values.litellm.database.sslEnabled) (.Values.litellm.database.sslCA) -}}
-{{- .Values.litellm.database.sslCA -}}
-{{- else if and (.Values.litellm.database.sslEnabled) (not .Values.litellm.database.sslCA) (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) -}}
-{{- .Values.externalPostgresql.sslCA -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the directory where the LiteLLM database CA cert will be mounted
-*/}}
-{{- define "carto.litellm.database.sslCA.configMapMountDir" -}}
-{{- if and (.Values.litellm.database.sslEnabled) (.Values.litellm.database.sslCA) -}}
-{{- print "/usr/src/certs/litellm-database-ssl-ca" -}}
-{{- else if and (.Values.litellm.database.sslEnabled) (not .Values.litellm.database.sslCA) (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) -}}
-{{- include "carto.postgresql.configMapMountDir" . -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the filename where the LiteLLM database CA will be mounted
-*/}}
-{{- define "carto.litellm.database.sslCA.configMapMountFilename" -}}
-{{- if and (.Values.litellm.database.sslEnabled) (.Values.litellm.database.sslCA) -}}
-{{- print "ca.crt" -}}
-{{- else if and (.Values.litellm.database.sslEnabled) (not .Values.litellm.database.sslCA) (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) -}}
-{{- include "carto.postgresql.configMapMountFilename" . -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the absolute path where the LiteLLM database CA cert will be mounted
-*/}}
-{{- define "carto.litellm.database.sslCA.configMapMountAbsolutePath" -}}
-{{- printf "%s/%s" (include "carto.litellm.database.sslCA.configMapMountDir" .) (include "carto.litellm.database.sslCA.configMapMountFilename" .) -}}
-{{- end -}}
