@@ -50,8 +50,6 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := append $messages (include "carto.validateValues.postgresql" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.proxy" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.logLevel" .) -}}
-{{- $messages := append $messages (include "carto.validateValues.aiApi" .) -}}
-{{- $messages := append $messages (include "carto.validateValues.litellm" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 
