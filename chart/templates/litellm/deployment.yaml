@@ -2,10 +2,10 @@
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
-  name: {{ template "carto.litellm.fullname" . }}
+  name: {{ template "carto.llmProxy.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: litellm
+    app.kubernetes.io/component: llmProxy
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -13,84 +13,84 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ .Values.litellm.replicaCount }}
-  {{- if .Values.litellm.updateStrategy }}
-  strategy: {{- toYaml .Values.litellm.updateStrategy | nindent 4 }}
+  replicas: {{ .Values.llmProxy.replicaCount }}
+  {{- if .Values.llmProxy.updateStrategy }}
+  strategy: {{- toYaml .Values.llmProxy.updateStrategy | nindent 4 }}
   {{- end }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
-      app.kubernetes.io/component: litellm
+      app.kubernetes.io/component: llmProxy
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/litellm/configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/litellm/secret.yaml") . | sha256sum }}
-        checksum/masterKeyChecksum: {{ include "carto.litellm.masterKeyChecksum" . | sha256sum }}
-        checksum/saltKeyChecksum: {{ include "carto.litellm.saltKeyChecksum" . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/llmProxy/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/llmProxy/secret.yaml") . | sha256sum }}
+        checksum/masterKeyChecksum: {{ include "carto.llmProxy.masterKeyChecksum" . | sha256sum }}
+        checksum/saltKeyChecksum: {{ include "carto.llmProxy.saltKeyChecksum" . | sha256sum }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
-        {{- if .Values.litellm.podAnnotations }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.litellm.podAnnotations "context" $) | nindent 8 }}
+        {{- if .Values.llmProxy.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
       labels: {{- include "common.labels.standard" . | nindent 8 }}
-        app.kubernetes.io/component: litellm
-        {{- if .Values.litellm.podLabels }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.litellm.podLabels "context" $) | nindent 8 }}
+        app.kubernetes.io/component: llmProxy
+        {{- if .Values.llmProxy.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.podLabels "context" $) | nindent 8 }}
         {{- end }}
     spec:
       serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
       {{- include "carto.imagePullSecrets" . | nindent 6 }}
-      {{- if .Values.litellm.hostAliases }}
-      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.hostAliases "context" $) | nindent 8 }}
+      {{- if .Values.llmProxy.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.hostAliases "context" $) | nindent 8 }}
       {{- end }}
-      {{- if .Values.litellm.affinity }}
-      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.litellm.affinity "context" $) | nindent 8 }}
+      {{- if .Values.llmProxy.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.llmProxy.affinity "context" $) | nindent 8 }}
       {{- else }}
       affinity:
-        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.litellm.podAffinityPreset "component" "litellm" "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.litellm.podAntiAffinityPreset "component" "litellm" "context" $) | nindent 10 }}
-        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.litellm.nodeAffinityPreset.type "key" .Values.litellm.nodeAffinityPreset.key "values" .Values.litellm.nodeAffinityPreset.values) | nindent 10 }}
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.llmProxy.podAffinityPreset "component" "llmProxy" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.llmProxy.podAntiAffinityPreset "component" "llmProxy" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.llmProxy.nodeAffinityPreset.type "key" .Values.llmProxy.nodeAffinityPreset.key "values" .Values.llmProxy.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
-      {{- if .Values.litellm.nodeSelector }}
-      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.litellm.nodeSelector "context" $) | nindent 8 }}
+      {{- if .Values.llmProxy.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.llmProxy.nodeSelector "context" $) | nindent 8 }}
       {{- end }}
-      {{- if .Values.litellm.tolerations }}
-      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.tolerations "context" .) | nindent 8 }}
+      {{- if .Values.llmProxy.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.tolerations "context" .) | nindent 8 }}
       {{- end }}
-      {{- if .Values.litellm.priorityClassName }}
-      priorityClassName: {{ .Values.litellm.priorityClassName | quote }}
+      {{- if .Values.llmProxy.priorityClassName }}
+      priorityClassName: {{ .Values.llmProxy.priorityClassName | quote }}
       {{- end }}
-      {{- if .Values.litellm.schedulerName }}
-      schedulerName: {{ .Values.litellm.schedulerName | quote }}
+      {{- if .Values.llmProxy.schedulerName }}
+      schedulerName: {{ .Values.llmProxy.schedulerName | quote }}
       {{- end }}
-      {{- if .Values.litellm.podSecurityContext.enabled }}
-      securityContext: {{- omit .Values.litellm.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- if .Values.llmProxy.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.llmProxy.podSecurityContext "enabled" | toYaml | nindent 8 }}
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
-        {{- if .Values.litellm.initContainers }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.litellm.initContainers "context" $) | nindent 8 }}
+        {{- if .Values.llmProxy.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.initContainers "context" $) | nindent 8 }}
         {{- end }}
       {{- end }}
-      terminationGracePeriodSeconds: {{ .Values.litellm.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.llmProxy.terminationGracePeriodSeconds }}
       containers:
-        - name: litellm
-          image: {{ template "carto.litellm.image" . }}
-          imagePullPolicy: {{ .Values.litellm.image.pullPolicy }}
-          {{- if .Values.litellm.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.litellm.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+        - name: llmProxy
+          image: {{ template "carto.llmProxy.image" . }}
+          imagePullPolicy: {{ .Values.llmProxy.image.pullPolicy }}
+          {{- if .Values.llmProxy.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.llmProxy.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
-          {{- else if .Values.litellm.command }}
-          command: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.command "context" $) | nindent 12 }}
+          {{- else if .Values.llmProxy.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.command "context" $) | nindent 12 }}
           {{- else }}
           command:
             - /bin/sh
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
-          {{- else if .Values.litellm.args }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.args "context" $) | nindent 12 }}
+          {{- else if .Values.llmProxy.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.args "context" $) | nindent 12 }}
           {{- else }}
           args:
             - -c
@@ -99,7 +99,7 @@ spec:
               export DATABASE_URL="postgresql://$DATABASE_USERNAME:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME?sslmode=${DATABASE_SSL_MODE}"{{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}&sslrootcert=${DATABASE_SSL_PATH}{{- end }}""
               # Construct REDIS_URL from the individual environment variables
               export REDIS_URL="{{- if and ( .Values.externalRedis.host ) ( .Values.externalRedis.tlsEnabled) -}}rediss{{- else -}}redis{{- end -}}://:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT/$REDIS_DB{{- if and ( .Values.externalRedis.host ) ( .Values.externalRedis.tlsEnabled) -}}&ssl_cert_reqs=none{{- end -}}"
-              exec litellm --config /app/config.yaml
+              exec llmProxy --config /app/config.yaml
           {{- end }}
           env:
             - name: DATABASE_PASSWORD
@@ -113,80 +113,80 @@ spec:
                   name: {{ include "carto.redis.secretName" . }}
                   key: {{ include "carto.redis.existingsecret.key" . }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
-                "LITELLM_MASTER_KEY"
-                "LITELLM_SALT_KEY"
+                "llmProxy_MASTER_KEY"
+                "llmProxy_SALT_KEY"
                 "OPENAI_API_KEY"
                 "GEMINI_API_KEY"
-                "LITELLM_JWT_SECRET"
+                "llmProxy_JWT_SECRET"
              ) "context" $ ) | nindent 12 }}
-            {{- if .Values.litellm.extraEnvVars }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.litellm.extraEnvVars "context" $) | nindent 12 }}
+            {{- if .Values.llmProxy.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
             - configMapRef:
-                name: {{ template "carto.litellm.configmapName" . }}
+                name: {{ template "carto.llmProxy.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
-                "LITELLM_MASTER_KEY"
-                "LITELLM_SALT_KEY"
+                "llmProxy_MASTER_KEY"
+                "llmProxy_SALT_KEY"
                 "OPENAI_API_KEY"
                 "GEMINI_API_KEY"
-                "LITELLM_JWT_SECRET"
+                "llmProxy_JWT_SECRET"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
-                name: {{ include "carto.litellm.secretName" . }}
+                name: {{ include "carto.llmProxy.secretName" . }}
             {{- end }}
-            {{- if .Values.litellm.extraEnvVarsCM }}
+            {{- if .Values.llmProxy.extraEnvVarsCM }}
             - configMapRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.litellm.extraEnvVarsCM "context" $) }}
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.llmProxy.extraEnvVarsCM "context" $) }}
             {{- end }}
-            {{- if .Values.litellm.extraEnvVarsSecret }}
+            {{- if .Values.llmProxy.extraEnvVarsSecret }}
             - secretRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.litellm.extraEnvVarsSecret "context" $) }}
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.llmProxy.extraEnvVarsSecret "context" $) }}
             {{- end }}
-          {{- if .Values.litellm.resources }}
-          resources: {{- toYaml .Values.litellm.resources | nindent 12 }}
+          {{- if .Values.llmProxy.resources }}
+          resources: {{- toYaml .Values.llmProxy.resources | nindent 12 }}
           {{- end }}
           ports:
             - name: http
-              containerPort: {{ .Values.litellm.containerPorts.http }}
+              containerPort: {{ .Values.llmProxy.containerPorts.http }}
           {{- if not .Values.diagnosticMode.enabled }}
-          {{- if .Values.litellm.livenessProbe.enabled }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.litellm.livenessProbe "enabled") "context" $) | nindent 12 }}
+          {{- if .Values.llmProxy.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.llmProxy.livenessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
               path: /health/liveliness
               port: http
               httpHeaders:
                 - name: Authorization
-                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
-          {{- else if .Values.litellm.customLivenessProbe }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customLivenessProbe "context" $) | nindent 12 }}
+                  value: "Bearer {{ .Values.cartoSecrets.llmProxyMasterKey.value }}"
+          {{- else if .Values.llmProxy.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.litellm.readinessProbe.enabled }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.litellm.readinessProbe "enabled") "context" $) | nindent 12 }}
+          {{- if .Values.llmProxy.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.llmProxy.readinessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
               path: /health/readiness
               port: http
               httpHeaders:
                 - name: Authorization
-                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
-          {{- else if .Values.litellm.customReadinessProbe }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customReadinessProbe "context" $) | nindent 12 }}
+                  value: "Bearer {{ .Values.cartoSecrets.llmProxyMasterKey.value }}"
+          {{- else if .Values.llmProxy.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.litellm.startupProbe.enabled }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.litellm.startupProbe "enabled") "context" $) | nindent 12 }}
+          {{- if .Values.llmProxy.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.llmProxy.startupProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
               path: /health/liveliness
               port: http
               httpHeaders:
                 - name: Authorization
-                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
-          {{- else if .Values.litellm.customStartupProbe }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.customStartupProbe "context" $) | nindent 12 }}
+                  value: "Bearer {{ .Values.cartoSecrets.llmProxyMasterKey.value }}"
+          {{- else if .Values.llmProxy.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- end }}
-          {{- if .Values.litellm.lifecycleHooks }}
-          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.lifecycleHooks "context" $) | nindent 12 }}
+          {{- if .Values.llmProxy.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
             - name: npm-cache-dir
@@ -201,11 +201,11 @@ spec:
               subPath: {{ include "carto.postgresql.configMapMountFilename" . }}
               readOnly: true
             {{- end }}
-            {{- if .Values.litellm.extraVolumeMounts }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.litellm.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- if .Values.llmProxy.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
-        {{- if .Values.litellm.sidecars }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.litellm.sidecars "context" $) | nindent 8 }}
+        {{- if .Values.llmProxy.sidecars }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
         # Required for read-only filesystem
@@ -223,7 +223,7 @@ spec:
               - key: {{ include "carto.postgresql.configMapMountFilename" . }}
                 path: {{ include "carto.postgresql.configMapMountFilename" . }}
         {{- end }}
-        {{- if .Values.litellm.extraVolumes }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.litellm.extraVolumes "context" $) | nindent 8 }}
+        {{- if .Values.llmProxy.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
 {{- end }}

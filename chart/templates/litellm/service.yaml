@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "carto.litellm.fullname" . }}
+  name: {{ template "carto.llmProxy.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: litellm
+    app.kubernetes.io/component: llmProxy
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -13,41 +13,41 @@ metadata:
     {{- if .Values.commonAnnotations }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
     {{- end }}
-    {{- if .Values.litellm.service.annotations }}
-    {{- include "common.tplvalues.render" (dict "value" .Values.litellm.service.annotations "context" $) | nindent 4 }}
+    {{- if .Values.llmProxy.service.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.service.annotations "context" $) | nindent 4 }}
     {{- end }}
 spec:
-  type: {{ .Values.litellm.service.type }}
-  {{- if and .Values.litellm.service.clusterIP (eq .Values.litellm.service.type "ClusterIP") }}
-  clusterIP: {{ .Values.litellm.service.clusterIP }}
+  type: {{ .Values.llmProxy.service.type }}
+  {{- if and .Values.llmProxy.service.clusterIP (eq .Values.llmProxy.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.llmProxy.service.clusterIP }}
   {{- end }}
-  {{- if and .Values.litellm.service.externalTrafficPolicy (ne .Values.litellm.service.type "ClusterIP") }}
-  externalTrafficPolicy: {{ .Values.litellm.service.externalTrafficPolicy }}
+  {{- if and .Values.llmProxy.service.externalTrafficPolicy (ne .Values.llmProxy.service.type "ClusterIP") }}
+  externalTrafficPolicy: {{ .Values.llmProxy.service.externalTrafficPolicy }}
   {{- end }}
-  {{- if and .Values.litellm.service.loadBalancerIP (eq .Values.litellm.service.type "LoadBalancer") }}
-  loadBalancerIP: {{ .Values.litellm.service.loadBalancerIP }}
+  {{- if and .Values.llmProxy.service.loadBalancerIP (eq .Values.llmProxy.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.llmProxy.service.loadBalancerIP }}
   {{- end }}
-  {{- if and (eq .Values.litellm.service.type "LoadBalancer") .Values.litellm.service.loadBalancerSourceRanges }}
-  loadBalancerSourceRanges: {{- toYaml .Values.litellm.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- if and (eq .Values.llmProxy.service.type "LoadBalancer") .Values.llmProxy.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml .Values.llmProxy.service.loadBalancerSourceRanges | nindent 4 }}
   {{- end }}
   ports:
-    - port: {{ .Values.litellm.service.ports.http }}
+    - port: {{ .Values.llmProxy.service.ports.http }}
       targetPort: http
       protocol: TCP
       name: http
-      {{- if and (or (eq .Values.litellm.service.type "NodePort") (eq .Values.litellm.service.type "LoadBalancer")) .Values.litellm.service.nodePorts.http }}
-      nodePort: {{ .Values.litellm.service.nodePorts.http }}
-      {{- else if eq .Values.litellm.service.type "ClusterIP" }}
+      {{- if and (or (eq .Values.llmProxy.service.type "NodePort") (eq .Values.llmProxy.service.type "LoadBalancer")) .Values.llmProxy.service.nodePorts.http }}
+      nodePort: {{ .Values.llmProxy.service.nodePorts.http }}
+      {{- else if eq .Values.llmProxy.service.type "ClusterIP" }}
       nodePort: null
       {{- end }}
-    {{- if .Values.litellm.service.extraPorts }}
-    {{- include "common.tplvalues.render" (dict "value" .Values.litellm.service.extraPorts "context" $) | nindent 4 }}
+    {{- if .Values.llmProxy.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.service.extraPorts "context" $) | nindent 4 }}
     {{- end }}
   selector:
-    {{- if .Values.litellm.service.labelSelectorsOverride }}
-    {{- include "common.tplvalues.render" (dict "value" .Values.litellm.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- if .Values.llmProxy.service.labelSelectorsOverride }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.service.labelSelectorsOverride "context" $) | nindent 4 }}
     {{- else }}
     {{- include "common.labels.matchLabels" . | nindent 4 }}
-    app.kubernetes.io/component: litellm
+    app.kubernetes.io/component: llmProxy
     {{- end }} 
 {{- end }}
