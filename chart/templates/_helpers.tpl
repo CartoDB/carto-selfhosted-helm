@@ -80,6 +80,7 @@ WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
 LITELLM_MASTER_KEY: cartoSecrets.litellmMasterKey
 LITELLM_SALT_KEY: cartoSecrets.litellmSaltKey
 AI_OPENAI_API_KEY: cartoSecrets.litellmMasterKey
+OPENAI_API_KEY: cartoSecrets.openAiApiKey
 GEMINI_API_KEY: cartoSecrets.geminiApiKey
 LITELLM_JWT_SECRET: cartoSecrets.litellmJwtSecret
 {{- end -}}
@@ -1472,18 +1473,4 @@ Return the litellm salt key checksum
 */}}
 {{- define "carto.litellm.saltKeyChecksum" -}}
 {{- .Values.cartoSecrets.litellmSaltKey.value | sha256sum -}}
-{{- end -}}
-
-{{/*
-Return the litellm database password secret name
-*/}}
-{{- define "carto.litellm.databasePasswordSecretName" -}}
-{{- include "carto.postgresql.secretName" . -}}
-{{- end -}}
-
-{{/*
-Return the litellm database password secret key
-*/}}
-{{- define "carto.litellm.databasePasswordSecretKey" -}}
-{{- include "carto.postgresql.secret.key" . -}}
 {{- end -}}

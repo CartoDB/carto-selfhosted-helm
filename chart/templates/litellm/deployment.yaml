@@ -82,14 +82,16 @@ spec:
           {{- if .Values.diagnosticMode.enabled }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
           {{- else if .Values.litellm.command }}
-          command:
-            {{- include "common.tplvalues.render" (dict "value" .Values.litellm.command "context" $) | nindent 10 }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.command "context" $) | nindent 12 }}
           {{- else }}
-          command: ["/bin/sh"]
+          command:
+            - /bin/sh
           {{- end }}
-          {{- if .Values.litellm.args }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.litellm.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.args "context" $) | nindent 12 }}
-          {{- else if not (.Values.diagnosticMode.enabled or .Values.litellm.command) }}
+          {{- else }}
           args:
             - -c
             - |
@@ -98,9 +100,6 @@ spec:
               # Construct REDIS_URL from the individual environment variables
               export REDIS_URL="{{- if and ( .Values.externalRedis.host ) ( .Values.externalRedis.tlsEnabled) -}}rediss{{- else -}}redis{{- end -}}://:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT/$REDIS_DB{{- if and ( .Values.externalRedis.host ) ( .Values.externalRedis.tlsEnabled) -}}&ssl_cert_reqs=none{{- end -}}"
               exec litellm --config /app/config.yaml
-          {{- end }}
-          {{- if .Values.litellm.args }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.litellm.args "context" $) | nindent 12 }}
           {{- end }}
           env:
             - name: DATABASE_PASSWORD
@@ -114,13 +113,11 @@ spec:
                   name: {{ include "carto.redis.secretName" . }}
                   key: {{ include "carto.redis.existingsecret.key" . }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
-              "CARTO_SELFHOSTED_INSTANCE_ID"
-              "ENCRYPTION_SECRET_KEY"
-              "EXPORTS_S3_BUCKET_ACCESS_KEY_ID"
-              "EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY"
-              "MAPS_API_V3_JWT_SECRET"
-              "LITELLM_MASTER_KEY"
-              "LITELLM_SALT_KEY"
+                "LITELLM_MASTER_KEY"
+                "LITELLM_SALT_KEY"
+                "OPENAI_API_KEY"
+                "GEMINI_API_KEY"
+                "LITELLM_JWT_SECRET"
              ) "context" $ ) | nindent 12 }}
             {{- if .Values.litellm.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.litellm.extraEnvVars "context" $) | nindent 12 }}
@@ -129,13 +126,11 @@ spec:
             - configMapRef:
                 name: {{ template "carto.litellm.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
-              "CARTO_SELFHOSTED_INSTANCE_ID"
-              "ENCRYPTION_SECRET_KEY"
-              "EXPORTS_S3_BUCKET_ACCESS_KEY_ID"
-              "EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY"
-              "MAPS_API_V3_JWT_SECRET"
-              "LITELLM_MASTER_KEY"
-              "LITELLM_SALT_KEY"
+                "LITELLM_MASTER_KEY"
+                "LITELLM_SALT_KEY"
+                "OPENAI_API_KEY"
+                "GEMINI_API_KEY"
+                "LITELLM_JWT_SECRET"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
@@ -231,4 +226,4 @@ spec:
         {{- if .Values.litellm.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.litellm.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
-{{- end }} 
+{{- end }}

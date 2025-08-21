@@ -5569,11 +5569,11 @@ aiApi:
   ##
   resources:
     limits:
-      memory: "1024Mi"
+      memory: "2048Mi"
       cpu: "1000m"
     requests:
-      memory: "512Mi"
-      cpu: "250m"
+      memory: "768Mi"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param aiApi.podSecurityContext.enabled Enabled ai-api pods' Security Context
@@ -5892,11 +5892,11 @@ litellm:
   ##
   resources:
     limits:
-      memory: "1024Mi"
-      cpu: "1000m"
+      memory: "8192Mi"
+      cpu: "2000m"
     requests:
-      memory: "512Mi"
-      cpu: "250m"
+      memory: "4096Mi"
+      cpu: "1000m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param litellm.podSecurityContext.enabled Enabled ai-api pods' Security Context
