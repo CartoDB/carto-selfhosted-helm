@@ -1487,4 +1487,3 @@ Return the litellm database password secret key
 {{- define "carto.litellm.databasePasswordSecretKey" -}}
 {{- include "carto.postgresql.secret.key" . -}}
 {{- end -}}
-
