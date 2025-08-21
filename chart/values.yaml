@@ -5148,6 +5148,7 @@ internalPostgresql:
 ## @param externalPostgresql.sslCA CA certificate in case CARTO Postgresql TLS cert it's selfsigned
 ## @param externalPostgresql.awsEksPodIdentityEnabled Enable EKS Pod Identity authentication for the external postgresql
 ## @param externalPostgresql.awsRdsRegion Region of the RDS PostgreSQL database in AWS. Needed when EKS Pod Identity is enabled
+## @param externalPostgresql.llmProxyDatabase Database name for llmProxy
 ##
 externalPostgresql:
   host: localhost
@@ -5875,7 +5876,7 @@ llmProxy:
   ## llmProxy autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
   ## @param llmProxy.autoscaling.enabled Enable autoscaling for the ai-api containers
-  ## @param llmProxyy.autoscaling.minReplicas The minimal number of containers for the ai-api deployment
+  ## @param llmProxy.autoscaling.minReplicas The minimal number of containers for the ai-api deployment
   ## @param llmProxy.autoscaling.maxReplicas The maximum number of containers for the ai-api deployment
   ## @param llmProxy.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in ai-api deployment
   ##
@@ -5983,7 +5984,7 @@ llmProxy:
     ## @param llmProxy.nodeAffinityPreset.key Node.js label key to match. Ignored if `llmProxy.affinity` is set
     ##
     key: ""
-    ## @param llmProxy.nodeAffinityPreset.values Node.js label values to match. Ignored if `llmProxyy.affinity` is set
+    ## @param llmProxy.nodeAffinityPreset.values Node.js label values to match. Ignored if `llmProxy.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
@@ -6083,7 +6084,7 @@ llmProxy:
     ## clusterIP: None
     ##
     clusterIP: ""
-    ## @param llmProxyy.service.loadBalancerIP ai-api service Load Balancer IP
+    ## @param llmProxy.service.loadBalancerIP ai-api service Load Balancer IP
     ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
     ##
     loadBalancerIP: ""
