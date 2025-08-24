@@ -44,8 +44,6 @@ data:
   REDIS_DB: "1"
   REDIS_HOST: {{ include "carto.redis.host" . | quote }}
   REDIS_PORT: {{ include "carto.redis.port" . | quote }}
-  STORE_MODEL_IN_DB: "True"
-  USE_PRISMA_MIGRATE: "True"
   PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
   XDG_CACHE_HOME: "/tmp/prisma-cache"
 {{- end }} 
