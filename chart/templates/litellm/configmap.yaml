@@ -18,7 +18,7 @@ data:
   AUTH0_NAMESPACE: "http://app.carto.com"
   AI_API_URL: "http://{{ include "carto.aiApi.fullname" . }}:{{ .Values.aiApi.service.ports.http }}"
   DATABASE_HOST: {{ include "carto.postgresql.host" . | quote }}
-  DATABASE_NAME: {{ .Values.externalPostgresql.aiDatabaseName | quote }}
+  DATABASE_NAME: "litellm"
   DATABASE_PORT: {{ include "carto.postgresql.port" . | quote }}
   DATABASE_SSL_MODE: {{ include "carto.litellm.databaseSslMode" . | quote }}
   DATABASE_SSL_PATH: {{ include "carto.postgresql.configMapMountAbsolutePath" . | quote }}
