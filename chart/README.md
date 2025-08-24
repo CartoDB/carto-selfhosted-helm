@@ -85,6 +85,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cartoConfigValues.onlyRunRouter`                 | Enable only the router component in the installation. This will just deploy the router component. Useful to check the ingress layer together with the option `cartoConfigValues.ingressTestingMode`. | `false` |
 | `cartoConfigValues.featureFlagsOverrides`         | YAML configuration for overriding feature flags.                                                                                                                                                     | `[]`    |
 | `cartoConfigValues.usePubSubRestApi`              | Enable the usage of PubSub via REST API instead of gRPC.                                                                                                                                             | `false` |
+| `cartoConfigValues.pubsubDomain`                  | PubSub domain to be used in the installation.                                                                                                                                                        | `""`    |
 
 ### App secret
 
