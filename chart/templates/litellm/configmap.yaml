@@ -18,9 +18,11 @@ data:
   AUTH0_NAMESPACE: "http://app.carto.com"
   AI_API_URL: "http://{{ include "carto.aiApi.fullname" . }}:{{ .Values.aiApi.service.ports.http }}"
   DATABASE_HOST: {{ include "carto.postgresql.host" . | quote }}
-  DATABASE_NAME: "litellm"
+  DATABASE_NAME: {{ .Values.externalPostgresql.aiDatabaseName | quote }}
   DATABASE_PORT: {{ include "carto.postgresql.port" . | quote }}
   DATABASE_SSL_MODE: {{ include "carto.litellm.databaseSslMode" . | quote }}
+  DATABASE_SSL_PATH: {{ include "carto.postgresql.configMapMountAbsolutePath" . | quote }}
+  DATABASE_SSL_CA: {{ ternary "true" "false" .Values.externalPostgresql.sslCA | quote }}
   DATABASE_USERNAME: {{ include "carto.postgresql.user" . | quote }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
@@ -47,6 +49,7 @@ data:
   REDIS_DB: "1"
   REDIS_HOST: {{ include "carto.redis.host" . | quote }}
   REDIS_PORT: {{ include "carto.redis.port" . | quote }}
+  REDIS_TLS_ENABLED: {{ .Values.externalRedis.tlsEnabled | quote }}
   STORE_MODEL_IN_DB: "True"
   USE_PRISMA_MIGRATE: "True"
   PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
