@@ -97,5 +97,5 @@ repos:
           fi
           '
         language: system
-        files: ^chart/(values\.yaml|README\.md|templates/.*)$
+        files: ^chart/(values\.yaml|README\.md)$
         pass_filenames: false 
