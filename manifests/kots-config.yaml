@@ -587,10 +587,10 @@ spec:
           default: "0"
 
         ## Litellm
-        - name: enableLitellmEndpoint
-          title: Enable Litellm endpoint
+        - name: enablellmProxyEndpoint
+          title: Enable llmProxy endpoint
           help_text: |-
-            Enable the Litellm endpoint.
+            Enable the llmProxy endpoint.
           type: bool
           default: "0"
         - name: litellmMasterKey
