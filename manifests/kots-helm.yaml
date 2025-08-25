@@ -410,6 +410,34 @@ spec:
             enabled: true
             minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
             maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+        aiApi:
+          autoscaling: *highAvailabilityEnabled
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 1
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: "app.kubernetes.io/component"
+                          operator: In
+                          values:
+                            - ai-api
+                    topologyKey: "kubernetes.io/hostname"
+        litellm:
+          autoscaling: *highAvailabilityEnabled
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 1
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: "app.kubernetes.io/component"
+                          operator: In
+                          values:
+                            - litellm
+                    topologyKey: "kubernetes.io/hostname"
         ldsApi:
           autoscaling: *highAvailabilityEnabled
           affinity:
