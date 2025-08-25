@@ -47,4 +47,5 @@ data:
   REDIS_PORT: {{ include "carto.redis.port" . | quote }}
   PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
   XDG_CACHE_HOME: "/app/.cache/prisma"
+  NPM_CONFIG_CACHE: "/tmp/.npm"
 {{- end }} 
