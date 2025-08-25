@@ -164,6 +164,8 @@ Return common collectors for preflights and support-bundle
               {{- end }}
               - name: PUBSUB_PROJECT_ID
                 value: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+              - name: PUBSUB_CUSTOM_DOMAIN
+                value: {{ .Values.cartoConfigValues.pubsubDomain | quote }}
               - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_TOPIC
                 value: projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus
               - name: TENANT_REQUIREMENTS_CHECKER_PUBSUB_TENANT_BUS_SUBSCRIPTION
@@ -354,12 +356,12 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   - clusterVersion:
       outcomes:
         - fail:
-            when: "< 1.25.0"
-            message: The application requires Kubernetes 1.25.0 or later, and recommends 1.29.0 or later.
+            when: "< 1.29.0"
+            message: The application requires Kubernetes 1.29.0 or later, and recommends 1.30.0 or later.
             uri: https://kubernetes.io/releases
         - warn:
-            when: "< 1.29.0"
-            message: Your cluster meets the minimum version of Kubernetes, but we recommend you update to 1.29.0 or later.
+            when: "< 1.30.0"
+            message: Your cluster meets the minimum version of Kubernetes, but we recommend you update to 1.30.0 or later.
             uri: https://kubernetes.io/releases
         - pass:
             message: Your cluster meets the recommended and required versions of Kubernetes.
@@ -435,6 +437,8 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
 Return customer values to use in preflights and support-bundle
 */}}
 {{- define "carto.replicated.tenantRequirementsChecker.customerValues" }}
+  - name: CARTO_SELFHOSTED_VERSION
+    value: {{ .Chart.AppVersion | quote }}
   - name: REDIS_CACHE_PREFIX 
     value: "onprem"
   - name: REDIS_HOST
