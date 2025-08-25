@@ -89,7 +89,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cartoConfigValues.enableLitellmEndpoint`         | Enable the Litellm endpoint in the router.                                                                                                                                                           | `false` |
 | `cartoConfigValues.pubsubDomain`                  | PubSub domain to be used in the installation.                                                                                                                                                        | `""`    |
 
-
 ### App secret
 
 | Name                                                                 | Description                                                                                                                                                                                                                                                                             | Value |
