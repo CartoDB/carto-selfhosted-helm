@@ -1642,6 +1642,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `externalPostgresql.sslCA`                          | CA certificate in case CARTO Postgresql TLS cert it's selfsigned                                                                       | `""`              |
 | `externalPostgresql.awsEksPodIdentityEnabled`       | Enable EKS Pod Identity authentication for the external postgresql                                                                     | `false`           |
 | `externalPostgresql.awsRdsRegion`                   | Region of the RDS PostgreSQL database in AWS. Needed when EKS Pod Identity is enabled                                                  | `""`              |
+| `externalPostgresql.aiDatabaseName`                 | Database name for AI features                                                                                                          | `litellm`         |
 
 ### External proxy configuration
 
