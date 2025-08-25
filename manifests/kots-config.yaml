@@ -586,11 +586,17 @@ spec:
           type: bool
           default: "0"
 
-        ## Litellm
-        - name: enableLitellmEndpoint
-          title: Enable Litellm endpoint
+        ## llmProxy
+        - name: llmProxyDatabaseName
+          title: AI Database name
+          type: text
+          when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
+          default: "llmProxy"
+
+        - name: enablellmProxyEndpoint
+          title: Enable llmProxy endpoint
           help_text: |-
-            Enable the Litellm endpoint.
+            Enable the llmProxy endpoint.
           type: bool
           default: "0"
         - name: litellmMasterKey
