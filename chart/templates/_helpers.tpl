@@ -141,10 +141,10 @@ Generate the secret def of one secret to be used in pods definitions
 */}}
 {{- if $secretExistingName }}
 - name: {{ $var }}
-valueFrom:
-secretKeyRef:
-name: {{ $secretExistingName | quote }}  # {{ $key }}.existingSecret.name
-key: {{ $secretExistingKey | quote }}    # {{ $key }}.existingSecret.key
+  valueFrom:
+    secretKeyRef:
+      name: {{ $secretExistingName | quote }}  # {{ $key }}.existingSecret.name
+      key: {{ $secretExistingKey | quote }}    # {{ $key }}.existingSecret.key
 {{- end }}
 {{- end -}}
 
