@@ -18,7 +18,7 @@ data:
   AUTH0_NAMESPACE: "http://app.carto.com"
   AI_API_URL: "http://{{ include "carto.aiApi.fullname" . }}:{{ .Values.aiApi.service.ports.http }}"
   DATABASE_HOST: {{ include "carto.postgresql.host" . | quote }}
-  DATABASE_NAME: "llmProxy"
+  DATABASE_NAME: {{ .Values.externalPostgresql.aiDatabaseName | quote }}
   DATABASE_PORT: {{ include "carto.postgresql.port" . | quote }}
   DATABASE_SSL_MODE: {{ include "carto.llmProxy.databaseSslMode" . | quote }}
   DATABASE_USERNAME: {{ include "carto.postgresql.user" . | quote }}
@@ -35,20 +35,15 @@ data:
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
   {{- end }}
-  llmProxy_CALLBACKS: ""
-  llmProxy_CALLBACK_LIST: ""
-  llmProxy_LOCAL_MODEL_COST_MAP: "True"
-  llmProxy_LOG_LEVEL: {{ ternary "DEBUG" "INFO" (eq .Values.appConfigValues.logLevel "debug") | quote }}
-  llmProxy_MIGRATION_DIR: "/tmp/prisma/migrations"
-  llmProxy_MODE: "PRODUCTION"
+  LITELLM_LOG_LEVEL: {{ ternary "DEBUG" "INFO" (eq .Values.appConfigValues.logLevel "debug") | quote }}
+  LITELLM_MIGRATION_DIR: "/tmp/prisma/migrations"
+  LITELLM_MODE: "PRODUCTION"
   PRISMA_BINARY_CACHE_DIR: "/tmp/prisma-cache"
   PRISMA_CLI_CACHE_DIR: "/tmp/prisma-cache"
   PRISMA_HOME: "/tmp/prisma-cache"
   REDIS_DB: "1"
   REDIS_HOST: {{ include "carto.redis.host" . | quote }}
   REDIS_PORT: {{ include "carto.redis.port" . | quote }}
-  STORE_MODEL_IN_DB: "True"
-  USE_PRISMA_MIGRATE: "True"
   PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
   XDG_CACHE_HOME: "/tmp/prisma-cache"
 {{- end }} 
