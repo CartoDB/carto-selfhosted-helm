@@ -83,23 +83,11 @@ spec:
           command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
           {{- else if .Values.llmProxy.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.command "context" $) | nindent 12 }}
-          {{- else }}
-          command:
-            - /bin/sh
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
           {{- else if .Values.llmProxy.args }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.args "context" $) | nindent 12 }}
-          {{- else }}
-          args:
-            - -c
-            - |
-              # Construct DATABASE_URL from the individual environment variables
-              export DATABASE_URL="postgresql://$DATABASE_USERNAME:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME?sslmode=${DATABASE_SSL_MODE}"{{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}&sslrootcert=${DATABASE_SSL_PATH}{{- end }}""
-              # Construct REDIS_URL from the individual environment variables
-              export REDIS_URL="{{- if and ( .Values.externalRedis.host ) ( .Values.externalRedis.tlsEnabled) -}}rediss{{- else -}}redis{{- end -}}://:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT/$REDIS_DB{{- if and ( .Values.externalRedis.host ) ( .Values.externalRedis.tlsEnabled) -}}&ssl_cert_reqs=none{{- end -}}"
-              exec llmProxy --config /app/config.yaml
           {{- end }}
           env:
             - name: DATABASE_PASSWORD

@@ -18,10 +18,11 @@ data:
   AUTH0_NAMESPACE: "http://app.carto.com"
   AI_API_URL: "http://{{ include "carto.aiApi.fullname" . }}:{{ .Values.aiApi.service.ports.http }}"
   DATABASE_HOST: {{ include "carto.postgresql.host" . | quote }}
+  DATABASE_USERNAME: {{ include "carto.postgresql.user" . | quote }}
   DATABASE_NAME: {{ .Values.externalPostgresql.aiDatabaseName | quote }}
   DATABASE_PORT: {{ include "carto.postgresql.port" . | quote }}
-  DATABASE_SSL_MODE: {{ include "carto.llmProxy.databaseSslMode" . | quote }}
-  DATABASE_USERNAME: {{ include "carto.postgresql.user" . | quote }}
+  DATABASE_SSL_MODE: {{ include "carto.litellm.databaseSslMode" . | quote }}
+  DATABASE_SSL_PATH: {{ include "carto.postgresql.configMapMountAbsolutePath" . | quote }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
