@@ -589,7 +589,7 @@ spec:
           default: "0"
 
         ## llmProxy
-        - name: aiDatabaseName
+        - name: llmProxyDatabaseName
           title: AI Database name
           type: text
           when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
@@ -601,14 +601,13 @@ spec:
             Enable the llmProxy endpoint.
           type: bool
           default: "0"
-          
         - name: litellmMasterKey
           title: Litellm master key
           type: password
           when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
           required: true
           default: 'sk-{{repl RandomString 16 "[A-Za-z0-9]" }}'
-
+          
         - name: litellmSaltKey
           title: Litellm salt key
           type: password

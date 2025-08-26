@@ -118,7 +118,7 @@ spec:
       sslEnabled: repl{{ if ConfigOptionEquals "metadataDBSSLMode" "1"}}truerepl{{ else }}falserepl{{ end }}
       sslCA: |
         repl{{- ConfigOptionData "metadataDBSSLCertificate" | nindent 8 }}
-      aiDatabaseName: '{{repl ConfigOption "aiDatabaseName" }}'
+      llmProxyDatabaseName: '{{repl ConfigOption "llmProxyDatabaseName" }}'
     ## Ai Features
     aiApi:
       image:
