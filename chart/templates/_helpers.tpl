@@ -1392,7 +1392,7 @@ Create aiApi Node options
 Create a default fully qualified llmProxy name.
 */}}
 {{- define "carto.llmProxy.fullname" -}}
-{{- printf "%s-llmProxy" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-llmproxy" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/* 

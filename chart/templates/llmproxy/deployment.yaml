@@ -157,7 +157,7 @@ spec:
               port: http
               httpHeaders:
                 - name: Authorization
-                  value: "Bearer {{ .Values.cartoSecrets.llmProxyMasterKey.value }}"
+                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
           {{- else if .Values.llmProxy.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
@@ -168,7 +168,7 @@ spec:
               port: http
               httpHeaders:
                 - name: Authorization
-                  value: "Bearer {{ .Values.cartoSecrets.llmProxyMasterKey.value }}"
+                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
           {{- else if .Values.llmProxy.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
