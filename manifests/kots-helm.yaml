@@ -118,13 +118,13 @@ spec:
       sslEnabled: repl{{ if ConfigOptionEquals "metadataDBSSLMode" "1"}}truerepl{{ else }}falserepl{{ end }}
       sslCA: |
         repl{{- ConfigOptionData "metadataDBSSLCertificate" | nindent 8 }}
-      aiDatabaseName: '{{repl ConfigOption "llmProxyDatabaseName" }}'
+      llmProxyDatabaseName: '{{repl ConfigOption "llmProxyDatabaseName" }}'
     ## Ai Features
     aiApi:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-    ## Litellm
-    litellm:
+    ## llmProxy
+    llmProxy:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     ## Redis
@@ -429,7 +429,7 @@ spec:
                           values:
                             - ai-api
                     topologyKey: "kubernetes.io/hostname"
-        litellm:
+        llmProxy:
           autoscaling: *highAvailabilityEnabled
           affinity:
             podAntiAffinity:

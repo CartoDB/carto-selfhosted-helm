@@ -1,0 +1,53 @@
+{{- if and (.Values.appConfigValues.aiFeaturesEnabled) (not .Values.cartoConfigValues.onlyRunRouter) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "carto.llmProxy.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: llmproxy
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.llmProxy.service.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.service.annotations "context" $) | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.llmProxy.service.type }}
+  {{- if and .Values.llmProxy.service.clusterIP (eq .Values.llmProxy.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.llmProxy.service.clusterIP }}
+  {{- end }}
+  {{- if and .Values.llmProxy.service.externalTrafficPolicy (ne .Values.llmProxy.service.type "ClusterIP") }}
+  externalTrafficPolicy: {{ .Values.llmProxy.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- if and .Values.llmProxy.service.loadBalancerIP (eq .Values.llmProxy.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.llmProxy.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq .Values.llmProxy.service.type "LoadBalancer") .Values.llmProxy.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml .Values.llmProxy.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.llmProxy.service.ports.http }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if and (or (eq .Values.llmProxy.service.type "NodePort") (eq .Values.llmProxy.service.type "LoadBalancer")) .Values.llmProxy.service.nodePorts.http }}
+      nodePort: {{ .Values.llmProxy.service.nodePorts.http }}
+      {{- else if eq .Values.llmProxy.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- if .Values.llmProxy.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  selector:
+    {{- if .Values.llmProxy.service.labelSelectorsOverride }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- else }}
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: llmproxy
+    {{- end }} 
+{{- end }}

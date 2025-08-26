@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "carto.litellm.configmapName" . }}
+  name: {{ template "carto.llmProxy.configmapName" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: litellm
+    app.kubernetes.io/component: llmproxy
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -21,7 +21,7 @@ data:
   DATABASE_USERNAME: {{ include "carto.postgresql.user" . | quote }}
   DATABASE_NAME: {{ .Values.externalPostgresql.aiDatabaseName | quote }}
   DATABASE_PORT: {{ include "carto.postgresql.port" . | quote }}
-  DATABASE_SSL_MODE: {{ include "carto.litellm.databaseSslMode" . | quote }}
+  DATABASE_SSL_MODE: {{ include "carto.llmProxy.databaseSslMode" . | quote }}
   DATABASE_SSL_CA_PATH: {{ include "carto.postgresql.configMapMountAbsolutePath" . | quote }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
