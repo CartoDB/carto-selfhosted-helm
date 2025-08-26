@@ -177,10 +177,8 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: npm-cache-dir
-              mountPath: /.npm
             - name: prisma-cache
-              mountPath: /.cache
+              mountPath: /app/.cache/prisma
             - name: tmp-dir
               mountPath: /tmp
             {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
@@ -197,8 +195,6 @@ spec:
         {{- end }}
       volumes:
         # Required for read-only filesystem
-        - name: npm-cache-dir
-          emptyDir: {}
         - name: prisma-cache
           emptyDir: {}
         - name: tmp-dir

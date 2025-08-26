@@ -141,10 +141,10 @@ Generate the secret def of one secret to be used in pods definitions
 */}}
 {{- if $secretExistingName }}
 - name: {{ $var }}
-valueFrom:
-secretKeyRef:
-name: {{ $secretExistingName | quote }}  # {{ $key }}.existingSecret.name
-key: {{ $secretExistingKey | quote }}    # {{ $key }}.existingSecret.key
+  valueFrom:
+    secretKeyRef:
+      name: {{ $secretExistingName | quote }}  # {{ $key }}.existingSecret.name
+      key: {{ $secretExistingKey | quote }}    # {{ $key }}.existingSecret.key
 {{- end }}
 {{- end -}}
 
@@ -167,9 +167,9 @@ As a replacement for "common.images.image" that forces you to set image.tag valu
 {{- $repositoryName := .imageRoot.repository -}}
 {{- $tag := (coalesce .imageRoot.tag .Chart.AppVersion) | toString -}}
 {{- if .global }}
-{{- if .global.imageRegistry }}
-{{- $registryName = .global.imageRegistry -}}
-{{- end -}}
+    {{- if .global.imageRegistry }}
+     {{- $registryName = .global.imageRegistry -}}
+    {{- end -}}
 {{- end -}}
 {{- if $registryName }}
 {{- printf "%s/%s:%s" $registryName $repositoryName $tag -}}
@@ -947,7 +947,7 @@ TODO: We have to regenerate the secret if the private key changes
 {{- .Values.tlsCerts.existingSecret.name -}}
 {{- else if (empty .Values.router.tlsCertificates.certificateValueBase64) -}}
 {{/*
-Preserved the original behaviour in case someone use the default secret name without explicitly define that parameter
+    Preserved the original behaviour in case someone use the default secret name without explicitly define that parameter
 */}}
 {{- printf "%s-tls" (include "common.names.fullname" .) -}}
 {{- else -}}
@@ -1006,15 +1006,15 @@ Get the Postgresql credentials secret.
 */}}
 {{- define "carto.postgresql.secretName" -}}
 {{- if and (.Values.internalPostgresql.enabled) (not .Values.internalPostgresql.auth.existingSecret) -}}
-{{- printf "%s" (include "carto.postgresql.fullname" .) -}}
+    {{- printf "%s" (include "carto.postgresql.fullname" .) -}}
 {{- else if and (.Values.internalPostgresql.enabled) (.Values.internalPostgresql.auth.existingSecret) -}}
-{{- printf "%s" .Values.internalPostgresql.auth.existingSecret -}}
+    {{- printf "%s" .Values.internalPostgresql.auth.existingSecret -}}
 {{- else }}
-{{- if .Values.externalPostgresql.existingSecret -}}
-{{- printf "%s" .Values.externalPostgresql.existingSecret -}}
-{{- else -}}
-{{ printf "%s-%s" .Release.Name "externalpostgresql" }}
-{{- end -}}
+    {{- if .Values.externalPostgresql.existingSecret -}}
+        {{- printf "%s" .Values.externalPostgresql.existingSecret -}}
+    {{- else -}}
+        {{ printf "%s-%s" .Release.Name "externalpostgresql" }}
+    {{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -1069,17 +1069,17 @@ Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.secret.key" -}}
 {{- if .Values.internalPostgresql.enabled -}}
-{{- printf "%s" "password" -}}
+    {{- printf "%s" "password" -}}
 {{- else -}}
-{{- if .Values.externalPostgresql.existingSecret -}}
-{{- if .Values.externalPostgresql.existingSecretPasswordKey -}}
-    {{- printf "%s" .Values.externalPostgresql.existingSecretPasswordKey -}}
-{{- else -}}
-    {{- printf "%s" "db-password" -}}
-{{- end -}}
-{{- else -}}
-{{- printf "%s" "db-password" -}}
-{{- end -}}
+    {{- if .Values.externalPostgresql.existingSecret -}}
+        {{- if .Values.externalPostgresql.existingSecretPasswordKey -}}
+            {{- printf "%s" .Values.externalPostgresql.existingSecretPasswordKey -}}
+        {{- else -}}
+            {{- printf "%s" "db-password" -}}
+        {{- end -}}
+    {{- else -}}
+        {{- printf "%s" "db-password" -}}
+    {{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -1088,17 +1088,17 @@ Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.secret.adminKey" -}}
 {{- if .Values.internalPostgresql.enabled -}}
-{{- print "postgres-password" -}}
+    {{- print "postgres-password" -}}
 {{- else -}}
-{{- if .Values.externalPostgresql.existingSecret -}}
-{{- if .Values.externalPostgresql.existingSecretAdminPasswordKey -}}
-{{- printf "%s" .Values.externalPostgresql.existingSecretAdminPasswordKey -}}
-{{- else -}}
-{{- print "db-admin-password" -}}
-{{- end -}}
-{{- else -}}
-{{- print "db-admin-password" -}}
-{{- end -}}
+    {{- if .Values.externalPostgresql.existingSecret -}}
+        {{- if .Values.externalPostgresql.existingSecretAdminPasswordKey -}}
+            {{- printf "%s" .Values.externalPostgresql.existingSecretAdminPasswordKey -}}
+        {{- else -}}
+            {{- print "db-admin-password" -}}
+        {{- end -}}
+    {{- else -}}
+        {{- print "db-admin-password" -}}
+    {{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -1114,9 +1114,9 @@ Get the Postgresql config map name
 */}}
 {{- define "carto.postgresql.configMapName" -}}
 {{- if .Values.internalPostgresql.enabled -}}
-{{- include "carto.postgresql.fullname" . -}}
+  {{- include "carto.postgresql.fullname" . -}}
 {{- else }}
-{{- printf "%s-%s" .Release.Name "externalpostgresql" -}}
+  {{- printf "%s-%s" .Release.Name "externalpostgresql" -}}
 {{- end -}}
 {{- end -}}
 
@@ -1176,21 +1176,21 @@ Add environment variables to configure Redis values
 */}}
 {{- define "carto.redis.existingsecret.key" -}}
 {{- if .Values.internalRedis.enabled -}}
-{{- if .Values.cartoSecrets.redisPassword.existingSecret.name -}}
-{{- print .Values.cartoSecrets.redisPassword.existingSecret.key -}}
+  {{- if .Values.cartoSecrets.redisPassword.existingSecret.name -}}
+    {{- print .Values.cartoSecrets.redisPassword.existingSecret.key -}}
+  {{- else -}}
+    {{- print "redis-password" -}}
+  {{- end }}
 {{- else -}}
-{{- print "redis-password" -}}
-{{- end }}
-{{- else -}}
-{{- if .Values.externalRedis.existingSecret -}}
-{{- if .Values.externalRedis.existingSecretPasswordKey -}}
-{{- printf "%s" .Values.externalRedis.existingSecretPasswordKey -}}
-{{- else -}}
-{{- print "redis-password" -}}
-{{- end }}
-{{- else -}}
-{{- print "redis-password" -}}
-{{- end }}
+  {{- if .Values.externalRedis.existingSecret -}}
+    {{- if .Values.externalRedis.existingSecretPasswordKey -}}
+      {{- printf "%s" .Values.externalRedis.existingSecretPasswordKey -}}
+    {{- else -}}
+      {{- print "redis-password" -}}
+    {{- end }}
+  {{- else -}}
+    {{- print "redis-password" -}}
+  {{- end }}
 {{- end }}
 {{- end }}
 
@@ -1199,15 +1199,15 @@ Get the Redis credentials secret.
 */}}
 {{- define "carto.redis.secretName" -}}
 {{- if and (.Values.internalRedis.enabled) (not .Values.internalRedis.existingSecret) -}}
-{{- printf "%s" (include "carto.redis.fullname" .) -}}
+    {{- printf "%s" (include "carto.redis.fullname" .) -}}
 {{- else if and (.Values.internalRedis.enabled) (.Values.internalRedis.existingSecret) -}}
-{{- printf "%s" .Values.internalRedis.existingSecret -}}
+    {{- printf "%s" .Values.internalRedis.existingSecret -}}
 {{- else }}
-{{- if .Values.externalRedis.existingSecret -}}
-{{- printf "%s" .Values.externalRedis.existingSecret -}}
-{{- else -}}
-{{ printf "%s-%s" .Release.Name "externalredis" }}
-{{- end -}}
+    {{- if .Values.externalRedis.existingSecret -}}
+        {{- printf "%s" .Values.externalRedis.existingSecret -}}
+    {{- else -}}
+        {{ printf "%s-%s" .Release.Name "externalredis" }}
+    {{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -1216,9 +1216,9 @@ Get the Redis config map name
 */}}
 {{- define "carto.redis.configMapName" -}}
 {{- if .Values.internalRedis.enabled -}}
-{{- include "carto.redis.fullname" . -}}
+  {{- include "carto.redis.fullname" . -}}
 {{- else }}
-{{- printf "%s-%s" .Release.Name "externalredis" -}}
+  {{- printf "%s-%s" .Release.Name "externalredis" -}}
 {{- end -}}
 {{- end -}}
 

@@ -1,5 +1,5 @@
 apiVersion: v2
-appVersion: 2025.7.16-rc.5
+appVersion: 2025.8.12
 dependencies:
   - name: common
     repository: https://charts.bitnami.com/bitnami
@@ -29,4 +29,4 @@ sources:
   - https://carto.com/
 annotations:
   minVersion: "2025.4.21"
-version: 1.192.1
+version: 1.202.1

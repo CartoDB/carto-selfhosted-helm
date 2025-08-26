@@ -35,6 +35,7 @@ data:
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   NODE_OPTIONS: {{ template "carto.importWorker.nodeOptions" . }}
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  PUBSUB_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.pubsubDomain | quote }}
   PUBSUB_USE_REST_API: {{ .Values.cartoConfigValues.usePubSubRestApi | quote }}
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . | quote }}
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . | quote }}

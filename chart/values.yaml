@@ -80,6 +80,8 @@ appConfigValues:
   ldsIsolineProvider: ""
   ## @param appConfigValues.logLevel The log level used in CARTO application
   logLevel: "info"
+  ## @param appConfigValues.deploymentType The deployment type used in CARTO application
+  deploymentType: "helm"
 
 ## @section CARTO Replicated parameters
 ## Global configuration for installations using Replicated. If you change something from this section probably your self-hosted is going to stop working.
@@ -132,6 +134,8 @@ cartoConfigValues:
   usePubSubRestApi: false
   ## @param cartoConfigValues.enablellmProxyEndpoint Enable the llmProxy endpoint in the router.
   enablellmProxyEndpoint: false
+  ## @param cartoConfigValues.pubsubDomain PubSub domain to be used in the installation.
+  pubsubDomain: ""
 
 ## @section App secret
 ## Global secrets to be edited by the client
@@ -4806,7 +4810,7 @@ internalRedis:
     ## pullSecrets:
     ##   - myRegistryKeySecretName
     ##
-  ## @param internalRedis.image.pullSecrets Image-pull secrets for private registries
+    ## @param internalRedis.image.pullSecrets Image-pull secrets for private registries
     pullSecrets: []
 
   ## @param internalRedis.auth.enabled Enable password authentication on internal-redis
@@ -4987,7 +4991,6 @@ internalRedis:
   ## @param internalRedis.tolerations Tolerations for internal-redis pods assignment
   ##
   tolerations: []
-
 
   ## @param internalRedis.priorityClassName internal-redis pods' priorityClassName
   ##

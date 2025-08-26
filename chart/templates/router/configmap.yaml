@@ -15,6 +15,7 @@ data:
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
+  LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   HTTP_CACHE_ENABLED: {{ .Values.appConfigValues.httpCacheEnabled | quote }}
   NGINX_CLIENT_MAX_BODY_SIZE: {{ .Values.router.nginxConfig.client_max_body_size | quote }}
   NGINX_GZIP_MIN_LENGTH: {{ .Values.router.nginxConfig.gzip_min_length | quote }}
@@ -28,6 +29,7 @@ data:
   ROUTER_AI_ENABLE_LLMPROXY_ENDPOINT: {{ .Values.cartoConfigValues.enablellmProxyEndpoint | quote }}
   ROUTER_AI_LLMPROXY_INTERNAL_URL: {{ include "carto.llmProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}/litellm
   {{- end }}
+  PUBSUB_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.pubsubDomain | quote }}
   ROUTER_ACCOUNTS_WWW_INTERNAL_URL: {{ include "carto.accountsWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_HTTP_CACHE_INTERNAL_URL: {{ include "carto.httpCache.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_NOTIFIER_INTERNAL_URL: {{ include "carto.notifier.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
@@ -44,7 +46,7 @@ data:
   ROUTER_METRICS_PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   ROUTER_METRICS_PUBSUB_TOPIC: "data-updates"
   ROUTER_METRICS_PUBSUB_USE_REST_API: {{ .Values.cartoConfigValues.usePubSubRestApi | quote }}
-  ROUTER_METRICS_HOST: "localhost"
+  ROUTER_METRICS_HOST: 127.0.0.1
   ROUTER_METRICS_PUBSUB_SUBSCRIPTION_FILTER: "aggregated-selfhosted-metrics"
   ROUTER_METRICS_EVENTS_TIMEOUT: "300000"
   ROUTER_INGRESS_TESTING_MODE: {{ .Values.cartoConfigValues.ingressTestingMode | quote }}

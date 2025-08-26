@@ -22,7 +22,7 @@ data:
   DATABASE_NAME: {{ .Values.externalPostgresql.aiDatabaseName | quote }}
   DATABASE_PORT: {{ include "carto.postgresql.port" . | quote }}
   DATABASE_SSL_MODE: {{ include "carto.litellm.databaseSslMode" . | quote }}
-  DATABASE_SSL_PATH: {{ include "carto.postgresql.configMapMountAbsolutePath" . | quote }}
+  DATABASE_SSL_CA_PATH: {{ include "carto.postgresql.configMapMountAbsolutePath" . | quote }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
@@ -46,5 +46,6 @@ data:
   REDIS_HOST: {{ include "carto.redis.host" . | quote }}
   REDIS_PORT: {{ include "carto.redis.port" . | quote }}
   PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
-  XDG_CACHE_HOME: "/tmp/prisma-cache"
+  XDG_CACHE_HOME: "/app/.cache/prisma"
+  NPM_CONFIG_CACHE: "/tmp/.npm"
 {{- end }} 

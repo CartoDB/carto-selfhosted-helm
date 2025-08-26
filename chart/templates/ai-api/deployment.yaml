@@ -25,6 +25,8 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/ai-api/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/ai-api/secret.yaml") . | sha256sum }}
+        checksum/postgresql-password: {{ include "carto.postgresql.passwordChecksum" . }}
+        checksum/redis-password: {{ include "carto.redis.passwordChecksum" . }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.aiApi.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.podAnnotations "context" $) | nindent 8 }}
