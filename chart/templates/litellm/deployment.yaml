@@ -19,7 +19,7 @@ spec:
   {{- end }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
-      app.kubernetes.io/component: llmProxy
+      app.kubernetes.io/component: llmproxy
   template:
     metadata:
       annotations:
