@@ -6,7 +6,7 @@ metadata:
   name: {{ template "carto.llmProxy.fullname" . }}-pdb
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: llmProxy
+    app.kubernetes.io/component: llmproxy
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
