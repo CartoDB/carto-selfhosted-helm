@@ -5171,7 +5171,7 @@ externalPostgresql:
   sslCA: ""
   awsEksPodIdentityEnabled: false
   awsRdsRegion: ""
-  llmProxyDatabase: "llmProxy"
+  aiDatabaseName: "llmProxy"
 
 ## @section External proxy configuration
 ## Configuration for an external proxy provided by the client. Only HTTP and HTTPS proxies are supported
