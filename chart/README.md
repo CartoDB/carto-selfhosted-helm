@@ -87,9 +87,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cartoConfigValues.featureFlagsOverrides`         | YAML configuration for overriding feature flags.                                                                                                                                                     | `[]`    |
 | `cartoConfigValues.usePubSubRestApi`              | Enable the usage of PubSub via REST API instead of gRPC.                                                                                                                                             | `false` |
 | `cartoConfigValues.enablellmProxyEndpoint`        | Enable the llmProxy endpoint in the router.                                                                                                                                                          | `false` |
-| `cartoConfigValues.enableLitellmEndpoint`         | Enable the Litellm endpoint in the router.                                                                                                                                                           | `false` |
 | `cartoConfigValues.pubsubDomain`                  | PubSub domain to be used in the installation.                                                                                                                                                        | `""`    |
-
 
 ### App secret
 

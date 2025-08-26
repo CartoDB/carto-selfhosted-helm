@@ -23,8 +23,8 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/llmProxy/configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/llmProxy/secret.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/llmproxy/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/llmproxy/secret.yaml") . | sha256sum }}
         checksum/masterKeyChecksum: {{ include "carto.llmProxy.masterKeyChecksum" . | sha256sum }}
         checksum/saltKeyChecksum: {{ include "carto.llmProxy.saltKeyChecksum" . | sha256sum }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
@@ -101,11 +101,11 @@ spec:
                   name: {{ include "carto.redis.secretName" . }}
                   key: {{ include "carto.redis.existingsecret.key" . }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
-                "llmProxy_MASTER_KEY"
-                "llmProxy_SALT_KEY"
+                "LITELLM_MASTER_KEY"
+                "LITELLM_SALT_KEY"
                 "OPENAI_API_KEY"
                 "GEMINI_API_KEY"
-                "llmProxy_JWT_SECRET"
+                "LITELLM_JWT_SECRET"
              ) "context" $ ) | nindent 12 }}
             {{- if .Values.llmProxy.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.extraEnvVars "context" $) | nindent 12 }}
@@ -114,11 +114,11 @@ spec:
             - configMapRef:
                 name: {{ template "carto.llmProxy.configmapName" . }}
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
-                "llmProxy_MASTER_KEY"
-                "llmProxy_SALT_KEY"
+                "LITELLM_MASTER_KEY"
+                "LITELLM_SALT_KEY"
                 "OPENAI_API_KEY"
                 "GEMINI_API_KEY"
-                "llmProxy_JWT_SECRET"
+                "LITELLM_JWT_SECRET"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
@@ -146,7 +146,7 @@ spec:
               port: http
               httpHeaders:
                 - name: Authorization
-                  value: "Bearer {{ .Values.cartoSecrets.llmProxyMasterKey.value }}"
+                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
           {{- else if .Values.llmProxy.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
