@@ -594,7 +594,6 @@ spec:
           type: text
           when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
           default: "llmProxy"
-
         - name: enablellmProxyEndpoint
           title: Enable llmProxy endpoint
           help_text: |-
@@ -607,7 +606,6 @@ spec:
           when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
           required: true
           default: 'sk-{{repl RandomString 16 "[A-Za-z0-9]" }}'
-          
         - name: litellmSaltKey
           title: Litellm salt key
           type: password
