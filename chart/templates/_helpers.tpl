@@ -886,7 +886,7 @@ Return the proper Carto tenant-requirements-checker image name
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.litellm.image) "context" $) -}}
+{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.llmProxy.image) "context" $) -}}
 {{- end -}}
 
 {{/*
@@ -1389,45 +1389,45 @@ Create aiApi Node options
 {{- end -}}
 
 {{/*
-Create a default fully qualified litellm name.
+Create a default fully qualified llmProxy name.
 */}}
-{{- define "carto.litellm.fullname" -}}
-{{- printf "%s-litellm" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- define "carto.llmProxy.fullname" -}}
+{{- printf "%s-llmproxy" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/* 
-Create carto Image full name for litellm
+Create carto Image full name for llmProxy
 */}}
-{{- define "carto.litellm.image" -}}
-{{- include "carto.images.image" (dict "imageRoot" .Values.litellm.image "global" .Values.global "Chart" .Chart) -}}
+{{- define "carto.llmProxy.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.llmProxy.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{/*
-Create the name of the litellm configmap
+Create the name of the llmProxy configmap
 */}}
-{{- define "carto.litellm.configmapName" -}}
-{{- if .Values.litellm.existingConfigMap -}}
-{{- .Values.litellm.existingConfigMap -}}
+{{- define "carto.llmProxy.configmapName" -}}
+{{- if .Values.llmProxy.existingConfigMap -}}
+{{- .Values.llmProxy.existingConfigMap -}}
 {{- else -}}
-{{- include "carto.litellm.fullname" . -}}
+{{- include "carto.llmProxy.fullname" . -}}
 {{- end -}}
 {{- end -}}
 
 {{/*
-Create the name of the litellm secret
+Create the name of the llmProxy secret
 */}}
-{{- define "carto.litellm.secretName" -}}
-{{- if .Values.litellm.existingSecret -}}
-{{- .Values.litellm.existingSecret -}}
+{{- define "carto.llmProxy.secretName" -}}
+{{- if .Values.llmProxy.existingSecret -}}
+{{- .Values.llmProxy.existingSecret -}}
 {{- else -}}
-{{- include "carto.litellm.fullname" . -}}
+{{- include "carto.llmProxy.fullname" . -}}
 {{- end -}}
 {{- end -}}
 
 {{/*
-Return the litellm database password
+Return the llmProxy database password
 */}}
-{{- define "carto.litellm.databasePassword" -}}
+{{- define "carto.llmProxy.databasePassword" -}}
 {{- if and .Values.internalPostgresql.enabled (not .Values.internalPostgresql.auth.existingSecret) -}}
 {{- .Values.internalPostgresql.auth.password -}}
 {{- else -}}
@@ -1438,9 +1438,9 @@ Return the litellm database password
 {{- end -}}
 
 {{/*
-Return the litellm database ssl mode
+Return the llmProxy database ssl mode
 */}}
-{{- define "carto.litellm.databaseSslMode" -}}
+{{- define "carto.llmProxy.databaseSslMode" -}}
 {{- if .Values.externalPostgresql.sslEnabled -}}
 require
 {{- else -}}
@@ -1449,9 +1449,9 @@ disable
 {{- end -}}
 
 {{/*
-Return the litellm redis password
+Return the llmProxy redis password
 */}}
-{{- define "carto.litellm.redisPassword" -}}
+{{- define "carto.llmProxy.redisPassword" -}}
 {{- if and ( .Values.internalRedis.enabled ) (not .Values.internalRedis.existingSecret) -}}
 {{- .Values.internalRedis.auth.password -}}
 {{- else -}}
@@ -1462,15 +1462,15 @@ Return the litellm redis password
 {{- end -}}
 
 {{/*
-Return the litellm master key checksum
+Return the llmProxy master key checksum
 */}}
-{{- define "carto.litellm.masterKeyChecksum" -}}
-{{- .Values.cartoSecrets.litellmMasterKey.value | sha256sum -}}
+{{- define "carto.llmProxy.masterKeyChecksum" -}}
+{{- .Values.cartoSecrets.llmProxyMasterKey.value | sha256sum -}}
 {{- end -}}
 
 {{/*
-Return the litellm salt key checksum
+Return the llmProxy salt key checksum
 */}}
-{{- define "carto.litellm.saltKeyChecksum" -}}
-{{- .Values.cartoSecrets.litellmSaltKey.value | sha256sum -}}
+{{- define "carto.llmProxy.saltKeyChecksum" -}}
+{{- .Values.cartoSecrets.llmProxySaltKey.value | sha256sum -}}
 {{- end -}}
