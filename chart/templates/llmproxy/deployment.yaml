@@ -75,7 +75,7 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.llmProxy.terminationGracePeriodSeconds }}
       containers:
-        - name: llmProxy
+        - name: llmproxy
           image: {{ template "carto.llmProxy.image" . }}
           imagePullPolicy: {{ .Values.llmProxy.image.pullPolicy }}
           {{- if .Values.llmProxy.containerSecurityContext.enabled }}
