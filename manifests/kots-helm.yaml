@@ -437,6 +437,12 @@ spec:
                 - weight: 1
                   podAffinityTerm:
                     labelSelector:
+                      matchExpressions:
+                        - key: "app.kubernetes.io/component"
+                          operator: In
+                          values:
+                            - llmproxy
+                    topologyKey: "kubernetes.io/hostname"
         ldsApi:
           autoscaling: *highAvailabilityEnabled
           affinity:
