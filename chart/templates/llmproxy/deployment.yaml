@@ -27,6 +27,8 @@ spec:
         checksum/secret: {{ include (print $.Template.BasePath "/llmproxy/secret.yaml") . | sha256sum }}
         checksum/masterKeyChecksum: {{ include "carto.llmProxy.masterKeyChecksum" . | sha256sum }}
         checksum/saltKeyChecksum: {{ include "carto.llmProxy.saltKeyChecksum" . | sha256sum }}
+        checksum/postgresql-password: {{ include "carto.postgresql.passwordChecksum" . }}
+        checksum/redis-password: {{ include "carto.redis.passwordChecksum" . }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.llmProxy.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.podAnnotations "context" $) | nindent 8 }}
