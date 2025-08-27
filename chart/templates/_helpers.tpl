@@ -1465,12 +1465,12 @@ Return the llmProxy redis password
 Return the llmProxy master key checksum
 */}}
 {{- define "carto.llmProxy.masterKeyChecksum" -}}
-{{- .Values.cartoSecrets.llmProxyMasterKey.value | sha256sum -}}
+{{- .Values.cartoSecrets.litellmMasterKey.value | sha256sum -}}
 {{- end -}}
 
 {{/*
 Return the llmProxy salt key checksum
 */}}
 {{- define "carto.llmProxy.saltKeyChecksum" -}}
-{{- .Values.cartoSecrets.llmProxySaltKey.value | sha256sum -}}
+{{- .Values.cartoSecrets.litellmSaltKey.value | sha256sum -}}
 {{- end -}}
