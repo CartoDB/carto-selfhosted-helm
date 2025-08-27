@@ -5888,10 +5888,10 @@ llmProxy:
   resources:
     limits:
       memory: "8192Mi"
-      cpu: "2000m"
+      cpu: "3000m"
     requests:
       memory: "4096Mi"
-      cpu: "1000m"
+      cpu: "2000m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param llmProxy.podSecurityContext.enabled Enabled ai-api pods' Security Context
