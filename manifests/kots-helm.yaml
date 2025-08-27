@@ -50,9 +50,7 @@ spec:
       litellmSaltKey:
         value: '{{repl ConfigOption "litellmSaltKey" }}'
       geminiApiKey:
-        value: '{{repl ConfigOption "geminiApiKey" }}'
-      litellmJwtSecret:
-        value: '{{repl ConfigOption "jwtEncryptionKey" }}'
+        value: '{{repl LicenseFieldValue "geminiApiKey" }}'
 
     # Carto Config Values
     cartoConfigValues:

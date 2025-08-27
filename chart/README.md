@@ -217,10 +217,6 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cartoSecrets.geminiApiKey.value`                              | Value of the secret used to define the API key for the Gemini instance. One of `cartoSecrets.geminiApiKey.value` or `cartoSecrets.geminiApiKey.existingSecret` could be defined.                                                                                      | `""`             |
 | `cartoSecrets.geminiApiKey.existingSecret.name`                | Name of the pre-existent secret containing the `cartoSecrets.geminiApiKey.existingSecret.key`. If `cartoSecrets.geminiApiKey.value` is defined, this value is going to be ignored and not used.                                                                       | `""`             |
 | `cartoSecrets.geminiApiKey.existingSecret.key`                 | Key to find in `cartoSecrets.geminiApiKey.existingSecret.name` where the value of `cartoSecrets.geminiApiKey` is found. If `cartoSecrets.geminiApiKey.value` is defined, this value is going to be ignored and not used.                                              | `""`             |
-| `cartoSecrets.litellmJwtSecret`                                | The JWT secret for the Litellm instance.                                                                                                                                                                                                                              |                  |
-| `cartoSecrets.litellmJwtSecret.value`                          | Value of the secret used to define the JWT secret for the Litellm instance. One of `cartoSecrets.litellmJwtSecret.value` or `cartoSecrets.litellmJwtSecret.existingSecret` could be defined.                                                                          | `""`             |
-| `cartoSecrets.litellmJwtSecret.existingSecret.name`            | Name of the pre-existent secret containing the `cartoSecrets.litellmJwtSecret.existingSecret.key`. If `cartoSecrets.litellmJwtSecret.value` is defined, this value is going to be ignored and not used.                                                               | `""`             |
-| `cartoSecrets.litellmJwtSecret.existingSecret.key`             | Key to find in `cartoSecrets.litellmJwtSecret.existingSecret.name` where the value of `cartoSecrets.litellmJwtSecret` is found. If `cartoSecrets.litellmJwtSecret.value` is defined, this value is going to be ignored and not used.                                  | `""`             |
 
 ### TLS parameters
 
@@ -1644,7 +1640,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `externalPostgresql.sslCA`                          | CA certificate in case CARTO Postgresql TLS cert it's selfsigned                                                                       | `""`              |
 | `externalPostgresql.awsEksPodIdentityEnabled`       | Enable EKS Pod Identity authentication for the external postgresql                                                                     | `false`           |
 | `externalPostgresql.awsRdsRegion`                   | Region of the RDS PostgreSQL database in AWS. Needed when EKS Pod Identity is enabled                                                  | `""`              |
-| `externalPostgresql.llmProxyDatabaseName`           | Database name for llmProxy                                                                                                             | `llmProxy`        |
+| `externalPostgresql.llmProxyDatabaseName`           | Database name for llmProxy                                                                                                             | `llmproxy`        |
 
 ### External proxy configuration
 

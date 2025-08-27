@@ -82,7 +82,7 @@ LITELLM_SALT_KEY: cartoSecrets.litellmSaltKey
 AI_OPENAI_API_KEY: cartoSecrets.litellmMasterKey
 OPENAI_API_KEY: cartoSecrets.openAiApiKey
 GEMINI_API_KEY: cartoSecrets.geminiApiKey
-LITELLM_JWT_SECRET: cartoSecrets.litellmJwtSecret
+LITELLM_JWT_SECRET: cartoSecrets.jwtEncryptionKey
 {{- end -}}
 
 {{/*
@@ -1248,15 +1248,9 @@ Return the Redis password sha256sum
 */}}
 {{- define "carto.redis.passwordChecksum" -}}
 {{- if .Values.internalRedis.enabled -}}
-{{- if and (.Values.cartoSecrets) (.Values.cartoSecrets.redisPassword) (.Values.cartoSecrets.redisPassword.value) -}}
-{{- print (tpl (toYaml .Values.cartoSecrets.redisPassword.value) . | sha256sum ) -}}
+{{- print (tpl (toYaml (default .Values.internalRedis.auth.password .Values.cartoSecrets.redisPassword.value)) . | sha256sum ) -}}
 {{- else -}}
-{{- print (tpl (toYaml .Values.internalRedis.auth.password) . | sha256sum ) -}}
-{{- end -}}
-{{- else -}}
-{{- if not .Values.externalRedis.existingSecret -}}
 {{- print (tpl (toYaml .Values.externalRedis.password) . | sha256sum ) -}}
-{{- end -}}
 {{- end -}}
 {{- end -}}
 

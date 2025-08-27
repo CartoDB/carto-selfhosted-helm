@@ -618,14 +618,6 @@ spec:
           type: bool
           default: "0"
 
-
-        ## Gemini
-        - name: geminiApiKey
-          title: Gemini API key
-          type: password
-          when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
-          default: '{{repl LicenseFieldValue "geminiApiKey" }}'
-
         ## Redis
         - name: externalRedisEnabled
           title: Redis

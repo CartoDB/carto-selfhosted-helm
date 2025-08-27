@@ -443,16 +443,6 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
-  ## @extra cartoSecrets.litellmJwtSecret The JWT secret for the Litellm instance.
-  litellmJwtSecret:
-    ## @param cartoSecrets.litellmJwtSecret.value Value of the secret used to define the JWT secret for the Litellm instance. One of `cartoSecrets.litellmJwtSecret.value` or `cartoSecrets.litellmJwtSecret.existingSecret` could be defined.
-    value: ""
-    ## @param cartoSecrets.litellmJwtSecret.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.litellmJwtSecret.existingSecret.key`. If `cartoSecrets.litellmJwtSecret.value` is defined, this value is going to be ignored and not used.
-    ## @param cartoSecrets.litellmJwtSecret.existingSecret.key Key to find in `cartoSecrets.litellmJwtSecret.existingSecret.name` where the value of `cartoSecrets.litellmJwtSecret` is found. If `cartoSecrets.litellmJwtSecret.value` is defined, this value is going to be ignored and not used.
-    ##
-    existingSecret:
-      name: ""
-      key: ""
 
 ## FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 ## @section TLS parameters
@@ -5171,7 +5161,7 @@ externalPostgresql:
   sslCA: ""
   awsEksPodIdentityEnabled: false
   awsRdsRegion: ""
-  llmProxyDatabaseName: "llmProxy"
+  llmProxyDatabaseName: "llmproxy"
 
 ## @section External proxy configuration
 ## Configuration for an external proxy provided by the client. Only HTTP and HTTPS proxies are supported
