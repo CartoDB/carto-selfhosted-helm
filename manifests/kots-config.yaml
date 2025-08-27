@@ -30,6 +30,8 @@ spec:
           hidden: true
           type: text
           value: '{{repl LicenseFieldValue "licenseType" }}'
+
+        ## Auto-generated values derived from Carto Platform Environment (that do not change)
         - name: valuesDerivedFromCartoPlatformEnvironment
           title: Customer Package Values
           type: textarea
@@ -81,7 +83,22 @@ spec:
           hidden: true
           readonly: false
           value: '{{repl RandomString 32 }}'
-
+        - name: litellmMasterKey
+          title: Litellm master key
+          type: password
+          hidden: true
+          readonly: false
+          when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
+          value: 'sk-{{repl RandomString 16 "[A-Za-z0-9]" }}'
+        - name: litellmSaltKey
+          title: Litellm salt key
+          type: password
+          hidden: true
+          readonly: false
+          when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
+          value: 'sk-{{repl RandomString 16 "[A-Za-z0-9]" }}'
+          
+        ## Derived values from the license
         - name: derivedSelfHostedGCPProjectId
           title: Project Id
           type: textarea
@@ -600,18 +617,7 @@ spec:
             Enable the llmProxy endpoint.
           type: bool
           default: "0"
-        - name: litellmMasterKey
-          title: Litellm master key
-          type: password
-          when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
-          required: true
-          default: 'sk-{{repl RandomString 16 "[A-Za-z0-9]" }}'
-        - name: litellmSaltKey
-          title: Litellm salt key
-          type: password
-          when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
-          required: true
-          default: 'sk-{{repl RandomString 16 "[A-Za-z0-9]" }}'
+
 
         ## Gemini
         - name: geminiApiKey
