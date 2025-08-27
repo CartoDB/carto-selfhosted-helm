@@ -16,10 +16,10 @@ data:
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
-  AI_API_URL: "http://{{ include "carto.aiApi.fullname" . }}:{{ .Values.aiApi.service.ports.http }}"
+  AI_API_URL: {{ include "carto.aiApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   DATABASE_HOST: {{ include "carto.postgresql.host" . | quote }}
   DATABASE_USERNAME: {{ include "carto.postgresql.user" . | quote }}
-  DATABASE_NAME: {{ .Values.externalPostgresql.aiDatabaseName | quote }}
+  DATABASE_NAME: {{ .Values.externalPostgresql.llmProxyDatabaseName | quote }}
   DATABASE_PORT: {{ include "carto.postgresql.port" . | quote }}
   DATABASE_SSL_MODE: {{ include "carto.llmProxy.databaseSslMode" . | quote }}
   DATABASE_SSL_CA_PATH: {{ include "carto.postgresql.configMapMountAbsolutePath" . | quote }}
