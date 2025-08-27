@@ -5888,7 +5888,7 @@ llmProxy:
   resources:
     limits:
       memory: "8192Mi"
-      cpu: "3000m"
+      cpu: "2000m"
     requests:
       memory: "4096Mi"
       cpu: "2000m"
