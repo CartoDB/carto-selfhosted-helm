@@ -42,14 +42,6 @@ data:
   NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
   {{- end }}
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
-  MAPS_API_V3_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
-  MAPS_API_V3_PORT: "{{ .Values.mapsApi.containerPorts.http }}"
-  MAPS_API_V3_RESOURCE_URL_ALLOWED_HOSTS: {{ .Values.appConfigValues.selfHostedDomain | quote }}
-  MAPS_API_V3_RESOURCE_URL_HOST: {{ .Values.appConfigValues.selfHostedDomain | quote }}
-  MAPS_API_V3_RESOURCE_URL_TEMPLATE_NEW: 'https://${host}/api/${path}'
-  MAPS_API_V3_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  MAPS_API_V3_PUBSUB_TENANT_BUS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/tenant-bus-sql-worker-sub"
-  MAPS_API_V3_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
   NODE_OPTIONS: {{ template "carto.aiApi.nodeOptions" . }}
   REDIS_CACHE_PREFIX: "onprem"
   REDIS_HOST: {{ include "carto.redis.host" . | quote }}
