@@ -1419,19 +1419,6 @@ Create the name of the llmProxy secret
 {{- end -}}
 
 {{/*
-Return the llmProxy database password
-*/}}
-{{- define "carto.llmProxy.databasePassword" -}}
-{{- if and .Values.internalPostgresql.enabled (not .Values.internalPostgresql.auth.existingSecret) -}}
-{{- .Values.internalPostgresql.auth.password -}}
-{{- else -}}
-{{- if not .Values.externalPostgresql.existingSecret -}}
-{{- .Values.externalPostgresql.password -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Return the llmProxy database ssl mode
 */}}
 {{- define "carto.llmProxy.databaseSslMode" -}}
@@ -1439,19 +1426,6 @@ Return the llmProxy database ssl mode
 require
 {{- else -}}
 disable
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the llmProxy redis password
-*/}}
-{{- define "carto.llmProxy.redisPassword" -}}
-{{- if and ( .Values.internalRedis.enabled ) (not .Values.internalRedis.existingSecret) -}}
-{{- .Values.internalRedis.auth.password -}}
-{{- else -}}
-{{- if not .Values.externalRedis.existingSecret -}}
-{{- .Values.externalRedis.password -}}
-{{- end -}}
 {{- end -}}
 {{- end -}}
 
