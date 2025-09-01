@@ -83,10 +83,6 @@ data:
   USING_EXTERNAL_REDIS: "true"
   {{- end }}
 
-  # Selfhosted Configuration
-  SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
-  SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
-
   # Workspace Configuration
   WORKSPACE_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
   WORKSPACE_PORT: {{ .Values.workspaceApi.containerPorts.http | quote }}
