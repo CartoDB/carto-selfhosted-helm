@@ -12,38 +12,66 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
+  # Authentication Configuration
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
+  CARTO_SELFHOSTED_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
+
+  # BigQuery Configuration
   BIGQUERY_OAUTH2_CLIENT_ID: {{ .Values.appConfigValues.bigqueryOauth2ClientId | quote }}
+
+  # Feature Flags Configuration
   {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
   CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
   {{- end }}
-  CARTO_SELFHOSTED_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
+
+  # Core Selfhosted Configuration
   CARTO_SELFHOSTED_CARTO_DW_LOCATION: {{ .Values.cartoConfigValues.cartoSelfhostedDwLocation | quote }}
   CARTO_SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   CARTO_SELFHOSTED_DEPLOYMENT: {{ .Values.appConfigValues.deploymentType | quote }}
+  {{ if or (.Values.appSecrets.googleMapsApiKey.value) (and .Values.appSecrets.googleMapsApiKey.existingSecret.name .Values.appSecrets.googleMapsApiKey.existingSecret.key) }}
+  GOOGLE_BASEMAPS_ENABLED: "true"
+  {{- end }}
+  {{- if .Values.cartoConfigValues.cartoDataWarehouseEnabled }}
+  CARTO_DATA_WAREHOUSE_ENABLED: "true"
+  {{- end }}
+  SSO_ORGANIZATION_ID: {{ .Values.appConfigValues.ssoOrganizationId | quote }}
+  ROUTER_HTTPS_ENABLED: {{ .Values.tlsCerts.httpsEnabled | quote }}
+  WORKSPACE_API_IMAGE_NAME: {{ template "carto.workspaceApi.image" . }}
+
+  # Replicated Configuration
   {{- if .Values.replicated.enabled }}
   CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "replicated.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:3000"
   {{- end }}
-  {{- if eq .Values.appConfigValues.logLevel "debug" }}
-  CARTO_TRACING_MODE: "local"
-  {{- end }}
-  EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
-  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
+
+  # Exports Configuration
   EXPORTS_GCS_BUCKET_NAME: {{ .Values.appConfigValues.workspaceExportsBucket | quote }}
+
+  # Google Application Credentials
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
+
+  # Logging Configuration
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   NODE_OPTIONS: {{ template "carto.workspaceApi.nodeOptions" . }}
+  {{- if eq .Values.appConfigValues.logLevel "debug" }}
+  CARTO_TRACING_MODE: "local"
+  {{- end }}
+
+  # PubSub Configuration
   PUBSUB_MODE: "pull"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   PUBSUB_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.pubsubDomain | quote }}
   PUBSUB_USE_REST_API: {{ .Values.cartoConfigValues.usePubSubRestApi | quote }}
+  EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
+  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
+
+  # Redis Configuration
   REDIS_CACHE_PREFIX: "onprem"
   REDIS_HOST: {{ include "carto.redis.host" . }}
   REDIS_PORT: {{ include "carto.redis.port" . }}
@@ -51,10 +79,21 @@ data:
   {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
   REDIS_TLS_CA: {{ include "carto.redis.configMapMountAbsolutePath" . }}
   {{- end }}
+  {{- if not (.Values.internalRedis.enabled) }}
+  USING_EXTERNAL_REDIS: "true"
+  {{- end }}
+
+  # Selfhosted Configuration
   SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+
+  # Workspace Configuration
   WORKSPACE_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
-  WORKSPACE_PORT: {{ .Values.workspaceApi.containerPorts.http  | quote }}
+  WORKSPACE_PORT: {{ .Values.workspaceApi.containerPorts.http | quote }}
+  WORKSPACE_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  WORKSPACE_SYNC_DATA_ENABLED: "true"
+
+  # PostgreSQL Configuration
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
   WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . }}
@@ -63,22 +102,32 @@ data:
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
   WORKSPACE_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
   {{- end }}
+
+  # AWS EKS Pod Identity Configuration
   {{- if .Values.externalPostgresql.awsEksPodIdentityEnabled }}
   CARTO_SELFHOSTED_AWS_RDS_METADATA_REGION: {{ .Values.externalPostgresql.awsRdsRegion | quote }}
   CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED: {{ .Values.externalPostgresql.awsEksPodIdentityEnabled | quote }}
   {{- end }}
+
+  # Import Configuration
   IMPORT_AWS_CUSTOM_BUCKET_ROLE_ARN: {{ .Values.appConfigValues.importAwsRoleArn | quote }}
+
+  # Workspace PubSub Configuration
   WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/data-updates-workspace-sub"
   WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/data-updates"
   WORKSPACE_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
-  WORKSPACE_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  WORKSPACE_SYNC_DATA_ENABLED: "true"
+
+  # Workspace Storage - Imports
   WORKSPACE_IMPORTS_BUCKET: {{ .Values.appConfigValues.workspaceImportsBucket | quote }}
   WORKSPACE_IMPORTS_PUBLIC: {{ .Values.appConfigValues.workspaceImportsPublic | quote }}
   WORKSPACE_IMPORTS_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
+
+  # Workspace Storage - Thumbnails
   WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.appConfigValues.workspaceThumbnailsBucket | quote }}
   WORKSPACE_THUMBNAILS_PUBLIC: {{ .Values.appConfigValues.workspaceThumbnailsPublic | quote }}
   WORKSPACE_THUMBNAILS_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
+
+  # GCP Storage Configuration
   {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
   {{- if .Values.appConfigValues.googleCloudStorageProjectId }}
   WORKSPACE_IMPORTS_PROJECTID: {{ .Values.appConfigValues.googleCloudStorageProjectId | quote }}
@@ -94,6 +143,8 @@ data:
   {{- end }}
   {{- end }}
   {{- end }}
+
+  # S3 Storage Configuration
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}
   WORKSPACE_THUMBNAILS_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
   WORKSPACE_IMPORTS_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
@@ -101,17 +152,25 @@ data:
   CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_S3_ENABLED: {{ .Values.appConfigValues.awsEksPodIdentityBucketsEnabled | quote }}
   {{- end }}
   {{- end }}
+
+  # Azure Blob Storage Configuration
   {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
   WORKSPACE_THUMBNAILS_STORAGE_ACCOUNT: {{ .Values.appConfigValues.azureStorageAccount | quote }}
   WORKSPACE_IMPORTS_STORAGE_ACCOUNT: {{ .Values.appConfigValues.azureStorageAccount | quote }}
   {{- end }}
+
+  # Workload Identity Configuration
   {{- if .Values.appConfigValues.workloadIdentityConnection.enabled }}
   WORKSPACE_WORKLOAD_IDENTITY_WORKFLOWS_TEMP: {{ .Values.appConfigValues.workloadIdentityConnection.workflowsTempLocation | quote }}
   WORKSPACE_WORKLOAD_IDENTITY_BILLING_PROJECT: {{ .Values.appConfigValues.workloadIdentityConnection.billingProject | quote }}
   WORKSPACE_WORKLOAD_IDENTITY_SERVICE_ACCOUNT_EMAIL: {{ .Values.appConfigValues.workloadIdentityConnection.serviceAccountEmail | quote }}
   WORKSPACE_WORKLOAD_IDENTITY_CONNECTION_OWNER_ID: {{ .Values.appConfigValues.workloadIdentityConnection.connectionOwner | quote }}
   {{- end }}
+
+  # Data Observatory Configuration
   WORKSPACE_DO_PROJECT_ID: {{ .Values.cartoConfigValues.dataObservatoryProjectId | quote }}
+
+  # Default AT Location Configuration
   {{- if .Values.appConfigValues.defaultAtLocation.bigquery }}
   AT_LOCATION_BIGQUERY: {{ .Values.appConfigValues.defaultAtLocation.bigquery }}
   {{- end }}
@@ -124,9 +183,11 @@ data:
   {{- if .Values.appConfigValues.defaultAtLocation.postgres }}
   AT_LOCATION_POSTGRES: {{ .Values.appConfigValues.defaultAtLocation.postgres }}
   {{- end }}
+
+  # Default DO Location Configuration
   {{- if .Values.appConfigValues.defaultDoLocation.bigquery }}
   DO_LOCATION_BIGQUERY: {{ .Values.appConfigValues.defaultDoLocation.bigquery }}
-  {{- end}}
+  {{- end }}
   {{- if .Values.appConfigValues.defaultDoLocation.snowflake }}
   DO_LOCATION_SNOWFLAKE: {{ .Values.appConfigValues.defaultDoLocation.snowflake }}
   {{- end }}
@@ -136,6 +197,8 @@ data:
   {{- if .Values.appConfigValues.defaultDoLocation.postgres }}
   DO_LOCATION_POSTGRES: {{ .Values.appConfigValues.defaultDoLocation.postgres }}
   {{- end }}
+
+  # Proxy Configuration
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
