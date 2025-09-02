@@ -25,9 +25,6 @@ data:
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
   REACT_APP_ACCOUNTS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/"
-  {{- if .Values.aiApi.enabled }}
-  REACT_APP_AI_API_URL: "http://{{ .Values.appConfigValues.selfHostedDomain }}/api/v3/ai/"
-  {{- end }}
   REACT_APP_API_BASE_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api"
   REACT_APP_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   REACT_APP_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
