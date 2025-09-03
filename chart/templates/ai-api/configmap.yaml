@@ -18,6 +18,7 @@ data:
   # llmProxy acts as a unified gateway that can route to various AI providers
   AI_OPENAI_ENDPOINT: "http://{{ include "carto.llmProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   AI_SQL_API_URL: "http://{{ include "carto.mapsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+  AI_LDS_API_URL: "http://{{ include "carto.ldsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
@@ -62,5 +63,4 @@ data:
   CARTO_SELFHOSTED_AWS_RDS_METADATA_REGION: {{ .Values.externalPostgresql.awsRdsRegion | quote }}
   CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED: {{ .Values.externalPostgresql.awsEksPodIdentityEnabled | quote }}
   {{- end }}
-
 {{- end }}
