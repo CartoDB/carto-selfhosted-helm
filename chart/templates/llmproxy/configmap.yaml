@@ -1,0 +1,51 @@
+{{- if and (.Values.appConfigValues.aiFeaturesEnabled) (not .Values.cartoConfigValues.onlyRunRouter) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "carto.llmProxy.configmapName" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: llmproxy
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  AUTH0_AUDIENCE: "carto-cloud-native-api"
+  AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
+  AUTH0_NAMESPACE: "http://app.carto.com"
+  AI_API_URL: "http://{{ include "carto.aiApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+  DATABASE_HOST: {{ include "carto.postgresql.host" . | quote }}
+  DATABASE_USERNAME: {{ include "carto.postgresql.user" . | quote }}
+  DATABASE_NAME: {{ .Values.externalPostgresql.llmProxyDatabaseName | quote }}
+  DATABASE_PORT: {{ include "carto.postgresql.port" . | quote }}
+  DATABASE_SSL_MODE: {{ include "carto.llmProxy.databaseSslMode" . | quote }}
+  DATABASE_SSL_CA_PATH: {{ include "carto.postgresql.configMapMountAbsolutePath" . | quote }}
+  {{- if .Values.externalProxy.enabled }}
+  HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  HTTPS_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  https_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  GRPC_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  grpc_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
+  {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
+  NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  {{- end }}
+  {{- end }}
+  LITELLM_LOG_LEVEL: {{ ternary "DEBUG" "INFO" (eq .Values.appConfigValues.logLevel "debug") | quote }}
+  LITELLM_MIGRATION_DIR: "/tmp/prisma/migrations"
+  LITELLM_MODE: "PRODUCTION"
+  PRISMA_BINARY_CACHE_DIR: "/tmp/prisma-cache"
+  PRISMA_CLI_CACHE_DIR: "/tmp/prisma-cache"
+  PRISMA_HOME: "/tmp/prisma-cache"
+  REDIS_DB: "1"
+  REDIS_HOST: {{ include "carto.redis.host" . | quote }}
+  REDIS_PORT: {{ include "carto.redis.port" . | quote }}
+  PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
+  XDG_CACHE_HOME: "/app/.cache/prisma"
+  NPM_CONFIG_CACHE: "/tmp/.npm"
+{{- end }} 

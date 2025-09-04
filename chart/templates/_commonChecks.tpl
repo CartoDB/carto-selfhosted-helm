@@ -442,9 +442,9 @@ Return customer values to use in preflights and support-bundle
   - name: REDIS_CACHE_PREFIX 
     value: "onprem"
   - name: REDIS_HOST
-    value: {{ include "carto.redis.host" . }}
+    value: {{ include "carto.redis.host" . | quote }}
   - name: REDIS_PORT
-    value: {{ include "carto.redis.port" . }}
+    value: {{ include "carto.redis.port" . | quote }}
   - name: REDIS_TLS_ENABLED
     value: {{ .Values.externalRedis.tlsEnabled | quote }}
   {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
@@ -452,13 +452,13 @@ Return customer values to use in preflights and support-bundle
     value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
   {{- end }}
   - name: WORKSPACE_POSTGRES_HOST
-    value: {{ include "carto.postgresql.host" . }}
+    value: {{ include "carto.postgresql.host" . | quote }}
   - name: WORKSPACE_POSTGRES_PORT
-    value: {{ include "carto.postgresql.port" . }}
+    value: {{ include "carto.postgresql.port" . | quote }}
   - name: WORKSPACE_POSTGRES_DB
-    value: {{ include "carto.postgresql.databaseName" . }}
+    value: {{ include "carto.postgresql.databaseName" . | quote }}
   - name: WORKSPACE_POSTGRES_USER
-    value: {{ include "carto.postgresql.user" . }}
+    value: {{ include "carto.postgresql.user" . | quote }}
   - name: WORKSPACE_POSTGRES_SSL_ENABLED
     value: {{ .Values.externalPostgresql.sslEnabled | quote }}
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
