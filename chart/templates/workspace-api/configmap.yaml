@@ -15,11 +15,11 @@ data:
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
-  CARTO_SELFHOSTED_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   BIGQUERY_OAUTH2_CLIENT_ID: {{ .Values.appConfigValues.bigqueryOauth2ClientId | quote }}
   {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
   CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
   {{- end }}
+  CARTO_SELFHOSTED_AUTH0_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   CARTO_SELFHOSTED_CARTO_DW_LOCATION: {{ .Values.cartoConfigValues.cartoSelfhostedDwLocation | quote }}
   CARTO_SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   CARTO_SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
@@ -38,21 +38,21 @@ data:
   {{- if .Values.replicated.enabled }}
   CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "replicated.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:3000"
   {{- end }}
+  {{- if eq .Values.appConfigValues.logLevel "debug" }}
+  CARTO_TRACING_MODE: "local"
+  {{- end }}
+  EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
+  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   EXPORTS_GCS_BUCKET_NAME: {{ .Values.appConfigValues.workspaceExportsBucket | quote }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   NODE_OPTIONS: {{ template "carto.workspaceApi.nodeOptions" . }}
-  {{- if eq .Values.appConfigValues.logLevel "debug" }}
-  CARTO_TRACING_MODE: "local"
-  {{- end }}
   PUBSUB_MODE: "pull"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   PUBSUB_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.pubsubDomain | quote }}
   PUBSUB_USE_REST_API: {{ .Values.cartoConfigValues.usePubSubRestApi | quote }}
-  EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
-  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   REDIS_CACHE_PREFIX: "onprem"
   REDIS_HOST: {{ include "carto.redis.host" . }}
   REDIS_PORT: {{ include "carto.redis.port" . }}
@@ -65,8 +65,6 @@ data:
   {{- end }}
   WORKSPACE_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
   WORKSPACE_PORT: {{ .Values.workspaceApi.containerPorts.http | quote }}
-  WORKSPACE_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  WORKSPACE_SYNC_DATA_ENABLED: "true"
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
   WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . }}
@@ -83,6 +81,8 @@ data:
   WORKSPACE_PUBSUB_DATA_UPDATES_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/data-updates-workspace-sub"
   WORKSPACE_PUBSUB_DATA_UPDATES_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/data-updates"
   WORKSPACE_PUBSUB_TENANT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/tenant-bus"
+  WORKSPACE_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  WORKSPACE_SYNC_DATA_ENABLED: "true"
   WORKSPACE_IMPORTS_BUCKET: {{ .Values.appConfigValues.workspaceImportsBucket | quote }}
   WORKSPACE_IMPORTS_PUBLIC: {{ .Values.appConfigValues.workspaceImportsPublic | quote }}
   WORKSPACE_IMPORTS_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
