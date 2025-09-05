@@ -45,6 +45,13 @@ spec:
         value: '{{repl LicenseFieldValue "vitallyToken" }}'
       openAiApiKey:
         value: '{{repl ConfigOptionEquals "customOpenAIAPIKeyEnabled" "1" | ternary (ConfigOption "customOpenAIAPIKey") (LicenseFieldValue "openAiApiKey") }}'
+      litellmMasterKey:
+        value: '{{repl ConfigOption "litellmMasterKey" }}'
+      litellmSaltKey:
+        value: '{{repl ConfigOption "litellmSaltKey" }}'
+      geminiApiKey:
+        value: '{{repl LicenseFieldValue "geminiApiKey" }}'
+
     # Carto Config Values
     cartoConfigValues:
       cartoAccApiDomain: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "cartoAccApiDomain" "" | Base64Decode }}'
@@ -63,7 +70,9 @@ spec:
       dataObservatoryProjectId: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "dataObservatoryProjectId" "" | Base64Decode }}'
       ingressTestingMode: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
       onlyRunRouter: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
+      enablellmProxyEndpoint: repl{{ if ConfigOptionEquals "enablellmProxyEndpoint" "1"}}truerepl{{ else }}falserepl{{ end }}
       pubsubDomain: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "pubsubDomain" "" | Base64Decode }}'
+
     # Customizations
     ## App Secrets
     appSecrets:
@@ -79,6 +88,7 @@ spec:
         value: '{{repl ConfigOption "storageBucketsAzureAccessKey" }}'
     ## App Config Values
     appConfigValues:
+      aiFeaturesEnabled: repl{{ if ConfigOptionEquals "aiFeaturesEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
       # domain
       selfHostedDomain: '{{repl ConfigOption "cartoSelfHostedDomain" }}'
       # buckets
@@ -106,6 +116,15 @@ spec:
       sslEnabled: repl{{ if ConfigOptionEquals "metadataDBSSLMode" "1"}}truerepl{{ else }}falserepl{{ end }}
       sslCA: |
         repl{{- ConfigOptionData "metadataDBSSLCertificate" | nindent 8 }}
+      llmProxyDatabaseName: '{{repl ConfigOption "llmProxyDatabaseName" }}'
+    ## Ai Features
+    aiApi:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+    ## llmProxy
+    llmProxy:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     ## Redis
     internalRedis:
       enabled: repl{{ if ConfigOptionEquals "externalRedisEnabled" "0"}}truerepl{{ else }}falserepl{{ end }}
@@ -394,6 +413,34 @@ spec:
             enabled: true
             minReplicas: '{{repl ConfigOption "highAvailabilityMinReplicas" }}'
             maxReplicas: '{{repl ConfigOption "highAvailabilityMaxReplicas" }}'
+        aiApi:
+          autoscaling: *highAvailabilityEnabled
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 1
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: "app.kubernetes.io/component"
+                          operator: In
+                          values:
+                            - ai-api
+                    topologyKey: "kubernetes.io/hostname"
+        llmProxy:
+          autoscaling: *highAvailabilityEnabled
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 1
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: "app.kubernetes.io/component"
+                          operator: In
+                          values:
+                            - llmproxy
+                    topologyKey: "kubernetes.io/hostname"
         ldsApi:
           autoscaling: *highAvailabilityEnabled
           affinity:
