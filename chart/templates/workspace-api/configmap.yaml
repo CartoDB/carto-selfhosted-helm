@@ -26,6 +26,15 @@ data:
   CARTO_SELFHOSTED_NAME: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   CARTO_SELFHOSTED_DEPLOYMENT: {{ .Values.appConfigValues.deploymentType | quote }}
+  {{ if or (.Values.appSecrets.googleMapsApiKey.value) (and .Values.appSecrets.googleMapsApiKey.existingSecret.name .Values.appSecrets.googleMapsApiKey.existingSecret.key) }}
+  GOOGLE_BASEMAPS_ENABLED: "true"
+  {{- end }}
+  {{- if .Values.cartoConfigValues.cartoDataWarehouseEnabled }}
+  CARTO_DATA_WAREHOUSE_ENABLED: "true"
+  {{- end }}
+  SSO_ORGANIZATION_ID: {{ .Values.appConfigValues.ssoOrganizationId | quote }}
+  ROUTER_HTTPS_ENABLED: {{ .Values.tlsCerts.httpsEnabled | quote }}
+  WORKSPACE_API_IMAGE_NAME: {{ template "carto.workspaceApi.image" . }}
   {{- if .Values.replicated.enabled }}
   CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "replicated.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:3000"
   {{- end }}
@@ -51,8 +60,9 @@ data:
   {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
   REDIS_TLS_CA: {{ include "carto.redis.configMapMountAbsolutePath" . }}
   {{- end }}
-  SELFHOSTED_DOMAIN: {{ .Values.appConfigValues.selfHostedDomain | quote }}
-  SELFHOSTED_GCP_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  {{- if not (.Values.internalRedis.enabled) }}
+  USING_EXTERNAL_REDIS: "true"
+  {{- end }}
   WORKSPACE_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
   WORKSPACE_LITELLM_BASE_URL: "http://{{ include "carto.llmProxy.fullname" . }}:{{ .Values.llmProxy.containerPorts.http }}/v1"
   WORKSPACE_LITELLM_API_KEY: {{ .Values.cartoSecrets.litellmMasterKey.value | quote }}
@@ -128,7 +138,7 @@ data:
   {{- end }}
   {{- if .Values.appConfigValues.defaultDoLocation.bigquery }}
   DO_LOCATION_BIGQUERY: {{ .Values.appConfigValues.defaultDoLocation.bigquery }}
-  {{- end}}
+  {{- end }}
   {{- if .Values.appConfigValues.defaultDoLocation.snowflake }}
   DO_LOCATION_SNOWFLAKE: {{ .Values.appConfigValues.defaultDoLocation.snowflake }}
   {{- end }}
