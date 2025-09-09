@@ -29,12 +29,12 @@ If not using ClusterIP, or if a host or LoadBalancerIP is not defined, the value
 {{- $port := "" -}}
 {{- $servicePortString := printf "%v" .Values.router.service.ports.http -}}
 {{- if and (ne $servicePortString "80") (ne $servicePortString "443") -}}
-  {{- $port = printf ":%s" $servicePortString -}}
+{{- $port = printf ":%s" $servicePortString -}}
 {{- end -}}
 
 {{- $defaultUrl := "" -}}
 {{- if $host -}}
-  {{- $defaultUrl = printf "%s%s" $host $port -}}
+{{- $defaultUrl = printf "%s%s" $host $port -}}
 {{- end -}}
 
 {{- default $defaultUrl (printf "%s" .Values.appConfigValues.selfHostedDomain) -}}
@@ -77,6 +77,12 @@ WORKSPACE_JWT_SECRET: cartoSecrets.jwtApiSecret
 WORKSPACE_THUMBNAILS_ACCESSKEYID: appSecrets.awsAccessKeyId
 WORKSPACE_THUMBNAILS_SECRETACCESSKEY: appSecrets.awsAccessKeySecret
 WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY: appSecrets.azureStorageAccessKey
+LITELLM_JWT_SECRET: cartoSecrets.jwtApiSecret
+LITELLM_MASTER_KEY: cartoSecrets.litellmMasterKey
+LITELLM_SALT_KEY: cartoSecrets.litellmSaltKey
+AI_OPENAI_API_KEY: cartoSecrets.litellmMasterKey
+OPENAI_API_KEY: cartoSecrets.openAiApiKey
+GEMINI_API_KEY: cartoSecrets.geminiApiKey
 {{- end -}}
 
 {{/*
@@ -815,7 +821,6 @@ Create the name of the service account to use for the notifier deployment
 {{- end -}}
 {{- end -}}
 
-
 {{/*
 Return the proper Carto cdn-invalidator-sub full name
 */}}
@@ -881,7 +886,7 @@ Return the proper Carto tenant-requirements-checker image name
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image) "context" $) -}}
+{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.llmProxy.image) "context" $) -}}
 {{- end -}}
 
 {{/*
@@ -942,7 +947,7 @@ TODO: We have to regenerate the secret if the private key changes
 {{- .Values.tlsCerts.existingSecret.name -}}
 {{- else if (empty .Values.router.tlsCertificates.certificateValueBase64) -}}
 {{/*
-     Preserved the original behaviour in case someone use the default secret name without explicitly define that parameter
+    Preserved the original behaviour in case someone use the default secret name without explicitly define that parameter
 */}}
 {{- printf "%s-tls" (include "common.names.fullname" .) -}}
 {{- else -}}
@@ -1018,7 +1023,7 @@ Return the Postgresql password sha256sum
 */}}
 {{- define "carto.postgresql.passwordChecksum" -}}
 {{- if .Values.internalPostgresql.enabled -}}
-{{- print (tpl (toYaml .Values.internalPostgresql.password) . | sha256sum ) -}}
+{{- print (tpl (toYaml .Values.internalPostgresql.auth.postgresPassword) . | sha256sum ) -}}
 {{- else -}}
 {{- print (tpl (toYaml .Values.externalPostgresql.password) . | sha256sum ) -}}
 {{- end -}}
@@ -1028,35 +1033,35 @@ Return the Postgresql password sha256sum
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.host" -}}
-{{- ternary (include "carto.postgresql.fullname" .) .Values.externalPostgresql.host .Values.internalPostgresql.enabled | quote -}}
+{{- ternary (include "carto.postgresql.fullname" .) .Values.externalPostgresql.host .Values.internalPostgresql.enabled -}}
 {{- end -}}
 
 {{/*
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.user" -}}
-{{- ternary .Values.internalPostgresql.auth.username .Values.externalPostgresql.user .Values.internalPostgresql.enabled | quote -}}
+{{- ternary .Values.internalPostgresql.auth.username .Values.externalPostgresql.user .Values.internalPostgresql.enabled -}}
 {{- end -}}
 
 {{/*
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.adminUser" -}}
-{{- ternary "postgres" .Values.externalPostgresql.adminUser .Values.internalPostgresql.enabled | quote -}}
+{{- ternary "postgres" .Values.externalPostgresql.adminUser .Values.internalPostgresql.enabled -}}
 {{- end -}}
 
 {{/*
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.adminDatabase" -}}
-{{- ternary "postgres" .Values.externalPostgresql.adminDatabase .Values.internalPostgresql.enabled | quote -}}
+{{- ternary "postgres" .Values.externalPostgresql.adminDatabase .Values.internalPostgresql.enabled -}}
 {{- end -}}
 
 {{/*
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.databaseName" -}}
-{{- ternary .Values.internalPostgresql.auth.database .Values.externalPostgresql.database .Values.internalPostgresql.enabled | quote -}}
+{{- ternary .Values.internalPostgresql.auth.database .Values.externalPostgresql.database .Values.internalPostgresql.enabled -}}
 {{- end -}}
 
 {{/*
@@ -1101,7 +1106,7 @@ Add environment variables to configure database values
 Add environment variables to configure database values
 */}}
 {{- define "carto.postgresql.port" -}}
-{{- ternary "5432" .Values.externalPostgresql.port .Values.internalPostgresql.enabled | quote -}}
+{{- ternary "5432" .Values.externalPostgresql.port .Values.internalPostgresql.enabled -}}
 {{- end -}}
 
 {{/*
@@ -1138,7 +1143,6 @@ Return the absolute path where the Postgresql CA cert will be mounted
 
 {{/*
 Create a default fully qualified redis name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "carto.redis.fullname" -}}
 {{- include "common.names.dependency.fullname" (dict "chartName" "redis" "chartValues" .Values.internalRedis "context" $) -}}
@@ -1157,14 +1161,14 @@ Return the hostname that the rest of the CARTO components should use
 to reach Redis.
 */}}
 {{- define "carto.redis.host" -}}
-{{- ternary (include "carto.redis.fullname" .) .Values.externalRedis.host .Values.internalRedis.enabled | quote -}}
+{{- ternary (include "carto.redis.fullname" .) .Values.externalRedis.host .Values.internalRedis.enabled -}}
 {{- end -}}
 
 {{/*
 Add environment variables to configure database values
 */}}
 {{- define "carto.redis.port" -}}
-{{- ternary "6379" .Values.externalRedis.port .Values.internalRedis.enabled | quote -}}
+{{- ternary "6379" .Values.externalRedis.port .Values.internalRedis.enabled -}}
 {{- end -}}
 
 {{/*
@@ -1325,8 +1329,116 @@ Return the list of overridden feature flags as a comma-separated string
 {{- $featureFlags := .Values.cartoConfigValues.featureFlagsOverrides -}}
 {{- $ffNames := list -}}
 {{- range $featureFlags -}}
-  {{- $ffNames = append $ffNames .name -}}
+{{- $ffNames = append $ffNames .name -}}
 {{- end -}}
 {{- $nameList := join "," $ffNames -}}
 {{- $nameList -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified ai-api name.
+*/}}
+{{- define "carto.aiApi.fullname" -}}
+{{- printf "%s-ai-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/* 
+Create carto Image full name for aiApi
+*/}}
+{{- define "carto.aiApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.aiApi.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Create the name of the aiApi configmap
+*/}}
+{{- define "carto.aiApi.configmapName" -}}
+{{- if .Values.aiApi.existingConfigMap -}}
+{{- .Values.aiApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.aiApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the aiApi secret
+*/}}
+{{- define "carto.aiApi.secretName" -}}
+{{- if .Values.aiApi.existingSecret -}}
+{{- .Values.aiApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.aiApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create aiApi Node options
+*/}}
+{{- define "carto.aiApi.nodeOptions" -}}
+{{- if eq (.Values.aiApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.aiApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.aiApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- else -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.aiApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified llmProxy name.
+*/}}
+{{- define "carto.llmProxy.fullname" -}}
+{{- printf "%s-llmproxy" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/* 
+Create carto Image full name for llmProxy
+*/}}
+{{- define "carto.llmProxy.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.llmProxy.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Create the name of the llmProxy configmap
+*/}}
+{{- define "carto.llmProxy.configmapName" -}}
+{{- if .Values.llmProxy.existingConfigMap -}}
+{{- .Values.llmProxy.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.llmProxy.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the llmProxy secret
+*/}}
+{{- define "carto.llmProxy.secretName" -}}
+{{- if .Values.llmProxy.existingSecret -}}
+{{- .Values.llmProxy.existingSecret -}}
+{{- else -}}
+{{- include "carto.llmProxy.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the llmProxy database ssl mode
+*/}}
+{{- define "carto.llmProxy.databaseSslMode" -}}
+{{- if .Values.externalPostgresql.sslEnabled -}}
+require
+{{- else -}}
+disable
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the llmProxy master key checksum
+*/}}
+{{- define "carto.llmProxy.masterKeyChecksum" -}}
+{{- .Values.cartoSecrets.litellmMasterKey.value | sha256sum -}}
+{{- end -}}
+
+{{/*
+Return the llmProxy salt key checksum
+*/}}
+{{- define "carto.llmProxy.saltKeyChecksum" -}}
+{{- .Values.cartoSecrets.litellmSaltKey.value | sha256sum -}}
 {{- end -}}

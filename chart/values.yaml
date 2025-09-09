@@ -5,6 +5,8 @@ appConfigValues:
   selfHostedDomain: "carto-selfhosted.lan"
   ## @param appConfigValues.storageProvider Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob`
   storageProvider: "gcp"
+  ## @param appConfigValues.aiFeaturesEnabled Enable the AI features
+  aiFeaturesEnabled: false
   ## @param appConfigValues.httpCacheEnabled Enable the internal httpCache
   httpCacheEnabled: true
   ## @param appConfigValues.importAwsRoleArn ARN Role to be used to import files from the bucket
@@ -130,6 +132,8 @@ cartoConfigValues:
   featureFlagsOverrides: []
   ## @param cartoConfigValues.usePubSubRestApi Enable the usage of PubSub via REST API instead of gRPC.
   usePubSubRestApi: false
+  ## @param cartoConfigValues.enablellmProxyEndpoint Enable the llmProxy endpoint in the router.
+  enablellmProxyEndpoint: false
   ## @param cartoConfigValues.pubsubDomain PubSub domain to be used in the installation.
   pubsubDomain: ""
 
@@ -410,6 +414,36 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: "redis-password"
+  ## @extra cartoSecrets.litellmMasterKey The master key for the Litellm instance.
+  litellmMasterKey:
+    ## @param cartoSecrets.litellmMasterKey.value Value of the secret used to define the master key for the Litellm instance. One of `cartoSecrets.litellmMasterKey.value` or `cartoSecrets.litellmMasterKey.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.litellmMasterKey.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.litellmMasterKey.existingSecret.key`. If `cartoSecrets.litellmMasterKey.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.litellmMasterKey.existingSecret.key Key to find in `cartoSecrets.litellmMasterKey.existingSecret.name` where the value of `cartoSecrets.litellmMasterKey` is found. If `cartoSecrets.litellmMasterKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra cartoSecrets.litellmSaltKey The salt key for the Litellm instance.
+  litellmSaltKey:
+    ## @param cartoSecrets.litellmSaltKey.value Value of the secret used to define the salt key for the Litellm instance. One of `cartoSecrets.litellmSaltKey.value` or `cartoSecrets.litellmSaltKey.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.litellmSaltKey.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.litellmSaltKey.existingSecret.key`. If `cartoSecrets.litellmSaltKey.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.litellmSaltKey.existingSecret.key Key to find in `cartoSecrets.litellmSaltKey.existingSecret.name` where the value of `cartoSecrets.litellmSaltKey` is found. If `cartoSecrets.litellmSaltKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  geminiApiKey:
+    ## @param cartoSecrets.geminiApiKey.value Value of the secret used to define the API key for the Gemini instance. One of `cartoSecrets.geminiApiKey.value` or `cartoSecrets.geminiApiKey.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.geminiApiKey.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.geminiApiKey.existingSecret.key`. If `cartoSecrets.geminiApiKey.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.geminiApiKey.existingSecret.key Key to find in `cartoSecrets.geminiApiKey.existingSecret.name` where the value of `cartoSecrets.geminiApiKey` is found. If `cartoSecrets.geminiApiKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+
 ## FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 ## @section TLS parameters
 ## Global TLS parameters
@@ -5107,6 +5141,7 @@ internalPostgresql:
 ## @param externalPostgresql.sslCA CA certificate in case CARTO Postgresql TLS cert it's selfsigned
 ## @param externalPostgresql.awsEksPodIdentityEnabled Enable EKS Pod Identity authentication for the external postgresql
 ## @param externalPostgresql.awsRdsRegion Region of the RDS PostgreSQL database in AWS. Needed when EKS Pod Identity is enabled
+## @param externalPostgresql.llmProxyDatabaseName Database name for llmProxy
 ##
 externalPostgresql:
   host: localhost
@@ -5126,6 +5161,7 @@ externalPostgresql:
   sslCA: ""
   awsEksPodIdentityEnabled: false
   awsRdsRegion: ""
+  llmProxyDatabaseName: "llmproxy"
 
 ## @section External proxy configuration
 ## Configuration for an external proxy provided by the client. Only HTTP and HTTPS proxies are supported
@@ -5411,3 +5447,657 @@ gateway:
     type: NamedAddress
   ## @param gateway.annotations Additional annotations for the gateway resource.
   annotations: {}
+
+## @section ai-api Deployment Parameters
+##
+aiApi:
+  ##
+  ## ai-api image
+  ## @param aiApi.image.registry ai-api image registry
+  ## @param aiApi.image.repository ai-api image repository
+  ## @param aiApi.image.tag ai-api image tag (immutable tags are recommended)
+  ## @param aiApi.image.pullPolicy ai-api image pull policy
+  ## @param aiApi.image.pullSecrets ai-api image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: ai-api
+    ## Specify a custom image tag
+    tag: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param aiApi.replicaCount Number of ai-api replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param aiApi.containerPorts.http ai-api HTTP container port
+  ##
+  containerPorts:
+    http: 3000
+  ## @param aiApi.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeProcessMaxOldSpacePercentage: 75
+  ## @param aiApi.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  defaultNodeProcessMaxOldSpace: 768
+  ## Configure extra options for ai-api containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param aiApi.livenessProbe.enabled Enable livenessProbe on ai-api containers
+  ## @param aiApi.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param aiApi.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param aiApi.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param aiApi.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param aiApi.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param aiApi.readinessProbe.enabled Enable readinessProbe on ai-api containers
+  ## @param aiApi.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param aiApi.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param aiApi.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param aiApi.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param aiApi.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param aiApi.startupProbe.enabled Enable startupProbe on ai-api containers
+  ## @param aiApi.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param aiApi.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param aiApi.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param aiApi.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param aiApi.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param aiApi.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param aiApi.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param aiApi.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## ai-api autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param aiApi.autoscaling.enabled Enable autoscaling for the ai-api containers
+  ## @param aiApi.autoscaling.minReplicas The minimal number of containers for the ai-api deployment
+  ## @param aiApi.autoscaling.maxReplicas The maximum number of containers for the ai-api deployment
+  ## @param aiApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in ai-api deployment
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 75
+  ## ai-api resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param aiApi.resources.limits.memory Container memory limits in MiB
+  ## @param aiApi.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param aiApi.resources.requests.memory Container memory requests in MiB
+  ## @param aiApi.resources.requests.cpu Container cpu requests in milliCPU cores
+  ##
+  resources:
+    limits:
+      memory: "2048Mi"
+      cpu: "1000m"
+    requests:
+      memory: "768Mi"
+      cpu: "350m"
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param aiApi.podSecurityContext.enabled Enabled ai-api pods' Security Context
+  ## @param aiApi.podSecurityContext.fsGroup Set ai-api pod's Security Context fsGroup
+  ## @param aiApi.podSecurityContext.supplementalGroups[0] Set ai-api pod's Security Context supplementalGroups
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1000
+    supplementalGroups: [2345]
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param aiApi.containerSecurityContext.enabled Enabled ai-api containers' Security Context
+  ## @param aiApi.containerSecurityContext.runAsUser Set ai-api containers' Security Context runAsUser
+  ## @param aiApi.containerSecurityContext.runAsGroup Set ai-api containers' Security Context runAsGroup
+  ## @param aiApi.containerSecurityContext.runAsNonRoot Set ai-api containers' Security Context runAsNonRoot
+  ## @param aiApi.containerSecurityContext.allowPrivilegeEscalation Set ai-api containers' Security Context allowPrivilegeEscalation
+  ## @param aiApi.containerSecurityContext.readOnlyRootFilesystem Set ai-api containers' Security Context readOnlyRootFilesystem
+  ## @param aiApi.containerSecurityContext.capabilities.drop removes ai-api containers' Security Context capabilities
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
+  ## @param aiApi.podDisruptionBudget.enabled defines disruption budget for ai-api
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ## @param aiApi.podDisruptionBudget.minAvailable Minimum number of pods that must be available during the update
+  ## @param aiApi.podDisruptionBudget.maxUnavailable Maximum number of pods that can be unavailable during the update
+  ##
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
+    maxUnavailable: 0
+  ## @param aiApi.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
+  ## @param aiApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for ai-api
+  ##
+  existingConfigMap: ""
+  ## @param aiApi.existingSecret The name of an existing ConfigMap with your custom configuration for ai-api
+  ##
+  existingSecret: ""
+  ## @param aiApi.command Override default container command (useful when using custom images)
+  ##
+  command: ["/bin/bash"]
+  ## @param aiApi.args Override default container args (useful when using custom images)
+  ##
+  args:
+    []
+  ## @param aiApi.hostAliases ai-api pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param aiApi.podLabels Extra labels for ai-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param aiApi.podAnnotations Annotations for ai-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param aiApi.podAffinityPreset Pod affinity preset. Ignored if `aiApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param aiApi.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `aiApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node.js aiApi.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param aiApi.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `aiApi.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param aiApi.nodeAffinityPreset.key Node.js label key to match. Ignored if `aiApi.affinity` is set
+    ##
+    key: ""
+    ## @param aiApi.nodeAffinityPreset.values Node.js label values to match. Ignored if `aiApi.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param aiApi.affinity Affinity for ai-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `aiApi.podAffinityPreset`, `aiApi.podAntiAffinityPreset`, and `aiApi.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param aiApi.nodeSelector Node.js labels for ai-api pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param aiApi.tolerations Tolerations for ai-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param aiApi.updateStrategy.type ai-api statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param aiApi.priorityClassName ai-api pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param aiApi.schedulerName Name of the k8s scheduler (other than default) for ai-api pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param aiApi.lifecycleHooks for the ai-api container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param aiApi.extraEnvVars Array with extra environment variables to add to ai-api nodes ([More info](#additional-environment-variables))
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param aiApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for ai-api nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsCM: ""
+  ## @param aiApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for ai-api nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsSecret: ""
+  ## @param aiApi.extraVolumes Optionally specify extra list of additional volumes for the ai-api pod(s)
+  ##
+  extraVolumes: []
+  ## @param aiApi.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the ai-api container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param aiApi.sidecars Add additional sidecar containers to the ai-api pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param aiApi.initContainers Add additional init containers to the ai-api pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section ai-api Service Parameters
+  ##
+  ##
+  service:
+    ## @param aiApi.service.type ai-api service type
+    ##
+    type: ClusterIP
+    ## @param aiApi.service.ports.http ai-api service HTTP port
+    ##
+    ports:
+      http: 3000
+    ## Node.js ports to expose
+    ## @param aiApi.service.nodePorts.http Node.js port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param aiApi.service.clusterIP ai-api service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param aiApi.service.loadBalancerIP ai-api service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param aiApi.service.labelSelectorsOverride Selector for ai-api service
+    ##
+    labelSelectorsOverride: {}
+    ## @param aiApi.service.loadBalancerSourceRanges ai-api service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param aiApi.service.externalTrafficPolicy ai-api service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param aiApi.service.annotations Additional custom annotations for ai-api service
+    ##
+    annotations: {}
+    ## @param aiApi.service.extraPorts Extra ports to expose in ai-api service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+
+## @section llmProxy Deployment Parameters
+##
+llmProxy:
+  ##
+  ## @param llmProxy.image.registry llmProxy image registry
+  ## @param llmProxy.image.repository llmProxy image repository
+  ## @param llmProxy.image.tag llmProxy image tag (immutable tags are recommended)
+  ## @param llmProxy.image.pullPolicy llmProxy image pull policy
+  ## @param llmProxy.image.pullSecrets llmProxy image pull secrets
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: litellm
+    ## Specify a custom image tag
+    tag: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param llmProxy.replicaCount Number of llmProxy replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param llmProxy.containerPorts.http llmProxy HTTP container port
+  ##
+  containerPorts:
+    http: 4000
+  ## Configure extra options for llmProxy containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param llmProxy.livenessProbe.enabled Enable livenessProbe on ai-api containers
+  ## @param llmProxy.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param llmProxy.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param llmProxy.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param llmProxy.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param llmProxy.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param llmProxy.readinessProbe.enabled Enable readinessProbe on ai-api containers
+  ## @param llmProxy.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param llmProxy.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param llmProxy.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param llmProxy.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param llmProxy.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param llmProxy.startupProbe.enabled Enable startupProbe on ai-api containers
+  ## @param llmProxy.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param llmProxy.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param llmProxy.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param llmProxy.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param llmProxy.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 30
+  ## @param llmProxy.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param llmProxy.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param llmProxy.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## llmProxy autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param llmProxy.autoscaling.enabled Enable autoscaling for the ai-api containers
+  ## @param llmProxy.autoscaling.minReplicas The minimal number of containers for the ai-api deployment
+  ## @param llmProxy.autoscaling.maxReplicas The maximum number of containers for the ai-api deployment
+  ## @param llmProxy.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in ai-api deployment
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 75
+  ## llmProxy resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param llmProxy.resources.limits.memory Container memory limits in MiB
+  ## @param llmProxy.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param llmProxy.resources.requests.memory Container memory requests in MiB
+  ## @param llmProxy.resources.requests.cpu Container cpu requests in milliCPU cores
+  ##
+  resources:
+    limits:
+      memory: "8192Mi"
+      cpu: "2000m"
+    requests:
+      memory: "4096Mi"
+      cpu: "2000m"
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param llmProxy.podSecurityContext.enabled Enabled ai-api pods' Security Context
+  ## @param llmProxy.podSecurityContext.fsGroup Set ai-api pod's Security Context fsGroup
+  ## @param llmProxy.podSecurityContext.supplementalGroups[0] Set ai-api pod's Security Context supplementalGroups
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1000
+    supplementalGroups: [2345]
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param llmProxy.containerSecurityContext.enabled Enabled ai-api containers' Security Context
+  ## @param llmProxy.containerSecurityContext.runAsUser Set ai-api containers' Security Context runAsUser
+  ## @param llmProxy.containerSecurityContext.runAsGroup Set ai-api containers' Security Context runAsGroup
+  ## @param llmProxy.containerSecurityContext.runAsNonRoot Set ai-api containers' Security Context runAsNonRoot
+  ## @param llmProxy.containerSecurityContext.allowPrivilegeEscalation Set ai-api containers' Security Context allowPrivilegeEscalation
+  ## @param llmProxy.containerSecurityContext.readOnlyRootFilesystem Set ai-api containers' Security Context readOnlyRootFilesystem
+  ## @param llmProxy.containerSecurityContext.capabilities.drop removes ai-api containers' Security Context capabilities
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
+  ## @param llmProxy.podDisruptionBudget.enabled defines disruption budget for ai-api
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ## @param llmProxy.podDisruptionBudget.minAvailable Minimum number of pods that must be available during the update
+  ## @param llmProxy.podDisruptionBudget.maxUnavailable Maximum number of pods that can be unavailable during the update
+  ##
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
+    maxUnavailable: 0
+  ## @param llmProxy.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
+  ## @param llmProxy.existingConfigMap The name of an existing ConfigMap with your custom configuration for ai-api
+  ##
+  existingConfigMap: ""
+  ## @param llmProxy.existingSecret The name of an existing ConfigMap with your custom configuration for ai-api
+  ##
+  existingSecret: ""
+  ## @param llmProxy.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param llmProxy.args Override default container args (useful when using custom images)
+  ##
+  args:
+    []
+  ## @param llmProxy.hostAliases ai-api pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param llmProxy.podLabels Extra labels for ai-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param llmProxy.podAnnotations Annotations for ai-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param llmProxy.podAffinityPreset Pod affinity preset. Ignored if `llmProxy.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param llmProxy.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `llmProxy.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node.js llmProxy.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param llmProxy.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `llmProxy.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param llmProxy.nodeAffinityPreset.key Node.js label key to match. Ignored if `llmProxy.affinity` is set
+    ##
+    key: ""
+    ## @param llmProxy.nodeAffinityPreset.values Node.js label values to match. Ignored if `llmProxy.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param llmProxy.affinity Affinity for ai-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `llmProxy.podAffinityPreset`, `llmProxy.podAntiAffinityPreset`, and `llmProxy.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param llmProxy.nodeSelector Node.js labels for ai-api pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param llmProxy.tolerations Tolerations for ai-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param llmProxy.updateStrategy.type ai-api statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param llmProxy.priorityClassName ai-api pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param llmProxy.schedulerName Name of the k8s scheduler (other than default) for ai-api pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param llmProxy.lifecycleHooks for the ai-api container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param llmProxy.extraEnvVars Array with extra environment variables to add to ai-api nodes ([More info](#additional-environment-variables))
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param llmProxy.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for ai-api nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsCM: ""
+  ## @param llmProxy.extraEnvVarsSecret Name of existing Secret containing extra env vars for ai-api nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsSecret: ""
+  ## @param llmProxy.extraVolumes Optionally specify extra list of additional volumes for the ai-api pod(s)
+  ##
+  extraVolumes: []
+  ## @param llmProxy.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the ai-api container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param llmProxy.sidecars Add additional sidecar containers to the ai-api pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param llmProxy.initContainers Add additional init containers to the ai-api pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section ai-api Service Parameters
+  ##
+  ##
+  service:
+    ## @param llmProxy.service.type ai-api service type
+    ##
+    type: ClusterIP
+    ## @param llmProxy.service.ports.http ai-api service HTTP port
+    ##
+    ports:
+      http: 4000
+    ## Node.js ports to expose
+    ## @param llmProxy.service.nodePorts.http Node.js port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param llmProxy.service.clusterIP ai-api service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param llmProxy.service.loadBalancerIP ai-api service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param llmProxy.service.labelSelectorsOverride Selector for ai-api service
+    ##
+    labelSelectorsOverride: {}
+    ## @param llmProxy.service.loadBalancerSourceRanges ai-api service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param llmProxy.service.externalTrafficPolicy ai-api service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param llmProxy.service.annotations Additional custom annotations for ai-api service
+    ##
+    annotations: {}
+    ## @param llmProxy.service.extraPorts Extra ports to expose in ai-api service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []

@@ -1,0 +1,223 @@
+{{- if and (.Values.appConfigValues.aiFeaturesEnabled) (not .Values.cartoConfigValues.onlyRunRouter) }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.aiApi.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: ai-api
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.aiApi.replicaCount }}
+  {{- if .Values.aiApi.updateStrategy }}
+  strategy: {{- toYaml .Values.aiApi.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: ai-api
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/ai-api/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/ai-api/secret.yaml") . | sha256sum }}
+        checksum/postgresql-password: {{ include "carto.postgresql.passwordChecksum" . }}
+        checksum/redis-password: {{ include "carto.redis.passwordChecksum" . }}
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+        {{- if .Values.aiApi.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: ai-api
+        {{- if .Values.aiApi.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.aiApi.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.aiApi.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.aiApi.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.aiApi.podAffinityPreset "component" "ai-api" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.aiApi.podAntiAffinityPreset "component" "ai-api" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.aiApi.nodeAffinityPreset.type "key" .Values.aiApi.nodeAffinityPreset.key "values" .Values.aiApi.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.aiApi.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.aiApi.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.aiApi.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.aiApi.priorityClassName }}
+      priorityClassName: {{ .Values.aiApi.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.aiApi.schedulerName }}
+      schedulerName: {{ .Values.aiApi.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.aiApi.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.aiApi.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if not .Values.diagnosticMode.enabled }}
+      initContainers:
+        {{- if .Values.aiApi.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.aiApi.terminationGracePeriodSeconds }}
+      containers:
+        - name: ai-api
+          image: {{ template "carto.aiApi.image" . }}
+          imagePullPolicy: {{ .Values.aiApi.image.pullPolicy }}
+          {{- if .Values.aiApi.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.aiApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.aiApi.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.aiApi.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.args "context" $) | nindent 12 }}
+          {{ else }}
+          args:
+            - -ec
+            - |
+              exec node -r ./tsconfig-paths-bootstrap.js dist/app/index.js
+          {{- end }}
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.redis.secretName" . }}
+                  key: {{ include "carto.redis.existingsecret.key" . | quote }}
+            - name: WORKSPACE_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ include "carto.postgresql.secret.key" . }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+              "AI_OPENAI_API_KEY"
+              "WORKSPACE_JWT_SECRET"
+             ) "context" $ ) | nindent 12 }}
+            {{- if .Values.aiApi.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "carto.aiApi.configmapName" . }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+              "AI_OPENAI_API_KEY"
+              "WORKSPACE_JWT_SECRET"
+             ) "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.aiApi.secretName" . }}
+            {{- end }}
+            {{- if .Values.aiApi.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.aiApi.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.aiApi.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.aiApi.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.aiApi.resources }}
+          resources: {{- toYaml .Values.aiApi.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.aiApi.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.aiApi.livenessProbe.enabled }}
+          {{/* TODO: Review liveness probe for ai-api */}}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.aiApi.livenessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /
+              port: http
+          {{- else if .Values.aiApi.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.aiApi.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.aiApi.readinessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /
+              port: http
+          {{- else if .Values.aiApi.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.aiApi.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.aiApi.startupProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /
+              port: http
+          {{- else if .Values.aiApi.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.aiApi.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: gcp-default-service-account-key
+              mountPath: {{ include "carto.google.secretMountDir" . }}
+              readOnly: true
+            {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+            - name: postgresql-ssl-ca
+              mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+            {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+            - name: redis-tls-ca
+              mountPath: {{ include "carto.redis.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+            {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+            - name: proxy-ssl-ca
+              mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+            {{- if .Values.aiApi.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+        {{- if .Values.aiApi.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.aiApi.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: {{ include "carto.google.secretName" . }}
+            items:
+              - key: {{ include "carto.google.secretKey" . }}
+                path: {{ include "carto.google.secretMountFilename" . }}
+        {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+        - name: postgresql-ssl-ca
+          configMap:
+            name: {{ include "carto.postgresql.configMapName" . }}
+        {{- end }}
+        {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+        - name: redis-tls-ca
+          configMap:
+            name: {{ include "carto.redis.configMapName" . }}
+        {{- end }}
+        {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+        - name: proxy-ssl-ca
+          configMap:
+            name: {{ include "carto.proxy.configMapName" . }}
+        {{- end }}
+        {{- if .Values.aiApi.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+{{- end }} 

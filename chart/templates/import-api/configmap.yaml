@@ -40,10 +40,10 @@ data:
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   NODE_OPTIONS: {{ template "carto.importApi.nodeOptions" . }}
-  WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . }}
-  WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . }}
-  WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . }}
-  WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . }}
+  WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . | quote }}
+  WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . | quote }}
+  WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . | quote }}
+  WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . | quote }}
   WORKSPACE_POSTGRES_SSL_ENABLED: {{ .Values.externalPostgresql.sslEnabled | quote }}
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA  }}
   WORKSPACE_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
