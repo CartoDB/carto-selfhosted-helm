@@ -29,9 +29,7 @@ data:
   {{ if or (.Values.appSecrets.googleMapsApiKey.value) (and .Values.appSecrets.googleMapsApiKey.existingSecret.name .Values.appSecrets.googleMapsApiKey.existingSecret.key) }}
   GOOGLE_BASEMAPS_ENABLED: "true"
   {{- end }}
-  {{- if .Values.cartoConfigValues.cartoDataWarehouseEnabled }}
-  CARTO_DATA_WAREHOUSE_ENABLED: "true"
-  {{- end }}
+  CARTO_DATA_WAREHOUSE_ENABLED: {{ .Values.cartoConfigValues.cartoDataWarehouseEnabled | quote }}
   SSO_ORGANIZATION_ID: {{ .Values.appConfigValues.ssoOrganizationId | quote }}
   ROUTER_HTTPS_ENABLED: {{ .Values.tlsCerts.httpsEnabled | quote }}
   WORKSPACE_API_IMAGE_NAME: {{ template "carto.workspaceApi.image" . }}
