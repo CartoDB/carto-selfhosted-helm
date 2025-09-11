@@ -7,7 +7,7 @@ metadata:
 spec:
   chart:
     name: carto
-    chartVersion: 1.202.1
+    chartVersion: 1.207.2
   builder:
     replicated:
       enabled: true
@@ -51,7 +51,6 @@ spec:
         value: '{{repl ConfigOption "litellmSaltKey" }}'
       geminiApiKey:
         value: '{{repl LicenseFieldValue "geminiApiKey" }}'
-
     # Carto Config Values
     cartoConfigValues:
       cartoAccApiDomain: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "cartoAccApiDomain" "" | Base64Decode }}'
@@ -72,7 +71,6 @@ spec:
       onlyRunRouter: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
       enablellmProxyEndpoint: repl{{ if ConfigOptionEquals "enablellmProxyEndpoint" "1"}}truerepl{{ else }}falserepl{{ end }}
       pubsubDomain: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "pubsubDomain" "" | Base64Decode }}'
-
     # Customizations
     ## App Secrets
     appSecrets:
