@@ -8,9 +8,7 @@ Return common collectors for preflights and support-bundle
       namespace: {{ .Release.Namespace | quote }}
       timeout: 180s
       podSpec:
-        {{- if .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
-        {{- end }}
         restartPolicy: Never
         securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
         initContainers:
@@ -66,6 +64,10 @@ Return common collectors for preflights and support-bundle
                   fi
                 done
             env:
+              {{- if .Values.externalPostgresql.awsEksPodIdentityEnabled }}
+              - name: CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED
+                value: "true"
+              {{- end }}
               {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
               {{- if eq .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name "" }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
