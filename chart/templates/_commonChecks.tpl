@@ -64,10 +64,6 @@ Return common collectors for preflights and support-bundle
                   fi
                 done
             env:
-              {{- if .Values.externalPostgresql.awsEksPodIdentityEnabled }}
-              - name: CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED
-                value: "true"
-              {{- end }}
               {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
               {{- if eq .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name "" }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
@@ -160,6 +156,16 @@ Return common collectors for preflights and support-bundle
             securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
             resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
             env:
+              {{- if .Values.externalPostgresql.awsEksPodIdentityEnabled }}
+              - name: CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED
+                value: "true"
+              - name: CARTO_SELFHOSTED_AWS_RDS_METADATA_REGION
+                value: {{ .Values.externalPostgresql.awsRdsRegion | quote }}
+              {{- end }}
+              {{- if .Values.appConfigValues.awsEksPodIdentityBucketsEnabled }}
+              - name: CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_S3_ENABLED
+                value: "true"
+              {{- end }}
               {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
               - name: OVERRIDDEN_FEATURE_FLAGS
                 value: {{ include "carto.featureFlags.overriddenFeatureFlags" . | quote }}
@@ -235,7 +241,7 @@ Return common collectors for preflights and support-bundle
           {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
           - name: router-tls-cert-and-key
             emptyDir:
-              sizeLimit: 1Mi
+              sizeLimit: 1Mir
           {{- end }}
   - registryImages:
       namespace: {{ .Release.Namespace | quote }}
