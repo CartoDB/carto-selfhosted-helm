@@ -241,7 +241,7 @@ Return common collectors for preflights and support-bundle
           {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
           - name: router-tls-cert-and-key
             emptyDir:
-              sizeLimit: 1Mir
+              sizeLimit: 1Mi
           {{- end }}
   - registryImages:
       namespace: {{ .Release.Namespace | quote }}
