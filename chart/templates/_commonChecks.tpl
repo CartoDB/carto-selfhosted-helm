@@ -8,9 +8,7 @@ Return common collectors for preflights and support-bundle
       namespace: {{ .Release.Namespace | quote }}
       timeout: 180s
       podSpec:
-        {{- if .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
-        {{- end }}
         restartPolicy: Never
         securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
         initContainers:
@@ -158,6 +156,16 @@ Return common collectors for preflights and support-bundle
             securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
             resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
             env:
+              {{- if .Values.externalPostgresql.awsEksPodIdentityEnabled }}
+              - name: CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED
+                value: "true"
+              - name: CARTO_SELFHOSTED_AWS_RDS_METADATA_REGION
+                value: {{ .Values.externalPostgresql.awsRdsRegion | quote }}
+              {{- end }}
+              {{- if .Values.appConfigValues.awsEksPodIdentityBucketsEnabled }}
+              - name: CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_S3_ENABLED
+                value: "true"
+              {{- end }}
               {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
               - name: OVERRIDDEN_FEATURE_FLAGS
                 value: {{ include "carto.featureFlags.overriddenFeatureFlags" . | quote }}
