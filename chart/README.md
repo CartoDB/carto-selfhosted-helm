@@ -1837,7 +1837,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | Name                                     | Description                                                                       | Value       |
 | ---------------------------------------- | --------------------------------------------------------------------------------- | ----------- |
 | `aiApi.service.type`                     | ai-api service type                                                               | `ClusterIP` |
-| `aiApi.service.ports.http`               | ai-api service HTTP port                                                          | `3000`      |
+| `aiApi.service.ports.http`               | ai-api service HTTP port                                                          | `80`        |
 | `aiApi.service.nodePorts.http`           | Node.js port for HTTP                                                             | `""`        |
 | `aiApi.service.clusterIP`                | ai-api service Cluster IP                                                         | `""`        |
 | `aiApi.service.loadBalancerIP`           | ai-api service Load Balancer IP                                                   | `""`        |
@@ -1933,7 +1933,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | Name                                        | Description                                                                       | Value       |
 | ------------------------------------------- | --------------------------------------------------------------------------------- | ----------- |
 | `llmProxy.service.type`                     | ai-api service type                                                               | `ClusterIP` |
-| `llmProxy.service.ports.http`               | ai-api service HTTP port                                                          | `4000`      |
+| `llmProxy.service.ports.http`               | ai-api service HTTP port                                                          | `80`        |
 | `llmProxy.service.nodePorts.http`           | Node.js port for HTTP                                                             | `""`        |
 | `llmProxy.service.clusterIP`                | ai-api service Cluster IP                                                         | `""`        |
 | `llmProxy.service.loadBalancerIP`           | ai-api service Load Balancer IP                                                   | `""`        |
