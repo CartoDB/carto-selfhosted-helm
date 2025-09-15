@@ -39,6 +39,7 @@ data:
   LITELLM_LOG_LEVEL: {{ ternary "DEBUG" "INFO" (eq .Values.appConfigValues.logLevel "debug") | quote }}
   LITELLM_MIGRATION_DIR: "/tmp/prisma/migrations"
   LITELLM_MODE: "PRODUCTION"
+  LITELLM_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   PRISMA_BINARY_CACHE_DIR: "/tmp/prisma-cache"
   PRISMA_CLI_CACHE_DIR: "/tmp/prisma-cache"
   PRISMA_HOME: "/tmp/prisma-cache"
