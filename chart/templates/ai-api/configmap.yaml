@@ -16,7 +16,7 @@ data:
   AI_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
   # AI_OPENAI_ENDPOINT points to llmProxy proxy service, not directly to OpenAI
   # llmProxy acts as a unified gateway that can route to various AI providers
-  AI_OPENAI_ENDPOINT: "http://{{ include "carto.llmProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+  AI_OPENAI_ENDPOINT: "http://{{ include "carto.llmProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}/v1"
   AI_SQL_API_URL: "http://{{ include "carto.mapsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   AI_LDS_API_URL: "http://{{ include "carto.ldsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   AUTH0_AUDIENCE: "carto-cloud-native-api"
@@ -51,6 +51,7 @@ data:
   {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
   REDIS_TLS_CA: {{ .Values.externalRedis.tlsCA | quote }}
   {{- end }}
+  WORKSPACE_LITELLM_BASE_URL: "http://{{ include "carto.llmProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . | quote }}
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . | quote }}
   WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . | quote }}
