@@ -129,6 +129,7 @@ spec:
               "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_ACCESSKEYID"
               "WORKSPACE_IMPORTS_SECRETACCESSKEY"
+              "WORKSPACE_LITELLM_API_KEY"
               ) "context" $ ) | nindent 12 }}
             {{- if .Values.workspaceApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVars "context" $) | nindent 12 }}
@@ -147,6 +148,7 @@ spec:
               "WORKSPACE_THUMBNAILS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_ACCESSKEYID"
               "WORKSPACE_IMPORTS_SECRETACCESSKEY"
+              "WORKSPACE_LITELLM_API_KEY"
               ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
