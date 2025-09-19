@@ -27,6 +27,7 @@ data:
   CARTO_TRACING_MODE: "local"
   {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
+  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
