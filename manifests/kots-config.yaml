@@ -604,7 +604,7 @@ spec:
             Enable the AI API. [More info](https://docs.carto.com/carto-self-hosted/guides/enable-the-ai-api).
           type: bool
           default: "0"
-          when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}' # to hide while ai features are not GA
 
         ## llmProxy
         - name: llmProxyDatabaseName
