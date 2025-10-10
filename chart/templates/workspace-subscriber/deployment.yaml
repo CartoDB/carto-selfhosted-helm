@@ -148,14 +148,41 @@ spec:
           {{- if .Values.workspaceSubscriber.resources }}
           resources: {{- toYaml .Values.workspaceSubscriber.resources | nindent 12 }}
           {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.workspaceSubscriber.containerPorts.http }}
           {{- if not .Values.diagnosticMode.enabled }}
-          {{- if .Values.workspaceSubscriber.customLivenessProbe }}
+          {{- if .Values.workspaceSubscriber.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceSubscriber.livenessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+              httpHeaders:
+                - name: Carto-Monitoring
+                  value: "True"
+          {{- else if .Values.workspaceSubscriber.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.workspaceSubscriber.customReadinessProbe }}
+          {{- if .Values.workspaceSubscriber.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceSubscriber.readinessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+              httpHeaders:
+                - name: Carto-Monitoring
+                  value: "True"
+          {{- else if .Values.workspaceSubscriber.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.workspaceSubscriber.customStartupProbe }}
+          {{- if .Values.workspaceSubscriber.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceSubscriber.startupProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health
+              port: http
+              httpHeaders:
+                - name: Carto-Monitoring
+                  value: "True"
+          {{- else if .Values.workspaceSubscriber.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- end }}
