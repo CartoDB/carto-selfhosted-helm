@@ -1748,6 +1748,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `gateway.listeners.http.port`                                     | HTTP listener port                                                         | `80`                            |
 | `gateway.address.type`                                            | AddressType defines how a network address is represented as a text string. | `NamedAddress`                  |
 | `gateway.annotations`                                             | Additional annotations for the gateway resource.                           | `{}`                            |
+| `gateway.timeouts.request`                                        | Request timeout for the gateway                                            | `300s`                          |
 
 ### ai-api Deployment Parameters
 

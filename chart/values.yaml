@@ -5447,6 +5447,9 @@ gateway:
     type: NamedAddress
   ## @param gateway.annotations Additional annotations for the gateway resource.
   annotations: {}
+  ## @param gateway.timeouts.request Request timeout for the gateway
+  timeouts:
+    request: 300s
 
 ## @section ai-api Deployment Parameters
 ##

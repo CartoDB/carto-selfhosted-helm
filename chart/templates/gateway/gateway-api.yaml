@@ -60,6 +60,8 @@ spec:
       {{- else }}
       port: {{ .Values.router.service.ports.http }}
       {{- end }}
+      timeouts:
+        request: {{ .Values.gateway.timeouts.request }}
 ---
 apiVersion: gateway.networking.k8s.io/v1beta1
 kind: HTTPRoute
