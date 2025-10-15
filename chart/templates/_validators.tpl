@@ -45,7 +45,7 @@ Validate log level
 Validate ServiceAccount configuration when Pod Identity features are enabled
 */}}
 {{- define "carto.validateValues.serviceAccount" -}}
-{{- $podIdentityEnabled := or .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity .Values.externalPostgresql.awsEksPodIdentityEnabled .Values.appConfigValues.awsEksPodIdentityBucketsEnabled -}}
+{{- $podIdentityEnabled := include "carto.podIdentity.enabled" . -}}
 {{- $saConfigured := or .Values.commonBackendServiceAccount.create .Values.commonBackendServiceAccount.name -}}
 {{- if and $podIdentityEnabled (not $saConfigured) -}}
 CARTO: ServiceAccount misconfiguration for Pod Identity
