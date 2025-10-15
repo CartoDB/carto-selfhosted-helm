@@ -42,6 +42,25 @@ Validate log level
 {{- end -}}
 
 {{/*
+Validate ServiceAccount configuration when Pod Identity features are enabled
+*/}}
+{{- define "carto.validateValues.serviceAccount" -}}
+{{- $podIdentityEnabled := or .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity .Values.externalPostgresql.awsEksPodIdentityEnabled .Values.appConfigValues.awsEksPodIdentityBucketsEnabled -}}
+{{- if and $podIdentityEnabled (not .Values.commonBackendServiceAccount.create) -}}
+CARTO: ServiceAccount required for Pod Identity
+
+One or more Pod Identity features are enabled:
+  - GCP Workload Identity: {{ .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+  - AWS EKS Pod Identity (PostgreSQL): {{ .Values.externalPostgresql.awsEksPodIdentityEnabled }}
+  - AWS EKS Pod Identity (S3 Buckets): {{ .Values.appConfigValues.awsEksPodIdentityBucketsEnabled }}
+
+  Review CARTO public docs: 
+    https://docs.carto.com/carto-self-hosted/guides/guides-helm/use-workload-identity-in-gcp
+    https://docs.carto.com/carto-self-hosted/guides/guides-helm/use-eks-pod-identity-in-aws
+{{- end -}}
+{{- end -}}
+
+{{/*
 Compile all warnings into a single message, and call fail.
 */}}
 {{- define "carto.validateValues" -}}
@@ -50,6 +69,7 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := append $messages (include "carto.validateValues.postgresql" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.proxy" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.logLevel" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.serviceAccount" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 

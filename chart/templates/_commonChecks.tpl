@@ -8,7 +8,9 @@ Return common collectors for preflights and support-bundle
       namespace: {{ .Release.Namespace | quote }}
       timeout: 180s
       podSpec:
+        {{- if or .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity .Values.externalPostgresql.awsEksPodIdentityEnabled .Values.appConfigValues.awsEksPodIdentityBucketsEnabled }}
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+        {{- end }}
         restartPolicy: Never
         securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
         initContainers:
