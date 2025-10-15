@@ -46,17 +46,20 @@ Validate ServiceAccount configuration when Pod Identity features are enabled
 */}}
 {{- define "carto.validateValues.serviceAccount" -}}
 {{- $podIdentityEnabled := or .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity .Values.externalPostgresql.awsEksPodIdentityEnabled .Values.appConfigValues.awsEksPodIdentityBucketsEnabled -}}
-{{- if $podIdentityEnabled -}}
-CARTO: ServiceAccount required for Pod Identity
+{{- $saConfigured := or .Values.commonBackendServiceAccount.create .Values.commonBackendServiceAccount.name -}}
+{{- if and $podIdentityEnabled (not $saConfigured) -}}
+CARTO: ServiceAccount misconfiguration for Pod Identity
+
+When using a Pod Identity feature, you must either create a new Service Account (commonBackendServiceAccount.create=true) or specify an existing one (commonBackendServiceAccount.name).
 
 One or more Pod Identity features are enabled:
   - GCP Workload Identity: {{ .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   - AWS EKS Pod Identity (PostgreSQL): {{ .Values.externalPostgresql.awsEksPodIdentityEnabled }}
   - AWS EKS Pod Identity (S3 Buckets): {{ .Values.appConfigValues.awsEksPodIdentityBucketsEnabled }}
 
-  Review CARTO public docs: 
-    https://docs.carto.com/carto-self-hosted/guides/guides-helm/use-workload-identity-in-gcp
-    https://docs.carto.com/carto-self-hosted/guides/guides-helm/use-eks-pod-identity-in-aws
+Review CARTO public docs: 
+  https://docs.carto.com/carto-self-hosted/guides/guides-helm/use-workload-identity-in-gcp
+  https://docs.carto.com/carto-self-hosted/guides/guides-helm/use-eks-pod-identity-in-aws
 {{- end -}}
 {{- end -}}
 
