@@ -46,7 +46,7 @@ Validate ServiceAccount configuration when Pod Identity features are enabled
 */}}
 {{- define "carto.validateValues.serviceAccount" -}}
 {{- $podIdentityEnabled := or .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity .Values.externalPostgresql.awsEksPodIdentityEnabled .Values.appConfigValues.awsEksPodIdentityBucketsEnabled -}}
-{{- if and $podIdentityEnabled (not .Values.commonBackendServiceAccount.create) -}}
+{{- if $podIdentityEnabled -}}
 CARTO: ServiceAccount required for Pod Identity
 
 One or more Pod Identity features are enabled:
