@@ -5447,9 +5447,9 @@ gateway:
     type: NamedAddress
   ## @param gateway.annotations Additional annotations for the gateway resource.
   annotations: {}
-  ## @param gateway.timeouts.request Request timeout for the gateway
-  timeouts:
-    request: 300s
+  ## @param gateway.backendPolicy.timeoutSec Backend timeout in seconds for GKE Gateway (applied via GCPBackendPolicy)
+  backendPolicy:
+    timeoutSec: 300
 
 ## @section ai-api Deployment Parameters
 ##

@@ -1748,7 +1748,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `gateway.listeners.http.port`                                     | HTTP listener port                                                         | `80`                            |
 | `gateway.address.type`                                            | AddressType defines how a network address is represented as a text string. | `NamedAddress`                  |
 | `gateway.annotations`                                             | Additional annotations for the gateway resource.                           | `{}`                            |
-| `gateway.timeouts.request`                                        | Request timeout for the gateway                                            | `300s`                          |
+| `gateway.backendPolicy.timeoutSec`                                | Backend timeout in seconds for GKE Gateway (applied via GCPBackendPolicy)  | `300`                           |
 
 ### ai-api Deployment Parameters
 
