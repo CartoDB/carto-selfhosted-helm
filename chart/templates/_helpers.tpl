@@ -243,6 +243,16 @@ Create the name of the service account to use for Carto common deployments to co
 {{- end -}}
 
 {{/*
+Check if any Pod Identity feature is enabled
+Returns "true" if any Pod Identity feature is enabled, empty string otherwise
+*/}}
+{{- define "carto.podIdentity.enabled" -}}
+{{- if or .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity .Values.externalPostgresql.awsEksPodIdentityEnabled .Values.appConfigValues.awsEksPodIdentityBucketsEnabled -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto lds-api full name
 */}}
 {{- define "carto.ldsApi.fullname" -}}
