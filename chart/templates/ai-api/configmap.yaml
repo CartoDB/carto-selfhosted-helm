@@ -36,6 +36,9 @@ data:
   https_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
   GRPC_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   grpc_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
+  {{- end }}
   {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
@@ -49,7 +52,7 @@ data:
   NODE_OPTIONS: {{ template "carto.aiApi.nodeOptions" . }}
   PUBSUB_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.pubsubDomain | quote }}
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
-  PUBSUB_USE_REST_API: "true" #{{ .Values.cartoConfigValues.usePubSubRestApi | quote }}
+  PUBSUB_USE_REST_API: "true"
   PUBSUB_MODE: "push"
   REDIS_CACHE_PREFIX: "onprem"
   REDIS_HOST: {{ include "carto.redis.host" . | quote }}
