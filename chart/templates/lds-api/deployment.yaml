@@ -156,7 +156,7 @@ spec:
           {{- if .Values.ldsApi.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.ldsApi.livenessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /v3/lds/health
+              path: /health
               port: http
               httpHeaders:
                 - name: Carto-Monitoring
@@ -167,7 +167,7 @@ spec:
           {{- if .Values.ldsApi.readinessProbe.enabled }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.ldsApi.readinessProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /v3/lds/health
+              path: /health
               port: http
               httpHeaders:
                 - name: Carto-Monitoring
@@ -178,7 +178,7 @@ spec:
           {{- if .Values.ldsApi.startupProbe.enabled }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.ldsApi.startupProbe "enabled") "context" $) | nindent 12 }}
             httpGet:
-              path: /v3/lds/health
+              path: /health
               port: http
               httpHeaders:
                 - name: Carto-Monitoring
