@@ -95,7 +95,7 @@ spec:
           args:
             - -ec
             - |
-              exec node -r ./tsconfig-paths-bootstrap.js dist/app/index.js
+              exec node -r ./tsconfig-paths-bootstrap.js dist/ai-api/index.js
           {{- end }}
           env:
             - name: REDIS_PASSWORD
