@@ -1,4 +1,4 @@
-# carto
+# carto 
 
 [The CARTO Helm chart](https://github.com/CartoDB/carto-selfhosted-helm) deploys CARTO in a self hosted environment.
 
