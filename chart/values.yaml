@@ -1040,7 +1040,7 @@ importApi:
   args:
     [
       "-c",
-      "node ./tsconfig-paths-bootstrap.js dist/import-api/scripts/ready-to-run.js && exec node -r ./tsconfig-paths-bootstrap.js ./dist/import-api/index.js",
+      "node ./tsconfig-paths-bootstrap.js dist/import-api/scripts/ready-to-run.js && exec node -r ./tsconfig-paths-bootstrap.js dist/import-api/index.js",
     ]
   ## @param importApi.hostAliases import-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
@@ -3599,7 +3599,7 @@ cdnInvalidatorSub:
   args:
     [
       "-c",
-      "node -r /usr/src/app/cdn-invalidator-sub/tsconfig-paths-bootstrap.js /usr/src/app/cdn-invalidator-sub/dist/app/cdn-invalidator-sub/index.js",
+      "node -r ./tsconfig-paths-bootstrap.js dist/consumers/cdn-invalidator-sub/index.js",
     ]
   ## @param cdnInvalidatorSub.hostAliases cdnInvalidatorSub pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
