@@ -1690,65 +1690,67 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### routerMetrics container parameters
 
-| Name                                                              | Description                                                                | Value                           |
-| ----------------------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------- |
-| `routerMetrics.image.registry`                                    | routerMetrics image registry                                               | `gcr.io/carto-onprem-artifacts` |
-| `routerMetrics.image.repository`                                  | routerMetrics image repository                                             | `router/router-metrics`         |
-| `routerMetrics.image.tag`                                         | routerMetrics image tag (immutable tags are recommended)                   | `""`                            |
-| `routerMetrics.image.pullPolicy`                                  | routerMetrics image pull policy                                            | `IfNotPresent`                  |
-| `routerMetrics.image.pullSecrets`                                 | routerMetrics image pull secrets                                           | `[]`                            |
-| `routerMetrics.command`                                           | Override default container command (useful when using custom images)       | `[]`                            |
-| `routerMetrics.args`                                              | Override default container args (useful when using custom images)          | `[]`                            |
-| `routerMetrics.resources.limits.memory`                           | Container memory limits in MiB                                             | `512Mi`                         |
-| `routerMetrics.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                     | `500m`                          |
-| `routerMetrics.resources.requests.memory`                         | Container memory requests in MiB                                           | `256Mi`                         |
-| `routerMetrics.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                   | `250m`                          |
-| `routerMetrics.containerSecurityContext.enabled`                  | Enabled router-metrics containers' Security Context                        | `true`                          |
-| `routerMetrics.containerSecurityContext.runAsUser`                | Set router-metrics containers' Security Context runAsUser                  | `1000`                          |
-| `routerMetrics.containerSecurityContext.runAsGroup`               | Set router-metrics containers' Security Context runAsGroup                 | `1000`                          |
-| `routerMetrics.containerSecurityContext.runAsNonRoot`             | Set router-metrics containers' Security Context runAsNonRoot               | `true`                          |
-| `routerMetrics.containerSecurityContext.allowPrivilegeEscalation` | Set router-metrics containers' Security Context allowPrivilegeEscalation   | `false`                         |
-| `routerMetrics.containerSecurityContext.readOnlyRootFilesystem`   | Set router-metrics containers' Security Context readOnlyRootFilesystem     | `true`                          |
-| `routerMetrics.containerSecurityContext.capabilities.drop`        | removes router-metrics containers' Security Context capabilities           | `["all"]`                       |
-| `routerMetrics.podDisruptionBudget.enabled`                       | defines disruption budget for router-metrics                               | `false`                         |
-| `routerMetrics.containerPorts.http`                               | routerMetrics HTTP container port                                          | `5447`                          |
-| `routerMetrics.livenessProbe.enabled`                             | Enable livenessProbe on router containers                                  | `false`                         |
-| `routerMetrics.livenessProbe.initialDelaySeconds`                 | Initial delay seconds for livenessProbe                                    | `10`                            |
-| `routerMetrics.livenessProbe.periodSeconds`                       | Period seconds for livenessProbe                                           | `30`                            |
-| `routerMetrics.livenessProbe.timeoutSeconds`                      | Timeout seconds for livenessProbe                                          | `5`                             |
-| `routerMetrics.livenessProbe.successThreshold`                    | Success threshold for livenessProbe                                        | `1`                             |
-| `routerMetrics.livenessProbe.failureThreshold`                    | Failure threshold for livenessProbe                                        | `5`                             |
-| `routerMetrics.readinessProbe.enabled`                            | Enable readinessProbe on router containers                                 | `false`                         |
-| `routerMetrics.readinessProbe.initialDelaySeconds`                | Initial delay seconds for readinessProbe                                   | `10`                            |
-| `routerMetrics.readinessProbe.periodSeconds`                      | Period seconds for readinessProbe                                          | `30`                            |
-| `routerMetrics.readinessProbe.timeoutSeconds`                     | Timeout seconds for readinessProbe                                         | `5`                             |
-| `routerMetrics.readinessProbe.successThreshold`                   | Success threshold for readinessProbe                                       | `1`                             |
-| `routerMetrics.readinessProbe.failureThreshold`                   | Failure threshold for readinessProbe                                       | `5`                             |
-| `routerMetrics.startupProbe.enabled`                              | Enable startupProbe on router containers                                   | `false`                         |
-| `routerMetrics.startupProbe.initialDelaySeconds`                  | Initial delay seconds for startupProbe                                     | `10`                            |
-| `routerMetrics.startupProbe.periodSeconds`                        | Period seconds for startupProbe                                            | `30`                            |
-| `routerMetrics.startupProbe.timeoutSeconds`                       | Timeout seconds for startupProbe                                           | `5`                             |
-| `routerMetrics.startupProbe.successThreshold`                     | Success threshold for startupProbe                                         | `1`                             |
-| `routerMetrics.startupProbe.failureThreshold`                     | Failure threshold for startupProbe                                         | `5`                             |
-| `routerMetrics.customLivenessProbe`                               | Custom livenessProbe that overrides the default one                        | `{}`                            |
-| `routerMetrics.customReadinessProbe`                              | Custom readinessProbe that overrides the default one                       | `{}`                            |
-| `routerMetrics.customStartupProbe`                                | Custom startupProbe that overrides the default one                         | `{}`                            |
-| `gateway.enabled`                                                 | Enable gateway api.                                                        | `false`                         |
-| `gateway.tlsCertificates.customSSLCerts.enabled`                  | enable if customer provides their own certificates.                        | `false`                         |
-| `gateway.tlsCertificates.customSSLCerts.certificateValueBase64`   | custom certificate in base64.                                              | `""`                            |
-| `gateway.tlsCertificates.customSSLCerts.privateKeyValueBase64`    | custom private key in base64.                                              | `""`                            |
-| `gateway.tlsCertificates.managedCerts.enabled`                    | enable if managed certs creation is required.                              | `false`                         |
-| `gateway.apiVersion`                                              | Kubernetes Gateway API Version.                                            | `""`                            |
-| `gateway.gatewayClassName`                                        | GatewayClass that will be be used to implement the gateway api.            | `""`                            |
-| `gateway.path`                                                    | The Path to CARTO                                                          | `/`                             |
-| `gateway.tls.mode`                                                | defines the TLS behavior for the TLS session initiated by the client.      | `Terminate`                     |
-| `gateway.listeners.https.name`                                    | HTTPS listener name                                                        | `https`                         |
-| `gateway.listeners.https.port`                                    | HTTPS listener port                                                        | `443`                           |
-| `gateway.listeners.http.name`                                     | HTTP listener name                                                         | `http`                          |
-| `gateway.listeners.http.port`                                     | HTTP listener port                                                         | `80`                            |
-| `gateway.address.type`                                            | AddressType defines how a network address is represented as a text string. | `NamedAddress`                  |
-| `gateway.annotations`                                             | Additional annotations for the gateway resource.                           | `{}`                            |
-| `gateway.backendPolicy.timeoutSec`                                | Backend timeout in seconds for GKE Gateway (applied via GCPBackendPolicy)  | `300`                           |
+| Name                                                              | Description                                                                                                 | Value                           |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `routerMetrics.image.registry`                                    | routerMetrics image registry                                                                                | `gcr.io/carto-onprem-artifacts` |
+| `routerMetrics.image.repository`                                  | routerMetrics image repository                                                                              | `router/router-metrics`         |
+| `routerMetrics.image.tag`                                         | routerMetrics image tag (immutable tags are recommended)                                                    | `""`                            |
+| `routerMetrics.image.pullPolicy`                                  | routerMetrics image pull policy                                                                             | `IfNotPresent`                  |
+| `routerMetrics.image.pullSecrets`                                 | routerMetrics image pull secrets                                                                            | `[]`                            |
+| `routerMetrics.command`                                           | Override default container command (useful when using custom images)                                        | `[]`                            |
+| `routerMetrics.args`                                              | Override default container args (useful when using custom images)                                           | `[]`                            |
+| `routerMetrics.resources.limits.memory`                           | Container memory limits in MiB                                                                              | `512Mi`                         |
+| `routerMetrics.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                                      | `500m`                          |
+| `routerMetrics.resources.requests.memory`                         | Container memory requests in MiB                                                                            | `256Mi`                         |
+| `routerMetrics.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                                                    | `250m`                          |
+| `routerMetrics.containerSecurityContext.enabled`                  | Enabled router-metrics containers' Security Context                                                         | `true`                          |
+| `routerMetrics.containerSecurityContext.runAsUser`                | Set router-metrics containers' Security Context runAsUser                                                   | `1000`                          |
+| `routerMetrics.containerSecurityContext.runAsGroup`               | Set router-metrics containers' Security Context runAsGroup                                                  | `1000`                          |
+| `routerMetrics.containerSecurityContext.runAsNonRoot`             | Set router-metrics containers' Security Context runAsNonRoot                                                | `true`                          |
+| `routerMetrics.containerSecurityContext.allowPrivilegeEscalation` | Set router-metrics containers' Security Context allowPrivilegeEscalation                                    | `false`                         |
+| `routerMetrics.containerSecurityContext.readOnlyRootFilesystem`   | Set router-metrics containers' Security Context readOnlyRootFilesystem                                      | `true`                          |
+| `routerMetrics.containerSecurityContext.capabilities.drop`        | removes router-metrics containers' Security Context capabilities                                            | `["all"]`                       |
+| `routerMetrics.podDisruptionBudget.enabled`                       | defines disruption budget for router-metrics                                                                | `false`                         |
+| `routerMetrics.containerPorts.http`                               | routerMetrics HTTP container port                                                                           | `5447`                          |
+| `routerMetrics.livenessProbe.enabled`                             | Enable livenessProbe on router containers                                                                   | `false`                         |
+| `routerMetrics.livenessProbe.initialDelaySeconds`                 | Initial delay seconds for livenessProbe                                                                     | `10`                            |
+| `routerMetrics.livenessProbe.periodSeconds`                       | Period seconds for livenessProbe                                                                            | `30`                            |
+| `routerMetrics.livenessProbe.timeoutSeconds`                      | Timeout seconds for livenessProbe                                                                           | `5`                             |
+| `routerMetrics.livenessProbe.successThreshold`                    | Success threshold for livenessProbe                                                                         | `1`                             |
+| `routerMetrics.livenessProbe.failureThreshold`                    | Failure threshold for livenessProbe                                                                         | `5`                             |
+| `routerMetrics.readinessProbe.enabled`                            | Enable readinessProbe on router containers                                                                  | `false`                         |
+| `routerMetrics.readinessProbe.initialDelaySeconds`                | Initial delay seconds for readinessProbe                                                                    | `10`                            |
+| `routerMetrics.readinessProbe.periodSeconds`                      | Period seconds for readinessProbe                                                                           | `30`                            |
+| `routerMetrics.readinessProbe.timeoutSeconds`                     | Timeout seconds for readinessProbe                                                                          | `5`                             |
+| `routerMetrics.readinessProbe.successThreshold`                   | Success threshold for readinessProbe                                                                        | `1`                             |
+| `routerMetrics.readinessProbe.failureThreshold`                   | Failure threshold for readinessProbe                                                                        | `5`                             |
+| `routerMetrics.startupProbe.enabled`                              | Enable startupProbe on router containers                                                                    | `false`                         |
+| `routerMetrics.startupProbe.initialDelaySeconds`                  | Initial delay seconds for startupProbe                                                                      | `10`                            |
+| `routerMetrics.startupProbe.periodSeconds`                        | Period seconds for startupProbe                                                                             | `30`                            |
+| `routerMetrics.startupProbe.timeoutSeconds`                       | Timeout seconds for startupProbe                                                                            | `5`                             |
+| `routerMetrics.startupProbe.successThreshold`                     | Success threshold for startupProbe                                                                          | `1`                             |
+| `routerMetrics.startupProbe.failureThreshold`                     | Failure threshold for startupProbe                                                                          | `5`                             |
+| `routerMetrics.customLivenessProbe`                               | Custom livenessProbe that overrides the default one                                                         | `{}`                            |
+| `routerMetrics.customReadinessProbe`                              | Custom readinessProbe that overrides the default one                                                        | `{}`                            |
+| `routerMetrics.customStartupProbe`                                | Custom startupProbe that overrides the default one                                                          | `{}`                            |
+| `gateway.enabled`                                                 | Enable gateway api.                                                                                         | `false`                         |
+| `gateway.tlsCertificates.customSSLCerts.enabled`                  | enable if customer provides their own certificates.                                                         | `false`                         |
+| `gateway.tlsCertificates.customSSLCerts.certificateValueBase64`   | custom certificate in base64.                                                                               | `""`                            |
+| `gateway.tlsCertificates.customSSLCerts.privateKeyValueBase64`    | custom private key in base64.                                                                               | `""`                            |
+| `gateway.tlsCertificates.managedCerts.enabled`                    | enable if managed certs creation is required.                                                               | `false`                         |
+| `gateway.apiVersion`                                              | Kubernetes Gateway API Version.                                                                             | `""`                            |
+| `gateway.gatewayClassName`                                        | GatewayClass that will be be used to implement the gateway api.                                             | `""`                            |
+| `gateway.path`                                                    | The Path to CARTO                                                                                           | `/`                             |
+| `gateway.tls.mode`                                                | defines the TLS behavior for the TLS session initiated by the client.                                       | `Terminate`                     |
+| `gateway.listeners.https.name`                                    | HTTPS listener name                                                                                         | `https`                         |
+| `gateway.listeners.https.port`                                    | HTTPS listener port                                                                                         | `443`                           |
+| `gateway.listeners.http.name`                                     | HTTP listener name                                                                                          | `http`                          |
+| `gateway.listeners.http.port`                                     | HTTP listener port                                                                                          | `80`                            |
+| `gateway.address.type`                                            | AddressType defines how a network address is represented as a text string.                                  | `NamedAddress`                  |
+| `gateway.annotations`                                             | Additional annotations for the gateway resource.                                                            | `{}`                            |
+| `gateway.timeouts.request`                                        | Total request timeout for HTTPRoute (native Gateway API, works on EKS)                                      | `300s`                          |
+| `gateway.backendPolicy.enabled`                                   | Enable cloud provider-specific backend policy (auto-detects: GCPBackendPolicy for GKE, RoutePolicy for AKS) | `true`                          |
+| `gateway.backendPolicy.timeoutSec`                                | Backend timeout in seconds (applied via cloud-specific policy based on replicated.platformDistribution)     | `300`                           |
 
 ### ai-api Deployment Parameters
 

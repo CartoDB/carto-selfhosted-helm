@@ -1,0 +1,30 @@
+{{- if and .Values.gateway.enabled .Values.gateway.backendPolicy.enabled (eq .Values.replicated.platformDistribution "gke") }}
+apiVersion: networking.gke.io/v1
+kind: GCPBackendPolicy
+metadata:
+  name: {{ template "carto.gateway.fullname" . }}-backend-policy
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  default:
+    timeoutSec: {{ .Values.gateway.backendPolicy.timeoutSec }}
+  targetRef:
+    group: ""
+    kind: Service
+    name: {{ template "carto.router.fullname" . }}
+{{- end }}
+---
+{{- if and .Values.gateway.enabled .Values.gateway.backendPolicy.enabled (eq .Values.replicated.platformDistribution "aks") }}
+apiVersion: alb.networking.azure.io/v1
+kind: RoutePolicy
+metadata:
+  name: {{ template "carto.gateway.fullname" . }}-route-policy
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  targetRef:
+    kind: HTTPRoute
+    name: {{ template "carto.gateway.fullname" . }}-https
+    group: gateway.networking.k8s.io
+  default:
+    timeouts:
+      routeTimeout: {{ .Values.gateway.backendPolicy.timeoutSec }}s
+{{- end }}

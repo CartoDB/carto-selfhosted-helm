@@ -53,6 +53,13 @@ spec:
   - matches:
     - path:
         value: {{ .Values.gateway.path }}
+    {{- if and .Values.gateway.enabled (eq .Values.replicated.platformDistribution "eks") }}
+    timeouts:
+      request: {{ .Values.gateway.timeouts.request }}
+      {{- if .Values.gateway.timeouts.backendRequest }}
+      backendRequest: {{ .Values.gateway.timeouts.backendRequest }}
+      {{- end }}
+    {{- end }}
     backendRefs:
     - name: {{ template "carto.router.fullname" . }}
       {{- if .Values.tlsCerts.httpsEnabled }}
@@ -78,19 +85,4 @@ spec:
       requestRedirect:
         scheme: https
         statusCode: 301
-{{- end }}
----
-{{- if and .Values.gateway.enabled (eq .Values.replicated.platformDistribution "gke") }}
-apiVersion: networking.gke.io/v1
-kind: GCPBackendPolicy
-metadata:
-  name: {{ template "carto.gateway.fullname" . }}-backend-policy
-  namespace: {{ .Release.Namespace | quote }}
-spec:
-  default:
-    timeoutSec: {{ .Values.gateway.backendPolicy.timeoutSec }}
-  targetRef:
-    group: ""
-    kind: Service
-    name: {{ template "carto.router.fullname" . }}
 {{- end }}
