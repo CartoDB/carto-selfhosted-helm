@@ -7,6 +7,6 @@ dependencies:
   version: 11.9.13
 - name: replicated
   repository: oci://registry.replicated.com/library
-  version: 1.7.1
-digest: sha256:7c34eedc9ac1e4216942efa6589aad2c21f98c333323c74e88a6fe902b5ebce3
-generated: "2025-07-14T10:07:18.090658+02:00"
+  version: 1.11.0
+digest: sha256:fe71321d3b9cc1b0ebc0366f734fab083b9b9e8c11a6a363b55f3799acaeb3e7
+generated: "2025-11-06T03:22:44.70217246Z"
