@@ -604,20 +604,17 @@ spec:
             Enable the AI API. [More info](https://docs.carto.com/carto-self-hosted/guides/enable-the-ai-api).
           type: bool
           default: "0"
-          when: false # TODO: hide while ai features are not GA
         ## llmProxy
         - name: llmProxyDatabaseName
           title: AI Database name
           type: text
-          when: false # TODO: hide while ai features are not GA
-          #when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
           default: "llmProxy"
         - name: enablellmProxyEndpoint
           title: Enable llmProxy endpoint
           help_text: |-
             Enable the llmProxy endpoint.
-          when: false # TODO: hide while ai features are not GA
-          #when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
           type: bool
           default: "0"
 
