@@ -599,9 +599,9 @@ spec:
         ## Ai Features
         ## TODO: replace the links to the docs with the new ones
         - name: aiFeaturesEnabled
-          title: AI API
+          title: Agentic GIS
           help_text: |-
-            Enable the AI API. [More info](https://docs.carto.com/carto-self-hosted/guides/enable-the-ai-api).
+            Enable the Agentic GIS features for CARTO Self-Hosted. [More info](https://docs.carto.com/carto-self-hosted/guides/enable-agentic-gis-helm).
           type: bool
           default: "0"
         ## llmProxy
