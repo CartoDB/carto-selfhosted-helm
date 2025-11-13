@@ -48,6 +48,7 @@ data:
   REDIS_HOST: {{ include "carto.redis.host" . | quote }}
   REDIS_PORT: {{ include "carto.redis.port" . | quote }}
   {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
+  # llmproxy python httpx requirement
   SSL_CERT_FILE: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   XDG_CACHE_HOME: "/app/.cache/prisma"

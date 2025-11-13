@@ -92,11 +92,6 @@ spec:
           args: {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.args "context" $) | nindent 12 }}
           {{- end }}
           env:
-            {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
-            # llmproxy python httpx requirement
-            - name: SSL_CERT_FILE
-              value: {{ include "carto.proxy.configMapMountAbsolutePath" . }}
-            {{- end }}
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
