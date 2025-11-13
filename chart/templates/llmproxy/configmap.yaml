@@ -40,13 +40,7 @@ data:
   LITELLM_MIGRATION_DIR: "/tmp/prisma/migrations"
   LITELLM_MODE: "PRODUCTION"
   LITELLM_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  PRISMA_BINARY_CACHE_DIR: "/tmp/prisma-cache"
-  PRISMA_CLI_CACHE_DIR: "/tmp/prisma-cache"
-  PRISMA_HOME: "/tmp/prisma-cache"
   REDIS_DB: "1"
   REDIS_HOST: {{ include "carto.redis.host" . | quote }}
   REDIS_PORT: {{ include "carto.redis.port" . | quote }}
-  PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
-  XDG_CACHE_HOME: "/app/.cache/prisma"
-  NPM_CONFIG_CACHE: "/tmp/.npm"
 {{- end }} 
