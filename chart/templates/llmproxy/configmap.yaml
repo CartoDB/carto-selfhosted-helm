@@ -43,10 +43,14 @@ data:
   PRISMA_BINARY_CACHE_DIR: "/tmp/prisma-cache"
   PRISMA_CLI_CACHE_DIR: "/tmp/prisma-cache"
   PRISMA_HOME: "/tmp/prisma-cache"
+  PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
   REDIS_DB: "1"
   REDIS_HOST: {{ include "carto.redis.host" . | quote }}
   REDIS_PORT: {{ include "carto.redis.port" . | quote }}
-  PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
+  {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
+  # llmproxy python httpx requirement
+  SSL_CERT_FILE: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
+  {{- end }}
   XDG_CACHE_HOME: "/app/.cache/prisma"
   NPM_CONFIG_CACHE: "/tmp/.npm"
 {{- end }} 

@@ -189,6 +189,11 @@ spec:
               subPath: {{ include "carto.postgresql.configMapMountFilename" . }}
               readOnly: true
             {{- end }}
+            {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
+            - name: proxy-ssl-ca
+              mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
             {{- if .Values.llmProxy.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
@@ -208,6 +213,11 @@ spec:
             items:
               - key: {{ include "carto.postgresql.configMapMountFilename" . }}
                 path: {{ include "carto.postgresql.configMapMountFilename" . }}
+        {{- end }}
+        {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
+        - name: proxy-ssl-ca
+          configMap:
+            name: {{ include "carto.proxy.configMapName" . }}
         {{- end }}
         {{- if .Values.llmProxy.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.llmProxy.extraVolumes "context" $) | nindent 8 }}
