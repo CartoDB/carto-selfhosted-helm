@@ -47,6 +47,7 @@ data:
   REDIS_DB: "1"
   REDIS_HOST: {{ include "carto.redis.host" . | quote }}
   REDIS_PORT: {{ include "carto.redis.port" . | quote }}
+  SERVER_ROOT_PATH: "/litellm"
   {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
   # llmproxy python httpx requirement
   SSL_CERT_FILE: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
