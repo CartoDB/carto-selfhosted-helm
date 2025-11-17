@@ -601,7 +601,7 @@ spec:
         - name: aiFeaturesEnabled
           title: Agentic GIS
           help_text: |-
-            Enable the Agentic GIS features for CARTO Self-Hosted. [More info](https://docs.carto.com/carto-self-hosted/guides/enable-agentic-gis-helm).
+            Enable the Agentic GIS features for CARTO Self-Hosted. [More info](https://docs.carto.com/carto-self-hosted/guides/enable-agentic-gis-kots).
           type: bool
           default: "0"
         ## llmProxy
