@@ -675,7 +675,6 @@ spec:
           default: http
           items:
             - name: http
-
               title: HTTP
             - name: https
               title: HTTPS
