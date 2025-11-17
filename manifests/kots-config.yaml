@@ -605,7 +605,7 @@ spec:
           default: "0"
         ## llmProxy
         - name: llmProxyDatabaseName
-          title: aiProxy Database name
+          title: AI Proxy Database name
           help_text: |-
             Set a value here if you want to use a custom database name for the aiProxy.
             [More info](https://docs.carto.com/carto-self-hosted/guides/enable-agentic-gis-kots).
