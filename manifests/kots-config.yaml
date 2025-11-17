@@ -597,11 +597,10 @@ spec:
         Fine-tune your self-hosted environment with advanced configuration.
       items:
         ## Ai Features
-        ## TODO: replace the links to the docs with the new ones
         - name: aiFeaturesEnabled
-          title: AI API
+          title: CARTO AI Pre-requisites
           help_text: |-
-            Enable the AI API. [More info](https://docs.carto.com/carto-self-hosted/guides/enable-the-ai-api).
+            Prepare your deployment for enabling CARTO AI. [More info](https://docs.carto.com/carto-self-hosted/guides/enable-agentic-gis-kots).
           type: bool
           default: "0"
         ## llmProxy
@@ -610,13 +609,6 @@ spec:
           type: text
           when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
           default: "llmProxy"
-        - name: enablellmProxyEndpoint
-          title: Enable llmProxy endpoint
-          help_text: |-
-            Enable the llmProxy endpoint.
-          when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
-          type: bool
-          default: "0"
 
         ## Redis
         - name: externalRedisEnabled
