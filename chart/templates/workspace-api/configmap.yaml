@@ -64,7 +64,7 @@ data:
   USING_EXTERNAL_REDIS: "true"
   {{- end }}
   WORKSPACE_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
-  WORKSPACE_LITELLM_BASE_URL: "http://{{ include "carto.llmProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+  WORKSPACE_LITELLM_BASE_URL: "http://{{ include "carto.aiProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   WORKSPACE_PORT: {{ .Values.workspaceApi.containerPorts.http  | quote }}
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . | quote }}
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . | quote }}

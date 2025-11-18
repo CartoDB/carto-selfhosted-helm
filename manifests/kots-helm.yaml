@@ -69,7 +69,7 @@ spec:
       dataObservatoryProjectId: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "dataObservatoryProjectId" "" | Base64Decode }}'
       ingressTestingMode: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
       onlyRunRouter: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
-      enablellmProxyEndpoint: repl{{ if ConfigOptionEquals "enablellmProxyEndpoint" "1"}}truerepl{{ else }}falserepl{{ end }}
+      enableAiProxyEndpoint: repl{{ if ConfigOptionEquals "enableAiProxyEndpoint" "1"}}truerepl{{ else }}falserepl{{ end }}
       pubsubDomain: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "pubsubDomain" "" | Base64Decode }}'
     # Customizations
     ## App Secrets
@@ -114,13 +114,13 @@ spec:
       sslEnabled: repl{{ if ConfigOptionEquals "metadataDBSSLMode" "1"}}truerepl{{ else }}falserepl{{ end }}
       sslCA: |
         repl{{- ConfigOptionData "metadataDBSSLCertificate" | nindent 8 }}
-      llmProxyDatabaseName: '{{repl ConfigOption "llmProxyDatabaseName" }}'
+      aiProxyDatabaseName: '{{repl ConfigOption "aiProxyDatabaseName" }}'
     ## Ai Features
     aiApi:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
-    ## llmProxy
-    llmProxy:
+    ## aiProxy
+    aiProxy:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     ## Redis
@@ -425,7 +425,7 @@ spec:
                           values:
                             - ai-api
                     topologyKey: "kubernetes.io/hostname"
-        llmProxy:
+        aiProxy:
           autoscaling: *highAvailabilityEnabled
           affinity:
             podAntiAffinity:
@@ -437,7 +437,7 @@ spec:
                         - key: "app.kubernetes.io/component"
                           operator: In
                           values:
-                            - llmproxy
+                            - aiproxy
                     topologyKey: "kubernetes.io/hostname"
         ldsApi:
           autoscaling: *highAvailabilityEnabled
