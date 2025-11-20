@@ -48,8 +48,8 @@ spec:
       affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.aiProxy.affinity "context" $) | nindent 8 }}
       {{- else }}
       affinity:
-        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.aiProxy.podAffinityPreset "component" "aiProxy" "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.aiProxy.podAntiAffinityPreset "component" "aiProxy" "context" $) | nindent 10 }}
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.aiProxy.podAffinityPreset "component" "aiproxy" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.aiProxy.podAntiAffinityPreset "component" "aiproxy" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.aiProxy.nodeAffinityPreset.type "key" .Values.aiProxy.nodeAffinityPreset.key "values" .Values.aiProxy.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
       {{- if .Values.aiProxy.nodeSelector }}
