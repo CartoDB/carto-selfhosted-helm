@@ -611,7 +611,7 @@ spec:
             [More info](https://docs.carto.com/carto-self-hosted/guides/enable-agentic-gis-kots).
           type: text
           when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
-          default: "aiProxy"
+          default: "aiproxy"
 
         ## Redis
         - name: externalRedisEnabled
