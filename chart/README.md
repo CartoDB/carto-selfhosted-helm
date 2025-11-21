@@ -1849,99 +1849,99 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### aiProxy Deployment Parameters
 
-| Name                                                        | Description                                                                                                            | Value                           |
-| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `aiProxy.image.registry`                                    | aiProxy image registry                                                                                                 | `gcr.io/carto-onprem-artifacts` |
-| `aiProxy.image.repository`                                  | aiProxy image repository                                                                                               | `litellm`                       |
-| `aiProxy.image.tag`                                         | aiProxy image tag (immutable tags are recommended)                                                                     | `""`                            |
-| `aiProxy.image.pullPolicy`                                  | aiProxy image pull policy                                                                                              | `IfNotPresent`                  |
-| `aiProxy.image.pullSecrets`                                 | aiProxy image pull secrets                                                                                             | `[]`                            |
-| `aiProxy.replicaCount`                                      | Number of aiProxy replicas to deploy                                                                                   | `1`                             |
-| `aiProxy.containerPorts.http`                               | aiProxy HTTP container port                                                                                            | `4000`                          |
-| `aiProxy.livenessProbe.enabled`                             | Enable livenessProbe on ai-api containers                                                                              | `true`                          |
-| `aiProxy.livenessProbe.initialDelaySeconds`                 | Initial delay seconds for livenessProbe                                                                                | `10`                            |
-| `aiProxy.livenessProbe.periodSeconds`                       | Period seconds for livenessProbe                                                                                       | `30`                            |
-| `aiProxy.livenessProbe.timeoutSeconds`                      | Timeout seconds for livenessProbe                                                                                      | `5`                             |
-| `aiProxy.livenessProbe.failureThreshold`                    | Failure threshold for livenessProbe                                                                                    | `5`                             |
-| `aiProxy.livenessProbe.successThreshold`                    | Success threshold for livenessProbe                                                                                    | `1`                             |
-| `aiProxy.readinessProbe.enabled`                            | Enable readinessProbe on ai-api containers                                                                             | `true`                          |
-| `aiProxy.readinessProbe.initialDelaySeconds`                | Initial delay seconds for readinessProbe                                                                               | `10`                            |
-| `aiProxy.readinessProbe.periodSeconds`                      | Period seconds for readinessProbe                                                                                      | `30`                            |
-| `aiProxy.readinessProbe.timeoutSeconds`                     | Timeout seconds for readinessProbe                                                                                     | `5`                             |
-| `aiProxy.readinessProbe.failureThreshold`                   | Failure threshold for readinessProbe                                                                                   | `5`                             |
-| `aiProxy.readinessProbe.successThreshold`                   | Success threshold for readinessProbe                                                                                   | `1`                             |
-| `aiProxy.startupProbe.enabled`                              | Enable startupProbe on ai-api containers                                                                               | `false`                         |
-| `aiProxy.startupProbe.initialDelaySeconds`                  | Initial delay seconds for startupProbe                                                                                 | `10`                            |
-| `aiProxy.startupProbe.periodSeconds`                        | Period seconds for startupProbe                                                                                        | `10`                            |
-| `aiProxy.startupProbe.timeoutSeconds`                       | Timeout seconds for startupProbe                                                                                       | `5`                             |
-| `aiProxy.startupProbe.failureThreshold`                     | Failure threshold for startupProbe                                                                                     | `30`                            |
-| `aiProxy.startupProbe.successThreshold`                     | Success threshold for startupProbe                                                                                     | `1`                             |
-| `aiProxy.customLivenessProbe`                               | Custom livenessProbe that overrides the default one                                                                    | `{}`                            |
-| `aiProxy.customReadinessProbe`                              | Custom readinessProbe that overrides the default one                                                                   | `{}`                            |
-| `aiProxy.customStartupProbe`                                | Custom startupProbe that overrides the default one                                                                     | `{}`                            |
-| `aiProxy.autoscaling.enabled`                               | Enable autoscaling for the ai-api containers                                                                           | `false`                         |
-| `aiProxy.autoscaling.minReplicas`                           | The minimal number of containers for the ai-api deployment                                                             | `1`                             |
-| `aiProxy.autoscaling.maxReplicas`                           | The maximum number of containers for the ai-api deployment                                                             | `3`                             |
-| `aiProxy.autoscaling.targetCPUUtilizationPercentage`        | The CPU utilization percentage used for scale up containers in ai-api deployment                                       | `75`                            |
-| `aiProxy.resources.limits.memory`                           | Container memory limits in MiB                                                                                         | `8192Mi`                        |
-| `aiProxy.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                                                 | `2000m`                         |
-| `aiProxy.resources.requests.memory`                         | Container memory requests in MiB                                                                                       | `4096Mi`                        |
-| `aiProxy.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                                                               | `2000m`                         |
-| `aiProxy.podSecurityContext.enabled`                        | Enabled ai-api pods' Security Context                                                                                  | `true`                          |
-| `aiProxy.podSecurityContext.fsGroup`                        | Set ai-api pod's Security Context fsGroup                                                                              | `1000`                          |
-| `aiProxy.podSecurityContext.supplementalGroups[0]`          | Set ai-api pod's Security Context supplementalGroups                                                                   | `2345`                          |
-| `aiProxy.containerSecurityContext.enabled`                  | Enabled ai-api containers' Security Context                                                                            | `true`                          |
-| `aiProxy.containerSecurityContext.runAsUser`                | Set ai-api containers' Security Context runAsUser                                                                      | `1000`                          |
-| `aiProxy.containerSecurityContext.runAsGroup`               | Set ai-api containers' Security Context runAsGroup                                                                     | `1000`                          |
-| `aiProxy.containerSecurityContext.runAsNonRoot`             | Set ai-api containers' Security Context runAsNonRoot                                                                   | `true`                          |
-| `aiProxy.containerSecurityContext.allowPrivilegeEscalation` | Set ai-api containers' Security Context allowPrivilegeEscalation                                                       | `false`                         |
-| `aiProxy.containerSecurityContext.readOnlyRootFilesystem`   | Set ai-api containers' Security Context readOnlyRootFilesystem                                                         | `true`                          |
-| `aiProxy.containerSecurityContext.capabilities.drop`        | removes ai-api containers' Security Context capabilities                                                               | `["all"]`                       |
-| `aiProxy.podDisruptionBudget.enabled`                       | defines disruption budget for ai-api                                                                                   | `false`                         |
-| `aiProxy.podDisruptionBudget.minAvailable`                  | Minimum number of pods that must be available during the update                                                        | `1`                             |
-| `aiProxy.podDisruptionBudget.maxUnavailable`                | Maximum number of pods that can be unavailable during the update                                                       | `0`                             |
-| `aiProxy.terminationGracePeriodSeconds`                     | Time to wait before force killing the container                                                                        | `300`                           |
-| `aiProxy.existingConfigMap`                                 | The name of an existing ConfigMap with your custom configuration for ai-api                                            | `""`                            |
-| `aiProxy.existingSecret`                                    | The name of an existing ConfigMap with your custom configuration for ai-api                                            | `""`                            |
-| `aiProxy.command`                                           | Override default container command (useful when using custom images)                                                   | `[]`                            |
-| `aiProxy.args`                                              | Override default container args (useful when using custom images)                                                      | `[]`                            |
-| `aiProxy.hostAliases`                                       | ai-api pods host aliases                                                                                               | `[]`                            |
-| `aiProxy.podLabels`                                         | Extra labels for ai-api pods                                                                                           | `{}`                            |
-| `aiProxy.podAnnotations`                                    | Annotations for ai-api pods                                                                                            | `{}`                            |
-| `aiProxy.podAffinityPreset`                                 | Pod affinity preset. Ignored if `aiProxy.affinity` is set. Allowed values: `soft` or `hard`                            | `""`                            |
-| `aiProxy.podAntiAffinityPreset`                             | Pod anti-affinity preset. Ignored if `aiProxy.affinity` is set. Allowed values: `soft` or `hard`                       | `soft`                          |
-| `aiProxy.nodeAffinityPreset.type`                           | Node.js affinity preset type. Ignored if `aiProxy.affinity` is set. Allowed values: `soft` or `hard`                   | `""`                            |
-| `aiProxy.nodeAffinityPreset.key`                            | Node.js label key to match. Ignored if `aiProxy.affinity` is set                                                       | `""`                            |
-| `aiProxy.nodeAffinityPreset.values`                         | Node.js label values to match. Ignored if `aiProxy.affinity` is set                                                    | `[]`                            |
-| `aiProxy.affinity`                                          | Affinity for ai-api pods assignment                                                                                    | `{}`                            |
-| `aiProxy.nodeSelector`                                      | Node.js labels for ai-api pods assignment                                                                              | `{}`                            |
-| `aiProxy.tolerations`                                       | Tolerations for ai-api pods assignment                                                                                 | `[]`                            |
-| `aiProxy.updateStrategy.type`                               | ai-api statefulset strategy type                                                                                       | `RollingUpdate`                 |
-| `aiProxy.priorityClassName`                                 | ai-api pods' priorityClassName                                                                                         | `""`                            |
-| `aiProxy.schedulerName`                                     | Name of the k8s scheduler (other than default) for ai-api pods                                                         | `""`                            |
-| `aiProxy.lifecycleHooks`                                    | for the ai-api container(s) to automate configuration before or after startup                                          | `{}`                            |
-| `aiProxy.extraEnvVars`                                      | Array with extra environment variables to add to ai-api nodes ([More info](#additional-environment-variables))         | `[]`                            |
-| `aiProxy.extraEnvVarsCM`                                    | Name of existing ConfigMap containing extra env vars for ai-api nodes ([More info](#additional-environment-variables)) | `""`                            |
-| `aiProxy.extraEnvVarsSecret`                                | Name of existing Secret containing extra env vars for ai-api nodes ([More info](#additional-environment-variables))    | `""`                            |
-| `aiProxy.extraVolumes`                                      | Optionally specify extra list of additional volumes for the ai-api pod(s)                                              | `[]`                            |
-| `aiProxy.extraVolumeMounts`                                 | Optionally specify extra list of additional volumeMounts for the ai-api container(s)                                   | `[]`                            |
-| `aiProxy.sidecars`                                          | Add additional sidecar containers to the ai-api pod(s)                                                                 | `{}`                            |
-| `aiProxy.initContainers`                                    | Add additional init containers to the ai-api pod(s)                                                                    | `{}`                            |
+| Name                                                        | Description                                                                                                             | Value                           |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `aiProxy.image.registry`                                    | aiProxy image registry                                                                                                  | `gcr.io/carto-onprem-artifacts` |
+| `aiProxy.image.repository`                                  | aiProxy image repository                                                                                                | `litellm`                       |
+| `aiProxy.image.tag`                                         | aiProxy image tag (immutable tags are recommended)                                                                      | `""`                            |
+| `aiProxy.image.pullPolicy`                                  | aiProxy image pull policy                                                                                               | `IfNotPresent`                  |
+| `aiProxy.image.pullSecrets`                                 | aiProxy image pull secrets                                                                                              | `[]`                            |
+| `aiProxy.replicaCount`                                      | Number of aiProxy replicas to deploy                                                                                    | `1`                             |
+| `aiProxy.containerPorts.http`                               | aiProxy HTTP container port                                                                                             | `4000`                          |
+| `aiProxy.livenessProbe.enabled`                             | Enable livenessProbe on aiProxy containers                                                                              | `true`                          |
+| `aiProxy.livenessProbe.initialDelaySeconds`                 | Initial delay seconds for livenessProbe                                                                                 | `10`                            |
+| `aiProxy.livenessProbe.periodSeconds`                       | Period seconds for livenessProbe                                                                                        | `30`                            |
+| `aiProxy.livenessProbe.timeoutSeconds`                      | Timeout seconds for livenessProbe                                                                                       | `5`                             |
+| `aiProxy.livenessProbe.failureThreshold`                    | Failure threshold for livenessProbe                                                                                     | `5`                             |
+| `aiProxy.livenessProbe.successThreshold`                    | Success threshold for livenessProbe                                                                                     | `1`                             |
+| `aiProxy.readinessProbe.enabled`                            | Enable readinessProbe on aiProxy containers                                                                             | `true`                          |
+| `aiProxy.readinessProbe.initialDelaySeconds`                | Initial delay seconds for readinessProbe                                                                                | `10`                            |
+| `aiProxy.readinessProbe.periodSeconds`                      | Period seconds for readinessProbe                                                                                       | `30`                            |
+| `aiProxy.readinessProbe.timeoutSeconds`                     | Timeout seconds for readinessProbe                                                                                      | `5`                             |
+| `aiProxy.readinessProbe.failureThreshold`                   | Failure threshold for readinessProbe                                                                                    | `5`                             |
+| `aiProxy.readinessProbe.successThreshold`                   | Success threshold for readinessProbe                                                                                    | `1`                             |
+| `aiProxy.startupProbe.enabled`                              | Enable startupProbe on aiProxy containers                                                                               | `false`                         |
+| `aiProxy.startupProbe.initialDelaySeconds`                  | Initial delay seconds for startupProbe                                                                                  | `10`                            |
+| `aiProxy.startupProbe.periodSeconds`                        | Period seconds for startupProbe                                                                                         | `10`                            |
+| `aiProxy.startupProbe.timeoutSeconds`                       | Timeout seconds for startupProbe                                                                                        | `5`                             |
+| `aiProxy.startupProbe.failureThreshold`                     | Failure threshold for startupProbe                                                                                      | `30`                            |
+| `aiProxy.startupProbe.successThreshold`                     | Success threshold for startupProbe                                                                                      | `1`                             |
+| `aiProxy.customLivenessProbe`                               | Custom livenessProbe that overrides the default one                                                                     | `{}`                            |
+| `aiProxy.customReadinessProbe`                              | Custom readinessProbe that overrides the default one                                                                    | `{}`                            |
+| `aiProxy.customStartupProbe`                                | Custom startupProbe that overrides the default one                                                                      | `{}`                            |
+| `aiProxy.autoscaling.enabled`                               | Enable autoscaling for the aiProxy containers                                                                           | `false`                         |
+| `aiProxy.autoscaling.minReplicas`                           | The minimal number of containers for the aiProxy deployment                                                             | `1`                             |
+| `aiProxy.autoscaling.maxReplicas`                           | The maximum number of containers for the aiProxy deployment                                                             | `3`                             |
+| `aiProxy.autoscaling.targetCPUUtilizationPercentage`        | The CPU utilization percentage used for scale up containers in aiProxy deployment                                       | `75`                            |
+| `aiProxy.resources.limits.memory`                           | Container memory limits in MiB                                                                                          | `8192Mi`                        |
+| `aiProxy.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                                                  | `2000m`                         |
+| `aiProxy.resources.requests.memory`                         | Container memory requests in MiB                                                                                        | `4096Mi`                        |
+| `aiProxy.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                                                                | `2000m`                         |
+| `aiProxy.podSecurityContext.enabled`                        | Enabled aiProxy pods' Security Context                                                                                  | `true`                          |
+| `aiProxy.podSecurityContext.fsGroup`                        | Set aiProxy pod's Security Context fsGroup                                                                              | `1000`                          |
+| `aiProxy.podSecurityContext.supplementalGroups[0]`          | Set aiProxy pod's Security Context supplementalGroups                                                                   | `2345`                          |
+| `aiProxy.containerSecurityContext.enabled`                  | Enabled aiProxy containers' Security Context                                                                            | `true`                          |
+| `aiProxy.containerSecurityContext.runAsUser`                | Set aiProxy containers' Security Context runAsUser                                                                      | `1000`                          |
+| `aiProxy.containerSecurityContext.runAsGroup`               | Set aiProxy containers' Security Context runAsGroup                                                                     | `1000`                          |
+| `aiProxy.containerSecurityContext.runAsNonRoot`             | Set aiProxy containers' Security Context runAsNonRoot                                                                   | `true`                          |
+| `aiProxy.containerSecurityContext.allowPrivilegeEscalation` | Set aiProxy containers' Security Context allowPrivilegeEscalation                                                       | `false`                         |
+| `aiProxy.containerSecurityContext.readOnlyRootFilesystem`   | Set aiProxy containers' Security Context readOnlyRootFilesystem                                                         | `true`                          |
+| `aiProxy.containerSecurityContext.capabilities.drop`        | removes aiProxy containers' Security Context capabilities                                                               | `["all"]`                       |
+| `aiProxy.podDisruptionBudget.enabled`                       | defines disruption budget for aiProxy                                                                                   | `false`                         |
+| `aiProxy.podDisruptionBudget.minAvailable`                  | Minimum number of pods that must be available during the update                                                         | `1`                             |
+| `aiProxy.podDisruptionBudget.maxUnavailable`                | Maximum number of pods that can be unavailable during the update                                                        | `0`                             |
+| `aiProxy.terminationGracePeriodSeconds`                     | Time to wait before force killing the container                                                                         | `300`                           |
+| `aiProxy.existingConfigMap`                                 | The name of an existing ConfigMap with your custom configuration for aiProxy                                            | `""`                            |
+| `aiProxy.existingSecret`                                    | The name of an existing Secret with your custom configuration for aiProxy                                               | `""`                            |
+| `aiProxy.command`                                           | Override default container command (useful when using custom images)                                                    | `[]`                            |
+| `aiProxy.args`                                              | Override default container args (useful when using custom images)                                                       | `[]`                            |
+| `aiProxy.hostAliases`                                       | aiProxy pods host aliases                                                                                               | `[]`                            |
+| `aiProxy.podLabels`                                         | Extra labels for aiProxy pods                                                                                           | `{}`                            |
+| `aiProxy.podAnnotations`                                    | Annotations for aiProxy pods                                                                                            | `{}`                            |
+| `aiProxy.podAffinityPreset`                                 | Pod affinity preset. Ignored if `aiProxy.affinity` is set. Allowed values: `soft` or `hard`                             | `""`                            |
+| `aiProxy.podAntiAffinityPreset`                             | Pod anti-affinity preset. Ignored if `aiProxy.affinity` is set. Allowed values: `soft` or `hard`                        | `soft`                          |
+| `aiProxy.nodeAffinityPreset.type`                           | Node.js affinity preset type. Ignored if `aiProxy.affinity` is set. Allowed values: `soft` or `hard`                    | `""`                            |
+| `aiProxy.nodeAffinityPreset.key`                            | Node.js label key to match. Ignored if `aiProxy.affinity` is set                                                        | `""`                            |
+| `aiProxy.nodeAffinityPreset.values`                         | Node.js label values to match. Ignored if `aiProxy.affinity` is set                                                     | `[]`                            |
+| `aiProxy.affinity`                                          | Affinity for aiProxy pods assignment                                                                                    | `{}`                            |
+| `aiProxy.nodeSelector`                                      | Node.js labels for aiProxy pods assignment                                                                              | `{}`                            |
+| `aiProxy.tolerations`                                       | Tolerations for aiProxy pods assignment                                                                                 | `[]`                            |
+| `aiProxy.updateStrategy.type`                               | aiProxy statefulset strategy type                                                                                       | `RollingUpdate`                 |
+| `aiProxy.priorityClassName`                                 | aiProxy pods' priorityClassName                                                                                         | `""`                            |
+| `aiProxy.schedulerName`                                     | Name of the k8s scheduler (other than default) for aiProxy pods                                                         | `""`                            |
+| `aiProxy.lifecycleHooks`                                    | for the aiProxy container(s) to automate configuration before or after startup                                          | `{}`                            |
+| `aiProxy.extraEnvVars`                                      | Array with extra environment variables to add to aiProxy nodes ([More info](#additional-environment-variables))         | `[]`                            |
+| `aiProxy.extraEnvVarsCM`                                    | Name of existing ConfigMap containing extra env vars for aiProxy nodes ([More info](#additional-environment-variables)) | `""`                            |
+| `aiProxy.extraEnvVarsSecret`                                | Name of existing Secret containing extra env vars for aiProxy nodes ([More info](#additional-environment-variables))    | `""`                            |
+| `aiProxy.extraVolumes`                                      | Optionally specify extra list of additional volumes for the aiProxy pod(s)                                              | `[]`                            |
+| `aiProxy.extraVolumeMounts`                                 | Optionally specify extra list of additional volumeMounts for the aiProxy container(s)                                   | `[]`                            |
+| `aiProxy.sidecars`                                          | Add additional sidecar containers to the aiProxy pod(s)                                                                 | `{}`                            |
+| `aiProxy.initContainers`                                    | Add additional init containers to the aiProxy pod(s)                                                                    | `{}`                            |
 
-### ai-api Service Parameters
+### aiProxy Service Parameters
 
-| Name                                       | Description                                                                       | Value       |
-| ------------------------------------------ | --------------------------------------------------------------------------------- | ----------- |
-| `aiProxy.service.type`                     | ai-api service type                                                               | `ClusterIP` |
-| `aiProxy.service.ports.http`               | ai-api service HTTP port                                                          | `80`        |
-| `aiProxy.service.nodePorts.http`           | Node.js port for HTTP                                                             | `""`        |
-| `aiProxy.service.clusterIP`                | ai-api service Cluster IP                                                         | `""`        |
-| `aiProxy.service.loadBalancerIP`           | ai-api service Load Balancer IP                                                   | `""`        |
-| `aiProxy.service.labelSelectorsOverride`   | Selector for ai-api service                                                       | `{}`        |
-| `aiProxy.service.loadBalancerSourceRanges` | ai-api service Load Balancer sources                                              | `[]`        |
-| `aiProxy.service.externalTrafficPolicy`    | ai-api service external traffic policy                                            | `Cluster`   |
-| `aiProxy.service.annotations`              | Additional custom annotations for ai-api service                                  | `{}`        |
-| `aiProxy.service.extraPorts`               | Extra ports to expose in ai-api service (normally used with the `sidecars` value) | `[]`        |
+| Name                                       | Description                                                                        | Value       |
+| ------------------------------------------ | ---------------------------------------------------------------------------------- | ----------- |
+| `aiProxy.service.type`                     | aiProxy service type                                                               | `ClusterIP` |
+| `aiProxy.service.ports.http`               | aiProxy service HTTP port                                                          | `80`        |
+| `aiProxy.service.nodePorts.http`           | Node.js port for HTTP                                                              | `""`        |
+| `aiProxy.service.clusterIP`                | aiProxy service Cluster IP                                                         | `""`        |
+| `aiProxy.service.loadBalancerIP`           | aiProxy service Load Balancer IP                                                   | `""`        |
+| `aiProxy.service.labelSelectorsOverride`   | Selector for aiProxy service                                                       | `{}`        |
+| `aiProxy.service.loadBalancerSourceRanges` | aiProxy service Load Balancer sources                                              | `[]`        |
+| `aiProxy.service.externalTrafficPolicy`    | aiProxy service external traffic policy                                            | `Cluster`   |
+| `aiProxy.service.annotations`              | Additional custom annotations for aiProxy service                                  | `{}`        |
+| `aiProxy.service.extraPorts`               | Extra ports to expose in aiProxy service (normally used with the `sidecars` value) | `[]`        |
 
 
 ## Configuration and installation details

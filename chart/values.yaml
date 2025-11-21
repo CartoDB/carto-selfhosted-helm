@@ -5815,7 +5815,7 @@ aiProxy:
     http: 4000
   ## Configure extra options for aiProxy containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-  ## @param aiProxy.livenessProbe.enabled Enable livenessProbe on ai-api containers
+  ## @param aiProxy.livenessProbe.enabled Enable livenessProbe on aiProxy containers
   ## @param aiProxy.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
   ## @param aiProxy.livenessProbe.periodSeconds Period seconds for livenessProbe
   ## @param aiProxy.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
@@ -5829,7 +5829,7 @@ aiProxy:
     timeoutSeconds: 5
     successThreshold: 1
     failureThreshold: 5
-  ## @param aiProxy.readinessProbe.enabled Enable readinessProbe on ai-api containers
+  ## @param aiProxy.readinessProbe.enabled Enable readinessProbe on aiProxy containers
   ## @param aiProxy.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
   ## @param aiProxy.readinessProbe.periodSeconds Period seconds for readinessProbe
   ## @param aiProxy.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
@@ -5843,7 +5843,7 @@ aiProxy:
     timeoutSeconds: 5
     successThreshold: 1
     failureThreshold: 5
-  ## @param aiProxy.startupProbe.enabled Enable startupProbe on ai-api containers
+  ## @param aiProxy.startupProbe.enabled Enable startupProbe on aiProxy containers
   ## @param aiProxy.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
   ## @param aiProxy.startupProbe.periodSeconds Period seconds for startupProbe
   ## @param aiProxy.startupProbe.timeoutSeconds Timeout seconds for startupProbe
@@ -5868,10 +5868,10 @@ aiProxy:
   customStartupProbe: {}
   ## aiProxy autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
-  ## @param aiProxy.autoscaling.enabled Enable autoscaling for the ai-api containers
-  ## @param aiProxy.autoscaling.minReplicas The minimal number of containers for the ai-api deployment
-  ## @param aiProxy.autoscaling.maxReplicas The maximum number of containers for the ai-api deployment
-  ## @param aiProxy.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in ai-api deployment
+  ## @param aiProxy.autoscaling.enabled Enable autoscaling for the aiProxy containers
+  ## @param aiProxy.autoscaling.minReplicas The minimal number of containers for the aiProxy deployment
+  ## @param aiProxy.autoscaling.maxReplicas The maximum number of containers for the aiProxy deployment
+  ## @param aiProxy.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in aiProxy deployment
   ##
   autoscaling:
     enabled: false
@@ -5894,9 +5894,9 @@ aiProxy:
       cpu: "2000m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-  ## @param aiProxy.podSecurityContext.enabled Enabled ai-api pods' Security Context
-  ## @param aiProxy.podSecurityContext.fsGroup Set ai-api pod's Security Context fsGroup
-  ## @param aiProxy.podSecurityContext.supplementalGroups[0] Set ai-api pod's Security Context supplementalGroups
+  ## @param aiProxy.podSecurityContext.enabled Enabled aiProxy pods' Security Context
+  ## @param aiProxy.podSecurityContext.fsGroup Set aiProxy pod's Security Context fsGroup
+  ## @param aiProxy.podSecurityContext.supplementalGroups[0] Set aiProxy pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -5904,13 +5904,13 @@ aiProxy:
     supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-  ## @param aiProxy.containerSecurityContext.enabled Enabled ai-api containers' Security Context
-  ## @param aiProxy.containerSecurityContext.runAsUser Set ai-api containers' Security Context runAsUser
-  ## @param aiProxy.containerSecurityContext.runAsGroup Set ai-api containers' Security Context runAsGroup
-  ## @param aiProxy.containerSecurityContext.runAsNonRoot Set ai-api containers' Security Context runAsNonRoot
-  ## @param aiProxy.containerSecurityContext.allowPrivilegeEscalation Set ai-api containers' Security Context allowPrivilegeEscalation
-  ## @param aiProxy.containerSecurityContext.readOnlyRootFilesystem Set ai-api containers' Security Context readOnlyRootFilesystem
-  ## @param aiProxy.containerSecurityContext.capabilities.drop removes ai-api containers' Security Context capabilities
+  ## @param aiProxy.containerSecurityContext.enabled Enabled aiProxy containers' Security Context
+  ## @param aiProxy.containerSecurityContext.runAsUser Set aiProxy containers' Security Context runAsUser
+  ## @param aiProxy.containerSecurityContext.runAsGroup Set aiProxy containers' Security Context runAsGroup
+  ## @param aiProxy.containerSecurityContext.runAsNonRoot Set aiProxy containers' Security Context runAsNonRoot
+  ## @param aiProxy.containerSecurityContext.allowPrivilegeEscalation Set aiProxy containers' Security Context allowPrivilegeEscalation
+  ## @param aiProxy.containerSecurityContext.readOnlyRootFilesystem Set aiProxy containers' Security Context readOnlyRootFilesystem
+  ## @param aiProxy.containerSecurityContext.capabilities.drop removes aiProxy containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
@@ -5922,7 +5922,7 @@ aiProxy:
     capabilities:
       drop:
         - all
-  ## @param aiProxy.podDisruptionBudget.enabled defines disruption budget for ai-api
+  ## @param aiProxy.podDisruptionBudget.enabled defines disruption budget for aiProxy
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
   ## @param aiProxy.podDisruptionBudget.minAvailable Minimum number of pods that must be available during the update
   ## @param aiProxy.podDisruptionBudget.maxUnavailable Maximum number of pods that can be unavailable during the update
@@ -5934,10 +5934,10 @@ aiProxy:
   ## @param aiProxy.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 300
-  ## @param aiProxy.existingConfigMap The name of an existing ConfigMap with your custom configuration for ai-api
+  ## @param aiProxy.existingConfigMap The name of an existing ConfigMap with your custom configuration for aiProxy
   ##
   existingConfigMap: ""
-  ## @param aiProxy.existingSecret The name of an existing ConfigMap with your custom configuration for ai-api
+  ## @param aiProxy.existingSecret The name of an existing Secret with your custom configuration for aiProxy
   ##
   existingSecret: ""
   ## @param aiProxy.command Override default container command (useful when using custom images)
@@ -5947,15 +5947,15 @@ aiProxy:
   ##
   args:
     []
-  ## @param aiProxy.hostAliases ai-api pods host aliases
+  ## @param aiProxy.hostAliases aiProxy pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
   hostAliases: []
-  ## @param aiProxy.podLabels Extra labels for ai-api pods
+  ## @param aiProxy.podLabels Extra labels for aiProxy pods
   ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
   ##
   podLabels: {}
-  ## @param aiProxy.podAnnotations Annotations for ai-api pods
+  ## @param aiProxy.podAnnotations Annotations for aiProxy pods
   ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
   ##
   podAnnotations: {}
@@ -5984,20 +5984,20 @@ aiProxy:
     ##   - e2e-az2
     ##
     values: []
-  ## @param aiProxy.affinity Affinity for ai-api pods assignment
+  ## @param aiProxy.affinity Affinity for aiProxy pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
   ## NOTE: `aiProxy.podAffinityPreset`, `aiProxy.podAntiAffinityPreset`, and `aiProxy.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param aiProxy.nodeSelector Node.js labels for ai-api pods assignment
+  ## @param aiProxy.nodeSelector Node.js labels for aiProxy pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
-  ## @param aiProxy.tolerations Tolerations for ai-api pods assignment
+  ## @param aiProxy.tolerations Tolerations for aiProxy pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations: []
-  ## @param aiProxy.updateStrategy.type ai-api statefulset strategy type
+  ## @param aiProxy.updateStrategy.type aiProxy statefulset strategy type
   ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
   ##
   updateStrategy:
@@ -6005,36 +6005,36 @@ aiProxy:
     ## Can be set to RollingUpdate or OnDelete
     ##
     type: RollingUpdate
-  ## @param aiProxy.priorityClassName ai-api pods' priorityClassName
+  ## @param aiProxy.priorityClassName aiProxy pods' priorityClassName
   ##
   priorityClassName: ""
-  ## @param aiProxy.schedulerName Name of the k8s scheduler (other than default) for ai-api pods
+  ## @param aiProxy.schedulerName Name of the k8s scheduler (other than default) for aiProxy pods
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param aiProxy.lifecycleHooks for the ai-api container(s) to automate configuration before or after startup
+  ## @param aiProxy.lifecycleHooks for the aiProxy container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
-  ## @param aiProxy.extraEnvVars Array with extra environment variables to add to ai-api nodes ([More info](#additional-environment-variables))
+  ## @param aiProxy.extraEnvVars Array with extra environment variables to add to aiProxy nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
   ##   - name: FOO
   ##     value: "bar"
   ##
   extraEnvVars: []
-  ## @param aiProxy.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for ai-api nodes ([More info](#additional-environment-variables))
+  ## @param aiProxy.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for aiProxy nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsCM: ""
-  ## @param aiProxy.extraEnvVarsSecret Name of existing Secret containing extra env vars for ai-api nodes ([More info](#additional-environment-variables))
+  ## @param aiProxy.extraEnvVarsSecret Name of existing Secret containing extra env vars for aiProxy nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsSecret: ""
-  ## @param aiProxy.extraVolumes Optionally specify extra list of additional volumes for the ai-api pod(s)
+  ## @param aiProxy.extraVolumes Optionally specify extra list of additional volumes for the aiProxy pod(s)
   ##
   extraVolumes: []
-  ## @param aiProxy.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the ai-api container(s)
+  ## @param aiProxy.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the aiProxy container(s)
   ##
   extraVolumeMounts: []
-  ## @param aiProxy.sidecars Add additional sidecar containers to the ai-api pod(s)
+  ## @param aiProxy.sidecars Add additional sidecar containers to the aiProxy pod(s)
   ## e.g:
   ## sidecars:
   ##   - name: your-image-name
@@ -6045,7 +6045,7 @@ aiProxy:
   ##         containerPort: 1234
   ##
   sidecars: {}
-  ## @param aiProxy.initContainers Add additional init containers to the ai-api pod(s)
+  ## @param aiProxy.initContainers Add additional init containers to the aiProxy pod(s)
   ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
   ## e.g:
   ## initContainers:
@@ -6055,14 +6055,14 @@ aiProxy:
   ##    command: ['sh', '-c', 'echo "hello world"']
   ##
   initContainers: {}
-  ## @section ai-api Service Parameters
+  ## @section aiProxy Service Parameters
   ##
   ##
   service:
-    ## @param aiProxy.service.type ai-api service type
+    ## @param aiProxy.service.type aiProxy service type
     ##
     type: ClusterIP
-    ## @param aiProxy.service.ports.http ai-api service HTTP port
+    ## @param aiProxy.service.ports.http aiProxy service HTTP port
     ##
     ports:
       http: 80
@@ -6072,32 +6072,32 @@ aiProxy:
     ##
     nodePorts:
       http: ""
-    ## @param aiProxy.service.clusterIP ai-api service Cluster IP
+    ## @param aiProxy.service.clusterIP aiProxy service Cluster IP
     ## e.g.:
     ## clusterIP: None
     ##
     clusterIP: ""
-    ## @param aiProxy.service.loadBalancerIP ai-api service Load Balancer IP
+    ## @param aiProxy.service.loadBalancerIP aiProxy service Load Balancer IP
     ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
     ##
     loadBalancerIP: ""
-    ## @param aiProxy.service.labelSelectorsOverride Selector for ai-api service
+    ## @param aiProxy.service.labelSelectorsOverride Selector for aiProxy service
     ##
     labelSelectorsOverride: {}
-    ## @param aiProxy.service.loadBalancerSourceRanges ai-api service Load Balancer sources
+    ## @param aiProxy.service.loadBalancerSourceRanges aiProxy service Load Balancer sources
     ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
     ## e.g:
     ## loadBalancerSourceRanges:
     ##   - 10.10.10.0/24
     ##
     loadBalancerSourceRanges: []
-    ## @param aiProxy.service.externalTrafficPolicy ai-api service external traffic policy
+    ## @param aiProxy.service.externalTrafficPolicy aiProxy service external traffic policy
     ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
     ##
     externalTrafficPolicy: Cluster
-    ## @param aiProxy.service.annotations Additional custom annotations for ai-api service
+    ## @param aiProxy.service.annotations Additional custom annotations for aiProxy service
     ##
     annotations: {}
-    ## @param aiProxy.service.extraPorts Extra ports to expose in ai-api service (normally used with the `sidecars` value)
+    ## @param aiProxy.service.extraPorts Extra ports to expose in aiProxy service (normally used with the `sidecars` value)
     ##
     extraPorts: []
