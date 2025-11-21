@@ -69,7 +69,6 @@ spec:
       dataObservatoryProjectId: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "dataObservatoryProjectId" "" | Base64Decode }}'
       ingressTestingMode: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
       onlyRunRouter: repl{{ if ConfigOptionEquals "enableIngressTestingMode" "1"}}truerepl{{ else }}falserepl{{ end }}
-      enableAiProxyEndpoint: repl{{ if ConfigOptionEquals "enableAiProxyEndpoint" "1"}}truerepl{{ else }}falserepl{{ end }}
       pubsubDomain: '{{repl fromJson (ConfigOption "valuesDerivedFromCartoPlatformEnvironment") | dig "pubsubDomain" "" | Base64Decode }}'
     # Customizations
     ## App Secrets
