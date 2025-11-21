@@ -612,6 +612,12 @@ spec:
           type: text
           when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
           default: "aiproxy"
+        - name: enableAiProxyEndpoint
+          title: Enable AI Proxy Endpoint
+          type: bool
+          hidden: true
+          when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
+          default: "1"
 
         ## Redis
         - name: externalRedisEnabled
