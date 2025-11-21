@@ -132,8 +132,8 @@ cartoConfigValues:
   featureFlagsOverrides: []
   ## @param cartoConfigValues.usePubSubRestApi Enable the usage of PubSub via REST API instead of gRPC.
   usePubSubRestApi: false
-  ## @param cartoConfigValues.enablellmProxyEndpoint Enable the llmProxy endpoint in the router.
-  enablellmProxyEndpoint: false
+  ## @param cartoConfigValues.enableAiProxyEndpoint Enable the aiProxy endpoint in the router.
+  enableAiProxyEndpoint: false
   ## @param cartoConfigValues.pubsubDomain PubSub domain to be used in the installation.
   pubsubDomain: ""
 
@@ -5141,7 +5141,7 @@ internalPostgresql:
 ## @param externalPostgresql.sslCA CA certificate in case CARTO Postgresql TLS cert it's selfsigned
 ## @param externalPostgresql.awsEksPodIdentityEnabled Enable EKS Pod Identity authentication for the external postgresql
 ## @param externalPostgresql.awsRdsRegion Region of the RDS PostgreSQL database in AWS. Needed when EKS Pod Identity is enabled
-## @param externalPostgresql.llmProxyDatabaseName Database name for llmProxy
+## @param externalPostgresql.aiProxyDatabaseName Database name for aiProxy
 ##
 externalPostgresql:
   host: localhost
@@ -5161,7 +5161,7 @@ externalPostgresql:
   sslCA: ""
   awsEksPodIdentityEnabled: false
   awsRdsRegion: ""
-  llmProxyDatabaseName: "llmproxy"
+  aiProxyDatabaseName: "aiproxy"
 
 ## @section External proxy configuration
 ## Configuration for an external proxy provided by the client. Only HTTP and HTTPS proxies are supported
@@ -5779,15 +5779,15 @@ aiApi:
     ##
     extraPorts: []
 
-## @section llmProxy Deployment Parameters
+## @section aiProxy Deployment Parameters
 ##
-llmProxy:
+aiProxy:
   ##
-  ## @param llmProxy.image.registry llmProxy image registry
-  ## @param llmProxy.image.repository llmProxy image repository
-  ## @param llmProxy.image.tag llmProxy image tag (immutable tags are recommended)
-  ## @param llmProxy.image.pullPolicy llmProxy image pull policy
-  ## @param llmProxy.image.pullSecrets llmProxy image pull secrets
+  ## @param aiProxy.image.registry aiProxy image registry
+  ## @param aiProxy.image.repository aiProxy image repository
+  ## @param aiProxy.image.tag aiProxy image tag (immutable tags are recommended)
+  ## @param aiProxy.image.pullPolicy aiProxy image pull policy
+  ## @param aiProxy.image.pullSecrets aiProxy image pull secrets
   image:
     registry: gcr.io/carto-onprem-artifacts
     repository: litellm
@@ -5806,21 +5806,21 @@ llmProxy:
     ##   - myRegistryKeySecretName
     ##
     pullSecrets: []
-  ## @param llmProxy.replicaCount Number of llmProxy replicas to deploy
+  ## @param aiProxy.replicaCount Number of aiProxy replicas to deploy
   ##
   replicaCount: 1
-  ## @param llmProxy.containerPorts.http llmProxy HTTP container port
+  ## @param aiProxy.containerPorts.http aiProxy HTTP container port
   ##
   containerPorts:
     http: 4000
-  ## Configure extra options for llmProxy containers' liveness and readiness probes
+  ## Configure extra options for aiProxy containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-  ## @param llmProxy.livenessProbe.enabled Enable livenessProbe on ai-api containers
-  ## @param llmProxy.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
-  ## @param llmProxy.livenessProbe.periodSeconds Period seconds for livenessProbe
-  ## @param llmProxy.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
-  ## @param llmProxy.livenessProbe.failureThreshold Failure threshold for livenessProbe
-  ## @param llmProxy.livenessProbe.successThreshold Success threshold for livenessProbe
+  ## @param aiProxy.livenessProbe.enabled Enable livenessProbe on aiProxy containers
+  ## @param aiProxy.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param aiProxy.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param aiProxy.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param aiProxy.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param aiProxy.livenessProbe.successThreshold Success threshold for livenessProbe
   ##
   livenessProbe:
     enabled: true
@@ -5829,12 +5829,12 @@ llmProxy:
     timeoutSeconds: 5
     successThreshold: 1
     failureThreshold: 5
-  ## @param llmProxy.readinessProbe.enabled Enable readinessProbe on ai-api containers
-  ## @param llmProxy.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
-  ## @param llmProxy.readinessProbe.periodSeconds Period seconds for readinessProbe
-  ## @param llmProxy.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
-  ## @param llmProxy.readinessProbe.failureThreshold Failure threshold for readinessProbe
-  ## @param llmProxy.readinessProbe.successThreshold Success threshold for readinessProbe
+  ## @param aiProxy.readinessProbe.enabled Enable readinessProbe on aiProxy containers
+  ## @param aiProxy.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param aiProxy.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param aiProxy.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param aiProxy.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param aiProxy.readinessProbe.successThreshold Success threshold for readinessProbe
   ##
   readinessProbe:
     enabled: true
@@ -5843,12 +5843,12 @@ llmProxy:
     timeoutSeconds: 5
     successThreshold: 1
     failureThreshold: 5
-  ## @param llmProxy.startupProbe.enabled Enable startupProbe on ai-api containers
-  ## @param llmProxy.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
-  ## @param llmProxy.startupProbe.periodSeconds Period seconds for startupProbe
-  ## @param llmProxy.startupProbe.timeoutSeconds Timeout seconds for startupProbe
-  ## @param llmProxy.startupProbe.failureThreshold Failure threshold for startupProbe
-  ## @param llmProxy.startupProbe.successThreshold Success threshold for startupProbe
+  ## @param aiProxy.startupProbe.enabled Enable startupProbe on aiProxy containers
+  ## @param aiProxy.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param aiProxy.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param aiProxy.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param aiProxy.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param aiProxy.startupProbe.successThreshold Success threshold for startupProbe
   ##
   startupProbe:
     enabled: false
@@ -5857,33 +5857,33 @@ llmProxy:
     timeoutSeconds: 5
     successThreshold: 1
     failureThreshold: 30
-  ## @param llmProxy.customLivenessProbe Custom livenessProbe that overrides the default one
+  ## @param aiProxy.customLivenessProbe Custom livenessProbe that overrides the default one
   ##
   customLivenessProbe: {}
-  ## @param llmProxy.customReadinessProbe Custom readinessProbe that overrides the default one
+  ## @param aiProxy.customReadinessProbe Custom readinessProbe that overrides the default one
   ##
   customReadinessProbe: {}
-  ## @param llmProxy.customStartupProbe Custom startupProbe that overrides the default one
+  ## @param aiProxy.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
-  ## llmProxy autoscaling configuration
+  ## aiProxy autoscaling configuration
   ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
-  ## @param llmProxy.autoscaling.enabled Enable autoscaling for the ai-api containers
-  ## @param llmProxy.autoscaling.minReplicas The minimal number of containers for the ai-api deployment
-  ## @param llmProxy.autoscaling.maxReplicas The maximum number of containers for the ai-api deployment
-  ## @param llmProxy.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in ai-api deployment
+  ## @param aiProxy.autoscaling.enabled Enable autoscaling for the aiProxy containers
+  ## @param aiProxy.autoscaling.minReplicas The minimal number of containers for the aiProxy deployment
+  ## @param aiProxy.autoscaling.maxReplicas The maximum number of containers for the aiProxy deployment
+  ## @param aiProxy.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in aiProxy deployment
   ##
   autoscaling:
     enabled: false
     minReplicas: 1
     maxReplicas: 3
     targetCPUUtilizationPercentage: 75
-  ## llmProxy resource requests and limits
+  ## aiProxy resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param llmProxy.resources.limits.memory Container memory limits in MiB
-  ## @param llmProxy.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @param llmProxy.resources.requests.memory Container memory requests in MiB
-  ## @param llmProxy.resources.requests.cpu Container cpu requests in milliCPU cores
+  ## @param aiProxy.resources.limits.memory Container memory limits in MiB
+  ## @param aiProxy.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param aiProxy.resources.requests.memory Container memory requests in MiB
+  ## @param aiProxy.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -5894,9 +5894,9 @@ llmProxy:
       cpu: "2000m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-  ## @param llmProxy.podSecurityContext.enabled Enabled ai-api pods' Security Context
-  ## @param llmProxy.podSecurityContext.fsGroup Set ai-api pod's Security Context fsGroup
-  ## @param llmProxy.podSecurityContext.supplementalGroups[0] Set ai-api pod's Security Context supplementalGroups
+  ## @param aiProxy.podSecurityContext.enabled Enabled aiProxy pods' Security Context
+  ## @param aiProxy.podSecurityContext.fsGroup Set aiProxy pod's Security Context fsGroup
+  ## @param aiProxy.podSecurityContext.supplementalGroups[0] Set aiProxy pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -5904,13 +5904,13 @@ llmProxy:
     supplementalGroups: [2345]
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-  ## @param llmProxy.containerSecurityContext.enabled Enabled ai-api containers' Security Context
-  ## @param llmProxy.containerSecurityContext.runAsUser Set ai-api containers' Security Context runAsUser
-  ## @param llmProxy.containerSecurityContext.runAsGroup Set ai-api containers' Security Context runAsGroup
-  ## @param llmProxy.containerSecurityContext.runAsNonRoot Set ai-api containers' Security Context runAsNonRoot
-  ## @param llmProxy.containerSecurityContext.allowPrivilegeEscalation Set ai-api containers' Security Context allowPrivilegeEscalation
-  ## @param llmProxy.containerSecurityContext.readOnlyRootFilesystem Set ai-api containers' Security Context readOnlyRootFilesystem
-  ## @param llmProxy.containerSecurityContext.capabilities.drop removes ai-api containers' Security Context capabilities
+  ## @param aiProxy.containerSecurityContext.enabled Enabled aiProxy containers' Security Context
+  ## @param aiProxy.containerSecurityContext.runAsUser Set aiProxy containers' Security Context runAsUser
+  ## @param aiProxy.containerSecurityContext.runAsGroup Set aiProxy containers' Security Context runAsGroup
+  ## @param aiProxy.containerSecurityContext.runAsNonRoot Set aiProxy containers' Security Context runAsNonRoot
+  ## @param aiProxy.containerSecurityContext.allowPrivilegeEscalation Set aiProxy containers' Security Context allowPrivilegeEscalation
+  ## @param aiProxy.containerSecurityContext.readOnlyRootFilesystem Set aiProxy containers' Security Context readOnlyRootFilesystem
+  ## @param aiProxy.containerSecurityContext.capabilities.drop removes aiProxy containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
@@ -5922,82 +5922,82 @@ llmProxy:
     capabilities:
       drop:
         - all
-  ## @param llmProxy.podDisruptionBudget.enabled defines disruption budget for ai-api
+  ## @param aiProxy.podDisruptionBudget.enabled defines disruption budget for aiProxy
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
-  ## @param llmProxy.podDisruptionBudget.minAvailable Minimum number of pods that must be available during the update
-  ## @param llmProxy.podDisruptionBudget.maxUnavailable Maximum number of pods that can be unavailable during the update
+  ## @param aiProxy.podDisruptionBudget.minAvailable Minimum number of pods that must be available during the update
+  ## @param aiProxy.podDisruptionBudget.maxUnavailable Maximum number of pods that can be unavailable during the update
   ##
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
     maxUnavailable: 0
-  ## @param llmProxy.terminationGracePeriodSeconds Time to wait before force killing the container
+  ## @param aiProxy.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 300
-  ## @param llmProxy.existingConfigMap The name of an existing ConfigMap with your custom configuration for ai-api
+  ## @param aiProxy.existingConfigMap The name of an existing ConfigMap with your custom configuration for aiProxy
   ##
   existingConfigMap: ""
-  ## @param llmProxy.existingSecret The name of an existing ConfigMap with your custom configuration for ai-api
+  ## @param aiProxy.existingSecret The name of an existing Secret with your custom configuration for aiProxy
   ##
   existingSecret: ""
-  ## @param llmProxy.command Override default container command (useful when using custom images)
+  ## @param aiProxy.command Override default container command (useful when using custom images)
   ##
   command: []
-  ## @param llmProxy.args Override default container args (useful when using custom images)
+  ## @param aiProxy.args Override default container args (useful when using custom images)
   ##
   args:
     []
-  ## @param llmProxy.hostAliases ai-api pods host aliases
+  ## @param aiProxy.hostAliases aiProxy pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
   ##
   hostAliases: []
-  ## @param llmProxy.podLabels Extra labels for ai-api pods
+  ## @param aiProxy.podLabels Extra labels for aiProxy pods
   ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
   ##
   podLabels: {}
-  ## @param llmProxy.podAnnotations Annotations for ai-api pods
+  ## @param aiProxy.podAnnotations Annotations for aiProxy pods
   ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
   ##
   podAnnotations: {}
-  ## @param llmProxy.podAffinityPreset Pod affinity preset. Ignored if `llmProxy.affinity` is set. Allowed values: `soft` or `hard`
+  ## @param aiProxy.podAffinityPreset Pod affinity preset. Ignored if `aiProxy.affinity` is set. Allowed values: `soft` or `hard`
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAffinityPreset: ""
-  ## @param llmProxy.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `llmProxy.affinity` is set. Allowed values: `soft` or `hard`
+  ## @param aiProxy.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `aiProxy.affinity` is set. Allowed values: `soft` or `hard`
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
   ##
   podAntiAffinityPreset: soft
-  ## Node.js llmProxy.affinity preset
+  ## Node.js aiProxy.affinity preset
   ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
   ##
   nodeAffinityPreset:
-    ## @param llmProxy.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `llmProxy.affinity` is set. Allowed values: `soft` or `hard`
+    ## @param aiProxy.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `aiProxy.affinity` is set. Allowed values: `soft` or `hard`
     ##
     type: ""
-    ## @param llmProxy.nodeAffinityPreset.key Node.js label key to match. Ignored if `llmProxy.affinity` is set
+    ## @param aiProxy.nodeAffinityPreset.key Node.js label key to match. Ignored if `aiProxy.affinity` is set
     ##
     key: ""
-    ## @param llmProxy.nodeAffinityPreset.values Node.js label values to match. Ignored if `llmProxy.affinity` is set
+    ## @param aiProxy.nodeAffinityPreset.values Node.js label values to match. Ignored if `aiProxy.affinity` is set
     ## E.g.
     ## values:
     ##   - e2e-az1
     ##   - e2e-az2
     ##
     values: []
-  ## @param llmProxy.affinity Affinity for ai-api pods assignment
+  ## @param aiProxy.affinity Affinity for aiProxy pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
-  ## NOTE: `llmProxy.podAffinityPreset`, `llmProxy.podAntiAffinityPreset`, and `llmProxy.nodeAffinityPreset` will be ignored when it's set
+  ## NOTE: `aiProxy.podAffinityPreset`, `aiProxy.podAntiAffinityPreset`, and `aiProxy.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param llmProxy.nodeSelector Node.js labels for ai-api pods assignment
+  ## @param aiProxy.nodeSelector Node.js labels for aiProxy pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
   nodeSelector: {}
-  ## @param llmProxy.tolerations Tolerations for ai-api pods assignment
+  ## @param aiProxy.tolerations Tolerations for aiProxy pods assignment
   ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
   tolerations: []
-  ## @param llmProxy.updateStrategy.type ai-api statefulset strategy type
+  ## @param aiProxy.updateStrategy.type aiProxy statefulset strategy type
   ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
   ##
   updateStrategy:
@@ -6005,36 +6005,36 @@ llmProxy:
     ## Can be set to RollingUpdate or OnDelete
     ##
     type: RollingUpdate
-  ## @param llmProxy.priorityClassName ai-api pods' priorityClassName
+  ## @param aiProxy.priorityClassName aiProxy pods' priorityClassName
   ##
   priorityClassName: ""
-  ## @param llmProxy.schedulerName Name of the k8s scheduler (other than default) for ai-api pods
+  ## @param aiProxy.schedulerName Name of the k8s scheduler (other than default) for aiProxy pods
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param llmProxy.lifecycleHooks for the ai-api container(s) to automate configuration before or after startup
+  ## @param aiProxy.lifecycleHooks for the aiProxy container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
-  ## @param llmProxy.extraEnvVars Array with extra environment variables to add to ai-api nodes ([More info](#additional-environment-variables))
+  ## @param aiProxy.extraEnvVars Array with extra environment variables to add to aiProxy nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
   ##   - name: FOO
   ##     value: "bar"
   ##
   extraEnvVars: []
-  ## @param llmProxy.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for ai-api nodes ([More info](#additional-environment-variables))
+  ## @param aiProxy.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for aiProxy nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsCM: ""
-  ## @param llmProxy.extraEnvVarsSecret Name of existing Secret containing extra env vars for ai-api nodes ([More info](#additional-environment-variables))
+  ## @param aiProxy.extraEnvVarsSecret Name of existing Secret containing extra env vars for aiProxy nodes ([More info](#additional-environment-variables))
   ##
   extraEnvVarsSecret: ""
-  ## @param llmProxy.extraVolumes Optionally specify extra list of additional volumes for the ai-api pod(s)
+  ## @param aiProxy.extraVolumes Optionally specify extra list of additional volumes for the aiProxy pod(s)
   ##
   extraVolumes: []
-  ## @param llmProxy.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the ai-api container(s)
+  ## @param aiProxy.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the aiProxy container(s)
   ##
   extraVolumeMounts: []
-  ## @param llmProxy.sidecars Add additional sidecar containers to the ai-api pod(s)
+  ## @param aiProxy.sidecars Add additional sidecar containers to the aiProxy pod(s)
   ## e.g:
   ## sidecars:
   ##   - name: your-image-name
@@ -6045,7 +6045,7 @@ llmProxy:
   ##         containerPort: 1234
   ##
   sidecars: {}
-  ## @param llmProxy.initContainers Add additional init containers to the ai-api pod(s)
+  ## @param aiProxy.initContainers Add additional init containers to the aiProxy pod(s)
   ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
   ## e.g:
   ## initContainers:
@@ -6055,49 +6055,49 @@ llmProxy:
   ##    command: ['sh', '-c', 'echo "hello world"']
   ##
   initContainers: {}
-  ## @section ai-api Service Parameters
+  ## @section aiProxy Service Parameters
   ##
   ##
   service:
-    ## @param llmProxy.service.type ai-api service type
+    ## @param aiProxy.service.type aiProxy service type
     ##
     type: ClusterIP
-    ## @param llmProxy.service.ports.http ai-api service HTTP port
+    ## @param aiProxy.service.ports.http aiProxy service HTTP port
     ##
     ports:
       http: 80
     ## Node.js ports to expose
-    ## @param llmProxy.service.nodePorts.http Node.js port for HTTP
+    ## @param aiProxy.service.nodePorts.http Node.js port for HTTP
     ## NOTE: choose port between <30000-32767>
     ##
     nodePorts:
       http: ""
-    ## @param llmProxy.service.clusterIP ai-api service Cluster IP
+    ## @param aiProxy.service.clusterIP aiProxy service Cluster IP
     ## e.g.:
     ## clusterIP: None
     ##
     clusterIP: ""
-    ## @param llmProxy.service.loadBalancerIP ai-api service Load Balancer IP
+    ## @param aiProxy.service.loadBalancerIP aiProxy service Load Balancer IP
     ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
     ##
     loadBalancerIP: ""
-    ## @param llmProxy.service.labelSelectorsOverride Selector for ai-api service
+    ## @param aiProxy.service.labelSelectorsOverride Selector for aiProxy service
     ##
     labelSelectorsOverride: {}
-    ## @param llmProxy.service.loadBalancerSourceRanges ai-api service Load Balancer sources
+    ## @param aiProxy.service.loadBalancerSourceRanges aiProxy service Load Balancer sources
     ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
     ## e.g:
     ## loadBalancerSourceRanges:
     ##   - 10.10.10.0/24
     ##
     loadBalancerSourceRanges: []
-    ## @param llmProxy.service.externalTrafficPolicy ai-api service external traffic policy
+    ## @param aiProxy.service.externalTrafficPolicy aiProxy service external traffic policy
     ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
     ##
     externalTrafficPolicy: Cluster
-    ## @param llmProxy.service.annotations Additional custom annotations for ai-api service
+    ## @param aiProxy.service.annotations Additional custom annotations for aiProxy service
     ##
     annotations: {}
-    ## @param llmProxy.service.extraPorts Extra ports to expose in ai-api service (normally used with the `sidecars` value)
+    ## @param aiProxy.service.extraPorts Extra ports to expose in aiProxy service (normally used with the `sidecars` value)
     ##
     extraPorts: []
