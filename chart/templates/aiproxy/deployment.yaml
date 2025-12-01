@@ -184,7 +184,7 @@ spec:
             - name: tmp-dir
               mountPath: /tmp
             - name: ui-static-files
-              mountPath: /app/litellm/proxy/_experimental/out
+              mountPath: /usr/lib/python3.13/site-packages/litellm/proxy/_experimental/out
             {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
             - name: postgresql-ssl-ca
               mountPath: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
