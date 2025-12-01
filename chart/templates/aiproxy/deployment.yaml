@@ -183,6 +183,8 @@ spec:
               mountPath: /app/.cache/prisma
             - name: tmp-dir
               mountPath: /tmp
+            - name: ui-static-files
+              mountPath: /app/litellm/proxy/_experimental/out
             {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
             - name: postgresql-ssl-ca
               mountPath: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
@@ -205,6 +207,8 @@ spec:
         - name: prisma-cache
           emptyDir: {}
         - name: tmp-dir
+          emptyDir: {}
+        - name: ui-static-files
           emptyDir: {}
         {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
         - name: postgresql-ssl-ca
