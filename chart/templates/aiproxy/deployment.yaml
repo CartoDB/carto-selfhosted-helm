@@ -69,6 +69,29 @@ spec:
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
+        - name: copy-ui-files
+          image: {{ template "carto.aiProxy.image" . }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Copying UI files to writable volume..."
+              UI_SRC=$(python3 -c "import litellm; import os; print(os.path.join(os.path.dirname(litellm.__file__), 'proxy/_experimental/out'))")
+              echo "Source: $UI_SRC"
+              echo "Destination: /ui-writable/"
+
+              if [ -d "$UI_SRC" ] && [ "$(ls -A $UI_SRC)" ]; then
+                cp -rv "$UI_SRC"/* /ui-writable/
+                echo "UI files copied successfully"
+                ls -la /ui-writable/ | head -20
+              else
+                echo "WARNING: Source directory empty or not found"
+              fi
+          volumeMounts:
+            - name: ui-static-files
+              mountPath: /ui-writable
+          {{- if .Values.aiProxy.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.aiProxy.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
         {{- if .Values.aiProxy.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.initContainers "context" $) | nindent 8 }}
         {{- end }}
