@@ -93,13 +93,6 @@ runs:
         gsutil -h "Cache-Control:public,max-age=180,s-maxage=30" cp packages-selfhosted-charts/index.yaml "gs://${CHARTS_BUCKET}"
 
 
-    - name: Create release-changes channel
-      if: inputs.trigger-action = 
-      shell: bash
-      env:
-        REPLICATED_APP: carto
-        REPLICATED_API_TOKEN: ${{ inputs.replicated-api-token }}
-
     # Step 7: Upload to Replicated
     - name: Upload release to Replicated
       shell: bash
