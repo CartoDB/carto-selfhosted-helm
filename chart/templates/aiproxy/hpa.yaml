@@ -1,11 +1,11 @@
-{{- if and (.Values.appConfigValues.aiFeaturesEnabled) (.Values.llmProxy.autoscaling.enabled) }}
+{{- if and (.Values.appConfigValues.aiFeaturesEnabled) (.Values.aiProxy.autoscaling.enabled) }}
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ template "carto.llmProxy.fullname" . }}
+  name: {{ template "carto.aiProxy.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: llmproxy
+    app.kubernetes.io/component: aiproxy
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
@@ -13,11 +13,11 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  minReplicas: {{ .Values.llmProxy.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.llmProxy.autoscaling.maxReplicas }}
+  minReplicas: {{ .Values.aiProxy.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.aiProxy.autoscaling.maxReplicas }}
   scaleTargetRef:
     apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
     kind: Deployment
-    name: {{ template "carto.llmProxy.fullname" . }}
-  targetCPUUtilizationPercentage: {{ .Values.llmProxy.autoscaling.targetCPUUtilizationPercentage }}
+    name: {{ template "carto.aiProxy.fullname" . }}
+  targetCPUUtilizationPercentage: {{ .Values.aiProxy.autoscaling.targetCPUUtilizationPercentage }}
 {{- end }} 

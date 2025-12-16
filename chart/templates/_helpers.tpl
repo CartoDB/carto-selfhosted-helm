@@ -243,6 +243,16 @@ Create the name of the service account to use for Carto common deployments to co
 {{- end -}}
 
 {{/*
+Check if any Pod Identity feature is enabled
+Returns "true" if any Pod Identity feature is enabled, empty string otherwise
+*/}}
+{{- define "carto.podIdentity.enabled" -}}
+{{- if or .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity .Values.externalPostgresql.awsEksPodIdentityEnabled .Values.appConfigValues.awsEksPodIdentityBucketsEnabled -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto lds-api full name
 */}}
 {{- define "carto.ldsApi.fullname" -}}
@@ -887,7 +897,7 @@ Return the proper Carto tenant-requirements-checker image name
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.llmProxy.image) "context" $) -}}
+{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.aiProxy.image) "context" $) -}}
 {{- end -}}
 
 {{/*
@@ -1384,45 +1394,45 @@ Create aiApi Node options
 {{- end -}}
 
 {{/*
-Create a default fully qualified llmProxy name.
+Create a default fully qualified aiProxy name.
 */}}
-{{- define "carto.llmProxy.fullname" -}}
-{{- printf "%s-llmproxy" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{/* 
-Create carto Image full name for llmProxy
-*/}}
-{{- define "carto.llmProxy.image" -}}
-{{- include "carto.images.image" (dict "imageRoot" .Values.llmProxy.image "global" .Values.global "Chart" .Chart) -}}
+{{- define "carto.aiProxy.fullname" -}}
+{{- printf "%s-aiproxy" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
-Create the name of the llmProxy configmap
+Create carto Image full name for aiProxy
 */}}
-{{- define "carto.llmProxy.configmapName" -}}
-{{- if .Values.llmProxy.existingConfigMap -}}
-{{- .Values.llmProxy.existingConfigMap -}}
+{{- define "carto.aiProxy.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.aiProxy.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Create the name of the aiProxy configmap
+*/}}
+{{- define "carto.aiProxy.configmapName" -}}
+{{- if .Values.aiProxy.existingConfigMap -}}
+{{- .Values.aiProxy.existingConfigMap -}}
 {{- else -}}
-{{- include "carto.llmProxy.fullname" . -}}
+{{- include "carto.aiProxy.fullname" . -}}
 {{- end -}}
 {{- end -}}
 
 {{/*
-Create the name of the llmProxy secret
+Create the name of the aiProxy secret
 */}}
-{{- define "carto.llmProxy.secretName" -}}
-{{- if .Values.llmProxy.existingSecret -}}
-{{- .Values.llmProxy.existingSecret -}}
+{{- define "carto.aiProxy.secretName" -}}
+{{- if .Values.aiProxy.existingSecret -}}
+{{- .Values.aiProxy.existingSecret -}}
 {{- else -}}
-{{- include "carto.llmProxy.fullname" . -}}
+{{- include "carto.aiProxy.fullname" . -}}
 {{- end -}}
 {{- end -}}
 
 {{/*
-Return the llmProxy database ssl mode
+Return the aiProxy database ssl mode
 */}}
-{{- define "carto.llmProxy.databaseSslMode" -}}
+{{- define "carto.aiProxy.databaseSslMode" -}}
 {{- if .Values.externalPostgresql.sslEnabled -}}
 require
 {{- else -}}
@@ -1431,15 +1441,15 @@ disable
 {{- end -}}
 
 {{/*
-Return the llmProxy master key checksum
+Return the aiProxy master key checksum
 */}}
-{{- define "carto.llmProxy.masterKeyChecksum" -}}
+{{- define "carto.aiProxy.masterKeyChecksum" -}}
 {{- .Values.cartoSecrets.litellmMasterKey.value | sha256sum -}}
 {{- end -}}
 
 {{/*
-Return the llmProxy salt key checksum
+Return the aiProxy salt key checksum
 */}}
-{{- define "carto.llmProxy.saltKeyChecksum" -}}
+{{- define "carto.aiProxy.saltKeyChecksum" -}}
 {{- .Values.cartoSecrets.litellmSaltKey.value | sha256sum -}}
 {{- end -}}

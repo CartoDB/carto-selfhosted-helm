@@ -1,0 +1,225 @@
+{{- if and (.Values.appConfigValues.aiFeaturesEnabled) (not .Values.cartoConfigValues.onlyRunRouter) }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.aiProxy.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: aiproxy
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.aiProxy.replicaCount }}
+  {{- if .Values.aiProxy.updateStrategy }}
+  strategy: {{- toYaml .Values.aiProxy.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: aiproxy
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/aiproxy/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/aiproxy/secret.yaml") . | sha256sum }}
+        checksum/masterKeyChecksum: {{ include "carto.aiProxy.masterKeyChecksum" . | sha256sum }}
+        checksum/saltKeyChecksum: {{ include "carto.aiProxy.saltKeyChecksum" . | sha256sum }}
+        checksum/postgresql-password: {{ include "carto.postgresql.passwordChecksum" . }}
+        checksum/redis-password: {{ include "carto.redis.passwordChecksum" . }}
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+        {{- if .Values.aiProxy.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: aiproxy
+        {{- if .Values.aiProxy.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.aiProxy.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.aiProxy.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.aiProxy.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.aiProxy.podAffinityPreset "component" "aiproxy" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.aiProxy.podAntiAffinityPreset "component" "aiproxy" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.aiProxy.nodeAffinityPreset.type "key" .Values.aiProxy.nodeAffinityPreset.key "values" .Values.aiProxy.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.aiProxy.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.aiProxy.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.aiProxy.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.aiProxy.priorityClassName }}
+      priorityClassName: {{ .Values.aiProxy.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.aiProxy.schedulerName }}
+      schedulerName: {{ .Values.aiProxy.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.aiProxy.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.aiProxy.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if not .Values.diagnosticMode.enabled }}
+      initContainers:
+        {{- if .Values.aiProxy.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.aiProxy.terminationGracePeriodSeconds }}
+      containers:
+        - name: aiproxy
+          image: {{ template "carto.aiProxy.image" . }}
+          imagePullPolicy: {{ .Values.aiProxy.image.pullPolicy }}
+          {{- if .Values.aiProxy.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.aiProxy.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.aiProxy.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.aiProxy.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.args "context" $) | nindent 12 }}
+          {{- end }}
+          env:
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ include "carto.postgresql.secret.key" . }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.redis.secretName" . }}
+                  key: {{ include "carto.redis.existingsecret.key" . }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+                "LITELLM_MASTER_KEY"
+                "LITELLM_SALT_KEY"
+                "OPENAI_API_KEY"
+                "GEMINI_API_KEY"
+                "LITELLM_JWT_SECRET"
+             ) "context" $ ) | nindent 12 }}
+            {{- if .Values.aiProxy.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "carto.aiProxy.configmapName" . }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+                "LITELLM_MASTER_KEY"
+                "LITELLM_SALT_KEY"
+                "OPENAI_API_KEY"
+                "GEMINI_API_KEY"
+                "LITELLM_JWT_SECRET"
+             ) "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.aiProxy.secretName" . }}
+            {{- end }}
+            {{- if .Values.aiProxy.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.aiProxy.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.aiProxy.resources }}
+          resources: {{- toYaml .Values.aiProxy.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.aiProxy.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.aiProxy.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.aiProxy.livenessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health/liveliness
+              port: http
+              httpHeaders:
+                - name: Authorization
+                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
+          {{- else if .Values.aiProxy.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.aiProxy.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.aiProxy.readinessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health/readiness
+              port: http
+              httpHeaders:
+                - name: Authorization
+                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
+          {{- else if .Values.aiProxy.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.aiProxy.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.aiProxy.startupProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /health/liveliness
+              port: http
+              httpHeaders:
+                - name: Authorization
+                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
+          {{- else if .Values.aiProxy.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.aiProxy.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: prisma-cache
+              mountPath: /app/.cache/prisma
+            - name: tmp-dir
+              mountPath: /tmp
+            {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
+            - name: postgresql-ssl-ca
+              mountPath: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
+              subPath: {{ include "carto.postgresql.configMapMountFilename" . }}
+              readOnly: true
+            {{- end }}
+            {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
+            - name: proxy-ssl-ca
+              mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+            {{- if .Values.aiProxy.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+        {{- if .Values.aiProxy.sidecars }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        # Required for read-only filesystem
+        - name: prisma-cache
+          emptyDir: {}
+        - name: tmp-dir
+          emptyDir: {}
+        {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
+        - name: postgresql-ssl-ca
+          configMap:
+            name: {{ include "carto.postgresql.configMapName" . }}
+            items:
+              - key: {{ include "carto.postgresql.configMapMountFilename" . }}
+                path: {{ include "carto.postgresql.configMapMountFilename" . }}
+        {{- end }}
+        {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
+        - name: proxy-ssl-ca
+          configMap:
+            name: {{ include "carto.proxy.configMapName" . }}
+        {{- end }}
+        {{- if .Values.aiProxy.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+{{- end }}

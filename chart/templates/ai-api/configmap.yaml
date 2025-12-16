@@ -14,9 +14,9 @@ metadata:
   {{- end }}
 data:
   AI_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
-  # AI_OPENAI_ENDPOINT points to llmProxy proxy service, not directly to OpenAI
-  # llmProxy acts as a unified gateway that can route to various AI providers
-  AI_OPENAI_ENDPOINT: "http://{{ include "carto.llmProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}/v1"
+  # AI_OPENAI_ENDPOINT points to aiProxy proxy service, not directly to OpenAI
+  # aiProxy acts as a unified gateway that can route to various AI providers
+  AI_OPENAI_ENDPOINT: "http://{{ include "carto.aiProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}/v1"
   AI_SQL_API_URL: "http://{{ include "carto.mapsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   AI_LDS_API_URL: "http://{{ include "carto.ldsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   AI_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
@@ -27,6 +27,7 @@ data:
   CARTO_TRACING_MODE: "local"
   {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
+  EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
@@ -35,6 +36,9 @@ data:
   https_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
   GRPC_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   grpc_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
+  {{- end }}
   {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
@@ -46,6 +50,9 @@ data:
   {{- end }}
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   NODE_OPTIONS: {{ template "carto.aiApi.nodeOptions" . }}
+  PUBSUB_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.pubsubDomain | quote }}
+  PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  PUBSUB_USE_REST_API: {{ .Values.cartoConfigValues.usePubSubRestApi | quote }}
   REDIS_CACHE_PREFIX: "onprem"
   REDIS_HOST: {{ include "carto.redis.host" . | quote }}
   REDIS_PORT: {{ include "carto.redis.port" . | quote }}
@@ -53,7 +60,7 @@ data:
   {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
   REDIS_TLS_CA: {{ .Values.externalRedis.tlsCA | quote }}
   {{- end }}
-  WORKSPACE_LITELLM_BASE_URL: "http://{{ include "carto.llmProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+  WORKSPACE_LITELLM_BASE_URL: "http://{{ include "carto.aiProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   WORKSPACE_POSTGRES_DB: {{ include "carto.postgresql.databaseName" . | quote }}
   WORKSPACE_POSTGRES_HOST: {{ include "carto.postgresql.host" . | quote }}
   WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . | quote }}

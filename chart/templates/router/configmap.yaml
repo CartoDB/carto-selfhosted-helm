@@ -25,8 +25,8 @@ data:
   NGINX_PROXY_BUSY_BUFFERS_SIZE: {{ .Values.router.nginxConfig.proxy_busy_buffers_size | quote }}
   {{- if .Values.appConfigValues.aiFeaturesEnabled }}
   ROUTER_AI_API_INTERNAL_URL: {{ include "carto.aiApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
-  ROUTER_AI_ENABLE_LLMPROXY_ENDPOINT: {{ .Values.cartoConfigValues.enablellmProxyEndpoint | quote }}
-  ROUTER_AI_LLMPROXY_INTERNAL_URL: {{ include "carto.llmProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+  ROUTER_AI_ENABLE_AIPROXY_ENDPOINT: {{ .Values.cartoConfigValues.enableAiProxyEndpoint | quote }}
+  ROUTER_AI_AIPROXY_INTERNAL_URL: {{ include "carto.aiProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   {{- end }}
   PUBSUB_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.pubsubDomain | quote }}
   ROUTER_ACCOUNTS_WWW_INTERNAL_URL: {{ include "carto.accountsWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}

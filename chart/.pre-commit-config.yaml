@@ -65,6 +65,8 @@ repos:
           print_status "Generating Helm README..."
           
           # Run the helm-readme-generator
+          # Use pipefail to ensure we get the exit code from docker, not from indent_grey
+          set -o pipefail
           if docker run --rm \
               -v "$(pwd)/$CHART_DIR:/my_helm" \
               -w /my_helm \
@@ -72,6 +74,7 @@ repos:
               readme-generator \
               --readme README.md \
               --values values.yaml 2>&1 | indent_grey; then
+              set +o pipefail
               
               print_warning "README.md has been updated!"
               
@@ -88,6 +91,7 @@ repos:
                   exit 1
               fi
           else
+              set +o pipefail
               print_error "Failed to generate README.md. Please check the error messages above."
               exit 1
           fi
