@@ -92,12 +92,12 @@ spec:
           args: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.args "context" $) | nindent 12 }}
           {{- end }}
           env:
-            - name: DATABASE_PASSWORD
+            - name: LITELLM_DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.key" . }}
-            - name: REDIS_PASSWORD
+            - name: LITELLM_REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "carto.redis.secretName" . }}
@@ -105,7 +105,7 @@ spec:
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
                 "LITELLM_MASTER_KEY"
                 "LITELLM_SALT_KEY"
-                "OPENAI_API_KEY"
+                "LITELLM_OPENAI_API_KEY"
                 "GEMINI_API_KEY"
                 "LITELLM_JWT_SECRET"
              ) "context" $ ) | nindent 12 }}
@@ -118,7 +118,7 @@ spec:
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
                 "LITELLM_MASTER_KEY"
                 "LITELLM_SALT_KEY"
-                "OPENAI_API_KEY"
+                "LITELLM_OPENAI_API_KEY"
                 "GEMINI_API_KEY"
                 "LITELLM_JWT_SECRET"
              ) "context" $ ) -}}
