@@ -82,7 +82,6 @@ LITELLM_JWT_SECRET: cartoSecrets.jwtApiSecret
 LITELLM_MASTER_KEY: cartoSecrets.litellmMasterKey
 LITELLM_SALT_KEY: cartoSecrets.litellmSaltKey
 AI_OPENAI_API_KEY: cartoSecrets.litellmMasterKey
-OPENAI_API_KEY: cartoSecrets.openAiApiKey
 LITELLM_OPENAI_API_KEY: cartoSecrets.openAiApiKey
 GEMINI_API_KEY: cartoSecrets.geminiApiKey
 {{- end -}}
