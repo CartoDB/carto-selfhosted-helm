@@ -150,14 +150,29 @@ spec:
           {{- if .Values.sqlWorker.resources }}
           resources: {{- toYaml .Values.sqlWorker.resources | nindent 12 }}
           {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.sqlWorker.containerPorts.http }}
           {{- if not .Values.diagnosticMode.enabled }}
-          {{- if .Values.sqlWorker.customLivenessProbe }}
+          {{- if .Values.sqlWorker.livenessProbe.enabled }}
+          livenessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.sqlWorker.livenessProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
+          {{- else if .Values.sqlWorker.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.sqlWorker.customReadinessProbe }}
+          {{- if .Values.sqlWorker.readinessProbe.enabled }}
+          readinessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.sqlWorker.readinessProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
+          {{- else if .Values.sqlWorker.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.sqlWorker.customStartupProbe }}
+          {{- if .Values.sqlWorker.startupProbe.enabled }}
+          startupProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.sqlWorker.startupProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
+          {{- else if .Values.sqlWorker.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- end }}

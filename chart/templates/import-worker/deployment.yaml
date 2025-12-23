@@ -153,14 +153,29 @@ spec:
           {{- if .Values.importWorker.resources }}
           resources: {{- toYaml .Values.importWorker.resources | nindent 12 }}
           {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.importWorker.containerPorts.http }}
           {{- if not .Values.diagnosticMode.enabled }}
-          {{- if .Values.importWorker.customLivenessProbe }}
+          {{- if .Values.importWorker.livenessProbe.enabled }}
+          livenessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.importWorker.livenessProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
+          {{- else if .Values.importWorker.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.importWorker.customReadinessProbe }}
+          {{- if .Values.importWorker.readinessProbe.enabled }}
+          readinessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.importWorker.readinessProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
+          {{- else if .Values.importWorker.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.importWorker.customStartupProbe }}
+          {{- if .Values.importWorker.startupProbe.enabled }}
+          startupProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.importWorker.startupProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
+          {{- else if .Values.importWorker.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- end }}
