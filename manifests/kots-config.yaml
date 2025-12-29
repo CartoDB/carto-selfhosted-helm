@@ -369,6 +369,7 @@ spec:
             - name: accessToCartoModeK8sDefault
               title: |-
                 Default Access
+              when: '{{repl not ConfigOptionEquals "platformDistribution" "aks" }}'
             - name: accessToCartoModeK8sCustom
               title: |-
                 Custom
