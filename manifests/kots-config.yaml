@@ -251,7 +251,7 @@ spec:
             repl{{    $_ := set $result "gatewayClassName" "gke-l7-global-external-managed" }}
             repl{{ else if eq $k8sDistribution "aks" }}
             repl{{    $_ := set $result "name" "unsupported" }}
-            repl{{    $_ := set $result "title" "AKS does not support Default Access mode. Please select Custom mode to configure your own Load Balancer and TLS certificates." }}
+            repl{{    $_ := set $result "title" "AKS Load Balancer - Only Custom mode is supported" }}
             repl{{ else if eq $k8sDistribution "eks" }}
             repl{{    $_ := set $result "name" "routerLoadBalancerEKS" }}
             repl{{    $_ := set $result "title" "AWS EKS LoadBalancer" }}
