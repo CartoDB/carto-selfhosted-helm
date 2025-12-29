@@ -252,6 +252,9 @@ spec:
             repl{{ else if eq $k8sDistribution "eks" }}
             repl{{    $_ := set $result "name" "routerLoadBalancerEKS" }}
             repl{{    $_ := set $result "title" "AWS EKS LoadBalancer" }}
+            repl{{ else if eq $k8sDistribution "aks" }}
+            repl{{    $_ := set $result "name" "unsupported" }}
+            repl{{    $_ := set $result "title" "AKS does not support Default Access mode with managed certificates. Please select 'Custom' mode to configure your own Load Balancer and TLS certificates." }}
             repl{{ else }}
             repl{{    $_ := set $result "name" "unsupported" }}
             repl{{    $_ := set $result "title" (print "ERROR: No Load Balancer supported for your kubernetes platform, " $k8sDistribution) }}
@@ -268,7 +271,7 @@ spec:
         - name: isK8sFullyImplementedPlatform
           title: Kubernetes Platform
           when: &when_is_k8s_fully_implemented_platform >-
-            {{repl $result := or (eq Distribution "gke") (eq Distribution "eks") -}}
+            {{repl $result := or (eq Distribution "gke") (eq Distribution "eks") (eq Distribution "aks") -}}
             {{repl $result -}}
           hidden: true
           type: text
@@ -284,7 +287,7 @@ spec:
         - name: isK8sNotFullyImplementedPlatform
           title: Not supported Kubernetes Platform
           when: &when_is_k8s_NOT_fully_implemented_platform >-
-            {{repl $result := not (or (eq Distribution "gke") (eq Distribution "eks") (eq Distribution "embedded-cluster")) -}}
+            {{repl $result := not (or (eq Distribution "gke") (eq Distribution "eks") (eq Distribution "aks") (eq Distribution "embedded-cluster")) -}}
             {{repl $result -}}
           hidden: true
           type: text
@@ -319,6 +322,14 @@ spec:
             {{repl $result := and $cond1 $cond2 -}}
             {{repl $result -}}
           default: *when_gcp_managed_ssl_certs
+        - name: isAksPlatform
+          title: AKS Platform
+          when: &when_is_aks_platform >-
+            {{repl $result := (eq Distribution "aks") -}}
+            {{repl $result -}}
+          hidden: true
+          type: text
+          default: *when_is_aks_platform
         - name: cartoRouterHTTPSEnabled
           type: text
           hidden: true
@@ -361,6 +372,7 @@ spec:
             How do you want to access to your Self-Hosted?
           type: select_one
           when: *when_is_k8s_fully_implemented_platform
+          default: '{{repl if (ConfigOptionEquals "isAksPlatform" "true") }}accessToCartoModeK8sCustom{{repl else }}accessToCartoModeK8sDefault{{repl end }}'
           required: true
           items:
             - name: accessToCartoModeK8sDefault
@@ -431,7 +443,6 @@ spec:
           type: text
           required: true
           help_text: The Certificate ARN in format arn:aws:acm:<REGION>:<AWS_ACCOUNT>:certificate/<CERTIFICATE_ID>
-
         # Static IP
         - name: accessToCartoGCPStaticIPName
           type: text
