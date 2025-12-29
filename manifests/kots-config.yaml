@@ -378,7 +378,7 @@ spec:
           type: label
           title: |-
             AKS does not support Default Access mode. Please select Custom Access mode to configure your own TLS certificates.
-          when: '{{repl ConfigOptionEquals "platformDistribution" "aks" }}'
+          when: '{{repl and (ConfigOptionEquals "platformDistribution" "aks") (not (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom")) }}'
         - name: accessToCartoModeK8sDefaultLabel
           type: label
           when: '{{repl and (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") (not (ConfigOptionEquals "platformDistribution" "aks")) }}'
