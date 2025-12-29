@@ -322,14 +322,6 @@ spec:
             {{repl $result := and $cond1 $cond2 -}}
             {{repl $result -}}
           default: *when_gcp_managed_ssl_certs
-        - name: isAksPlatform
-          title: AKS Platform
-          when: &when_is_aks_platform >-
-            {{repl $result := (eq Distribution "aks") -}}
-            {{repl $result -}}
-          hidden: true
-          type: text
-          default: *when_is_aks_platform
         - name: cartoRouterHTTPSEnabled
           type: text
           hidden: true
@@ -372,12 +364,6 @@ spec:
             How do you want to access to your Self-Hosted?
           type: select_one
           when: *when_is_k8s_fully_implemented_platform
-          default: |-
-            repl{{- if ConfigOptionEquals "isAksPlatform" "true" -}}
-            accessToCartoModeK8sCustom
-            repl{{- else -}}
-            accessToCartoModeK8sDefault
-            repl{{- end -}}
           required: true
           items:
             - name: accessToCartoModeK8sDefault
