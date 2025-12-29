@@ -386,7 +386,7 @@ spec:
             We will deploy an external Load Balancer to access to your Carto Self-Hosted environment.
         - name: accessToCartoModeK8sCustomLabel
           type: label
-          when: '{{repl (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom")}}'
+          when: '{{repl and (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") (not (ConfigOptionEquals "platformDistribution" "aks")) }}'
           title: |-
             You should create and configure your own Load Balancer and connect it to the CARTO router service.
         # Embedded Cluster
