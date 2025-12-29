@@ -362,8 +362,9 @@ spec:
           title: &accessToCartoModeK8sTitle Self-Hosted access mode
           help_text: &accessToCartoModeK8sHelpText |-
             How do you want to access to your Self-Hosted?
-          type: select_one
+          type: radio
           when: *when_is_k8s_fully_implemented_platform
+          default: accessToCartoModeK8sCustom
           required: true
           items:
             - name: accessToCartoModeK8sDefault
@@ -373,11 +374,11 @@ spec:
             - name: accessToCartoModeK8sCustom
               title: |-
                 Custom
-            - name: AKS warning
-              type: label
-              title: |-
-                AKS does not support Default Access mode. Please select Custom Access mode to configure your own TLS certificates.
-              when: '{{repl ConfigOptionEquals "platformDistribution" "aks" }}'
+        - name: AKS warning
+          type: label
+          title: |-
+            AKS does not support Default Access mode. Please select Custom Access mode to configure your own TLS certificates.
+          when: '{{repl ConfigOptionEquals "platformDistribution" "aks" }}'
         - name: accessToCartoModeK8sDefaultLabel
           type: label
           when: '{{repl and (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") (not (ConfigOptionEquals "platformDistribution" "aks")) }}'
