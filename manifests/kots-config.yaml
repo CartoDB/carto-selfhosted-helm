@@ -249,6 +249,9 @@ spec:
             repl{{    $_ := set $result "name" "routerLoadBalancerGKE" }}
             repl{{    $_ := set $result "title" "GCP GKE LoadBalancer" }}
             repl{{    $_ := set $result "gatewayClassName" "gke-l7-global-external-managed" }}
+            repl{{ else if eq $k8sDistribution "aks" }}
+            repl{{    $_ := set $result "name" "unsupported" }}
+            repl{{    $_ := set $result "title" "AKS Load Balancer - Only Custom mode is supported" }}
             repl{{ else if eq $k8sDistribution "eks" }}
             repl{{    $_ := set $result "name" "routerLoadBalancerEKS" }}
             repl{{    $_ := set $result "title" "AWS EKS LoadBalancer" }}
@@ -268,7 +271,7 @@ spec:
         - name: isK8sFullyImplementedPlatform
           title: Kubernetes Platform
           when: &when_is_k8s_fully_implemented_platform >-
-            {{repl $result := or (eq Distribution "gke") (eq Distribution "eks") -}}
+            {{repl $result := or (eq Distribution "gke") (eq Distribution "eks") (eq Distribution "aks") -}}
             {{repl $result -}}
           hidden: true
           type: text
@@ -284,7 +287,7 @@ spec:
         - name: isK8sNotFullyImplementedPlatform
           title: Not supported Kubernetes Platform
           when: &when_is_k8s_NOT_fully_implemented_platform >-
-            {{repl $result := not (or (eq Distribution "gke") (eq Distribution "eks") (eq Distribution "embedded-cluster")) -}}
+            {{repl $result := not (or (ConfigOptionEquals "isK8sFullyImplementedPlatform" "true") (ConfigOptionEquals "isEmbeddedCluster" "true")) -}}
             {{repl $result -}}
           hidden: true
           type: text
@@ -359,24 +362,31 @@ spec:
           title: &accessToCartoModeK8sTitle Self-Hosted access mode
           help_text: &accessToCartoModeK8sHelpText |-
             How do you want to access to your Self-Hosted?
-          type: select_one
+          type: radio
           when: *when_is_k8s_fully_implemented_platform
+          default: accessToCartoModeK8sCustom
           required: true
           items:
             - name: accessToCartoModeK8sDefault
               title: |-
                 Default Access
+              when: '{{repl not ConfigOptionEquals "platformDistribution" "aks" }}'
             - name: accessToCartoModeK8sCustom
               title: |-
                 Custom
+        - name: AKS warning
+          type: label
+          title: |-
+            AKS does not support Default Access mode. Please select Custom Access mode to configure your own TLS certificates.
+          when: '{{repl and (ConfigOptionEquals "platformDistribution" "aks") (not (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom")) }}'
         - name: accessToCartoModeK8sDefaultLabel
           type: label
-          when: '{{repl (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") }}'
+          when: '{{repl and (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sDefault") (not (ConfigOptionEquals "platformDistribution" "aks")) }}'
           title: |-
             We will deploy an external Load Balancer to access to your Carto Self-Hosted environment.
         - name: accessToCartoModeK8sCustomLabel
           type: label
-          when: '{{repl (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") }}'
+          when: '{{repl and (ConfigOptionEquals "accessToCartoModeK8s" "accessToCartoModeK8sCustom") (not (ConfigOptionEquals "platformDistribution" "aks")) }}'
           title: |-
             You should create and configure your own Load Balancer and connect it to the CARTO router service.
         # Embedded Cluster
