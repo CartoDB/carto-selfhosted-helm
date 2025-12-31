@@ -20,6 +20,9 @@ data:
   AI_SQL_API_URL: "http://{{ include "carto.mapsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   AI_LDS_API_URL: "http://{{ include "carto.ldsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   AI_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+  AI_API_PUBLIC_URL_ALLOWED_HOSTS: {{ .Values.appConfigValues.selfHostedDomain | quote }}
+  AI_API_PUBLIC_URL_HOST: {{ .Values.appConfigValues.selfHostedDomain | quote }}
+  AI_API_PUBLIC_URL_TEMPLATE: 'https://${host}/api${path}'
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
