@@ -51,6 +51,7 @@ data:
   WAREHOUSE_PROVIDERS_DATABRICKS_REST: "true"
   WAREHOUSE_PROVIDERS_DATABRICKS_WAREHOUSE: "true"
   WAREHOUSE_PROVIDERS_FABRIC: "true"
+  WAREHOUSE_PROVIDERS_ORACLE: "true"
   {{- if .Values.appConfigValues.ssoOrganizationId }}
   REACT_APP_ORGANIZATION_ID: {{ .Values.appConfigValues.ssoOrganizationId }}
   {{- end }}
