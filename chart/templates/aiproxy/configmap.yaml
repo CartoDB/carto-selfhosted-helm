@@ -40,7 +40,7 @@ data:
   LITELLM_DATABASE_SSL_MODE: {{ include "carto.aiProxy.databaseSslMode" . | quote }}
   LITELLM_DATABASE_SSL_CA_PATH: {{ include "carto.postgresql.configMapMountAbsolutePath" . | quote }}
   LITELLM_LOG_LEVEL: {{ ternary "DEBUG" "INFO" (eq .Values.appConfigValues.logLevel "debug") | quote }}
-  LITELLM_MIGRATION_DIR: "/tmp/prisma/migrations"
+  LITELLM_MIGRATION_DIR: "/app/migrations"
   LITELLM_MODE: "PRODUCTION"
   LITELLM_REDIS_DB: "1"
   LITELLM_REDIS_HOST: {{ include "carto.redis.host" . | quote }}
@@ -49,13 +49,11 @@ data:
   LITELLM_VERTEXAI_PROJECT: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   LITELLM_VERTEXAI_LOCATION: {{ .Values.cartoConfigValues.selfHostedGcpProjectRegion | quote }}
   LITELLM_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  LITELLM_NON_ROOT: true
-  LITELLM_APP_MIGRATIONS_DIR: "/app/migrations"
+  LITELLM_NON_ROOT: "true"
   SERVER_ROOT_PATH: "/litellm"
   {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
   # aiproxy python httpx requirement
   SSL_CERT_FILE: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
-  XDG_CACHE_HOME: "/app/.cache/prisma"
-  NPM_CONFIG_CACHE: "/tmp/.npm"
+  XDG_CACHE_HOME: "/app/cache"
 {{- end }} 
