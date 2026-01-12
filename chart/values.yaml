@@ -118,6 +118,8 @@ cartoConfigValues:
   selfHostedGcpProjectId: ""
   ## @param cartoConfigValues.selfHostedTenantId CARTO internal tenantId used in the installation.
   selfHostedTenantId: ""
+  ## @param cartoConfigValues.selfHostedGcpProjectRegion GCP project region used in the installation.
+  selfHostedGcpProjectRegion: ""
   ## @param cartoConfigValues.launchDarklyClientSideId LaunchDarkly ClientSideId (by www) used to enable/disable features.
   launchDarklyClientSideId: ""
   ## @param cartoConfigValues.cartoDataWarehouseEnabled Enable the CARTO Data Warehouse for the self-hosted.

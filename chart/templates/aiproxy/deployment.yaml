@@ -179,10 +179,15 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: prisma-cache
-              mountPath: /app/.cache/prisma
-            - name: tmp-dir
-              mountPath: /tmp
+            {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+            - name: gcp-default-service-account-key
+              mountPath: {{ include "carto.google.secretMountDir" . }}
+              readOnly: true
+            {{- end }}
+            - name: app-cache
+              mountPath: /app/cache
+            - name: app-migrations
+              mountPath: /app/migrations
             {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
             - name: postgresql-ssl-ca
               mountPath: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
@@ -201,10 +206,18 @@ spec:
         {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
+        {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: {{ include "carto.google.secretName" . }}
+            items:
+              - key: {{ include "carto.google.secretKey" . }}
+                path: {{ include "carto.google.secretMountFilename" . }}
+        {{- end }}
         # Required for read-only filesystem
-        - name: prisma-cache
+        - name: app-cache
           emptyDir: {}
-        - name: tmp-dir
+        - name: app-migrations
           emptyDir: {}
         {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
         - name: postgresql-ssl-ca
