@@ -17,12 +17,9 @@ data:
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
   AI_API_URL: "http://{{ include "carto.aiApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
-  DATABASE_HOST: {{ include "carto.postgresql.host" . | quote }}
-  DATABASE_USERNAME: {{ include "carto.postgresql.user" . | quote }}
-  DATABASE_NAME: {{ .Values.externalPostgresql.aiProxyDatabaseName | quote }}
-  DATABASE_PORT: {{ include "carto.postgresql.port" . | quote }}
-  DATABASE_SSL_MODE: {{ include "carto.aiProxy.databaseSslMode" . | quote }}
-  DATABASE_SSL_CA_PATH: {{ include "carto.postgresql.configMapMountAbsolutePath" . | quote }}
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . | quote }}
+  {{- end }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
@@ -36,22 +33,27 @@ data:
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
   {{- end }}
+  LITELLM_DATABASE_HOST: {{ include "carto.postgresql.host" . | quote }}
+  LITELLM_DATABASE_USERNAME: {{ include "carto.postgresql.user" . | quote }}
+  LITELLM_DATABASE_NAME: {{ .Values.externalPostgresql.aiProxyDatabaseName | quote }}
+  LITELLM_DATABASE_PORT: {{ include "carto.postgresql.port" . | quote }}
+  LITELLM_DATABASE_SSL_MODE: {{ include "carto.aiProxy.databaseSslMode" . | quote }}
+  LITELLM_DATABASE_SSL_CA_PATH: {{ include "carto.postgresql.configMapMountAbsolutePath" . | quote }}
   LITELLM_LOG_LEVEL: {{ ternary "DEBUG" "INFO" (eq .Values.appConfigValues.logLevel "debug") | quote }}
-  LITELLM_MIGRATION_DIR: "/tmp/prisma/migrations"
+  LITELLM_MIGRATION_DIR: "/app/migrations"
   LITELLM_MODE: "PRODUCTION"
+  LITELLM_REDIS_DB: "1"
+  LITELLM_REDIS_HOST: {{ include "carto.redis.host" . | quote }}
+  LITELLM_REDIS_PORT: {{ include "carto.redis.port" . | quote }}
+  LITELLM_REDIS_TLS_ENABLED: {{ .Values.externalRedis.tlsEnabled | quote }}
+  LITELLM_VERTEXAI_PROJECT: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  LITELLM_VERTEXAI_LOCATION: {{ .Values.cartoConfigValues.selfHostedGcpProjectRegion | quote }}
   LITELLM_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  PRISMA_BINARY_CACHE_DIR: "/tmp/prisma-cache"
-  PRISMA_CLI_CACHE_DIR: "/tmp/prisma-cache"
-  PRISMA_HOME: "/tmp/prisma-cache"
-  PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: "1"
-  REDIS_DB: "1"
-  REDIS_HOST: {{ include "carto.redis.host" . | quote }}
-  REDIS_PORT: {{ include "carto.redis.port" . | quote }}
+  LITELLM_NON_ROOT: "true"
   SERVER_ROOT_PATH: "/litellm"
   {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
   # aiproxy python httpx requirement
   SSL_CERT_FILE: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
-  XDG_CACHE_HOME: "/app/.cache/prisma"
-  NPM_CONFIG_CACHE: "/tmp/.npm"
+  XDG_CACHE_HOME: "/app/cache"
 {{- end }} 
