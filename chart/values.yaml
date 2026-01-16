@@ -5941,7 +5941,7 @@ aiProxy:
       cpu: "2000m"
     requests:
       memory: "4096Mi"
-      cpu: "2000m"
+      cpu: "500m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param aiProxy.podSecurityContext.enabled Enabled aiProxy pods' Security Context
