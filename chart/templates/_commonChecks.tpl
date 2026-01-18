@@ -12,6 +12,7 @@ Return common collectors for preflights and support-bundle
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
         {{- end }}
         restartPolicy: Never
+        {{- include "carto.imagePullSecrets" . | nindent 8 }}
         securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
         initContainers:
           - name: init-tenant-requirements-check
@@ -254,7 +255,12 @@ Return common collectors for preflights and support-bundle
       imagePullSecret:
         name: carto-registry
       images:
+        {{ if not .Values.global.imageRegistry }}
+        - {{ template "carto.tenantRequirementsChecker.image" . }}
+        {{ else }}
         - {{ template "carto.accountsWww.image" . }}
+        - {{ template "carto.aiApi.image" . }}
+        - {{ template "carto.aiProxy.image" . }}
         - {{ template "carto.cdnInvalidatorSub.image" . }}
         - {{ template "carto.httpCache.image" . }}
         - {{ template "carto.importApi.image" . }}
@@ -262,13 +268,17 @@ Return common collectors for preflights and support-bundle
         - {{ template "carto.ldsApi.image" . }}
         - {{ template "carto.mapsApi.image" . }}
         - {{ template "carto.notifier.image" . }}
+        - {{ template "carto.redis.image" . }}
         - {{ template "carto.router.image" . }}
+        - {{ template "carto.routerMetrics.image" . }}
         - {{ template "carto.sqlWorker.image" . }}
+        - {{ template "carto.tenantRequirementsChecker.image" . }}
+        - {{ template "carto.upgradeCheck.image" . }}
         - {{ template "carto.workspaceApi.image" . }}
         - {{ template "carto.workspaceMigrations.image" . }}
         - {{ template "carto.workspaceSubscriber.image" . }}
         - {{ template "carto.workspaceWww.image" . }}
-        - {{ template "carto.tenantRequirementsChecker.image" . }}
+        {{ end }}
 {{- end -}}
 
 {{/*
@@ -277,11 +287,11 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
 */}}
 {{- define "carto.replicated.commonChecks.analyzers" }}
   {{- $preflightsDict := dict
-      "WorkspaceDatabaseValidator" (list "Check_database_connection" "Check_database_encoding" "Check_user_has_right_permissions" "Check_database_version") 
+      "WorkspaceDatabaseValidator" (list "Check_database_connection" "Check_database_encoding" "Check_user_has_right_permissions" "Check_database_version")
       "ServiceAccountValidator" (list "Check_valid_service_account")
       "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket")
-      "EgressRequirementsValidator" (list "Check_CARTO_Auth_connectivity" "Check_PubSub_connectivity" "Check_Google_Storage_connectivity" "Check_release_channels_connectivity" "Check_Google_Storage_connectivity" "Check_CARTO_images_registry_connectivity" "Check_TomTom_connectivity" "Check_TravelTime_connectivity")
-      "PubSubValidator" (list "Check_publish_and_listen_to_topic")
+      "EgressRequirementsValidator" (list "Check_CARTO_Auth_connectivity" "Check_PubSub_connectivity" "Check_Google_Storage_connectivity" "Check_release_channels_connectivity" "Check_CARTO_images_registry_connectivity" "Check_BigQuery_connectivity" "Check_TomTom_connectivity" "Check_TravelTime_connectivity" "Check_LaunchDarkly_connectivity")
+      "PubSubValidator" (list "Check_publish_and_listen_to_topic" "Check_publish_and_listen_to_topic_via_REST_API")
   }}
   
   {{/* Add optional analyzers to the preflightsDict */}}
@@ -321,6 +331,23 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   {{- if not .Values.internalRedis.enabled }}
   {{- $_ := set $preflightsDict "RedisValidator" (list "Check_redis_connection") }}
   {{- end }}
+  {{/* First, check if each validator was skipped due to failed dependencies */}}
+  {{- range $preflight, $preflightChecks := $preflightsDict }}
+  - jsonCompare:
+      checkName: {{ $preflight | replace "Validator" "" }} (skipped)
+      fileName: tenant-requirements-check/tenant-requirements-check.log
+      path: "{{ $preflight }}.{{ $preflight }}.status"
+      value: |
+        "skipped"
+      outcomes:
+        - warn:
+            when: "true"
+            message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflight }}"
+        - pass:
+            when: "false"
+            message: "Validator was not skipped"
+  {{- end }}
+  {{/* Then check individual preflight checks */}}
   {{- range $preflight, $preflightChecks  := $preflightsDict }}
   {{- range $preflightCheckName := $preflightChecks }}
   - jsonCompare:
@@ -341,7 +368,7 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
         - fail:
             when: "false"
             message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
-      {{- end }}  
+      {{- end }}
   {{- end }}
   {{- end }}
   {{/*
@@ -364,6 +391,10 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   */}}
   {{- if ne .Values.replicated.platformDistribution "" }}
   - clusterVersion:
+      docString: |
+        CARTO Self-Hosted requires Kubernetes 1.29.0 or later.
+        Recommended version: 1.30.0 or later for optimal performance and security patches.
+        Reference: https://docs.carto.com/carto-self-hosted/requirements
       outcomes:
         - fail:
             when: "< 1.29.0"
@@ -376,6 +407,9 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
         - pass:
             message: Your cluster meets the recommended and required versions of Kubernetes.
   - containerRuntime:
+      docString: |
+        CARTO Self-Hosted requires containerd as the container runtime.
+        Other runtimes (Docker, CRI-O) are not supported.
       outcomes:
         - pass:
             when: "== containerd"
@@ -383,6 +417,14 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
         - fail:
             message: Did not find containerd container runtime.
   - distribution:
+      docString: |
+        CARTO Self-Hosted supports the following Kubernetes distributions:
+        - Amazon EKS
+        - Google GKE
+        - Azure AKS
+        - OpenShift
+        - Replicated Embedded Cluster (single VM)
+        Local development clusters (Docker Desktop, minikube, MicroK8s) and DigitalOcean are not supported.
       outcomes:
         - fail:
             when: "== docker-desktop"
@@ -416,6 +458,9 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
             message: Unable to determine the distribution of Kubernetes.
   - nodeResources:
       checkName: The cluster should contain at least 6 cores
+      docString: |
+        CARTO Self-Hosted requires a minimum of 6 CPU cores across the cluster.
+        This requirement can be ignored if cluster autoscaling is enabled.
       outcomes:
         - fail:
             when: "sum(cpuCapacity) < 6"
@@ -423,18 +468,25 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
         - pass:
             message: There are at least 6 cores in the cluster.
   - nodeResources:
-      checkName: The cluster should contain at least 16 Gi of RAM memory
+      checkName: The cluster should contain at least 32 Gi of RAM memory
+      docString: |
+        CARTO Self-Hosted requires a minimum of 32 GiB of allocatable memory across the cluster.
+        This requirement can be ignored if cluster autoscaling is enabled.
       outcomes:
         - fail:
-            when: "sum(memoryAllocatable) < 16Gi"
+            when: "sum(memoryAllocatable) < 32Gi"
             message: The cluster must contain at least 16Gi of RAM memory. ➡️ Ignore if you have auto-scale enabled in your cluster.
         - pass:
-            message: There are at least 16 Gi in the cluster.
+            message: There are at least 32 GiB of RAM memory in the cluster.
   {{- end }}
   {{- if .Values.gateway.enabled }}
   - customResourceDefinition:
       checkName: Gateway API available
       customResourceDefinitionName: gateways.gateway.networking.k8s.io
+      docString: |
+        CARTO Self-Hosted requires the Kubernetes Gateway API when gateway mode is enabled.
+        Install Gateway API CRDs before deploying CARTO.
+        Reference: https://gateway-api.sigs.k8s.io/guides/#installing-gateway-api
       outcomes:
         - fail:
             message: Gateway API is not enabled for your cluster. Please enable it to continue.
