@@ -290,17 +290,14 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
       "WorkspaceDatabaseValidator" (list "Check_database_connection" "Check_database_encoding" "Check_user_has_right_permissions" "Check_database_version")
       "ServiceAccountValidator" (list "Check_valid_service_account")
       "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket")
-      "EgressRequirementsValidator" (list "Check_CARTO_Auth_connectivity" "Check_PubSub_connectivity" "Check_Google_Storage_connectivity" "Check_release_channels_connectivity" "Check_CARTO_images_registry_connectivity" "Check_BigQuery_connectivity" "Check_TomTom_connectivity" "Check_TravelTime_connectivity" "Check_LaunchDarkly_connectivity")
+      "EgressRequirementsValidator" (list "Check_CARTO_Auth_connectivity" "Check_PubSub_connectivity" "Check_Google_Storage_connectivity" "Check_release_channels_connectivity" "Check_CARTO_images_registry_connectivity" "Check_BigQuery_connectivity" "Check_TomTom_connectivity" "Check_TravelTime_connectivity" )
       "PubSubValidator" (list "Check_publish_and_listen_to_topic" "Check_publish_and_listen_to_topic_via_REST_API")
   }}
-  
   {{/* Add optional analyzers to the preflightsDict */}}
-
   {{- $preflightOptionalList := list
       "Check_TravelTime_connectivity"
       "Check_TomTom_connectivity"
   }}
-
   {{/*
   We push conditionally new analyzers for the feature flags if the customer defined overridden feature flags
   */}}
@@ -333,8 +330,9 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   {{- end }}
   {{/* First, check if each validator was skipped due to failed dependencies */}}
   {{- range $preflight, $preflightChecks := $preflightsDict }}
+  {{- range $preflightCheckName := $preflightChecks }}
   - jsonCompare:
-      checkName: {{ $preflight | replace "Validator" "" }} (skipped)
+      checkName: {{ $preflightCheckName | replace "_" " " }} (skipped)
       fileName: tenant-requirements-check/tenant-requirements-check.log
       path: "{{ $preflight }}.{{ $preflight }}.status"
       value: |
@@ -346,6 +344,7 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
         - pass:
             when: "false"
             message: "Validator was not skipped"
+  {{- end }}
   {{- end }}
   {{/* Then check individual preflight checks */}}
   {{- range $preflight, $preflightChecks  := $preflightsDict }}
