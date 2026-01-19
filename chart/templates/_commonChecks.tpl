@@ -288,12 +288,35 @@ Return common analyzers for preflights and support-bundle.
 NOTE: Remember that with the ingress testing mode the components are not deployed, so take it into account when adding a new preflight!!
 */}}
 {{- define "carto.replicated.commonChecks.analyzers" }}
+  {{/* Build Preflight Checks conditionals */}}
+  {{/* Build EgressRequirementsValidator checks list */}}
+  {{- $egressChecks := list
+      "Check_CARTO_Auth_connectivity"
+      "Check_PubSub_connectivity"
+      "Check_Google_Storage_connectivity"
+      "Check_release_channels_connectivity"
+      "Check_CARTO_images_registry_connectivity"
+      "Check_BigQuery_connectivity"
+      "Check_TomTom_connectivity"
+      "Check_TravelTime_connectivity"
+  }}
+  {{- if .Values.cartoSecrets.launchDarklySdkKey.value }}
+  {{- $egressChecks = append $egressChecks "Check_LaunchDarkly_connectivity" }}
+  {{- end }}
+  {{/* Build PubSubValidator checks list */}}
+  {{- $pubSubChecks := list
+      "Check_publish_and_listen_to_topic"
+  }}
+  {{- if .Values.cartoConfigValues.usePubSubRestApi }}
+  {{- $pubSubChecks = append $pubSubChecks "Check_publish_and_listen_to_topic_via_REST_API" }}
+  {{- end }}
+  {{/* Assemble the preflights dict */}}
   {{- $preflightsDict := dict
       "WorkspaceDatabaseValidator" (list "Check_database_connection" "Check_database_encoding" "Check_user_has_right_permissions" "Check_database_version")
       "ServiceAccountValidator" (list "Check_valid_service_account")
       "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket")
-      "EgressRequirementsValidator" (list "Check_CARTO_Auth_connectivity" "Check_PubSub_connectivity" "Check_Google_Storage_connectivity" "Check_release_channels_connectivity" "Check_CARTO_images_registry_connectivity" "Check_BigQuery_connectivity" "Check_TomTom_connectivity" "Check_TravelTime_connectivity" )
-      "PubSubValidator" (list "Check_publish_and_listen_to_topic" "Check_publish_and_listen_to_topic_via_REST_API")
+      "EgressRequirementsValidator" $egressChecks
+      "PubSubValidator" $pubSubChecks
   }}
   {{/* Add optional analyzers to the preflightsDict */}}
   {{- $preflightOptionalList := list
