@@ -353,25 +353,6 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   {{- if not .Values.internalRedis.enabled }}
   {{- $_ := set $preflightsDict "RedisValidator" (list "Check_redis_connection") }}
   {{- end }}
-  {{/* First, check if each validator was skipped due to failed dependencies */}}
-  {{- range $preflight, $preflightChecks := $preflightsDict }}
-  {{- range $preflightCheckName := $preflightChecks }}
-  - jsonCompare:
-      checkName: {{ $preflightCheckName | replace "_" " " }} (skipped)
-      fileName: tenant-requirements-check/tenant-requirements-check.log
-      path: "{{ $preflight }}.{{ $preflight }}.status"
-      value: |
-        "skipped"
-      outcomes:
-        - warn:
-            when: "true"
-            message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflight }}"
-        - pass:
-            when: "false"
-            message: "Validator was not skipped"
-  {{- end }}
-  {{- end }}
-  {{/* Then check individual preflight checks */}}
   {{- range $preflight, $preflightChecks  := $preflightsDict }}
   {{- range $preflightCheckName := $preflightChecks }}
   - jsonCompare:
