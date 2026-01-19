@@ -474,7 +474,7 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
       outcomes:
         - fail:
             when: "sum(memoryAllocatable) < 32Gi"
-            message: The cluster must contain at least 16Gi of RAM memory. ➡️ Ignore if you have auto-scale enabled in your cluster.
+            message: The cluster must contain at least 32Gi of RAM memory. ➡️ Ignore if you have auto-scale enabled in your cluster.
         - pass:
             message: There are at least 32 GiB of RAM memory in the cluster.
   {{- end }}
