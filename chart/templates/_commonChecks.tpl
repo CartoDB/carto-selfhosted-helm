@@ -429,7 +429,7 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
         - Azure AKS
         - OpenShift
         - Replicated Embedded Cluster (single VM)
-        Local development clusters (Docker Desktop, minikube, MicroK8s) and DigitalOcean are not supported.
+        Local development clusters (Docker Desktop, Minikube, MicroK8s) and DigitalOcean are not supported.
       outcomes:
         - fail:
             when: "== docker-desktop"
