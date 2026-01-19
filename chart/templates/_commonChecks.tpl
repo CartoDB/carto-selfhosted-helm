@@ -259,8 +259,10 @@ Return common collectors for preflights and support-bundle
         - {{ template "carto.tenantRequirementsChecker.image" . }}
         {{ else }}
         - {{ template "carto.accountsWww.image" . }}
+        {{ if .Values.appConfigValues.aiFeaturesEnabled }}
         - {{ template "carto.aiApi.image" . }}
         - {{ template "carto.aiProxy.image" . }}
+        {{ end }}
         - {{ template "carto.cdnInvalidatorSub.image" . }}
         - {{ template "carto.httpCache.image" . }}
         - {{ template "carto.importApi.image" . }}
