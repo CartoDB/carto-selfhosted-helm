@@ -15,7 +15,8 @@ stringData:
     spec:
       collectors:
         - clusterResources:
-            exclude: true
+            namespaces:
+                - {{ .Release.Namespace }}
     {{- include "carto.replicated.commonChecks.collectors" . | indent 6 }}
       analyzers:
     {{- include "carto.replicated.commonChecks.analyzers" . | indent 6 }}
