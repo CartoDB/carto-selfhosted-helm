@@ -413,7 +413,7 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   We only can run the following preflight checks and get the platform distribution when a cluster role is created.
   Otherwise, we cannot obtain this info
   */}}
-  {{- if ne .Values.replicated.platformDistribution "" }}
+  {{- if .Values.replicated.platformDistribution }}
   - clusterVersion:
       docString: |
         CARTO Self-Hosted requires Kubernetes 1.29.0 or later.
