@@ -428,7 +428,7 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
         - Google GKE
         - Azure AKS
         - OpenShift
-        - Replicated Embedded Cluster (single VM)
+        - Single VM (Embedded Cluster)
         Local development clusters (Docker Desktop, minikube, MicroK8s) and DigitalOcean are not supported.
       outcomes:
         - fail:
