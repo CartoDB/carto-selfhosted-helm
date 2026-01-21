@@ -5549,6 +5549,14 @@ gateway:
     type: NamedAddress
   ## @param gateway.annotations Additional annotations for the gateway resource.
   annotations: {}
+  ## @param gateway.timeouts.request Total request timeout for HTTPRoute (native Gateway API, works on EKS)
+  timeouts:
+    request: 300s
+  ## @param gateway.backendPolicy.enabled Enable cloud provider-specific backend policy (auto-detects: GCPBackendPolicy for GKE, RoutePolicy for AKS)
+  ## @param gateway.backendPolicy.timeoutSec Backend timeout in seconds (applied via cloud-specific policy based on replicated.platformDistribution)
+  backendPolicy:
+    enabled: true
+    timeoutSec: 300
 
 ## @section ai-api Deployment Parameters
 ##
