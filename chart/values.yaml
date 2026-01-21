@@ -1042,7 +1042,7 @@ importApi:
   args:
     [
       "-c",
-      "node ./tsconfig-paths-bootstrap.js dist/import-api/scripts/ready-to-run.js && exec node -r ./tsconfig-paths-bootstrap.js dist/import-api/index.js",
+      "node dist/import-api/scripts/ready-to-run.js && exec node dist/import-api/index.js",
     ]
   ## @param importApi.hostAliases import-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
@@ -1359,7 +1359,7 @@ importWorker:
   args:
     [
       "-c",
-      "node -r ./tsconfig-paths-bootstrap.js dist/import-api/subscriber/index.js",
+      "node dist/import-api/subscriber/index.js",
     ]
   ## @param importWorker.hostAliases import-worker pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
@@ -1642,7 +1642,7 @@ ldsApi:
   args:
     [
       "-c",
-      "node ./tsconfig-paths-bootstrap.js dist/lds-api/scripts/ready-to-run.js && exec node -r ./tsconfig-paths-bootstrap.js dist/lds-api/index.js",
+      "node dist/lds-api/scripts/ready-to-run.js && exec node dist/lds-api/index.js",
     ]
   ## @param ldsApi.hostAliases lds-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
@@ -1971,7 +1971,7 @@ mapsApi:
   args:
     [
       "-c",
-      "node ./tsconfig-paths-bootstrap.js dist/maps-api/scripts/ready-to-run.js && exec node -r ./tsconfig-paths-bootstrap.js dist/maps-api/index.js",
+      "node dist/maps-api/scripts/ready-to-run.js && exec node dist/maps-api/index.js",
     ]
   ## @param mapsApi.hostAliases maps-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
@@ -2279,7 +2279,7 @@ sqlWorker:
   args:
     [
       "-c",
-      "node ./tsconfig-paths-bootstrap.js dist/maps-api/scripts/ready-to-run.js && exec node -r ./tsconfig-paths-bootstrap.js dist/maps-api/subscriber/index.js",
+      "node dist/maps-api/scripts/ready-to-run.js && exec node dist/maps-api/subscriber/index.js",
     ]
   ## @param sqlWorker.hostAliases sql-worker pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
@@ -3653,7 +3653,7 @@ cdnInvalidatorSub:
   args:
     [
       "-c",
-      "node -r ./tsconfig-paths-bootstrap.js dist/consumers/cdn-invalidator-sub/index.js",
+      "node dist/consumers/cdn-invalidator-sub/index.js",
     ]
   ## @param cdnInvalidatorSub.hostAliases cdnInvalidatorSub pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
@@ -3985,7 +3985,7 @@ workspaceApi:
   args:
     [
       "-c",
-      "node ./tsconfig-paths-bootstrap.js dist/workspace-api/scripts/ready-to-run.js && exec node -r ./tsconfig-paths-bootstrap.js dist/workspace-api/index.js",
+      "node dist/workspace-api/scripts/ready-to-run.js && exec node dist/workspace-api/index.js",
     ]
   ## @param workspaceApi.hostAliases workspace-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
@@ -4302,7 +4302,7 @@ workspaceSubscriber:
   args:
     [
       "-c",
-      "node ./tsconfig-paths-bootstrap.js dist/workspace-api/scripts/ready-to-run.js && exec node -r ./tsconfig-paths-bootstrap.js dist/workspace-api/subscriber/index.js",
+      "node dist/workspace-api/scripts/ready-to-run.js && exec node dist/workspace-api/subscriber/index.js",
     ]
   ## @param workspaceSubscriber.hostAliases workspace-subscriber pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
