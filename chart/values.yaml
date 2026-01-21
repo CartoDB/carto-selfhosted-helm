@@ -1230,6 +1230,54 @@ importWorker:
   ## @param importWorker.replicaCount Number of import-worker replicas to deploy
   ##
   replicaCount: 1
+  ## @param importWorker.containerPorts.http import-worker HTTP container port
+  ##
+  containerPorts:
+    http: 8012
+  ## Configure extra options for import-worker containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param importWorker.livenessProbe.enabled Enable livenessProbe on import-worker containers
+  ## @param importWorker.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param importWorker.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param importWorker.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param importWorker.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param importWorker.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param importWorker.readinessProbe.enabled Enable readinessProbe on import-worker containers
+  ## @param importWorker.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param importWorker.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param importWorker.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param importWorker.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param importWorker.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param importWorker.startupProbe.enabled Enable startupProbe on import-worker containers
+  ## @param importWorker.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param importWorker.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param importWorker.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param importWorker.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param importWorker.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
   ## @param importWorker.customLivenessProbe Custom livenessProbe that overrides the default one
   ##
   customLivenessProbe: {}
@@ -2117,6 +2165,10 @@ sqlWorker:
   ## @param sqlWorker.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
   defaultNodeProcessMaxOldSpace: 1536
+  ## @param sqlWorker.containerPorts.http sql-worker HTTP container port
+  ##
+  containerPorts:
+    http: 8013
   ## Configure extra options for sqlWorker containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param sqlWorker.livenessProbe.enabled Enable livenessProbe on sqlWorker containers
@@ -3475,7 +3527,7 @@ cdnInvalidatorSub:
   ## @param cdnInvalidatorSub.containerPorts.http cdnInvalidatorSub HTTP container port
   ##
   containerPorts:
-    http: 3000
+    http: 8014
   ## @param cdnInvalidatorSub.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
   nodeProcessMaxOldSpacePercentage: 75
@@ -3492,8 +3544,8 @@ cdnInvalidatorSub:
   ## @param cdnInvalidatorSub.livenessProbe.successThreshold Success threshold for livenessProbe
   ##
   livenessProbe:
-    enabled: false
-    initialDelaySeconds: 10
+    enabled: true
+    initialDelaySeconds: 30
     periodSeconds: 30
     timeoutSeconds: 5
     successThreshold: 1
@@ -3506,8 +3558,8 @@ cdnInvalidatorSub:
   ## @param cdnInvalidatorSub.readinessProbe.successThreshold Success threshold for readinessProbe
   ##
   readinessProbe:
-    enabled: false
-    initialDelaySeconds: 10
+    enabled: true
+    initialDelaySeconds: 30
     periodSeconds: 30
     timeoutSeconds: 5
     successThreshold: 1

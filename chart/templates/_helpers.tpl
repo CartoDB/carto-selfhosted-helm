@@ -1453,3 +1453,15 @@ Return the aiProxy salt key checksum
 {{- define "carto.aiProxy.saltKeyChecksum" -}}
 {{- .Values.cartoSecrets.litellmSaltKey.value | sha256sum -}}
 {{- end -}}
+
+{{/*
+HTTP Get health check probe
+*/}}
+{{- define "carto.healthCheckProbe" -}}
+httpGet:
+  path: /health
+  port: http
+  httpHeaders:
+    - name: Carto-Monitoring
+      value: "True"
+{{- end -}}

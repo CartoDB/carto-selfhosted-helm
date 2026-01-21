@@ -156,35 +156,23 @@ spec:
               containerPort: {{ .Values.importApi.containerPorts.http }}
           {{- if not .Values.diagnosticMode.enabled }}
           {{- if .Values.importApi.livenessProbe.enabled }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.livenessProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /health
-              port: http
-              httpHeaders:
-                - name: Carto-Monitoring
-                  value: "True"
+          livenessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.livenessProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
           {{- else if .Values.importApi.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.importApi.readinessProbe.enabled }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.readinessProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /health
-              port: http
-              httpHeaders:
-                - name: Carto-Monitoring
-                  value: "True"
+          readinessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.readinessProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
           {{- else if .Values.importApi.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.importApi.startupProbe.enabled }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.startupProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /health
-              port: http
-              httpHeaders:
-                - name: Carto-Monitoring
-                  value: "True"
+          startupProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.startupProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
           {{- else if .Values.importApi.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
