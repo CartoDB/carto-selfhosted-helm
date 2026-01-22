@@ -1,0 +1,224 @@
+# CARTO Selfhosted Architecture
+# Clean layout with minimal connections
+# Shows hybrid architecture: self-hosted tenant + CARTO Cloud 
+
+direction: down
+
+# =============================================================================
+# STYLING
+# =============================================================================
+
+*.style.font-size: 12
+
+# =============================================================================
+# USERS
+# =============================================================================
+
+users: "Users" {
+  shape: person
+  width: 60
+  height: 60
+}
+
+# =============================================================================
+# MAIN LAYOUT (side by side containers)
+# =============================================================================
+
+main: "" {
+  style.stroke: transparent
+  style.fill: transparent
+  direction: right
+
+  # ----- LEFT: CARTO Cloud  -----
+  carto_cloud: "CARTO Cloud " {
+    style.fill: "#EDE7F6"
+    style.stroke: "#7B1FA2"
+    style.stroke-dash: 3
+    width: 180
+
+    auth0: "Auth0" {
+      icon: https://www.vectorlogo.zone/logos/auth0/auth0-icon.svg
+      label: "SSO / OAuth"
+    }
+    accounts_api: "Accounts API" {
+      icon: https://raw.githubusercontent.com/kubernetes/community/master/icons/svg/resources/labeled/pod.svg
+      label: "accounts.carto.com"
+    }
+    event_bus: "Event Bus" {
+      icon: https://icons.terrastruct.com/gcp%2FProducts%20and%20services%2FData%20Analytics%2FCloud%20PubSub.svg
+      shape: queue
+    }
+  }
+
+  # ----- CENTER: Kubernetes Cluster (Self-Hosted) -----
+  k8s: "Kubernetes Cluster (Self-Hosted Tenant)" {
+    style.fill: "#F5F5F5"
+    style.stroke: "#616161"
+    width: 420
+
+    edge: "Edge Layer" {
+      style.fill: "#FFF3E0"
+      style.stroke: "#FF9800"
+      direction: right
+
+      router: "Router" {
+        icon: https://raw.githubusercontent.com/kubernetes/community/master/icons/svg/resources/labeled/pod.svg
+        label: "Nginx"
+      }
+      http_cache: "HTTP Cache" {
+        icon: https://raw.githubusercontent.com/kubernetes/community/master/icons/svg/resources/labeled/pod.svg
+        label: "Varnish"
+      }
+    }
+
+    services: "API Services" {
+      style.fill: "#E3F2FD"
+      style.stroke: "#1976D2"
+
+      frontends: "Frontends" {
+        direction: right
+        accounts_www: "Accounts WWW" {
+          icon: https://icons.terrastruct.com/dev%2Freact.svg
+          label: "Frontend Only"
+        }
+        workspace_www: "Workspace WWW" {
+          icon: https://icons.terrastruct.com/dev%2Freact.svg
+        }
+      }
+
+      apis: "APIs" {
+        direction: right
+        workspace_api: "Workspace" {
+          icon: https://raw.githubusercontent.com/kubernetes/community/master/icons/svg/resources/labeled/pod.svg
+        }
+        maps_api: "Maps" {
+          icon: https://raw.githubusercontent.com/kubernetes/community/master/icons/svg/resources/labeled/pod.svg
+        }
+        import_api: "Import" {
+          icon: https://raw.githubusercontent.com/kubernetes/community/master/icons/svg/resources/labeled/pod.svg
+        }
+        lds_api: "LDS" {
+          icon: https://raw.githubusercontent.com/kubernetes/community/master/icons/svg/resources/labeled/pod.svg
+        }
+      }
+    }
+
+    workers: "Background Workers" {
+      style.fill: "#E8F5E9"
+      style.stroke: "#2E7D32"
+      direction: right
+
+      workspace_sub: "Workspace\nSubscriber" {
+        icon: https://raw.githubusercontent.com/kubernetes/community/master/icons/svg/resources/labeled/pod.svg
+      }
+      sql_worker: "SQL Worker" {
+        icon: https://raw.githubusercontent.com/kubernetes/community/master/icons/svg/resources/labeled/pod.svg
+      }
+      import_worker: "Import Worker" {
+        icon: https://raw.githubusercontent.com/kubernetes/community/master/icons/svg/resources/labeled/pod.svg
+      }
+    }
+
+    # AI Features (Conditional)
+    ai: "AI Features" {
+      style.fill: "#F3E5F5"
+      style.stroke: "#880E4F"
+      style.stroke-dash: 3
+      direction: right
+
+      ai_api: "AI API" {
+        icon: https://raw.githubusercontent.com/kubernetes/community/master/icons/svg/resources/labeled/pod.svg
+      }
+      aiproxy: "AI Proxy" {
+        icon: https://raw.githubusercontent.com/kubernetes/community/master/icons/svg/resources/labeled/pod.svg
+        label: "AI Proxy"
+      }
+    }
+  }
+
+  # ----- Data Layer (External to K8s) -----
+  data: "Data Layer" {
+    style.fill: "#FFF3E0"
+    style.stroke: "#E65100"
+    width: 120
+
+    postgres: "PostgreSQL" {
+      icon: https://icons.terrastruct.com/dev%2Fpostgresql.svg
+      shape: cylinder
+    }
+    redis: "Redis" {
+      icon: https://icons.terrastruct.com/dev%2Fredis.svg
+      shape: cylinder
+    }
+  }
+
+  # ----- RIGHT: External Services -----
+  external: "External Services" {
+    style.fill: "#ECEFF1"
+    style.stroke: "#9E9E9E"
+    width: 160
+
+    warehouses: "Data Warehouses" {
+      bigquery: "BigQuery" {
+        icon: https://icons.terrastruct.com/gcp%2FProducts%20and%20services%2FData%20Analytics%2FBigQuery.svg
+      }
+      snowflake: "Snowflake" {
+        icon: https://www.vectorlogo.zone/logos/snowflake/snowflake-icon.svg
+      }
+      databricks: "Databricks" {
+        icon: https://www.vectorlogo.zone/logos/databricks/databricks-icon.svg
+      }
+      redshift: "Redshift" {
+        icon: https://icons.terrastruct.com/aws%2FDatabase%2FAmazon-Redshift.svg
+      }
+    }
+
+    ai_providers: "AI Providers" {
+      openai: "OpenAI" {
+        icon: ../icons/openai.png
+      }
+      gemini: "Gemini" {
+        icon: ../icons/gemini.svg
+      }
+      anthropic: "Anthropic" {
+        icon: ../icons/anthropic.png
+      }
+    }
+  }
+}
+
+# =============================================================================
+# KEY CONNECTIONS ONLY (minimal arrows)
+# =============================================================================
+
+# User flow
+users -> main.k8s.edge.router
+
+# Auth flow (to CARTO Cloud)
+users -> main.carto_cloud.auth0: "auth" {
+  style.stroke-dash: 3
+  style.stroke: "#4A148C"
+}
+
+# Edge to frontends
+main.k8s.edge.router -> main.k8s.services.frontends
+
+# Accounts WWW to CARTO Accounts API
+main.k8s.services.frontends.accounts_www -> main.carto_cloud.accounts_api: "API" {
+  style.stroke-dash: 3
+  style.stroke: "#0D47A1"
+}
+
+# APIs publish events to CARTO Cloud
+main.k8s.services.apis -> main.carto_cloud.event_bus: "events" {
+  style.stroke-dash: 3
+  style.stroke: "#E65100"
+}
+
+# APIs to Data Warehouses (grouped)
+main.k8s.services.apis -> main.external.warehouses
+
+# AI to External Providers (grouped)
+main.k8s.ai.aiproxy -> main.external.ai_providers: "API" {
+  style.stroke: "#880E4F"
+}
