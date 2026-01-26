@@ -18,5 +18,5 @@ stringData:
             namespaces:
                 - {{ .Release.Namespace }}
     {{- include "carto.replicated.commonChecks.collectors" . | indent 6 }}
-      analyzers:
+      analyzers: 
     {{- include "carto.replicated.commonChecks.analyzers" . | indent 6 }}
