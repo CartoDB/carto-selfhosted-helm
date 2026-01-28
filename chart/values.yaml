@@ -79,7 +79,7 @@ appConfigValues:
   ## @param appConfigValues.ldsIsolineProvider The default LDS provider for isolines
   ldsIsolineProvider: ""
   ## @param appConfigValues.logLevel The log level used in CARTO application
-  logLevel: "debug"
+  logLevel: "info"
   ## @param appConfigValues.deploymentType The deployment type used in CARTO application
   deploymentType: "helm"
 
