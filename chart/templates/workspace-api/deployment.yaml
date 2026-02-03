@@ -89,7 +89,7 @@ spec:
           args:
             - -ec
             - |
-              /usr/src/app/onprem-init-db.sh
+              /usr/src/workspace-db/onprem-init-db.sh
           {{- end }}
           env:
             - name: POSTGRES_ADMIN_USER
