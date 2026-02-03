@@ -1,0 +1,41 @@
+{{- if and (.Values.appConfigValues.publicEventsApiEnabled) (not .Values.cartoConfigValues.onlyRunRouter) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "carto.publicEventsApi.fullname" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+    app.kubernetes.io/component: public-events-api
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
+  {{- end }}
+  PUBLIC_EVENTS_SERVICE_PORT: {{ .Values.publicEventsApi.containerPorts.http | quote }}
+  LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
+  NODE_OPTIONS: {{ template "carto.publicEventsApi.nodeOptions" . }}
+  PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+  PUBSUB_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.pubsubDomain | quote }}
+  PUBSUB_USE_REST_API: {{ .Values.cartoConfigValues.usePubSubRestApi | quote }}
+  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
+  {{- if .Values.externalProxy.enabled }}
+  HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  HTTPS_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  https_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  GRPC_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  grpc_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+  NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
+  {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
+  NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  {{- end }}
+  {{- if or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name }}
+  NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }}

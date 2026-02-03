@@ -441,6 +441,53 @@ Return Carto maps-api node options
 {{- end -}}
 
 {{/*
+Return the proper Carto public-events-api full name
+*/}}
+{{- define "carto.publicEventsApi.fullname" -}}
+{{- printf "%s-public-events-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto public-events-api image name
+*/}}
+{{- define "carto.publicEventsApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.publicEventsApi.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto public-events-api ConfigMap name
+*/}}
+{{- define "carto.publicEventsApi.configmapName" -}}
+{{- if .Values.publicEventsApi.existingConfigMap -}}
+{{- .Values.publicEventsApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.publicEventsApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the proper Carto public-events-api Secret name
+*/}}
+{{- define "carto.publicEventsApi.secretName" -}}
+{{- if .Values.publicEventsApi.existingSecret -}}
+{{- .Values.publicEventsApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.publicEventsApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return Carto public-events-api node options
+*/}}
+{{- define "carto.publicEventsApi.nodeOptions" -}}
+{{- if eq (.Values.publicEventsApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.publicEventsApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.publicEventsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- else -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.publicEventsApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto sql-worker full name
 */}}
 {{- define "carto.sqlWorker.fullname" -}}

@@ -1,0 +1,19 @@
+{{- if and (.Values.appConfigValues.publicEventsApiEnabled) (not .Values.cartoConfigValues.onlyRunRouter) (.Values.publicEventsApi.podDisruptionBudget.enabled) }}
+---
+apiVersion: {{ .Values.global.kubernetesPolicyVersion }}
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "carto.publicEventsApi.fullname" . }}-pdb
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+spec:
+{{- if .Values.publicEventsApi.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ .Values.publicEventsApi.podDisruptionBudget.minAvailable }}
+{{- end }}
+{{- if .Values.publicEventsApi.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.publicEventsApi.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "carto.publicEventsApi.fullname" . }}
+{{- end }}

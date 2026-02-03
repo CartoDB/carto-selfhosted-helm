@@ -1,0 +1,53 @@
+{{- if and (.Values.appConfigValues.publicEventsApiEnabled) (not .Values.cartoConfigValues.onlyRunRouter) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "carto.publicEventsApi.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: public-events-api
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.publicEventsApi.service.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.service.annotations "context" $) | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.publicEventsApi.service.type }}
+  {{- if and .Values.publicEventsApi.service.clusterIP (eq .Values.publicEventsApi.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.publicEventsApi.service.clusterIP }}
+  {{- end }}
+  {{- if and .Values.publicEventsApi.service.externalTrafficPolicy (ne .Values.publicEventsApi.service.type "ClusterIP") }}
+  externalTrafficPolicy: {{ .Values.publicEventsApi.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- if and .Values.publicEventsApi.service.loadBalancerIP (eq .Values.publicEventsApi.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.publicEventsApi.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq .Values.publicEventsApi.service.type "LoadBalancer") .Values.publicEventsApi.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml .Values.publicEventsApi.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.publicEventsApi.service.ports.http }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if and (or (eq .Values.publicEventsApi.service.type "NodePort") (eq .Values.publicEventsApi.service.type "LoadBalancer")) .Values.publicEventsApi.service.nodePorts.http }}
+      nodePort: {{ .Values.publicEventsApi.service.nodePorts.http }}
+      {{- else if eq .Values.publicEventsApi.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- if .Values.publicEventsApi.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  selector:
+    {{- if .Values.publicEventsApi.service.labelSelectorsOverride }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- else }}
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: public-events-api
+    {{- end }}
+{{- end }}

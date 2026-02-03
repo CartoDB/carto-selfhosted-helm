@@ -28,6 +28,9 @@ data:
   ROUTER_AI_ENABLE_AIPROXY_ENDPOINT: {{ .Values.cartoConfigValues.enableAiProxyEndpoint | quote }}
   ROUTER_AI_AIPROXY_INTERNAL_URL: {{ include "carto.aiProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   {{- end }}
+  {{- if .Values.appConfigValues.publicEventsApiEnabled }}
+  ROUTER_PUBLIC_EVENTS_API_INTERNAL_URL: {{ include "carto.publicEventsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+  {{- end }}
   PUBSUB_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.pubsubDomain | quote }}
   ROUTER_ACCOUNTS_WWW_INTERNAL_URL: {{ include "carto.accountsWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_HTTP_CACHE_INTERNAL_URL: {{ include "carto.httpCache.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
