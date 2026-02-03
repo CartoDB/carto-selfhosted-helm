@@ -623,6 +623,14 @@ spec:
           when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
           default: "aiproxy"
 
+        ## Public Events API
+        - name: publicEventsApiEnabled
+          title: Public Events API
+          help_text: |-
+            Enable the Public Events API to track user interactions and events on public maps.
+          type: bool
+          default: "0"
+
         ## Redis
         - name: externalRedisEnabled
           title: Redis
