@@ -1973,7 +1973,7 @@ publicEventsApi:
   args:
     [
       "-c",
-      "node ./tsconfig-paths-bootstrap.js dist/public-events-api/scripts/ready-to-run.js && exec node -r ./tsconfig-paths-bootstrap.js dist/public-events-api/index.js",
+      "node dist/public-events-api/index.js",
     ]
   ## @param publicEventsApi.hostAliases public-events-api pods host aliases
   ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
