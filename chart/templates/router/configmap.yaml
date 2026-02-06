@@ -29,6 +29,7 @@ data:
   ROUTER_AI_AIPROXY_INTERNAL_URL: {{ include "carto.aiProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   {{- end }}
   {{- if .Values.appConfigValues.publicEventsApiEnabled }}
+  ROUTER_ENABLE_PUBLIC_EVENTS_API: "true"
   ROUTER_PUBLIC_EVENTS_API_INTERNAL_URL: {{ include "carto.publicEventsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   {{- end }}
   PUBSUB_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.pubsubDomain | quote }}
