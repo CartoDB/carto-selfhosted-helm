@@ -754,19 +754,6 @@ spec:
           when: '{{repl (ConfigOptionEquals "googleBasemapsEnabled" "1") }}'
           required: true
 
-        ## Custom OpenAI API Key
-        - name: customOpenAIAPIKeyEnabled
-          title: Custom OpenAI API Key
-          help_text: |
-            Enable if you want to use your custom OpenAI API Key.
-          type: bool
-          default: "0"
-        - name: customOpenAIAPIKey
-          title: OpenAI API Key
-          type: text
-          when: '{{repl (ConfigOptionEquals "customOpenAIAPIKeyEnabled" "1") }}'
-          required: true
-
         ## BigQuery Oauth
         - name: bigqueryOauthEnabled
           title: BigQuery OAuth connections
