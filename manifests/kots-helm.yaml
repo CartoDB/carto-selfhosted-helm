@@ -86,6 +86,7 @@ spec:
     ## App Config Values
     appConfigValues:
       aiFeaturesEnabled: repl{{ if ConfigOptionEquals "aiFeaturesEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
+      publicEventsApiEnabled: repl{{ if ConfigOptionEquals "publicEventsApiEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
       # domain
       selfHostedDomain: '{{repl ConfigOption "cartoSelfHostedDomain" }}'
       # buckets
@@ -120,6 +121,10 @@ spec:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     ## aiProxy
     aiProxy:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+    ## publicEventsApi
+    publicEventsApi:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     ## Redis

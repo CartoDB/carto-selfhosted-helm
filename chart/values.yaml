@@ -7,6 +7,8 @@ appConfigValues:
   storageProvider: "gcp"
   ## @param appConfigValues.aiFeaturesEnabled Enable the AI features
   aiFeaturesEnabled: false
+  ## @param appConfigValues.publicEventsApiEnabled Enable the public events API
+  publicEventsApiEnabled: false
   ## @param appConfigValues.httpCacheEnabled Enable the internal httpCache
   httpCacheEnabled: true
   ## @param appConfigValues.importAwsRoleArn ARN Role to be used to import files from the bucket
@@ -1796,6 +1798,335 @@ ldsApi:
     ##
     annotations: {}
     ## @param ldsApi.service.extraPorts Extra ports to expose in lds-api service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+
+## @section public-events-api Deployment Parameters
+##
+publicEventsApi:
+  ## public-events-api image
+  ## @param publicEventsApi.image.registry public-events-api image registry
+  ## @param publicEventsApi.image.repository public-events-api image repository
+  ## @param publicEventsApi.image.tag public-events-api image tag (immutable tags are recommended)
+  ## @param publicEventsApi.image.pullPolicy public-events-api image pull policy
+  ## @param publicEventsApi.image.pullSecrets public-events-api image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: public-events-api
+    ## Specify a custom image tag
+    tag: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param publicEventsApi.replicaCount Number of public-events-api replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param publicEventsApi.containerPorts.http public-events-api HTTP container port
+  ##
+  containerPorts:
+    http: 8005
+  ## @param publicEventsApi.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeProcessMaxOldSpacePercentage: 75
+  ## @param publicEventsApi.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  defaultNodeProcessMaxOldSpace: 768
+  ## Configure extra options for public-events-api containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param publicEventsApi.livenessProbe.enabled Enable livenessProbe on public-events-api containers
+  ## @param publicEventsApi.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param publicEventsApi.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param publicEventsApi.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param publicEventsApi.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param publicEventsApi.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param publicEventsApi.readinessProbe.enabled Enable readinessProbe on public-events-api containers
+  ## @param publicEventsApi.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param publicEventsApi.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param publicEventsApi.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param publicEventsApi.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param publicEventsApi.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param publicEventsApi.startupProbe.enabled Enable startupProbe on public-events-api containers
+  ## @param publicEventsApi.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param publicEventsApi.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param publicEventsApi.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param publicEventsApi.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param publicEventsApi.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param publicEventsApi.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param publicEventsApi.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param publicEventsApi.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## public-events-api autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param publicEventsApi.autoscaling.enabled Enable autoscaling for the public-events-api containers
+  ## @param publicEventsApi.autoscaling.minReplicas The minimal number of containers for the public-events-api deployment
+  ## @param publicEventsApi.autoscaling.maxReplicas The maximum number of containers for the public-events-api deployment
+  ## @param publicEventsApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in public-events-api deployment
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 75
+  ## public-events-api resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param publicEventsApi.resources.limits.memory Container memory limits in MiB
+  ## @param publicEventsApi.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param publicEventsApi.resources.requests.memory Container memory requests in MiB
+  ## @param publicEventsApi.resources.requests.cpu Container cpu requests in milliCPU cores
+  ##
+  resources:
+    limits:
+      memory: "1024Mi"
+      cpu: "1000m"
+    requests:
+      memory: "768Mi"
+      cpu: "350m"
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param publicEventsApi.podSecurityContext.enabled Enabled public-events-api pods' Security Context
+  ## @param publicEventsApi.podSecurityContext.fsGroup Set public-events-api pod's Security Context fsGroup
+  ## @param publicEventsApi.podSecurityContext.supplementalGroups[0] Set public-events-api pod's Security Context supplementalGroups
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1000
+    supplementalGroups: [2345]
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param publicEventsApi.containerSecurityContext.enabled Enabled public-events-api containers' Security Context
+  ## @param publicEventsApi.containerSecurityContext.runAsUser Set public-events-api containers' Security Context runAsUser
+  ## @param publicEventsApi.containerSecurityContext.runAsGroup Set public-events-api containers' Security Context runAsGroup
+  ## @param publicEventsApi.containerSecurityContext.runAsNonRoot Set public-events-api containers' Security Context runAsNonRoot
+  ## @param publicEventsApi.containerSecurityContext.allowPrivilegeEscalation Set public-events-api containers' Security Context allowPrivilegeEscalation
+  ## @param publicEventsApi.containerSecurityContext.readOnlyRootFilesystem Set public-events-api containers' Security Context readOnlyRootFilesystem
+  ## @param publicEventsApi.containerSecurityContext.capabilities.drop removes public-events-api containers' Security Context capabilities
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
+  ## @param publicEventsApi.podDisruptionBudget.enabled defines disruption budget for public-events-api
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ##
+  podDisruptionBudget:
+    enabled: false
+  ## @param publicEventsApi.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 60
+  ## @param publicEventsApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for public-events-api
+  ##
+  existingConfigMap: ""
+  ## @param publicEventsApi.existingSecret The name of an existing Secret with your custom configuration for public-events-api
+  ##
+  existingSecret: ""
+  ## @param publicEventsApi.command Override default container command (useful when using custom images)
+  ##
+  command: ["/bin/bash"]
+  ## @param publicEventsApi.args Override default container args (useful when using custom images)
+  ##
+  args:
+    [
+      "-c",
+      "node dist/public-events-api/index.js",
+    ]
+  ## @param publicEventsApi.hostAliases public-events-api pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param publicEventsApi.podLabels Extra labels for public-events-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param publicEventsApi.podAnnotations Annotations for public-events-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param publicEventsApi.podAffinityPreset Pod affinity preset. Ignored if `publicEventsApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param publicEventsApi.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `publicEventsApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node.js publicEventsApi.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param publicEventsApi.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `publicEventsApi.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param publicEventsApi.nodeAffinityPreset.key Node.js label key to match. Ignored if `publicEventsApi.affinity` is set
+    ##
+    key: ""
+    ## @param publicEventsApi.nodeAffinityPreset.values Node.js label values to match. Ignored if `publicEventsApi.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param publicEventsApi.affinity Affinity for public-events-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `publicEventsApi.podAffinityPreset`, `publicEventsApi.podAntiAffinityPreset`, and `publicEventsApi.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param publicEventsApi.nodeSelector Node.js labels for public-events-api pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param publicEventsApi.tolerations Tolerations for public-events-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param publicEventsApi.updateStrategy.type public-events-api statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param publicEventsApi.priorityClassName public-events-api pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param publicEventsApi.schedulerName Name of the k8s scheduler (other than default) for public-events-api pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param publicEventsApi.lifecycleHooks for the public-events-api container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param publicEventsApi.extraEnvVars Array with extra environment variables to add to public-events-api nodes ([More info](#additional-environment-variables))
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param publicEventsApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for public-events-api nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsCM: ""
+  ## @param publicEventsApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for public-events-api nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsSecret: ""
+  ## @param publicEventsApi.extraVolumes Optionally specify extra list of additional volumes for the public-events-api pod(s)
+  ##
+  extraVolumes: []
+  ## @param publicEventsApi.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the public-events-api container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param publicEventsApi.sidecars Add additional sidecar containers to the public-events-api pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param publicEventsApi.initContainers Add additional init containers to the public-events-api pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section public-events-api Service Parameters
+  ##
+  ##
+  service:
+    ## @param publicEventsApi.service.type public-events-api service type
+    ##
+    type: ClusterIP
+    ## @param publicEventsApi.service.ports.http public-events-api service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node.js ports to expose
+    ## @param publicEventsApi.service.nodePorts.http Node.js port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param publicEventsApi.service.clusterIP public-events-api service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param publicEventsApi.service.loadBalancerIP public-events-api service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param publicEventsApi.service.labelSelectorsOverride Selector for public-events-api service
+    ##
+    labelSelectorsOverride: {}
+    ## @param publicEventsApi.service.loadBalancerSourceRanges public-events-api service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param publicEventsApi.service.externalTrafficPolicy public-events-api service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param publicEventsApi.service.annotations Additional custom annotations for public-events-api service
+    ##
+    annotations: {}
+    ## @param publicEventsApi.service.extraPorts Extra ports to expose in public-events-api service (normally used with the `sidecars` value)
     ##
     extraPorts: []
 

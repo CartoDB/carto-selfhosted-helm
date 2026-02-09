@@ -1,0 +1,174 @@
+{{- if and (.Values.appConfigValues.publicEventsApiEnabled) (not .Values.cartoConfigValues.onlyRunRouter) }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.publicEventsApi.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: public-events-api
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.publicEventsApi.replicaCount }}
+  {{- if .Values.publicEventsApi.updateStrategy }}
+  strategy: {{- toYaml .Values.publicEventsApi.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: public-events-api
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/public-events-api/configmap.yaml") . | sha256sum }}
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+        {{- if .Values.publicEventsApi.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: public-events-api
+        {{- if .Values.publicEventsApi.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.publicEventsApi.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.publicEventsApi.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.publicEventsApi.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.publicEventsApi.podAffinityPreset "component" "public-events-api" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.publicEventsApi.podAntiAffinityPreset "component" "public-events-api" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.publicEventsApi.nodeAffinityPreset.type "key" .Values.publicEventsApi.nodeAffinityPreset.key "values" .Values.publicEventsApi.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.publicEventsApi.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.publicEventsApi.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.publicEventsApi.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.publicEventsApi.priorityClassName }}
+      priorityClassName: {{ .Values.publicEventsApi.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.publicEventsApi.schedulerName }}
+      schedulerName: {{ .Values.publicEventsApi.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.publicEventsApi.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.publicEventsApi.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if not .Values.diagnosticMode.enabled }}
+      initContainers:
+        {{- if .Values.publicEventsApi.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.publicEventsApi.terminationGracePeriodSeconds }}
+      containers:
+        - name: public-events-api
+          image: {{ template "carto.publicEventsApi.image" . }}
+          imagePullPolicy: {{ .Values.publicEventsApi.image.pullPolicy }}
+          {{- if .Values.publicEventsApi.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.publicEventsApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.publicEventsApi.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.publicEventsApi.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.args "context" $) | nindent 12 }}
+          {{ else }}
+          args:
+            - -ec
+            - |
+              exec node dist/public-events-api/index.js
+          {{- end }}
+          env:
+            {{- if .Values.publicEventsApi.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "carto.publicEventsApi.configmapName" . }}
+            {{- if .Values.publicEventsApi.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.publicEventsApi.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.publicEventsApi.resources }}
+          resources: {{- toYaml .Values.publicEventsApi.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.publicEventsApi.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.publicEventsApi.livenessProbe.enabled }}
+          livenessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.publicEventsApi.livenessProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
+          {{- else if .Values.publicEventsApi.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.publicEventsApi.readinessProbe.enabled }}
+          readinessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.publicEventsApi.readinessProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
+          {{- else if .Values.publicEventsApi.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.publicEventsApi.startupProbe.enabled }}
+          startupProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.publicEventsApi.startupProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
+          {{- else if .Values.publicEventsApi.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.publicEventsApi.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: gcp-default-service-account-key
+              mountPath: {{ include "carto.google.secretMountDir" . }}
+              readOnly: true
+            {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
+            - name: proxy-ssl-ca
+              mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+          {{- if .Values.publicEventsApi.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.publicEventsApi.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.publicEventsApi.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: {{ include "carto.google.secretName" . }}
+            items:
+              - key: {{ include "carto.google.secretKey" . }}
+                path: {{ include "carto.google.secretMountFilename" . }}
+        {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
+        - name: proxy-ssl-ca
+          configMap:
+            name: {{ include "carto.proxy.configMapName" . }}
+        {{- end }}
+        {{- if .Values.publicEventsApi.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+{{- end }}

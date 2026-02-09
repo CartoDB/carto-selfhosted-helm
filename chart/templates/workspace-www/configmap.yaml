@@ -55,4 +55,7 @@ data:
   {{- if .Values.appConfigValues.ssoOrganizationId }}
   REACT_APP_ORGANIZATION_ID: {{ .Values.appConfigValues.ssoOrganizationId }}
   {{- end }}
+  {{- if .Values.appConfigValues.publicEventsApiEnabled }}
+  REACT_APP_PUBLIC_EVENTS_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/public-events-api"
+  {{- end }}
 {{- end }}

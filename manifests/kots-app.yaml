@@ -26,6 +26,7 @@ spec:
     - '{{repl if ConfigOptionEquals "externalRedisEnabled" "0" }}deployment/carto-redis{{repl else}}{{repl end }}'
     - '{{repl if ConfigOptionEquals "aiFeaturesEnabled" "1" }}deployment/carto-ai-api{{repl else}}{{repl end }}'
     - '{{repl if ConfigOptionEquals "aiFeaturesEnabled" "1" }}deployment/carto-aiproxy{{repl else}}{{repl end }}'
+    - '{{repl if ConfigOptionEquals "publicEventsApiEnabled" "1" }}deployment/carto-public-events-api{{repl else}}{{repl end }}'
   minKotsVersion: 1.117.3
   additionalImages:
     - gcr.io/carto-onprem-artifacts/tenant-requirements-checker:2025.6.10
