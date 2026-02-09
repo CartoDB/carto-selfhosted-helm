@@ -184,6 +184,8 @@ spec:
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
             {{- end }}
+            - name: tmp
+              mountPath: /tmp
             - name: app-cache
               mountPath: /app/cache
             - name: app-migrations
@@ -215,6 +217,8 @@ spec:
                 path: {{ include "carto.google.secretMountFilename" . }}
         {{- end }}
         # Required for read-only filesystem
+        - name: tmp
+          emptyDir: {}
         - name: app-cache
           emptyDir: {}
         - name: app-migrations
