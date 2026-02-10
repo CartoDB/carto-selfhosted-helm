@@ -218,7 +218,8 @@ spec:
         {{- end }}
         # Required for read-only filesystem
         - name: tmp
-          emptyDir: {}
+          emptyDir:
+            medium: Memory
         - name: app-cache
           emptyDir: {}
         - name: app-migrations
