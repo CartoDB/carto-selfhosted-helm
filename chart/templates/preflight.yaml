@@ -7,13 +7,16 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 stringData:
   preflight.yaml: |
-    apiVersion: troubleshoot.sh/v1beta2
+    apiVersion: troubleshoot.sh/v1beta3
     kind: Preflight
     metadata:
       name: {{ .Release.Name }}-preflight
       namespace: {{ .Release.Namespace | quote }}
     spec:
       collectors:
+        - clusterResources:
+            namespaces:
+                - {{ .Release.Namespace }}
     {{- include "carto.replicated.commonChecks.collectors" . | indent 6 }}
-      analyzers:
+      analyzers: 
     {{- include "carto.replicated.commonChecks.analyzers" . | indent 6 }}
