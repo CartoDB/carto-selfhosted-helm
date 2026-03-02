@@ -398,16 +398,6 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
-    ## @extra cartoSecrets.openAiApiKey The API Key to be used for the AI provider.
-  openAiApiKey:
-    ## @param cartoSecrets.openAiApiKey.value Value of the secret `WORKSPACE_OPENAI_API_KEY`
-    value: ""
-    ## @param cartoSecrets.openAiApiKey.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.openAiApiKey.existingSecret.key`. If `cartoSecrets.openAiApiKey.value` is defined, this value is going to be ignored and not used.
-    ## @param cartoSecrets.openAiApiKey.existingSecret.key Key to find in `cartoSecrets.openAiApiKey.existingSecret.name` where the value of `cartoSecrets.openAiApiKey` is found. If `cartoSecrets.openAiApiKey.value` is defined, this value is going to be ignored and not used.
-    ##
-    existingSecret:
-      name: ""
-      key: ""
   ## @extra cartoSecrets.redisPassword The password for the Redis instance.
   redisPassword:
     ## @param cartoSecrets.redisPassword.value Value of the secret used to define the password for the Redis instance. One of `cartoSecrets.redisPassword.value` or `cartoSecrets.redisPassword.existingSecret` could be defined.
