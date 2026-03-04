@@ -8,3 +8,6 @@
 **/*carto-values.yaml*
 **/customer.env
 **/*customization.yaml*
+
+# Git worktrees
+.worktrees/
