@@ -5200,20 +5200,23 @@ tenantRequirementsChecker:
         - all
 
 ## @section internalRedis Deployment Parameters
+## NOTE: The `internalRedis` key is kept for backward compatibility with existing customer value overrides.
+##       Internally this now deploys Valkey instead of Redis. The REDIS_* environment variable names are
+##       also kept unchanged — this is intentional per the Redis → Valkey migration (sc-530424).
 ##
 internalRedis:
-  ## internal-redis image
-  ## @param internalRedis.enabled Switch value between internal-redis deployment and external-redis deployment
-  ## @param internalRedis.image.registry internal-redis image registry
-  ## @param internalRedis.image.repository internal-redis image repository
-  ## @param internalRedis.image.tag internal-redis image tag (immutable tags are recommended)
-  ## @param internalRedis.image.pullPolicy internal-redis image pull policy
-  ## @param internalRedis.image.pullSecrets internal-redis image pull secrets
+  ## internal-valkey image (formerly Redis; key name kept for backward compatibility)
+  ## @param internalRedis.enabled Switch value between internal-valkey deployment and external-redis/valkey deployment
+  ## @param internalRedis.image.registry internal-valkey image registry
+  ## @param internalRedis.image.repository internal-valkey image repository
+  ## @param internalRedis.image.tag internal-valkey image tag (immutable tags are recommended)
+  ## @param internalRedis.image.pullPolicy internal-valkey image pull policy
+  ## @param internalRedis.image.pullSecrets internal-valkey image pull secrets
   ##
   enabled: true
   image:
     registry: gcr.io/carto-onprem-artifacts
-    repository: redis
+    repository: valkey
     tag: ""
     pullPolicy: IfNotPresent
     ## Optionally specify an array of imagePullSecrets.

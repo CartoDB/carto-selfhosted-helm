@@ -1198,14 +1198,16 @@ Return the absolute path where the Postgresql CA cert will be mounted
 {{- end -}}
 
 {{/*
-Create a default fully qualified redis name.
+Create a default fully qualified valkey name.
+NOTE: The template name `carto.redis.fullname` is kept for backward compatibility.
 */}}
 {{- define "carto.redis.fullname" -}}
-{{- include "common.names.dependency.fullname" (dict "chartName" "redis" "chartValues" .Values.internalRedis "context" $) -}}
+{{- include "common.names.dependency.fullname" (dict "chartName" "valkey" "chartValues" .Values.internalRedis "context" $) -}}
 {{- end -}}
 
-{{/* 
-Create carto Image full name for Redis
+{{/*
+Create carto Image full name for Valkey (formerly Redis).
+NOTE: The template name `carto.redis.image` is kept for backward compatibility.
 */}}
 {{- define "carto.redis.image" -}}
 {{- include "carto.images.image" (dict "imageRoot" .Values.internalRedis.image "global" .Values.global "Chart" .Chart) -}}
@@ -1214,7 +1216,7 @@ Create carto Image full name for Redis
 {{/*
 Add environment variables to configure database values.
 Return the hostname that the rest of the CARTO components should use
-to reach Redis.
+to reach Valkey (formerly Redis). The env var is still named REDIS_HOST.
 */}}
 {{- define "carto.redis.host" -}}
 {{- ternary (include "carto.redis.fullname" .) .Values.externalRedis.host .Values.internalRedis.enabled -}}

@@ -1,6 +1,7 @@
 {{- /*
-  Redis Deployment
-  Rendered only when we ship an in-cluster Redis
+  Valkey Deployment
+  Rendered only when we ship an in-cluster Valkey instance.
+  NOTE: The values key `internalRedis` is kept for backward compatibility with existing customer overrides.
 */ -}}
 {{- if .Values.internalRedis.enabled }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
@@ -10,7 +11,7 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: redis
+    app.kubernetes.io/component: valkey
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
     {{- end }}
@@ -24,7 +25,7 @@ spec:
   selector:
     matchLabels:
       {{- include "common.labels.matchLabels" . | nindent 6 }}
-      app.kubernetes.io/component: redis
+      app.kubernetes.io/component: valkey
   template:
     metadata:
       annotations:
@@ -35,7 +36,7 @@ spec:
         {{- end }}
       labels:
         {{- include "common.labels.standard" . | nindent 8 }}
-        app.kubernetes.io/component: redis
+        app.kubernetes.io/component: valkey
         {{- if .Values.internalRedis.podLabels }}
         {{- include "common.tplvalues.render" ( dict "value" .Values.internalRedis.podLabels "context" $ ) | nindent 8 }}
         {{- end }}
@@ -49,8 +50,8 @@ spec:
       affinity: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.affinity "context" $) | nindent 8 }}
       {{- else }}
       affinity:
-        podAffinity:     {{- include "common.affinities.pods" (dict "type" .Values.internalRedis.podAffinityPreset     "component" "redis" "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.internalRedis.podAntiAffinityPreset "component" "redis" "context" $) | nindent 10 }}
+        podAffinity:     {{- include "common.affinities.pods" (dict "type" .Values.internalRedis.podAffinityPreset     "component" "valkey" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.internalRedis.podAntiAffinityPreset "component" "valkey" "context" $) | nindent 10 }}
         nodeAffinity:    {{- include "common.affinities.nodes" (dict "type" .Values.internalRedis.nodeAffinityPreset.type "key" .Values.internalRedis.nodeAffinityPreset.key "values" .Values.internalRedis.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
       {{- if .Values.internalRedis.nodeSelector }}
@@ -70,7 +71,7 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.internalRedis.terminationGracePeriodSeconds }}
       containers:
-        - name: redis
+        - name: valkey
           image: {{ template "carto.redis.image" . }}
           imagePullPolicy: {{ .Values.internalRedis.image.pullPolicy }}
           {{- if .Values.internalRedis.containerSecurityContext.enabled }}
@@ -83,7 +84,7 @@ spec:
           args: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.args "context" $) | nindent 12 }}
           {{- end }}
           ports:
-            - name: redis
+            - name: valkey
               containerPort: {{ .Values.internalRedis.service.ports.http }}
           {{- if .Values.internalRedis.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.master.customLivenessProbe "context" $) | nindent 12 }}
@@ -105,7 +106,7 @@ spec:
               command:
                 - /bin/sh
                 - -ec
-                - /health/ping_readiness_local.sh {{ .Values.internalRedis.readinessProbe.timeoutSeconds }}          
+                - /health/ping_readiness_local.sh {{ .Values.internalRedis.readinessProbe.timeoutSeconds }}
           {{- end }}
           {{- if .Values.internalRedis.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.customStartupProbe "context" $) | nindent 12 }}
@@ -113,7 +114,7 @@ spec:
           startupProbe:
             {{- include "common.tplvalues.render" (dict "value" (omit .Values.internalRedis.startupProbe "enabled") "context" $) | nindent 12 }}
             tcpSocket:
-              port: redis
+              port: valkey
           {{- end }}
           env:
             - name: REDIS_PASSWORD
@@ -130,7 +131,7 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
-            - name: redis-data
+            - name: valkey-data
               mountPath: /data
             {{- if .Values.internalRedis.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.extraVolumeMounts "context" $) | nindent 12 }}
@@ -142,9 +143,9 @@ spec:
         - name: tmp
           emptyDir:
             medium: Memory
-        - name: redis-data
+        - name: valkey-data
           emptyDir: {}
         {{- if .Values.internalRedis.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.extraVolumes "context" $) | nindent 8 }}
-        {{- end }}  
+        {{- end }}
 {{- end }}
