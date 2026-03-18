@@ -87,7 +87,7 @@ spec:
             - name: valkey
               containerPort: {{ .Values.internalRedis.service.ports.http }}
           {{- if .Values.internalRedis.customLivenessProbe }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.master.customLivenessProbe "context" $) | nindent 12 }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.customLivenessProbe "context" $) | nindent 12 }}
           {{- else if .Values.internalRedis.livenessProbe.enabled }}
           livenessProbe:
             {{- include "common.tplvalues.render" (dict "value" (omit .Values.internalRedis.livenessProbe "enabled") "context" $) | nindent 12 }}
