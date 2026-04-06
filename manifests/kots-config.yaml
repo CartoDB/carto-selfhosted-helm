@@ -633,7 +633,7 @@ spec:
 
         ## Valkey / Redis-compatible cache
         - name: externalRedisEnabled
-          title: External cache (Valkey / Redis-compatible)
+          title: External In-memory cache
           help_text: |-
             Configure an external in-memory cache. Valkey is recommended; any Redis-compatible server (Valkey 7+, Redis 7.2) is supported.
             [More info](https://docs.carto.com/carto-self-hosted/guides/configure-an-external-in-memory-cache).
