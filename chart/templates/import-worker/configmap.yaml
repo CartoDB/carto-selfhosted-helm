@@ -40,6 +40,7 @@ data:
   IMPORT_WORKER_PROCESSING_DIR: "/tmp/import-worker"
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
+  WORKSPACE_BRANDINGS_BUCKET: {{ .Values.appConfigValues.workspaceThumbnailsBucket | quote }}
   NODE_OPTIONS: {{ template "carto.importWorker.nodeOptions" . }}
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   PUBSUB_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.pubsubDomain | quote }}
