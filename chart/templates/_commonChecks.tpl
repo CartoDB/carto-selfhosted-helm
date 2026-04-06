@@ -319,7 +319,7 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   We just need to add the RedisValidator to the preflightsDict if the externalRedis is enabled
   */}}
   {{- if not .Values.internalRedis.enabled }}
-  {{- $_ := set $preflightsDict "RedisValidator" (list "Check_redis_connection") }}
+  {{- $_ := set $preflightsDict "RedisValidator" (list "Check_redis_connection" "Check_redis_multiple_databases_support") }}
   {{- end }}
   {{- range $preflight, $preflightChecks  := $preflightsDict }}
   {{- range $preflightCheckName := $preflightChecks }}
@@ -455,6 +455,10 @@ Return customer values to use in preflights and support-bundle
     value: {{ include "carto.redis.host" . | quote }}
   - name: REDIS_PORT
     value: {{ include "carto.redis.port" . | quote }}
+  - name: REDIS_DB
+    value: "0"
+  - name: LITELLM_REDIS_DB
+    value: "1"
   - name: REDIS_TLS_ENABLED
     value: {{ .Values.externalRedis.tlsEnabled | quote }}
   {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}

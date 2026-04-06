@@ -1,11 +1,11 @@
 {{/*
-Validate external Redis config
+Validate external Valkey / Redis-compatible cache config
 */}}
 {{- define "carto.validateValues.redis" -}}
 {{- if and (not .Values.internalRedis.enabled) (not .Values.externalRedis.host) (not .Values.cartoConfigValues.onlyRunRouter) -}}
-CARTO: Missing Redis(TM)
+CARTO: Missing Valkey / Redis-compatible cache
 
-If internalRedis.enabled=false you need to specify the host of an external Redis(TM) instance setting externalRedis.host
+If internalRedis.enabled=false you need to specify the host of an external Valkey or Redis-compatible instance setting externalRedis.host
 {{- end -}}
 {{- end -}}
 

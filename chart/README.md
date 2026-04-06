@@ -1639,12 +1639,12 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 | Name                                                              | Description                                                                                            | Value                           |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------- |
-| `internalRedis.enabled`                                           | Switch value between internal-redis deployment and external-redis deployment                           | `true`                          |
-| `internalRedis.image.registry`                                    | internal-redis image registry                                                                          | `gcr.io/carto-onprem-artifacts` |
-| `internalRedis.image.repository`                                  | internal-redis image repository                                                                        | `redis`                         |
-| `internalRedis.image.tag`                                         | internal-redis image tag (immutable tags are recommended)                                              | `""`                            |
-| `internalRedis.image.pullPolicy`                                  | internal-redis image pull policy                                                                       | `IfNotPresent`                  |
-| `internalRedis.image.pullSecrets`                                 | internal-redis image pull secrets                                                                      | `[]`                            |
+| `internalRedis.enabled`                                           | Switch value between internal-valkey deployment and external-redis/valkey deployment                   | `true`                          |
+| `internalRedis.image.registry`                                    | internal-valkey image registry                                                                         | `gcr.io/carto-onprem-artifacts` |
+| `internalRedis.image.repository`                                  | internal-valkey image repository                                                                       | `valkey`                        |
+| `internalRedis.image.tag`                                         | internal-valkey image tag (immutable tags are recommended)                                             | `""`                            |
+| `internalRedis.image.pullPolicy`                                  | internal-valkey image pull policy                                                                      | `IfNotPresent`                  |
+| `internalRedis.image.pullSecrets`                                 | internal-valkey image pull secrets                                                                     | `[]`                            |
 | `internalRedis.image.pullSecrets`                                 | Image-pull secrets for private registries                                                              | `[]`                            |
 | `internalRedis.auth.enabled`                                      | Enable password authentication on internal-redis                                                       | `true`                          |
 | `internalRedis.auth.password`                                     | Password for Redis authentication                                                                      | `""`                            |
