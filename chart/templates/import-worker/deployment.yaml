@@ -100,7 +100,7 @@ spec:
           args:
             - -ec
             - |
-              exec node -r ./tsconfig-paths-bootstrap.js dist/import-api/subscriber/index.js
+              exec node dist/import-api/subscriber/index.js
           {{- end }}
           env:
             - name: WORKSPACE_POSTGRES_PASSWORD
