@@ -60,7 +60,6 @@ data:
   WORKSPACE_THUMBNAILS_KEYFILENAME: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   {{- end }}
-  {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}
   WORKSPACE_THUMBNAILS_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
   WORKSPACE_IMPORTS_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
