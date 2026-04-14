@@ -52,6 +52,34 @@ data:
   WORKSPACE_POSTGRES_PORT: {{ include "carto.postgresql.port" . | quote }}
   WORKSPACE_POSTGRES_USER: {{ include "carto.postgresql.user" . | quote }}
   WORKSPACE_POSTGRES_SSL_ENABLED: {{ .Values.externalPostgresql.sslEnabled | quote }}
+  WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.appConfigValues.workspaceThumbnailsBucket | quote }}
+  WORKSPACE_THUMBNAILS_PUBLIC: {{ .Values.appConfigValues.workspaceThumbnailsPublic | quote }}
+  WORKSPACE_THUMBNAILS_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
+  {{- if .Values.appConfigValues.googleCloudStorageProjectId }}
+  WORKSPACE_IMPORTS_PROJECTID: {{ .Values.appConfigValues.googleCloudStorageProjectId | quote }}
+  WORKSPACE_THUMBNAILS_PROJECTID: {{ .Values.appConfigValues.googleCloudStorageProjectId | quote }}
+  {{- end }}
+  {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
+  WORKSPACE_IMPORTS_KEYFILENAME: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
+  WORKSPACE_THUMBNAILS_KEYFILENAME: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
+  {{- else }}
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+  WORKSPACE_IMPORTS_KEYFILENAME: {{ include "carto.google.secretMountAbsolutePath" . }}
+  WORKSPACE_THUMBNAILS_KEYFILENAME: {{ include "carto.google.secretMountAbsolutePath" . }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- if eq .Values.appConfigValues.storageProvider "s3" }}
+  WORKSPACE_THUMBNAILS_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
+  WORKSPACE_IMPORTS_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
+  {{- if .Values.appConfigValues.awsEksPodIdentityBucketsEnabled }}
+  CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_S3_ENABLED: {{ .Values.appConfigValues.awsEksPodIdentityBucketsEnabled | quote }}
+  {{- end }}
+  {{- end }}
+  {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
+  WORKSPACE_THUMBNAILS_STORAGE_ACCOUNT: {{ .Values.appConfigValues.azureStorageAccount | quote }}
+  WORKSPACE_IMPORTS_STORAGE_ACCOUNT: {{ .Values.appConfigValues.azureStorageAccount | quote }}
+  {{- end }}
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA  }}
   WORKSPACE_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
   {{- end }}
