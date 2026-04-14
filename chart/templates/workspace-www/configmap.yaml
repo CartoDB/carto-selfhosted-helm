@@ -58,4 +58,34 @@ data:
   {{- if .Values.appConfigValues.publicEventsApiEnabled }}
   REACT_APP_PUBLIC_EVENTS_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/public-events-api"
   {{- end }}
+  {{- if .Values.appConfigValues.customCSP.extraConnectSrc }}
+  CARTO_CSP_EXTRA_CONNECT_SRC: {{ .Values.appConfigValues.customCSP.extraConnectSrc | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.customCSP.extraScriptSrc }}
+  CARTO_CSP_EXTRA_SCRIPT_SRC: {{ .Values.appConfigValues.customCSP.extraScriptSrc | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.customCSP.extraStyleSrc }}
+  CARTO_CSP_EXTRA_STYLE_SRC: {{ .Values.appConfigValues.customCSP.extraStyleSrc | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.customCSP.extraFontSrc }}
+  CARTO_CSP_EXTRA_FONT_SRC: {{ .Values.appConfigValues.customCSP.extraFontSrc | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.customCSP.extraImgSrc }}
+  CARTO_CSP_EXTRA_IMG_SRC: {{ .Values.appConfigValues.customCSP.extraImgSrc | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.customCSP.extraFrameSrc }}
+  CARTO_CSP_EXTRA_FRAME_SRC: {{ .Values.appConfigValues.customCSP.extraFrameSrc | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.customCSP.extraFrameAncestors }}
+  CARTO_CSP_EXTRA_FRAME_ANCESTORS: {{ .Values.appConfigValues.customCSP.extraFrameAncestors | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.customCSP.extraWorkerSrc }}
+  CARTO_CSP_EXTRA_WORKER_SRC: {{ .Values.appConfigValues.customCSP.extraWorkerSrc | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.customCSP.extraChildSrc }}
+  CARTO_CSP_EXTRA_CHILD_SRC: {{ .Values.appConfigValues.customCSP.extraChildSrc | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.customCSP.extraDefaultSrc }}
+  CARTO_CSP_EXTRA_DEFAULT_SRC: {{ .Values.appConfigValues.customCSP.extraDefaultSrc | quote }}
+  {{- end }}
 {{- end }}
