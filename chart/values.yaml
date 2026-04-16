@@ -43,6 +43,31 @@ appConfigValues:
   enableTrackJS: true
   ## @param appConfigValues.ssoOrganizationId SSO organization ID provided by CARTO used to configure the SSO in the app.
   ssoOrganizationId: ""
+  ## Custom CSP (Content Security Policy) configuration.
+  ## Use these to append extra domains to specific CSP directives in workspace-www and accounts-www.
+  ## Values are space-separated URLs that get appended to CARTO's default CSP at container startup.
+  ## Example: "https://dynatrace.example.com https://rum-cdn.dynatrace.com"
+  customCSP:
+    ## @param appConfigValues.customCSP.extraConnectSrc Extra domains to append to the connect-src CSP directive
+    extraConnectSrc: ""
+    ## @param appConfigValues.customCSP.extraScriptSrc Extra domains to append to the script-src CSP directive
+    extraScriptSrc: ""
+    ## @param appConfigValues.customCSP.extraStyleSrc Extra domains to append to the style-src CSP directive
+    extraStyleSrc: ""
+    ## @param appConfigValues.customCSP.extraFontSrc Extra domains to append to the font-src CSP directive
+    extraFontSrc: ""
+    ## @param appConfigValues.customCSP.extraImgSrc Extra domains to append to the img-src CSP directive
+    extraImgSrc: ""
+    ## @param appConfigValues.customCSP.extraFrameSrc Extra domains to append to the frame-src CSP directive
+    extraFrameSrc: ""
+    ## @param appConfigValues.customCSP.extraFrameAncestors Extra domains to append to the frame-ancestors CSP directive
+    extraFrameAncestors: ""
+    ## @param appConfigValues.customCSP.extraWorkerSrc Extra domains to append to the worker-src CSP directive
+    extraWorkerSrc: ""
+    ## @param appConfigValues.customCSP.extraChildSrc Extra domains to append to the child-src CSP directive
+    extraChildSrc: ""
+    ## @param appConfigValues.customCSP.extraDefaultSrc Extra domains to append to the default-src CSP directive
+    extraDefaultSrc: ""
   defaultAtLocation:
     ## @param appConfigValues.defaultAtLocation.bigquery The default AT location for BigQuery connections
     bigquery: ""
