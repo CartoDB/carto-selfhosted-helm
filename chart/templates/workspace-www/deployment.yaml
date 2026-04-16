@@ -163,6 +163,8 @@ spec:
               mountPath: /www/data/config
             - name: tmp
               mountPath: /tmp
+            - name: nginx-conf-d
+              mountPath: /etc/nginx/conf.d
             - name: nginx-shared-snippets
               mountPath: /etc/nginx/conf.d/shared-snippets
             {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
@@ -179,6 +181,9 @@ spec:
         {{- end }}
       volumes:
         - name: config
+          emptyDir:
+            medium: Memory
+        - name: nginx-conf-d
           emptyDir:
             medium: Memory
         - name: nginx-shared-snippets
