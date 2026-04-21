@@ -111,8 +111,6 @@ spec:
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "CARTO_SELFHOSTED_INSTANCE_ID"
               "ENCRYPTION_SECRET_KEY"
-              "EXPORTS_S3_BUCKET_ACCESS_KEY_ID"
-              "EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY"
               "IMPORT_ACCESSKEYID"
               "IMPORT_AWS_ACCESS_KEY_ID"
               "IMPORT_AWS_SECRET_ACCESS_KEY"
@@ -130,8 +128,6 @@ spec:
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "CARTO_SELFHOSTED_INSTANCE_ID"
               "ENCRYPTION_SECRET_KEY"
-              "EXPORTS_S3_BUCKET_ACCESS_KEY_ID"
-              "EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY"
               "IMPORT_ACCESSKEYID"
               "IMPORT_AWS_ACCESS_KEY_ID"
               "IMPORT_AWS_SECRET_ACCESS_KEY"
