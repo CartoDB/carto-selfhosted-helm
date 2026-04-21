@@ -87,6 +87,7 @@ data:
   CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED: {{ .Values.externalPostgresql.awsEksPodIdentityEnabled | quote }}
   {{- end }}
   IMPORT_AWS_CUSTOM_BUCKET_ROLE_ARN: {{ .Values.appConfigValues.importAwsRoleArn | quote }}
+  IMPORT_DATA_IMPORTS_BUCKET: {{ .Values.appConfigValues.workspaceImportsBucket | quote }}
   IMPORT_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
   {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
   {{- if .Values.appConfigValues.googleCloudStorageProjectId }}
