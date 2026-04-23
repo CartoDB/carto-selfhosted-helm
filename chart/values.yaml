@@ -6118,6 +6118,14 @@ aiApi:
   ## @param aiApi.lifecycleHooks for the ai-api container(s) to automate configuration before or after startup
   ##
   lifecycleHooks: {}
+  ## @param aiApi.customHeaders Custom HTTP headers to inject into every outgoing LLM request. Rendered as JSON into the AI_CUSTOM_HEADERS env var. Intended for corporate LLM gateways that require authentication or tracking headers. Supports template variables resolved per-request: `{{sso_user_id}}`, `{{client_ip}}`, `{{user_agent}}`, `{{account_id}}`, `{{ai_feature}}`, `{{ai_proxy_ip}}`.
+  ## e.g:
+  ## customHeaders:
+  ##   X-Gateway-User-Type: "ASSOCIATE"
+  ##   X-Gateway-User-Name: "{{sso_user_id}}"
+  ##   X-Gateway-User-IP: "{{client_ip}}"
+  ##
+  customHeaders: {}
   ## @param aiApi.extraEnvVars Array with extra environment variables to add to ai-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
