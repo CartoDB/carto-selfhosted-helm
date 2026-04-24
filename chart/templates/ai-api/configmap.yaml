@@ -23,6 +23,9 @@ data:
   AI_API_PUBLIC_URL_ALLOWED_HOSTS: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   AI_API_PUBLIC_URL_HOST: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   AI_API_PUBLIC_URL_TEMPLATE: 'https://${host}/api${path}'
+  {{- if .Values.aiApi.customHeaders }}
+  AI_CUSTOM_HEADERS: {{ .Values.aiApi.customHeaders | toJson | quote }}
+  {{- end }}
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
