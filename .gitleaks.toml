@@ -1,0 +1,77 @@
+# Gitleaks configuration for carto-selfhosted-helm
+# Docs: https://github.com/gitleaks/gitleaks#configuration
+
+title = "Gitleaks Configuration for CARTO Self-Hosted Helm Chart"
+
+[extend]
+# Use default Gitleaks rules as a baseline
+useDefault = true
+
+# Custom rules for credential formats used by components in this chart
+# that the default Gitleaks ruleset does not cover.
+
+[[rules]]
+id = "launchdarkly-server-sdk-key"
+description = "LaunchDarkly server-side SDK key (sdk-<uuid>)"
+regex = '''\bsdk-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b'''
+tags = ["launchdarkly", "credentials"]
+
+[[rules]]
+id = "generic-sk-prefixed-key"
+description = "Generic sk-prefixed API key"
+regex = '''\bsk-[A-Za-z0-9_-]{20,}\b'''
+tags = ["credentials"]
+
+[allowlist]
+description = "Allowlist for known safe patterns in the helm chart repo"
+
+regexes = [
+  # Example / placeholder values in documentation and templates
+  '''example\.com''',
+  '''YOUR_.*_HERE''',
+  '''REPLACE_ME''',
+  '''FILL_ME''',
+  '''<[A-Z_]+>''',
+  # Helm template placeholders
+  '''\{\{[^}]+\}\}''',
+  # NOTE: bare UUIDs are intentionally not allowlisted here. Some credential
+  # formats use UUID-shaped suffixes; an over-broad UUID allowlist would
+  # weaken the scan.
+  # GCP project IDs (public identifiers, not secrets)
+  '''projects/[a-z0-9-]+''',
+  # Hubspot form IDs are public (embedded in frontend HTML), not API keys.
+  # Default gitleaks hubspot-api-key rule flags UUID-shaped values — too broad.
+  # The value below is REACT_APP_HUBSPOT_LIMIT_FORM_ID, a public marketing
+  # form identifier intentionally shipped to browsers.
+  '''cd9486fa-5766-4bac-81b9-d8c6cd029b3b''',
+  # Example AWS account IDs in documentation
+  '''123456789012''',
+  # localhost URLs for local dev / docs
+  '''http://localhost:\d+''',
+  '''https://localhost:\d+''',
+]
+
+# Files and paths to skip. Regex patterns, not globs.
+paths = [
+  # Git internal
+  '''\.git/''',
+  # Git worktrees used by contributors
+  '''^\.worktrees/''',
+  # Documentation and generated README content
+  '''README\.md$''',
+  '''^docs/''',
+  '''CLAUDE\.md$''',
+  # Chart-packaged archives (produced by `helm package`)
+  '''\.tgz$''',
+  # Replicated preflight / support bundles (also in .gitignore, but belt + suspenders)
+  '''preflightbundle-.*\.tar\.gz$''',
+  '''support-bundle-.*\.tar\.gz$''',
+  '''analyzer-bundle-.*\.tar\.gz$''',
+  # Gitleaks report artifacts
+  '''gitleaks-report\.json$''',
+]
+
+# Commits to skip (leave empty; prefer fixing over skipping)
+# commits = [
+#   "<sha>",
+# ]
