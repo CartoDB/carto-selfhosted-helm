@@ -19,7 +19,7 @@ chart/                       Helm chart — source of truth
   values.yaml                full parameter surface; drives auto-generated chart/README.md
   templates/<component>/     per-component manifests (configmap, deployment, hpa, ingress, pdb, service, secret)
   templates/_helpers.tpl     fullname, baseUrl, secretAssociation map (ENV → values path)
-  templates/_validators.tpl  early-failing template guards (Postgres / Redis / Proxy / log level)
+  templates/_validators.tpl  early-failing template guards (Postgres / Redis / Proxy / log level / ServiceAccount)
   templates/_commonChecks.tpl preflight & support-bundle collectors and analyzers
   templates/preflight.yaml   troubleshoot.sh preflight Secret
   templates/support-bundle.yaml troubleshoot.sh support bundle Secret
