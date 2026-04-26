@@ -1,0 +1,19 @@
+# =============================================================================
+# THIS FILE IS A TEST ARTIFACT FOR THE GITLEAKS WORKFLOW.
+# It contains SYNTHETIC values that match credential regex patterns but are
+# NOT real credentials. The all-zeros UUID and the literal string "Dummy" /
+# "Synthetic" / "Fake" / "DoNotUse" make these values obviously inert.
+# This file should be deleted before this branch is closed.
+# =============================================================================
+
+# Synthetic value matching launchdarkly-server-sdk-key (sdk-<uuid>):
+launchdarkly_sdk_key_synthetic: sdk-00000000-1111-2222-3333-444444444444
+
+# Synthetic value matching generic-sk-prefixed-key (sk-<>=20 chars>):
+litellm_master_key_synthetic: sk-SyntheticDoNotUseValue1234
+
+# Synthetic value matching gitleaks default aws-access-token:
+aws_access_key_id_synthetic: AKIAIOSFODNN7EXAMPLE
+
+# Synthetic value matching gitleaks default github-pat:
+github_pat_synthetic: ghp_FakeDummyTokenForTestValidation0001
