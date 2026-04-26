@@ -608,6 +608,40 @@ the user supplies the value inline.
 {{- end -}}
 
 
+{{/*
+Return redactor specs for the preflight and support-bundle collectors.
+
+These run inside Replicated Troubleshoot at bundle-generation time and
+replace any matched substring with `***HIDDEN***` before the bundle is
+written to disk. They are a defense-in-depth layer, NOT a substitute for
+proper secret handling in the chart itself.
+
+Patterns are intentionally narrow to minimise false-positive redactions
+that would degrade the usefulness of debug bundles. Only well-formed
+credential shapes are matched. Add new patterns here when a new credential
+format is introduced to the platform.
+*/}}
+{{- define "carto.replicated.commonChecks.redactors" }}
+- name: launchdarkly-sdk-keys
+  removals:
+    regex:
+      - redactor: '(?P<mask>\bsdk-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b)'
+- name: sk-prefixed-keys
+  removals:
+    regex:
+      - redactor: '(?P<mask>\bsk-[A-Za-z0-9_-]{20,}\b)'
+- name: aws-access-key-ids
+  removals:
+    regex:
+      - redactor: '(?P<mask>\bAKIA[0-9A-Z]{16}\b)'
+- name: pod-env-value-fields
+  removals:
+    yamlPath:
+      - "spec.containers.*.env.*.value"
+      - "spec.initContainers.*.env.*.value"
+{{- end -}}
+
+
 {{ define "carto.tenantRequirementsChecker.externalPostgresql.sslCA" }}
   {{- $value := .Values.externalPostgresql.sslCA -}}
   {{- $maxLength := 10000 -}}
