@@ -120,11 +120,27 @@ Generate a secret file content for multiple variables
 {{- end -}}
 
 {{/*
-Generate the secret def of one secret to be used in pods definitions
+Generate the secret def of one secret to be used in pods definitions.
+
+When the caller passes an optional `defaultSecret` (and optionally
+`defaultSecretKey`), the helper falls back to a chart-generated Secret
+reference if the user provided the value inline (i.e. did not set
+`existingSecret.name`). This avoids inlining sensitive values into
+PodSpecs while keeping backward compatibility with callers that don't
+pass a default.
+
+Resolution order:
+  1. User-provided `existingSecret` -> reference that.
+  2. Inline `value` AND caller passed `defaultSecret` -> reference the
+     chart-generated Secret using `defaultSecret` as the Secret name and
+     either `defaultSecretKey` (if provided) or the var name as the key.
+  3. Otherwise -> emit nothing (legitimate empty / not configured).
 */}}
 {{- define "carto._utils.generateSecretDef" -}}
 {{- $var := .var -}}
 {{- $context := .context -}}
+{{- $defaultSecret := default "" .defaultSecret -}}
+{{- $defaultSecretKey := default $var .defaultSecretKey -}}
 {{- $mapSecrets := include "carto._utils.secretAssociation" . | fromYaml -}}
 {{- $key := get $mapSecrets $var -}}
 {{- $secretGroupName := regexReplaceAll "\\..*" $key "" -}}
@@ -135,15 +151,18 @@ Generate the secret def of one secret to be used in pods definitions
 {{- $secretExistingName := $secretEntry.existingSecret.name -}}
 {{- $secretExistingKey := $secretEntry.existingSecret.key -}}
 
-{{/*
-{{ get $mapSecrets $key }}({{ $key }})={{ $secretValue }}:{{ $secretExistingName }}:{{ $secretExistingKey }}:
-*/}}
 {{- if $secretExistingName }}
 - name: {{ $var }}
   valueFrom:
     secretKeyRef:
       name: {{ $secretExistingName | quote }}  # {{ $key }}.existingSecret.name
       key: {{ $secretExistingKey | quote }}    # {{ $key }}.existingSecret.key
+{{- else if and $secretValue $defaultSecret }}
+- name: {{ $var }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ $defaultSecret | quote }}       # {{ $key }}.value (chart-generated Secret)
+      key: {{ $defaultSecretKey | quote }}
 {{- end }}
 {{- end -}}
 
