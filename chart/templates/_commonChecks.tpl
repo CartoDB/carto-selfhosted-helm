@@ -66,59 +66,82 @@ Return common collectors for preflights and support-bundle
                   fi
                 done
             env:
+              {{/*
+              Every *_FILE_CONTENT env var below references a chart-generated
+              Secret (or ConfigMap) via `valueFrom`. Inlining sensitive material
+              with `value:` here causes Replicated Troubleshoot to capture it
+              into the support bundle when the tenant-requirements-check pod is
+              snapshotted by the runPod collector. Any new file-content env
+              MUST follow the same pattern.
+              */}}
               {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
-              {{- if eq .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name "" }}
-              - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
-                value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | b64enc | quote }}
-              {{- else }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
                 valueFrom:
                   secretKeyRef:
+                    {{- if eq .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name "" }}
+                    name: {{ include "carto.google.secretName" . | quote }}
+                    key: "key.json"
+                    {{- else }}
                     name: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name | quote }}
                     key: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.key | quote }}
-              {{- end }}
+                    {{- end }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.google.secretMountAbsolutePath" . }}
               {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
-              {{- if eq .Values.appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name "" }}
-              - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_CONTENT
-                value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | b64enc | quote }}
-              {{- else }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_CONTENT
                 valueFrom:
                   secretKeyRef:
+                    {{- if eq .Values.appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name "" }}
+                    name: {{ include "carto.googleCloudStorageServiceAccountKey.secretName" . | quote }}
+                    key: "key.json"
+                    {{- else }}
                     name: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name | quote }}
                     key: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.existingSecret.key | quote }}
-              {{- end }}
+                    {{- end }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
               {{- end }}
               {{- end }}
               {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
-              {{/* We need to split the SSL CA content in chunks of 10000 characters */}}
-              {{- include "carto.tenantRequirementsChecker.externalPostgresql.sslCA" . }}
+              - name: POSTGRES_SSL_CA__FILE_CONTENT
+                valueFrom:
+                  configMapKeyRef:
+                    name: {{ include "carto.postgresql.configMapName" . | quote }}
+                    key: {{ include "carto.postgresql.configMapMountFilename" . | quote }}
               - name: POSTGRES_SSL_CA__FILE_PATH
                 value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
               - name: REDIS_TLS_CA__FILE_CONTENT
-                value: {{ .Values.externalRedis.tlsCA | b64enc | quote }}
+                valueFrom:
+                  configMapKeyRef:
+                    name: {{ include "carto.redis.configMapName" . | quote }}
+                    key: {{ include "carto.redis.configMapMountFilename" . | quote }}
               - name: REDIS_TLS_CA__FILE_PATH
                 value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
               - name: PROXY_SSL_CA__FILE_CONTENT
-                value: {{ .Values.externalProxy.sslCA | b64enc | quote }}
+                valueFrom:
+                  configMapKeyRef:
+                    name: {{ include "carto.proxy.configMapName" . | quote }}
+                    key: {{ include "carto.proxy.configMapMountFilename" . | quote }}
               - name: PROXY_SSL_CA__FILE_PATH
                 value: {{ include "carto.proxy.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
               - name: ROUTER_SSL_CERT__FILE_CONTENT
-                value: {{ .Values.router.tlsCertificates.certificateValueBase64 | quote }}
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ include "carto.tlsCerts.secretName" . | quote }}
+                    key: {{ include "carto.tlsCerts.secretCertKey" . | quote }}
               - name: ROUTER_SSL_CERT__FILE_PATH
                 value: "/etc/ssl/certs/cert.crt"
               - name: ROUTER_SSL_CERT_KEY__FILE_CONTENT
-                value: {{ .Values.router.tlsCertificates.privateKeyValueBase64 | quote }}
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ include "carto.tlsCerts.secretName" . | quote }}
+                    key: {{ include "carto.tlsCerts.secretKeyKey" . | quote }}
               - name: ROUTER_SSL_CERT_KEY__FILE_PATH
                 value: "/etc/ssl/certs/cert.key"
               {{- end }}
@@ -565,91 +588,83 @@ Return customer values to use in preflights and support-bundle
 {{- end -}}
 
 {{/*
-Return customer secrets to use in preflights and support-bundle
+Return customer secrets to use in preflights and support-bundle.
+
+Every entry in this snippet must reference a Kubernetes Secret via
+`valueFrom.secretKeyRef`. Inlining sensitive values directly into the
+PodSpec causes them to be captured by the Replicated Troubleshoot
+collectors when the tenant-requirements-check pod is snapshotted. Any
+new entry added here MUST follow the same pattern.
+
+For Postgres / Redis, the `carto.postgresql.secretName` and
+`carto.redis.secretName` helpers already resolve to a chart-generated
+Secret when the user did not provide an `existingSecret`, so a single
+`secretKeyRef` block covers both paths.
+
+For values stored in workload-scoped Secrets (LaunchDarkly, AWS, Azure),
+`carto._utils.generateSecretDef` is invoked with `defaultSecret` pointing
+at the workspace-api Secret, which is generated by the chart whenever
+the user supplies the value inline.
 */}}
 {{- define "carto.replicated.tenantRequirementsChecker.customerSecrets" }}
-  {{- if eq .Values.externalPostgresql.existingSecret "" }}
-  - name: WORKSPACE_POSTGRES_PASSWORD
-    value: {{ .Values.externalPostgresql.password | quote }}
-  {{- else }}
   - name: WORKSPACE_POSTGRES_PASSWORD
     valueFrom:
       secretKeyRef:
         name: {{ include "carto.postgresql.secretName" . }}
-        key: {{ include "carto.postgresql.secret.key" . }}
-  {{- end -}}
-  {{- if eq .Values.externalRedis.existingSecret "" }}
-  - name: REDIS_PASSWORD
-    value: {{ .Values.externalRedis.password | quote }}
-  {{- else }}
+        key: {{ include "carto.postgresql.secret.key" . | quote }}
   - name: REDIS_PASSWORD
     valueFrom:
       secretKeyRef:
         name: {{ include "carto.redis.secretName" . }}
         key: {{ include "carto.redis.existingsecret.key" . | quote }}
-  {{- end -}}
-  {{- if eq .Values.cartoSecrets.launchDarklySdkKey.existingSecret.name "" }}
-  - name: LAUNCHDARKLY_SDK_KEY
-    value: {{ .Values.cartoSecrets.launchDarklySdkKey.value | quote }}
-  {{- else -}}
-  {{ include "carto._utils.generateSecretDef" (dict "var" "LAUNCHDARKLY_SDK_KEY" "context" .) | nindent 2 }}
-  {{- end -}}
-  {{- if eq .Values.appConfigValues.storageProvider "s3" -}}
-  {{- if eq .Values.appSecrets.awsAccessKeyId.existingSecret.name "" }}
-  - name: WORKSPACE_THUMBNAILS_ACCESSKEYID
-    value: {{ .Values.appSecrets.awsAccessKeyId.value | quote }}
-  {{- else -}}
-  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_THUMBNAILS_ACCESSKEYID" "context" .) | nindent 2 }}
-  {{- end -}}
-  {{- if eq .Values.appSecrets.awsAccessKeyId.existingSecret.name "" }}
-  - name: WORKSPACE_IMPORTS_ACCESSKEYID
-    value: {{ .Values.appSecrets.awsAccessKeyId.value | quote }}
-  {{- else -}}
-  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_ACCESSKEYID" "context" .) | nindent 2 }}
-  {{- end -}}
-  {{- if eq .Values.appSecrets.awsAccessKeySecret.existingSecret.name "" }}
-  - name: WORKSPACE_THUMBNAILS_SECRETACCESSKEY
-    value: {{ .Values.appSecrets.awsAccessKeySecret.value | quote }}
-  {{- else -}}
-  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_THUMBNAILS_SECRETACCESSKEY" "context" .) | nindent 2 }}
-  {{- end -}}
-  {{- if eq .Values.appSecrets.awsAccessKeySecret.existingSecret.name "" }}
-  - name: WORKSPACE_IMPORTS_SECRETACCESSKEY
-    value: {{ .Values.appSecrets.awsAccessKeySecret.value | quote }}
-  {{- else -}}
-  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_SECRETACCESSKEY" "context" .) | nindent 2 }}
-  {{- end -}}
-  {{- end -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "LAUNCHDARKLY_SDK_KEY" "context" . "defaultSecret" (include "carto.workspaceApi.fullname" .)) | nindent 2 }}
+  {{- if eq .Values.appConfigValues.storageProvider "s3" }}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_THUMBNAILS_ACCESSKEYID"     "context" . "defaultSecret" (include "carto.workspaceApi.fullname" .)) | nindent 2 }}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_ACCESSKEYID"        "context" . "defaultSecret" (include "carto.workspaceApi.fullname" .)) | nindent 2 }}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_THUMBNAILS_SECRETACCESSKEY" "context" . "defaultSecret" (include "carto.workspaceApi.fullname" .)) | nindent 2 }}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_SECRETACCESSKEY"    "context" . "defaultSecret" (include "carto.workspaceApi.fullname" .)) | nindent 2 }}
+  {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
-  {{- if eq .Values.appSecrets.azureStorageAccessKey.existingSecret.name "" }}
-  - name: WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY
-    value: {{ .Values.appSecrets.azureStorageAccessKey.value | quote }}
-  {{- else -}}
-  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY" "context" .) | nindent 2 }}
-  {{- end -}}
-  {{- if eq .Values.appSecrets.azureStorageAccessKey.existingSecret.name "" }}
-  - name: WORKSPACE_IMPORTS_STORAGE_ACCESSKEY
-    value: {{ .Values.appSecrets.azureStorageAccessKey.value | quote }}
-  {{- else -}}
-  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY" "context" .) | nindent 2 }}
-  {{- end -}}
-  {{- end -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY" "context" . "defaultSecret" (include "carto.workspaceApi.fullname" .)) | nindent 2 }}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY"    "context" . "defaultSecret" (include "carto.workspaceApi.fullname" .)) | nindent 2 }}
+  {{- end }}
 {{- end -}}
 
 
-{{ define "carto.tenantRequirementsChecker.externalPostgresql.sslCA" }}
-  {{- $value := .Values.externalPostgresql.sslCA -}}
-  {{- $maxLength := 10000 -}}
-  {{- if gt (len $value) $maxLength -}}
-    {{- $neededChunks := int (div (len $value) $maxLength | ceil) -}}
-    {{- range $i, $chunk := until (add $neededChunks 1 | int) -}}
-      {{- $envVarName := printf "POSTGRES_SSL_CA__FILE_CONTENT_%02d" (add $i 1) }}
-      {{- $chunk := substr (mul $i $maxLength | int) (mul (add $i 1) $maxLength | int) $value }}
-              - name: {{$envVarName}}
-                value: {{ $chunk | b64enc }}
-    {{- end -}}
-  {{- else -}}
-  - name: POSTGRES_SSL_CA__FILE_CONTENT
-    {{ printf "value: %s" ($value | b64enc | quote) | indent 12 }}
-  {{- end -}}
-{{ end }}
+{{/*
+Return redactor specs for the preflight and support-bundle collectors.
+
+These run inside Replicated Troubleshoot at bundle-generation time and
+replace any matched substring with `***HIDDEN***` before the bundle is
+written to disk. They are a defense-in-depth layer, NOT a substitute for
+proper secret handling in the chart itself.
+
+Patterns are intentionally narrow to minimise false-positive redactions
+that would degrade the usefulness of debug bundles. Only well-formed
+credential shapes are matched. Add new patterns here when a new credential
+format is introduced to the platform.
+
+Note: Replicated Troubleshoot ships built-in redactors that already mask
+env vars whose names match `*PASSWORD*`, `*TOKEN*`, `*ACCESS_KEY_ID`, and
+`*SECRET_ACCESS_KEY` in the JSON-shaped `"name":"...","value":"..."`
+captures produced by the runPod collector. Do not add rules that
+duplicate those defaults, and do not add broad `yamlPath` rules over
+`spec.containers.*.env.*.value` — they redact non-sensitive env vars
+across every captured pod and break debug bundles.
+*/}}
+{{- define "carto.replicated.commonChecks.redactors" }}
+- name: launchdarkly-sdk-keys
+  removals:
+    regex:
+      - redactor: '(?P<mask>\bsdk-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b)'
+- name: sk-prefixed-keys
+  removals:
+    regex:
+      - redactor: '(?P<mask>\bsk-[A-Za-z0-9_-]{20,}\b)'
+- name: aws-access-key-ids
+  removals:
+    regex:
+      - redactor: '(?P<mask>\b(?:AKIA|ASIA)[0-9A-Z]{16}\b)'
+{{- end -}}
+
+

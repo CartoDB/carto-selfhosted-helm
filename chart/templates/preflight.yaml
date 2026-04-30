@@ -17,3 +17,5 @@ stringData:
     {{- include "carto.replicated.commonChecks.collectors" . | indent 6 }}
       analyzers:
     {{- include "carto.replicated.commonChecks.analyzers" . | indent 6 }}
+      redactors:
+    {{- include "carto.replicated.commonChecks.redactors" . | indent 6 }}
