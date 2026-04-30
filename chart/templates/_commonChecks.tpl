@@ -588,7 +588,7 @@ the user supplies the value inline.
     valueFrom:
       secretKeyRef:
         name: {{ include "carto.postgresql.secretName" . }}
-        key: {{ include "carto.postgresql.secret.key" . }}
+        key: {{ include "carto.postgresql.secret.key" . | quote }}
   - name: REDIS_PASSWORD
     valueFrom:
       secretKeyRef:
@@ -620,6 +620,14 @@ Patterns are intentionally narrow to minimise false-positive redactions
 that would degrade the usefulness of debug bundles. Only well-formed
 credential shapes are matched. Add new patterns here when a new credential
 format is introduced to the platform.
+
+Note: Replicated Troubleshoot ships built-in redactors that already mask
+env vars whose names match `*PASSWORD*`, `*TOKEN*`, `*ACCESS_KEY_ID`, and
+`*SECRET_ACCESS_KEY` in the JSON-shaped `"name":"...","value":"..."`
+captures produced by the runPod collector. Do not add rules that
+duplicate those defaults, and do not add broad `yamlPath` rules over
+`spec.containers.*.env.*.value` — they redact non-sensitive env vars
+across every captured pod and break debug bundles.
 */}}
 {{- define "carto.replicated.commonChecks.redactors" }}
 - name: launchdarkly-sdk-keys
@@ -633,12 +641,7 @@ format is introduced to the platform.
 - name: aws-access-key-ids
   removals:
     regex:
-      - redactor: '(?P<mask>\bAKIA[0-9A-Z]{16}\b)'
-- name: pod-env-value-fields
-  removals:
-    yamlPath:
-      - "spec.containers.*.env.*.value"
-      - "spec.initContainers.*.env.*.value"
+      - redactor: '(?P<mask>\b(?:AKIA|ASIA)[0-9A-Z]{16}\b)'
 {{- end -}}
 
 
