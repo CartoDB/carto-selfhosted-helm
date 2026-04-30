@@ -7,7 +7,7 @@ metadata:
 spec:
   chart:
     name: carto
-    chartVersion: 1.251.6
+    chartVersion: 1.252.2
   builder:
     replicated:
       enabled: true
