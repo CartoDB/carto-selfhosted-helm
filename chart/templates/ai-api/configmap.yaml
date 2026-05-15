@@ -23,6 +23,7 @@ data:
   AI_API_PUBLIC_URL_ALLOWED_HOSTS: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   AI_API_PUBLIC_URL_HOST: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   AI_API_PUBLIC_URL_TEMPLATE: 'https://${host}/api${path}'
+  AI_WORKSPACE_VITE_URL_TEMPLATE: "https://{{ .Values.appConfigValues.selfHostedDomain }}"
   {{- if .Values.aiApi.customHeaders }}
   AI_CUSTOM_HEADERS: {{ .Values.aiApi.customHeaders | toJson | quote }}
   {{- end }}
