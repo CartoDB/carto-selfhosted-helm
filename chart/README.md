@@ -200,8 +200,8 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cartoSecrets.instanceId.value`                                | Value of the secret used to define the instance ID for the active installation. One of `cartoSecrets.instanceId.value` or `cartoSecrets.instanceId.existingSecret` could be defined.                                                                                  | `""`             |
 | `cartoSecrets.instanceId.existingSecret.name`                  | Name of the pre-existent secret containing the `cartoSecrets.instanceId.existingSecret.key`. If `cartoSecrets.instanceId.value` is defined, this value is going to be ignored and not used.                                                                           | `""`             |
 | `cartoSecrets.instanceId.existingSecret.key`                   | Key to find in `cartoSecrets.instanceId.existingSecret.name` where the value of `cartoSecrets.instanceId` is found. If `cartoSecrets.instanceId.value` is defined, this value is going to be ignored and not used.                                                    | `""`             |
-| `cartoSecrets.redisPassword`                                   | The password for the Valkey instance.                                                                                                                                                                                                                                  |                  |
-| `cartoSecrets.redisPassword.value`                             | Value of the secret used to define the password for the Valkey instance. One of `cartoSecrets.redisPassword.value` or `cartoSecrets.redisPassword.existingSecret` could be defined.                                                                                    | `""`             |
+| `cartoSecrets.redisPassword`                                   | The password for the Valkey instance.                                                                                                                                                                                                                                 |                  |
+| `cartoSecrets.redisPassword.value`                             | Value of the secret used to define the password for the Valkey instance. One of `cartoSecrets.redisPassword.value` or `cartoSecrets.redisPassword.existingSecret` could be defined.                                                                                   | `""`             |
 | `cartoSecrets.redisPassword.existingSecret.name`               | Name of the pre-existent secret containing the `cartoSecrets.redisPassword.existingSecret.key`. If `cartoSecrets.redisPassword.value` is defined, this value is going to be ignored and not used.                                                                     | `""`             |
 | `cartoSecrets.redisPassword.existingSecret.key`                | Key to find in `cartoSecrets.redisPassword.existingSecret.name` where the value of `cartoSecrets.redisPassword` is found. If `cartoSecrets.redisPassword.value` is defined, this value is going to be ignored and not used.                                           | `redis-password` |
 | `cartoSecrets.litellmMasterKey`                                | The master key for the Litellm instance.                                                                                                                                                                                                                              |                  |
@@ -1639,29 +1639,29 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 | Name                                                              | Description                                                                                            | Value                           |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------- |
-| `internalRedis.enabled`                                           | Switch value between internal-valkey deployment and external-valkey deployment                   | `true`                          |
+| `internalRedis.enabled`                                           | Switch value between internal-valkey deployment and external-valkey deployment                         | `true`                          |
 | `internalRedis.image.registry`                                    | internal-valkey image registry                                                                         | `gcr.io/carto-onprem-artifacts` |
 | `internalRedis.image.repository`                                  | internal-valkey image repository                                                                       | `valkey`                        |
 | `internalRedis.image.tag`                                         | internal-valkey image tag (immutable tags are recommended)                                             | `""`                            |
 | `internalRedis.image.pullPolicy`                                  | internal-valkey image pull policy                                                                      | `IfNotPresent`                  |
 | `internalRedis.image.pullSecrets`                                 | internal-valkey image pull secrets                                                                     | `[]`                            |
 | `internalRedis.image.pullSecrets`                                 | Image-pull secrets for private registries                                                              | `[]`                            |
-| `internalRedis.auth.enabled`                                      | Enable password authentication on internal-valkey                                                       | `true`                          |
-| `internalRedis.auth.password`                                     | Password for Valkey authentication                                                                      | `""`                            |
-| `internalRedis.containerPorts.redis`                              | internal-valkey container port                                                                          | `6379`                          |
-| `internalRedis.livenessProbe.enabled`                             | Enable livenessProbe on internal-valkey containers                                                      | `true`                          |
+| `internalRedis.auth.enabled`                                      | Enable password authentication on internal-valkey                                                      | `true`                          |
+| `internalRedis.auth.password`                                     | Password for Valkey authentication                                                                     | `""`                            |
+| `internalRedis.containerPorts.redis`                              | internal-valkey container port                                                                         | `6379`                          |
+| `internalRedis.livenessProbe.enabled`                             | Enable livenessProbe on internal-valkey containers                                                     | `true`                          |
 | `internalRedis.livenessProbe.initialDelaySeconds`                 | Initial delay seconds for livenessProbe                                                                | `10`                            |
 | `internalRedis.livenessProbe.periodSeconds`                       | Period seconds for livenessProbe                                                                       | `30`                            |
 | `internalRedis.livenessProbe.timeoutSeconds`                      | Timeout seconds for livenessProbe                                                                      | `5`                             |
 | `internalRedis.livenessProbe.failureThreshold`                    | Failure threshold for livenessProbe                                                                    | `5`                             |
 | `internalRedis.livenessProbe.successThreshold`                    | Success threshold for livenessProbe                                                                    | `1`                             |
-| `internalRedis.readinessProbe.enabled`                            | Enable readinessProbe on internal-valkey containers                                                     | `true`                          |
+| `internalRedis.readinessProbe.enabled`                            | Enable readinessProbe on internal-valkey containers                                                    | `true`                          |
 | `internalRedis.readinessProbe.initialDelaySeconds`                | Initial delay seconds for readinessProbe                                                               | `10`                            |
 | `internalRedis.readinessProbe.periodSeconds`                      | Period seconds for readinessProbe                                                                      | `30`                            |
 | `internalRedis.readinessProbe.timeoutSeconds`                     | Timeout seconds for readinessProbe                                                                     | `5`                             |
 | `internalRedis.readinessProbe.failureThreshold`                   | Failure threshold for readinessProbe                                                                   | `5`                             |
 | `internalRedis.readinessProbe.successThreshold`                   | Success threshold for readinessProbe                                                                   | `1`                             |
-| `internalRedis.startupProbe.enabled`                              | Enable startupProbe on internal-valkey containers                                                       | `false`                         |
+| `internalRedis.startupProbe.enabled`                              | Enable startupProbe on internal-valkey containers                                                      | `false`                         |
 | `internalRedis.startupProbe.initialDelaySeconds`                  | Initial delay seconds for startupProbe                                                                 | `10`                            |
 | `internalRedis.startupProbe.periodSeconds`                        | Period seconds for startupProbe                                                                        | `30`                            |
 | `internalRedis.startupProbe.timeoutSeconds`                       | Timeout seconds for startupProbe                                                                       | `5`                             |
@@ -1674,46 +1674,46 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `internalRedis.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                                 | `200m`                          |
 | `internalRedis.resources.requests.memory`                         | Container memory requests in MiB                                                                       | `512Mi`                         |
 | `internalRedis.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                                               | `200m`                          |
-| `internalRedis.podSecurityContext.enabled`                        | Enabled internal-valkey pods' Security Context                                                          | `true`                          |
-| `internalRedis.podSecurityContext.fsGroup`                        | Set internal-valkey pod's Security Context fsGroup                                                      | `1000`                          |
-| `internalRedis.podSecurityContext.supplementalGroups[0]`          | Set internal-valkey pod's Security Context supplementalGroups                                           | `2345`                          |
-| `internalRedis.containerSecurityContext.enabled`                  | Enabled internal-valkey containers' Security Context                                                    | `true`                          |
-| `internalRedis.containerSecurityContext.runAsUser`                | Set internal-valkey containers' Security Context runAsUser                                              | `1000`                          |
-| `internalRedis.containerSecurityContext.runAsGroup`               | Set internal-valkey containers' Security Context runAsGroup                                             | `1000`                          |
-| `internalRedis.containerSecurityContext.runAsNonRoot`             | Set internal-valkey containers' Security Context runAsNonRoot                                           | `true`                          |
-| `internalRedis.containerSecurityContext.allowPrivilegeEscalation` | Set internal-valkey containers' Security Context allowPrivilegeEscalation                               | `false`                         |
-| `internalRedis.containerSecurityContext.readOnlyRootFilesystem`   | Set internal-valkey containers' Security Context readOnlyRootFilesystem                                 | `true`                          |
-| `internalRedis.containerSecurityContext.capabilities.drop`        | Removes internal-valkey containers' Security Context capabilities                                       | `["all"]`                       |
+| `internalRedis.podSecurityContext.enabled`                        | Enabled internal-valkey pods' Security Context                                                         | `true`                          |
+| `internalRedis.podSecurityContext.fsGroup`                        | Set internal-valkey pod's Security Context fsGroup                                                     | `1000`                          |
+| `internalRedis.podSecurityContext.supplementalGroups[0]`          | Set internal-valkey pod's Security Context supplementalGroups                                          | `2345`                          |
+| `internalRedis.containerSecurityContext.enabled`                  | Enabled internal-valkey containers' Security Context                                                   | `true`                          |
+| `internalRedis.containerSecurityContext.runAsUser`                | Set internal-valkey containers' Security Context runAsUser                                             | `1000`                          |
+| `internalRedis.containerSecurityContext.runAsGroup`               | Set internal-valkey containers' Security Context runAsGroup                                            | `1000`                          |
+| `internalRedis.containerSecurityContext.runAsNonRoot`             | Set internal-valkey containers' Security Context runAsNonRoot                                          | `true`                          |
+| `internalRedis.containerSecurityContext.allowPrivilegeEscalation` | Set internal-valkey containers' Security Context allowPrivilegeEscalation                              | `false`                         |
+| `internalRedis.containerSecurityContext.readOnlyRootFilesystem`   | Set internal-valkey containers' Security Context readOnlyRootFilesystem                                | `true`                          |
+| `internalRedis.containerSecurityContext.capabilities.drop`        | Removes internal-valkey containers' Security Context capabilities                                      | `["all"]`                       |
 | `internalRedis.terminationGracePeriodSeconds`                     | Time to wait before force killing the container                                                        | `10`                            |
-| `internalRedis.existingSecret`                                    | The name of an existing Secret with your custom password for internal-valkey                            | `""`                            |
+| `internalRedis.existingSecret`                                    | The name of an existing Secret with your custom password for internal-valkey                           | `""`                            |
 | `internalRedis.command`                                           | Override default container command (useful when using custom images)                                   | `[]`                            |
 | `internalRedis.args`                                              | Override default container args (useful when using custom images)                                      | `[]`                            |
-| `internalRedis.hostAliases`                                       | internal-valkey pods host aliases                                                                       | `[]`                            |
-| `internalRedis.podLabels`                                         | Extra labels for internal-valkey pods                                                                   | `{}`                            |
-| `internalRedis.podAnnotations`                                    | Annotations for internal-valkey pods                                                                    | `{}`                            |
+| `internalRedis.hostAliases`                                       | internal-valkey pods host aliases                                                                      | `[]`                            |
+| `internalRedis.podLabels`                                         | Extra labels for internal-valkey pods                                                                  | `{}`                            |
+| `internalRedis.podAnnotations`                                    | Annotations for internal-valkey pods                                                                   | `{}`                            |
 | `internalRedis.podAffinityPreset`                                 | Pod affinity preset. Ignored if `internalRedis.affinity` is set. Allowed values: `soft` or `hard`      | `""`                            |
 | `internalRedis.podAntiAffinityPreset`                             | Pod anti-affinity preset. Ignored if `internalRedis.affinity` is set. Allowed values: `soft` or `hard` | `soft`                          |
 | `internalRedis.nodeAffinityPreset.type`                           | Node affinity preset type. Ignored if `internalRedis.affinity` is set                                  | `""`                            |
 | `internalRedis.nodeAffinityPreset.key`                            | Node label key to match. Ignored if `internalRedis.affinity` is set                                    | `""`                            |
 | `internalRedis.nodeAffinityPreset.values`                         | Node label values to match. Ignored if `internalRedis.affinity` is set                                 | `[]`                            |
-| `internalRedis.affinity`                                          | Affinity for internal-valkey pods assignment                                                            | `{}`                            |
-| `internalRedis.nodeSelector`                                      | Node labels for internal-valkey pods assignment                                                         | `{}`                            |
-| `internalRedis.tolerations`                                       | Tolerations for internal-valkey pods assignment                                                         | `[]`                            |
-| `internalRedis.priorityClassName`                                 | internal-valkey pods' priorityClassName                                                                 | `""`                            |
-| `internalRedis.schedulerName`                                     | Name of the k8s scheduler (other than default) for internal-valkey pods                                 | `""`                            |
-| `internalRedis.lifecycleHooks`                                    | Lifecycle hooks for internal-valkey container(s)                                                        | `{}`                            |
-| `internalRedis.extraEnvVars`                                      | Extra environment variables for internal-valkey pods                                                    | `[]`                            |
+| `internalRedis.affinity`                                          | Affinity for internal-valkey pods assignment                                                           | `{}`                            |
+| `internalRedis.nodeSelector`                                      | Node labels for internal-valkey pods assignment                                                        | `{}`                            |
+| `internalRedis.tolerations`                                       | Tolerations for internal-valkey pods assignment                                                        | `[]`                            |
+| `internalRedis.priorityClassName`                                 | internal-valkey pods' priorityClassName                                                                | `""`                            |
+| `internalRedis.schedulerName`                                     | Name of the k8s scheduler (other than default) for internal-valkey pods                                | `""`                            |
+| `internalRedis.lifecycleHooks`                                    | Lifecycle hooks for internal-valkey container(s)                                                       | `{}`                            |
+| `internalRedis.extraEnvVars`                                      | Extra environment variables for internal-valkey pods                                                   | `[]`                            |
 | `internalRedis.extraEnvVarsCM`                                    | Name of existing ConfigMap with extra env vars                                                         | `""`                            |
 | `internalRedis.extraEnvVarsSecret`                                | Name of existing Secret with extra env vars                                                            | `""`                            |
-| `internalRedis.extraVolumes`                                      | Optionally specify extra volumes for internal-valkey pod(s)                                             | `[]`                            |
-| `internalRedis.extraVolumeMounts`                                 | Optionally specify extra volumeMounts for internal-valkey container(s)                                  | `[]`                            |
-| `internalRedis.sidecars`                                          | Add additional sidecar containers to internal-valkey pod(s)                                             | `{}`                            |
-| `internalRedis.initContainers`                                    | Add additional init containers to internal-valkey pod(s)                                                | `{}`                            |
+| `internalRedis.extraVolumes`                                      | Optionally specify extra volumes for internal-valkey pod(s)                                            | `[]`                            |
+| `internalRedis.extraVolumeMounts`                                 | Optionally specify extra volumeMounts for internal-valkey container(s)                                 | `[]`                            |
+| `internalRedis.sidecars`                                          | Add additional sidecar containers to internal-valkey pod(s)                                            | `{}`                            |
+| `internalRedis.initContainers`                                    | Add additional init containers to internal-valkey pod(s)                                               | `{}`                            |
 
 ### internalRedis Service Parameters
 
-| Name                                             | Description                                         | Value       |
-| ------------------------------------------------ | --------------------------------------------------- | ----------- |
+| Name                                             | Description                                          | Value       |
+| ------------------------------------------------ | ---------------------------------------------------- | ----------- |
 | `internalRedis.service.type`                     | internal-valkey service type                         | `ClusterIP` |
 | `internalRedis.service.ports.http`               | internal-valkey service HTTP port                    | `6379`      |
 | `internalRedis.service.nodePorts.redis`          | Node port for internal-valkey service                | `""`        |
@@ -1727,15 +1727,15 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### External Valkey parameters
 
-| Name                                      | Description                                                                                 | Value       |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------- | ----------- |
+| Name                                      | Description                                                                                  | Value       |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------- | ----------- |
 | `externalRedis.host`                      | Valkey host                                                                                  | `localhost` |
 | `externalRedis.port`                      | Valkey port number                                                                           | `6379`      |
 | `externalRedis.password`                  | Valkey password                                                                              | `""`        |
 | `externalRedis.tlsEnabled`                | Whether or not connect to Valkey via TLS                                                     | `false`     |
 | `externalRedis.tlsCA`                     | CA certificate in case Valkey TLS cert it's selfsigned                                       | `""`        |
 | `externalRedis.existingSecret`            | Name of an existing secret resource containing the Valkey password in a 'redis-password' key | `""`        |
-| `externalRedis.existingSecretPasswordKey` | Key of the existing secret                                                                  | `""`        |
+| `externalRedis.existingSecretPasswordKey` | Key of the existing secret                                                                   | `""`        |
 
 ### Internal PostgreSQL subchart parameters
 
