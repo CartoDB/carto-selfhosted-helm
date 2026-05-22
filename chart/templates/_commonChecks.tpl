@@ -66,82 +66,59 @@ Return common collectors for preflights and support-bundle
                   fi
                 done
             env:
-              {{/*
-              Every *_FILE_CONTENT env var below references a chart-generated
-              Secret (or ConfigMap) via `valueFrom`. Inlining sensitive material
-              with `value:` here causes Replicated Troubleshoot to capture it
-              into the support bundle when the tenant-requirements-check pod is
-              snapshotted by the runPod collector. Any new file-content env
-              MUST follow the same pattern.
-              */}}
               {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+              {{- if eq .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name "" }}
+              - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
+                value: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.value | b64enc | quote }}
+              {{- else }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
                 valueFrom:
                   secretKeyRef:
-                    {{- if eq .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name "" }}
-                    name: {{ include "carto.google.secretName" . | quote }}
-                    key: "key.json"
-                    {{- else }}
                     name: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name | quote }}
                     key: {{ .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.key | quote }}
-                    {{- end }}
+              {{- end }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.google.secretMountAbsolutePath" . }}
               {{- if ( include "carto.googleCloudStorageServiceAccountKey.used" . ) }}
+              {{- if eq .Values.appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name "" }}
+              - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_CONTENT
+                value: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.value | b64enc | quote }}
+              {{- else }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_CONTENT
                 valueFrom:
                   secretKeyRef:
-                    {{- if eq .Values.appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name "" }}
-                    name: {{ include "carto.googleCloudStorageServiceAccountKey.secretName" . | quote }}
-                    key: "key.json"
-                    {{- else }}
                     name: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.existingSecret.name | quote }}
                     key: {{ .Values.appSecrets.googleCloudStorageServiceAccountKey.existingSecret.key | quote }}
-                    {{- end }}
+              {{- end }}
               - name: STORAGE_SERVICE_ACCOUNT_KEY__FILE_PATH
                 value: {{ include "carto.googleCloudStorageServiceAccountKey.secretMountAbsolutePath" . }}
               {{- end }}
               {{- end }}
               {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
-              - name: POSTGRES_SSL_CA__FILE_CONTENT
-                valueFrom:
-                  configMapKeyRef:
-                    name: {{ include "carto.postgresql.configMapName" . | quote }}
-                    key: {{ include "carto.postgresql.configMapMountFilename" . | quote }}
+              {{/* We need to split the SSL CA content in chunks of 10000 characters */}}
+              {{- include "carto.tenantRequirementsChecker.externalPostgresql.sslCA" . }}
               - name: POSTGRES_SSL_CA__FILE_PATH
                 value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
               - name: REDIS_TLS_CA__FILE_CONTENT
-                valueFrom:
-                  configMapKeyRef:
-                    name: {{ include "carto.redis.configMapName" . | quote }}
-                    key: {{ include "carto.redis.configMapMountFilename" . | quote }}
+                value: {{ .Values.externalRedis.tlsCA | b64enc | quote }}
               - name: REDIS_TLS_CA__FILE_PATH
                 value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
               - name: PROXY_SSL_CA__FILE_CONTENT
-                valueFrom:
-                  configMapKeyRef:
-                    name: {{ include "carto.proxy.configMapName" . | quote }}
-                    key: {{ include "carto.proxy.configMapMountFilename" . | quote }}
+                value: {{ .Values.externalProxy.sslCA | b64enc | quote }}
               - name: PROXY_SSL_CA__FILE_PATH
                 value: {{ include "carto.proxy.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
               - name: ROUTER_SSL_CERT__FILE_CONTENT
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ include "carto.tlsCerts.secretName" . | quote }}
-                    key: {{ include "carto.tlsCerts.secretCertKey" . | quote }}
+                value: {{ .Values.router.tlsCertificates.certificateValueBase64 | quote }}
               - name: ROUTER_SSL_CERT__FILE_PATH
                 value: "/etc/ssl/certs/cert.crt"
               - name: ROUTER_SSL_CERT_KEY__FILE_CONTENT
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ include "carto.tlsCerts.secretName" . | quote }}
-                    key: {{ include "carto.tlsCerts.secretKeyKey" . | quote }}
+                value: {{ .Values.router.tlsCertificates.privateKeyValueBase64 | quote }}
               - name: ROUTER_SSL_CERT_KEY__FILE_PATH
                 value: "/etc/ssl/certs/cert.key"
               {{- end }}
@@ -588,83 +565,233 @@ Return customer values to use in preflights and support-bundle
 {{- end -}}
 
 {{/*
-Return customer secrets to use in preflights and support-bundle.
-
-Every entry in this snippet must reference a Kubernetes Secret via
-`valueFrom.secretKeyRef`. Inlining sensitive values directly into the
-PodSpec causes them to be captured by the Replicated Troubleshoot
-collectors when the tenant-requirements-check pod is snapshotted. Any
-new entry added here MUST follow the same pattern.
-
-For Postgres / Redis, the `carto.postgresql.secretName` and
-`carto.redis.secretName` helpers already resolve to a chart-generated
-Secret when the user did not provide an `existingSecret`, so a single
-`secretKeyRef` block covers both paths.
-
-For values stored in workload-scoped Secrets (LaunchDarkly, AWS, Azure),
-`carto._utils.generateSecretDef` is invoked with `defaultSecret` pointing
-at the workspace-api Secret, which is generated by the chart whenever
-the user supplies the value inline.
+Return customer secrets to use in preflights and support-bundle
 */}}
 {{- define "carto.replicated.tenantRequirementsChecker.customerSecrets" }}
+  {{- if eq .Values.externalPostgresql.existingSecret "" }}
+  - name: WORKSPACE_POSTGRES_PASSWORD
+    value: {{ .Values.externalPostgresql.password | quote }}
+  {{- else }}
   - name: WORKSPACE_POSTGRES_PASSWORD
     valueFrom:
       secretKeyRef:
         name: {{ include "carto.postgresql.secretName" . }}
-        key: {{ include "carto.postgresql.secret.key" . | quote }}
+        key: {{ include "carto.postgresql.secret.key" . }}
+  {{- end -}}
+  {{- if eq .Values.externalRedis.existingSecret "" }}
+  - name: REDIS_PASSWORD
+    value: {{ .Values.externalRedis.password | quote }}
+  {{- else }}
   - name: REDIS_PASSWORD
     valueFrom:
       secretKeyRef:
         name: {{ include "carto.redis.secretName" . }}
         key: {{ include "carto.redis.existingsecret.key" . | quote }}
-  {{ include "carto._utils.generateSecretDef" (dict "var" "LAUNCHDARKLY_SDK_KEY" "context" . "defaultSecret" (include "carto.workspaceApi.fullname" .)) | nindent 2 }}
-  {{- if eq .Values.appConfigValues.storageProvider "s3" }}
-  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_THUMBNAILS_ACCESSKEYID"     "context" . "defaultSecret" (include "carto.workspaceApi.fullname" .)) | nindent 2 }}
-  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_ACCESSKEYID"        "context" . "defaultSecret" (include "carto.workspaceApi.fullname" .)) | nindent 2 }}
-  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_THUMBNAILS_SECRETACCESSKEY" "context" . "defaultSecret" (include "carto.workspaceApi.fullname" .)) | nindent 2 }}
-  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_SECRETACCESSKEY"    "context" . "defaultSecret" (include "carto.workspaceApi.fullname" .)) | nindent 2 }}
-  {{- end }}
+  {{- end -}}
+  {{- if eq .Values.cartoSecrets.launchDarklySdkKey.existingSecret.name "" }}
+  - name: LAUNCHDARKLY_SDK_KEY
+    value: {{ .Values.cartoSecrets.launchDarklySdkKey.value | quote }}
+  {{- else -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "LAUNCHDARKLY_SDK_KEY" "context" .) | nindent 2 }}
+  {{- end -}}
+  {{- if eq .Values.appConfigValues.storageProvider "s3" -}}
+  {{- if eq .Values.appSecrets.awsAccessKeyId.existingSecret.name "" }}
+  - name: WORKSPACE_THUMBNAILS_ACCESSKEYID
+    value: {{ .Values.appSecrets.awsAccessKeyId.value | quote }}
+  {{- else -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_THUMBNAILS_ACCESSKEYID" "context" .) | nindent 2 }}
+  {{- end -}}
+  {{- if eq .Values.appSecrets.awsAccessKeyId.existingSecret.name "" }}
+  - name: WORKSPACE_IMPORTS_ACCESSKEYID
+    value: {{ .Values.appSecrets.awsAccessKeyId.value | quote }}
+  {{- else -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_ACCESSKEYID" "context" .) | nindent 2 }}
+  {{- end -}}
+  {{- if eq .Values.appSecrets.awsAccessKeySecret.existingSecret.name "" }}
+  - name: WORKSPACE_THUMBNAILS_SECRETACCESSKEY
+    value: {{ .Values.appSecrets.awsAccessKeySecret.value | quote }}
+  {{- else -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_THUMBNAILS_SECRETACCESSKEY" "context" .) | nindent 2 }}
+  {{- end -}}
+  {{- if eq .Values.appSecrets.awsAccessKeySecret.existingSecret.name "" }}
+  - name: WORKSPACE_IMPORTS_SECRETACCESSKEY
+    value: {{ .Values.appSecrets.awsAccessKeySecret.value | quote }}
+  {{- else -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_SECRETACCESSKEY" "context" .) | nindent 2 }}
+  {{- end -}}
+  {{- end -}}
   {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
-  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY" "context" . "defaultSecret" (include "carto.workspaceApi.fullname" .)) | nindent 2 }}
-  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY"    "context" . "defaultSecret" (include "carto.workspaceApi.fullname" .)) | nindent 2 }}
-  {{- end }}
+  {{- if eq .Values.appSecrets.azureStorageAccessKey.existingSecret.name "" }}
+  - name: WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY
+    value: {{ .Values.appSecrets.azureStorageAccessKey.value | quote }}
+  {{- else -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_THUMBNAILS_STORAGE_ACCESSKEY" "context" .) | nindent 2 }}
+  {{- end -}}
+  {{- if eq .Values.appSecrets.azureStorageAccessKey.existingSecret.name "" }}
+  - name: WORKSPACE_IMPORTS_STORAGE_ACCESSKEY
+    value: {{ .Values.appSecrets.azureStorageAccessKey.value | quote }}
+  {{- else -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY" "context" .) | nindent 2 }}
+  {{- end -}}
+  {{- end -}}
 {{- end -}}
+
+
+{{ define "carto.tenantRequirementsChecker.externalPostgresql.sslCA" }}
+  {{- $value := .Values.externalPostgresql.sslCA -}}
+  {{- $maxLength := 10000 -}}
+  {{- if gt (len $value) $maxLength -}}
+    {{- $neededChunks := int (div (len $value) $maxLength | ceil) -}}
+    {{- range $i, $chunk := until (add $neededChunks 1 | int) -}}
+      {{- $envVarName := printf "POSTGRES_SSL_CA__FILE_CONTENT_%02d" (add $i 1) }}
+      {{- $chunk := substr (mul $i $maxLength | int) (mul (add $i 1) $maxLength | int) $value }}
+              - name: {{$envVarName}}
+                value: {{ $chunk | b64enc }}
+    {{- end -}}
+  {{- else -}}
+  - name: POSTGRES_SSL_CA__FILE_CONTENT
+    {{ printf "value: %s" ($value | b64enc | quote) | indent 12 }}
+  {{- end -}}
+{{ end }}
 
 
 {{/*
 Return redactor specs for the preflight and support-bundle collectors.
 
-These run inside Replicated Troubleshoot at bundle-generation time and
-replace any matched substring with `***HIDDEN***` before the bundle is
-written to disk. They are a defense-in-depth layer, NOT a substitute for
-proper secret handling in the chart itself.
+Replicated Troubleshoot applies these redactors in-stream, *before* the
+support bundle tar.gz is written and before anything leaves the cluster.
+Any byte that matches a `mask` capture group is replaced with `***HIDDEN***`
+in the captured artifact.
 
-Patterns are intentionally narrow to minimise false-positive redactions
-that would degrade the usefulness of debug bundles. Only well-formed
-credential shapes are matched. Add new patterns here when a new credential
-format is introduced to the platform.
+This is the primary leak control for the chart, layered on top of the
+built-in redactors that Replicated/KOTS ships (env vars named *PASSWORD*,
+*TOKEN*, *ACCESS_KEY_ID, *SECRET_ACCESS_KEY, *OWNER_ACCOUNT, and
+protocol://user:pass@host connection strings).
 
-Note: Replicated Troubleshoot ships built-in redactors that already mask
-env vars whose names match `*PASSWORD*`, `*TOKEN*`, `*ACCESS_KEY_ID`, and
-`*SECRET_ACCESS_KEY` in the JSON-shaped `"name":"...","value":"..."`
-captures produced by the runPod collector. Do not add rules that
-duplicate those defaults, and do not add broad `yamlPath` rules over
-`spec.containers.*.env.*.value` — they redact non-sensitive env vars
-across every captured pod and break debug bundles.
+Patterns are scoped narrowly to known credential shapes to minimise
+false-positive redaction in debug bundles. Add a new pattern when a new
+credential shape is introduced. Verify by running:
+
+  helm template chart -f values.yaml \
+    | yq '.stringData."support-bundle.yaml"' \
+    | troubleshoot redact < a-real-captured-bundle.tar.gz
+
+against a fixture and confirming known plaintext sentinels (BEGIN PRIVATE
+KEY, AKIA, AIzaSy, sk-, sdk-) do not appear in the output.
+
+The leak surfaces this set targets, derived from 24 real support bundles:
+  - PodSpec env captures by the clusterResources collector
+  - tenant-requirements-check runPod pod definition snapshot
+  - Replicated SDK license-info stdout dump, which leaks
+    cartoPlatformDefaultSA private_key, openAiApiKey, geminiApiKey,
+    vitallyToken, cartoFeaturesFlagSdkKey, and other license entitlements
+    in plaintext
 */}}
 {{- define "carto.replicated.commonChecks.redactors" }}
+# IMPORTANT: redactor order matters. Replicated Troubleshoot applies them
+# sequentially, so any outer/longer container must be redacted BEFORE its
+# inner/shorter substrings. Specifically, the GCP service-account JSON
+# (when base64-wrapped) contains a base64-encoded PEM private key inside
+# it. If we redact the inner PEM first, the GCP outer match no longer has
+# enough remaining bytes to satisfy its length requirement and leaks.
+
+# GCP service account JSON — base64-wrapped whole object. The three prefixes
+# cover {"type":"service_account" with three common whitespace layouts.
+# DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT and STORAGE_SERVICE_ACCOUNT_KEY
+# inline as base64 of this JSON (~3000+ chars in real bundles).
+# MUST run before pem-private-keys-base64.
+- name: gcp-sa-json-base64
+  removals:
+    regex:
+      - redactor: '(?P<mask>(?:eyAidHlwZSI6|ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCI|eyJ0eXBlIjoic2VydmljZV9hY2NvdW50)[A-Za-z0-9+/=]{50,})'
+# GCP service account JSON — private_key field inside any JSON object.
+- name: gcp-sa-private-key-field
+  removals:
+    regex:
+      - redactor: '"private_key"\s*:\s*"(?P<mask>-----BEGIN[^"]+)"'
+
+# PEM private keys — raw form (e.g. inside replicated-sdk license dump's
+# cartoPlatformDefaultSA JSON private_key field after JSON unescaping in logs).
+- name: pem-private-keys-raw
+  removals:
+    regex:
+      - redactor: '(?P<mask>-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----)'
+# PEM private keys — base64-wrapped form (ROUTER_SSL_CERT_KEY__FILE_CONTENT
+# inlines as base64 of "-----BEGIN ... PRIVATE KEY-----", which starts with
+# LS0tLS1CRUdJTi...). Bounded length keeps it from over-matching short blobs.
+- name: pem-private-keys-base64
+  removals:
+    regex:
+      - redactor: '(?P<mask>LS0tLS1CRUdJTi[A-Za-z0-9+/=]{200,})'
+
+# LaunchDarkly SDK and mobile keys (well-known shape).
 - name: launchdarkly-sdk-keys
   removals:
     regex:
       - redactor: '(?P<mask>\bsdk-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b)'
-- name: sk-prefixed-keys
+- name: launchdarkly-mobile-keys
   removals:
     regex:
-      - redactor: '(?P<mask>\bsk-[A-Za-z0-9_-]{20,}\b)'
+      - redactor: '(?P<mask>\bmob-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b)'
+
+# AWS access key IDs (production + STS temporary).
 - name: aws-access-key-ids
   removals:
     regex:
       - redactor: '(?P<mask>\b(?:AKIA|ASIA)[0-9A-Z]{16}\b)'
+
+# OpenAI / Anthropic-style `sk-`-prefixed API keys, including sk-svcacct- and
+# sk-proj- variants observed in real license dumps.
+- name: openai-sk-keys
+  removals:
+    regex:
+      - redactor: '(?P<mask>\bsk-(?:svcacct-|proj-|None-)?[A-Za-z0-9_-]{20,}\b)'
+
+# Google API keys (AIzaSy...) — geminiApiKey, googleMapsApiKey.
+- name: google-api-keys
+  removals:
+    regex:
+      - redactor: '(?P<mask>\bAIza[0-9A-Za-z_-]{35}\b)'
+
+# JWT tokens — raw header.payload.signature form.
+- name: jwt-tokens
+  removals:
+    regex:
+      - redactor: '(?P<mask>\beyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b)'
+# JWT tokens — base64-wrapped form (vitallyToken in license dumps is base64 of
+# a JWT, so it starts with ZXlK which is base64 of "eyJ").
+- name: jwt-tokens-base64-wrapped
+  removals:
+    regex:
+      - redactor: '(?P<mask>\bZXlK[A-Za-z0-9+/=]{50,}\b)'
+
+# Replicated license entitlement scrub. Scoped to the license-info file only,
+# so the regex does not redact unrelated `"value":"..."` JSON fields elsewhere.
+# Catches any future entitlement we forget to add a shape rule for, plus the
+# ones with no recognisable shape (databaseEncryptionKey, jwtEncryptionKey,
+# instanceId, cartoAuthClientId).
+- name: carto-license-sensitive-entitlements
+  fileSelector:
+    files:
+      - "**/replicated-sdk/**/replicated-license-info-stdout.txt"
+      - "**/replicated-sdk/**/replicated-license-info-stderr.txt"
+  removals:
+    regex:
+      - redactor: '"(?:cartoPlatformDefaultSA|cartoFeaturesFlagSdkKey|openAiApiKey|geminiApiKey|vitallyToken|databaseEncryptionKey|jwtEncryptionKey|ldsConfiguration|cartoAuthClientId|instanceId)"[^}]*"value"\s*:\s*"(?P<mask>[^"]+)"'
+
+# Final fallback: scrub every env value in the tenant-requirements-check pod
+# definition. Scoped via fileSelector so it does NOT redact env values across
+# the rest of the bundle (which would break debugging of LOG_LEVEL, NODE_ENV,
+# bucket names, etc.). Covers values with no recognisable shape — Azure
+# storage keys (WORKSPACE_*_STORAGE_ACCESSKEY, 88-char base64), unusual
+# Postgres passwords that escape the built-in *PASSWORD* env name match, and
+# anything else added here in the future.
+- name: tenant-requirements-check-env-fallback
+  fileSelector:
+    files:
+      - "**/tenant-requirements-check/tenant-requirements-check.json"
+  removals:
+    yamlPath:
+      - "spec.containers.*.env.*.value"
+      - "spec.initContainers.*.env.*.value"
 {{- end -}}
-
-
