@@ -14,6 +14,7 @@ metadata:
 data:
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
+  AUTH0_NAMESPACE: "http://app.carto.com"
   BIGQUERY_OAUTH2_CLIENT_ID: {{ .Values.appConfigValues.bigqueryOauth2ClientId | quote }}
   {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
   CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
