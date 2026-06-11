@@ -94,6 +94,13 @@ data:
   {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
   IMPORT_STORAGE_ACCOUNT: {{ .Values.appConfigValues.azureStorageAccount | quote }}
   {{- end }}
+  REDIS_CACHE_PREFIX: "onprem"
+  REDIS_HOST: {{ include "carto.redis.host" . | quote }}
+  REDIS_PORT: {{ include "carto.redis.port" . | quote }}
+  REDIS_TLS_ENABLED: {{ .Values.externalRedis.tlsEnabled | quote }}
+  {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+  REDIS_TLS_CA: {{ include "carto.redis.configMapMountAbsolutePath" . }}
+  {{- end }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
