@@ -79,9 +79,13 @@ Ship those together. A KOTS config change without the chart-side wiring (or vice
 
 ## 3. Validation
 
-CI is the gate — it runs lint, helm-readme drift check, super-linter, Trivy IaC scan, and KOTS rendering on every PR. You don't need to reproduce all of that locally before pushing; push and track the CI run instead.
+PR CI is thin — don't assume it catches your change. On a pull request only two workflows run:
+- `lint-codebase.yaml` — super-linter (YAML/MD/shell) **+ helm-readme-generator drift check**.
+- `security-gitleaks.yml` — gitleaks secret scan.
 
-For a quick local sanity check while editing the chart:
+Everything else (`trivy-security-scanning.yaml`, `check-helm-chart-resources.yaml`) triggers on **push to `main`**, i.e. *after* merge — not on your PR. And `helm lint`, `helm template`, and KOTS rendering are **not in CI at all**. So a broken template or a `kots-helm.yaml` typo passes PR CI green and only surfaces at customer install time.
+
+Render it yourself before pushing — nothing on the PR does:
 
 ```bash
 cd chart
@@ -91,11 +95,13 @@ helm template . -f values.yaml                     # render and eyeball output
 helm template . --set replicated.enabled=true      # also render the Replicated path
 ```
 
-Two things are easy to forget and CI hard-fails on:
-- **Edited `chart/values.yaml`?** Regenerate `chart/README.md` (helm-readme-generator) — CI fails on drift.
-- **Changed `requests`/`limits`?** The `check-helm-resources-changed` job PR-comments and Slacks `#selfhosted-internal`. Update the deployment-resources docs.
+For a KOTS-layer change (`kots-config.yaml` / `kots-helm.yaml`), also render the KOTS path — no CI check covers it:
 
-The exact commands CI uses live in `.github/workflows/` — read them on demand if you want to run a specific check locally (e.g. `./scripts/test-kots-config.sh all`).
+```bash
+./scripts/test-kots-config.sh all                  # gke / eks / aks / all
+```
+
+The one thing PR CI *will* fail you on: **edit `chart/values.yaml` → regenerate `chart/README.md`** (helm-readme-generator), or the drift check blocks the PR. (Resource `requests`/`limits` changes are flagged by `check-helm-chart-resources.yaml`, but only post-merge on `main` — update the deployment-resources docs when you touch sizing.)
 
 ---
 
@@ -156,7 +162,7 @@ What you *do* need to get right when a change requires a version bump is keeping
 
 ## 7. CI workflows
 
-CI workflows live in `.github/workflows/` — read them on demand rather than relying on a table here. The PR gate worth knowing up front is `lint-codebase.yaml` (super-linter + helm-readme-generator drift check); the rest cover Trivy scanning, the `release-changes` branch channel, official releases, auto-tagging, and Renovate.
+CI workflows live in `.github/workflows/` — read them on demand rather than relying on a table here. Only two run on a PR: `lint-codebase.yaml` (super-linter + helm-readme-generator drift check) and `security-gitleaks.yml` (secret scan). The rest trigger on push to `main` or on release events — Trivy scanning and the resource-change check (post-merge), the `release-changes` branch channel, official releases, auto-tagging, and Renovate.
 
 ---
 
@@ -176,7 +182,7 @@ A self-hosted product runs on the **customer's** infrastructure with the custome
 ### 8.2 Image registry & supply chain
 - Customer images are pulled from `registry.self-hosted.carto.com` (Replicated proxy → `gcr.io/carto-onprem-artifacts`). Air-gapped customers use a local registry — `kots-helm.yaml` switches via `HasLocalRegistry | ternary LocalRegistryHost ...`. **Don't hardcode `gcr.io/carto-artifacts`** (that's the SaaS-only registry).
 - The KOTS Admin Console and embedded cluster are pinned versions in `manifests/embbeded-cluster.yaml` and `manifests/kots-app.yaml#minKotsVersion`. Renovate bumps them; review the changelog for security advisories before merging.
-- Daily Trivy scan (`trivy-security-scanning.yaml`) is CRITICAL-only with `ignore-unfixed`. If you need broader coverage, run `trivy config chart` locally with `--severity HIGH,CRITICAL`.
+- The Trivy IaC scan (`trivy-security-scanning.yaml`) runs on push to `main` and on a weekday cron — **not on PRs** — and is CRITICAL-only with `ignore-unfixed`. It won't gate your PR, so run `trivy config chart --severity HIGH,CRITICAL` locally if a change touches security-relevant config.
 
 ### 8.3 TLS & ingress
 - Two paths to expose the platform: **router** (NGINX, default) and **gateway** (Kubernetes Gateway API, opt-in via `gateway.enabled`).
