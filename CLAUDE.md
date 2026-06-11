@@ -77,34 +77,25 @@ Ship those together. A KOTS config change without the chart-side wiring (or vice
 
 ---
 
-## 3. Local validation (run before pushing)
+## 3. Validation
+
+CI is the gate — it runs lint, helm-readme drift check, super-linter, Trivy IaC scan, and KOTS rendering on every PR. You don't need to reproduce all of that locally before pushing; push and track the CI run instead.
+
+For a quick local sanity check while editing the chart:
 
 ```bash
-# Helm-level
 cd chart
 helm dep update
-helm lint .                                        # local lint
-helm template . -f values.yaml                     # render and check output
+helm lint .
+helm template . -f values.yaml                     # render and eyeball output
 helm template . --set replicated.enabled=true      # also render the Replicated path
-
-# Auto-generated chart README (CI fails if drifted)
-docker run --rm -v "$PWD:/my_helm" -w /my_helm \
-  helm-readme-generator readme-generator --readme README.md --values values.yaml
-
-# Super-linter (CI lints YAML, shellcheck, markdown, etc.)
-docker run --rm -e RUN_LOCAL=true -e USE_FIND_ALGORITHM=true \
-  -v "$PWD:/tmp/lint" -w /tmp/lint ghcr.io/github/super-linter
-
-# Trivy IaC scan (CI scans chart/ for CRITICAL findings)
-trivy config chart --severity CRITICAL --ignore-unfixed
-
-# KOTS template rendering (per K8s distro)
-./scripts/test-kots-config.sh all                  # gke / eks / aks / all
 ```
 
-If you change anything under `chart/values.yaml`, **regenerate `chart/README.md`** via the helm-readme-generator container — CI hard-fails on drift.
+Two things are easy to forget and CI hard-fails on:
+- **Edited `chart/values.yaml`?** Regenerate `chart/README.md` (helm-readme-generator) — CI fails on drift.
+- **Changed `requests`/`limits`?** The `check-helm-resources-changed` job PR-comments and Slacks `#selfhosted-internal`. Update the deployment-resources docs.
 
-If you change resource sizing (`requests`/`limits`) in `chart/values.yaml`, the `check-helm-resources-changed` job will post a PR comment and Slack the `#selfhosted-internal` channel. Update the deployment-resources docs accordingly.
+The exact commands CI uses live in `.github/workflows/` — read them on demand if you want to run a specific check locally (e.g. `./scripts/test-kots-config.sh all`).
 
 ---
 
@@ -147,13 +138,11 @@ Removing the label or closing the PR triggers `branch-changes-delete.yaml` to cl
 
 ---
 
-## 6. Release flow
+## 6. Versioning
 
-1. **Pre-release tag** on GitHub (`prereleased`) → `official-release.yaml` appends `-beta` to `chart/Chart.yaml#version`, publishes to Replicated channel **`Release candidates`**.
-2. **Release tag** on GitHub (`released`) → publishes to channel **`Stable`** and posts to `#carto-selfhosted` Slack.
-3. `release-autotag.yaml` and `release-dedicateds-changes.yaml` automate version bumps and dedicated-environment notification.
+Releases themselves are automated (GitHub release tags → `official-release.yaml` publishes to the Replicated `Release candidates` / `Stable` channels; `:rocket:` commits and `release-autotag.yaml` handle app-version bumps). You won't run these by hand — they're here for context.
 
-**Versioning:**
+What you *do* need to get right when a change requires a version bump is keeping these files in sync:
 - `chart/Chart.yaml#version` — Helm chart SemVer (e.g. `1.249.1`). Bump on every release.
 - `chart/Chart.yaml#appVersion` — CARTO app version (e.g. `2026.3.10`). Tracks the cloud-native app release.
 - `VERSION` (repo root) — mirrors `appVersion` for tooling.
@@ -167,19 +156,7 @@ Removing the label or closing the PR triggers `branch-changes-delete.yaml` to cl
 
 ## 7. CI workflows
 
-| Workflow | Trigger | Purpose |
-|---|---|---|
-| `lint-codebase.yaml` | PR | super-linter (YAML/MD/shell) + helm-readme-generator drift check |
-| `check-helm-chart-resources.yaml` | push to `main` | Slack `#selfhosted-internal` if `Mi`/`m` resources changed |
-| `trivy-security-scanning.yaml` | push to `main`, weekday cron, manual | IaC scan of `chart/`, CRITICAL only, uploads SARIF |
-| `branch-changes-release.yaml` | PR with `release-changes` label | publish branch chart to Replicated dev channel |
-| `branch-changes-delete.yaml` | label removed / PR closed | tear down the dev channel |
-| `official-release.yaml` | GitHub release prereleased / released | publish to Replicated `Release candidates` / `Stable` |
-| `release-autotag.yaml` | push to `main` | auto-tag based on `semver.yaml` rules |
-| `release-dedicateds-changes.yaml` | release events | notify dedicated environments of new release |
-| `renovate-dependencies.yaml` | scheduled | run Renovate against `renovate-config.json` |
-
-CI uses `ubuntu-22.04` / `ubuntu-24.04` runners. Don't pin Node — workflows do their own runtime setup.
+CI workflows live in `.github/workflows/` — read them on demand rather than relying on a table here. The PR gate worth knowing up front is `lint-codebase.yaml` (super-linter + helm-readme-generator drift check); the rest cover Trivy scanning, the `release-changes` branch channel, official releases, auto-tagging, and Renovate.
 
 ---
 
@@ -229,6 +206,7 @@ A self-hosted product runs on the **customer's** infrastructure with the custome
 - Adding/removing components in `manifests/kots-app.yaml#statusInformers` — KOTS UI shows wrong status if it drifts from the chart.
 - Anything under `chart/templates/router/` or `chart/templates/gateway/` — public-facing.
 - Bumping `replicated`, `bitnami/common`, `bitnami/postgresql`, or `embedded-cluster` versions.
+- Adding/modifying PodDisruptionBudgets — match the existing PDB pattern (empty `labels:`, a `matchLabels` selector on `app.kubernetes.io/name`), not the HPA/Deployment labeling.
 
 ---
 
@@ -238,9 +216,7 @@ A self-hosted product runs on the **customer's** infrastructure with the custome
 |---|---|
 | `/carto-selfhosted-deploy-assist` | deploy a fresh install / test a PR / upgrade an existing cluster |
 | `/carto-selfhosted-troubleshooter` | trace a config value end-to-end, diagnose a preflight or import failure, analyze a support bundle |
-| `/oncall` | production incident response (CARTO-side) |
-| `/shortcut-ticket` | search/create/update Shortcut tickets |
-| `/submit-pr` | (cloud-native repo) — does not apply here; use the local PR template |
+| `/code-review` | review chart/manifest changes on a PR before merge |
 
 ---
 
