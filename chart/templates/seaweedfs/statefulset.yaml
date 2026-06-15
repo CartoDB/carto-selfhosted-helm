@@ -1,0 +1,140 @@
+{{- /*
+  Bundled SeaweedFS — S3-compatible object-storage TEST-BED.
+  Rendered only when internalObjectStorage.enabled (default false). Test-only
+  stand-in for a customer-provided S3-compatible endpoint — NOT a supported
+  storage backend and NOT shipped to customers. Mirrors templates/valkey.
+
+  StatefulSet + volumeClaimTemplates (not a Deployment + emptyDir) so the data
+  survives pod reschedules (node drain / cluster rescale). The PVC is namespaced,
+  so it still dies with the namespace — ephemeral per dedicated-k8s env, per
+  Spec-Dev §Deployment. Buckets are provisioned by the image entrypoint from
+  S3_TESTBED_INIT_BUCKETS (no init Job needed).
+*/ -}}
+{{- if .Values.internalObjectStorage.enabled }}
+apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
+kind: StatefulSet
+metadata:
+  name: {{ template "carto.seaweedfs.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: seaweedfs
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" $) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: 1
+  serviceName: {{ template "carto.seaweedfs.fullname" . }}
+  ## Reclaim the PVC (and, with a Delete-reclaim StorageClass, the underlying
+  ## disk) when the StatefulSet is deleted or scaled down — so disabling the flag,
+  ## a helm uninstall, or namespace teardown never leaves orphaned volumes
+  ## accruing cost. (Requires k8s >= 1.27; silently ignored on older clusters.)
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Delete
+    whenScaled: Delete
+  selector:
+    matchLabels:
+      {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: seaweedfs
+  template:
+    metadata:
+      annotations:
+        {{- if .Values.internalObjectStorage.podAnnotations }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.internalObjectStorage.podAnnotations "context" $ ) | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: seaweedfs
+    spec:
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.internalObjectStorage.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.internalObjectStorage.nodeSelector "context" $ ) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.internalObjectStorage.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" ( dict "value" .Values.internalObjectStorage.tolerations "context" $ ) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.internalObjectStorage.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.internalObjectStorage.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: seaweedfs
+          image: {{ template "carto.seaweedfs.image" . }}
+          imagePullPolicy: {{ .Values.internalObjectStorage.image.pullPolicy }}
+          {{- if .Values.internalObjectStorage.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.internalObjectStorage.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: s3
+              containerPort: {{ include "carto.seaweedfs.s3Port" . }}
+          env:
+            - name: S3_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.seaweedfs.secretName" . }}
+                  key: access-key
+            - name: S3_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.seaweedfs.secretName" . }}
+                  key: secret-key
+            {{- if .Values.internalObjectStorage.buckets }}
+            - name: S3_TESTBED_INIT_BUCKETS
+              value: {{ join "," .Values.internalObjectStorage.buckets | quote }}
+            {{- end }}
+            {{- if .Values.internalObjectStorage.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.internalObjectStorage.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          {{- if .Values.internalObjectStorage.livenessProbe.enabled }}
+          livenessProbe:
+            exec:
+              command:
+                - /usr/local/bin/healthcheck.sh
+            initialDelaySeconds: {{ .Values.internalObjectStorage.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.internalObjectStorage.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.internalObjectStorage.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.internalObjectStorage.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.internalObjectStorage.livenessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.internalObjectStorage.readinessProbe.enabled }}
+          readinessProbe:
+            exec:
+              command:
+                - /usr/local/bin/healthcheck.sh
+            initialDelaySeconds: {{ .Values.internalObjectStorage.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.internalObjectStorage.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.internalObjectStorage.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.internalObjectStorage.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.internalObjectStorage.readinessProbe.failureThreshold }}
+          {{- end }}
+          {{- if .Values.internalObjectStorage.resources }}
+          resources: {{- toYaml .Values.internalObjectStorage.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          {{- include "common.labels.matchLabels" . | nindent 10 }}
+          app.kubernetes.io/component: seaweedfs
+      spec:
+        accessModes: {{- toYaml .Values.internalObjectStorage.persistence.accessModes | nindent 10 }}
+        resources:
+          requests:
+            storage: {{ .Values.internalObjectStorage.persistence.size | quote }}
+        {{- $storageClass := .Values.internalObjectStorage.persistence.storageClass | default .Values.global.storageClass }}
+        {{- if $storageClass }}
+        storageClassName: {{ $storageClass | quote }}
+        {{- end }}
+{{- end }}

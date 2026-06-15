@@ -1313,6 +1313,42 @@ Return the Redis password sha256sum
 {{- end -}}
 
 {{/*
+Bundled SeaweedFS (S3-compatible) TEST-BED helpers.
+Rendered only when internalObjectStorage.enabled. Test-only stand-in for a
+customer-provided S3-compatible endpoint — never shipped to customers.
+*/}}
+{{- define "carto.seaweedfs.fullname" -}}
+{{- include "common.names.dependency.fullname" (dict "chartName" "seaweedfs" "chartValues" .Values.internalObjectStorage "context" $) -}}
+{{- end -}}
+
+{{- define "carto.seaweedfs.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.internalObjectStorage.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+In-cluster S3 endpoint host the rest of CARTO points at (see sc-555243 bucket values):
+http://<carto.seaweedfs.host>:<carto.seaweedfs.s3Port>
+*/}}
+{{- define "carto.seaweedfs.host" -}}
+{{- include "carto.seaweedfs.fullname" . -}}
+{{- end -}}
+
+{{- define "carto.seaweedfs.s3Port" -}}
+{{- print "8333" -}}
+{{- end -}}
+
+{{/*
+Secret holding the test-bed's static S3 access/secret keys.
+*/}}
+{{- define "carto.seaweedfs.secretName" -}}
+{{- if .Values.internalObjectStorage.existingSecret -}}
+{{- printf "%s" .Values.internalObjectStorage.existingSecret -}}
+{{- else -}}
+{{- include "carto.seaweedfs.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto upgrade check image name
 */}}
 {{- define "carto.upgradeCheck.image" -}}

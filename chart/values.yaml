@@ -5204,6 +5204,140 @@ tenantRequirementsChecker:
 ##       Internally this now deploys Valkey instead of Redis. The REDIS_* environment variable names are
 ##       also kept unchanged — this is intentional per the Redis → Valkey migration (sc-530424).
 ##
+
+## Bundled SeaweedFS — S3-compatible object-storage TEST-BED (sc-555272).
+## Test-only, in-cluster stand-in for a customer-provided S3-compatible endpoint,
+## used to exercise the S3-compatible storage path in dedicated-k8s. NOT a
+## supported storage backend and NOT shipped to customers — gated default-false,
+## mirroring internalRedis.enabled / internalPostgresql.enabled. When enabled,
+## the main-bucket values (sc-555243) point at http://<release>-seaweedfs:8333.
+## The image lives only in the cloudnative CI registry (gcr.io/carto-artifacts),
+## not the selfhosted release registry, so a customer cluster cannot pull it —
+## consistent with it being test-only.
+## @param internalObjectStorage.enabled Deploy the bundled SeaweedFS test-bed (test-only; never enable in production)
+##
+internalObjectStorage:
+  enabled: false
+  ## @param internalObjectStorage.image.registry SeaweedFS test-bed image registry
+  ## @param internalObjectStorage.image.repository SeaweedFS test-bed image repository
+  ## @param internalObjectStorage.image.tag SeaweedFS test-bed image tag
+  ## @param internalObjectStorage.image.pullPolicy SeaweedFS test-bed image pull policy
+  ## @param internalObjectStorage.image.pullSecrets SeaweedFS test-bed image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-artifacts
+    repository: s3-compatible-testbed
+    tag: ""
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+
+  ## S3 credentials for the test-bed. Leave empty to auto-generate random
+  ## credentials at install time — they are persisted across upgrades via `lookup`
+  ## (so they stay stable and consumers don't break), and the bundled entrypoint
+  ## renders them into SeaweedFS's config. Set explicit values only to pin
+  ## known credentials. Nothing static is committed.
+  ## @param internalObjectStorage.auth.accessKey S3 access key (empty = auto-generate)
+  ## @param internalObjectStorage.auth.secretKey S3 secret key (empty = auto-generate)
+  ##
+  auth:
+    accessKey: ""
+    secretKey: ""
+
+  ## @param internalObjectStorage.existingSecret Name of a pre-existing secret with `access-key`/`secret-key` keys (overrides auth.*)
+  ##
+  existingSecret: ""
+
+  ## @param internalObjectStorage.buckets Buckets the entrypoint provisions on boot (S3_TESTBED_INIT_BUCKETS). Usually set by the dedicated-k8s override / sc-555243 wiring.
+  ##
+  buckets: []
+
+  ## @param internalObjectStorage.service.type SeaweedFS service type
+  ## @param internalObjectStorage.service.ports.s3 SeaweedFS S3 gateway port
+  ## @param internalObjectStorage.service.annotations Additional service annotations
+  ##
+  service:
+    type: ClusterIP
+    ports:
+      s3: 8333
+    annotations: {}
+
+  ## Persistence — a PVC (not emptyDir) so data survives pod reschedules
+  ## (node drain / cluster rescale). The PVC is namespaced: it dies with the
+  ## namespace (ephemeral per dedicated-k8s env, per Spec-Dev §Deployment).
+  ## @param internalObjectStorage.persistence.storageClass PVC storage class (defaults to global.storageClass)
+  ## @param internalObjectStorage.persistence.accessModes PVC access modes
+  ## @param internalObjectStorage.persistence.size PVC size
+  ##
+  persistence:
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+
+  ## internal-object-storage resource requests and limits (~256Mi per Spec-Dev)
+  ## @param internalObjectStorage.resources.requests.memory Container memory requests
+  ## @param internalObjectStorage.resources.requests.cpu Container cpu requests
+  ## @param internalObjectStorage.resources.limits.memory Container memory limits
+  ## @param internalObjectStorage.resources.limits.cpu Container cpu limits
+  ##
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "250m"
+
+  ## Probes run the image's baked /usr/local/bin/healthcheck.sh — green only once
+  ## the master is healthy AND every requested bucket exists.
+  ## @param internalObjectStorage.livenessProbe.enabled Enable livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 15
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+
+  ## @param internalObjectStorage.readinessProbe.enabled Enable readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+
+  ## @param internalObjectStorage.podSecurityContext.enabled Enable pod security context
+  ## @param internalObjectStorage.podSecurityContext.fsGroup fsGroup for the data volume
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1000
+
+  ## @param internalObjectStorage.containerSecurityContext.enabled Enable container security context
+  ##
+  containerSecurityContext:
+    enabled: false
+
+  ## @param internalObjectStorage.nodeSelector Node selector for the test-bed pod
+  ##
+  nodeSelector: {}
+
+  ## @param internalObjectStorage.tolerations Tolerations for the test-bed pod
+  ##
+  tolerations: []
+
+  ## @param internalObjectStorage.podAnnotations Extra pod annotations
+  ##
+  podAnnotations: {}
+
+  ## @param internalObjectStorage.extraEnvVars Extra environment variables for the test-bed container
+  ##
+  extraEnvVars: []
+
 internalRedis:
   ## internal-valkey image (formerly Redis; key name kept for backward compatibility)
   ## @param internalRedis.enabled Switch value between internal-valkey deployment and external-valkey deployment
