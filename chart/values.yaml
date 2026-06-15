@@ -5291,6 +5291,11 @@ internalObjectStorage:
   ## Probes run the image's baked /usr/local/bin/healthcheck.sh — green only once
   ## the master is healthy AND every requested bucket exists.
   ## @param internalObjectStorage.livenessProbe.enabled Enable livenessProbe
+  ## @param internalObjectStorage.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param internalObjectStorage.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param internalObjectStorage.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param internalObjectStorage.livenessProbe.successThreshold Success threshold for livenessProbe
+  ## @param internalObjectStorage.livenessProbe.failureThreshold Failure threshold for livenessProbe
   ##
   livenessProbe:
     enabled: true
@@ -5301,6 +5306,11 @@ internalObjectStorage:
     failureThreshold: 5
 
   ## @param internalObjectStorage.readinessProbe.enabled Enable readinessProbe
+  ## @param internalObjectStorage.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param internalObjectStorage.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param internalObjectStorage.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param internalObjectStorage.readinessProbe.successThreshold Success threshold for readinessProbe
+  ## @param internalObjectStorage.readinessProbe.failureThreshold Failure threshold for readinessProbe
   ##
   readinessProbe:
     enabled: true
