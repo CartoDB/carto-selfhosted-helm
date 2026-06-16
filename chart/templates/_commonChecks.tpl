@@ -771,10 +771,15 @@ The leak surfaces this set targets, derived from 24 real support bundles:
 # ones with no recognisable shape (databaseEncryptionKey, jwtEncryptionKey,
 # instanceId, cartoAuthClientId).
 - name: carto-license-sensitive-entitlements
+  # NOTE: troubleshoot.sh's fileSelector doesn't match `**` in the middle of a
+  # path (e.g. `**/replicated-sdk/**/replicated-license-info-stdout.txt` is a
+  # no-op). The basename-only form is the supported way to match across any
+  # directory depth — verified empirically against Replicated Troubleshoot
+  # 0.123.x and chart/tests/test-redactors.sh.
   fileSelector:
     files:
-      - "**/replicated-sdk/**/replicated-license-info-stdout.txt"
-      - "**/replicated-sdk/**/replicated-license-info-stderr.txt"
+      - "**/replicated-license-info-stdout.txt"
+      - "**/replicated-license-info-stderr.txt"
   removals:
     regex:
       - redactor: '"(?:cartoPlatformDefaultSA|cartoFeaturesFlagSdkKey|openAiApiKey|geminiApiKey|vitallyToken|databaseEncryptionKey|jwtEncryptionKey|ldsConfiguration|cartoAuthClientId|instanceId)"[^}]*"value"\s*:\s*"(?P<mask>[^"]+)"'

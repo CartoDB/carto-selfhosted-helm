@@ -1,0 +1,46 @@
+name: Verify support-bundle redactors
+
+on:
+  pull_request:
+    paths:
+      - chart/templates/_commonChecks.tpl
+      - chart/templates/preflight.yaml
+      - chart/templates/support-bundle.yaml
+      - chart/tests/test-redactors.sh
+      - .github/workflows/redactor-test.yaml
+
+# This workflow exists because a redactor regression is silent — the chart
+# renders, the bundle generates, and the secret leaks. A failing diff is not
+# enough; we need to actually drive the redactor pipeline against a fixture
+# bundle and assert known plaintext sentinels are gone.
+#
+# The script lives at chart/tests/test-redactors.sh and can be run locally
+# the same way (krew install support-bundle preflight, then bash the script).
+
+jobs:
+  redactor-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.16.2
+
+      - name: Install kubectl-support_bundle krew plugin
+        run: |
+          curl -fsSL -o /tmp/sb.tar.gz https://github.com/replicatedhq/troubleshoot/releases/download/v0.123.17/support-bundle_linux_amd64.tar.gz
+          mkdir -p "$HOME/.local/bin"
+          tar -xzf /tmp/sb.tar.gz -C "$HOME/.local/bin" support-bundle
+          # The script invokes via `kubectl support-bundle` — make the
+          # binary discoverable under that name too.
+          ln -s "$HOME/.local/bin/support-bundle" "$HOME/.local/bin/kubectl-support_bundle"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Sync helm chart dependencies
+        working-directory: chart
+        run: helm dependency update
+
+      - name: Run redactor verification
+        run: bash chart/tests/test-redactors.sh
