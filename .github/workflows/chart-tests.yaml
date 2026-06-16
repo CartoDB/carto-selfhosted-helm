@@ -1,0 +1,54 @@
+name: Chart tests
+
+# General-purpose CI job for behavioural checks against the rendered chart.
+# Each step under `chart-tests` is an independent test. Add new steps here
+# rather than creating per-test workflows — that way the CI status is one
+# check on the PR, helm + krew install costs are amortised across tests, and
+# triggers stay scoped to chart changes.
+#
+# Tests run today:
+#   - redactor verification (chart/tests/test-redactors.sh)
+#
+# Tests to consider adding (open follow-ups, not in scope for this PR):
+#   - validators (_validators.tpl): render with intentionally-broken values,
+#     assert each carto.validateValues.* fires the expected message
+#   - KOTS render: ./scripts/test-kots-config.sh all
+#   - schema lint of the rendered preflight/support-bundle Secrets
+#
+# Local equivalent of this workflow:
+#   helm dependency update -C chart
+#   bash chart/tests/test-redactors.sh
+
+on:
+  pull_request:
+    paths:
+      - chart/**
+      - .github/workflows/chart-tests.yaml
+
+jobs:
+  chart-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.16.2
+
+      - name: Install troubleshoot.sh CLI (kubectl-support_bundle)
+        run: |
+          curl -fsSL -o /tmp/sb.tar.gz https://github.com/replicatedhq/troubleshoot/releases/download/v0.123.17/support-bundle_linux_amd64.tar.gz
+          mkdir -p "$HOME/.local/bin"
+          tar -xzf /tmp/sb.tar.gz -C "$HOME/.local/bin" support-bundle
+          # The script invokes via `kubectl support-bundle` — make the
+          # binary discoverable under that name too.
+          ln -s "$HOME/.local/bin/support-bundle" "$HOME/.local/bin/kubectl-support_bundle"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Sync helm chart dependencies
+        working-directory: chart
+        run: helm dependency update
+
+      - name: Verify support-bundle redactors
+        run: bash chart/tests/test-redactors.sh
