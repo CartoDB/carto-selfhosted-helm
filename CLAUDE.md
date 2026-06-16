@@ -169,6 +169,12 @@ Branching, signing, squash-merge, and "who pushes merges" are in `CONTRIBUTING.m
 - Branch off `main`; use `sc-<id>/` in the branch name to auto-link the PR. Open PRs as **draft**.
 - The **`release-changes`** label publishes the branch's chart to a per-branch Replicated dev channel, so a test license can install your branch via KOTS; removing the label or closing the PR tears it down.
 
+## When blocked by CartoDB permissions
+
+If a tool fails because the user lacks access (e.g., `gh` push returns 403, an internal app rejects auth, a SaaS account is missing, a Claude rate-limit error fires), don't stop work — invoke the org-wide `carto-it-request` skill (from the `CartoDB/carto-skills` plugin marketplace). It handles the full range of `#it-issues` request types (GitHub access, GCP/BigQuery IAM, Claude quota, SaaS OAuth, dev DB credentials, signatures), drafting either a draft PR against the right Terraform file in `CartoDB/carto-infrastructure` (when the resource is IaC-managed) or a structured ticket in `#it-issues` matching the IT Helpdesk triage form. The skill's resource catalog lives at `plugins/infrastructure/skills/carto-it-request/references/it-resource-registry.md` in carto-skills.
+
+Use `#devops-issues` (not the IT Helpdesk) for infrastructure/DevOps requests.
+
 ## Before you open a PR
 
 1. Renders in **both** paths (`helm template` plain + `--set replicated.enabled=true`)?
