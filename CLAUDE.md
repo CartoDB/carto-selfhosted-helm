@@ -2,8 +2,7 @@
 
 Context for working in this repo. Focus is **how the machinery actually works and where it bites** — not commands.
 
-- Process (Git setup, doc generation, linting, branching, merging): [`CONTRIBUTING.md`](./CONTRIBUTING.md) — but note it says `stable`; the repo actually develops on **`main`**.
-- Full chart parameter list: the auto-generated [`chart/README.md`](./chart/README.md).
+Process detail (Git setup, doc generation, linting, merging) lives in [`CONTRIBUTING.md`](./CONTRIBUTING.md) — note it still says `stable`, but the repo develops on **`main`**. Full chart params are in the generated [`chart/README.md`](./chart/README.md). The release/versioning chain — and how it's driven from cloud-native — is its own section below.
 
 ## What this repo is
 
@@ -20,12 +19,12 @@ It's a *deployment* repo — the container images come from CARTO's cloud-native
 
 ```
 chart/                       the chart — source of truth
-  values.yaml                full parameter surface (~5600 lines); drives chart/README.md
+  values.yaml                full parameter surface; drives chart/README.md
   Chart.yaml                 version, appVersion, deps, minVersion annotation
   templates/<component>/*     per-component manifests (configmap, deployment, hpa, ingress, pdb, service, secret)
-  templates/_helpers.tpl     (~1500 lines) naming, images, the secretAssociation map + secret-injection helpers
+  templates/_helpers.tpl     naming, images, the secretAssociation map + secret-injection helpers
   templates/_validators.tpl  early-fail config guards, aggregated and invoked from NOTES.txt
-  templates/_commonChecks.tpl  (~650 lines) troubleshoot.sh collectors + analyzers shared by preflight & support bundle
+  templates/_commonChecks.tpl  troubleshoot.sh collectors + analyzers shared by preflight & support bundle
   templates/preflight.yaml / support-bundle.yaml   the two troubleshoot.sh Secrets
   templates/pre-upgrade-check-versions-*.yaml      version-skew gate (Helm pre-upgrade hook)
   templates/NOTES.txt        post-install notes — also where validators fire
@@ -38,7 +37,7 @@ scripts/test-kots-config.sh  render the KOTS config for gke|eks|aks|all
 doc/                         customer-facing customization docs
 ```
 
-Components (dirs under `chart/templates/`): `accounts-www`, `ai-api`, `aiproxy`, `cdn-invalidator-sub`, `gateway`, `http-cache`, `import-api`, `import-worker`, `lds-api`, `maps-api`, `notifier`, `public-events-api`, `redis` (legacy), `valkey` (current cache), `router`, `sql-worker`, `workspace-api`, `workspace-subscriber`, `workspace-www`.
+Each subdirectory under `chart/templates/` is a component (`ls chart/templates/` for the current set — they map to CARTO's cloud-native services plus the cache: `valkey` is current, `redis` is the legacy name kept for compatibility). They're uniform — every component carries the same handful of manifests (configmap, deployment, hpa, ingress, pdb, service, secret) and the same helper triad (see the `_helpers.tpl` deep-dive).
 
 ## The values flow — internalize this
 
@@ -58,7 +57,7 @@ kots-config.yaml   (KOTS UI: items + RandomString secrets)
 
 ## `_helpers.tpl` — the chart's standard library
 
-~1500 lines, almost entirely `{{- define "carto.*" }}` blocks. Everything is **per-component and uniform**: for each of the ~19 components you'll find the same triad of helpers — `carto.<component>.fullname`, `.configmapName`, `.secretName`, plus `.image`, and (for Node.js services) `.nodeOptions`. So to find how a component is named or where its config comes from, grep `carto.<component>.`.
+Almost entirely `{{- define "carto.*" }}` blocks. Everything is **per-component and uniform**: each component has the same triad of helpers — `carto.<component>.fullname`, `.configmapName`, `.secretName`, plus `.image`, and (for Node.js services) `.nodeOptions`. So to find how a component is named or where its config comes from, grep `carto.<component>.`.
 
 **Naming.** `carto.<component>.fullname` = `{{ include "common.names.fullname" . }}-<component>`, truncated to 63 chars. Everything keys off this — Service/Deployment names, the `app.kubernetes.io/name` selector, ConfigMap/Secret names (which return `existingConfigMap`/`existingSecret` if the customer set one, else the fullname).
 
@@ -85,15 +84,15 @@ The two helpers are **mirror images**: `Objects` writes the value when there is 
 
 ## `_validators.tpl` — fail-fast config guards
 
-Five guards, each `{{- define "carto.validateValues.<thing>" }}` returning a human message **only when misconfigured** (empty otherwise):
+Each guard is a `{{- define "carto.validateValues.<thing>" }}` that returns a human message **only when misconfigured** (empty otherwise). Grep `carto.validateValues.` for the current set; the pattern, with representative examples:
 
 - `redis` — internal disabled *and* no `externalRedis.host` (skipped in `onlyRunRouter` mode).
 - `postgresql` — internal disabled *and* no `externalPostgresql.host`.
 - `proxy` — both `externalProxy.sslCA` *and* `externalProxy.sslCAConfigmap.name` set (pick one).
-- `logLevel` — `appConfigValues.logLevel` not in `info|debug|error`.
-- `serviceAccount` — a Pod Identity feature on (GCP Workload Identity, AWS EKS Pod Identity for Postgres/S3) but no `commonBackendServiceAccount` configured.
+- `logLevel` — `appConfigValues.logLevel` outside the allowed set.
+- `serviceAccount` — a Pod Identity feature on (GCP Workload Identity, AWS EKS Pod Identity) but no `commonBackendServiceAccount` configured.
 
-The aggregator **`carto.validateValues`** includes all five, drops the empty results, joins the rest, and if anything remains calls Helm's built-in **`fail`** — which aborts `helm template`/`install`. **It's invoked from `NOTES.txt` (line ~114)**, so the validation fires as part of normal render; there's no separate step. (One TLS validator, `carto.tlsCerts.duplicatedValueValidator`, is instead called *inline inside* `carto.tlsCerts.secretName`, so it only fires if a template actually uses that helper.)
+The aggregator **`carto.validateValues`** includes each guard, drops the empty results, joins the rest, and if anything remains calls Helm's built-in **`fail`** — which aborts `helm template`/`install`. **It's invoked from `NOTES.txt`**, so the validation fires as part of normal render; there's no separate step. (One TLS validator, `carto.tlsCerts.duplicatedValueValidator`, is instead called *inline inside* `carto.tlsCerts.secretName`, so it only fires if a template actually uses that helper.)
 
 **To add one:** write `carto.validateValues.<thing>` returning a message on the bad condition, then `append` its include into the `$messages` list in `carto.validateValues`. Mind the blast radius in both directions: a condition that's **too broad blocks every install** (non-recoverable for customers); **too narrow lets broken config ship** and fails cryptically at runtime. Validators catch *config-time* mistakes only — environment problems belong in preflights below.
 
@@ -102,13 +101,13 @@ The aggregator **`carto.validateValues`** includes all five, drops the empty res
 This is the [troubleshoot.sh](https://troubleshoot.sh) framework. Both `preflight.yaml` and `support-bundle.yaml` render a **Kubernetes Secret** whose `stringData` embeds a troubleshoot.sh spec as a string, discovered by the label `troubleshoot.sh/kind: preflight` (or `support-bundle`). Both pull their shared collectors/analyzers from `_commonChecks.tpl`.
 
 - **Preflight** = runs **before** install, **blocks** it on failure. Pre-install, the app pods don't exist yet — so preflights can only test the *environment*.
-- **Support bundle** = post-hoc **diagnostics**, never blocks. It includes the same environment checks *plus* cluster info, namespaced pod logs (30-day window), and pod-status analyzers (CrashLoopBackOff, ImagePullBackOff, Pending, …).
+- **Support bundle** = post-hoc **diagnostics**, never blocks. It includes the same environment checks *plus* cluster info, namespaced pod logs, and pod-status analyzers (CrashLoopBackOff, ImagePullBackOff, Pending, …).
 
 **The engine is one pod.** The main collector (`carto.replicated.commonChecks.collectors`) launches a `tenant-requirements-check` pod from the `tenant-requirements-checker` image. An **init container unpacks secrets/certs from env vars into files** (the `THING__FILE_CONTENT` / `THING__FILE_PATH` convention; large Postgres CA bundles are chunked into `…_01`, `…_02`, … to dodge the env-var size limit, then reassembled). The pod runs the checks and writes a JSON log; the **analyzers read that JSON**.
 
 **The verdict pattern.** `_commonChecks.tpl` builds a dict of `Validator → [Check names]`, then loops it into one `jsonCompare` analyzer per check that asserts `…<Validator>.<Check>.status == "passed"`, surfacing the pod's own `.info` string as the message. Checks in the **optional list** (TomTom, TravelTime connectivity) emit **`warn` instead of `fail`** so they don't block. Several validators are **conditional**: the Redis check only exists when `internalRedis.enabled=false`; certificate checks only when a cert is provided; feature-flag check only when overrides are set.
 
-**What's actually checked** (environment, blocking unless noted): Postgres reachability / UTF8 encoding / permissions / version / optional SSL cert; cache (Redis/Valkey) reachability + multi-DB support + optional TLS; object storage (GCS/S3/Azure) assets+temp bucket read/write; Google service-account validity (when not using Workload Identity); egress to CARTO auth, PubSub, GCS, release channels, image registry (+ optional TomTom/TravelTime); PubSub publish/consume; feature-flag JSON validity; provided TLS certs. **Cluster-level analyzers** (K8s ≥1.29, containerd runtime, supported distribution, ≥6 CPU / ≥16Gi RAM, Gateway API CRD when `gateway.enabled`) run **only when `replicated.platformDistribution != ""`**.
+**What's actually checked** (environment, blocking unless noted): Postgres reachability / UTF8 encoding / permissions / version / optional SSL cert; cache (Redis/Valkey) reachability + multi-DB support + optional TLS; object storage (GCS/S3/Azure) assets+temp bucket read/write; Google service-account validity (when not using Workload Identity); egress to CARTO auth, PubSub, GCS, release channels, image registry (+ optional TomTom/TravelTime); PubSub publish/consume; feature-flag JSON validity; provided TLS certs. **Cluster-level analyzers** (K8s version floor, container runtime, supported distribution, minimum CPU/RAM, Gateway API CRD when `gateway.enabled` — exact thresholds in `_commonChecks.tpl`) run **only when `replicated.platformDistribution != ""`**.
 
 **To add an environment check:** the actual logic lives in the external `tenant-requirements-checker` image (it must emit `{Validator:{Check:{status,info}}}` JSON). In *this* repo you extend the validator/check dict in `_commonChecks.tpl` (conditionally if needed) and, if the check needs new inputs, add them to the checker's `customerValues` / `customerSecrets` env blocks (wiring files through the init-container convention). A support-bundle-only collector is just an extra `collectors:` entry in `support-bundle.yaml` (+ an analyzer if you want a verdict).
 
@@ -131,13 +130,31 @@ Keep them separate; they're wired differently:
 
 Never commit a secret, not even a realistic placeholder — it runs on customer infrastructure you'll never see, and a bad default ships to everyone who upgrades.
 
-## Versioning
+## Release & versioning flow
 
-Releases are automated (GitHub release tags → `official-release.yaml` → Replicated channels; `:rocket:` commits + `release-autotag.yaml` bump app versions). You won't run these by hand. What you *do* own is keeping these in sync — they drift silently:
+**You almost never bump versions in this repo by hand** — cloud-native's release pipeline writes them for you. Understanding the chain matters more than the files.
 
-- `chart/Chart.yaml#version` **must equal** `manifests/kots-helm.yaml#spec.chart.chartVersion`.
-- `chart/Chart.yaml#appVersion` is mirrored by `VERSION` at the repo root.
-- Bumping `appVersion`? Reconsider `Chart.yaml#annotations.minVersion` (above).
+**The numbers originate in cloud-native.** The chart's app version *is* the CARTO cloud-native release version. When cloud-native cuts a self-hosted release (RC or stable), its `selfhosted-release-create-downstream-repositories` workflow opens a bot PR here — author `supercartofante`, titled `:rocket: Update to <chartVersion>-<appVersion>` (e.g. `1.266.1-2026.5.14`) — that sets **all** the version fields atomically:
+
+| File / field | Value | Decided by |
+|---|---|---|
+| `VERSION` (repo root) | release version, e.g. `2026.5.14` (or `2026.5.14-rc.8`) | cloud-native release |
+| `chart/Chart.yaml#appVersion` | same as `VERSION` | cloud-native release |
+| `chart/Chart.yaml#version` | chart SemVer, e.g. `1.266.1` | computed by cloud-native |
+| `manifests/kots-helm.yaml#spec.chart.chartVersion` | equals chart version | cloud-native (kept in lockstep) |
+| `chart/Chart.yaml#annotations.minVersion` | oldest upgradeable-from version | cloud-native's `onprem/MIN_VERSION` |
+
+So `appVersion` and `minVersion` are *not* decisions made in this repo. The PR title encodes both numbers: `<chartVersion>-<appVersion>`.
+
+**What merging that PR sets off (this repo's automation):**
+
+1. Merging to `main` changes `VERSION` → `release-autotag.yaml` creates a GitHub tag/release **named after the chart version**. If `appVersion` matches the RC pattern (`…-rc.N`) it's a **prerelease**, otherwise a full **release**.
+2. The release event → `official-release.yaml`:
+   - **prereleased** → appends `-beta` to the chart version + `kots-helm` chartVersion, publishes to the Replicated **`Release candidates`** channel.
+   - **released** → publishes to **`Stable`** and Slacks `#carto-selfhosted`.
+3. Separately, *every* push to `main` → `release-dedicateds-changes.yaml` publishes the chart to the **`Dedicateds`** channel (dev trigger); and any PR with the **`release-changes`** label gets its own per-branch dev channel for test installs.
+
+**The only time you edit versions by hand** is an out-of-band chart-only change (a chart hotfix with no cloud-native bump). Then keep the trio in lockstep yourself — `Chart.yaml#version` == `kots-helm.yaml#spec.chart.chartVersion` — and leave `appVersion` / `VERSION` / `minVersion` alone unless you mean to move them. Nothing in CI verifies the version fields agree; the only related guard is the helm-readme drift check.
 
 ## Validating a change
 
