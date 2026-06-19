@@ -656,75 +656,42 @@ Return customer secrets to use in preflights and support-bundle
 
 
 {{/*
-Return redactor specs for the preflight and support-bundle collectors.
-
-Replicated Troubleshoot applies these redactors in-stream, *before* the
-support bundle tar.gz is written and before anything leaves the cluster.
-Any byte that matches a `mask` capture group is replaced with `***HIDDEN***`
-in the captured artifact.
-
-This is the primary leak control for the chart, layered on top of the
-built-in redactors that Replicated/KOTS ships (env vars named *PASSWORD*,
-*TOKEN*, *ACCESS_KEY_ID, *SECRET_ACCESS_KEY, *OWNER_ACCOUNT, and
-protocol://user:pass@host connection strings).
-
-Patterns are scoped narrowly to known credential shapes to minimise
-false-positive redaction in debug bundles. Add a new pattern when a new
-credential shape is introduced. Verify by running:
-
-  helm template chart -f values.yaml \
-    | yq '.stringData."support-bundle.yaml"' \
-    | troubleshoot redact < a-real-captured-bundle.tar.gz
-
-against a fixture and confirming known plaintext sentinels (BEGIN PRIVATE
-KEY, AKIA, AIzaSy, sk-, sdk-) do not appear in the output.
-
-The leak surfaces this set targets, derived from 24 real support bundles:
-  - PodSpec env captures by the clusterResources collector
-  - tenant-requirements-check runPod pod definition snapshot
-  - Replicated SDK license-info stdout dump, which leaks
-    cartoPlatformDefaultSA private_key, openAiApiKey, geminiApiKey,
-    vitallyToken, cartoFeaturesFlagSdkKey, and other license entitlements
-    in plaintext
+Redactor specs for the preflight and support-bundle collectors. Troubleshoot
+runs these in-stream before the bundle is archived, replacing each `mask`
+group with ***HIDDEN***. Layered on top of Replicated's built-in redactors
+(*PASSWORD*, *TOKEN*, *ACCESS_KEY_ID, *SECRET_ACCESS_KEY env vars + conn
+strings). Patterns target known credential shapes only, to avoid redacting
+useful debug data. Verify changes with chart/tests/test-redactors.sh.
 */}}
 {{- define "carto.replicated.commonChecks.redactors" }}
-# IMPORTANT: redactor order matters. Replicated Troubleshoot applies them
-# sequentially, so any outer/longer container must be redacted BEFORE its
-# inner/shorter substrings. Specifically, the GCP service-account JSON
-# (when base64-wrapped) contains a base64-encoded PEM private key inside
-# it. If we redact the inner PEM first, the GCP outer match no longer has
-# enough remaining bytes to satisfy its length requirement and leaks.
+# Order matters: an outer base64 blob must be redacted before any inner
+# substring. The GCP SA JSON (base64) contains a base64 PEM key; redacting
+# the inner PEM first would shorten the outer match below its length floor.
 
-# GCP service account JSON — base64-wrapped whole object. The three prefixes
-# cover {"type":"service_account" with three common whitespace layouts.
-# DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT and STORAGE_SERVICE_ACCOUNT_KEY
-# inline as base64 of this JSON (~3000+ chars in real bundles).
-# MUST run before pem-private-keys-base64.
+# GCP service-account JSON, base64-wrapped (DEFAULT_/STORAGE_SERVICE_ACCOUNT_KEY).
+# Prefixes cover the three whitespace layouts of {"type":"service_account".
 - name: gcp-sa-json-base64
   removals:
     regex:
       - redactor: '(?P<mask>(?:eyAidHlwZSI6|ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCI|eyJ0eXBlIjoic2VydmljZV9hY2NvdW50)[A-Za-z0-9+/=]{50,})'
-# GCP service account JSON — private_key field inside any JSON object.
+# GCP SA JSON, raw private_key field.
 - name: gcp-sa-private-key-field
   removals:
     regex:
       - redactor: '"private_key"\s*:\s*"(?P<mask>-----BEGIN[^"]+)"'
 
-# PEM private keys — raw form (e.g. inside replicated-sdk license dump's
-# cartoPlatformDefaultSA JSON private_key field after JSON unescaping in logs).
+# PEM private keys, raw.
 - name: pem-private-keys-raw
   removals:
     regex:
       - redactor: '(?P<mask>-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----)'
-# PEM private keys — base64-wrapped form (ROUTER_SSL_CERT_KEY__FILE_CONTENT
-# inlines as base64 of "-----BEGIN ... PRIVATE KEY-----", which starts with
-# LS0tLS1CRUdJTi...). Bounded length keeps it from over-matching short blobs.
+# PEM private keys, base64 (ROUTER_SSL_CERT_KEY__FILE_CONTENT).
 - name: pem-private-keys-base64
   removals:
     regex:
       - redactor: '(?P<mask>LS0tLS1CRUdJTi[A-Za-z0-9+/=]{200,})'
 
-# LaunchDarkly SDK and mobile keys (well-known shape).
+# LaunchDarkly SDK + mobile keys.
 - name: launchdarkly-sdk-keys
   removals:
     regex:
@@ -734,48 +701,41 @@ The leak surfaces this set targets, derived from 24 real support bundles:
     regex:
       - redactor: '(?P<mask>\bmob-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b)'
 
-# AWS access key IDs (production + STS temporary).
+# AWS access key IDs (AKIA permanent, ASIA temporary).
 - name: aws-access-key-ids
   removals:
     regex:
       - redactor: '(?P<mask>\b(?:AKIA|ASIA)[0-9A-Z]{16}\b)'
 
-# OpenAI / Anthropic-style `sk-`-prefixed API keys, including sk-svcacct- and
-# sk-proj- variants observed in real license dumps.
+# sk- API keys, incl. sk-svcacct-/sk-proj- (openAiApiKey).
 - name: openai-sk-keys
   removals:
     regex:
       - redactor: '(?P<mask>\bsk-(?:svcacct-|proj-|None-)?[A-Za-z0-9_-]{20,}\b)'
 
-# Google API keys (AIzaSy...) — geminiApiKey, googleMapsApiKey.
+# Google API keys (geminiApiKey, googleMapsApiKey).
 - name: google-api-keys
   removals:
     regex:
       - redactor: '(?P<mask>\bAIza[0-9A-Za-z_-]{35}\b)'
 
-# JWT tokens — raw header.payload.signature form.
+# JWTs, raw.
 - name: jwt-tokens
   removals:
     regex:
       - redactor: '(?P<mask>\beyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b)'
-# JWT tokens — base64-wrapped form (vitallyToken in license dumps is base64 of
-# a JWT, so it starts with ZXlK which is base64 of "eyJ").
+# JWTs, base64-wrapped (vitallyToken — base64 of a JWT starts with ZXlK).
 - name: jwt-tokens-base64-wrapped
   removals:
     regex:
       - redactor: '(?P<mask>\bZXlK[A-Za-z0-9+/=]{50,}\b)'
 
-# Replicated license entitlement scrub. Scoped to the license-info file only,
-# so the regex does not redact unrelated `"value":"..."` JSON fields elsewhere.
-# Catches any future entitlement we forget to add a shape rule for, plus the
-# ones with no recognisable shape (databaseEncryptionKey, jwtEncryptionKey,
-# instanceId, cartoAuthClientId).
+# License entitlement values, scoped to the license-info file so we don't
+# redact unrelated "value" fields. Catches shapeless entitlements
+# (databaseEncryptionKey, jwtEncryptionKey, instanceId, cartoAuthClientId)
+# and any future addition. fileSelector uses basename-only globs: a mid-path
+# `**` (e.g. **/replicated-sdk/**/...) is a no-op in troubleshoot's matcher.
 - name: carto-license-sensitive-entitlements
-  # NOTE: troubleshoot.sh's fileSelector doesn't match `**` in the middle of a
-  # path (e.g. `**/replicated-sdk/**/replicated-license-info-stdout.txt` is a
-  # no-op). The basename-only form is the supported way to match across any
-  # directory depth — verified empirically against Replicated Troubleshoot
-  # 0.123.x and chart/tests/test-redactors.sh.
   fileSelector:
     files:
       - "**/replicated-license-info-stdout.txt"
@@ -784,13 +744,9 @@ The leak surfaces this set targets, derived from 24 real support bundles:
     regex:
       - redactor: '"(?:cartoPlatformDefaultSA|cartoFeaturesFlagSdkKey|openAiApiKey|geminiApiKey|vitallyToken|databaseEncryptionKey|jwtEncryptionKey|ldsConfiguration|cartoAuthClientId|instanceId)"[^}]*"value"\s*:\s*"(?P<mask>[^"]+)"'
 
-# Final fallback: scrub every env value in the tenant-requirements-check pod
-# definition. Scoped via fileSelector so it does NOT redact env values across
-# the rest of the bundle (which would break debugging of LOG_LEVEL, NODE_ENV,
-# bucket names, etc.). Covers values with no recognisable shape — Azure
-# storage keys (WORKSPACE_*_STORAGE_ACCESSKEY, 88-char base64), unusual
-# Postgres passwords that escape the built-in *PASSWORD* env name match, and
-# anything else added here in the future.
+# Fallback: scrub all env values in the tenant-requirements-check pod (e.g.
+# Azure WORKSPACE_*_STORAGE_ACCESSKEY, shapeless values). fileSelector keeps
+# this from touching env values elsewhere in the bundle.
 - name: tenant-requirements-check-env-fallback
   fileSelector:
     files:
