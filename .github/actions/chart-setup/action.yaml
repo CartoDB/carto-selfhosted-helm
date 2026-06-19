@@ -1,0 +1,61 @@
+name: Chart setup
+description: |
+  Shared setup for any CI job that needs to render, lint, or test the helm
+  chart. Composes: helm install, troubleshoot.sh CLI, and `helm dependency
+  update` on `chart/`. Use this from any workflow that exercises the chart
+  so future tests share one place to bump versions and fix install logic.
+
+  Caller must run `actions/checkout` BEFORE this composite — the composite
+  cannot check itself out (chicken-and-egg with local actions).
+
+inputs:
+  helm-version:
+    description: Helm CLI version (passed to azure/setup-helm)
+    required: false
+    default: v3.16.2
+  troubleshoot-version:
+    description: |
+      Replicated Troubleshoot CLI release tag. Pinned because new minor
+      versions sometimes change `kubectl support-bundle redact` semantics
+      (cf. PR #854 — inline spec.redactors silently no-oped under 0.123.x).
+    required: false
+    default: v0.123.17
+  install-troubleshoot:
+    description: |
+      Whether to install kubectl support-bundle / preflight. Skip when the
+      job only needs `helm template`.
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Install helm
+      uses: azure/setup-helm@v4
+      with:
+        version: ${{ inputs.helm-version }}
+
+    - name: Install troubleshoot.sh CLI (kubectl support-bundle / preflight)
+      if: inputs.install-troubleshoot == 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        VERSION="${{ inputs.troubleshoot-version }}"
+        BIN_DIR="$HOME/.local/bin"
+        mkdir -p "$BIN_DIR"
+        curl -fsSL -o /tmp/sb.tar.gz \
+          "https://github.com/replicatedhq/troubleshoot/releases/download/${VERSION}/support-bundle_linux_amd64.tar.gz"
+        tar -xzf /tmp/sb.tar.gz -C "$BIN_DIR" support-bundle
+        curl -fsSL -o /tmp/pf.tar.gz \
+          "https://github.com/replicatedhq/troubleshoot/releases/download/${VERSION}/preflight_linux_amd64.tar.gz"
+        tar -xzf /tmp/pf.tar.gz -C "$BIN_DIR" preflight
+        # The scripts call via `kubectl support-bundle` / `kubectl preflight` —
+        # make the binaries discoverable under those names.
+        ln -sf "$BIN_DIR/support-bundle" "$BIN_DIR/kubectl-support_bundle"
+        ln -sf "$BIN_DIR/preflight"      "$BIN_DIR/kubectl-preflight"
+        echo "$BIN_DIR" >> "$GITHUB_PATH"
+
+    - name: Sync helm chart dependencies
+      shell: bash
+      working-directory: chart
+      run: helm dependency update
