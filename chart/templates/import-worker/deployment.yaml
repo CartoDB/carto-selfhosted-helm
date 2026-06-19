@@ -31,6 +31,7 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/import-worker/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/import-worker/secret.yaml") . | sha256sum }}
+        checksum/redis-password: {{ include "carto.redis.passwordChecksum" . }}
         checksum/postgresql-password: {{ include "carto.postgresql.passwordChecksum" . }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.importWorker.podAnnotations }}
@@ -108,14 +109,19 @@ spec:
                 secretKeyRef:
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.key" . }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.redis.secretName" . }}
+                  key: {{ include "carto.redis.existingsecret.key" . | quote }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "BIGQUERY_OAUTH2_CLIENT_SECRET"
               "CARTO_SELFHOSTED_INSTANCE_ID"
               "ENCRYPTION_SECRET_KEY"
-              "IMPORT_JWT_SECRET"
+              "IMPORT_ACCESSKEYID"
               "IMPORT_AWS_ACCESS_KEY_ID"
               "IMPORT_AWS_SECRET_ACCESS_KEY"
-              "IMPORT_ACCESSKEYID"
+              "IMPORT_JWT_SECRET"
               "IMPORT_SECRETACCESSKEY"
               "IMPORT_STORAGE_ACCESSKEY"
               "LAUNCHDARKLY_SDK_KEY"
@@ -130,10 +136,10 @@ spec:
               "BIGQUERY_OAUTH2_CLIENT_SECRET"
               "CARTO_SELFHOSTED_INSTANCE_ID"
               "ENCRYPTION_SECRET_KEY"
-              "IMPORT_JWT_SECRET"
+              "IMPORT_ACCESSKEYID"
               "IMPORT_AWS_ACCESS_KEY_ID"
               "IMPORT_AWS_SECRET_ACCESS_KEY"
-              "IMPORT_ACCESSKEYID"
+              "IMPORT_JWT_SECRET"
               "IMPORT_SECRETACCESSKEY"
               "IMPORT_STORAGE_ACCESSKEY"
               "LAUNCHDARKLY_SDK_KEY"
@@ -201,6 +207,11 @@ spec:
               mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
               readOnly: true
             {{- end }}
+            {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+            - name: redis-tls-ca
+              mountPath: {{ include "carto.redis.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
             {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
             - name: proxy-ssl-ca
               mountPath: {{ include "carto.proxy.configMapMountDir" . }}
@@ -239,6 +250,11 @@ spec:
         - name: postgresql-ssl-ca
           configMap:
             name: {{ include "carto.postgresql.configMapName" . }}
+        {{- end }}
+        {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
+        - name: redis-tls-ca
+          configMap:
+            name: {{ include "carto.redis.configMapName" . }}
         {{- end }}
         {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
         - name: proxy-ssl-ca

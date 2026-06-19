@@ -398,9 +398,9 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
-  ## @extra cartoSecrets.redisPassword The password for the Redis instance.
+  ## @extra cartoSecrets.redisPassword The password for the Valkey instance.
   redisPassword:
-    ## @param cartoSecrets.redisPassword.value Value of the secret used to define the password for the Redis instance. One of `cartoSecrets.redisPassword.value` or `cartoSecrets.redisPassword.existingSecret` could be defined.
+    ## @param cartoSecrets.redisPassword.value Value of the secret used to define the password for the Valkey instance. One of `cartoSecrets.redisPassword.value` or `cartoSecrets.redisPassword.existingSecret` could be defined.
     value: ""
     ## @param cartoSecrets.redisPassword.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.redisPassword.existingSecret.key`. If `cartoSecrets.redisPassword.value` is defined, this value is going to be ignored and not used.
     ## @param cartoSecrets.redisPassword.existingSecret.key Key to find in `cartoSecrets.redisPassword.existingSecret.name` where the value of `cartoSecrets.redisPassword` is found. If `cartoSecrets.redisPassword.value` is defined, this value is going to be ignored and not used.
@@ -5206,7 +5206,7 @@ tenantRequirementsChecker:
 ##
 internalRedis:
   ## internal-valkey image (formerly Redis; key name kept for backward compatibility)
-  ## @param internalRedis.enabled Switch value between internal-valkey deployment and external-redis/valkey deployment
+  ## @param internalRedis.enabled Switch value between internal-valkey deployment and external-valkey deployment
   ## @param internalRedis.image.registry internal-valkey image registry
   ## @param internalRedis.image.repository internal-valkey image repository
   ## @param internalRedis.image.tag internal-valkey image tag (immutable tags are recommended)
@@ -5229,21 +5229,21 @@ internalRedis:
     ## @param internalRedis.image.pullSecrets Image-pull secrets for private registries
     pullSecrets: []
 
-  ## @param internalRedis.auth.enabled Enable password authentication on internal-redis
-  ## @param internalRedis.auth.password Password for Redis authentication
+  ## @param internalRedis.auth.enabled Enable password authentication on internal-valkey
+  ## @param internalRedis.auth.password Password for Valkey authentication
   ##
   auth:
     enabled: true
     password: ""
 
-  ## @param internalRedis.containerPorts.redis internal-redis container port
+  ## @param internalRedis.containerPorts.redis internal-valkey container port
   ##
   containerPorts:
     redis: 6379
 
-  ## Configure extra options for internal-redis containers' liveness and readiness probes
+  ## Configure extra options for internal-valkey containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
-  ## @param internalRedis.livenessProbe.enabled Enable livenessProbe on internal-redis containers
+  ## @param internalRedis.livenessProbe.enabled Enable livenessProbe on internal-valkey containers
   ## @param internalRedis.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
   ## @param internalRedis.livenessProbe.periodSeconds Period seconds for livenessProbe
   ## @param internalRedis.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
@@ -5258,7 +5258,7 @@ internalRedis:
     successThreshold: 1
     failureThreshold: 5
 
-  ## @param internalRedis.readinessProbe.enabled Enable readinessProbe on internal-redis containers
+  ## @param internalRedis.readinessProbe.enabled Enable readinessProbe on internal-valkey containers
   ## @param internalRedis.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
   ## @param internalRedis.readinessProbe.periodSeconds Period seconds for readinessProbe
   ## @param internalRedis.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
@@ -5273,7 +5273,7 @@ internalRedis:
     successThreshold: 1
     failureThreshold: 5
 
-  ## @param internalRedis.startupProbe.enabled Enable startupProbe on internal-redis containers
+  ## @param internalRedis.startupProbe.enabled Enable startupProbe on internal-valkey containers
   ## @param internalRedis.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
   ## @param internalRedis.startupProbe.periodSeconds Period seconds for startupProbe
   ## @param internalRedis.startupProbe.timeoutSeconds Timeout seconds for startupProbe
@@ -5300,7 +5300,7 @@ internalRedis:
   ##
   customStartupProbe: {}
 
-  ## internal-redis resource requests and limits
+  ## internal-valkey resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param internalRedis.resources.limits.memory Container memory limits in MiB
   ## @param internalRedis.resources.limits.cpu Container cpu limits in milliCPU cores
@@ -5317,9 +5317,9 @@ internalRedis:
 
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-  ## @param internalRedis.podSecurityContext.enabled Enabled internal-redis pods' Security Context
-  ## @param internalRedis.podSecurityContext.fsGroup Set internal-redis pod's Security Context fsGroup
-  ## @param internalRedis.podSecurityContext.supplementalGroups[0] Set internal-redis pod's Security Context supplementalGroups
+  ## @param internalRedis.podSecurityContext.enabled Enabled internal-valkey pods' Security Context
+  ## @param internalRedis.podSecurityContext.fsGroup Set internal-valkey pod's Security Context fsGroup
+  ## @param internalRedis.podSecurityContext.supplementalGroups[0] Set internal-valkey pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
@@ -5328,13 +5328,13 @@ internalRedis:
 
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
-  ## @param internalRedis.containerSecurityContext.enabled Enabled internal-redis containers' Security Context
-  ## @param internalRedis.containerSecurityContext.runAsUser Set internal-redis containers' Security Context runAsUser
-  ## @param internalRedis.containerSecurityContext.runAsGroup Set internal-redis containers' Security Context runAsGroup
-  ## @param internalRedis.containerSecurityContext.runAsNonRoot Set internal-redis containers' Security Context runAsNonRoot
-  ## @param internalRedis.containerSecurityContext.allowPrivilegeEscalation Set internal-redis containers' Security Context allowPrivilegeEscalation
-  ## @param internalRedis.containerSecurityContext.readOnlyRootFilesystem Set internal-redis containers' Security Context readOnlyRootFilesystem
-  ## @param internalRedis.containerSecurityContext.capabilities.drop Removes internal-redis containers' Security Context capabilities
+  ## @param internalRedis.containerSecurityContext.enabled Enabled internal-valkey containers' Security Context
+  ## @param internalRedis.containerSecurityContext.runAsUser Set internal-valkey containers' Security Context runAsUser
+  ## @param internalRedis.containerSecurityContext.runAsGroup Set internal-valkey containers' Security Context runAsGroup
+  ## @param internalRedis.containerSecurityContext.runAsNonRoot Set internal-valkey containers' Security Context runAsNonRoot
+  ## @param internalRedis.containerSecurityContext.allowPrivilegeEscalation Set internal-valkey containers' Security Context allowPrivilegeEscalation
+  ## @param internalRedis.containerSecurityContext.readOnlyRootFilesystem Set internal-valkey containers' Security Context readOnlyRootFilesystem
+  ## @param internalRedis.containerSecurityContext.capabilities.drop Removes internal-valkey containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true
@@ -5351,7 +5351,7 @@ internalRedis:
   ##
   terminationGracePeriodSeconds: 10
 
-  ## @param internalRedis.existingSecret The name of an existing Secret with your custom password for internal-redis
+  ## @param internalRedis.existingSecret The name of an existing Secret with your custom password for internal-valkey
   ##
   existingSecret: ""
 
@@ -5363,15 +5363,15 @@ internalRedis:
   ##
   args: []
 
-  ## @param internalRedis.hostAliases internal-redis pods host aliases
+  ## @param internalRedis.hostAliases internal-valkey pods host aliases
   ##
   hostAliases: []
 
-  ## @param internalRedis.podLabels Extra labels for internal-redis pods
+  ## @param internalRedis.podLabels Extra labels for internal-valkey pods
   ##
   podLabels: {}
 
-  ## @param internalRedis.podAnnotations Annotations for internal-redis pods
+  ## @param internalRedis.podAnnotations Annotations for internal-valkey pods
   ##
   podAnnotations: {}
 
@@ -5383,7 +5383,7 @@ internalRedis:
   ##
   podAntiAffinityPreset: soft
 
-  ## internal-redis affinity preset
+  ## internal-valkey affinity preset
   ##
   nodeAffinityPreset:
     ## @param internalRedis.nodeAffinityPreset.type Node affinity preset type. Ignored if `internalRedis.affinity` is set
@@ -5396,31 +5396,31 @@ internalRedis:
     ##
     values: []
 
-  ## @param internalRedis.affinity Affinity for internal-redis pods assignment
+  ## @param internalRedis.affinity Affinity for internal-valkey pods assignment
   ##
   affinity: {}
 
-  ## @param internalRedis.nodeSelector Node labels for internal-redis pods assignment
+  ## @param internalRedis.nodeSelector Node labels for internal-valkey pods assignment
   ##
   nodeSelector: {}
 
-  ## @param internalRedis.tolerations Tolerations for internal-redis pods assignment
+  ## @param internalRedis.tolerations Tolerations for internal-valkey pods assignment
   ##
   tolerations: []
 
-  ## @param internalRedis.priorityClassName internal-redis pods' priorityClassName
+  ## @param internalRedis.priorityClassName internal-valkey pods' priorityClassName
   ##
   priorityClassName: ""
 
-  ## @param internalRedis.schedulerName Name of the k8s scheduler (other than default) for internal-redis pods
+  ## @param internalRedis.schedulerName Name of the k8s scheduler (other than default) for internal-valkey pods
   ##
   schedulerName: ""
 
-  ## @param internalRedis.lifecycleHooks Lifecycle hooks for internal-redis container(s)
+  ## @param internalRedis.lifecycleHooks Lifecycle hooks for internal-valkey container(s)
   ##
   lifecycleHooks: {}
 
-  ## @param internalRedis.extraEnvVars Extra environment variables for internal-redis pods
+  ## @param internalRedis.extraEnvVars Extra environment variables for internal-valkey pods
   ##
   extraEnvVars: []
 
@@ -5432,67 +5432,67 @@ internalRedis:
   ##
   extraEnvVarsSecret: ""
 
-  ## @param internalRedis.extraVolumes Optionally specify extra volumes for internal-redis pod(s)
+  ## @param internalRedis.extraVolumes Optionally specify extra volumes for internal-valkey pod(s)
   ##
   extraVolumes: []
 
-  ## @param internalRedis.extraVolumeMounts Optionally specify extra volumeMounts for internal-redis container(s)
+  ## @param internalRedis.extraVolumeMounts Optionally specify extra volumeMounts for internal-valkey container(s)
   ##
   extraVolumeMounts: []
 
-  ## @param internalRedis.sidecars Add additional sidecar containers to internal-redis pod(s)
+  ## @param internalRedis.sidecars Add additional sidecar containers to internal-valkey pod(s)
   ##
   sidecars: {}
 
-  ## @param internalRedis.initContainers Add additional init containers to internal-redis pod(s)
+  ## @param internalRedis.initContainers Add additional init containers to internal-valkey pod(s)
   ##
   initContainers: {}
 
   ## @section internalRedis Service Parameters
   ##
   service:
-    ## @param internalRedis.service.type internal-redis service type
+    ## @param internalRedis.service.type internal-valkey service type
     ##
     type: ClusterIP
-    ## @param internalRedis.service.ports.http internal-redis service HTTP port
+    ## @param internalRedis.service.ports.http internal-valkey service HTTP port
     ##
     ports:
       http: 6379
-    ## @param internalRedis.service.nodePorts.redis Node port for internal-redis service
+    ## @param internalRedis.service.nodePorts.redis Node port for internal-valkey service
     ##
     nodePorts:
       redis: ""
-    ## @param internalRedis.service.clusterIP internal-redis service ClusterIP
+    ## @param internalRedis.service.clusterIP internal-valkey service ClusterIP
     ##
     clusterIP: ""
-    ## @param internalRedis.service.loadBalancerIP internal-redis service LoadBalancer IP
+    ## @param internalRedis.service.loadBalancerIP internal-valkey service LoadBalancer IP
     ##
     loadBalancerIP: ""
-    ## @param internalRedis.service.labelSelectorsOverride Label selectors override for internal-redis service
+    ## @param internalRedis.service.labelSelectorsOverride Label selectors override for internal-valkey service
     ##
     labelSelectorsOverride: {}
-    ## @param internalRedis.service.loadBalancerSourceRanges internal-redis service LoadBalancer source ranges
+    ## @param internalRedis.service.loadBalancerSourceRanges internal-valkey service LoadBalancer source ranges
     ##
     loadBalancerSourceRanges: []
-    ## @param internalRedis.service.externalTrafficPolicy internal-redis service external traffic policy
+    ## @param internalRedis.service.externalTrafficPolicy internal-valkey service external traffic policy
     ##
     externalTrafficPolicy: Cluster
-    ## @param internalRedis.service.annotations Additional annotations for internal-redis service
+    ## @param internalRedis.service.annotations Additional annotations for internal-valkey service
     ##
     annotations: {}
-    ## @param internalRedis.service.extraPorts Extra ports for internal-redis service
+    ## @param internalRedis.service.extraPorts Extra ports for internal-valkey service
     ##
     extraPorts: []
 
-## @section External Redis parameters
-## External Redis configuration
+## @section External Valkey parameters
+## External Valkey configuration
 ## All of these values are only used when redis.enabled is set to false
-## @param externalRedis.host Redis host
-## @param externalRedis.port Redis port number
-## @param externalRedis.password Redis password
-## @param externalRedis.tlsEnabled Whether or not connect to Redis via TLS
-## @param externalRedis.tlsCA CA certificate in case Redis TLS cert it's selfsigned
-## @param externalRedis.existingSecret Name of an existing secret resource containing the Redis password in a 'redis-password' key
+## @param externalRedis.host Valkey host
+## @param externalRedis.port Valkey port number
+## @param externalRedis.password Valkey password
+## @param externalRedis.tlsEnabled Whether or not connect to Valkey via TLS
+## @param externalRedis.tlsCA CA certificate in case Valkey TLS cert it's selfsigned
+## @param externalRedis.existingSecret Name of an existing secret resource containing the Valkey password in a 'redis-password' key
 ## @param externalRedis.existingSecretPasswordKey Key of the existing secret
 ##
 externalRedis:
