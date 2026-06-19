@@ -96,7 +96,7 @@ spec:
           args:
             - -ec
             - |
-              exec node -r ./tsconfig-paths-bootstrap.js dist/maps-api/index.js
+              exec node dist/maps-api/index.js
           {{- end }}
           env:
             - name: WORKSPACE_POSTGRES_PASSWORD
