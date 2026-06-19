@@ -9,10 +9,6 @@ description: |
   cannot check itself out (chicken-and-egg with local actions).
 
 inputs:
-  helm-version:
-    description: Helm CLI version (passed to azure/setup-helm)
-    required: false
-    default: v3.16.2
   troubleshoot-version:
     description: |
       Replicated Troubleshoot CLI release tag. Pinned because new minor
@@ -31,9 +27,12 @@ runs:
   using: composite
   steps:
     - name: Install helm
-      uses: azure/setup-helm@v4
-      with:
-        version: ${{ inputs.helm-version }}
+      shell: bash
+      # Upstream-maintained installer, matching trivy-security-scanning.yaml's
+      # existing pattern in this repo. ubuntu-latest runners already ship a
+      # recent helm, but installing explicitly keeps the version deterministic
+      # and avoids a runner-image surprise.
+      run: curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
     - name: Install troubleshoot.sh CLI (kubectl support-bundle / preflight)
       if: inputs.install-troubleshoot == 'true'
