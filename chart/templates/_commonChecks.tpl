@@ -664,34 +664,24 @@ strings). Patterns target known credential shapes only, to avoid redacting
 useful debug data. Verify changes with chart/tests/test-redactors.sh.
 */}}
 {{- define "carto.replicated.commonChecks.redactors" }}
-# Order matters: an outer base64 blob must be redacted before any inner
-# substring. The GCP SA JSON (base64) contains a base64 PEM key; redacting
-# the inner PEM first would shorten the outer match below its length floor.
-
-# GCP service-account JSON, base64-wrapped (DEFAULT_/STORAGE_SERVICE_ACCOUNT_KEY).
-# Prefixes cover the three whitespace layouts of {"type":"service_account".
+# Order matters: redacting the inner base64 PEM first would shorten the
+# outer GCP-SA-JSON match below its length floor, so the outer rule runs first.
 - name: gcp-sa-json-base64
   removals:
     regex:
       - redactor: '(?P<mask>(?:eyAidHlwZSI6|ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCI|eyJ0eXBlIjoic2VydmljZV9hY2NvdW50)[A-Za-z0-9+/=]{50,})'
-# GCP SA JSON, raw private_key field.
 - name: gcp-sa-private-key-field
   removals:
     regex:
       - redactor: '"private_key"\s*:\s*"(?P<mask>-----BEGIN[^"]+)"'
-
-# PEM private keys, raw.
 - name: pem-private-keys-raw
   removals:
     regex:
       - redactor: '(?P<mask>-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----)'
-# PEM private keys, base64 (ROUTER_SSL_CERT_KEY__FILE_CONTENT).
 - name: pem-private-keys-base64
   removals:
     regex:
       - redactor: '(?P<mask>LS0tLS1CRUdJTi[A-Za-z0-9+/=]{200,})'
-
-# LaunchDarkly SDK + mobile keys.
 - name: launchdarkly-sdk-keys
   removals:
     regex:
@@ -700,41 +690,29 @@ useful debug data. Verify changes with chart/tests/test-redactors.sh.
   removals:
     regex:
       - redactor: '(?P<mask>\bmob-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b)'
-
-# AWS access key IDs (AKIA permanent, ASIA temporary).
 - name: aws-access-key-ids
   removals:
     regex:
       - redactor: '(?P<mask>\b(?:AKIA|ASIA)[0-9A-Z]{16}\b)'
-
-# sk- API keys, incl. sk-svcacct-/sk-proj- (openAiApiKey).
 - name: openai-sk-keys
   removals:
     regex:
       - redactor: '(?P<mask>\bsk-(?:svcacct-|proj-|None-)?[A-Za-z0-9_-]{20,}\b)'
-
-# Google API keys (geminiApiKey, googleMapsApiKey).
 - name: google-api-keys
   removals:
     regex:
       - redactor: '(?P<mask>\bAIza[0-9A-Za-z_-]{35}\b)'
-
-# JWTs, raw.
 - name: jwt-tokens
   removals:
     regex:
       - redactor: '(?P<mask>\beyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b)'
-# JWTs, base64-wrapped (vitallyToken — base64 of a JWT starts with ZXlK).
+# base64 of a JWT starts with ZXlK (e.g. vitallyToken).
 - name: jwt-tokens-base64-wrapped
   removals:
     regex:
       - redactor: '(?P<mask>\bZXlK[A-Za-z0-9+/=]{50,}\b)'
-
-# License entitlement values, scoped to the license-info file so we don't
-# redact unrelated "value" fields. Catches shapeless entitlements
-# (databaseEncryptionKey, jwtEncryptionKey, instanceId, cartoAuthClientId)
-# and any future addition. fileSelector uses basename-only globs: a mid-path
-# `**` (e.g. **/replicated-sdk/**/...) is a no-op in troubleshoot's matcher.
+# Catches shapeless entitlement values. fileSelector globs are basename-only:
+# a mid-path `**` (e.g. **/replicated-sdk/**/...) is a no-op in troubleshoot.
 - name: carto-license-sensitive-entitlements
   fileSelector:
     files:
@@ -743,10 +721,8 @@ useful debug data. Verify changes with chart/tests/test-redactors.sh.
   removals:
     regex:
       - redactor: '"(?:cartoPlatformDefaultSA|cartoFeaturesFlagSdkKey|openAiApiKey|geminiApiKey|vitallyToken|databaseEncryptionKey|jwtEncryptionKey|ldsConfiguration|cartoAuthClientId|instanceId)"[^}]*"value"\s*:\s*"(?P<mask>[^"]+)"'
-
-# Fallback: scrub all env values in the tenant-requirements-check pod (e.g.
-# Azure WORKSPACE_*_STORAGE_ACCESSKEY, shapeless values). fileSelector keeps
-# this from touching env values elsewhere in the bundle.
+# Catch-all for shapeless env values (e.g. Azure storage keys); fileSelector
+# keeps the env-value wildcard from touching other pods in the bundle.
 - name: tenant-requirements-check-env-fallback
   fileSelector:
     files:
