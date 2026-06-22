@@ -92,9 +92,8 @@ EAD: <!-- Google Docs link to EAD, or "N/A - small change" -->
 
 ## Coding Standards Compliance
 - [ ] Changes follow team coding standards
-- [ ] No violations of deprecated patterns (e.g., no new Redux Sagas)
-- [ ] Backend: layer separation respected (middlewares → services → data layer)
-- [ ] Backend: new/modified tests are black-box (test behavior, not implementation)
+- [ ] Chart documentation updated (via helm-readme-generator)
+- [ ] Chart templates linted and validated
 
 ## Checklist
 - [ ] PR title follows convention
