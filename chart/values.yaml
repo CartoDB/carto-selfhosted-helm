@@ -1295,7 +1295,7 @@ importWorker:
   resources:
     limits:
       memory: "8192Mi"
-      cpu: "2000m"
+      cpu: "4000m"
     requests:
       memory: "3072Mi"
       cpu: "350m"
