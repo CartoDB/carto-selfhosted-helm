@@ -121,13 +121,6 @@ Repo-specific bits:
   Replicated dev channel, so a test license can install your branch via KOTS;
   removing the label or closing the PR tears it down.
 
-## Skills
-
-Repo-relevant skills:
-- `/carto-selfhosted-deploy-assist` — deploy / test a PR / upgrade a self-hosted install.
-- `/carto-selfhosted-troubleshooter` — trace a config value source→runtime, analyze support bundles.
-- `/code-review` — review chart/manifest changes.
-
 ## Before you open a PR
 
 1. Renders in **both** paths (`helm template` plain + `--set replicated.enabled=true`)?
