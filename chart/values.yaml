@@ -7,7 +7,7 @@ appConfigValues:
   storageProvider: "gcp"
   ## @param appConfigValues.storageEndpoint S3-compatible custom endpoint for the main buckets (e.g. http://minio:9000). Leave empty for AWS S3 / GCS / Azure.
   storageEndpoint: ""
-  ## @param appConfigValues.storageExternalUrl Browser-facing external URL for the main buckets when it differs from the internal endpoint (split-horizon). Leave empty to reuse the endpoint.
+  ## @param appConfigValues.storageExternalUrl Browser-facing external URL for the main buckets when it differs from the internal endpoint (split-horizon).
   storageExternalUrl: ""
   ## @param appConfigValues.storageForcePathStyle Use path-style S3 addressing (required by most S3-compatible providers). Leave false for AWS S3.
   storageForcePathStyle: false
