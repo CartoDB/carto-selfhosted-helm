@@ -64,6 +64,19 @@ Review CARTO public docs:
 {{- end -}}
 
 {{/*
+Validate S3-compatible values are only set when the storage provider is s3
+*/}}
+{{- define "carto.validateValues.s3Compatible" -}}
+{{- if ne .Values.appConfigValues.storageProvider "s3" -}}
+{{-   if or .Values.appConfigValues.s3Endpoint .Values.appConfigValues.s3ExternalUrl .Values.appConfigValues.s3ForcePathStyle -}}
+CARTO: S3-compatible values ignored
+
+s3Endpoint, s3ExternalUrl and s3ForcePathStyle only apply when appConfigValues.storageProvider is "s3" (current: {{ .Values.appConfigValues.storageProvider }}). Remove them or set storageProvider=s3.
+{{-   end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Compile all warnings into a single message, and call fail.
 */}}
 {{- define "carto.validateValues" -}}
@@ -73,6 +86,7 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := append $messages (include "carto.validateValues.proxy" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.logLevel" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.serviceAccount" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.s3Compatible" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 
