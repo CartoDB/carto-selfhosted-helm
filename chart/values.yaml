@@ -5,6 +5,12 @@ appConfigValues:
   selfHostedDomain: "carto-selfhosted.lan"
   ## @param appConfigValues.storageProvider Indicate the storage provider for the bucket. Valid values are: `gcp`, `s3` & `azure-blob`
   storageProvider: "gcp"
+  ## @param appConfigValues.s3Endpoint S3-compatible custom endpoint for the main buckets (e.g. http://minio:9000). Leave empty for AWS S3 / GCS / Azure.
+  s3Endpoint: ""
+  ## @param appConfigValues.s3ExternalUrl Browser-facing external URL for the main buckets when it differs from the internal endpoint (split-horizon).
+  s3ExternalUrl: ""
+  ## @param appConfigValues.s3ForcePathStyle Use path-style S3 addressing (required by most S3-compatible providers). Leave false for AWS S3.
+  s3ForcePathStyle: false
   ## @param appConfigValues.aiFeaturesEnabled Enable the AI features
   aiFeaturesEnabled: false
   ## @param appConfigValues.publicEventsApiEnabled Enable the public events API

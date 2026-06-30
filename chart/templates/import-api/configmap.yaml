@@ -59,6 +59,15 @@ data:
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}
   WORKSPACE_THUMBNAILS_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
+  {{- if .Values.appConfigValues.s3Endpoint }}
+  WORKSPACE_THUMBNAILS_ENDPOINT: {{ .Values.appConfigValues.s3Endpoint | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.s3ExternalUrl }}
+  WORKSPACE_THUMBNAILS_EXTERNAL_URL: {{ .Values.appConfigValues.s3ExternalUrl | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.s3ForcePathStyle }}
+  WORKSPACE_THUMBNAILS_FORCE_PATH_STYLE: {{ .Values.appConfigValues.s3ForcePathStyle | quote }}
+  {{- end }}
   {{- if .Values.appConfigValues.awsEksPodIdentityBucketsEnabled }}
   CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_S3_ENABLED: {{ .Values.appConfigValues.awsEksPodIdentityBucketsEnabled | quote }}
   {{- end }}
@@ -90,6 +99,15 @@ data:
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}
   IMPORT_REGION: {{ .Values.appConfigValues.awsS3Region | quote }}
+  {{- if .Values.appConfigValues.s3Endpoint }}
+  IMPORT_ENDPOINT: {{ .Values.appConfigValues.s3Endpoint | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.s3ExternalUrl }}
+  IMPORT_EXTERNAL_URL: {{ .Values.appConfigValues.s3ExternalUrl | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.s3ForcePathStyle }}
+  IMPORT_FORCE_PATH_STYLE: {{ .Values.appConfigValues.s3ForcePathStyle | quote }}
+  {{- end }}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
   IMPORT_STORAGE_ACCOUNT: {{ .Values.appConfigValues.azureStorageAccount | quote }}
