@@ -477,7 +477,7 @@ spec:
             - name: custom_gcs
               title: Google Cloud Storage
             - name: custom_aws_s3
-              title: Amazon Web Services S3
+              title: AWS S3 or S3-compatible
             - name: custom_azb
               title: Azure Blob Storage
         - name: storageBucketsProvider
@@ -532,6 +532,29 @@ spec:
           help_text: Region of the buckets created in AWS S3
           type: text
           required: true
+
+        # S3-compatible providers (MinIO, Ceph, OVH, ...). Not needed for AWS S3.
+        - name: storageBucketsS3Endpoint
+          title: S3-compatible endpoint
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+          help_text: |-
+            Custom S3 endpoint for S3-compatible providers (MinIO, Ceph, OVH, ...), e.g. `https://objects.example.com`. Not needed for AWS S3 — leave blank.
+          type: text
+          required: false
+        - name: storageBucketsS3ExternalUrl
+          title: S3-compatible external URL
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+          help_text: |-
+            Browser-facing URL for the buckets when it differs from the endpoint (split-horizon). Not needed for AWS S3 — leave blank.
+          type: text
+          required: false
+        - name: storageBucketsS3ForcePathStyle
+          title: Use path-style addressing
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+          help_text: |-
+            Required by most S3-compatible providers. Not needed for AWS S3 — leave disabled.
+          type: bool
+          default: "0"
 
         # Azure
         - name: storageBucketsAzureStorageAccount
