@@ -95,7 +95,7 @@ spec:
       workspaceThumbnailsPublic: repl{{ if ConfigOptionEquals "storageBucketsThumbnailsIsPublic" "1"}}truerepl{{ else }}falserepl{{ end }}
       googleCloudStorageProjectId: '{{repl ConfigOption "storageBucketsGcpProjectId" }}'
       awsS3Region: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
-      storageForcePathStyle: repl{{ if ConfigOptionEquals "storageBucketsS3ForcePathStyle" "1"}}truerepl{{ else }}falserepl{{ end }}
+      s3ForcePathStyle: repl{{ if ConfigOptionEquals "storageBucketsS3ForcePathStyle" "1"}}truerepl{{ else }}falserepl{{ end }}
       azureStorageAccount: '{{repl ConfigOption "storageBucketsAzureStorageAccount"}}'
       # other config
       bigqueryOauth2ClientId: '{{repl ConfigOption "bigqueryOauthClientID" }}'
@@ -324,12 +324,12 @@ spec:
       recursiveMerge: true
       values:
         appConfigValues:
-          storageEndpoint: '{{repl ConfigOption "storageBucketsS3Endpoint" }}'
+          s3Endpoint: '{{repl ConfigOption "storageBucketsS3Endpoint" }}'
     - when: '{{repl not (empty (ConfigOption "storageBucketsS3ExternalUrl")) }}'
       recursiveMerge: true
       values:
         appConfigValues:
-          storageExternalUrl: '{{repl ConfigOption "storageBucketsS3ExternalUrl" }}'
+          s3ExternalUrl: '{{repl ConfigOption "storageBucketsS3ExternalUrl" }}'
     ## ---- Router ----
     ## Terminate TLS at router
     ## Access to Carto
