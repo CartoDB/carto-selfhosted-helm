@@ -897,7 +897,7 @@ spec:
           required: true
           type: text
         - name: bigqueryWorkloadIdentityConnectionBillingProject
-          title: Google billing broject
+          title: Google billing project
           when: *when_google_workload_identity_and_connections
           help_text: |-
             GCP project to be charged with the BigQuery costs when using Workload Identity
