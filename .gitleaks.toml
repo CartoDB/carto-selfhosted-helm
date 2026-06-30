@@ -69,6 +69,11 @@ paths = [
   '''analyzer-bundle-.*\.tar\.gz$''',
   # Gitleaks report artifacts
   '''gitleaks-report\.json$''',
+  # Chart test fixtures intentionally embed realistic credential SHAPES
+  # (AKIA…, sdk-…, sk-svcacct-…, AIzaSy…, base64 PEM headers) so that the
+  # redactor verification test can prove each shape is scrubbed. None of the
+  # values are real credentials — they are deterministic test sentinels.
+  '''^chart/tests/''',
 ]
 
 # Commits to skip (leave empty; prefer fixing over skipping)
