@@ -523,6 +523,18 @@ Return customer values to use in preflights and support-bundle
     value: {{ .Values.appConfigValues.awsS3Region | quote }}
   - name: WORKSPACE_IMPORTS_REGION
     value: {{ .Values.appConfigValues.awsS3Region | quote }}
+  {{- if .Values.appConfigValues.s3Endpoint }}
+  - name: WORKSPACE_THUMBNAILS_ENDPOINT
+    value: {{ .Values.appConfigValues.s3Endpoint | quote }}
+  - name: WORKSPACE_IMPORTS_ENDPOINT
+    value: {{ .Values.appConfigValues.s3Endpoint | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.s3ForcePathStyle }}
+  - name: WORKSPACE_THUMBNAILS_FORCE_PATH_STYLE
+    value: {{ .Values.appConfigValues.s3ForcePathStyle | quote }}
+  - name: WORKSPACE_IMPORTS_FORCE_PATH_STYLE
+    value: {{ .Values.appConfigValues.s3ForcePathStyle | quote }}
+  {{- end }}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
   - name: WORKSPACE_THUMBNAILS_STORAGE_ACCOUNT
@@ -618,23 +630,7 @@ Return customer secrets to use in preflights and support-bundle
     value: {{ .Values.appSecrets.awsAccessKeySecret.value | quote }}
   {{- else -}}
   {{ include "carto._utils.generateSecretDef" (dict "var" "WORKSPACE_IMPORTS_SECRETACCESSKEY" "context" .) | nindent 2 }}
-  {{- end }}
-  - name: WORKSPACE_THUMBNAILS_REGION
-    value: {{ .Values.appConfigValues.awsS3Region | quote }}
-  - name: WORKSPACE_IMPORTS_REGION
-    value: {{ .Values.appConfigValues.awsS3Region | quote }}
-  {{- if .Values.appConfigValues.s3Endpoint }}
-  - name: WORKSPACE_THUMBNAILS_ENDPOINT
-    value: {{ .Values.appConfigValues.s3Endpoint | quote }}
-  - name: WORKSPACE_IMPORTS_ENDPOINT
-    value: {{ .Values.appConfigValues.s3Endpoint | quote }}
-  {{- end }}
-  {{- if .Values.appConfigValues.s3ForcePathStyle }}
-  - name: WORKSPACE_THUMBNAILS_FORCE_PATH_STYLE
-    value: {{ .Values.appConfigValues.s3ForcePathStyle | quote }}
-  - name: WORKSPACE_IMPORTS_FORCE_PATH_STYLE
-    value: {{ .Values.appConfigValues.s3ForcePathStyle | quote }}
-  {{- end }}
+  {{- end -}}
   {{- end -}}
   {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
   {{- if eq .Values.appSecrets.azureStorageAccessKey.existingSecret.name "" }}
