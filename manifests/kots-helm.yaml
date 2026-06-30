@@ -95,8 +95,6 @@ spec:
       workspaceThumbnailsPublic: repl{{ if ConfigOptionEquals "storageBucketsThumbnailsIsPublic" "1"}}truerepl{{ else }}falserepl{{ end }}
       googleCloudStorageProjectId: '{{repl ConfigOption "storageBucketsGcpProjectId" }}'
       awsS3Region: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
-      storageEndpoint: '{{repl ConfigOption "storageBucketsS3Endpoint" }}'
-      storageExternalUrl: '{{repl ConfigOption "storageBucketsS3ExternalUrl" }}'
       storageForcePathStyle: repl{{ if ConfigOptionEquals "storageBucketsS3ForcePathStyle" "1"}}truerepl{{ else }}falserepl{{ end }}
       azureStorageAccount: '{{repl ConfigOption "storageBucketsAzureStorageAccount"}}'
       # other config
@@ -321,6 +319,17 @@ spec:
           exportAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
           awsExportBucket: '{{repl ConfigOption "storageBucketsExportAws" }}'
           awsExportBucketRegion: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
+    ## S3-compatible custom endpoint (only set when provided, so standard AWS S3 keeps its default regional endpoints)
+    - when: '{{repl not (empty (ConfigOption "storageBucketsS3Endpoint")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          storageEndpoint: '{{repl ConfigOption "storageBucketsS3Endpoint" }}'
+    - when: '{{repl not (empty (ConfigOption "storageBucketsS3ExternalUrl")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          storageExternalUrl: '{{repl ConfigOption "storageBucketsS3ExternalUrl" }}'
     ## ---- Router ----
     ## Terminate TLS at router
     ## Access to Carto
