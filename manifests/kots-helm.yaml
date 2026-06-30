@@ -95,6 +95,9 @@ spec:
       workspaceThumbnailsPublic: repl{{ if ConfigOptionEquals "storageBucketsThumbnailsIsPublic" "1"}}truerepl{{ else }}falserepl{{ end }}
       googleCloudStorageProjectId: '{{repl ConfigOption "storageBucketsGcpProjectId" }}'
       awsS3Region: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
+      storageEndpoint: '{{repl ConfigOption "storageBucketsS3Endpoint" }}'
+      storageExternalUrl: '{{repl ConfigOption "storageBucketsS3ExternalUrl" }}'
+      storageForcePathStyle: repl{{ if ConfigOptionEquals "storageBucketsS3ForcePathStyle" "1"}}truerepl{{ else }}falserepl{{ end }}
       azureStorageAccount: '{{repl ConfigOption "storageBucketsAzureStorageAccount"}}'
       # other config
       bigqueryOauth2ClientId: '{{repl ConfigOption "bigqueryOauthClientID" }}'
