@@ -51,9 +51,8 @@ work in *both* paths — Helm-only or KOTS-only is half done.
 Subtree specifics live next to the code and load on demand:
 [`chart/CLAUDE.md`](./chart/CLAUDE.md) (templates, helpers, validators,
 preflights) and [`manifests/CLAUDE.md`](./manifests/CLAUDE.md) (KOTS layer).
-Process detail (git setup, doc generation, linting) is in
-[`CONTRIBUTING.md`](./CONTRIBUTING.md) — note it still says `stable`, but the
-repo develops on **`main`**. Full chart params are in the generated
+Process detail (git setup, doc generation, linting, branching) is in
+[`CONTRIBUTING.md`](./CONTRIBUTING.md). Full chart params are in the generated
 [`chart/README.md`](./chart/README.md).
 
 ## The values flow
