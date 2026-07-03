@@ -82,6 +82,7 @@ LITELLM_MASTER_KEY: cartoSecrets.litellmMasterKey
 LITELLM_SALT_KEY: cartoSecrets.litellmSaltKey
 AI_OPENAI_API_KEY: cartoSecrets.litellmMasterKey
 GEMINI_API_KEY: cartoSecrets.geminiApiKey
+CARTO_INTERNAL_SERVICE_TOKEN: authApi.internalServiceToken
 {{- end -}}
 
 {{/*
@@ -942,7 +943,7 @@ Return the proper Carto tenant-requirements-checker image name
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.aiProxy.image) "context" $) -}}
+{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authApiMigrations.image) "context" $) -}}
 {{- end -}}
 
 {{/*
@@ -1511,4 +1512,149 @@ httpGet:
   httpHeaders:
     - name: Carto-Monitoring
       value: "True"
+{{- end -}}
+
+{{/*
+Create a default fully qualified auth-api name.
+*/}}
+{{- define "carto.authApi.fullname" -}}
+{{- printf "%s-auth-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Create carto Image full name for authApi
+*/}}
+{{- define "carto.authApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.authApi.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Create the name of the authApi configmap
+*/}}
+{{- define "carto.authApi.configmapName" -}}
+{{- if .Values.authApi.existingConfigMap -}}
+{{- .Values.authApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.authApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the authApi secret
+*/}}
+{{- define "carto.authApi.secretName" -}}
+{{- if .Values.authApi.existingSecret -}}
+{{- .Values.authApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.authApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create authApi Node options
+*/}}
+{{- define "carto.authApi.nodeOptions" -}}
+{{- if eq (.Values.authApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.authApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.authApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- else -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.authApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create carto Image full name for authApiMigrations
+*/}}
+{{- define "carto.authApiMigrations.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.authApiMigrations.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Return the external base URL where auth-api is exposed
+*/}}
+{{- define "carto.authApi.publicBaseUrl" -}}
+{{- if .Values.authApi.publicBaseUrl -}}
+{{- trimSuffix "/" .Values.authApi.publicBaseUrl -}}
+{{- else -}}
+{{- printf "https://%s/auth" .Values.appConfigValues.selfHostedDomain -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the issuer of the tokens minted by auth-api
+*/}}
+{{- define "carto.authApi.issuer" -}}
+{{- default (include "carto.authApi.publicBaseUrl" .) .Values.authApi.issuer -}}
+{{- end -}}
+
+{{/*
+Accounts database connection for auth-api. When authApi.accountsPostgresql.host is not
+set, auth-api reuses the chart PostgreSQL (internal or external) and its credentials.
+*/}}
+{{- define "carto.authApi.postgresql.host" -}}
+{{- default (include "carto.postgresql.host" .) .Values.authApi.accountsPostgresql.host -}}
+{{- end -}}
+
+{{- define "carto.authApi.postgresql.port" -}}
+{{- if .Values.authApi.accountsPostgresql.host -}}
+{{- default "5432" .Values.authApi.accountsPostgresql.port -}}
+{{- else -}}
+{{- include "carto.postgresql.port" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.authApi.postgresql.user" -}}
+{{- if .Values.authApi.accountsPostgresql.host -}}
+{{- .Values.authApi.accountsPostgresql.user -}}
+{{- else -}}
+{{- include "carto.postgresql.user" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.authApi.postgresql.databaseName" -}}
+{{- if .Values.authApi.accountsPostgresql.host -}}
+{{- .Values.authApi.accountsPostgresql.database -}}
+{{- else -}}
+{{- include "carto.postgresql.databaseName" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.authApi.postgresql.sslEnabled" -}}
+{{- if .Values.authApi.accountsPostgresql.host -}}
+{{- .Values.authApi.accountsPostgresql.sslEnabled -}}
+{{- else -}}
+{{- .Values.externalPostgresql.sslEnabled -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Get the auth-api accounts database CA config map name
+*/}}
+{{- define "carto.authApi.postgresql.configMapName" -}}
+{{- printf "%s-accounts-postgresql" (include "carto.authApi.fullname" .) -}}
+{{- end -}}
+
+{{/*
+Return the directory where the auth-api accounts database CA cert will be mounted
+*/}}
+{{- define "carto.authApi.postgresql.configMapMountDir" -}}
+{{- print "/usr/src/certs/accounts-postgresql-ssl-ca" -}}
+{{- end -}}
+
+{{/*
+Return the absolute path where the auth-api accounts database CA cert will be mounted
+*/}}
+{{- define "carto.authApi.postgresql.configMapMountAbsolutePath" -}}
+{{- printf "%s/%s" (include "carto.authApi.postgresql.configMapMountDir" .) (include "carto.postgresql.configMapMountFilename" .) -}}
+{{- end -}}
+
+{{/*
+Environment variables that switch every backend service to internal-auth mode.
+The four variables must be consistent with the auth-api configmap: commons.validateJwt
+rejects tokens whose issuer/audience do not match the ones auth-api mints with.
+*/}}
+{{- define "carto.internalAuthEnv" -}}
+CARTO_INTERNAL_JWKS_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}/.well-known/jwks.json"
+CARTO_INTERNAL_ISSUER: {{ include "carto.authApi.issuer" . | quote }}
+CARTO_AUTH_AUDIENCE: {{ .Values.authApi.audience | quote }}
+CARTO_AUTH_NAMESPACE: "http://app.carto.com"
 {{- end -}}

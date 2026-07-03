@@ -85,6 +85,7 @@ spec:
     appConfigValues:
       aiFeaturesEnabled: repl{{ if ConfigOptionEquals "aiFeaturesEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
       publicEventsApiEnabled: repl{{ if ConfigOptionEquals "publicEventsApiEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
+      authApiEnabled: repl{{ if ConfigOptionEquals "authApiEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
       # domain
       selfHostedDomain: '{{repl ConfigOption "cartoSelfHostedDomain" }}'
       # buckets
@@ -124,6 +125,28 @@ spec:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     ## publicEventsApi
     publicEventsApi:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+    ## Internal Authentication
+    authApi:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+      protocol: '{{repl ConfigOption "authApiProtocol" }}'
+      accountsApiUrl: '{{repl ConfigOption "authApiAccountsApiUrl" }}'
+      orgId: '{{repl ConfigOption "authApiOrgId" }}'
+      allowedOrigins:
+        - '{{repl ConfigOption "authApiAllowedOrigins" }}'
+      internalServiceToken:
+        value: '{{repl ConfigOption "authApiInternalServiceToken" }}'
+      oidc:
+        issuerUrl: '{{repl ConfigOption "authApiOidcIssuerUrl" }}'
+        clientId: '{{repl ConfigOption "authApiOidcClientId" }}'
+        clientSecret: '{{repl ConfigOption "authApiOidcClientSecret" }}'
+      saml:
+        metadataUrl: '{{repl ConfigOption "authApiSamlMetadataUrl" }}'
+        metadataXml: |
+          repl{{- ConfigOption "authApiSamlMetadataXml" | nindent 10 }}
+    authApiMigrations:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     ## Redis

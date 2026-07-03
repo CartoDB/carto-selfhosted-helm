@@ -269,6 +269,10 @@ Return common collectors for preflights and support-bundle
         - {{ template "carto.workspaceSubscriber.image" . }}
         - {{ template "carto.workspaceWww.image" . }}
         - {{ template "carto.tenantRequirementsChecker.image" . }}
+        {{- if .Values.appConfigValues.authApiEnabled }}
+        - {{ template "carto.authApi.image" . }}
+        - {{ template "carto.authApiMigrations.image" . }}
+        {{- end }}
 {{- end -}}
 
 {{/*
