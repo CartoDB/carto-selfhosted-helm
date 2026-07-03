@@ -34,7 +34,7 @@ data:
   {{- end }}
   {{- end }}
   {{- if eq .Values.authApi.protocol "saml" }}
-  {{- if trim .Values.authApi.saml.metadataXml }}
+  {{- if trim (default "" .Values.authApi.saml.metadataXml) }}
   CARTO_SAML_IDP_METADATA: {{ trim .Values.authApi.saml.metadataXml | quote }}
   {{- else }}
   CARTO_SAML_IDP_METADATA: {{ .Values.authApi.saml.metadataUrl | quote }}

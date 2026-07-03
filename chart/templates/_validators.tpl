@@ -88,7 +88,7 @@ Validate auth-api (internal authentication) config
 {{- if and (eq .Values.authApi.protocol "oidc") (or (not .Values.authApi.oidc.issuerUrl) (not .Values.authApi.oidc.clientId) (and (not .Values.authApi.oidc.clientSecret) (not .Values.authApi.oidc.existingSecret.name))) -}}
 {{- $messages = append $messages "CARTO: Missing auth-api OIDC configuration\n\nIf authApi.protocol=oidc you need to set authApi.oidc.issuerUrl, authApi.oidc.clientId and one of authApi.oidc.clientSecret or authApi.oidc.existingSecret" -}}
 {{- end -}}
-{{- if and (eq .Values.authApi.protocol "saml") (not .Values.authApi.saml.metadataUrl) (not (trim .Values.authApi.saml.metadataXml)) -}}
+{{- if and (eq .Values.authApi.protocol "saml") (not .Values.authApi.saml.metadataUrl) (not (trim (default "" .Values.authApi.saml.metadataXml))) -}}
 {{- $messages = append $messages "CARTO: Missing auth-api SAML configuration\n\nIf authApi.protocol=saml you need to set one of authApi.saml.metadataUrl or authApi.saml.metadataXml" -}}
 {{- end -}}
 {{- if not .Values.authApi.allowedOrigins -}}
