@@ -13,7 +13,9 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
+  {{- if not .Values.workspaceApi.autoscaling.enabled }}
   replicas: {{ .Values.workspaceApi.replicaCount }}
+  {{- end }}
   {{- if .Values.workspaceApi.updateStrategy }}
   strategy: {{- toYaml .Values.workspaceApi.updateStrategy | nindent 4 }}
   {{- end }}
