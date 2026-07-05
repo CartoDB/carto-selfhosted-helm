@@ -100,9 +100,6 @@ Validate auth-api (internal authentication) config
 {{- if and (not .Values.cartoSecrets.encryptionSecretKey.value) (not .Values.cartoSecrets.encryptionSecretKey.existingSecret.name) -}}
 {{- $messages = append $messages "CARTO: Missing encryption secret key for auth-api\n\nIf appConfigValues.authApiEnabled=true you need to set one of cartoSecrets.encryptionSecretKey.value or cartoSecrets.encryptionSecretKey.existingSecret" -}}
 {{- end -}}
-{{- if not .Values.authApi.accountsApiUrl -}}
-{{- $messages = append $messages "CARTO: Missing auth-api accounts-api URL\n\nIf appConfigValues.authApiEnabled=true you need to set authApi.accountsApiUrl. auth-api refuses to boot without it" -}}
-{{- end -}}
 {{- join "\n" $messages -}}
 {{- end -}}
 {{- end -}}

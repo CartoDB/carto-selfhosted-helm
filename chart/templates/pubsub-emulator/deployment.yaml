@@ -1,0 +1,81 @@
+{{- if and (.Values.appConfigValues.authApiEnabled) (not .Values.cartoConfigValues.onlyRunRouter) }}
+{{/* Interim in-cluster message broker for disconnected deployments; replaces Google Cloud PubSub. */}}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.pubsubEmulator.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: pubsub-emulator
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.pubsubEmulator.replicaCount }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: pubsub-emulator
+  template:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+        {{- if .Values.pubsubEmulator.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.pubsubEmulator.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: pubsub-emulator
+        {{- if .Values.pubsubEmulator.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.pubsubEmulator.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.pubsubEmulator.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.pubsubEmulator.affinity "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.pubsubEmulator.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.pubsubEmulator.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.pubsubEmulator.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.pubsubEmulator.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.pubsubEmulator.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.pubsubEmulator.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: pubsub-emulator
+          image: {{ template "carto.pubsubEmulator.image" . }}
+          imagePullPolicy: {{ .Values.pubsubEmulator.image.pullPolicy }}
+          {{- if .Values.pubsubEmulator.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.pubsubEmulator.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          command:
+            - gcloud
+            - beta
+            - emulators
+            - pubsub
+            - start
+            - --host-port=0.0.0.0:{{ .Values.pubsubEmulator.containerPorts.http }}
+            - --project={{ .Values.cartoConfigValues.selfHostedGcpProjectId }}
+          {{- if .Values.pubsubEmulator.resources }}
+          resources: {{- toYaml .Values.pubsubEmulator.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.pubsubEmulator.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.pubsubEmulator.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.pubsubEmulator.livenessProbe "enabled") "context" $) | nindent 12 }}
+            tcpSocket:
+              port: http
+          {{- end }}
+          {{- if .Values.pubsubEmulator.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.pubsubEmulator.readinessProbe "enabled") "context" $) | nindent 12 }}
+            tcpSocket:
+              port: http
+          {{- end }}
+          {{- end }}
+{{- end }}

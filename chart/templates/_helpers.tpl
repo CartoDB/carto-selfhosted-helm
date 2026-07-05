@@ -943,7 +943,7 @@ Return the proper Carto tenant-requirements-checker image name
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authApiMigrations.image) "context" $) -}}
+{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authApiMigrations.image .Values.accountsApi.image .Values.accountsSubscriber.image .Values.accountsMigrations.image .Values.pubsubEmulator.image) "context" $) -}}
 {{- end -}}
 
 {{/*
@@ -1657,4 +1657,135 @@ CARTO_INTERNAL_JWKS_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Re
 CARTO_INTERNAL_ISSUER: {{ include "carto.authApi.issuer" . | quote }}
 CARTO_AUTH_AUDIENCE: {{ .Values.authApi.audience | quote }}
 CARTO_AUTH_NAMESPACE: "http://app.carto.com"
+{{- end -}}
+
+{{/*
+Base URL of the accounts-api service that auth-api calls for quota checks and SSO group sync.
+Defaults to the in-cluster accounts-api service when authApi.accountsApiUrl is not set.
+*/}}
+{{- define "carto.authApi.accountsApiUrl" -}}
+{{- if .Values.authApi.accountsApiUrl -}}
+{{- trimSuffix "/" .Values.authApi.accountsApiUrl -}}
+{{- else -}}
+{{- printf "http://%s.%s.svc.%s" (include "carto.accountsApi.fullname" .) .Release.Namespace .Values.clusterDomain -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified accounts-api name.
+*/}}
+{{- define "carto.accountsApi.fullname" -}}
+{{- printf "%s-accounts-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Create carto Image full name for accountsApi
+*/}}
+{{- define "carto.accountsApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.accountsApi.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Create the name of the accountsApi configmap
+*/}}
+{{- define "carto.accountsApi.configmapName" -}}
+{{- if .Values.accountsApi.existingConfigMap -}}
+{{- .Values.accountsApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.accountsApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the accountsApi secret
+*/}}
+{{- define "carto.accountsApi.secretName" -}}
+{{- if .Values.accountsApi.existingSecret -}}
+{{- .Values.accountsApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.accountsApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create accountsApi Node options
+*/}}
+{{- define "carto.accountsApi.nodeOptions" -}}
+{{- if eq (.Values.accountsApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.accountsApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.accountsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- else -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.accountsApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified accounts-subscriber name.
+*/}}
+{{- define "carto.accountsSubscriber.fullname" -}}
+{{- printf "%s-accounts-subscriber" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Create carto Image full name for accountsSubscriber
+*/}}
+{{- define "carto.accountsSubscriber.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.accountsSubscriber.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Create accountsSubscriber Node options
+*/}}
+{{- define "carto.accountsSubscriber.nodeOptions" -}}
+{{- if eq (.Values.accountsSubscriber.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.accountsSubscriber.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.accountsSubscriber.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- else -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.accountsSubscriber.defaultNodeProcessMaxOldSpace | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create carto Image full name for accountsMigrations
+*/}}
+{{- define "carto.accountsMigrations.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.accountsMigrations.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified pubsub-emulator name.
+*/}}
+{{- define "carto.pubsubEmulator.fullname" -}}
+{{- printf "%s-pubsub-emulator" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Create carto Image full name for the pubsub emulator. Unlike carto.images.image this pins the
+image by digest when pubsubEmulator.image.digest is set (digest is the security boundary; the
+tag is kept for readability).
+*/}}
+{{- define "carto.pubsubEmulator.image" -}}
+{{- $registryName := .Values.pubsubEmulator.image.registry -}}
+{{- $repositoryName := .Values.pubsubEmulator.image.repository -}}
+{{- $tag := .Values.pubsubEmulator.image.tag | toString -}}
+{{- $digest := .Values.pubsubEmulator.image.digest -}}
+{{- if and .Values.global .Values.global.imageRegistry -}}
+{{- $registryName = .Values.global.imageRegistry -}}
+{{- end -}}
+{{- $image := printf "%s/%s:%s" $registryName $repositoryName $tag -}}
+{{- if $registryName | not -}}
+{{- $image = printf "%s:%s" $repositoryName $tag -}}
+{{- end -}}
+{{- if $digest -}}
+{{- printf "%s@%s" $image $digest -}}
+{{- else -}}
+{{- $image -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Environment variables that route every in-cluster PubSub client to the interim in-cluster
+emulator instead of Google Cloud PubSub. Only meaningful in disconnected mode (authApiEnabled).
+*/}}
+{{- define "carto.disconnectedPubsubEnv" -}}
+PUBSUB_EMULATOR_HOST: "{{ include "carto.pubsubEmulator.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:{{ .Values.pubsubEmulator.service.ports.http }}"
+DEV_CREATE_PUBSUB_RESOURCES: "true"
 {{- end -}}

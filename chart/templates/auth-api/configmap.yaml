@@ -21,7 +21,7 @@ data:
   CARTO_AUTH_PUBLIC_BASE_URL: {{ include "carto.authApi.publicBaseUrl" . | quote }}
   CARTO_AUTH_ALLOWED_ORIGINS: {{ join "," .Values.authApi.allowedOrigins | quote }}
   CARTO_ORG_ID: {{ .Values.authApi.orgId | quote }}
-  CARTO_ACCOUNTS_API_URL: {{ .Values.authApi.accountsApiUrl | quote }}
+  CARTO_ACCOUNTS_API_URL: {{ include "carto.authApi.accountsApiUrl" . | quote }}
   {{- if eq .Values.authApi.protocol "oidc" }}
   CARTO_OIDC_ISSUER_URL: {{ .Values.authApi.oidc.issuerUrl | quote }}
   CARTO_OIDC_CLIENT_ID: {{ .Values.authApi.oidc.clientId | quote }}
