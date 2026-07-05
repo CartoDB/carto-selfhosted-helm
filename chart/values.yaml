@@ -1286,25 +1286,46 @@ importWorker:
   ##
   customStartupProbe: {}
   ## @param importWorker.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ## Kept low on purpose: DuckDB allocates native memory outside the V8 heap, so the heap must not scale up with the container.
   ##
-  nodeProcessMaxOldSpacePercentage: 50
+  nodeProcessMaxOldSpacePercentage: 33
   ## @param importWorker.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
   defaultNodeProcessMaxOldSpace: 2048
+  ## DuckDB import/export engine tuning. Memory limit bounds DuckDB's native allocations;
+  ## overflow spills to tempDirectory (disk-backed /tmp volume) up to maxTempDirectorySize, failing the job cleanly when exceeded.
+  ## @param importWorker.duckdb.memoryLimit DuckDB native memory limit (outside the Node heap)
+  ## @param importWorker.duckdb.threads DuckDB thread count
+  ## @param importWorker.duckdb.tempDirectory DuckDB spill directory (must live on the tmp volume)
+  ## @param importWorker.duckdb.maxTempDirectorySize Max size of the DuckDB spill directory (keep below importWorker.tmpVolume.sizeLimit)
+  ##
+  duckdb:
+    memoryLimit: "6GB"
+    threads: 4
+    tempDirectory: "/tmp/duckdb-spill"
+    maxTempDirectorySize: "15GB"
+  ## @param importWorker.tmpVolume.sizeLimit Size limit of the /tmp emptyDir (spill + import staging; keep below resources.limits.ephemeral-storage)
+  ##
+  tmpVolume:
+    sizeLimit: "20Gi"
   ## import-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param importWorker.resources.limits.memory Container memory limits in MiB
   ## @param importWorker.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param importWorker.resources.limits.ephemeral-storage Container ephemeral-storage limits (DuckDB spill + import staging on /tmp)
   ## @param importWorker.resources.requests.memory Container memory requests in MiB
   ## @param importWorker.resources.requests.cpu Container cpu requests in milliCPU cores
+  ## @param importWorker.resources.requests.ephemeral-storage Container ephemeral-storage requests
   ##
   resources:
     limits:
-      memory: "8192Mi"
-      cpu: "2000m"
+      memory: "12288Mi"
+      cpu: "4000m"
+      ephemeral-storage: "25Gi"
     requests:
-      memory: "3072Mi"
-      cpu: "350m"
+      memory: "6144Mi"
+      cpu: "1000m"
+      ephemeral-storage: "20Gi"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importWorker.podSecurityContext.enabled Enabled import-worker pods' Security Context

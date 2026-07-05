@@ -231,7 +231,10 @@ spec:
         {{- end }}
       volumes:
         - name: tmp
-          emptyDir: {}
+          # Disk-backed on purpose: DuckDB spills here to relieve pod memory. sizeLimit
+          # evicts the pod as a backstop; DuckDB's own temp cap should fail the job first.
+          emptyDir:
+            sizeLimit: {{ .Values.importWorker.tmpVolume.sizeLimit | quote }}
         - name: gcp-default-service-account-key
           secret:
             secretName: {{ include "carto.google.secretName" . }}
