@@ -32,7 +32,6 @@ data:
   AUTH0_NAMESPACE: "http://app.carto.com"
   {{- if .Values.appConfigValues.authApiEnabled }}
   {{- include "carto.internalAuthEnv" . | nindent 2 }}
-  {{- include "carto.disconnectedPubsubEnv" . | nindent 2 }}
   {{- end }}
   {{- if eq .Values.appConfigValues.logLevel "debug" }}
   CARTO_TRACING_MODE: "local"

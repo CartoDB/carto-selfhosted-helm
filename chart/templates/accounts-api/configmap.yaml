@@ -40,11 +40,9 @@ data:
   ACCOUNTS_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
   {{- end }}
   {{- end }}
-  # PubSub. In disconnected mode the in-cluster emulator replaces Google Cloud PubSub.
   PUBSUB_MODE: "pull"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
   PUBSUB_USE_REST_API: {{ .Values.cartoConfigValues.usePubSubRestApi | quote }}
-  {{- include "carto.disconnectedPubsubEnv" . | nindent 2 }}
   PUBSUB_COMMON_ACCOUNTS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/common-accounts"
   PUBSUB_COMMON_ACCOUNTS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/common-accounts-sub"
   PUBSUB_DATA_UPDATES_ACCOUNTS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/data-updates"

@@ -17,7 +17,6 @@ data:
   AUTH0_NAMESPACE: "http://app.carto.com"
   {{- if .Values.appConfigValues.authApiEnabled }}
   {{- include "carto.internalAuthEnv" . | nindent 2 }}
-  {{- include "carto.disconnectedPubsubEnv" . | nindent 2 }}
   {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   {{- if eq .Values.appConfigValues.logLevel "debug" }}

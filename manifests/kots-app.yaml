@@ -30,11 +30,9 @@ spec:
     - '{{repl if ConfigOptionEquals "authApiEnabled" "1" }}deployment/carto-auth-api{{repl else}}{{repl end }}'
     - '{{repl if ConfigOptionEquals "authApiEnabled" "1" }}deployment/carto-accounts-api{{repl else}}{{repl end }}'
     - '{{repl if ConfigOptionEquals "authApiEnabled" "1" }}deployment/carto-accounts-subscriber{{repl else}}{{repl end }}'
-    - '{{repl if ConfigOptionEquals "authApiEnabled" "1" }}deployment/carto-pubsub-emulator{{repl else}}{{repl end }}'
   minKotsVersion: 1.117.3
   additionalImages:
     - gcr.io/carto-onprem-artifacts/tenant-requirements-checker:2025.6.10
-    - gcr.io/google.com/cloudsdktool/google-cloud-cli:558.0.0-emulators@sha256:ecfd2ecd3c2bcb66a95920f97c6b26247108009f63bc15c7213dc70c78c412c8
 ---
 apiVersion: app.k8s.io/v1beta1
 kind: Application

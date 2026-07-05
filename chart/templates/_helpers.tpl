@@ -943,7 +943,7 @@ Return the proper Carto tenant-requirements-checker image name
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authApiMigrations.image .Values.accountsApi.image .Values.accountsSubscriber.image .Values.accountsMigrations.image .Values.pubsubEmulator.image) "context" $) -}}
+{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authApiMigrations.image .Values.accountsApi.image .Values.accountsSubscriber.image .Values.accountsMigrations.image) "context" $) -}}
 {{- end -}}
 
 {{/*
@@ -1750,42 +1750,3 @@ Create carto Image full name for accountsMigrations
 {{- include "carto.images.image" (dict "imageRoot" .Values.accountsMigrations.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
-{{/*
-Create a default fully qualified pubsub-emulator name.
-*/}}
-{{- define "carto.pubsubEmulator.fullname" -}}
-{{- printf "%s-pubsub-emulator" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{/*
-Create carto Image full name for the pubsub emulator. Unlike carto.images.image this pins the
-image by digest when pubsubEmulator.image.digest is set (digest is the security boundary; the
-tag is kept for readability).
-*/}}
-{{- define "carto.pubsubEmulator.image" -}}
-{{- $registryName := .Values.pubsubEmulator.image.registry -}}
-{{- $repositoryName := .Values.pubsubEmulator.image.repository -}}
-{{- $tag := .Values.pubsubEmulator.image.tag | toString -}}
-{{- $digest := .Values.pubsubEmulator.image.digest -}}
-{{- if and .Values.global .Values.global.imageRegistry -}}
-{{- $registryName = .Values.global.imageRegistry -}}
-{{- end -}}
-{{- $image := printf "%s/%s:%s" $registryName $repositoryName $tag -}}
-{{- if $registryName | not -}}
-{{- $image = printf "%s:%s" $repositoryName $tag -}}
-{{- end -}}
-{{- if $digest -}}
-{{- printf "%s@%s" $image $digest -}}
-{{- else -}}
-{{- $image -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Environment variables that route every in-cluster PubSub client to the interim in-cluster
-emulator instead of Google Cloud PubSub. Only meaningful in disconnected mode (authApiEnabled).
-*/}}
-{{- define "carto.disconnectedPubsubEnv" -}}
-PUBSUB_EMULATOR_HOST: "{{ include "carto.pubsubEmulator.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:{{ .Values.pubsubEmulator.service.ports.http }}"
-DEV_CREATE_PUBSUB_RESOURCES: "true"
-{{- end -}}
