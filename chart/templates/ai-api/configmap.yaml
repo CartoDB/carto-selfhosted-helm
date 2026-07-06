@@ -30,7 +30,7 @@ data:
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
-  {{- if .Values.appConfigValues.authApiEnabled }}
+  {{- if (include "carto.disconnected.enabled" .) }}
   {{- include "carto.internalAuthEnv" . | nindent 2 }}
   {{- end }}
   {{- if eq .Values.appConfigValues.logLevel "debug" }}

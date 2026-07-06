@@ -15,8 +15,8 @@ appConfigValues:
   aiFeaturesEnabled: false
   ## @param appConfigValues.publicEventsApiEnabled Enable the public events API
   publicEventsApiEnabled: false
-  ## @param appConfigValues.authApiEnabled Enable the internal authentication service (auth-api) for disconnected self-hosted deployments
-  authApiEnabled: false
+  ## @param appConfigValues.disconnectedEnabled Enable the self-hosted disconnected mode: deploys the internal authentication service (auth-api) and the in-cluster accounts stack, and switches every backend service to internal authentication
+  disconnectedEnabled: false
   ## @param appConfigValues.httpCacheEnabled Enable the internal httpCache
   httpCacheEnabled: true
   ## @param appConfigValues.importAwsRoleArn ARN Role to be used to import files from the bucket
@@ -7046,7 +7046,7 @@ authApiMigrations:
 
 ## @section accounts-api Parameters
 ##
-## accounts-api is only deployed when appConfigValues.authApiEnabled is true (self-hosted disconnected).
+## accounts-api is only deployed when appConfigValues.disconnectedEnabled is true (self-hosted disconnected mode).
 ## Its accounts database connection reuses authApi.accountsPostgresql via the shared carto.authApi.postgresql.* helpers.
 ##
 accountsApi:

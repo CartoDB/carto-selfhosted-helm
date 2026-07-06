@@ -1515,6 +1515,15 @@ httpGet:
 {{- end -}}
 
 {{/*
+Whether this deployment runs in self-hosted disconnected mode. Every disconnected gate must read
+this helper instead of the raw value, so the public toggle can evolve without touching templates.
+Returns "true" when enabled, empty string (falsy) otherwise.
+*/}}
+{{- define "carto.disconnected.enabled" -}}
+{{- if .Values.appConfigValues.disconnectedEnabled -}}true{{- end -}}
+{{- end -}}
+
+{{/*
 Create a default fully qualified auth-api name.
 */}}
 {{- define "carto.authApi.fullname" -}}

@@ -1032,22 +1032,22 @@ spec:
           default: "0"
 
 
-    # Internal Authentication
-    - name: internalAuthentication
-      title: Internal Authentication (Self-Hosted Disconnected)
+    # Self-Hosted Disconnected
+    - name: disconnected
+      title: Self-Hosted Disconnected
       description: |-
-        Replace CARTO Auth with the internal authentication service (auth-api), federating authentication to your own OIDC or SAML identity provider. Only for disconnected self-hosted deployments.
+        Run CARTO Self-Hosted in disconnected mode: authentication is served by the internal authentication service (auth-api), federated to your own OIDC or SAML identity provider, and the accounts stack runs inside the cluster.
       items:
-        - name: authApiEnabled
-          title: Enable internal authentication
+        - name: disconnectedEnabled
+          title: Enable disconnected mode
           help_text: |-
-            Deploy the auth-api component and switch every backend service to internal authentication.
+            Deploy the internal authentication service (auth-api) and the in-cluster accounts stack, and switch every backend service to internal authentication.
           type: bool
           default: "0"
         - name: authApiProtocol
           title: Identity provider protocol
           type: select_one
-          when: '{{repl (ConfigOptionEquals "authApiEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "disconnectedEnabled" "1") }}'
           default: oidc
           items:
             - name: oidc
@@ -1058,40 +1058,40 @@ spec:
           title: OIDC issuer URL
           type: text
           required: true
-          when: '{{repl and (ConfigOptionEquals "authApiEnabled" "1") (ConfigOptionEquals "authApiProtocol" "oidc") }}'
+          when: '{{repl and (ConfigOptionEquals "disconnectedEnabled" "1") (ConfigOptionEquals "authApiProtocol" "oidc") }}'
         - name: authApiOidcClientId
           title: OIDC client ID
           type: text
           required: true
-          when: '{{repl and (ConfigOptionEquals "authApiEnabled" "1") (ConfigOptionEquals "authApiProtocol" "oidc") }}'
+          when: '{{repl and (ConfigOptionEquals "disconnectedEnabled" "1") (ConfigOptionEquals "authApiProtocol" "oidc") }}'
         - name: authApiOidcClientSecret
           title: OIDC client secret
           type: password
           required: true
-          when: '{{repl and (ConfigOptionEquals "authApiEnabled" "1") (ConfigOptionEquals "authApiProtocol" "oidc") }}'
+          when: '{{repl and (ConfigOptionEquals "disconnectedEnabled" "1") (ConfigOptionEquals "authApiProtocol" "oidc") }}'
         - name: authApiSamlMetadataUrl
           title: SAML identity provider metadata URL
           help_text: |-
             Leave it blank if you provide the metadata XML below.
           type: text
-          when: '{{repl and (ConfigOptionEquals "authApiEnabled" "1") (ConfigOptionEquals "authApiProtocol" "saml") }}'
+          when: '{{repl and (ConfigOptionEquals "disconnectedEnabled" "1") (ConfigOptionEquals "authApiProtocol" "saml") }}'
         - name: authApiSamlMetadataXml
           title: SAML identity provider metadata XML
           help_text: |-
             Inline metadata XML. Preferred in production (no boot-time network dependency).
           type: textarea
-          when: '{{repl and (ConfigOptionEquals "authApiEnabled" "1") (ConfigOptionEquals "authApiProtocol" "saml") }}'
+          when: '{{repl and (ConfigOptionEquals "disconnectedEnabled" "1") (ConfigOptionEquals "authApiProtocol" "saml") }}'
         - name: authApiAccountsApiUrl
           title: Accounts API URL
           help_text: |-
             Base URL of the accounts-api service used by auth-api for quota checks and SSO group sync.
           type: text
           required: true
-          when: '{{repl (ConfigOptionEquals "authApiEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "disconnectedEnabled" "1") }}'
         - name: authApiOrgId
           title: Organization ID
           type: text
-          when: '{{repl (ConfigOptionEquals "authApiEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "disconnectedEnabled" "1") }}'
           default: "org_carto_sh_local"
         - name: authApiInternalServiceToken
           title: Internal service token
@@ -1099,13 +1099,13 @@ spec:
             Shared secret between auth-api and accounts-api internal endpoints.
           type: password
           required: true
-          when: '{{repl (ConfigOptionEquals "authApiEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "disconnectedEnabled" "1") }}'
         - name: authApiAllowedOrigins
           title: Allowed CORS origins
           help_text: |-
             Comma-separated list of origins allowed by auth-api CORS.
           type: text
-          when: '{{repl (ConfigOptionEquals "authApiEnabled" "1") }}'
+          when: '{{repl (ConfigOptionEquals "disconnectedEnabled" "1") }}'
           default: 'https://{{repl ConfigOption "cartoSelfHostedDomain" }}'
 
     # Custom configuration

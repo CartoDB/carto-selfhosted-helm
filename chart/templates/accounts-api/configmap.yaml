@@ -1,4 +1,4 @@
-{{- if and (.Values.appConfigValues.authApiEnabled) (not .Values.accountsApi.existingConfigMap) }}
+{{- if and ((include "carto.disconnected.enabled" .)) (not .Values.accountsApi.existingConfigMap) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

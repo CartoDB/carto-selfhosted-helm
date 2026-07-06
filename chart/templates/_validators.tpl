@@ -80,10 +80,10 @@ s3Endpoint, s3ExternalUrl and s3ForcePathStyle only apply when appConfigValues.s
 Validate auth-api (internal authentication) config
 */}}
 {{- define "carto.validateValues.authApi" -}}
-{{- if .Values.appConfigValues.authApiEnabled -}}
+{{- if (include "carto.disconnected.enabled" .) -}}
 {{- $messages := list -}}
 {{- if not (has .Values.authApi.protocol (list "oidc" "saml")) -}}
-{{- $messages = append $messages "CARTO: Invalid auth-api protocol\n\nIf appConfigValues.authApiEnabled=true you need to set authApi.protocol to \"oidc\" or \"saml\"" -}}
+{{- $messages = append $messages "CARTO: Invalid auth-api protocol\n\nIf appConfigValues.disconnectedEnabled=true you need to set authApi.protocol to \"oidc\" or \"saml\"" -}}
 {{- end -}}
 {{- if and (eq .Values.authApi.protocol "oidc") (or (not .Values.authApi.oidc.issuerUrl) (not .Values.authApi.oidc.clientId) (and (not .Values.authApi.oidc.clientSecret) (not .Values.authApi.oidc.existingSecret.name))) -}}
 {{- $messages = append $messages "CARTO: Missing auth-api OIDC configuration\n\nIf authApi.protocol=oidc you need to set authApi.oidc.issuerUrl, authApi.oidc.clientId and one of authApi.oidc.clientSecret or authApi.oidc.existingSecret" -}}
@@ -92,13 +92,13 @@ Validate auth-api (internal authentication) config
 {{- $messages = append $messages "CARTO: Missing auth-api SAML configuration\n\nIf authApi.protocol=saml you need to set one of authApi.saml.metadataUrl or authApi.saml.metadataXml" -}}
 {{- end -}}
 {{- if not .Values.authApi.allowedOrigins -}}
-{{- $messages = append $messages "CARTO: Missing auth-api allowed origins\n\nIf appConfigValues.authApiEnabled=true you need to set authApi.allowedOrigins with the browser origins allowed to call auth-api (e.g. https://<appConfigValues.selfHostedDomain>)" -}}
+{{- $messages = append $messages "CARTO: Missing auth-api allowed origins\n\nIf appConfigValues.disconnectedEnabled=true you need to set authApi.allowedOrigins with the browser origins allowed to call auth-api (e.g. https://<appConfigValues.selfHostedDomain>)" -}}
 {{- end -}}
 {{- if and (not .Values.authApi.internalServiceToken.value) (not .Values.authApi.internalServiceToken.existingSecret.name) -}}
-{{- $messages = append $messages "CARTO: Missing auth-api internal service token\n\nIf appConfigValues.authApiEnabled=true you need to set one of authApi.internalServiceToken.value or authApi.internalServiceToken.existingSecret" -}}
+{{- $messages = append $messages "CARTO: Missing auth-api internal service token\n\nIf appConfigValues.disconnectedEnabled=true you need to set one of authApi.internalServiceToken.value or authApi.internalServiceToken.existingSecret" -}}
 {{- end -}}
 {{- if and (not .Values.cartoSecrets.encryptionSecretKey.value) (not .Values.cartoSecrets.encryptionSecretKey.existingSecret.name) -}}
-{{- $messages = append $messages "CARTO: Missing encryption secret key for auth-api\n\nIf appConfigValues.authApiEnabled=true you need to set one of cartoSecrets.encryptionSecretKey.value or cartoSecrets.encryptionSecretKey.existingSecret" -}}
+{{- $messages = append $messages "CARTO: Missing encryption secret key for auth-api\n\nIf appConfigValues.disconnectedEnabled=true you need to set one of cartoSecrets.encryptionSecretKey.value or cartoSecrets.encryptionSecretKey.existingSecret" -}}
 {{- end -}}
 {{- join "\n" $messages -}}
 {{- end -}}

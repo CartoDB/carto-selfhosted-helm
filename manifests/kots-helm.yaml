@@ -85,7 +85,7 @@ spec:
     appConfigValues:
       aiFeaturesEnabled: repl{{ if ConfigOptionEquals "aiFeaturesEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
       publicEventsApiEnabled: repl{{ if ConfigOptionEquals "publicEventsApiEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
-      authApiEnabled: repl{{ if ConfigOptionEquals "authApiEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
+      disconnectedEnabled: repl{{ if ConfigOptionEquals "disconnectedEnabled" "1"}}truerepl{{ else }}falserepl{{ end }}
       # domain
       selfHostedDomain: '{{repl ConfigOption "cartoSelfHostedDomain" }}'
       # buckets

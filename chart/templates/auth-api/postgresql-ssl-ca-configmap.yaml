@@ -1,4 +1,4 @@
-{{- if and (.Values.appConfigValues.authApiEnabled) (.Values.authApi.accountsPostgresql.host) (.Values.authApi.accountsPostgresql.sslEnabled) (.Values.authApi.accountsPostgresql.sslCA) }}
+{{- if and ((include "carto.disconnected.enabled" .)) (.Values.authApi.accountsPostgresql.host) (.Values.authApi.accountsPostgresql.sslEnabled) (.Values.authApi.accountsPostgresql.sslCA) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
