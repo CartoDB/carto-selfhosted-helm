@@ -21,10 +21,11 @@ data:
   # accounts-api is self-hosted-disconnected-only: never export traces to the default OTLP localhost endpoint
   CARTO_TRACING_MODE: "none"
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
-  # Internal authentication: switch accounts-api to internal-auth mode (CARTO_INTERNAL_JWKS_URL set)
-  # and point it at the in-cluster auth-api. Keeps issuer/audience consistent with the tokens auth-api mints.
-  {{- include "carto.internalAuthEnv" . | nindent 2 }}
-  CARTO_AUTH_API_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+  # The disconnected env package sets CARTO_INTERNAL_JWKS_URL, which switches accounts-api to
+  # internal-auth mode and points it at the in-cluster auth-api.
+  {{- with include "carto.disconnected.commonEnv" . }}
+  {{- . | nindent 2 }}
+  {{- end }}
   # Accounts database. Reuses the same connection as auth-api (carto.authApi.postgresql.* helpers).
   ACCOUNTS_POSTGRES_HOST: {{ include "carto.authApi.postgresql.host" . | quote }}
   ACCOUNTS_POSTGRES_PORT: {{ include "carto.authApi.postgresql.port" . | quote }}

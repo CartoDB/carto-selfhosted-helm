@@ -1657,15 +1657,20 @@ Return the absolute path where the auth-api accounts database CA cert will be mo
 {{- end -}}
 
 {{/*
-Environment variables that switch every backend service to internal-auth mode.
-The four variables must be consistent with the auth-api configmap: commons.validateJwt
-rejects tokens whose issuer/audience do not match the ones auth-api mints with.
+The complete disconnected-mode environment package for backend services. Self-gated: emits
+nothing unless disconnected mode is enabled, so consumers include it unconditionally and never
+branch on the toggle themselves. The identity variables must be consistent with the auth-api
+configmap: commons.validateJwt rejects tokens whose issuer/audience do not match the ones
+auth-api mints with.
 */}}
-{{- define "carto.internalAuthEnv" -}}
+{{- define "carto.disconnected.commonEnv" -}}
+{{- if (include "carto.disconnected.enabled" .) -}}
 CARTO_INTERNAL_JWKS_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}/.well-known/jwks.json"
 CARTO_INTERNAL_ISSUER: {{ include "carto.authApi.issuer" . | quote }}
 CARTO_AUTH_AUDIENCE: {{ .Values.authApi.audience | quote }}
 CARTO_AUTH_NAMESPACE: "http://app.carto.com"
+CARTO_AUTH_API_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+{{- end -}}
 {{- end -}}
 
 {{/*

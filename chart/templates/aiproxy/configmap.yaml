@@ -16,8 +16,8 @@ data:
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
-  {{- if (include "carto.disconnected.enabled" .) }}
-  {{- include "carto.internalAuthEnv" . | nindent 2 }}
+  {{- with include "carto.disconnected.commonEnv" . }}
+  {{- . | nindent 2 }}
   {{- end }}
   AI_API_URL: "http://{{ include "carto.aiApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
