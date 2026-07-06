@@ -9,6 +9,13 @@ description: |
   cannot check itself out (chicken-and-egg with local actions).
 
 inputs:
+  helm-version:
+    description: |
+      Helm release tag. The installer script is fetched from this same tag,
+      so both the script and the binary it installs stay deterministic
+      regardless of runner-image or upstream-main changes.
+    required: false
+    default: v3.18.2
   troubleshoot-version:
     description: |
       Replicated Troubleshoot CLI release tag. Pinned because new minor
@@ -28,11 +35,16 @@ runs:
   steps:
     - name: Install helm
       shell: bash
-      # Upstream-maintained installer, matching trivy-security-scanning.yaml's
-      # existing pattern in this repo. ubuntu-latest runners already ship a
-      # recent helm, but installing explicitly keeps the version deterministic
-      # and avoids a runner-image surprise.
-      run: curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      # Upstream-maintained installer, same pattern as
+      # trivy-security-scanning.yaml but pinned: the script comes from the
+      # helm tag matching the version it installs (this repo is public, so
+      # CI must not execute whatever upstream main currently serves), and the
+      # script itself verifies the binary against its published checksum.
+      run: |
+        set -euo pipefail
+        VERSION="${{ inputs.helm-version }}"
+        curl -fsSL "https://raw.githubusercontent.com/helm/helm/${VERSION}/scripts/get-helm-3" \
+          | DESIRED_VERSION="${VERSION}" bash
 
     - name: Install troubleshoot.sh CLI (kubectl support-bundle / preflight)
       if: inputs.install-troubleshoot == 'true'

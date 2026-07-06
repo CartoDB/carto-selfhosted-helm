@@ -1,24 +1,12 @@
 name: Chart tests
 
 # Behavioural checks against the rendered chart. Each step under
-# `chart-tests` is an independent test. Add new tests as additional steps
-# here rather than creating per-test workflows — that way the PR shows one
-# `chart-tests` status check, helm + krew install costs are amortised
-# across tests, and triggers stay scoped to chart changes.
-#
-# Tests today:
-#   - support-bundle redactor verification
-#     (chart/tests/test-redactors.sh)
-#
-# Candidates to add next (open follow-ups, not in scope for this PR):
-#   - validators: render with intentionally-broken values and assert each
-#     carto.validateValues.* helper fires its expected message
-#   - KOTS render: scripts/test-kots-config.sh all
-#   - schema lint of the rendered preflight + support-bundle Secrets
-#
-# Local equivalent of this workflow:
-#   helm dependency update -C chart
-#   bash chart/tests/test-redactors.sh
+# `chart-tests` is an independent test, and each test is a script under
+# chart/tests/ that also runs locally (after `helm dependency update chart`).
+# Add new tests as additional steps here rather than creating per-test
+# workflows — that way the PR shows one `chart-tests` status check, helm +
+# troubleshoot install costs are amortised across tests, and triggers stay
+# scoped to chart changes.
 
 on:
   pull_request:
@@ -27,11 +15,19 @@ on:
       - .github/actions/chart-setup/**
       - .github/workflows/chart-tests.yaml
 
+permissions:
+  contents: read
+
+concurrency:
+  group: chart-tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   chart-tests:
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - uses: ./.github/actions/chart-setup
         # Composite installs helm + troubleshoot CLIs and runs
