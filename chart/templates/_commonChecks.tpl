@@ -723,8 +723,10 @@ useful debug data. Verify changes with chart/tests/test-redactors.sh.
   removals:
     regex:
       - redactor: '(?P<mask>\bZXlK[A-Za-z0-9+/=]{50,}\b)'
-# Catches shapeless entitlement values. fileSelector globs are basename-only:
-# a mid-path `**` (e.g. **/replicated-sdk/**/...) is a no-op in troubleshoot.
+# Catches shapeless entitlement values. fileSelector globs match against
+# bundle-root-relative paths and `**/` requires at least one parent directory
+# (troubleshoot compiles them with gobwas/glob) — list a root-relative form
+# alongside any `**/` form when the file can sit near the bundle root.
 - name: carto-license-sensitive-entitlements
   fileSelector:
     files:
@@ -738,6 +740,9 @@ useful debug data. Verify changes with chart/tests/test-redactors.sh.
 - name: tenant-requirements-check-env-fallback
   fileSelector:
     files:
+      # In-cluster captures store this file bundle-root-relative (depth 2),
+      # which a bare `**/` prefix can never match; keep both forms.
+      - "tenant-requirements-check/tenant-requirements-check.json"
       - "**/tenant-requirements-check/tenant-requirements-check.json"
   removals:
     yamlPath:
