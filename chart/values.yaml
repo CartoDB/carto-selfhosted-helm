@@ -1285,10 +1285,14 @@ importWorker:
   ## @param importWorker.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
-  ## @param importWorker.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
-  ## Kept low on purpose: DuckDB allocates native memory outside the V8 heap, so the heap must not scale up with the container.
+  ## @param importWorker.nodeProcessMaxOldSpace Absolute memory in MB for node process max-old-space-size. Takes precedence over nodeProcessMaxOldSpacePercentage.
+  ## Pinned on purpose: DuckDB allocates native memory outside the V8 heap, so the heap must not scale with the container.
+  ## If unset (0), the percentage below applies — beware 50% of a DuckDB-sized container starves DuckDB's budget.
   ##
-  nodeProcessMaxOldSpacePercentage: 33
+  nodeProcessMaxOldSpace: 4096
+  ## @param importWorker.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeProcessMaxOldSpacePercentage: 50
   ## @param importWorker.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
   defaultNodeProcessMaxOldSpace: 2048
