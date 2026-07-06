@@ -7,7 +7,7 @@ metadata:
 spec:
   chart:
     name: carto
-    chartVersion: 1.272.1
+    chartVersion: 1.275.1
   builder:
     replicated:
       enabled: true
@@ -95,6 +95,7 @@ spec:
       workspaceThumbnailsPublic: repl{{ if ConfigOptionEquals "storageBucketsThumbnailsIsPublic" "1"}}truerepl{{ else }}falserepl{{ end }}
       googleCloudStorageProjectId: '{{repl ConfigOption "storageBucketsGcpProjectId" }}'
       awsS3Region: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
+      s3ForcePathStyle: repl{{ if ConfigOptionEquals "storageBucketsS3ForcePathStyle" "1"}}truerepl{{ else }}falserepl{{ end }}
       azureStorageAccount: '{{repl ConfigOption "storageBucketsAzureStorageAccount"}}'
       # other config
       bigqueryOauth2ClientId: '{{repl ConfigOption "bigqueryOauthClientID" }}'
@@ -318,6 +319,17 @@ spec:
           exportAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
           awsExportBucket: '{{repl ConfigOption "storageBucketsExportAws" }}'
           awsExportBucketRegion: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
+    ## S3-compatible custom endpoint (only set when provided, so standard AWS S3 keeps its default regional endpoints)
+    - when: '{{repl not (empty (ConfigOption "storageBucketsS3Endpoint")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          s3Endpoint: '{{repl ConfigOption "storageBucketsS3Endpoint" }}'
+    - when: '{{repl not (empty (ConfigOption "storageBucketsS3ExternalUrl")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          s3ExternalUrl: '{{repl ConfigOption "storageBucketsS3ExternalUrl" }}'
     ## ---- Router ----
     ## Terminate TLS at router
     ## Access to Carto
