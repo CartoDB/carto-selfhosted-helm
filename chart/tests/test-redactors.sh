@@ -19,8 +19,8 @@
 #      against the synthetic bundle
 #   4. Grep the redacted bundle for each sentinel — must report zero hits
 #
-# Prerequisites: helm, yq (any version), kubectl, kubectl-support_bundle
-# krew plugin, python3 (for multi-doc YAML parsing).
+# Prerequisites: helm, kubectl, kubectl-support_bundle krew plugin,
+# python3 with PyYAML (for multi-doc YAML parsing).
 
 set -euo pipefail
 
@@ -77,6 +77,9 @@ spec:
 YAML
 
 # Synthetic runPod podSpec — the file the redactors target most directly.
+# The env-fallback redactor masks EVERY env value in this file (that is its
+# job: shapeless secrets like the Azure storage key have no pattern to match),
+# so non-sensitive values here are expected to be scrubbed too.
 cat > "$BUNDLE_ROOT/tenant-requirements-check/tenant-requirements-check.json" <<'JSON'
 {
   "kind": "Pod",
@@ -128,6 +131,26 @@ cat > "$BUNDLE_ROOT/replicated-sdk/test-ns/replicated-test/replicated-license-in
 }
 TXT
 
+# A pod OUTSIDE the env-fallback's fileSelector scope. Its non-sensitive env
+# values must survive redaction — this is what proves the env-value wildcard
+# stays scoped to the tenant-requirements-check file instead of stripping
+# debug data from every pod in the bundle.
+cat > "$BUNDLE_ROOT/cluster-resources/pods/other-app-pod.json" <<'JSON'
+{
+  "kind": "Pod",
+  "spec": {
+    "containers": [{
+      "name": "app",
+      "env": [
+        {"name": "WORKSPACE_POSTGRES_PORT", "value": "5432"},
+        {"name": "LOG_LEVEL", "value": "info"},
+        {"name": "NODE_ENV", "value": "production"}
+      ]
+    }]
+  }
+}
+JSON
+
 # Build the archive — match the convention of a single top-level dir inside.
 # COPYFILE_DISABLE=1 stops macOS tar from injecting AppleDouble (._) entries
 # that break the Go archive reader troubleshoot uses.
@@ -168,6 +191,11 @@ SENTINELS=(
   'LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVk'
   # GCP SA JSON (b64)
   'eyAidHlwZSI6'
+  # Azure storage key — shapeless, only the env-fallback yamlPath rule covers
+  # it. This sentinel is what catches a fileSelector glob that silently stops
+  # matching the tenant-requirements-check file (troubleshoot `**/` globs
+  # require a parent directory, so the root-relative form must stay listed).
+  'vA8/K5m+1i/1K3RwAGaUVump8VMzZMzaX1CquW6gw5iS0DGqFSSyUkG7G+cGB/LFIwjVLEEWLerf+ASt'
   # License-entitlement shape-less values
   'mcaI8oSWt9CBZEarrPJXLgKs4D1h7UY1'
   '2KMJ5T5hUo58O2OB'
@@ -187,12 +215,15 @@ for S in "${SENTINELS[@]}"; do
   fi
 done
 
-# Non-sensitive values MUST remain unredacted — over-redaction breaks debug
-# bundles. The Gemini reviewer specifically flagged this risk.
+# Non-sensitive values in pods OUTSIDE the env-fallback's scope MUST remain
+# unredacted — over-redaction breaks debug bundles. Checked only against the
+# out-of-scope pod: inside tenant-requirements-check.json the fallback masks
+# every env value by design.
+PRESERVED_FILE="$WORK_DIR/redacted-extracted/fixture/cluster-resources/pods/other-app-pod.json"
 PRESERVED_FOUND=0
 PRESERVED_MISSING=0
 for V in '5432' 'info' 'production'; do
-  if grep -rq -- "\"$V\"" "$WORK_DIR/redacted-extracted" 2>/dev/null; then
+  if grep -q -- "\"$V\"" "$PRESERVED_FILE" 2>/dev/null; then
     PRESERVED_FOUND=$((PRESERVED_FOUND + 1))
   else
     PRESERVED_MISSING=$((PRESERVED_MISSING + 1))
