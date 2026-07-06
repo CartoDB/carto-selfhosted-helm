@@ -53,9 +53,10 @@ data:
   {{- if .Values.authApi.refreshTokenTtlSeconds }}
   CARTO_REFRESH_TOKEN_TTL_SECONDS: {{ .Values.authApi.refreshTokenTtlSeconds | quote }}
   {{- end }}
-  # auth-api is self-hosted-only: never export traces to the default OTLP localhost endpoint
-  CARTO_TRACING_MODE: "none"
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
+  {{- if eq .Values.appConfigValues.logLevel "debug" }}
+  CARTO_TRACING_MODE: "local"
+  {{- end }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}

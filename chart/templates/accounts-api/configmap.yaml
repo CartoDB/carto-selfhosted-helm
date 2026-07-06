@@ -18,9 +18,10 @@ data:
   ACCOUNTS_LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   NODE_OPTIONS: {{ template "carto.accountsApi.nodeOptions" . }}
-  # accounts-api is self-hosted-disconnected-only: never export traces to the default OTLP localhost endpoint
-  CARTO_TRACING_MODE: "none"
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
+  {{- if eq .Values.appConfigValues.logLevel "debug" }}
+  CARTO_TRACING_MODE: "local"
+  {{- end }}
   # The disconnected env package sets CARTO_INTERNAL_JWKS_URL, which switches accounts-api to
   # internal-auth mode and points it at the in-cluster auth-api.
   {{- with include "carto.disconnected.commonEnv" . }}
@@ -74,6 +75,7 @@ data:
   ACCOUNTS_BACKOFFICE_AUTH_USER: "disabled"
   ACCOUNTS_BACKOFFICE_AUTH_PASSWORD: "disabled"
   ACCOUNTS_ACTIVITY_DATA_BUCKET_NAME: "disabled"
+  # Defaults to true upstream and would attempt outbound Slack notifications
   QUOTA_NOTIFICATIONS_ENABLED: "false"
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
