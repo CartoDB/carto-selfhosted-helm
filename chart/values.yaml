@@ -1301,35 +1301,33 @@ importWorker:
   ## @param importWorker.duckdb.memoryLimit DuckDB native memory limit (outside the Node heap)
   ## @param importWorker.duckdb.threads DuckDB thread count
   ## @param importWorker.duckdb.tempDirectory DuckDB spill directory (must live on the tmp volume)
-  ## @param importWorker.duckdb.maxTempDirectorySize Max size of the DuckDB spill directory (keep below importWorker.tmpVolume.sizeLimit)
+  ## @param importWorker.duckdb.maxTempDirectorySize Max size of the DuckDB spill directory (keep below importWorker.tmpVolume.sizeLimit when that is set)
   ##
   duckdb:
     memoryLimit: "6GB"
     threads: 4
     tempDirectory: "/tmp/duckdb-spill"
     maxTempDirectorySize: "15GB"
-  ## @param importWorker.tmpVolume.sizeLimit Size limit of the /tmp emptyDir (spill + import staging; keep below resources.limits.ephemeral-storage)
+  ## @param importWorker.tmpVolume.sizeLimit Optional size limit of the /tmp emptyDir. Empty (default) keeps it unbounded, preserving pre-existing behavior:
+  ## /tmp is shared by DuckDB spill, legacy GDAL processing and BigQuery staging, so a bound can evict jobs that previously completed.
+  ## When set, keep it above duckdb.maxTempDirectorySize and pair it with resources ephemeral-storage requests/limits.
   ##
   tmpVolume:
-    sizeLimit: "20Gi"
+    sizeLimit: ""
   ## import-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param importWorker.resources.limits.memory Container memory limits in MiB
   ## @param importWorker.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @param importWorker.resources.limits.ephemeral-storage Container ephemeral-storage limits (DuckDB spill + import staging on /tmp)
   ## @param importWorker.resources.requests.memory Container memory requests in MiB
   ## @param importWorker.resources.requests.cpu Container cpu requests in milliCPU cores
-  ## @param importWorker.resources.requests.ephemeral-storage Container ephemeral-storage requests
   ##
   resources:
     limits:
       memory: "12288Mi"
       cpu: "4000m"
-      ephemeral-storage: "25Gi"
     requests:
       memory: "6144Mi"
       cpu: "1000m"
-      ephemeral-storage: "20Gi"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importWorker.podSecurityContext.enabled Enabled import-worker pods' Security Context
