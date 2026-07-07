@@ -6654,8 +6654,23 @@ authApi:
     existingSecret:
       name: ""
       key: ""
-  ## Accounts database connection. If `authApi.accountsPostgresql.host` is empty, the chart PostgreSQL
-  ## (internalPostgresql or externalPostgresql) is used with its own credentials
+  ## Accounts database connection, shared by accounts-api, accounts-subscriber, and auth-api's `auth`
+  ## schema (see `carto.authApi.postgresql.*` helpers).
+  ##
+  ## Tier 0 (default): leave this block empty. All three components connect with the SAME user and
+  ## instance as the chart's main PostgreSQL (internalPostgresql or externalPostgresql) — no extra DB
+  ## user to provision. This matches how comparable self-hosted platforms with an internal auth server
+  ## (Keycloak, ZITADEL) default in production: a single service-account role, not one per component.
+  ##
+  ## Tier 1 (hardening, recommended for regulated / air-gapped deployments): fill in this block for a
+  ## DEDICATED user. Either point `host` at a wholly separate PostgreSQL instance, or repeat the SAME
+  ## host as your main PostgreSQL while setting a different `user` / `password` / `database` — then have
+  ## the DBA scope that role to the accounts database only and
+  ## `REVOKE CONNECT ON DATABASE <main_database> FROM <accounts_user>` to block lateral access from it.
+  ##
+  ## Switching Tier 0 -> Tier 1 after the first install is NOT a zero-downtime toggle: both migration
+  ## sets (base + `migrations-internal-auth`) must be re-run as the new user and existing data migrated.
+  ## Decide the tier before the first `helm install`.
   accountsPostgresql:
     ## @param authApi.accountsPostgresql.host Accounts database host. If empty, the chart PostgreSQL (internal or external) is used
     ##
