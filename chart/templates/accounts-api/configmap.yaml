@@ -27,20 +27,15 @@ data:
   {{- with include "carto.disconnected.commonEnv" . }}
   {{- . | nindent 2 }}
   {{- end }}
-  # Accounts database. Reuses the same connection as auth-api (carto.authApi.postgresql.* helpers).
-  ACCOUNTS_POSTGRES_HOST: {{ include "carto.authApi.postgresql.host" . | quote }}
-  ACCOUNTS_POSTGRES_PORT: {{ include "carto.authApi.postgresql.port" . | quote }}
-  ACCOUNTS_POSTGRES_DB: {{ include "carto.authApi.postgresql.databaseName" . | quote }}
-  ACCOUNTS_POSTGRES_USER: {{ include "carto.authApi.postgresql.user" . | quote }}
-  ACCOUNTS_POSTGRES_SSL_ENABLED: {{ include "carto.authApi.postgresql.sslEnabled" . | quote }}
-  {{- if .Values.authApi.accountsPostgresql.host }}
-  {{- if and .Values.authApi.accountsPostgresql.sslEnabled .Values.authApi.accountsPostgresql.sslCA }}
-  ACCOUNTS_POSTGRES_SSL_CA: {{ include "carto.authApi.postgresql.configMapMountAbsolutePath" . }}
-  {{- end }}
-  {{- else }}
+  # Accounts database, via this service's view over the shared connection (see
+  # carto.accountsPostgresql.* in _helpers.tpl for the tiered credential model).
+  ACCOUNTS_POSTGRES_HOST: {{ include "carto.accountsApi.postgresql.host" . | quote }}
+  ACCOUNTS_POSTGRES_PORT: {{ include "carto.accountsApi.postgresql.port" . | quote }}
+  ACCOUNTS_POSTGRES_DB: {{ include "carto.accountsApi.postgresql.databaseName" . | quote }}
+  ACCOUNTS_POSTGRES_USER: {{ include "carto.accountsApi.postgresql.user" . | quote }}
+  ACCOUNTS_POSTGRES_SSL_ENABLED: {{ include "carto.accountsApi.postgresql.sslEnabled" . | quote }}
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
   ACCOUNTS_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
-  {{- end }}
   {{- end }}
   PUBSUB_MODE: "pull"
   PUBSUB_PROJECT_ID: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}

@@ -115,6 +115,7 @@ spec:
       sslCA: |
         repl{{- ConfigOptionData "metadataDBSSLCertificate" | nindent 8 }}
       aiProxyDatabaseName: '{{repl ConfigOption "aiProxyDatabaseName" }}'
+      accountsDatabaseName: '{{repl ConfigOption "accountsDatabaseName" }}'
     ## Ai Features
     aiApi:
       image:

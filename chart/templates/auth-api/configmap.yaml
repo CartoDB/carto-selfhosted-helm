@@ -84,13 +84,7 @@ data:
   ACCOUNTS_POSTGRES_DB: {{ include "carto.authApi.postgresql.databaseName" . | quote }}
   ACCOUNTS_POSTGRES_USER: {{ include "carto.authApi.postgresql.user" . | quote }}
   ACCOUNTS_POSTGRES_SSL_ENABLED: {{ include "carto.authApi.postgresql.sslEnabled" . | quote }}
-  {{- if .Values.authApi.accountsPostgresql.host }}
-  {{- if and .Values.authApi.accountsPostgresql.sslEnabled .Values.authApi.accountsPostgresql.sslCA }}
-  ACCOUNTS_POSTGRES_SSL_CA: {{ include "carto.authApi.postgresql.configMapMountAbsolutePath" . }}
-  {{- end }}
-  {{- else }}
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
   ACCOUNTS_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
-  {{- end }}
   {{- end }}
 {{- end }}

@@ -5576,6 +5576,7 @@ internalPostgresql:
 ## @param externalPostgresql.awsEksPodIdentityEnabled Enable EKS Pod Identity authentication for the external postgresql
 ## @param externalPostgresql.awsRdsRegion Region of the RDS PostgreSQL database in AWS. Needed when EKS Pod Identity is enabled
 ## @param externalPostgresql.aiProxyDatabaseName Database name for aiProxy
+## @param externalPostgresql.accountsDatabaseName Database name for the accounts model and internal-auth schema (self-hosted disconnected mode only). Lives on the same PostgreSQL and credentials as the main CARTO database and must be created beforehand, like the aiProxy one
 ##
 externalPostgresql:
   host: localhost
@@ -5596,6 +5597,11 @@ externalPostgresql:
   awsEksPodIdentityEnabled: false
   awsRdsRegion: ""
   aiProxyDatabaseName: "aiproxy"
+  ## The accounts database rides the main PostgreSQL on purpose: one instance, one service user,
+  ## separate database (industry-standard default — Keycloak/ZITADEL ship the same shape). A dedicated
+  ## role for the auth schema can be introduced later through the per-service helper views in
+  ## _helpers.tpl without any template change.
+  accountsDatabaseName: "accounts"
 
 ## @section External proxy configuration
 ## Configuration for an external proxy provided by the client. Only HTTP and HTTPS proxies are supported
@@ -6654,51 +6660,6 @@ authApi:
     existingSecret:
       name: ""
       key: ""
-  ## Accounts database connection, shared by accounts-api, accounts-subscriber, and auth-api's `auth`
-  ## schema (see `carto.authApi.postgresql.*` helpers).
-  ##
-  ## Tier 0 (default): leave this block empty. All three components connect with the SAME user and
-  ## instance as the chart's main PostgreSQL (internalPostgresql or externalPostgresql) — no extra DB
-  ## user to provision. This matches how comparable self-hosted platforms with an internal auth server
-  ## (Keycloak, ZITADEL) default in production: a single service-account role, not one per component.
-  ##
-  ## Tier 1 (hardening, recommended for regulated / air-gapped deployments): fill in this block for a
-  ## DEDICATED user. Either point `host` at a wholly separate PostgreSQL instance, or repeat the SAME
-  ## host as your main PostgreSQL while setting a different `user` / `password` / `database` — then have
-  ## the DBA scope that role to the accounts database only and
-  ## `REVOKE CONNECT ON DATABASE <main_database> FROM <accounts_user>` to block lateral access from it.
-  ##
-  ## Switching Tier 0 -> Tier 1 after the first install is NOT a zero-downtime toggle: both migration
-  ## sets (base + `migrations-internal-auth`) must be re-run as the new user and existing data migrated.
-  ## Decide the tier before the first `helm install`.
-  accountsPostgresql:
-    ## @param authApi.accountsPostgresql.host Accounts database host. If empty, the chart PostgreSQL (internal or external) is used
-    ##
-    host: ""
-    ## @param authApi.accountsPostgresql.port Accounts database port number
-    ##
-    port: ""
-    ## @param authApi.accountsPostgresql.database Accounts database name
-    ##
-    database: ""
-    ## @param authApi.accountsPostgresql.user Accounts database user
-    ##
-    user: ""
-    ## @param authApi.accountsPostgresql.password Accounts database password. One of `authApi.accountsPostgresql.password` or `authApi.accountsPostgresql.existingSecret` could be defined
-    ##
-    password: ""
-    ## @param authApi.accountsPostgresql.existingSecret.name Name of the pre-existent secret containing the `authApi.accountsPostgresql.existingSecret.key`. If `authApi.accountsPostgresql.password` is defined, this value is going to be ignored and not used.
-    ## @param authApi.accountsPostgresql.existingSecret.key Key to find in `authApi.accountsPostgresql.existingSecret.name` where the accounts database password is found. If `authApi.accountsPostgresql.password` is defined, this value is going to be ignored and not used.
-    ##
-    existingSecret:
-      name: ""
-      key: ""
-    ## @param authApi.accountsPostgresql.sslEnabled Whether or not connect to the accounts database via TLS
-    ##
-    sslEnabled: false
-    ## @param authApi.accountsPostgresql.sslCA CA certificate in case the accounts database TLS cert it's selfsigned
-    ##
-    sslCA: ""
   ## @param authApi.accessTokenTtlSeconds Access token TTL in seconds. Leave empty for the service default
   ##
   accessTokenTtlSeconds: ""
@@ -7062,7 +7023,7 @@ authApiMigrations:
 ## @section accounts-api Parameters
 ##
 ## accounts-api is only deployed when appConfigValues.disconnectedEnabled is true (self-hosted disconnected mode).
-## Its accounts database connection reuses authApi.accountsPostgresql via the shared carto.authApi.postgresql.* helpers.
+## Its accounts database connection comes from the top-level accountsPostgresql block, read through this service's carto.accountsApi.postgresql.* helper view.
 ##
 accountsApi:
   ##

@@ -100,16 +100,8 @@ spec:
             - name: ACCOUNTS_POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  {{- if .Values.authApi.accountsPostgresql.existingSecret.name }}
-                  name: {{ .Values.authApi.accountsPostgresql.existingSecret.name | quote }}
-                  key: {{ .Values.authApi.accountsPostgresql.existingSecret.key | quote }}
-                  {{- else if .Values.authApi.accountsPostgresql.password }}
-                  name: {{ include "carto.accountsApi.secretName" . }}
-                  key: ACCOUNTS_POSTGRES_PASSWORD
-                  {{- else }}
                   name: {{ include "carto.postgresql.secretName" . }}
                   key: {{ include "carto.postgresql.secret.key" . }}
-                  {{- end }}
             - name: ACCOUNTS_INVITE_JWT_SECRET
               valueFrom:
                 secretKeyRef:
@@ -179,18 +171,10 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
-            {{- if .Values.authApi.accountsPostgresql.host }}
-            {{- if and .Values.authApi.accountsPostgresql.sslEnabled .Values.authApi.accountsPostgresql.sslCA }}
-            - name: accounts-postgresql-ssl-ca
-              mountPath: {{ include "carto.authApi.postgresql.configMapMountDir" . }}
-              readOnly: true
-            {{- end }}
-            {{- else }}
             {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
             - name: postgresql-ssl-ca
               mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
               readOnly: true
-            {{- end }}
             {{- end }}
             {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
             - name: proxy-ssl-ca
@@ -204,18 +188,10 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.accountsSubscriber.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
-        {{- if .Values.authApi.accountsPostgresql.host }}
-        {{- if and .Values.authApi.accountsPostgresql.sslEnabled .Values.authApi.accountsPostgresql.sslCA }}
-        - name: accounts-postgresql-ssl-ca
-          configMap:
-            name: {{ include "carto.authApi.postgresql.configMapName" . }}
-        {{- end }}
-        {{- else }}
         {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
         - name: postgresql-ssl-ca
           configMap:
             name: {{ include "carto.postgresql.configMapName" . }}
-        {{- end }}
         {{- end }}
         {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
         - name: proxy-ssl-ca

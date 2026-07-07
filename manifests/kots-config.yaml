@@ -637,6 +637,16 @@ spec:
           when: '{{repl (ConfigOptionEquals "aiFeaturesEnabled" "1") }}'
           default: "aiproxy"
 
+        ## Accounts database (self-hosted disconnected)
+        - name: accountsDatabaseName
+          title: Accounts Database name
+          help_text: |-
+            Database that holds the accounts model and the internal-auth schema. It lives on the same
+            PostgreSQL and credentials as the main CARTO database and must be created beforehand.
+          type: text
+          when: '{{repl (ConfigOptionEquals "disconnectedEnabled" "1") }}'
+          default: "accounts"
+
         ## Public Events API
         - name: publicEventsApiEnabled
           title: Activity Data from Public Maps
