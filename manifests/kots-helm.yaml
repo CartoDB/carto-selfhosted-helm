@@ -139,6 +139,10 @@ spec:
         - '{{repl ConfigOption "authApiAllowedOrigins" }}'
       internalServiceToken:
         value: '{{repl ConfigOption "authApiInternalServiceToken" }}'
+      postgresql:
+        user: '{{repl ConfigOption "authApiPostgresUser" }}'
+        password:
+          value: '{{repl ConfigOption "authApiPostgresPassword" }}'
       oidc:
         issuerUrl: '{{repl ConfigOption "authApiOidcIssuerUrl" }}'
         clientId: '{{repl ConfigOption "authApiOidcClientId" }}'

@@ -1547,6 +1547,40 @@ Returns "true" when enabled, empty string (falsy) otherwise.
 {{- end -}}
 {{- end -}}
 
+{{/*
+auth-api PostgreSQL credentials: dedicated role when set, otherwise the shared platform user.
+This is the only sanctioned per-service credential divergence — auth-api owns the `auth` schema
+(signing keys) inside the accounts database, so only its user/password may differ; host, port and
+database always stay shared with the accounts stack.
+*/}}
+{{- define "carto.authApi.postgresql.user" -}}
+{{- if .Values.authApi.postgresql.user -}}
+{{- .Values.authApi.postgresql.user -}}
+{{- else -}}
+{{- include "carto.postgresql.user" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.authApi.postgresql.secretName" -}}
+{{- if .Values.authApi.postgresql.password.existingSecret.name -}}
+{{- .Values.authApi.postgresql.password.existingSecret.name -}}
+{{- else if .Values.authApi.postgresql.password.value -}}
+{{- include "carto.authApi.secretName" . -}}
+{{- else -}}
+{{- include "carto.postgresql.secretName" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.authApi.postgresql.secret.key" -}}
+{{- if .Values.authApi.postgresql.password.existingSecret.name -}}
+{{- .Values.authApi.postgresql.password.existingSecret.key -}}
+{{- else if .Values.authApi.postgresql.password.value -}}
+{{- printf "ACCOUNTS_POSTGRES_PASSWORD" -}}
+{{- else -}}
+{{- include "carto.postgresql.secret.key" . -}}
+{{- end -}}
+{{- end -}}
+
 {{- define "carto.authApi.nodeOptions" -}}
 {{- if eq (.Values.authApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
 {{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.authApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.authApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}

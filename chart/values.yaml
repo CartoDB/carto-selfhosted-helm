@@ -6658,6 +6658,20 @@ authApi:
     existingSecret:
       name: ""
       key: ""
+  ## @extra authApi.postgresql Optional dedicated PostgreSQL credentials for auth-api only. auth-api owns the `auth` schema (JWT signing keys) inside the accounts database; a dedicated login role scoped to that schema keeps the shared platform user out of it. Only the user and password diverge — host, port and database stay shared with the accounts stack. Leave empty to reuse the shared platform PostgreSQL user (default). The role and its grants must be pre-created on the database; the chart only consumes the credentials. Choose the model before the first install — switching afterwards is not zero-downtime (auth migrations must be re-run as the new role).
+  postgresql:
+    ## @param authApi.postgresql.user Dedicated PostgreSQL user for auth-api. Leave empty to reuse the shared platform user
+    user: ""
+    ## @extra authApi.postgresql.password Password for authApi.postgresql.user
+    password:
+      ## @param authApi.postgresql.password.value Value of the password for authApi.postgresql.user. One of `authApi.postgresql.password.value` or `authApi.postgresql.password.existingSecret` could be defined.
+      value: ""
+      ## @param authApi.postgresql.password.existingSecret.name Name of the pre-existent secret containing the `authApi.postgresql.password.existingSecret.key`. If `authApi.postgresql.password.value` is defined, this value is going to be ignored and not used.
+      ## @param authApi.postgresql.password.existingSecret.key Key to find in `authApi.postgresql.password.existingSecret.name` where the value of `authApi.postgresql.password` is found. If `authApi.postgresql.password.value` is defined, this value is going to be ignored and not used.
+      ##
+      existingSecret:
+        name: ""
+        key: ""
   ## @param authApi.accessTokenTtlSeconds Access token TTL in seconds. Leave empty for the service default
   ##
   accessTokenTtlSeconds: ""

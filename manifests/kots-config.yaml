@@ -1117,6 +1117,18 @@ spec:
           type: text
           when: '{{repl (ConfigOptionEquals "disconnectedEnabled" "1") }}'
           default: 'https://{{repl ConfigOption "cartoSelfHostedDomain" }}'
+        - name: authApiPostgresUser
+          title: Dedicated PostgreSQL user for auth-api (advanced)
+          help_text: |-
+            Optional hardening. A dedicated PostgreSQL login role for auth-api only, scoped to the `auth` schema (which holds the signing keys) inside the accounts database. Leave empty to reuse the shared platform user. The role and its grants must be created on the database beforehand — the chart only consumes the credentials. If you set this, you must also set the password below.
+          type: text
+          when: '{{repl (ConfigOptionEquals "disconnectedEnabled" "1") }}'
+        - name: authApiPostgresPassword
+          title: Dedicated PostgreSQL password for auth-api (advanced)
+          help_text: |-
+            Password for the dedicated auth-api PostgreSQL user above. Required only when that user is set.
+          type: password
+          when: '{{repl (ConfigOptionEquals "disconnectedEnabled" "1") }}'
 
     # Custom configuration
     - name: platformAdvancedTuning

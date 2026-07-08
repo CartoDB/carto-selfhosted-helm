@@ -102,8 +102,8 @@ spec:
             - name: ACCOUNTS_POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "carto.postgresql.secretName" . }}
-                  key: {{ include "carto.postgresql.secret.key" . }}
+                  name: {{ include "carto.authApi.postgresql.secretName" . }}
+                  key: {{ include "carto.authApi.postgresql.secret.key" . }}
           envFrom:
             - configMapRef:
                 name: {{ template "carto.authApi.configmapName" . }}
@@ -146,8 +146,8 @@ spec:
             - name: ACCOUNTS_POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "carto.postgresql.secretName" . }}
-                  key: {{ include "carto.postgresql.secret.key" . }}
+                  name: {{ include "carto.authApi.postgresql.secretName" . }}
+                  key: {{ include "carto.authApi.postgresql.secret.key" . }}
             {{- if eq .Values.authApi.protocol "oidc" }}
             - name: CARTO_OIDC_CLIENT_SECRET
               valueFrom:

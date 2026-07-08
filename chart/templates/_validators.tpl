@@ -100,6 +100,10 @@ Validate auth-api (internal authentication) config
 {{- if and (not .Values.cartoSecrets.encryptionSecretKey.value) (not .Values.cartoSecrets.encryptionSecretKey.existingSecret.name) -}}
 {{- $messages = append $messages "CARTO: Missing encryption secret key for auth-api\n\nIf appConfigValues.disconnectedEnabled=true you need to set one of cartoSecrets.encryptionSecretKey.value or cartoSecrets.encryptionSecretKey.existingSecret" -}}
 {{- end -}}
+{{- $pgPasswordSet := or .Values.authApi.postgresql.password.value .Values.authApi.postgresql.password.existingSecret.name -}}
+{{- if or (and .Values.authApi.postgresql.user (not $pgPasswordSet)) (and $pgPasswordSet (not .Values.authApi.postgresql.user)) -}}
+{{- $messages = append $messages "CARTO: Incomplete auth-api dedicated PostgreSQL credentials\n\nTo give auth-api a dedicated PostgreSQL role set BOTH authApi.postgresql.user and one of authApi.postgresql.password.value or authApi.postgresql.password.existingSecret. Leave all of them empty to reuse the shared platform user." -}}
+{{- end -}}
 {{- join "\n" $messages -}}
 {{- end -}}
 {{- end -}}

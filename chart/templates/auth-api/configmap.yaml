@@ -82,7 +82,7 @@ data:
   ACCOUNTS_POSTGRES_HOST: {{ include "carto.postgresql.host" . | quote }}
   ACCOUNTS_POSTGRES_PORT: {{ include "carto.postgresql.port" . | quote }}
   ACCOUNTS_POSTGRES_DB: {{ .Values.externalPostgresql.accountsDatabaseName | quote }}
-  ACCOUNTS_POSTGRES_USER: {{ include "carto.postgresql.user" . | quote }}
+  ACCOUNTS_POSTGRES_USER: {{ include "carto.authApi.postgresql.user" . | quote }}
   ACCOUNTS_POSTGRES_SSL_ENABLED: {{ .Values.externalPostgresql.sslEnabled | quote }}
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
   ACCOUNTS_POSTGRES_SSL_CA: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
