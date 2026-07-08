@@ -22,13 +22,9 @@ data:
   {{- if eq .Values.appConfigValues.logLevel "debug" }}
   CARTO_TRACING_MODE: "local"
   {{- end }}
-  # The disconnected env package sets CARTO_INTERNAL_JWKS_URL, which switches accounts-api to
-  # internal-auth mode and points it at the in-cluster auth-api.
   {{- with include "carto.disconnected.commonEnv" . }}
   {{- . | nindent 2 }}
   {{- end }}
-  # Accounts database, via this service's view over the shared connection (see
-  # carto.accountsPostgresql.* in _helpers.tpl for the tiered credential model).
   ACCOUNTS_POSTGRES_HOST: {{ include "carto.accountsApi.postgresql.host" . | quote }}
   ACCOUNTS_POSTGRES_PORT: {{ include "carto.accountsApi.postgresql.port" . | quote }}
   ACCOUNTS_POSTGRES_DB: {{ include "carto.accountsApi.postgresql.databaseName" . | quote }}

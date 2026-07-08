@@ -1523,23 +1523,14 @@ Returns "true" when enabled, empty string (falsy) otherwise.
 {{- if .Values.appConfigValues.disconnectedEnabled -}}true{{- end -}}
 {{- end -}}
 
-{{/*
-Create a default fully qualified auth-api name.
-*/}}
 {{- define "carto.authApi.fullname" -}}
 {{- printf "%s-auth-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{/*
-Create carto Image full name for authApi
-*/}}
 {{- define "carto.authApi.image" -}}
 {{- include "carto.images.image" (dict "imageRoot" .Values.authApi.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
-{{/*
-Create the name of the authApi configmap
-*/}}
 {{- define "carto.authApi.configmapName" -}}
 {{- if .Values.authApi.existingConfigMap -}}
 {{- .Values.authApi.existingConfigMap -}}
@@ -1548,9 +1539,6 @@ Create the name of the authApi configmap
 {{- end -}}
 {{- end -}}
 
-{{/*
-Create the name of the authApi secret
-*/}}
 {{- define "carto.authApi.secretName" -}}
 {{- if .Values.authApi.existingSecret -}}
 {{- .Values.authApi.existingSecret -}}
@@ -1559,9 +1547,6 @@ Create the name of the authApi secret
 {{- end -}}
 {{- end -}}
 
-{{/*
-Create authApi Node options
-*/}}
 {{- define "carto.authApi.nodeOptions" -}}
 {{- if eq (.Values.authApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
 {{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.authApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.authApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
@@ -1570,16 +1555,10 @@ Create authApi Node options
 {{- end -}}
 {{- end -}}
 
-{{/*
-Create carto Image full name for authApiMigrations
-*/}}
 {{- define "carto.authApiMigrations.image" -}}
 {{- include "carto.images.image" (dict "imageRoot" .Values.authApiMigrations.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
-{{/*
-Return the external base URL where auth-api is exposed
-*/}}
 {{- define "carto.authApi.publicBaseUrl" -}}
 {{- if .Values.authApi.publicBaseUrl -}}
 {{- trimSuffix "/" .Values.authApi.publicBaseUrl -}}
@@ -1588,9 +1567,6 @@ Return the external base URL where auth-api is exposed
 {{- end -}}
 {{- end -}}
 
-{{/*
-Return the issuer of the tokens minted by auth-api
-*/}}
 {{- define "carto.authApi.issuer" -}}
 {{- default (include "carto.authApi.publicBaseUrl" .) .Values.authApi.issuer -}}
 {{- end -}}
@@ -1672,23 +1648,14 @@ Defaults to the in-cluster accounts-api service when authApi.accountsApiUrl is n
 {{- end -}}
 {{- end -}}
 
-{{/*
-Create a default fully qualified accounts-api name.
-*/}}
 {{- define "carto.accountsApi.fullname" -}}
 {{- printf "%s-accounts-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{/*
-Create carto Image full name for accountsApi
-*/}}
 {{- define "carto.accountsApi.image" -}}
 {{- include "carto.images.image" (dict "imageRoot" .Values.accountsApi.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
-{{/*
-Create the name of the accountsApi configmap
-*/}}
 {{- define "carto.accountsApi.configmapName" -}}
 {{- if .Values.accountsApi.existingConfigMap -}}
 {{- .Values.accountsApi.existingConfigMap -}}
@@ -1697,9 +1664,6 @@ Create the name of the accountsApi configmap
 {{- end -}}
 {{- end -}}
 
-{{/*
-Create the name of the accountsApi secret
-*/}}
 {{- define "carto.accountsApi.secretName" -}}
 {{- if .Values.accountsApi.existingSecret -}}
 {{- .Values.accountsApi.existingSecret -}}
@@ -1708,9 +1672,6 @@ Create the name of the accountsApi secret
 {{- end -}}
 {{- end -}}
 
-{{/*
-Create accountsApi Node options
-*/}}
 {{- define "carto.accountsApi.nodeOptions" -}}
 {{- if eq (.Values.accountsApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
 {{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.accountsApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.accountsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
@@ -1719,23 +1680,14 @@ Create accountsApi Node options
 {{- end -}}
 {{- end -}}
 
-{{/*
-Create a default fully qualified accounts-subscriber name.
-*/}}
 {{- define "carto.accountsSubscriber.fullname" -}}
 {{- printf "%s-accounts-subscriber" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{/*
-Create carto Image full name for accountsSubscriber
-*/}}
 {{- define "carto.accountsSubscriber.image" -}}
 {{- include "carto.images.image" (dict "imageRoot" .Values.accountsSubscriber.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
-{{/*
-Create accountsSubscriber Node options
-*/}}
 {{- define "carto.accountsSubscriber.nodeOptions" -}}
 {{- if eq (.Values.accountsSubscriber.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
 {{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.accountsSubscriber.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.accountsSubscriber.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
@@ -1744,9 +1696,6 @@ Create accountsSubscriber Node options
 {{- end -}}
 {{- end -}}
 
-{{/*
-Create carto Image full name for accountsMigrations
-*/}}
 {{- define "carto.accountsMigrations.image" -}}
 {{- include "carto.images.image" (dict "imageRoot" .Values.accountsMigrations.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
