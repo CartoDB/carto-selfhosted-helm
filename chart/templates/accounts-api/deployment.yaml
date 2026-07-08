@@ -93,7 +93,7 @@ spec:
           {{- end }}
           env:
             - name: ACCOUNTS_POSTGRES_SSL_MODE
-              {{- if eq (include "carto.accountsApi.postgresql.sslEnabled" .) "true" }}
+              {{- if .Values.externalPostgresql.sslEnabled }}
               value: "require"
               {{- else }}
               value: "disable"

@@ -1572,54 +1572,6 @@ Returns "true" when enabled, empty string (falsy) otherwise.
 {{- end -}}
 
 {{/*
-Shared accounts database connection (public.* accounts model + auth schema). The accounts
-database always lives on the chart PostgreSQL (internal or external) with its credentials —
-only the database name differs (externalPostgresql.accountsDatabaseName), mirroring the
-aiProxyDatabaseName pattern.
-Templates must NOT read these helpers directly — each service reads its own view
-(carto.authApi.postgresql.* / carto.accountsApi.postgresql.*) so per-service credentials
-can be introduced later without touching templates.
-*/}}
-{{- define "carto.accountsPostgresql.host" -}}
-{{- include "carto.postgresql.host" . -}}
-{{- end -}}
-
-{{- define "carto.accountsPostgresql.port" -}}
-{{- include "carto.postgresql.port" . -}}
-{{- end -}}
-
-{{- define "carto.accountsPostgresql.user" -}}
-{{- include "carto.postgresql.user" . -}}
-{{- end -}}
-
-{{- define "carto.accountsPostgresql.databaseName" -}}
-{{- .Values.externalPostgresql.accountsDatabaseName -}}
-{{- end -}}
-
-{{- define "carto.accountsPostgresql.sslEnabled" -}}
-{{- .Values.externalPostgresql.sslEnabled -}}
-{{- end -}}
-
-{{/*
-Per-service views over the shared accounts DB connection. Both delegate to
-carto.accountsPostgresql.* today (one user for the whole accounts DB). A future
-per-service credentials split (e.g. a dedicated role for the auth schema) only
-changes these delegations — templates read their own service's view and never
-the shared helpers.
-*/}}
-{{- define "carto.authApi.postgresql.host" -}}{{- include "carto.accountsPostgresql.host" . -}}{{- end -}}
-{{- define "carto.authApi.postgresql.port" -}}{{- include "carto.accountsPostgresql.port" . -}}{{- end -}}
-{{- define "carto.authApi.postgresql.user" -}}{{- include "carto.accountsPostgresql.user" . -}}{{- end -}}
-{{- define "carto.authApi.postgresql.databaseName" -}}{{- include "carto.accountsPostgresql.databaseName" . -}}{{- end -}}
-{{- define "carto.authApi.postgresql.sslEnabled" -}}{{- include "carto.accountsPostgresql.sslEnabled" . -}}{{- end -}}
-
-{{- define "carto.accountsApi.postgresql.host" -}}{{- include "carto.accountsPostgresql.host" . -}}{{- end -}}
-{{- define "carto.accountsApi.postgresql.port" -}}{{- include "carto.accountsPostgresql.port" . -}}{{- end -}}
-{{- define "carto.accountsApi.postgresql.user" -}}{{- include "carto.accountsPostgresql.user" . -}}{{- end -}}
-{{- define "carto.accountsApi.postgresql.databaseName" -}}{{- include "carto.accountsPostgresql.databaseName" . -}}{{- end -}}
-{{- define "carto.accountsApi.postgresql.sslEnabled" -}}{{- include "carto.accountsPostgresql.sslEnabled" . -}}{{- end -}}
-
-{{/*
 The complete disconnected-mode environment package for backend services. Self-gated: emits
 nothing unless disconnected mode is enabled, so consumers include it unconditionally and never
 branch on the toggle themselves. The identity variables must be consistent with the auth-api

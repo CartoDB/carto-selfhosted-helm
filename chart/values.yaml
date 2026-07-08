@@ -5598,9 +5598,7 @@ externalPostgresql:
   awsRdsRegion: ""
   aiProxyDatabaseName: "aiproxy"
   ## The accounts database rides the main PostgreSQL on purpose: one instance, one service user,
-  ## separate database (industry-standard default — Keycloak/ZITADEL ship the same shape). A dedicated
-  ## role for the auth schema can be introduced later through the per-service helper views in
-  ## _helpers.tpl without any template change.
+  ## separate database (industry-standard default — Keycloak/ZITADEL ship the same shape).
   accountsDatabaseName: "accounts"
 
 ## @section External proxy configuration
@@ -7023,7 +7021,7 @@ authApiMigrations:
 ## @section accounts-api Parameters
 ##
 ## accounts-api is only deployed when appConfigValues.disconnectedEnabled is true (self-hosted disconnected mode).
-## Its accounts database connection comes from the top-level accountsPostgresql block, read through this service's carto.accountsApi.postgresql.* helper view.
+## It shares the platform PostgreSQL connection, on the database named by externalPostgresql.accountsDatabaseName.
 ##
 accountsApi:
   ##
