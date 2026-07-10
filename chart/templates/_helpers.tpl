@@ -339,7 +339,7 @@ Fixed heap, not derived from container memory: DuckDB allocates native memory
 outside V8, so the heap must not scale with the container.
 */}}
 {{- define "carto.importWorker.nodeOptions" -}}
-{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (int (.Values.importWorker.defaultNodeProcessMaxOldSpace | default 4096)) | quote -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (int .Values.importWorker.defaultNodeProcessMaxOldSpace) | quote -}}
 {{- end -}}
 
 {{/*
