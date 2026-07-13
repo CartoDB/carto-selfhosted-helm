@@ -1295,19 +1295,13 @@ importWorker:
   ## @param importWorker.duckdb.memoryLimit DuckDB native memory limit (outside the Node heap)
   ## @param importWorker.duckdb.threads DuckDB thread count
   ## @param importWorker.duckdb.tempDirectory DuckDB spill directory (must live on the tmp volume)
-  ## @param importWorker.duckdb.maxTempDirectorySize Max size of the DuckDB spill directory (keep below importWorker.tmpVolume.sizeLimit when that is set)
+  ## @param importWorker.duckdb.maxTempDirectorySize Max size of the DuckDB spill directory
   ##
   duckdb:
     memoryLimit: "6GB"
     threads: 4
     tempDirectory: "/tmp/duckdb-spill"
     maxTempDirectorySize: "15GB"
-  ## @param importWorker.tmpVolume.sizeLimit Optional size limit of the /tmp emptyDir. Empty (default) keeps it unbounded, preserving pre-existing behavior:
-  ## /tmp is shared by DuckDB spill, legacy GDAL processing and BigQuery staging, so a bound can evict jobs that previously completed.
-  ## When set, keep it above duckdb.maxTempDirectorySize and pair it with resources ephemeral-storage requests/limits.
-  ##
-  tmpVolume:
-    sizeLimit: ""
   ## import-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param importWorker.resources.limits.memory Container memory limits in MiB
