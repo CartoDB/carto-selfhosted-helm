@@ -16,7 +16,11 @@ data:
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   PORT: {{ .Values.accountsWww.containerPorts.http | quote }}
+  {{- if (include "carto.disconnected.enabled" .) }}
+  REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/accounts-api"
+  {{- else }}
   REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
+  {{- end }}
   REACT_APP_ACCOUNTS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/"
   REACT_APP_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   REACT_APP_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}

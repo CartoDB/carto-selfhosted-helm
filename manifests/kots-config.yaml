@@ -1091,13 +1091,6 @@ spec:
             Inline metadata XML. Preferred in production (no boot-time network dependency).
           type: textarea
           when: '{{repl and (ConfigOptionEquals "disconnectedEnabled" "1") (ConfigOptionEquals "authApiProtocol" "saml") }}'
-        - name: authApiAccountsApiUrl
-          title: Accounts API URL
-          help_text: |-
-            Base URL of the accounts-api service used by auth-api for quota checks and SSO group sync.
-          type: text
-          required: true
-          when: '{{repl (ConfigOptionEquals "disconnectedEnabled" "1") }}'
         - name: authApiOrgId
           title: Organization ID
           type: text

@@ -133,7 +133,6 @@ spec:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
       protocol: '{{repl ConfigOption "authApiProtocol" }}'
-      accountsApiUrl: '{{repl ConfigOption "authApiAccountsApiUrl" }}'
       orgId: '{{repl ConfigOption "authApiOrgId" }}'
       allowedOrigins:
         - '{{repl ConfigOption "authApiAllowedOrigins" }}'
