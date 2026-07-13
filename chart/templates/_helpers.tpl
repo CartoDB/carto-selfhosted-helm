@@ -1364,7 +1364,7 @@ Get the proxy config map name. The chart generates its own ConfigMap
 (`<release>-externalproxy`) whenever there is inline CA content (`customCA` or
 `externalProxy.sslCA`); otherwise it points at the customer-provided ConfigMap.
 */}}
-{{- define "carto.proxy.configMapName" -}}
+{{- define "carto.customCA.configMapName" -}}
 {{- if or .Values.customCA .Values.externalProxy.sslCA -}}
 {{- printf "%s-%s" .Release.Name "externalproxy" -}}
 {{- else if .Values.externalProxy.sslCAConfigmap.name -}}
@@ -1375,14 +1375,14 @@ Get the proxy config map name. The chart generates its own ConfigMap
 {{/*
 Return the directory where the proxy CA cert will be mounted
 */}}
-{{- define "carto.proxy.configMapMountDir" -}}
+{{- define "carto.customCA.configMapMountDir" -}}
 {{- print "/usr/src/certs/proxy-ssl-ca" -}}
 {{- end -}}
 
 {{/*
 Return the filename where the proxy CA will be mounted when injecting the CA value directly
 */}}
-{{- define "carto.proxy.configMapMountFilename" -}}
+{{- define "carto.customCA.configMapMountFilename" -}}
 {{- if .Values.externalProxy.sslCAConfigmap.key -}}
 {{- printf "%s" .Values.externalProxy.sslCAConfigmap.key -}}
 {{- else -}}
@@ -1393,8 +1393,8 @@ Return the filename where the proxy CA will be mounted when injecting the CA val
 {{/*
 Return the absolute path where the proxy CA cert will be mounted
 */}}
-{{- define "carto.proxy.configMapMountAbsolutePath" -}}
-{{- printf "%s/%s" (include "carto.proxy.configMapMountDir" .) (include "carto.proxy.configMapMountFilename" .) -}}
+{{- define "carto.customCA.configMapMountAbsolutePath" -}}
+{{- printf "%s/%s" (include "carto.customCA.configMapMountDir" .) (include "carto.customCA.configMapMountFilename" .) -}}
 {{- end -}}
 
 {{/*

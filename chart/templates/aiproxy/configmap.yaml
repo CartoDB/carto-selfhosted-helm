@@ -53,7 +53,7 @@ data:
   SERVER_ROOT_PATH: "/litellm"
   {{- if (include "carto.customCA.enabled" .) }}
   # aiproxy python httpx requirement
-  SSL_CERT_FILE: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
+  SSL_CERT_FILE: {{ include "carto.customCA.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   XDG_CACHE_HOME: "/app/cache"
 {{- end }} 

@@ -110,7 +110,7 @@ Return common collectors for preflights and support-bundle
               - name: PROXY_SSL_CA__FILE_CONTENT
                 value: {{ include "carto.customCA.bundle" . | b64enc | quote }}
               - name: PROXY_SSL_CA__FILE_PATH
-                value: {{ include "carto.proxy.configMapMountAbsolutePath" . }}
+                value: {{ include "carto.customCA.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
               - name: ROUTER_SSL_CERT__FILE_CONTENT
@@ -143,7 +143,7 @@ Return common collectors for preflights and support-bundle
               {{- end }}
               {{- if or .Values.customCA .Values.externalProxy.sslCA }}
               - name: proxy-ssl-ca
-                mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+                mountPath: {{ include "carto.customCA.configMapMountDir" . }}
                 readOnly: false
               {{- end }}
               {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
@@ -203,7 +203,7 @@ Return common collectors for preflights and support-bundle
               {{- end }}
               {{- if (include "carto.customCA.enabled" .) }}
               - name: proxy-ssl-ca
-                mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+                mountPath: {{ include "carto.customCA.configMapMountDir" . }}
                 readOnly: true
               {{- end }}
               {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
@@ -544,7 +544,7 @@ Return customer values to use in preflights and support-bundle
   {{- end }}
   {{- if and (not .Values.externalProxy.enabled) (include "carto.customCA.enabled" .) }}
   - name: NODE_EXTRA_CA_CERTS
-    value: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
+    value: {{ include "carto.customCA.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   {{- if .Values.externalProxy.enabled }}
   - name: HTTP_PROXY
@@ -569,7 +569,7 @@ Return customer values to use in preflights and support-bundle
   {{- end }}
   {{- if (include "carto.customCA.enabled" .) }}
   - name: NODE_EXTRA_CA_CERTS
-    value: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
+    value: {{ include "carto.customCA.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   {{- end }}
   {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}

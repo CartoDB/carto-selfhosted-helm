@@ -67,6 +67,6 @@ data:
   {{- end }}
   {{- end }}
   {{- if (include "carto.customCA.enabled" .) }}
-  NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
+  NODE_EXTRA_CA_CERTS: {{ include "carto.customCA.configMapMountAbsolutePath" . | quote }}
   {{- end }}
 {{- end }}
