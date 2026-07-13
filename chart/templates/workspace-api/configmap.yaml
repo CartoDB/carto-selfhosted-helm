@@ -161,9 +161,6 @@ data:
   {{- if .Values.appConfigValues.defaultDoLocation.postgres }}
   DO_LOCATION_POSTGRES: {{ .Values.appConfigValues.defaultDoLocation.postgres }}
   {{- end }}
-  {{- if and (not .Values.externalProxy.enabled) (include "carto.customCA.enabled" .) }}
-  NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
-  {{- end }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
@@ -176,8 +173,8 @@ data:
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
+  {{- end }}
   {{- if (include "carto.customCA.enabled" .) }}
   NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
-  {{- end }}
   {{- end }}
 {{- end }}

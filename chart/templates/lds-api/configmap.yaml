@@ -60,9 +60,6 @@ data:
   CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED: {{ .Values.externalPostgresql.awsEksPodIdentityEnabled | quote }}
   {{- end }}
   LDS_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
-  {{- if and (not .Values.externalProxy.enabled) (include "carto.customCA.enabled" .) }}
-  NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
-  {{- end }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
@@ -75,8 +72,8 @@ data:
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
+  {{- end }}
   {{- if (include "carto.customCA.enabled" .) }}
   NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
-  {{- end }}
   {{- end }}
 {{- end }}

@@ -53,9 +53,6 @@ data:
   ROUTER_METRICS_PUBSUB_SUBSCRIPTION_FILTER: "aggregated-selfhosted-metrics"
   ROUTER_METRICS_EVENTS_TIMEOUT: "300000"
   ROUTER_INGRESS_TESTING_MODE: {{ .Values.cartoConfigValues.ingressTestingMode | quote }}
-  {{- if and (not .Values.externalProxy.enabled) (include "carto.customCA.enabled" .) }}
-  NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
-  {{- end }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
@@ -68,8 +65,8 @@ data:
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
+  {{- end }}
   {{- if (include "carto.customCA.enabled" .) }}
   NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
-  {{- end }}
   {{- end }}
 {{- end }}
