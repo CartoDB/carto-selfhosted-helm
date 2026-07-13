@@ -134,5 +134,11 @@ data:
   {{- end }}
   {{- if (include "carto.trustedCACerts.enabled" .) }}
   NODE_EXTRA_CA_CERTS: {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . | quote }}
+  ## GDAL/ogr2ogr reads directly from the (S3) endpoint via /vsicurl/ and uses libcurl, not Node's
+  ## TLS stack, so point its CA bundle at the same mounted private CA. NOTE: GDAL_HTTP_CAINFO
+  ## REPLACES the system bundle (it does not append), so the trusted-ca-certs file becomes the ONLY
+  ## CA libcurl trusts for imports. This is intended for private-CA endpoints (the air-gapped case);
+  ## see the `trustedCACerts` section in values.yaml.
+  GDAL_HTTP_CAINFO: {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . | quote }}
   {{- end }}
 {{- end }}
