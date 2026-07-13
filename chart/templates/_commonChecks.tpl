@@ -106,9 +106,9 @@ Return common collectors for preflights and support-bundle
               - name: REDIS_TLS_CA__FILE_PATH
                 value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
               {{- end }}
-              {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+              {{- if or .Values.customCA .Values.externalProxy.sslCA }}
               - name: PROXY_SSL_CA__FILE_CONTENT
-                value: {{ .Values.externalProxy.sslCA | b64enc | quote }}
+                value: {{ include "carto.customCA.bundle" . | b64enc | quote }}
               - name: PROXY_SSL_CA__FILE_PATH
                 value: {{ include "carto.proxy.configMapMountAbsolutePath" . }}
               {{- end }}
@@ -141,7 +141,7 @@ Return common collectors for preflights and support-bundle
                 mountPath: {{ include "carto.redis.configMapMountDir" . }}
                 readOnly: false
               {{- end }}
-              {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+              {{- if or .Values.customCA .Values.externalProxy.sslCA }}
               - name: proxy-ssl-ca
                 mountPath: {{ include "carto.proxy.configMapMountDir" . }}
                 readOnly: false
@@ -201,7 +201,7 @@ Return common collectors for preflights and support-bundle
                 mountPath: {{ include "carto.redis.configMapMountDir" . }}
                 readOnly: true
               {{- end }}
-              {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
+              {{- if (include "carto.customCA.enabled" .) }}
               - name: proxy-ssl-ca
                 mountPath: {{ include "carto.proxy.configMapMountDir" . }}
                 readOnly: true
@@ -230,12 +230,12 @@ Return common collectors for preflights and support-bundle
             emptyDir:
               sizeLimit: 8Mi
           {{- end }}
-          {{- if .Values.externalProxy.sslCAConfigmap.name }}
+          {{- if and (not (or .Values.customCA .Values.externalProxy.sslCA)) .Values.externalProxy.sslCAConfigmap.name }}
           - name: proxy-ssl-ca
             configMap:
               name: {{ .Values.externalProxy.sslCAConfigmap.name }}
           {{- end }}
-          {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+          {{- if or .Values.customCA .Values.externalProxy.sslCA }}
           - name: proxy-ssl-ca
             emptyDir:
               sizeLimit: 1Mi
@@ -542,6 +542,10 @@ Return customer values to use in preflights and support-bundle
   - name: WORKSPACE_IMPORTS_STORAGE_ACCOUNT
     value: {{ .Values.appConfigValues.azureStorageAccount | quote }}
   {{- end }}
+  {{- if and (not .Values.externalProxy.enabled) (include "carto.customCA.enabled" .) }}
+  - name: NODE_EXTRA_CA_CERTS
+    value: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
+  {{- end }}
   {{- if .Values.externalProxy.enabled }}
   - name: HTTP_PROXY
     value: {{ include "carto.proxy.computedConnectionString" . | quote }}
@@ -563,7 +567,7 @@ Return customer values to use in preflights and support-bundle
   - name: no_proxy
     value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
-  {{- if (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
+  {{- if (include "carto.customCA.enabled" .) }}
   - name: NODE_EXTRA_CA_CERTS
     value: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
