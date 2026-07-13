@@ -15,6 +15,20 @@ It's no longer supported and you should use an external PostgreSQL instance inst
 
 {{- end }}
 
+{{- if .Values.externalProxy.sslCA }}
+
++-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
+|      externalProxy.sslCA IS DEPRECATED           |
++-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
+
+WARNING: `externalProxy.sslCA` is deprecated in favour of the global `customCA` value.
+It still works and is concatenated into the same trusted CA bundle, but it will be
+removed in a future release. Move your CA certificate(s) to the top-level `customCA`
+value, which trusts them fleet-wide via `NODE_EXTRA_CA_CERTS` regardless of whether an
+external proxy is configured.
+
+{{- end }}
+
 ** Please be patient while the chart is being deployed **
 
 ** Did you check our recommendations to customize your app in production mode? **
