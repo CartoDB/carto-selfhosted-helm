@@ -35,7 +35,7 @@ data:
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
   {{- end }}
-  {{- if (include "carto.customCA.enabled" .) }}
-  NODE_EXTRA_CA_CERTS: {{ include "carto.customCA.configMapMountAbsolutePath" . | quote }}
+  {{- if (include "carto.trustedCACerts.enabled" .) }}
+  NODE_EXTRA_CA_CERTS: {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . | quote }}
   {{- end }}
 {{- end }}

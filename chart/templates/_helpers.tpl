@@ -1331,60 +1331,87 @@ Return the proxy connection string if the config does not include the complete U
 {{- end -}}
 
 {{/*
-Return "true" when there is any custom CA to trust fleet-wide, from any source:
-the global `customCA` value, the (deprecated) `externalProxy.sslCA`, or a
-pre-existing ConfigMap via `externalProxy.sslCAConfigmap.name`. This is the
-single source of truth for whether the CA bundle ConfigMap is created and the
-`proxy-ssl-ca` volume/mount + `NODE_EXTRA_CA_CERTS` env are rendered. It is
-intentionally decoupled from `externalProxy.enabled` so a private-CA endpoint
-(e.g. an S3-compatible store) is trusted even without a proxy.
+Return "true" when there is inline CA content the chart must write into its own
+generated ConfigMap: the new `trustedCACerts.value`, or the deprecated
+`externalProxy.sslCA` (the latter only while an external proxy is configured).
+This distinguishes the "generate our own ConfigMap" sources from the "mount a
+pre-existing ConfigMap" sources.
 */}}
-{{- define "carto.customCA.enabled" -}}
-{{- if or .Values.customCA .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name -}}
+{{- define "carto.trustedCACerts.hasInline" -}}
+{{- if or .Values.trustedCACerts.value (and .Values.externalProxy.enabled .Values.externalProxy.sslCA) -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return "true" when there is any custom CA to trust fleet-wide, from any source.
+This is the single source of truth for whether the CA bundle ConfigMap is
+created and the `trusted-ca-certs` volume/mount + `NODE_EXTRA_CA_CERTS` env are
+rendered.
+
+The new `trustedCACerts.*` sources are intentionally decoupled from
+`externalProxy.enabled`, so a private-CA endpoint (e.g. an S3-compatible store)
+is trusted even without a proxy. The deprecated `externalProxy.sslCA` /
+`externalProxy.sslCAConfigmap` sources stay gated on `externalProxy.enabled`,
+matching the historical behaviour they replace.
+*/}}
+{{- define "carto.trustedCACerts.enabled" -}}
+{{- if or .Values.trustedCACerts.value .Values.trustedCACerts.existingConfigmap.name (and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name)) -}}
 true
 {{- end -}}
 {{- end -}}
 
 {{/*
 Return the concatenation of every inline custom CA PEM the chart manages, so a
-single `NODE_EXTRA_CA_CERTS` file can hold multiple certs. Order: the global
-`customCA` first, then the deprecated `externalProxy.sslCA` (kept working during
-the transition). Only covers inline sources written into the generated ConfigMap;
-`externalProxy.sslCAConfigmap.name` is mounted directly instead.
+single `NODE_EXTRA_CA_CERTS` file can hold multiple certs. Order: the new
+`trustedCACerts.value` first, then the deprecated `externalProxy.sslCA` (kept
+working during the transition, only while an external proxy is configured).
+Only covers inline sources written into the generated ConfigMap; the existing
+ConfigMap sources are mounted directly instead.
 */}}
-{{- define "carto.customCA.bundle" -}}
+{{- define "carto.trustedCACerts.bundle" -}}
 {{- $certs := list -}}
-{{- if .Values.customCA -}}{{- $certs = append $certs .Values.customCA -}}{{- end -}}
-{{- if .Values.externalProxy.sslCA -}}{{- $certs = append $certs .Values.externalProxy.sslCA -}}{{- end -}}
+{{- if .Values.trustedCACerts.value -}}{{- $certs = append $certs .Values.trustedCACerts.value -}}{{- end -}}
+{{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA -}}{{- $certs = append $certs .Values.externalProxy.sslCA -}}{{- end -}}
 {{- join "\n" $certs -}}
 {{- end -}}
 
 {{/*
-Get the proxy config map name. The chart generates its own ConfigMap
-(`<release>-externalproxy`) whenever there is inline CA content (`customCA` or
-`externalProxy.sslCA`); otherwise it points at the customer-provided ConfigMap.
+Get the trusted CA ConfigMap name. The chart generates its own ConfigMap
+(`<release>-trusted-ca-certs`) whenever there is inline CA content; otherwise it
+points at the customer-provided ConfigMap (`trustedCACerts.existingConfigmap`
+first, then the deprecated `externalProxy.sslCAConfigmap` while a proxy is set).
 */}}
-{{- define "carto.customCA.configMapName" -}}
-{{- if or .Values.customCA .Values.externalProxy.sslCA -}}
-{{- printf "%s-%s" .Release.Name "externalproxy" -}}
-{{- else if .Values.externalProxy.sslCAConfigmap.name -}}
+{{- define "carto.trustedCACerts.configMapName" -}}
+{{- if (include "carto.trustedCACerts.hasInline" .) -}}
+{{- printf "%s-%s" .Release.Name "trusted-ca-certs" -}}
+{{- else if .Values.trustedCACerts.existingConfigmap.name -}}
+{{- printf "%s" .Values.trustedCACerts.existingConfigmap.name -}}
+{{- else if and .Values.externalProxy.enabled .Values.externalProxy.sslCAConfigmap.name -}}
 {{- printf "%s" .Values.externalProxy.sslCAConfigmap.name -}}
 {{- end -}}
 {{- end -}}
 
 {{/*
-Return the directory where the proxy CA cert will be mounted
+Return the directory where the trusted CA cert will be mounted
 */}}
-{{- define "carto.customCA.configMapMountDir" -}}
-{{- print "/usr/src/certs/proxy-ssl-ca" -}}
+{{- define "carto.trustedCACerts.configMapMountDir" -}}
+{{- print "/usr/src/certs/trusted-ca-certs" -}}
 {{- end -}}
 
 {{/*
-Return the filename where the proxy CA will be mounted when injecting the CA value directly
+Return the filename where the trusted CA will be mounted. The generated
+(inline) ConfigMap always uses `ca.crt`; an existing ConfigMap uses its
+configured key (`trustedCACerts.existingConfigmap.key`, or the deprecated
+`externalProxy.sslCAConfigmap.key`), defaulting to `ca.crt`.
 */}}
-{{- define "carto.customCA.configMapMountFilename" -}}
-{{- if .Values.externalProxy.sslCAConfigmap.key -}}
-{{- printf "%s" .Values.externalProxy.sslCAConfigmap.key -}}
+{{- define "carto.trustedCACerts.configMapMountFilename" -}}
+{{- if (include "carto.trustedCACerts.hasInline" .) -}}
+{{- print "ca.crt" -}}
+{{- else if .Values.trustedCACerts.existingConfigmap.name -}}
+{{- .Values.trustedCACerts.existingConfigmap.key | default "ca.crt" -}}
+{{- else if and .Values.externalProxy.enabled .Values.externalProxy.sslCAConfigmap.name -}}
+{{- .Values.externalProxy.sslCAConfigmap.key | default "ca.crt" -}}
 {{- else -}}
 {{- print "ca.crt" -}}
 {{- end -}}
@@ -1393,8 +1420,8 @@ Return the filename where the proxy CA will be mounted when injecting the CA val
 {{/*
 Return the absolute path where the proxy CA cert will be mounted
 */}}
-{{- define "carto.customCA.configMapMountAbsolutePath" -}}
-{{- printf "%s/%s" (include "carto.customCA.configMapMountDir" .) (include "carto.customCA.configMapMountFilename" .) -}}
+{{- define "carto.trustedCACerts.configMapMountAbsolutePath" -}}
+{{- printf "%s/%s" (include "carto.trustedCACerts.configMapMountDir" .) (include "carto.trustedCACerts.configMapMountFilename" .) -}}
 {{- end -}}
 
 {{/*

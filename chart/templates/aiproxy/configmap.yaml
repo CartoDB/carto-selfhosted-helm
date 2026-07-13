@@ -51,9 +51,9 @@ data:
   LITELLM_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   LITELLM_NON_ROOT: "true"
   SERVER_ROOT_PATH: "/litellm"
-  {{- if (include "carto.customCA.enabled" .) }}
+  {{- if (include "carto.trustedCACerts.enabled" .) }}
   # aiproxy python httpx requirement
-  SSL_CERT_FILE: {{ include "carto.customCA.configMapMountAbsolutePath" . | quote }}
+  SSL_CERT_FILE: {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   XDG_CACHE_HOME: "/app/cache"
 {{- end }} 

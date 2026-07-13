@@ -52,8 +52,8 @@ data:
   {{- end }}
   NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
   {{- end }}
-  {{- if (include "carto.customCA.enabled" .) }}
-  NODE_EXTRA_CA_CERTS: {{ include "carto.customCA.configMapMountAbsolutePath" . | quote }}
+  {{- if (include "carto.trustedCACerts.enabled" .) }}
+  NODE_EXTRA_CA_CERTS: {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   NODE_OPTIONS: {{ template "carto.aiApi.nodeOptions" . }}

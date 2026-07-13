@@ -290,9 +290,9 @@ spec:
               mountPath: {{ include "carto.redis.configMapMountDir" . }}
               readOnly: true
             {{- end }}
-            {{- if (include "carto.customCA.enabled" .) }}
-            - name: proxy-ssl-ca
-              mountPath: {{ include "carto.customCA.configMapMountDir" . }}
+            {{- if (include "carto.trustedCACerts.enabled" .) }}
+            - name: trusted-ca-certs
+              mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
               readOnly: true
             {{- end }}
             {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
@@ -334,10 +334,10 @@ spec:
           configMap:
             name: {{ include "carto.redis.configMapName" . }}
         {{- end }}
-        {{- if (include "carto.customCA.enabled" .) }}
-        - name: proxy-ssl-ca
+        {{- if (include "carto.trustedCACerts.enabled" .) }}
+        - name: trusted-ca-certs
           configMap:
-            name: {{ include "carto.customCA.configMapName" . }}
+            name: {{ include "carto.trustedCACerts.configMapName" . }}
         {{- end }}
         {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
         - name: feature-flags
