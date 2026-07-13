@@ -1,4 +1,4 @@
-{{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+{{- if or .Values.customCA .Values.externalProxy.sslCA }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -12,5 +12,5 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  {{ include "carto.proxy.configMapMountFilename" . }}: {{ .Values.externalProxy.sslCA | quote }}
+  {{ include "carto.proxy.configMapMountFilename" . }}: {{ include "carto.customCA.bundle" . | quote }}
 {{- end }}

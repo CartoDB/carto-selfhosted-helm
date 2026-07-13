@@ -1778,20 +1778,26 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `externalPostgresql.awsRdsRegion`                   | Region of the RDS PostgreSQL database in AWS. Needed when EKS Pod Identity is enabled                                                  | `""`              |
 | `externalPostgresql.aiProxyDatabaseName`            | Database name for aiProxy                                                                                                              | `aiproxy`         |
 
+### Custom CA certificates
+
+| Name       | Description                                                                                                                                                                                                                             | Value |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| `customCA` | Custom CA certificate(s) in PEM format to trust fleet-wide. May contain multiple concatenated PEM blocks. When set, a ConfigMap is mounted into every service and `NODE_EXTRA_CA_CERTS` points at it. Supersedes `externalProxy.sslCA`. | `""`  |
+
 ### External proxy configuration
 
-| Name                                  | Description                                                                                   | Value   |
-| ------------------------------------- | --------------------------------------------------------------------------------------------- | ------- |
-| `externalProxy.enabled`               | Whether the APIs will use an external proxy or not                                            | `false` |
-| `externalProxy.host`                  | Proxy host                                                                                    | `""`    |
-| `externalProxy.port`                  | Proxy port                                                                                    | `""`    |
-| `externalProxy.type`                  | Proxy type. Only HTTP and HTTPS proxies are supported                                         | `""`    |
-| `externalProxy.excludedDomains`       | List of domains that should not be proxied                                                    | `[]`    |
-| `externalProxy.sslRejectUnauthorized` | Whether or not verify the HTTPS proxy SSL certificate                                         | `true`  |
-| `externalProxy.sslCA`                 | CA for the proxy SSL certificate in case is self-signed or signed by a not well-known CA      | `""`    |
-| `externalProxy.sslCAConfigmap.name`   | Name of the pre-existent ConfigMap containing the `externalProxy.sslCAConfigmap.key`.         | `""`    |
-| `externalProxy.sslCAConfigmap.key`    | Key to find in `externalProxy.sslCAConfigmap.name` where the custom CA certificate is stored. | `""`    |
-| `externalProxy.connectionString`      | Connection string to the proxy                                                                | `""`    |
+| Name                                  | Description                                                                                                                                                                                                                                                 | Value   |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `externalProxy.enabled`               | Whether the APIs will use an external proxy or not                                                                                                                                                                                                          | `false` |
+| `externalProxy.host`                  | Proxy host                                                                                                                                                                                                                                                  | `""`    |
+| `externalProxy.port`                  | Proxy port                                                                                                                                                                                                                                                  | `""`    |
+| `externalProxy.type`                  | Proxy type. Only HTTP and HTTPS proxies are supported                                                                                                                                                                                                       | `""`    |
+| `externalProxy.excludedDomains`       | List of domains that should not be proxied                                                                                                                                                                                                                  | `[]`    |
+| `externalProxy.sslRejectUnauthorized` | Whether or not verify the HTTPS proxy SSL certificate                                                                                                                                                                                                       | `true`  |
+| `externalProxy.sslCA`                 | CA for the proxy SSL certificate in case is self-signed or signed by a not well-known CA. # DEPRECATED: use `customCA` instead. Still honoured and concatenated into the same trusted bundle during the transition, but prefer the global `customCA` value. | `""`    |
+| `externalProxy.sslCAConfigmap.name`   | Name of the pre-existent ConfigMap containing the `externalProxy.sslCAConfigmap.key`.                                                                                                                                                                       | `""`    |
+| `externalProxy.sslCAConfigmap.key`    | Key to find in `externalProxy.sslCAConfigmap.name` where the custom CA certificate is stored.                                                                                                                                                               | `""`    |
+| `externalProxy.connectionString`      | Connection string to the proxy                                                                                                                                                                                                                              | `""`    |
 
 ### Upgrade Check pre hook parameters
 

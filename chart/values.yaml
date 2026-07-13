@@ -5595,6 +5595,14 @@ externalPostgresql:
   awsRdsRegion: ""
   aiProxyDatabaseName: "aiproxy"
 
+## @section Custom CA certificates
+## Extra CA certificate(s) to trust fleet-wide, mounted into every service via `NODE_EXTRA_CA_CERTS`.
+## Use this to trust a private/self-signed CA for any external endpoint the app talks to over TLS
+## (e.g. an S3-compatible object store, a custom proxy, etc.) without needing an external proxy.
+##
+## @param customCA Custom CA certificate(s) in PEM format to trust fleet-wide. May contain multiple concatenated PEM blocks. When set, a ConfigMap is mounted into every service and `NODE_EXTRA_CA_CERTS` points at it. Supersedes `externalProxy.sslCA`.
+customCA: ""
+
 ## @section External proxy configuration
 ## Configuration for an external proxy provided by the client. Only HTTP and HTTPS proxies are supported
 externalProxy:
@@ -5610,7 +5618,7 @@ externalProxy:
   excludedDomains: []
   ## @param externalProxy.sslRejectUnauthorized Whether or not verify the HTTPS proxy SSL certificate
   sslRejectUnauthorized: true
-  ## @param externalProxy.sslCA CA for the proxy SSL certificate in case is self-signed or signed by a not well-known CA
+  ## @param externalProxy.sslCA CA for the proxy SSL certificate in case is self-signed or signed by a not well-known CA. # DEPRECATED: use `customCA` instead. Still honoured and concatenated into the same trusted bundle during the transition, but prefer the global `customCA` value.
   sslCA: ""
   ## @param externalProxy.sslCAConfigmap.name Name of the pre-existent ConfigMap containing the `externalProxy.sslCAConfigmap.key`.
   ## @param externalProxy.sslCAConfigmap.key Key to find in `externalProxy.sslCAConfigmap.name` where the custom CA certificate is stored.

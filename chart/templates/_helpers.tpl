@@ -1331,10 +1331,41 @@ Return the proxy connection string if the config does not include the complete U
 {{- end -}}
 
 {{/*
-Get the proxy config map name
+Return "true" when there is any custom CA to trust fleet-wide, from any source:
+the global `customCA` value, the (deprecated) `externalProxy.sslCA`, or a
+pre-existing ConfigMap via `externalProxy.sslCAConfigmap.name`. This is the
+single source of truth for whether the CA bundle ConfigMap is created and the
+`proxy-ssl-ca` volume/mount + `NODE_EXTRA_CA_CERTS` env are rendered. It is
+intentionally decoupled from `externalProxy.enabled` so a private-CA endpoint
+(e.g. an S3-compatible store) is trusted even without a proxy.
+*/}}
+{{- define "carto.customCA.enabled" -}}
+{{- if or .Values.customCA .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the concatenation of every inline custom CA PEM the chart manages, so a
+single `NODE_EXTRA_CA_CERTS` file can hold multiple certs. Order: the global
+`customCA` first, then the deprecated `externalProxy.sslCA` (kept working during
+the transition). Only covers inline sources written into the generated ConfigMap;
+`externalProxy.sslCAConfigmap.name` is mounted directly instead.
+*/}}
+{{- define "carto.customCA.bundle" -}}
+{{- $certs := list -}}
+{{- if .Values.customCA -}}{{- $certs = append $certs .Values.customCA -}}{{- end -}}
+{{- if .Values.externalProxy.sslCA -}}{{- $certs = append $certs .Values.externalProxy.sslCA -}}{{- end -}}
+{{- join "\n" $certs -}}
+{{- end -}}
+
+{{/*
+Get the proxy config map name. The chart generates its own ConfigMap
+(`<release>-externalproxy`) whenever there is inline CA content (`customCA` or
+`externalProxy.sslCA`); otherwise it points at the customer-provided ConfigMap.
 */}}
 {{- define "carto.proxy.configMapName" -}}
-{{- if .Values.externalProxy.sslCA -}}
+{{- if or .Values.customCA .Values.externalProxy.sslCA -}}
 {{- printf "%s-%s" .Release.Name "externalproxy" -}}
 {{- else if .Values.externalProxy.sslCAConfigmap.name -}}
 {{- printf "%s" .Values.externalProxy.sslCAConfigmap.name -}}
