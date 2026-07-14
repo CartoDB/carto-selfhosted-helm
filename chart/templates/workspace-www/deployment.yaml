@@ -167,7 +167,7 @@ spec:
               mountPath: /tmp
             - name: nginx-shared-snippets
               mountPath: /etc/nginx/conf.d/shared-snippets
-            {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+            {{- if eq (include "carto.featureFlags.enabled" .) "true" }}
             - name: feature-flags
               mountPath: {{ include "carto.featureFlags.configMapMountDir" . }}
               subPath: custom-feature-flags.yaml
@@ -188,7 +188,7 @@ spec:
             medium: Memory
         - name: tmp
           emptyDir: {}
-        {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+        {{- if eq (include "carto.featureFlags.enabled" .) "true" }}
         - name: feature-flags
           configMap:
             name: {{ template "carto.featureFlags.configMapName" . }}

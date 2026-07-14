@@ -1,4 +1,4 @@
-{{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+{{- if eq (include "carto.featureFlags.enabled" .) "true" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -14,5 +14,5 @@ metadata:
 data:
   custom-feature-flags.yaml: |-
     featureFlagsOverrides:
-{{ .Values.cartoConfigValues.featureFlagsOverrides | toYaml | indent 6 }}
+{{ include "carto.featureFlags.effectiveOverrides" . | indent 6 }}
 {{- end }}

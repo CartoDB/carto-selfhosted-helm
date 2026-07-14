@@ -15,7 +15,7 @@ data:
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
-  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+  {{- if eq (include "carto.featureFlags.enabled" .) "true" }}
   CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
   {{- end }}
   {{- if .Values.replicated.enabled }}

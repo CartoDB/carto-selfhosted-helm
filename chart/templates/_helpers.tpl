@@ -1381,16 +1381,49 @@ Return the directory where the custom feature flags config file will be mounted
 {{- end -}}
 
 {{/*
+Auto-enable 2024-private-buckets when an S3-compatible endpoint is set: private
+main buckets need it for markers/branding to resolve (compat-analysis D-ACL).
+Safe because an S3-compatible deployment is a fresh install with no legacy
+public-URL maps to migrate. An explicit operator override for the flag wins.
+*/}}
+{{- define "carto.featureFlags.effectiveOverrides" -}}
+{{- $overrides := .Values.cartoConfigValues.featureFlagsOverrides | default list -}}
+{{- $result := $overrides -}}
+{{- if .Values.appConfigValues.s3Endpoint -}}
+{{- $names := list -}}
+{{- range $overrides -}}{{- $names = append $names .name -}}{{- end -}}
+{{- if not (has "2024-private-buckets" $names) -}}
+{{- $result = append $result (dict "name" "2024-private-buckets" "value" true) -}}
+{{- end -}}
+{{- end -}}
+{{- $result | toYaml -}}
+{{- end -}}
+
+{{/*
+Whether any feature-flag override is in effect (operator-provided or the
+S3-compatible auto-injected one). Emits "true" or nothing; use with `eq`.
+*/}}
+{{- define "carto.featureFlags.enabled" -}}
+{{- if or .Values.cartoConfigValues.featureFlagsOverrides .Values.appConfigValues.s3Endpoint -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the list of overridden feature flags as a comma-separated string
 */}}
 {{- define "carto.featureFlags.overriddenFeatureFlags" -}}
-{{- $featureFlags := .Values.cartoConfigValues.featureFlagsOverrides -}}
+{{- $overrides := .Values.cartoConfigValues.featureFlagsOverrides | default list -}}
 {{- $ffNames := list -}}
-{{- range $featureFlags -}}
+{{- range $overrides -}}
 {{- $ffNames = append $ffNames .name -}}
 {{- end -}}
-{{- $nameList := join "," $ffNames -}}
-{{- $nameList -}}
+{{- if .Values.appConfigValues.s3Endpoint -}}
+{{- if not (has "2024-private-buckets" $ffNames) -}}
+{{- $ffNames = append $ffNames "2024-private-buckets" -}}
+{{- end -}}
+{{- end -}}
+{{- join "," $ffNames -}}
 {{- end -}}
 
 {{/*
