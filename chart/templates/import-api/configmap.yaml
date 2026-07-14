@@ -134,11 +134,5 @@ data:
   {{- end }}
   {{- if (include "carto.trustedCACerts.enabled" .) }}
   NODE_EXTRA_CA_CERTS: {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . | quote }}
-  ## GDAL/ogr2ogr reads endpoints directly over libcurl (e.g. an S3-compatible store via /vsicurl/),
-  ## not Node's TLS stack. GDAL_HTTP_CAPATH maps to CURLOPT_CAPATH, which OpenSSL searches IN ADDITION
-  ## TO the system bundle (already pointed at by CURL_CA_BUNDLE baked into the image), so both public-
-  ## and private-CA endpoints stay trusted. The directory holds the hash-named symlinks produced by
-  ## the `trusted-ca-rehash` initContainer, which rehashes the private CA into a shared emptyDir.
-  GDAL_HTTP_CAPATH: "/usr/src/certs/trusted-ca-capath"
   {{- end }}
 {{- end }}

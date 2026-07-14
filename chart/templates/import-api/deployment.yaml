@@ -69,34 +69,6 @@ spec:
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
-        {{- if (include "carto.trustedCACerts.enabled" .) }}
-        ## Rehash the trusted private CA into a writable emptyDir so GDAL/ogr2ogr can consume it via
-        ## GDAL_HTTP_CAPATH (CURLOPT_CAPATH). CAPATH needs hash-named symlinks (openssl rehash), which
-        ## can't be created in the read-only mounted ConfigMap. Uses the service image (has openssl +
-        ## the system CA bundle) and mirrors its securityContext so the emptyDir is owned by the same
-        ## non-root user the main container runs as.
-        - name: trusted-ca-rehash
-          image: {{ template "carto.importApi.image" . }}
-          imagePullPolicy: {{ .Values.importApi.image.pullPolicy }}
-          {{- if .Values.importApi.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.importApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}
-          {{- end }}
-          command:
-            - /bin/sh
-            - -ec
-            - |
-              cp {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . }} /tmp/trusted-ca-capath/
-              openssl rehash /tmp/trusted-ca-capath || c_rehash /tmp/trusted-ca-capath
-          {{- if .Values.importApi.resources }}
-          resources: {{- toYaml .Values.importApi.resources | nindent 12 }}
-          {{- end }}
-          volumeMounts:
-            - name: trusted-ca-certs
-              mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
-              readOnly: true
-            - name: trusted-ca-capath
-              mountPath: /tmp/trusted-ca-capath
-        {{- end }}
         {{- if .Values.importApi.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.importApi.initContainers "context" $) | nindent 8 }}
         {{- end }}
@@ -233,9 +205,6 @@ spec:
             - name: trusted-ca-certs
               mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
               readOnly: true
-            - name: trusted-ca-capath
-              mountPath: /usr/src/certs/trusted-ca-capath
-              readOnly: true
             {{- end }}
             {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
             - name: feature-flags
@@ -278,8 +247,6 @@ spec:
         - name: trusted-ca-certs
           configMap:
             name: {{ include "carto.trustedCACerts.configMapName" . }}
-        - name: trusted-ca-capath
-          emptyDir: {}
         {{- end }}
         {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
         - name: feature-flags
