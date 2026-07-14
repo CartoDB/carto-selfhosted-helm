@@ -541,7 +541,7 @@ Return customer values to use in preflights and support-bundle
   - name: WORKSPACE_IMPORTS_STORAGE_ACCOUNT
     value: {{ .Values.appConfigValues.azureStorageAccount | quote }}
   {{- end }}
-  {{- if and (not .Values.externalProxy.enabled) (include "carto.trustedCACerts.enabled" .) }}
+  {{- if (include "carto.trustedCACerts.enabled" .) }}
   - name: NODE_EXTRA_CA_CERTS
     value: {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . | quote }}
   {{- end }}
@@ -565,10 +565,6 @@ Return customer values to use in preflights and support-bundle
     value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   - name: no_proxy
     value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
-  {{- end }}
-  {{- if (include "carto.trustedCACerts.enabled" .) }}
-  - name: NODE_EXTRA_CA_CERTS
-    value: {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   {{- end }}
   {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
