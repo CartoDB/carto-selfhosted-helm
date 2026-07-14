@@ -91,9 +91,6 @@ Validate auth-api (internal authentication) config
 {{- if and (eq .Values.authApi.protocol "saml") (not .Values.authApi.saml.metadataUrl) (not (trim (default "" .Values.authApi.saml.metadataXml))) -}}
 {{- $messages = append $messages "CARTO: Missing auth-api SAML configuration\n\nIf authApi.protocol=saml you need to set one of authApi.saml.metadataUrl or authApi.saml.metadataXml" -}}
 {{- end -}}
-{{- if not .Values.authApi.allowedOrigins -}}
-{{- $messages = append $messages "CARTO: Missing auth-api allowed origins\n\nIf appConfigValues.disconnectedEnabled=true you need to set authApi.allowedOrigins with the browser origins allowed to call auth-api (e.g. https://<appConfigValues.selfHostedDomain>)" -}}
-{{- end -}}
 {{- if and (not .Values.authApi.internalServiceToken.value) (not .Values.authApi.internalServiceToken.existingSecret.name) -}}
 {{- $messages = append $messages "CARTO: Missing auth-api internal service token\n\nIf appConfigValues.disconnectedEnabled=true you need to set one of authApi.internalServiceToken.value or authApi.internalServiceToken.existingSecret" -}}
 {{- end -}}

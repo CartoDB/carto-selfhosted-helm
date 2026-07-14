@@ -6608,7 +6608,7 @@ authApi:
   ## @param authApi.accountsApiUrl Base URL of the accounts-api service that auth-api uses for quota checks and SSO group sync
   ##
   accountsApiUrl: ""
-  ## @param authApi.allowedOrigins List of origins allowed by auth-api CORS (e.g. `https://carto.my-company.com`)
+  ## @param authApi.allowedOrigins List of origins allowed by auth-api CORS. Empty defaults to the platform origin (`https://<appConfigValues.selfHostedDomain>`)
   ##
   allowedOrigins: []
   ## OIDC federation configuration. Only used when `authApi.protocol` is `oidc`

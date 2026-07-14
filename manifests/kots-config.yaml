@@ -1099,10 +1099,12 @@ spec:
         - name: authApiInternalServiceToken
           title: Internal service token
           help_text: |-
-            Shared secret between auth-api and accounts-api internal endpoints.
+            Shared secret between auth-api and accounts-api internal endpoints. Auto-generated.
           type: password
-          required: true
+          hidden: true
+          readonly: false
           when: '{{repl (ConfigOptionEquals "disconnectedEnabled" "1") }}'
+          value: '{{repl RandomString 32 }}'
         - name: authApiAllowedOrigins
           title: Allowed CORS origins
           help_text: |-
