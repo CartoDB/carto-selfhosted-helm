@@ -406,12 +406,6 @@ spec:
         trustedCACerts:
           value: |
             repl{{- ConfigOption "trustedCaCertsValue" | nindent 12 }}
-    - when: '{{repl not (empty (ConfigOption "trustedCaCertsExistingConfigmapName")) }}'
-      recursiveMerge: true
-      values:
-        trustedCACerts:
-          existingConfigmap:
-            name: '{{repl ConfigOption "trustedCaCertsExistingConfigmapName" }}'
     - when: '{{repl ConfigOptionEquals "ssoEnabled" "1"}}'
       recursiveMerge: true
       values:

@@ -744,12 +744,7 @@ spec:
           title: Trusted CA certificate(s)
           type: textarea
           help_text: |-
-            PEM-encoded CA certificate(s) to trust for outbound TLS connections, i.e. verifying the servers CARTO connects to when they are signed by a private or self-signed CA (for example a private-CA S3-compatible object store). You may paste multiple concatenated PEM blocks. Leave empty if not needed.
-        - name: trustedCaCertsExistingConfigmapName
-          title: Trusted CA ConfigMap name
-          type: text
-          help_text: |-
-            Alternatively, reference a pre-existing ConfigMap in the release namespace holding the CA bundle (key `ca.crt`). Ignored when a certificate is pasted above.
+            PEM-encoded CA certificate(s) added to the standard trusted CAs (extends, does not replace them) for outbound TLS — verifying servers CARTO connects to that are signed by a private or self-signed CA (e.g. a private-CA S3-compatible store). Paste multiple concatenated PEM blocks if needed. Leave empty if not needed.
 
         ## SSO
         - name: ssoEnabled
