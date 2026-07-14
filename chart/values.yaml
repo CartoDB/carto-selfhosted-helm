@@ -5456,6 +5456,20 @@ internalRedis:
   ##
   initContainers: {}
 
+  ## Persistence for the internal-valkey data. Only active in self-hosted disconnected mode
+  ## (appConfigValues.disconnectedEnabled=true), where valkey stores the authentication sessions
+  ## and must survive pod restarts. Ignored otherwise: valkey stays an ephemeral cache
+  ## @param internalRedis.persistence.size Size of the internal-valkey data PVC (disconnected mode only)
+  ## @param internalRedis.persistence.storageClass Storage class of the internal-valkey data PVC. Empty uses the cluster default provisioner, "-" disables dynamic provisioning
+  ## @param internalRedis.persistence.existingClaim Name of an existing PVC to use for the internal-valkey data instead of creating one
+  ## @param internalRedis.persistence.annotations Additional annotations for the internal-valkey data PVC
+  ##
+  persistence:
+    size: 8Gi
+    storageClass: ""
+    existingClaim: ""
+    annotations: {}
+
   ## @section internalRedis Service Parameters
   ##
   service:

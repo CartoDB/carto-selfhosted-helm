@@ -1215,6 +1215,22 @@ NOTE: The template name `carto.redis.image` is kept for backward compatibility.
 {{- end -}}
 
 {{/*
+Whether the in-cluster valkey must persist its data. In disconnected mode valkey is the auth
+session store, not just a cache, so durability is part of the mode rather than a separate toggle.
+Returns "true" when enabled, empty string (falsy) otherwise.
+*/}}
+{{- define "carto.redis.persistenceEnabled" -}}
+{{- if and (include "carto.disconnected.enabled" .) .Values.internalRedis.enabled -}}true{{- end -}}
+{{- end -}}
+
+{{/*
+Name of the PVC backing the in-cluster valkey data in disconnected mode.
+*/}}
+{{- define "carto.redis.pvcName" -}}
+{{- .Values.internalRedis.persistence.existingClaim | default (printf "%s-data" (include "carto.redis.fullname" .)) -}}
+{{- end -}}
+
+{{/*
 Add environment variables to configure database values.
 Return the hostname that the rest of the CARTO components should use
 to reach Valkey (formerly Redis). The env var is still named REDIS_HOST.
