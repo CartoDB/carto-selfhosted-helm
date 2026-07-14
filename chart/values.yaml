@@ -5602,13 +5602,11 @@ externalPostgresql:
 ## Provide the certificate inline via `trustedCACerts.value`, or reference a pre-existing ConfigMap
 ## via `trustedCACerts.existingConfigmap`. Set at most one of the two.
 ##
-## When set, imports (import-api/import-worker) also point GDAL/ogr2ogr at this bundle via
-## `GDAL_HTTP_CAINFO` so it trusts the same private CA when reading endpoints directly over
-## libcurl (e.g. an S3-compatible store via /vsicurl/). NOTE: unlike Node's `NODE_EXTRA_CA_CERTS`
-## (which appends), `GDAL_HTTP_CAINFO` REPLACES libcurl's default system bundle — so once you set
-## a trusted CA, GDAL trusts ONLY this bundle for imports. This is exactly right for private-CA /
-## air-gapped endpoints; if imports must ALSO reach public-CA HTTPS endpoints, concatenate the
-## public roots into this bundle alongside your private CA.
+## When set, imports (import-api/import-worker) also trust the same private CA in GDAL/ogr2ogr, which
+## reads endpoints directly over libcurl (e.g. an S3-compatible store via /vsicurl/) rather than
+## Node's TLS stack. An initContainer rehashes the CA into an emptyDir exposed via `GDAL_HTTP_CAPATH`
+## (CURLOPT_CAPATH), which OpenSSL searches IN ADDITION TO the system bundle — so both public-CA and
+## private-CA endpoints stay trusted, no need to concatenate the public roots into your bundle.
 ##
 ## @param trustedCACerts.value Inline PEM CA certificate(s) to trust for OUTBOUND TLS (verifying servers CARTO connects to, e.g. a private-CA S3-compatible endpoint). May contain multiple concatenated PEM blocks. One of `trustedCACerts.value` or `trustedCACerts.existingConfigmap` may be set.
 ## @param trustedCACerts.existingConfigmap.name Name of a pre-existing ConfigMap holding the CA bundle. Ignored if `trustedCACerts.value` is set.
