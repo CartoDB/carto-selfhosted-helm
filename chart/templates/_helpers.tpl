@@ -1381,10 +1381,14 @@ Return the directory where the custom feature flags config file will be mounted
 {{- end -}}
 
 {{/*
-Auto-enable 2024-private-buckets when an S3-compatible endpoint is set: private
-main buckets need it for markers/branding to resolve (compat-analysis D-ACL).
-Safe because an S3-compatible deployment is a fresh install with no legacy
-public-URL maps to migrate. An explicit operator override for the flag wins.
+Effective feature-flag overrides = the operator-provided list plus any flags the
+chart auto-enables from deployment config. An auto-enabled flag never clobbers an
+explicit operator override of the same flag.
+
+Today the only auto-enabled flag is 2024-private-buckets, switched on when an
+S3-compatible endpoint is set: private main buckets need it for markers/branding
+to resolve (compat-analysis D-ACL), and it's safe because such a deployment is a
+fresh install with no legacy public-URL maps to migrate.
 */}}
 {{- define "carto.featureFlags.effectiveOverrides" -}}
 {{- $overrides := .Values.cartoConfigValues.featureFlagsOverrides | default list -}}

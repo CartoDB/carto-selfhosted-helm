@@ -206,7 +206,7 @@ spec:
               mountPath: {{ include "carto.proxy.configMapMountDir" . }}
               readOnly: true
             {{- end }}
-            {{- if eq (include "carto.featureFlags.enabled" .) "true" }}
+            {{- if (include "carto.featureFlags.enabled" .) }}
             - name: feature-flags
               mountPath: {{ include "carto.featureFlags.configMapMountDir" . }}
               subPath: custom-feature-flags.yaml
@@ -248,7 +248,7 @@ spec:
           configMap:
             name: {{ include "carto.proxy.configMapName" . }}
         {{- end }}
-        {{- if eq (include "carto.featureFlags.enabled" .) "true" }}
+        {{- if (include "carto.featureFlags.enabled" .) }}
         - name: feature-flags
           configMap:
             name: {{ template "carto.featureFlags.configMapName" . }}
