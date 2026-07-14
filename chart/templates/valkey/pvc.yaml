@@ -1,0 +1,34 @@
+{{- /*
+  Valkey data PVC
+  Rendered only in disconnected mode, where valkey stores the authentication sessions and must
+  survive pod restarts. Kept on uninstall (helm.sh/resource-policy) so sessions are not silently
+  destroyed, mirroring the retention behavior of StatefulSet volumeClaimTemplates.
+*/ -}}
+{{- if and (include "carto.redis.persistenceEnabled" .) (not .Values.internalRedis.persistence.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "carto.redis.pvcName" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: valkey
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
+    {{- end }}
+  annotations:
+    helm.sh/resource-policy: keep
+    {{- if .Values.internalRedis.persistence.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.persistence.annotations "context" $) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" $) | nindent 4 }}
+    {{- end }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.internalRedis.persistence.size | quote }}
+  {{- include "common.storage.class" (dict "persistence" .Values.internalRedis.persistence "global" .Values.global) | nindent 2 }}
+{{- end }}

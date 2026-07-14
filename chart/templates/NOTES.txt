@@ -15,6 +15,14 @@ It's no longer supported and you should use an external PostgreSQL instance inst
 
 {{- end }}
 
+{{- if and (include "carto.disconnected.enabled" .) (not .Values.internalRedis.enabled) }}
+
+WARNING: Disconnected mode stores the authentication sessions in your external Valkey / Redis
+instance. Make sure it has persistence enabled (AOF recommended); otherwise every user is
+logged out whenever that instance restarts.
+
+{{- end }}
+
 ** Please be patient while the chart is being deployed **
 
 ** Did you check our recommendations to customize your app in production mode? **
