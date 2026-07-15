@@ -43,9 +43,6 @@ data:
   https_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
   GRPC_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   grpc_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
-  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
-  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
-  {{- end }}
   {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
@@ -54,6 +51,9 @@ data:
   NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
+  {{- end }}
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   NODE_OPTIONS: {{ template "carto.aiApi.nodeOptions" . }}
