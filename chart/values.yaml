@@ -547,7 +547,7 @@ accountsWww:
   ## @param accountsWww.image.pullSecrets accounts-www image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: accounts-www
     ## Specify a custom image tag
     tag: ""
@@ -879,7 +879,7 @@ importApi:
   ## @param importApi.image.pullSecrets import-api image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: import-api
     ## Specify a custom image tag
     tag: ""
@@ -1208,7 +1208,7 @@ importWorker:
   ## @param importWorker.image.pullSecrets import-worker image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: import-api
     ## Specify a custom image tag
     tag: ""
@@ -1490,7 +1490,7 @@ ldsApi:
   ## @param ldsApi.image.pullSecrets lds-api image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: lds-api
     ## Specify a custom image tag
     tag: ""
@@ -1819,7 +1819,7 @@ publicEventsApi:
   ## @param publicEventsApi.image.pullSecrets public-events-api image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: public-events-api
     ## Specify a custom image tag
     tag: ""
@@ -2148,7 +2148,7 @@ mapsApi:
   ## @param mapsApi.image.pullSecrets maps-api image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: maps-api
     ## Specify a custom image tag
     tag: ""
@@ -2477,7 +2477,7 @@ sqlWorker:
   ## @param sqlWorker.image.pullSecrets sql-worker image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: maps-api
     ## Specify a custom image tag
     tag: ""
@@ -2739,7 +2739,7 @@ router:
   ## @param router.image.pullSecrets router image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: router/router-http
     ## Specify a custom image tag
     tag: ""
@@ -3190,7 +3190,7 @@ httpCache:
   ## @param httpCache.image.pullSecrets http-cache image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: http-cache
     ## Specify a custom image tag
     tag: ""
@@ -3517,7 +3517,7 @@ notifier:
   ## @param notifier.image.pullSecrets notifier image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: notifier
     ## Specify a custom image tag
     tag: ""
@@ -3842,7 +3842,7 @@ cdnInvalidatorSub:
   ## @param cdnInvalidatorSub.image.pullSecrets cdn-invalidator-sub image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: consumers/cdn-invalidator-sub
     ## Specify a custom image tag
     tag: ""
@@ -4161,7 +4161,7 @@ workspaceApi:
   ## @param workspaceApi.image.pullSecrets workspace-api image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: workspace-api
     ## Specify a custom image tag
     tag: ""
@@ -4491,7 +4491,7 @@ workspaceSubscriber:
   ## @param workspaceSubscriber.image.pullSecrets workspace-subscriber image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: workspace-api
     ## Specify a custom image tag
     tag: ""
@@ -4762,7 +4762,7 @@ workspaceWww:
   ## @param workspaceWww.image.pullSecrets workspace-www image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: workspace-www
     ## Specify a custom image tag
     tag: ""
@@ -5094,7 +5094,7 @@ workspaceMigrations:
   ## @param workspaceMigrations.image.pullSecrets workspace-db image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: workspace-db
     ## Specify a custom image tag
     tag: ""
@@ -5162,7 +5162,7 @@ tenantRequirementsChecker:
   ## @param tenantRequirementsChecker.image.pullSecrets tenant-requirements-checker image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: tenant-requirements-checker
     tag: ""
     pullPolicy: Always
@@ -5232,7 +5232,7 @@ internalRedis:
   ##
   enabled: true
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: valkey
     tag: ""
     pullPolicy: IfNotPresent
@@ -5643,7 +5643,7 @@ upgradeCheck:
   ## @param upgradeCheck.image.pullSecrets upgradeCheck image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: router/router-http
     ## Specify a custom image tag
     tag: ""
@@ -5718,7 +5718,7 @@ routerMetrics:
   ## @param routerMetrics.image.pullSecrets routerMetrics image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: router/router-metrics
     ## Specify a custom image tag
     tag: ""
@@ -5903,7 +5903,7 @@ aiApi:
   ## @param aiApi.image.pullSecrets ai-api image pull secrets
   ##
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: ai-api
     ## Specify a custom image tag
     tag: ""
@@ -6240,7 +6240,7 @@ aiProxy:
   ## @param aiProxy.image.pullPolicy aiProxy image pull policy
   ## @param aiProxy.image.pullSecrets aiProxy image pull secrets
   image:
-    registry: gcr.io/carto-onprem-artifacts
+    registry: us-docker.pkg.dev/carto-onprem-artifacts/gcr.io
     repository: litellm
     ## Specify a custom image tag
     tag: ""
