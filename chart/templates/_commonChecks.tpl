@@ -6,7 +6,12 @@ Return common collectors for preflights and support-bundle
       collectorName: tenant-requirements-check
       name: tenant-requirements-check
       namespace: {{ .Release.Namespace | quote }}
-      timeout: 180s
+      {{/*
+      The pod runs every validator sequentially and only emits results once the whole pass
+      finishes, so this budget must cover image pull plus the slowest full run. Keep headroom:
+      too tight and transient image-pull/egress latency trips a false timeout that blocks install.
+      */}}
+      timeout: 300s
       podSpec:
         {{- if include "carto.podIdentity.enabled" . }}
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
