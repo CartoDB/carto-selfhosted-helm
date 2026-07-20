@@ -344,6 +344,13 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   {{- if not .Values.internalRedis.enabled }}
   {{- $_ := set $preflightsDict "RedisValidator" (list "Check_redis_connection" "Check_redis_multiple_databases_support") }}
   {{- end }}
+  {{/*
+  Disconnected mode requires the pre-created accounts database (same PostgreSQL and credentials
+  as the workspace one, separate database); fail early if it is missing or unreachable.
+  */}}
+  {{- if (include "carto.disconnected.enabled" .) }}
+  {{- $_ := set $preflightsDict "AccountsDatabaseValidator" (list "Check_accounts_database_connection") -}}
+  {{- end }}
   {{- range $preflight, $preflightChecks  := $preflightsDict }}
   {{- range $preflightCheckName := $preflightChecks }}
   - jsonCompare:
@@ -501,6 +508,10 @@ Return customer values to use in preflights and support-bundle
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
   - name: WORKSPACE_POSTGRES_SSL_CA
     value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
+  {{- end }}
+  {{- if (include "carto.disconnected.enabled" .) }}
+  - name: ACCOUNTS_POSTGRES_DB
+    value: {{ .Values.externalPostgresql.accountsDatabaseName | quote }}
   {{- end }}
   - name: WORKSPACE_TENANT_ID
     value: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
