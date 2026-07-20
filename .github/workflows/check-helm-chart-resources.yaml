@@ -3,6 +3,19 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    paths:
+      - chart/values.yaml
+permissions:
+  contents: read
+  pull-requests: write
+env:
+  # Mirror of the Gatekeeper `container-must-have-limits` ceiling in
+  # CartoDB/gatekeeper-selfhosted-kubernetes → gatekeeper/constraints/psp-container-limits.yaml.
+  # Bump these whenever that constraint changes. Components above this ceiling are
+  # rejected at admission (FailedCreate) on clusters that enforce Gatekeeper.
+  GATEKEEPER_MAX_CPU_M: "4000"
+  GATEKEEPER_MAX_MEMORY_MI: "12288"
 jobs:
   check-helm-resources-changed:
     runs-on: ubuntu-24.04
@@ -17,19 +30,45 @@ jobs:
         id: check-helm-resources-diff
         continue-on-error: true
         run: |
-          export DIFF=$(git diff --unified=0 @~..@ chart/values.yaml | grep -E "[0-9]+Mi|[0-9]+m")
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin "${{ github.base_ref }}" --depth=1 >/dev/null 2>&1 || true
+            DIFF=$(git diff --unified=0 "origin/${{ github.base_ref }}"...HEAD -- chart/values.yaml | grep -E "[0-9]+Mi|[0-9]+m" || true)
+          else
+            DIFF=$(git diff --unified=0 @~..@ chart/values.yaml | grep -E "[0-9]+Mi|[0-9]+m" || true)
+          fi
           if [ -n "$DIFF" ]; then
             echo "resources-changed=true" >> $GITHUB_OUTPUT
           else
             echo "resources-changed=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Check Gatekeeper limit ceiling
+        id: gatekeeper
+        continue-on-error: true
+        env:
+          REPORT_FILE: gatekeeper-report.md
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 .github/scripts/check-gatekeeper-limits.py
+
+      - name: Comment on PR when a component exceeds the Gatekeeper ceiling
+        if: github.event_name == 'pull_request' && steps.gatekeeper.outputs.exceeds == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr comment "${{ github.event.pull_request.number }}" --body-file gatekeeper-report.md
+
       - name: Slack notification
-        if: steps.check-helm-resources-diff.outputs.resources-changed == 'true'
+        if: steps.check-helm-resources-diff.outputs.resources-changed == 'true' || steps.gatekeeper.outputs.exceeds == 'true'
         env:
           SLACK_CHANNEL: C06GJA56C5S # selfhosted-internal
+          EXCEEDS: ${{ steps.gatekeeper.outputs.exceeds }}
         run: |
-          curl -F "text=:warning: Hey <!here>! Self Hosted Helm Chart requested resources have changed. Check that the documentation is updated with the new values!" \
+          if [ "${EXCEEDS}" = "true" ]; then
+            TEXT=":rotating_light: Hey <!here>! A Self-Hosted Helm Chart component now *exceeds the Gatekeeper container-limits ceiling*. You MUST raise the ceiling in gatekeeper-selfhosted-kubernetes (gatekeeper/constraints/psp-container-limits.yaml) and get it applied to gke-infra / gke-deds, or the pod is rejected at admission (FailedCreate) and the Deployment wedges at 0 replicas. See the PR comment for the offending component(s)."
+          else
+            TEXT=":warning: Hey <!here>! Self Hosted Helm Chart requested resources have changed. Check that the documentation is updated with the new values — and that no component exceeds the Gatekeeper container-limits ceiling (if it does, raise it in gatekeeper-selfhosted-kubernetes before release)."
+          fi
+          curl -F "text=${TEXT}" \
            -F "channel=${SLACK_CHANNEL}" \
            -H "Authorization: Bearer ${{ secrets.SLACK_KEY }}" \
            -X POST https://slack.com/api/chat.postMessage
