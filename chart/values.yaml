@@ -6636,6 +6636,10 @@ authApi:
   ## @param authApi.allowedOrigins List of origins allowed by auth-api CORS. Empty defaults to the platform origin (`https://<appConfigValues.selfHostedDomain>`)
   ##
   allowedOrigins: []
+  ## @param authApi.spaClient.redirectUris Redirect URIs registered on the boot-seeded platform SPA client. Empty defaults to `https://<appConfigValues.selfHostedDomain>/callback`
+  ##
+  spaClient:
+    redirectUris: []
   ## OIDC federation configuration. Only used when `authApi.protocol` is `oidc`
   oidc:
     ## @param authApi.oidc.issuerUrl Issuer URL of the external OIDC identity provider

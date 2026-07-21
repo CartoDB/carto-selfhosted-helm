@@ -20,6 +20,7 @@ data:
   CARTO_AUTH_NAMESPACE: "http://app.carto.com"
   CARTO_AUTH_PUBLIC_BASE_URL: {{ include "carto.authApi.publicBaseUrl" . | quote }}
   CARTO_AUTH_ALLOWED_ORIGINS: {{ default (printf "https://%s" .Values.appConfigValues.selfHostedDomain) (join "," .Values.authApi.allowedOrigins) | quote }}
+  CARTO_SPA_REDIRECT_URIS: {{ default (printf "https://%s/callback" .Values.appConfigValues.selfHostedDomain) (join "," .Values.authApi.spaClient.redirectUris) | quote }}
   CARTO_ORG_ID: {{ .Values.authApi.orgId | quote }}
   CARTO_ACCOUNTS_API_URL: {{ include "carto.authApi.accountsApiUrl" . | quote }}
   {{- if eq .Values.authApi.protocol "oidc" }}

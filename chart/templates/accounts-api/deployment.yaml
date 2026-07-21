@@ -89,6 +89,14 @@ spec:
           args:
             - -ec
             - |
+              export PGHOST="$ACCOUNTS_POSTGRES_HOST" PGPORT="$ACCOUNTS_POSTGRES_PORT" \
+                PGDATABASE="$ACCOUNTS_POSTGRES_DB" PGUSER="$ACCOUNTS_POSTGRES_USER" \
+                PGPASSWORD="$ACCOUNTS_POSTGRES_PASSWORD" PGSSLMODE="$ACCOUNTS_POSTGRES_SSL_MODE"
+              # The migration chain assumes the pre-existing SaaS schema; a fresh disconnected
+              # database needs the frozen baseline seeded before db-migrate can run.
+              if [ "$(psql -tAc "SELECT to_regclass('public.accounts') IS NOT NULL")" != "t" ]; then
+                psql -v ON_ERROR_STOP=1 -v db_user="$ACCOUNTS_POSTGRES_USER" -f init/scripts/03_ddl.sql
+              fi
               ../node_modules/db-migrate/bin/db-migrate up
           {{- end }}
           env:
