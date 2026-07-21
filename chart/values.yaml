@@ -15,6 +15,8 @@ appConfigValues:
   aiFeaturesEnabled: false
   ## @param appConfigValues.publicEventsApiEnabled Enable the public events API
   publicEventsApiEnabled: false
+  ## @param appConfigValues.disconnectedEnabled Enable the self-hosted disconnected mode: deploys the internal authentication service (auth-api) and the in-cluster accounts stack, and switches every backend service to internal authentication
+  disconnectedEnabled: false
   ## @param appConfigValues.httpCacheEnabled Enable the internal httpCache
   httpCacheEnabled: true
   ## @param appConfigValues.importAwsRoleArn ARN Role to be used to import files from the bucket
@@ -5465,6 +5467,20 @@ internalRedis:
   ##
   initContainers: {}
 
+  ## Persistence for the internal-valkey data. Only active in self-hosted disconnected mode
+  ## (appConfigValues.disconnectedEnabled=true), where valkey stores the authentication sessions
+  ## and must survive pod restarts. Ignored otherwise: valkey stays an ephemeral cache
+  ## @param internalRedis.persistence.size Size of the internal-valkey data PVC (disconnected mode only)
+  ## @param internalRedis.persistence.storageClass Storage class of the internal-valkey data PVC. Empty uses the cluster default provisioner, "-" disables dynamic provisioning
+  ## @param internalRedis.persistence.existingClaim Name of an existing PVC to use for the internal-valkey data instead of creating one
+  ## @param internalRedis.persistence.annotations Additional annotations for the internal-valkey data PVC
+  ##
+  persistence:
+    size: 8Gi
+    storageClass: ""
+    existingClaim: ""
+    annotations: {}
+
   ## @section internalRedis Service Parameters
   ##
   service:
@@ -5585,6 +5601,7 @@ internalPostgresql:
 ## @param externalPostgresql.awsEksPodIdentityEnabled Enable EKS Pod Identity authentication for the external postgresql
 ## @param externalPostgresql.awsRdsRegion Region of the RDS PostgreSQL database in AWS. Needed when EKS Pod Identity is enabled
 ## @param externalPostgresql.aiProxyDatabaseName Database name for aiProxy
+## @param externalPostgresql.accountsDatabaseName Database name for the accounts model and internal-auth schema (self-hosted disconnected mode only). Lives on the same PostgreSQL and credentials as the main CARTO database and must be created beforehand, like the aiProxy one
 ##
 externalPostgresql:
   host: localhost
@@ -5605,6 +5622,9 @@ externalPostgresql:
   awsEksPodIdentityEnabled: false
   awsRdsRegion: ""
   aiProxyDatabaseName: "aiproxy"
+  ## The accounts database rides the main PostgreSQL on purpose: one instance, one service user,
+  ## separate database (industry-standard default — Keycloak/ZITADEL ship the same shape).
+  accountsDatabaseName: "accounts"
 
 ## @section External proxy configuration
 ## Configuration for an external proxy provided by the client. Only HTTP and HTTPS proxies are supported
@@ -6552,3 +6572,1090 @@ aiProxy:
     ## @param aiProxy.service.extraPorts Extra ports to expose in aiProxy service (normally used with the `sidecars` value)
     ##
     extraPorts: []
+
+## @section auth-api Deployment Parameters
+##
+authApi:
+  ##
+  ## auth-api image
+  ## @param authApi.image.registry auth-api image registry
+  ## @param authApi.image.repository auth-api image repository
+  ## @param authApi.image.tag auth-api image tag (immutable tags are recommended)
+  ## @param authApi.image.pullPolicy auth-api image pull policy
+  ## @param authApi.image.pullSecrets auth-api image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: auth-api
+    ## Specify a custom image tag
+    tag: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param authApi.replicaCount Number of auth-api replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param authApi.containerPorts.http auth-api HTTP container port
+  ##
+  containerPorts:
+    http: 3000
+  ## @param authApi.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeProcessMaxOldSpacePercentage: 75
+  ## @param authApi.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  defaultNodeProcessMaxOldSpace: 768
+  ## @param authApi.protocol Protocol used to federate authentication to the external identity provider. Allowed values: `oidc` or `saml`
+  ##
+  protocol: ""
+  ## @param authApi.publicBaseUrl External base URL where auth-api is exposed. If empty, `https://<appConfigValues.selfHostedDomain>/auth` is used
+  ##
+  publicBaseUrl: ""
+  ## @param authApi.issuer Issuer (`iss` claim) of the tokens minted by auth-api. If empty, the computed `authApi.publicBaseUrl` is used
+  ##
+  issuer: ""
+  ## @param authApi.audience Audience (`aud` claim) of the tokens minted by auth-api
+  ##
+  audience: "carto-cloud-native-api"
+  ## @param authApi.orgId Organization ID (`org_id` claim) of this self-hosted installation
+  ##
+  orgId: "org_carto_sh_local"
+  ## @param authApi.accountsApiUrl Base URL of the accounts-api service that auth-api uses for quota checks and SSO group sync
+  ##
+  accountsApiUrl: ""
+  ## @param authApi.allowedOrigins List of origins allowed by auth-api CORS. Empty defaults to the platform origin (`https://<appConfigValues.selfHostedDomain>`)
+  ##
+  allowedOrigins: []
+  ## @param authApi.spaClient.redirectUris Redirect URIs registered on the boot-seeded platform SPA client. Empty defaults to `https://<appConfigValues.selfHostedDomain>/callback`
+  ##
+  spaClient:
+    redirectUris: []
+  ## OIDC federation configuration. Only used when `authApi.protocol` is `oidc`
+  oidc:
+    ## @param authApi.oidc.issuerUrl Issuer URL of the external OIDC identity provider
+    ##
+    issuerUrl: ""
+    ## @param authApi.oidc.clientId Client ID of auth-api at the external OIDC identity provider
+    ##
+    clientId: ""
+    ## @param authApi.oidc.clientSecret Client secret of auth-api at the external OIDC identity provider. One of `authApi.oidc.clientSecret` or `authApi.oidc.existingSecret` could be defined
+    ##
+    clientSecret: ""
+    ## @param authApi.oidc.existingSecret.name Name of the pre-existent secret containing the `authApi.oidc.existingSecret.key`. If `authApi.oidc.clientSecret` is defined, this value is going to be ignored and not used.
+    ## @param authApi.oidc.existingSecret.key Key to find in `authApi.oidc.existingSecret.name` where the OIDC client secret is found. If `authApi.oidc.clientSecret` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+    ## @param authApi.oidc.emailKey Dot-path to the email claim in the identity provider id_token. Leave empty for the service default (`email`)
+    ##
+    emailKey: ""
+    ## @param authApi.oidc.groupsKey Dot-path to the groups claim in the identity provider id_token. Leave empty for the service default (`groups`)
+    ##
+    groupsKey: ""
+  ## SAML federation configuration. Only used when `authApi.protocol` is `saml`
+  saml:
+    ## @param authApi.saml.metadataUrl URL of the SAML identity provider metadata XML. Ignored if `authApi.saml.metadataXml` is defined
+    ##
+    metadataUrl: ""
+    ## @param authApi.saml.metadataXml Inline SAML identity provider metadata XML. Preferred in production (no boot-time network dependency)
+    ##
+    metadataXml: ""
+    ## @param authApi.saml.emailAttribute Assertion attribute holding the user email. Leave empty to fall back to the NameID
+    ##
+    emailAttribute: ""
+    ## @param authApi.saml.groupsAttribute Assertion attribute holding the user groups. Leave empty for the service default (`groups`)
+    ##
+    groupsAttribute: ""
+  ## @extra authApi.internalServiceToken Shared secret between auth-api and accounts-api internal endpoints.
+  internalServiceToken:
+    ## @param authApi.internalServiceToken.value Value of the shared secret between auth-api and accounts-api internal endpoints. One of `authApi.internalServiceToken.value` or `authApi.internalServiceToken.existingSecret` could be defined.
+    value: ""
+    ## @param authApi.internalServiceToken.existingSecret.name Name of the pre-existent secret containing the `authApi.internalServiceToken.existingSecret.key`. If `authApi.internalServiceToken.value` is defined, this value is going to be ignored and not used.
+    ## @param authApi.internalServiceToken.existingSecret.key Key to find in `authApi.internalServiceToken.existingSecret.name` where the value of `authApi.internalServiceToken` is found. If `authApi.internalServiceToken.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra authApi.postgresql Optional dedicated PostgreSQL credentials for auth-api only. auth-api owns the `auth` schema (JWT signing keys) inside the accounts database; a dedicated login role scoped to that schema keeps the shared platform user out of it. Only the user and password diverge — host, port and database stay shared with the accounts stack. Leave empty to reuse the shared platform PostgreSQL user (default). The role and its grants must be pre-created on the database; the chart only consumes the credentials. Choose the model before the first install — switching afterwards is not zero-downtime (auth migrations must be re-run as the new role).
+  postgresql:
+    ## @param authApi.postgresql.user Dedicated PostgreSQL user for auth-api. Leave empty to reuse the shared platform user
+    user: ""
+    ## @extra authApi.postgresql.password Password for authApi.postgresql.user
+    password:
+      ## @param authApi.postgresql.password.value Value of the password for authApi.postgresql.user. One of `authApi.postgresql.password.value` or `authApi.postgresql.password.existingSecret` could be defined.
+      value: ""
+      ## @param authApi.postgresql.password.existingSecret.name Name of the pre-existent secret containing the `authApi.postgresql.password.existingSecret.key`. If `authApi.postgresql.password.value` is defined, this value is going to be ignored and not used.
+      ## @param authApi.postgresql.password.existingSecret.key Key to find in `authApi.postgresql.password.existingSecret.name` where the value of `authApi.postgresql.password` is found. If `authApi.postgresql.password.value` is defined, this value is going to be ignored and not used.
+      ##
+      existingSecret:
+        name: ""
+        key: ""
+  ## @param authApi.accessTokenTtlSeconds Access token TTL in seconds. Leave empty for the service default
+  ##
+  accessTokenTtlSeconds: ""
+  ## @param authApi.refreshTokenTtlSeconds Refresh token TTL in seconds. Leave empty for the service default
+  ##
+  refreshTokenTtlSeconds: ""
+  ## Configure extra options for auth-api containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param authApi.livenessProbe.enabled Enable livenessProbe on auth-api containers
+  ## @param authApi.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param authApi.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param authApi.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param authApi.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param authApi.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param authApi.readinessProbe.enabled Enable readinessProbe on auth-api containers
+  ## @param authApi.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param authApi.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param authApi.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param authApi.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param authApi.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param authApi.startupProbe.enabled Enable startupProbe on auth-api containers
+  ## @param authApi.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param authApi.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param authApi.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param authApi.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param authApi.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param authApi.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param authApi.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param authApi.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## auth-api autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param authApi.autoscaling.enabled Enable autoscaling for the auth-api containers
+  ## @param authApi.autoscaling.minReplicas The minimal number of containers for the auth-api deployment
+  ## @param authApi.autoscaling.maxReplicas The maximum number of containers for the auth-api deployment
+  ## @param authApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in auth-api deployment
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 75
+  ## auth-api resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param authApi.resources.limits.memory Container memory limits in MiB
+  ## @param authApi.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param authApi.resources.requests.memory Container memory requests in MiB
+  ## @param authApi.resources.requests.cpu Container cpu requests in milliCPU cores
+  ##
+  resources:
+    limits:
+      memory: "2048Mi"
+      cpu: "1000m"
+    requests:
+      memory: "768Mi"
+      cpu: "350m"
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param authApi.podSecurityContext.enabled Enabled auth-api pods' Security Context
+  ## @param authApi.podSecurityContext.fsGroup Set auth-api pod's Security Context fsGroup
+  ## @param authApi.podSecurityContext.supplementalGroups[0] Set auth-api pod's Security Context supplementalGroups
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1000
+    supplementalGroups: [2345]
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param authApi.containerSecurityContext.enabled Enabled auth-api containers' Security Context
+  ## @param authApi.containerSecurityContext.runAsUser Set auth-api containers' Security Context runAsUser
+  ## @param authApi.containerSecurityContext.runAsGroup Set auth-api containers' Security Context runAsGroup
+  ## @param authApi.containerSecurityContext.runAsNonRoot Set auth-api containers' Security Context runAsNonRoot
+  ## @param authApi.containerSecurityContext.allowPrivilegeEscalation Set auth-api containers' Security Context allowPrivilegeEscalation
+  ## @param authApi.containerSecurityContext.readOnlyRootFilesystem Set auth-api containers' Security Context readOnlyRootFilesystem
+  ## @param authApi.containerSecurityContext.capabilities.drop removes auth-api containers' Security Context capabilities
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
+  ## @param authApi.podDisruptionBudget.enabled defines disruption budget for auth-api
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ## @param authApi.podDisruptionBudget.minAvailable Minimum number of pods that must be available during the update
+  ## @param authApi.podDisruptionBudget.maxUnavailable Maximum number of pods that can be unavailable during the update
+  ##
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
+    maxUnavailable: 0
+  ## @param authApi.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
+  ## @param authApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for auth-api
+  ##
+  existingConfigMap: ""
+  ## @param authApi.existingSecret The name of an existing Secret with your custom configuration for auth-api
+  ##
+  existingSecret: ""
+  ## @param authApi.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param authApi.args Override default container args (useful when using custom images)
+  ##
+  args:
+    []
+  ## @param authApi.hostAliases auth-api pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param authApi.podLabels Extra labels for auth-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param authApi.podAnnotations Annotations for auth-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param authApi.podAffinityPreset Pod affinity preset. Ignored if `authApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param authApi.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `authApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node.js authApi.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param authApi.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `authApi.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param authApi.nodeAffinityPreset.key Node.js label key to match. Ignored if `authApi.affinity` is set
+    ##
+    key: ""
+    ## @param authApi.nodeAffinityPreset.values Node.js label values to match. Ignored if `authApi.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param authApi.affinity Affinity for auth-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `authApi.podAffinityPreset`, `authApi.podAntiAffinityPreset`, and `authApi.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param authApi.nodeSelector Node.js labels for auth-api pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param authApi.tolerations Tolerations for auth-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param authApi.updateStrategy.type auth-api statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param authApi.priorityClassName auth-api pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param authApi.schedulerName Name of the k8s scheduler (other than default) for auth-api pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param authApi.lifecycleHooks for the auth-api container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param authApi.extraEnvVars Array with extra environment variables to add to auth-api nodes ([More info](#additional-environment-variables))
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param authApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for auth-api nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsCM: ""
+  ## @param authApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for auth-api nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsSecret: ""
+  ## @param authApi.extraVolumes Optionally specify extra list of additional volumes for the auth-api pod(s)
+  ##
+  extraVolumes: []
+  ## @param authApi.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the auth-api container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param authApi.sidecars Add additional sidecar containers to the auth-api pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param authApi.initContainers Add additional init containers to the auth-api pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section auth-api Service Parameters
+  ##
+  ##
+  service:
+    ## @param authApi.service.type auth-api service type
+    ##
+    type: ClusterIP
+    ## @param authApi.service.ports.http auth-api service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node.js ports to expose
+    ## @param authApi.service.nodePorts.http Node.js port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param authApi.service.clusterIP auth-api service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param authApi.service.loadBalancerIP auth-api service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param authApi.service.labelSelectorsOverride Selector for auth-api service
+    ##
+    labelSelectorsOverride: {}
+    ## @param authApi.service.loadBalancerSourceRanges auth-api service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param authApi.service.externalTrafficPolicy auth-api service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param authApi.service.annotations Additional custom annotations for auth-api service
+    ##
+    annotations: {}
+    ## @param authApi.service.extraPorts Extra ports to expose in auth-api service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+
+## @section auth-api Migrations Init Container Parameters
+##
+authApiMigrations:
+  ## accounts-db image
+  ## @param authApiMigrations.image.registry accounts-db image registry
+  ## @param authApiMigrations.image.repository accounts-db image repository
+  ## @param authApiMigrations.image.tag accounts-db image tag (immutable tags are recommended)
+  ## @param authApiMigrations.image.pullPolicy accounts-db image pull policy
+  ## @param authApiMigrations.image.pullSecrets accounts-db image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: accounts-db
+    ## Specify a custom image tag
+    tag: ""
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param authApiMigrations.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param authApiMigrations.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## Init container's resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param authApiMigrations.resources.limits.memory Container memory limits in MiB
+  ## @param authApiMigrations.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param authApiMigrations.resources.requests.memory Container memory requests in MiB
+  ## @param authApiMigrations.resources.requests.cpu Container cpu requests in milliCPU cores
+  ##
+  resources:
+    limits:
+      memory: "2048Mi"
+      cpu: "1"
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+  ## Init container Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+  ## @param authApiMigrations.containerSecurityContext.enabled Enable container security context
+  ## @param authApiMigrations.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
+  ## @param authApiMigrations.containerSecurityContext.runAsGroup Set init container's Security Context runAsGroup
+  ## @param authApiMigrations.containerSecurityContext.runAsNonRoot Force the init container to run as non root
+  ## @param authApiMigrations.containerSecurityContext.allowPrivilegeEscalation Set init container's Security Context allowPrivilegeEscalation
+  ## @param authApiMigrations.containerSecurityContext.readOnlyRootFilesystem Set init containers' Security Context readOnlyRootFilesystem
+  ## @param authApiMigrations.containerSecurityContext.capabilities.drop removes auth-api-migrations containers' Security Context capabilities
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
+
+## @section accounts-api Parameters
+##
+## accounts-api is only deployed when appConfigValues.disconnectedEnabled is true (self-hosted disconnected mode).
+## It shares the platform PostgreSQL connection, on the database named by externalPostgresql.accountsDatabaseName.
+##
+accountsApi:
+  ##
+  ## accounts-api image
+  ## @param accountsApi.image.registry accounts-api image registry
+  ## @param accountsApi.image.repository accounts-api image repository
+  ## @param accountsApi.image.tag accounts-api image tag (immutable tags are recommended)
+  ## @param accountsApi.image.pullPolicy accounts-api image pull policy
+  ## @param accountsApi.image.pullSecrets accounts-api image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: accounts-api
+    ## Specify a custom image tag
+    tag: ""
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+  ## @param accountsApi.replicaCount Number of accounts-api replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param accountsApi.containerPorts.http accounts-api HTTP container port
+  ##
+  containerPorts:
+    http: 3000
+  ## @param accountsApi.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeProcessMaxOldSpacePercentage: 75
+  ## @param accountsApi.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  defaultNodeProcessMaxOldSpace: 768
+  ## Configure extra options for accounts-api containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param accountsApi.livenessProbe.enabled Enable livenessProbe on accounts-api containers
+  ## @param accountsApi.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param accountsApi.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param accountsApi.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param accountsApi.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param accountsApi.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param accountsApi.readinessProbe.enabled Enable readinessProbe on accounts-api containers
+  ## @param accountsApi.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param accountsApi.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param accountsApi.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param accountsApi.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param accountsApi.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param accountsApi.startupProbe.enabled Enable startupProbe on accounts-api containers
+  ## @param accountsApi.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param accountsApi.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param accountsApi.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param accountsApi.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param accountsApi.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param accountsApi.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param accountsApi.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param accountsApi.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## accounts-api autoscaling configuration
+  ## ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+  ## @param accountsApi.autoscaling.enabled Enable autoscaling for the accounts-api containers
+  ## @param accountsApi.autoscaling.minReplicas The minimal number of containers for the accounts-api deployment
+  ## @param accountsApi.autoscaling.maxReplicas The maximum number of containers for the accounts-api deployment
+  ## @param accountsApi.autoscaling.targetCPUUtilizationPercentage The CPU utilization percentage used for scale up containers in accounts-api deployment
+  ##
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 75
+  ## accounts-api resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param accountsApi.resources.limits.memory Container memory limits in MiB
+  ## @param accountsApi.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param accountsApi.resources.requests.memory Container memory requests in MiB
+  ## @param accountsApi.resources.requests.cpu Container cpu requests in milliCPU cores
+  ##
+  resources:
+    limits:
+      memory: "2048Mi"
+      cpu: "1000m"
+    requests:
+      memory: "768Mi"
+      cpu: "350m"
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param accountsApi.podSecurityContext.enabled Enabled accounts-api pods' Security Context
+  ## @param accountsApi.podSecurityContext.fsGroup Set accounts-api pod's Security Context fsGroup
+  ## @param accountsApi.podSecurityContext.supplementalGroups[0] Set accounts-api pod's Security Context supplementalGroups
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1000
+    supplementalGroups: [2345]
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param accountsApi.containerSecurityContext.enabled Enabled accounts-api containers' Security Context
+  ## @param accountsApi.containerSecurityContext.runAsUser Set accounts-api containers' Security Context runAsUser
+  ## @param accountsApi.containerSecurityContext.runAsGroup Set accounts-api containers' Security Context runAsGroup
+  ## @param accountsApi.containerSecurityContext.runAsNonRoot Set accounts-api containers' Security Context runAsNonRoot
+  ## @param accountsApi.containerSecurityContext.allowPrivilegeEscalation Set accounts-api containers' Security Context allowPrivilegeEscalation
+  ## @param accountsApi.containerSecurityContext.readOnlyRootFilesystem Set accounts-api containers' Security Context readOnlyRootFilesystem
+  ## @param accountsApi.containerSecurityContext.capabilities.drop removes accounts-api containers' Security Context capabilities
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
+  ## @param accountsApi.podDisruptionBudget.enabled defines disruption budget for accounts-api
+  ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+  ## @param accountsApi.podDisruptionBudget.minAvailable Minimum number of pods that must be available during the update
+  ## @param accountsApi.podDisruptionBudget.maxUnavailable Maximum number of pods that can be unavailable during the update
+  ##
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
+    maxUnavailable: 0
+  ## @param accountsApi.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
+  ## @param accountsApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for accounts-api
+  ##
+  existingConfigMap: ""
+  ## @param accountsApi.existingSecret The name of an existing Secret with your custom configuration for accounts-api
+  ##
+  existingSecret: ""
+  ## @param accountsApi.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param accountsApi.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param accountsApi.hostAliases accounts-api pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param accountsApi.podLabels Extra labels for accounts-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param accountsApi.podAnnotations Annotations for accounts-api pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param accountsApi.podAffinityPreset Pod affinity preset. Ignored if `accountsApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param accountsApi.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `accountsApi.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node.js accountsApi.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param accountsApi.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `accountsApi.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param accountsApi.nodeAffinityPreset.key Node.js label key to match. Ignored if `accountsApi.affinity` is set
+    ##
+    key: ""
+    ## @param accountsApi.nodeAffinityPreset.values Node.js label values to match. Ignored if `accountsApi.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param accountsApi.affinity Affinity for accounts-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `accountsApi.podAffinityPreset`, `accountsApi.podAntiAffinityPreset`, and `accountsApi.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param accountsApi.nodeSelector Node.js labels for accounts-api pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param accountsApi.tolerations Tolerations for accounts-api pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param accountsApi.updateStrategy.type accounts-api deployment strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param accountsApi.priorityClassName accounts-api pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param accountsApi.schedulerName Name of the k8s scheduler (other than default) for accounts-api pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param accountsApi.lifecycleHooks for the accounts-api container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param accountsApi.extraEnvVars Array with extra environment variables to add to accounts-api nodes ([More info](#additional-environment-variables))
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param accountsApi.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for accounts-api nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsCM: ""
+  ## @param accountsApi.extraEnvVarsSecret Name of existing Secret containing extra env vars for accounts-api nodes ([More info](#additional-environment-variables))
+  ##
+  extraEnvVarsSecret: ""
+  ## @param accountsApi.extraVolumes Optionally specify extra list of additional volumes for the accounts-api pod(s)
+  ##
+  extraVolumes: []
+  ## @param accountsApi.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the accounts-api container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param accountsApi.sidecars Add additional sidecar containers to the accounts-api pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param accountsApi.initContainers Add additional init containers to the accounts-api pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+  ## @section accounts-api Service Parameters
+  ##
+  ##
+  service:
+    ## @param accountsApi.service.type accounts-api service type
+    ##
+    type: ClusterIP
+    ## @param accountsApi.service.ports.http accounts-api service HTTP port
+    ##
+    ports:
+      http: 80
+    ## Node.js ports to expose
+    ## @param accountsApi.service.nodePorts.http Node.js port for HTTP
+    ## NOTE: choose port between <30000-32767>
+    ##
+    nodePorts:
+      http: ""
+    ## @param accountsApi.service.clusterIP accounts-api service Cluster IP
+    ## e.g.:
+    ## clusterIP: None
+    ##
+    clusterIP: ""
+    ## @param accountsApi.service.loadBalancerIP accounts-api service Load Balancer IP
+    ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+    ##
+    loadBalancerIP: ""
+    ## @param accountsApi.service.labelSelectorsOverride Selector for accounts-api service
+    ##
+    labelSelectorsOverride: {}
+    ## @param accountsApi.service.loadBalancerSourceRanges accounts-api service Load Balancer sources
+    ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+    ## e.g:
+    ## loadBalancerSourceRanges:
+    ##   - 10.10.10.0/24
+    ##
+    loadBalancerSourceRanges: []
+    ## @param accountsApi.service.externalTrafficPolicy accounts-api service external traffic policy
+    ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+    ##
+    externalTrafficPolicy: Cluster
+    ## @param accountsApi.service.annotations Additional custom annotations for accounts-api service
+    ##
+    annotations: {}
+    ## @param accountsApi.service.extraPorts Extra ports to expose in accounts-api service (normally used with the `sidecars` value)
+    ##
+    extraPorts: []
+
+## @section accounts-subscriber Parameters
+##
+## accounts-subscriber runs the accounts-api PubSub subscriber process. It reuses the accounts-api
+## ConfigMap and Secret; only its image and pod-level settings are configured here.
+##
+accountsSubscriber:
+  ##
+  ## accounts-subscriber image (defaults to the accounts-api image so overrides stay independent)
+  ## @param accountsSubscriber.image.registry accounts-subscriber image registry
+  ## @param accountsSubscriber.image.repository accounts-subscriber image repository
+  ## @param accountsSubscriber.image.tag accounts-subscriber image tag (immutable tags are recommended)
+  ## @param accountsSubscriber.image.pullPolicy accounts-subscriber image pull policy
+  ## @param accountsSubscriber.image.pullSecrets accounts-subscriber image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: accounts-api
+    tag: ""
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+  ## @param accountsSubscriber.replicaCount Number of accounts-subscriber replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param accountsSubscriber.containerPorts.http accounts-subscriber health-check HTTP container port (ACCOUNTS_SUBSCRIBER_PORT)
+  ##
+  containerPorts:
+    http: 8010
+  ## @param accountsSubscriber.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  nodeProcessMaxOldSpacePercentage: 75
+  ## @param accountsSubscriber.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  defaultNodeProcessMaxOldSpace: 768
+  ## @param accountsSubscriber.livenessProbe.enabled Enable livenessProbe on accounts-subscriber containers
+  ## @param accountsSubscriber.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param accountsSubscriber.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param accountsSubscriber.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param accountsSubscriber.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param accountsSubscriber.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param accountsSubscriber.readinessProbe.enabled Enable readinessProbe on accounts-subscriber containers
+  ## @param accountsSubscriber.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param accountsSubscriber.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param accountsSubscriber.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param accountsSubscriber.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param accountsSubscriber.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param accountsSubscriber.startupProbe.enabled Enable startupProbe on accounts-subscriber containers
+  ## @param accountsSubscriber.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param accountsSubscriber.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param accountsSubscriber.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param accountsSubscriber.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param accountsSubscriber.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  ## @param accountsSubscriber.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param accountsSubscriber.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param accountsSubscriber.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## accounts-subscriber resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param accountsSubscriber.resources.limits.memory Container memory limits in MiB
+  ## @param accountsSubscriber.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param accountsSubscriber.resources.requests.memory Container memory requests in MiB
+  ## @param accountsSubscriber.resources.requests.cpu Container cpu requests in milliCPU cores
+  ##
+  resources:
+    limits:
+      memory: "1024Mi"
+      cpu: "500m"
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+  ## Configure Pods Security Context
+  ## @param accountsSubscriber.podSecurityContext.enabled Enabled accounts-subscriber pods' Security Context
+  ## @param accountsSubscriber.podSecurityContext.fsGroup Set accounts-subscriber pod's Security Context fsGroup
+  ## @param accountsSubscriber.podSecurityContext.supplementalGroups[0] Set accounts-subscriber pod's Security Context supplementalGroups
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1000
+    supplementalGroups: [2345]
+  ## Configure Container Security Context
+  ## @param accountsSubscriber.containerSecurityContext.enabled Enabled accounts-subscriber containers' Security Context
+  ## @param accountsSubscriber.containerSecurityContext.runAsUser Set accounts-subscriber containers' Security Context runAsUser
+  ## @param accountsSubscriber.containerSecurityContext.runAsGroup Set accounts-subscriber containers' Security Context runAsGroup
+  ## @param accountsSubscriber.containerSecurityContext.runAsNonRoot Set accounts-subscriber containers' Security Context runAsNonRoot
+  ## @param accountsSubscriber.containerSecurityContext.allowPrivilegeEscalation Set accounts-subscriber containers' Security Context allowPrivilegeEscalation
+  ## @param accountsSubscriber.containerSecurityContext.readOnlyRootFilesystem Set accounts-subscriber containers' Security Context readOnlyRootFilesystem
+  ## @param accountsSubscriber.containerSecurityContext.capabilities.drop removes accounts-subscriber containers' Security Context capabilities
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
+  ## @param accountsSubscriber.podDisruptionBudget.enabled defines disruption budget for accounts-subscriber
+  ## @param accountsSubscriber.podDisruptionBudget.minAvailable Minimum number of pods that must be available during the update
+  ## @param accountsSubscriber.podDisruptionBudget.maxUnavailable Maximum number of pods that can be unavailable during the update
+  ##
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
+    maxUnavailable: 0
+  ## @param accountsSubscriber.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 300
+  ## @param accountsSubscriber.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param accountsSubscriber.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param accountsSubscriber.hostAliases accounts-subscriber pods host aliases
+  ##
+  hostAliases: []
+  ## @param accountsSubscriber.podLabels Extra labels for accounts-subscriber pods
+  ##
+  podLabels: {}
+  ## @param accountsSubscriber.podAnnotations Annotations for accounts-subscriber pods
+  ##
+  podAnnotations: {}
+  ## @param accountsSubscriber.podAffinityPreset Pod affinity preset. Ignored if `accountsSubscriber.affinity` is set. Allowed values: `soft` or `hard`
+  ##
+  podAffinityPreset: ""
+  ## @param accountsSubscriber.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `accountsSubscriber.affinity` is set. Allowed values: `soft` or `hard`
+  ##
+  podAntiAffinityPreset: soft
+  ## @param accountsSubscriber.nodeAffinityPreset.type Node.js affinity preset type. Ignored if `accountsSubscriber.affinity` is set. Allowed values: `soft` or `hard`
+  ## @param accountsSubscriber.nodeAffinityPreset.key Node.js label key to match. Ignored if `accountsSubscriber.affinity` is set
+  ## @param accountsSubscriber.nodeAffinityPreset.values Node.js label values to match. Ignored if `accountsSubscriber.affinity` is set
+  ##
+  nodeAffinityPreset:
+    type: ""
+    key: ""
+    values: []
+  ## @param accountsSubscriber.affinity Affinity for accounts-subscriber pods assignment
+  ##
+  affinity: {}
+  ## @param accountsSubscriber.nodeSelector Node.js labels for accounts-subscriber pods assignment
+  ##
+  nodeSelector: {}
+  ## @param accountsSubscriber.tolerations Tolerations for accounts-subscriber pods assignment
+  ##
+  tolerations: []
+  ## @param accountsSubscriber.updateStrategy.type accounts-subscriber deployment strategy type
+  ##
+  updateStrategy:
+    type: RollingUpdate
+  ## @param accountsSubscriber.priorityClassName accounts-subscriber pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param accountsSubscriber.schedulerName Name of the k8s scheduler (other than default) for accounts-subscriber pods
+  ##
+  schedulerName: ""
+  ## @param accountsSubscriber.lifecycleHooks for the accounts-subscriber container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param accountsSubscriber.extraEnvVars Array with extra environment variables to add to accounts-subscriber nodes
+  ##
+  extraEnvVars: []
+  ## @param accountsSubscriber.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for accounts-subscriber nodes
+  ##
+  extraEnvVarsCM: ""
+  ## @param accountsSubscriber.extraEnvVarsSecret Name of existing Secret containing extra env vars for accounts-subscriber nodes
+  ##
+  extraEnvVarsSecret: ""
+  ## @param accountsSubscriber.extraVolumes Optionally specify extra list of additional volumes for the accounts-subscriber pod(s)
+  ##
+  extraVolumes: []
+  ## @param accountsSubscriber.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the accounts-subscriber container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param accountsSubscriber.sidecars Add additional sidecar containers to the accounts-subscriber pod(s)
+  ##
+  sidecars: {}
+  ## @param accountsSubscriber.initContainers Add additional init containers to the accounts-subscriber pod(s)
+  ##
+  initContainers: {}
+
+## @section accounts-api Migrations Init Container Parameters
+##
+accountsMigrations:
+  ## accounts-db image
+  ## @param accountsMigrations.image.registry accounts-db image registry
+  ## @param accountsMigrations.image.repository accounts-db image repository
+  ## @param accountsMigrations.image.tag accounts-db image tag (immutable tags are recommended)
+  ## @param accountsMigrations.image.pullPolicy accounts-db image pull policy
+  ## @param accountsMigrations.image.pullSecrets accounts-db image pull secrets
+  ##
+  image:
+    registry: gcr.io/carto-onprem-artifacts
+    repository: accounts-db
+    tag: ""
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+  ## @param accountsMigrations.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param accountsMigrations.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## Init container's resource requests and limits
+  ## @param accountsMigrations.resources.limits.memory Container memory limits in MiB
+  ## @param accountsMigrations.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param accountsMigrations.resources.requests.memory Container memory requests in MiB
+  ## @param accountsMigrations.resources.requests.cpu Container cpu requests in milliCPU cores
+  ##
+  resources:
+    limits:
+      memory: "2048Mi"
+      cpu: "1"
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+  ## Init container Container Security Context
+  ## @param accountsMigrations.containerSecurityContext.enabled Enable container security context
+  ## @param accountsMigrations.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
+  ## @param accountsMigrations.containerSecurityContext.runAsGroup Set init container's Security Context runAsGroup
+  ## @param accountsMigrations.containerSecurityContext.runAsNonRoot Force the init container to run as non root
+  ## @param accountsMigrations.containerSecurityContext.allowPrivilegeEscalation Set init container's Security Context allowPrivilegeEscalation
+  ## @param accountsMigrations.containerSecurityContext.readOnlyRootFilesystem Set init containers' Security Context readOnlyRootFilesystem
+  ## @param accountsMigrations.containerSecurityContext.capabilities.drop removes accounts-migrations containers' Security Context capabilities
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
+

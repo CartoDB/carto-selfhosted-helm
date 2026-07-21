@@ -22,6 +22,11 @@ metadata:
   {{- end }}
 spec:
   replicas: 1
+  {{- if (include "carto.redis.persistenceEnabled" .) }}
+  {{- /* The RWO data volume must be released by the old pod before the new one can attach */}}
+  strategy:
+    type: Recreate
+  {{- end }}
   selector:
     matchLabels:
       {{- include "common.labels.matchLabels" . | nindent 6 }}
@@ -80,8 +85,16 @@ spec:
           {{- if .Values.internalRedis.command }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.command "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.internalRedis.args }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.args "context" $) | nindent 12 }}
+          {{- if or .Values.internalRedis.args (include "carto.redis.persistenceEnabled" .) }}
+          args:
+            {{- if (include "carto.redis.persistenceEnabled" .) }}
+            {{- /* CLI args override the cache-tuned valkey.conf baked into the image (appendonly no) */}}
+            - --appendonly
+            - "yes"
+            {{- end }}
+            {{- if .Values.internalRedis.args }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.args "context" $) | nindent 12 }}
+            {{- end }}
           {{- end }}
           ports:
             - name: valkey
@@ -144,7 +157,12 @@ spec:
           emptyDir:
             medium: Memory
         - name: valkey-data
+          {{- if (include "carto.redis.persistenceEnabled" .) }}
+          persistentVolumeClaim:
+            claimName: {{ include "carto.redis.pvcName" . }}
+          {{- else }}
           emptyDir: {}
+          {{- end }}
         {{- if .Values.internalRedis.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

@@ -32,6 +32,11 @@ data:
   ROUTER_ENABLE_PUBLIC_EVENTS_API: "true"
   ROUTER_PUBLIC_EVENTS_API_INTERNAL_URL: {{ include "carto.publicEventsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   {{- end }}
+  {{- if (include "carto.disconnected.enabled" .) }}
+  ROUTER_DISCONNECTED_ENABLED: "true"
+  ROUTER_AUTH_API_INTERNAL_URL: {{ include "carto.authApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+  ROUTER_ACCOUNTS_API_INTERNAL_URL: {{ include "carto.accountsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
+  {{- end }}
   PUBSUB_CUSTOM_DOMAIN: {{ .Values.cartoConfigValues.pubsubDomain | quote }}
   ROUTER_ACCOUNTS_WWW_INTERNAL_URL: {{ include "carto.accountsWww.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}
   ROUTER_HTTP_CACHE_INTERNAL_URL: {{ include "carto.httpCache.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}

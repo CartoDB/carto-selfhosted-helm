@@ -1,0 +1,259 @@
+{{- if and ((include "carto.disconnected.enabled" .)) (not .Values.cartoConfigValues.onlyRunRouter) }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.accountsApi.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: accounts-api
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if not .Values.accountsApi.autoscaling.enabled }}
+  replicas: {{ .Values.accountsApi.replicaCount }}
+  {{- end }}
+  {{- if .Values.accountsApi.updateStrategy }}
+  strategy: {{- toYaml .Values.accountsApi.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: accounts-api
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/accounts-api/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/accounts-api/secret.yaml") . | sha256sum }}
+        checksum/postgresql-password: {{ include "carto.postgresql.passwordChecksum" . }}
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+        {{- if .Values.accountsApi.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: accounts-api
+        {{- if .Values.accountsApi.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.accountsApi.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.accountsApi.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.accountsApi.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.accountsApi.podAffinityPreset "component" "accounts-api" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.accountsApi.podAntiAffinityPreset "component" "accounts-api" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.accountsApi.nodeAffinityPreset.type "key" .Values.accountsApi.nodeAffinityPreset.key "values" .Values.accountsApi.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.accountsApi.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.accountsApi.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.accountsApi.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.accountsApi.priorityClassName }}
+      priorityClassName: {{ .Values.accountsApi.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.accountsApi.schedulerName }}
+      schedulerName: {{ .Values.accountsApi.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.accountsApi.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.accountsApi.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if not .Values.diagnosticMode.enabled }}
+      initContainers:
+        - name: accounts-migrations
+          image: {{ template "carto.accountsMigrations.image" . }}
+          imagePullPolicy: {{ .Values.accountsMigrations.image.pullPolicy }}
+          {{- if .Values.accountsMigrations.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.accountsMigrations.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.accountsMigrations.resources }}
+          resources: {{- toYaml .Values.accountsMigrations.resources | nindent 12 }}
+          {{- end }}
+          {{- if .Values.accountsMigrations.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.accountsMigrations.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
+          {{- end }}
+          {{- if .Values.accountsMigrations.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.accountsMigrations.args "context" $) | nindent 12 }}
+          {{- else }}
+          args:
+            - -ec
+            - |
+              export PGHOST="$ACCOUNTS_POSTGRES_HOST" PGPORT="$ACCOUNTS_POSTGRES_PORT" \
+                PGDATABASE="$ACCOUNTS_POSTGRES_DB" PGUSER="$ACCOUNTS_POSTGRES_USER" \
+                PGPASSWORD="$ACCOUNTS_POSTGRES_PASSWORD" PGSSLMODE="$ACCOUNTS_POSTGRES_SSL_MODE"
+              # The migration chain assumes the pre-existing SaaS schema; a fresh disconnected
+              # database needs the frozen baseline seeded before db-migrate can run.
+              if [ "$(psql -tAc "SELECT to_regclass('public.accounts') IS NOT NULL")" != "t" ]; then
+                psql -v ON_ERROR_STOP=1 -v db_user="$ACCOUNTS_POSTGRES_USER" -f init/scripts/03_ddl.sql
+              fi
+              ../node_modules/db-migrate/bin/db-migrate up
+          {{- end }}
+          env:
+            - name: ACCOUNTS_POSTGRES_SSL_MODE
+              {{- if .Values.externalPostgresql.sslEnabled }}
+              value: "require"
+              {{- else }}
+              value: "disable"
+              {{- end }}
+            - name: ACCOUNTS_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ include "carto.postgresql.secret.key" . }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "carto.accountsApi.configmapName" . }}
+        {{- if .Values.accountsApi.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.accountsApi.terminationGracePeriodSeconds }}
+      containers:
+        - name: accounts-api
+          image: {{ template "carto.accountsApi.image" . }}
+          imagePullPolicy: {{ .Values.accountsApi.image.pullPolicy }}
+          {{- if .Values.accountsApi.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.accountsApi.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.accountsApi.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.accountsApi.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.args "context" $) | nindent 12 }}
+          {{ else }}
+          args:
+            - -ec
+            - |
+              exec node dist/accounts-api/index.js
+          {{- end }}
+          env:
+            - name: ACCOUNTS_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ include "carto.postgresql.secret.key" . }}
+            # Invitation-link JWT signing secret is mandatory at boot but the email-invite flow is
+            # unused in disconnected internal-auth mode (users are provisioned via OIDC/SAML JIT).
+            # Reuse the encryption secret key so no extra required secret is introduced.
+            - name: ACCOUNTS_INVITE_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.cartoSecrets.encryptionSecretKey.existingSecret.name }}
+                  name: {{ .Values.cartoSecrets.encryptionSecretKey.existingSecret.name | quote }}
+                  key: {{ .Values.cartoSecrets.encryptionSecretKey.existingSecret.key | quote }}
+                  {{- else }}
+                  name: {{ include "carto.accountsApi.secretName" . }}
+                  key: ENCRYPTION_SECRET_KEY
+                  {{- end }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+              "CARTO_INTERNAL_SERVICE_TOKEN"
+              "ENCRYPTION_SECRET_KEY"
+             ) "context" $ ) | nindent 12 }}
+            {{- if .Values.accountsApi.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "carto.accountsApi.configmapName" . }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+              "CARTO_INTERNAL_SERVICE_TOKEN"
+              "ENCRYPTION_SECRET_KEY"
+             ) "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.accountsApi.secretName" . }}
+            {{- end }}
+            {{- if .Values.accountsApi.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.accountsApi.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.accountsApi.resources }}
+          resources: {{- toYaml .Values.accountsApi.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.accountsApi.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.accountsApi.livenessProbe.enabled }}
+          {{/* Liveness on / instead of /health: /health pings Postgres, and a transient DB blip
+               must not restart-loop the pod */}}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.accountsApi.livenessProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /
+              port: http
+          {{- else if .Values.accountsApi.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.accountsApi.readinessProbe.enabled }}
+          readinessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.accountsApi.readinessProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
+          {{- else if .Values.accountsApi.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.accountsApi.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.accountsApi.startupProbe "enabled") "context" $) | nindent 12 }}
+            httpGet:
+              path: /
+              port: http
+          {{- else if .Values.accountsApi.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.accountsApi.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+            - name: postgresql-ssl-ca
+              mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+            {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+            - name: proxy-ssl-ca
+              mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+            {{- if .Values.accountsApi.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+        {{- if .Values.accountsApi.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.accountsApi.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+        - name: postgresql-ssl-ca
+          configMap:
+            name: {{ include "carto.postgresql.configMapName" . }}
+        {{- end }}
+        {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+        - name: proxy-ssl-ca
+          configMap:
+            name: {{ include "carto.proxy.configMapName" . }}
+        {{- end }}
+        {{- if .Values.accountsApi.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+{{- end }}

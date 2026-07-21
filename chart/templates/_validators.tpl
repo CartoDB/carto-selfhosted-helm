@@ -77,6 +77,35 @@ s3Endpoint, s3ExternalUrl and s3ForcePathStyle only apply when appConfigValues.s
 {{- end -}}
 
 {{/*
+Validate auth-api (internal authentication) config
+*/}}
+{{- define "carto.validateValues.authApi" -}}
+{{- if (include "carto.disconnected.enabled" .) -}}
+{{- $messages := list -}}
+{{- if not (has .Values.authApi.protocol (list "oidc" "saml")) -}}
+{{- $messages = append $messages "CARTO: Invalid auth-api protocol\n\nIf appConfigValues.disconnectedEnabled=true you need to set authApi.protocol to \"oidc\" or \"saml\"" -}}
+{{- end -}}
+{{- if and (eq .Values.authApi.protocol "oidc") (or (not .Values.authApi.oidc.issuerUrl) (not .Values.authApi.oidc.clientId) (and (not .Values.authApi.oidc.clientSecret) (not .Values.authApi.oidc.existingSecret.name))) -}}
+{{- $messages = append $messages "CARTO: Missing auth-api OIDC configuration\n\nIf authApi.protocol=oidc you need to set authApi.oidc.issuerUrl, authApi.oidc.clientId and one of authApi.oidc.clientSecret or authApi.oidc.existingSecret" -}}
+{{- end -}}
+{{- if and (eq .Values.authApi.protocol "saml") (not .Values.authApi.saml.metadataUrl) (not (trim (default "" .Values.authApi.saml.metadataXml))) -}}
+{{- $messages = append $messages "CARTO: Missing auth-api SAML configuration\n\nIf authApi.protocol=saml you need to set one of authApi.saml.metadataUrl or authApi.saml.metadataXml" -}}
+{{- end -}}
+{{- if and (not .Values.authApi.internalServiceToken.value) (not .Values.authApi.internalServiceToken.existingSecret.name) -}}
+{{- $messages = append $messages "CARTO: Missing auth-api internal service token\n\nIf appConfigValues.disconnectedEnabled=true you need to set one of authApi.internalServiceToken.value or authApi.internalServiceToken.existingSecret" -}}
+{{- end -}}
+{{- if and (not .Values.cartoSecrets.encryptionSecretKey.value) (not .Values.cartoSecrets.encryptionSecretKey.existingSecret.name) -}}
+{{- $messages = append $messages "CARTO: Missing encryption secret key for auth-api\n\nIf appConfigValues.disconnectedEnabled=true you need to set one of cartoSecrets.encryptionSecretKey.value or cartoSecrets.encryptionSecretKey.existingSecret" -}}
+{{- end -}}
+{{- $pgPasswordSet := or .Values.authApi.postgresql.password.value .Values.authApi.postgresql.password.existingSecret.name -}}
+{{- if or (and .Values.authApi.postgresql.user (not $pgPasswordSet)) (and $pgPasswordSet (not .Values.authApi.postgresql.user)) -}}
+{{- $messages = append $messages "CARTO: Incomplete auth-api dedicated PostgreSQL credentials\n\nTo give auth-api a dedicated PostgreSQL role set BOTH authApi.postgresql.user and one of authApi.postgresql.password.value or authApi.postgresql.password.existingSecret. Leave all of them empty to reuse the shared platform user." -}}
+{{- end -}}
+{{- join "\n" $messages -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Compile all warnings into a single message, and call fail.
 */}}
 {{- define "carto.validateValues" -}}
@@ -87,6 +116,7 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := append $messages (include "carto.validateValues.logLevel" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.serviceAccount" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.s3Compatible" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.authApi" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 
