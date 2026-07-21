@@ -6,7 +6,12 @@ Return common collectors for preflights and support-bundle
       collectorName: tenant-requirements-check
       name: tenant-requirements-check
       namespace: {{ .Release.Namespace | quote }}
-      timeout: 180s
+      {{/*
+      The pod runs every validator sequentially and only emits results once the whole pass
+      finishes, so this budget must cover image pull plus the slowest full run. Keep headroom:
+      too tight and transient image-pull/egress latency trips a false timeout that blocks install.
+      */}}
+      timeout: 300s
       podSpec:
         {{- if include "carto.podIdentity.enabled" . }}
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
@@ -291,6 +296,17 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   }}
 
   {{/*
+  When an S3-compatible split-horizon external URL is configured, the checker also emits the
+  browser-facing (external) bucket checks. They are non-authoritative (CORS is enforced by the
+  browser, not by the checker), so they are registered as warn outcomes rather than fail.
+  */}}
+  {{- if and (eq .Values.appConfigValues.storageProvider "s3") .Values.appConfigValues.s3ExternalUrl }}
+  {{- $_ := set $preflightsDict "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket" "Check_assets_bucket_external" "Check_temp_bucket_external") -}}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_assets_bucket_external" -}}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_temp_bucket_external" -}}
+  {{- end }}
+
+  {{/*
   We push conditionally new analyzers for the feature flags if the customer defined overridden feature flags
   */}}
   {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
@@ -527,6 +543,12 @@ Return customer values to use in preflights and support-bundle
     value: {{ .Values.appConfigValues.s3Endpoint | quote }}
   - name: WORKSPACE_IMPORTS_ENDPOINT
     value: {{ .Values.appConfigValues.s3Endpoint | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.s3ExternalUrl }}
+  - name: WORKSPACE_THUMBNAILS_EXTERNAL_URL
+    value: {{ .Values.appConfigValues.s3ExternalUrl | quote }}
+  - name: WORKSPACE_IMPORTS_EXTERNAL_URL
+    value: {{ .Values.appConfigValues.s3ExternalUrl | quote }}
   {{- end }}
   {{- if .Values.appConfigValues.s3ForcePathStyle }}
   - name: WORKSPACE_THUMBNAILS_FORCE_PATH_STYLE
