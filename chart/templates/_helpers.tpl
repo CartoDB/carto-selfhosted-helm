@@ -335,11 +335,13 @@ Return the proper Carto import-worker Secret name
 
 {{/*
 Return Carto import-worker node options
-Fixed heap, not derived from container memory: DuckDB allocates native memory
-outside V8, so the heap must not scale with the container.
 */}}
 {{- define "carto.importWorker.nodeOptions" -}}
-{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (int .Values.importWorker.defaultNodeProcessMaxOldSpace) | quote -}}
+{{- if eq (.Values.importWorker.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.importWorker.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.importWorker.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- else -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.importWorker.defaultNodeProcessMaxOldSpace | quote -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
