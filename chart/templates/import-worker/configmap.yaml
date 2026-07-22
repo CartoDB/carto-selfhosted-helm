@@ -120,10 +120,6 @@ data:
   {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
   REDIS_TLS_CA: {{ include "carto.redis.configMapMountAbsolutePath" . }}
   {{- end }}
-  TRANSFER_DUCKDB_MEMORY_LIMIT: {{ .Values.importWorker.duckdb.memoryLimit | quote }}
-  TRANSFER_DUCKDB_THREADS: {{ .Values.importWorker.duckdb.threads | quote }}
-  TRANSFER_DUCKDB_TEMP_DIRECTORY: {{ .Values.importWorker.duckdb.tempDirectory | quote }}
-  TRANSFER_DUCKDB_MAX_TEMP_DIRECTORY_SIZE: {{ .Values.importWorker.duckdb.maxTempDirectorySize | quote }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
