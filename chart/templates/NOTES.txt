@@ -15,6 +15,34 @@ It's no longer supported and you should use an external PostgreSQL instance inst
 
 {{- end }}
 
+{{- if .Values.externalProxy.sslCA }}
+
++-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
+|      externalProxy.sslCA IS DEPRECATED           |
++-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
+
+WARNING: `externalProxy.sslCA` is deprecated in favour of the global `trustedCACerts.value`.
+It still works and is concatenated into the same trusted CA bundle, but it will be
+removed in a future release. Move your CA certificate(s) to the top-level
+`trustedCACerts.value`, which trusts them fleet-wide for every outbound TLS connection
+regardless of whether an external proxy is configured.
+
+{{- end }}
+
+{{- if .Values.externalProxy.sslCAConfigmap.name }}
+
++-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
+|   externalProxy.sslCAConfigmap IS DEPRECATED     |
++-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
+
+WARNING: `externalProxy.sslCAConfigmap` is deprecated in favour of the global
+`trustedCACerts.existingConfigmap`. It still works and the ConfigMap is still mounted,
+but it will be removed in a future release. Point `trustedCACerts.existingConfigmap.name`
+(and `.key`) at your ConfigMap to trust it fleet-wide regardless of whether an external
+proxy is configured.
+
+{{- end }}
+
 ** Please be patient while the chart is being deployed **
 
 ** Did you check our recommendations to customize your app in production mode? **

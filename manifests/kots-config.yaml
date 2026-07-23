@@ -739,6 +739,13 @@ spec:
           value: 'repl{{ PrivateCACert }}'
           readonly: true
 
+        ## Trusted CA certificates
+        - name: trustedCaCertsValue
+          title: Trusted CA certificate(s)
+          type: textarea
+          help_text: |-
+            PEM-encoded CA certificate(s) added to the standard trusted CAs (extends, does not replace them) for outbound TLS — verifying servers CARTO connects to that are signed by a private or self-signed CA (e.g. a private-CA S3-compatible store). Paste multiple concatenated PEM blocks if needed. Leave empty if not needed.
+
         ## SSO
         - name: ssoEnabled
           title: Single Sign-On

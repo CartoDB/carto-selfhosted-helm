@@ -196,9 +196,9 @@ spec:
               subPath: {{ include "carto.postgresql.configMapMountFilename" . }}
               readOnly: true
             {{- end }}
-            {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
-            - name: proxy-ssl-ca
-              mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+            {{- if (include "carto.trustedCACerts.enabled" .) }}
+            - name: trusted-ca-certs
+              mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
               readOnly: true
             {{- end }}
             {{- if .Values.aiProxy.extraVolumeMounts }}
@@ -232,10 +232,10 @@ spec:
               - key: {{ include "carto.postgresql.configMapMountFilename" . }}
                 path: {{ include "carto.postgresql.configMapMountFilename" . }}
         {{- end }}
-        {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
-        - name: proxy-ssl-ca
+        {{- if (include "carto.trustedCACerts.enabled" .) }}
+        - name: trusted-ca-certs
           configMap:
-            name: {{ include "carto.proxy.configMapName" . }}
+            name: {{ include "carto.trustedCACerts.configMapName" . }}
         {{- end }}
         {{- if .Values.aiProxy.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraVolumes "context" $) | nindent 8 }}
