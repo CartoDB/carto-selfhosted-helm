@@ -6,7 +6,12 @@ Return common collectors for preflights and support-bundle
       collectorName: tenant-requirements-check
       name: tenant-requirements-check
       namespace: {{ .Release.Namespace | quote }}
-      timeout: 180s
+      {{/*
+      The pod runs every validator sequentially and only emits results once the whole pass
+      finishes, so this budget must cover image pull plus the slowest full run. Keep headroom:
+      too tight and transient image-pull/egress latency trips a false timeout that blocks install.
+      */}}
+      timeout: 300s
       podSpec:
         {{- if include "carto.podIdentity.enabled" . }}
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
@@ -106,11 +111,11 @@ Return common collectors for preflights and support-bundle
               - name: REDIS_TLS_CA__FILE_PATH
                 value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
               {{- end }}
-              {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+              {{- if (include "carto.trustedCACerts.hasInline" .) }}
               - name: PROXY_SSL_CA__FILE_CONTENT
-                value: {{ .Values.externalProxy.sslCA | b64enc | quote }}
+                value: {{ include "carto.trustedCACerts.bundle" . | b64enc | quote }}
               - name: PROXY_SSL_CA__FILE_PATH
-                value: {{ include "carto.proxy.configMapMountAbsolutePath" . }}
+                value: {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
               - name: ROUTER_SSL_CERT__FILE_CONTENT
@@ -141,9 +146,9 @@ Return common collectors for preflights and support-bundle
                 mountPath: {{ include "carto.redis.configMapMountDir" . }}
                 readOnly: false
               {{- end }}
-              {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
-              - name: proxy-ssl-ca
-                mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+              {{- if (include "carto.trustedCACerts.hasInline" .) }}
+              - name: trusted-ca-certs
+                mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
                 readOnly: false
               {{- end }}
               {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
@@ -201,9 +206,9 @@ Return common collectors for preflights and support-bundle
                 mountPath: {{ include "carto.redis.configMapMountDir" . }}
                 readOnly: true
               {{- end }}
-              {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
-              - name: proxy-ssl-ca
-                mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+              {{- if (include "carto.trustedCACerts.enabled" .) }}
+              - name: trusted-ca-certs
+                mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
                 readOnly: true
               {{- end }}
               {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
@@ -230,15 +235,14 @@ Return common collectors for preflights and support-bundle
             emptyDir:
               sizeLimit: 8Mi
           {{- end }}
-          {{- if .Values.externalProxy.sslCAConfigmap.name }}
-          - name: proxy-ssl-ca
-            configMap:
-              name: {{ .Values.externalProxy.sslCAConfigmap.name }}
-          {{- end }}
-          {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
-          - name: proxy-ssl-ca
+          {{- if (include "carto.trustedCACerts.hasInline" .) }}
+          - name: trusted-ca-certs
             emptyDir:
               sizeLimit: 1Mi
+          {{- else if (include "carto.trustedCACerts.enabled" .) }}
+          - name: trusted-ca-certs
+            configMap:
+              name: {{ include "carto.trustedCACerts.configMapName" . }}
           {{- end }}
           {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
           - name: router-tls-cert-and-key
@@ -290,6 +294,17 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
       "Check_TravelTime_connectivity"
       "Check_TomTom_connectivity"
   }}
+
+  {{/*
+  When an S3-compatible split-horizon external URL is configured, the checker also emits the
+  browser-facing (external) bucket checks. They are non-authoritative (CORS is enforced by the
+  browser, not by the checker), so they are registered as warn outcomes rather than fail.
+  */}}
+  {{- if and (eq .Values.appConfigValues.storageProvider "s3") .Values.appConfigValues.s3ExternalUrl }}
+  {{- $_ := set $preflightsDict "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket" "Check_assets_bucket_external" "Check_temp_bucket_external") -}}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_assets_bucket_external" -}}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_temp_bucket_external" -}}
+  {{- end }}
 
   {{/*
   We push conditionally new analyzers for the feature flags if the customer defined overridden feature flags
@@ -529,6 +544,12 @@ Return customer values to use in preflights and support-bundle
   - name: WORKSPACE_IMPORTS_ENDPOINT
     value: {{ .Values.appConfigValues.s3Endpoint | quote }}
   {{- end }}
+  {{- if .Values.appConfigValues.s3ExternalUrl }}
+  - name: WORKSPACE_THUMBNAILS_EXTERNAL_URL
+    value: {{ .Values.appConfigValues.s3ExternalUrl | quote }}
+  - name: WORKSPACE_IMPORTS_EXTERNAL_URL
+    value: {{ .Values.appConfigValues.s3ExternalUrl | quote }}
+  {{- end }}
   {{- if .Values.appConfigValues.s3ForcePathStyle }}
   - name: WORKSPACE_THUMBNAILS_FORCE_PATH_STYLE
     value: {{ .Values.appConfigValues.s3ForcePathStyle | quote }}
@@ -541,6 +562,10 @@ Return customer values to use in preflights and support-bundle
     value: {{ .Values.appConfigValues.azureStorageAccount | quote }}
   - name: WORKSPACE_IMPORTS_STORAGE_ACCOUNT
     value: {{ .Values.appConfigValues.azureStorageAccount | quote }}
+  {{- end }}
+  {{- if (include "carto.trustedCACerts.enabled" .) }}
+  - name: NODE_EXTRA_CA_CERTS
+    value: {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   {{- if .Values.externalProxy.enabled }}
   - name: HTTP_PROXY
@@ -562,10 +587,6 @@ Return customer values to use in preflights and support-bundle
     value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   - name: no_proxy
     value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
-  {{- end }}
-  {{- if (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
-  - name: NODE_EXTRA_CA_CERTS
-    value: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   {{- end }}
   {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
