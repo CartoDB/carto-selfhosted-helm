@@ -1437,16 +1437,53 @@ Return the directory where the custom feature flags config file will be mounted
 {{- end -}}
 
 {{/*
+Effective feature-flag overrides = the operator-provided list plus any flags the
+chart auto-enables from deployment config. An auto-enabled flag never clobbers an
+explicit operator override of the same flag.
+
+Today the only auto-enabled flag is 2024-private-buckets, switched on when an
+S3-compatible endpoint is set: private main buckets need it for markers/branding
+to resolve (compat-analysis D-ACL), and it's safe because such a deployment is a
+fresh install with no legacy public-URL maps to migrate.
+*/}}
+{{- define "carto.featureFlags.effectiveOverrides" -}}
+{{- $overrides := .Values.cartoConfigValues.featureFlagsOverrides | default list -}}
+{{- $result := $overrides -}}
+{{- if .Values.appConfigValues.s3Endpoint -}}
+{{- $names := list -}}
+{{- range $overrides -}}{{- $names = append $names .name -}}{{- end -}}
+{{- if not (has "2024-private-buckets" $names) -}}
+{{- $result = append $result (dict "name" "2024-private-buckets" "value" true) -}}
+{{- end -}}
+{{- end -}}
+{{- $result | toYaml -}}
+{{- end -}}
+
+{{/*
+Whether any feature-flag override is in effect (operator-provided or the
+S3-compatible auto-injected one). Emits "true" or nothing; use with `eq`.
+*/}}
+{{- define "carto.featureFlags.enabled" -}}
+{{- if or .Values.cartoConfigValues.featureFlagsOverrides .Values.appConfigValues.s3Endpoint -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the list of overridden feature flags as a comma-separated string
 */}}
 {{- define "carto.featureFlags.overriddenFeatureFlags" -}}
-{{- $featureFlags := .Values.cartoConfigValues.featureFlagsOverrides -}}
+{{- $overrides := .Values.cartoConfigValues.featureFlagsOverrides | default list -}}
 {{- $ffNames := list -}}
-{{- range $featureFlags -}}
+{{- range $overrides -}}
 {{- $ffNames = append $ffNames .name -}}
 {{- end -}}
-{{- $nameList := join "," $ffNames -}}
-{{- $nameList -}}
+{{- if .Values.appConfigValues.s3Endpoint -}}
+{{- if not (has "2024-private-buckets" $ffNames) -}}
+{{- $ffNames = append $ffNames "2024-private-buckets" -}}
+{{- end -}}
+{{- end -}}
+{{- join "," $ffNames -}}
 {{- end -}}
 
 {{/*
