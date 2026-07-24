@@ -399,6 +399,13 @@ spec:
           sslCAConfigmap:
             name: '{{repl ConfigOption "externalProxyCAConfigmapName" }}'
             key: "ca_0.crt"
+    # Trusted CA certificates (outbound TLS)
+    - when: '{{repl not (empty (ConfigOption "trustedCaCertsValue")) }}'
+      recursiveMerge: true
+      values:
+        trustedCACerts:
+          value: |
+            repl{{- ConfigOption "trustedCaCertsValue" | nindent 12 }}
     - when: '{{repl ConfigOptionEquals "ssoEnabled" "1"}}'
       recursiveMerge: true
       values:
