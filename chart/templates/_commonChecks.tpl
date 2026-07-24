@@ -173,7 +173,7 @@ Return common collectors for preflights and support-bundle
               - name: CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_S3_ENABLED
                 value: "true"
               {{- end }}
-              {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+              {{- if (include "carto.featureFlags.enabled" .) }}
               - name: OVERRIDDEN_FEATURE_FLAGS
                 value: {{ include "carto.featureFlags.overriddenFeatureFlags" . | quote }}
               {{- end }}
@@ -310,7 +310,7 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   {{/*
   We push conditionally new analyzers for the feature flags if the customer defined overridden feature flags
   */}}
-  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+  {{- if (include "carto.featureFlags.enabled" .) }}
   {{- $_ := set $preflightsDict "FeatureFlagsValidator" (list "Check_valid_feature_flags") -}}
   {{- end }}
   {{/*
