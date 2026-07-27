@@ -41,6 +41,11 @@ data:
   PUBSUB_DATA_UPDATES_ACCOUNTS_TOPIC: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/topics/data-updates"
   PUBSUB_DATA_UPDATES_ACCOUNTS_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/data-updates-accounts-sub-0000"
   PUBSUB_DATA_UPDATES_TOPICS_TEMPLATE: "projects/{project_id}/topics/data-updates"
+  # Disconnected has no central accounts service, so this accounts-api emits the
+  # accountCreated/userCreated bus events itself. Without these, commons' EventBus
+  # falls back to "topic-not-set" and publishes fail silently.
+  EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
+  EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   # Cloud-only integrations unreachable in disconnected internal mode. These settings are mandatory at
   # boot but back features (billing, email, partner connect, activity exports, backoffice) that are not
   # exercised in a disconnected deployment; placeholder values until they are gated upstream.
