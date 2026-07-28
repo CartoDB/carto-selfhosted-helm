@@ -18,7 +18,7 @@ data:
   {{- with include "carto.disconnected.commonEnv" . }}
   {{- . | nindent 2 }}
   {{- end }}
-  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+  {{- if (include "carto.featureFlags.enabled" .) }}
   CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
   {{- end }}
   {{- if .Values.replicated.enabled }}

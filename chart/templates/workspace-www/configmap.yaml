@@ -13,7 +13,7 @@ metadata:
   {{- end }}
 data:
   CARTO_DATA_WAREHOUSE_ENABLED: {{ .Values.cartoConfigValues.cartoDataWarehouseEnabled | quote }}
-  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+  {{- if (include "carto.featureFlags.enabled" .) }}
   CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
   {{- end }}
   {{- if $.Values.appConfigValues.bigqueryOauth2ClientId }}
@@ -41,6 +41,7 @@ data:
   REACT_APP_LAUNCH_DARKLY_CLIENT_SIDE_ID: {{ .Values.cartoConfigValues.launchDarklyClientSideId | quote }}
   REACT_APP_PUBLIC_MAP_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api/v3/maps/public"
   REACT_APP_WORKSPACE_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/workspace-api"
+  REACT_APP_HOSTED_APPS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/app"
   REACT_APP_NOTIFIER_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/notifier"
   REACT_APP_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
   THUMBNAILS_BUCKET_EXTERNAL_URL: {{ .Values.appConfigValues.thumbnailsBucketExternalURL | quote }}

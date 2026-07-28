@@ -19,7 +19,7 @@ data:
   {{- . | nindent 2 }}
   {{- end }}
   BIGQUERY_OAUTH2_CLIENT_ID: {{ .Values.appConfigValues.bigqueryOauth2ClientId | quote }}
-  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+  {{- if (include "carto.featureFlags.enabled" .) }}
   CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
   {{- end }}
   {{- if .Values.replicated.enabled }}
@@ -85,6 +85,7 @@ data:
   CARTO_SELFHOSTED_AWS_RDS_METADATA_REGION: {{ .Values.externalPostgresql.awsRdsRegion | quote }}
   CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED: {{ .Values.externalPostgresql.awsEksPodIdentityEnabled | quote }}
   {{- end }}
+  EXPORTS_GCS_BUCKET_NAME: {{ .Values.appConfigValues.workspaceExportsBucket | quote }}
   IMPORT_AWS_CUSTOM_BUCKET_ROLE_ARN: {{ .Values.appConfigValues.importAwsRoleArn | quote }}
   IMPORT_DATA_IMPORTS_BUCKET: {{ .Values.appConfigValues.workspaceImportsBucket | quote }}
   IMPORT_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
@@ -122,10 +123,6 @@ data:
   {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
   REDIS_TLS_CA: {{ include "carto.redis.configMapMountAbsolutePath" . }}
   {{- end }}
-  TRANSFER_DUCKDB_MEMORY_LIMIT: {{ .Values.importWorker.duckdb.memoryLimit | quote }}
-  TRANSFER_DUCKDB_THREADS: {{ .Values.importWorker.duckdb.threads | quote }}
-  TRANSFER_DUCKDB_TEMP_DIRECTORY: {{ .Values.importWorker.duckdb.tempDirectory | quote }}
-  TRANSFER_DUCKDB_MAX_TEMP_DIRECTORY_SIZE: {{ .Values.importWorker.duckdb.maxTempDirectorySize | quote }}
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
