@@ -1676,6 +1676,39 @@ CARTO_AUTH_API_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release
 {{- end -}}
 
 {{/*
+Client ID of the boot-seeded platform SPA client. auth-api registers it and both SPAs
+authenticate with it, so all three must read this one helper or login breaks on a mismatch.
+*/}}
+{{- define "carto.authApi.spaClient.clientId" -}}
+{{- default "carto-spa" .Values.authApi.spaClient.clientId -}}
+{{- end -}}
+
+{{/*
+Redirect URIs registered on the platform SPA client. The default covers both SPAs: workspace-www
+redirects to the bare origin, accounts-www to /callback. Registering only one 400s the other.
+*/}}
+{{- define "carto.authApi.spaClient.redirectUris" -}}
+{{- if .Values.authApi.spaClient.redirectUris -}}
+{{- join "," .Values.authApi.spaClient.redirectUris -}}
+{{- else -}}
+{{- printf "https://%s,https://%s/callback" .Values.appConfigValues.selfHostedDomain .Values.appConfigValues.selfHostedDomain -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+The disconnected-mode environment package for the SPAs. Self-gated like
+carto.disconnected.commonEnv, so consumers include it unconditionally. The authority must be the
+issuer auth-api mints with, hence the shared helper — a mismatch fails the OIDC code flow.
+*/}}
+{{- define "carto.disconnected.wwwEnv" -}}
+{{- if (include "carto.disconnected.enabled" .) -}}
+REACT_APP_AUTH_PROVIDER: "oidc"
+REACT_APP_OIDC_AUTHORITY: {{ include "carto.authApi.issuer" . | quote }}
+REACT_APP_OIDC_CLIENT_ID: {{ include "carto.authApi.spaClient.clientId" . | quote }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Base URL of the accounts-api service that auth-api calls for quota checks and SSO group sync.
 Defaults to the in-cluster accounts-api service when authApi.accountsApiUrl is not set.
 */}}

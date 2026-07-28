@@ -23,6 +23,9 @@ data:
   {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
+  {{- with include "carto.disconnected.wwwEnv" . }}
+  {{- . | nindent 2 }}
+  {{- end }}
   {{- if (include "carto.disconnected.enabled" .) }}
   REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/accounts-api"
   {{- else }}

@@ -73,6 +73,9 @@ data:
   ACCOUNTS_ACTIVITY_DATA_BUCKET_NAME: "disabled"
   # Defaults to true upstream and would attempt outbound Slack notifications
   QUOTA_NOTIFICATIONS_ENABLED: "false"
+  # Account provisioning creates the DO BigQuery dataset before reaching the CDW skip, so with no
+  # GCP reachability every new account would fail. Data Observatory needs cloud access anyway.
+  DO_ENABLED: "false"
   {{- if .Values.externalProxy.enabled }}
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}

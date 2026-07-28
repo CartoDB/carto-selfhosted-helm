@@ -20,7 +20,8 @@ data:
   CARTO_AUTH_NAMESPACE: "http://app.carto.com"
   CARTO_AUTH_PUBLIC_BASE_URL: {{ include "carto.authApi.publicBaseUrl" . | quote }}
   CARTO_AUTH_ALLOWED_ORIGINS: {{ default (printf "https://%s" .Values.appConfigValues.selfHostedDomain) (join "," .Values.authApi.allowedOrigins) | quote }}
-  CARTO_SPA_REDIRECT_URIS: {{ default (printf "https://%s/callback" .Values.appConfigValues.selfHostedDomain) (join "," .Values.authApi.spaClient.redirectUris) | quote }}
+  CARTO_SPA_CLIENT_ID: {{ include "carto.authApi.spaClient.clientId" . | quote }}
+  CARTO_SPA_REDIRECT_URIS: {{ include "carto.authApi.spaClient.redirectUris" . | quote }}
   CARTO_ORG_ID: {{ .Values.authApi.orgId | quote }}
   CARTO_ACCOUNTS_API_URL: {{ include "carto.authApi.accountsApiUrl" . | quote }}
   {{- if eq .Values.authApi.protocol "oidc" }}
@@ -59,6 +60,9 @@ data:
   CARTO_TRACING_MODE: "local"
   {{- end }}
   {{- if .Values.externalProxy.enabled }}
+  # openid-client discovers over native fetch, which ignores HTTP_PROXY unless opted in — and
+  # behind a proxy the IDP is only reachable through it.
+  NODE_USE_ENV_PROXY: "1"
   HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
   HTTPS_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}

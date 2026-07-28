@@ -6625,9 +6625,13 @@ authApi:
   ## @param authApi.allowedOrigins List of origins allowed by auth-api CORS. Empty defaults to the platform origin (`https://<appConfigValues.selfHostedDomain>`)
   ##
   allowedOrigins: []
-  ## @param authApi.spaClient.redirectUris Redirect URIs registered on the boot-seeded platform SPA client. Empty defaults to `https://<appConfigValues.selfHostedDomain>/callback`
-  ##
+  ## The boot-seeded platform SPA client, shared by workspace-www and accounts-www
   spaClient:
+    ## @param authApi.spaClient.clientId Client ID of the platform SPA client. Empty defaults to `carto-spa`
+    ##
+    clientId: ""
+    ## @param authApi.spaClient.redirectUris Redirect URIs registered on the platform SPA client. Empty defaults to both SPA callbacks (`https://<appConfigValues.selfHostedDomain>` and `.../callback`)
+    ##
     redirectUris: []
   ## OIDC federation configuration. Only used when `authApi.protocol` is `oidc`
   oidc:
