@@ -308,19 +308,14 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   {{- end }}
 
   {{/*
-  When a custom S3-compatible endpoint is configured, browser direct uploads/downloads go
-  straight to the bucket host (a different origin than the app), so each bucket needs a CORS
-  policy allowing the app origin. The checker probes this with a live OPTIONS preflight. Gated
-  on the endpoint (not the external URL) on purpose: a single-host S3-compatible setup
-  (external URL unset) still needs the policy, and that is exactly where browser uploads
-  silently failed. Non-authoritative like the external checks (CORS is a browser concern), so
-  registered as warn.
+  Browser direct uploads/downloads hit the bucket host (a different origin than the app) on
+  every storage provider, so the bucket needs a CORS policy allowing the app origin. The
+  checker probes this with a live OPTIONS preflight; these checks always run. Non-authoritative
+  like the external checks (CORS is enforced by the browser), so registered as warn.
   */}}
-  {{- if and (eq .Values.appConfigValues.storageProvider "s3") .Values.appConfigValues.s3Endpoint }}
   {{- $_ := set $preflightsDict "BucketsValidator" (concat (index $preflightsDict "BucketsValidator") (list "Check_assets_bucket_CORS" "Check_temp_bucket_CORS")) -}}
   {{- $preflightOptionalList = append $preflightOptionalList "Check_assets_bucket_CORS" -}}
   {{- $preflightOptionalList = append $preflightOptionalList "Check_temp_bucket_CORS" -}}
-  {{- end }}
 
   {{/*
   We push conditionally new analyzers for the feature flags if the customer defined overridden feature flags
