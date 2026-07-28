@@ -23,9 +23,14 @@ metadata:
 spec:
   replicas: 1
   {{- if (include "carto.redis.persistenceEnabled" .) }}
-  {{- /* The RWO data volume must be released by the old pod before the new one can attach */}}
+  {{- /* maxSurge 0 releases the RWO data volume before the new pod attaches. Equivalent to
+         Recreate, but switching type in place leaves the defaulted rollingUpdate fields on the
+         live object, which the API server then rejects — so own them explicitly instead. */}}
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
   {{- end }}
   selector:
     matchLabels:
