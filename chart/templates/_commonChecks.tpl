@@ -307,6 +307,16 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   {{- end }}
 
   {{/*
+  Browser direct uploads/downloads hit the bucket host (a different origin than the app) on
+  every storage provider, so the bucket needs a CORS policy allowing the app origin. The
+  checker probes this with a live OPTIONS preflight; these checks always run. Non-authoritative
+  like the external checks (CORS is enforced by the browser), so registered as warn.
+  */}}
+  {{- $_ := set $preflightsDict "BucketsValidator" (concat (index $preflightsDict "BucketsValidator") (list "Check_assets_bucket_CORS_sanity_check" "Check_temp_bucket_CORS_sanity_check")) -}}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_assets_bucket_CORS_sanity_check" -}}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_temp_bucket_CORS_sanity_check" -}}
+
+  {{/*
   We push conditionally new analyzers for the feature flags if the customer defined overridden feature flags
   */}}
   {{- if (include "carto.featureFlags.enabled" .) }}
@@ -464,6 +474,8 @@ Return customer values to use in preflights and support-bundle
 {{- define "carto.replicated.tenantRequirementsChecker.customerValues" }}
   - name: CARTO_SELFHOSTED_VERSION
     value: {{ .Chart.AppVersion | quote }}
+  - name: CARTO_SELFHOSTED_DOMAIN
+    value: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   - name: REDIS_CACHE_PREFIX 
     value: "onprem"
   - name: REDIS_HOST
