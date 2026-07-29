@@ -231,6 +231,7 @@ spec:
         {{- end }}
       volumes:
         - name: tmp
+          # Disk-backed on purpose: DuckDB spills here to relieve pod memory.
           emptyDir: {}
         - name: gcp-default-service-account-key
           secret:
