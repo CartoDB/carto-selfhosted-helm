@@ -188,9 +188,9 @@ spec:
               mountPath: {{ include "carto.redis.configMapMountDir" . }}
               readOnly: true
             {{- end }}
-            {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
-            - name: proxy-ssl-ca
-              mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+            {{- if (include "carto.trustedCACerts.enabled" .) }}
+            - name: trusted-ca-certs
+              mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
               readOnly: true
             {{- end }}
             {{- if .Values.aiApi.extraVolumeMounts }}
@@ -216,10 +216,10 @@ spec:
           configMap:
             name: {{ include "carto.redis.configMapName" . }}
         {{- end }}
-        {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
-        - name: proxy-ssl-ca
+        {{- if (include "carto.trustedCACerts.enabled" .) }}
+        - name: trusted-ca-certs
           configMap:
-            name: {{ include "carto.proxy.configMapName" . }}
+            name: {{ include "carto.trustedCACerts.configMapName" . }}
         {{- end }}
         {{- if .Values.aiApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.extraVolumes "context" $) | nindent 8 }}
