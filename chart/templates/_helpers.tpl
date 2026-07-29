@@ -1634,7 +1634,7 @@ database always stay shared with the accounts stack.
 {{- if .Values.authApi.publicBaseUrl -}}
 {{- trimSuffix "/" .Values.authApi.publicBaseUrl -}}
 {{- else -}}
-{{- printf "https://%s/auth" .Values.appConfigValues.selfHostedDomain -}}
+{{- printf "https://%s/auth-api" .Values.appConfigValues.selfHostedDomain -}}
 {{- end -}}
 {{- end -}}
 
