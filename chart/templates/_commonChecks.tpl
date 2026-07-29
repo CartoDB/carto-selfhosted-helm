@@ -313,9 +313,9 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   checker probes this with a live OPTIONS preflight; these checks always run. Non-authoritative
   like the external checks (CORS is enforced by the browser), so registered as warn.
   */}}
-  {{- $_ := set $preflightsDict "BucketsValidator" (concat (index $preflightsDict "BucketsValidator") (list "Check_assets_bucket_CORS" "Check_temp_bucket_CORS")) -}}
-  {{- $preflightOptionalList = append $preflightOptionalList "Check_assets_bucket_CORS" -}}
-  {{- $preflightOptionalList = append $preflightOptionalList "Check_temp_bucket_CORS" -}}
+  {{- $_ := set $preflightsDict "BucketsValidator" (concat (index $preflightsDict "BucketsValidator") (list "Check_assets_bucket_CORS_sanity_check" "Check_temp_bucket_CORS_sanity_check")) -}}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_assets_bucket_CORS_sanity_check" -}}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_temp_bucket_CORS_sanity_check" -}}
 
   {{/*
   We push conditionally new analyzers for the feature flags if the customer defined overridden feature flags
