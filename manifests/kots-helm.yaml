@@ -227,11 +227,11 @@ spec:
         importApi:
           image:
             registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
-            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+            tag: "4642525312b68dcb4296fb134cceb24e6aa926f2"
         importWorker:
           image:
             registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
-            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+            tag: "4642525312b68dcb4296fb134cceb24e6aa926f2"
         ldsApi:
           image:
             registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
