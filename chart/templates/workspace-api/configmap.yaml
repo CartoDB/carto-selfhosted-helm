@@ -64,6 +64,14 @@ data:
   USING_EXTERNAL_REDIS: "true"
   {{- end }}
   WORKSPACE_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
+  {{- /* Always render the switch as a real boolean: an empty value makes workspace-api throw at boot. */}}
+  WORKSPACE_HTTP_REQUEST_RESTRICT_IPS: {{ .Values.appConfigValues.workflowsHttpRequestRestrictIps | quote }}
+  {{- if gt (len .Values.appConfigValues.workflowsHttpRequestAllowedIpRanges) 0 }}
+  WORKSPACE_HTTP_REQUEST_ALLOWED_IP_RANGES: {{ join "," .Values.appConfigValues.workflowsHttpRequestAllowedIpRanges | quote }}
+  {{- end }}
+  {{- if gt (len .Values.appConfigValues.workflowsHttpRequestRestrictedIpRanges) 0 }}
+  WORKSPACE_HTTP_REQUEST_RESTRICTED_IP_RANGES: {{ join "," .Values.appConfigValues.workflowsHttpRequestRestrictedIpRanges | quote }}
+  {{- end }}
   {{- if .Values.appConfigValues.aiFeaturesEnabled }}
   WORKSPACE_LITELLM_BASE_URL: "http://{{ include "carto.aiProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   {{- end }}

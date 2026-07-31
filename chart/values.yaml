@@ -90,6 +90,12 @@ appConfigValues:
   logLevel: "info"
   ## @param appConfigValues.deploymentType The deployment type used in CARTO application
   deploymentType: "helm"
+  ## @param appConfigValues.workflowsHttpRequestRestrictIps Block the Workflows HTTP Request component from reaching private and reserved IP ranges. Enabled by default.
+  workflowsHttpRequestRestrictIps: true
+  ## @param appConfigValues.workflowsHttpRequestAllowedIpRanges CIDR ranges the HTTP Request component may reach even when otherwise blocked. Checked before the blocklist.
+  workflowsHttpRequestAllowedIpRanges: []
+  ## @param appConfigValues.workflowsHttpRequestRestrictedIpRanges Override the default IP blocklist for the HTTP Request component. When set, it replaces CARTO's defaults.
+  workflowsHttpRequestRestrictedIpRanges: []
 
 ## @section CARTO Replicated parameters
 ## Global configuration for installations using Replicated. If you change something from this section probably your self-hosted is going to stop working.

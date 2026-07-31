@@ -59,6 +59,9 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `appConfigValues.ldsIsolineProvider`                               | The default LDS provider for isolines                                                                                  | `""`                   |
 | `appConfigValues.logLevel`                                         | The log level used in CARTO application                                                                                | `info`                 |
 | `appConfigValues.deploymentType`                                   | The deployment type used in CARTO application                                                                          | `helm`                 |
+| `appConfigValues.workflowsHttpRequestRestrictIps`                  | Block the Workflows HTTP Request component from reaching private and reserved IP ranges. Enabled by default.           | `true`                 |
+| `appConfigValues.workflowsHttpRequestAllowedIpRanges`              | CIDR ranges the HTTP Request component may reach even when otherwise blocked. Checked before the blocklist.            | `[]`                   |
+| `appConfigValues.workflowsHttpRequestRestrictedIpRanges`           | Override the default IP blocklist for the HTTP Request component. When set, it replaces CARTO's defaults.              | `[]`                   |
 
 ### CARTO Replicated parameters
 
