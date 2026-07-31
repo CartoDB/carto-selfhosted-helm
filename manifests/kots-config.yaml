@@ -1043,8 +1043,10 @@ spec:
 
 
     # Self-Hosted Disconnected
+    # Hidden unless the license enables it: the feature is not generally available yet.
     - name: disconnected
       title: Self-Hosted Disconnected
+      when: '{{repl or (eq (LicenseFieldValue "installerFeaturesEnabled") "all") (contains "disconnectedEnabled" (LicenseFieldValue "installerFeaturesEnabled")) }}'
       description: |-
         Run CARTO Self-Hosted in disconnected mode: authentication is served by the internal authentication service (auth-api), federated to your own OIDC or SAML identity provider, and the accounts stack runs inside the cluster.
       items:
