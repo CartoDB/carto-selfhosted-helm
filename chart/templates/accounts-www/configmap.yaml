@@ -25,8 +25,10 @@ data:
   REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
   {{- end }}
   REACT_APP_ACCOUNTS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/"
+  {{- if not (include "carto.disconnected.enabled" .) }}
   REACT_APP_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   REACT_APP_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
+  {{- end }}
   REACT_APP_CUSTOM_TENANT: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   REACT_APP_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
   THUMBNAILS_BUCKET_EXTERNAL_URL: {{ .Values.appConfigValues.thumbnailsBucketExternalURL | quote }}

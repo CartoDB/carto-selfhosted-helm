@@ -27,9 +27,11 @@ data:
   {{- if .Values.aiApi.customHeaders }}
   AI_CUSTOM_HEADERS: {{ .Values.aiApi.customHeaders | toJson | quote }}
   {{- end }}
+  {{- if not (include "carto.disconnected.enabled" .) }}
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
+  {{- end }}
   {{- with include "carto.disconnected.commonEnv" . }}
   {{- . | nindent 2 }}
   {{- end }}
