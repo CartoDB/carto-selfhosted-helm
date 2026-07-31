@@ -287,7 +287,7 @@ spec:
         tenantRequirementsChecker:
           image:
             registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
-            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+            tag: "047a23a0866e88a5be8fede38e5d363c1db86a3b"
         internalRedis:
           image:
             registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
