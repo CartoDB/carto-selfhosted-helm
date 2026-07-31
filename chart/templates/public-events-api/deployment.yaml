@@ -26,6 +26,7 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/public-events-api/configmap.yaml") . | sha256sum }}
+        checksum/feature-flags-config: {{ include (print $.Template.BasePath "/custom-feature-flags-configmap.yaml") . | sha256sum }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.publicEventsApi.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.podAnnotations "context" $) | nindent 8 }}
@@ -152,6 +153,12 @@ spec:
               mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
               readOnly: true
             {{- end }}
+            {{- if (include "carto.featureFlags.enabled" .) }}
+            - name: feature-flags
+              mountPath: {{ include "carto.featureFlags.configMapMountDir" . }}
+              subPath: custom-feature-flags.yaml
+              readOnly: true
+            {{- end }}
           {{- if .Values.publicEventsApi.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -169,6 +176,14 @@ spec:
         - name: trusted-ca-certs
           configMap:
             name: {{ include "carto.trustedCACerts.configMapName" . }}
+        {{- end }}
+        {{- if (include "carto.featureFlags.enabled" .) }}
+        - name: feature-flags
+          configMap:
+            name: {{ template "carto.featureFlags.configMapName" . }}
+            items:
+              - key: custom-feature-flags.yaml
+                path: custom-feature-flags.yaml
         {{- end }}
         {{- if .Values.publicEventsApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.extraVolumes "context" $) | nindent 8 }}
