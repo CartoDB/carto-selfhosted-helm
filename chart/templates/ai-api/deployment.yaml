@@ -26,6 +26,7 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/ai-api/configmap.yaml") . | sha256sum }}
+        checksum/feature-flags-config: {{ include (print $.Template.BasePath "/custom-feature-flags-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/ai-api/secret.yaml") . | sha256sum }}
         checksum/postgresql-password: {{ include "carto.postgresql.passwordChecksum" . }}
         checksum/redis-password: {{ include "carto.redis.passwordChecksum" . }}
@@ -193,6 +194,12 @@ spec:
               mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
               readOnly: true
             {{- end }}
+            {{- if (include "carto.featureFlags.enabled" .) }}
+            - name: feature-flags
+              mountPath: {{ include "carto.featureFlags.configMapMountDir" . }}
+              subPath: custom-feature-flags.yaml
+              readOnly: true
+            {{- end }}
             {{- if .Values.aiApi.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
@@ -220,6 +227,14 @@ spec:
         - name: trusted-ca-certs
           configMap:
             name: {{ include "carto.trustedCACerts.configMapName" . }}
+        {{- end }}
+        {{- if (include "carto.featureFlags.enabled" .) }}
+        - name: feature-flags
+          configMap:
+            name: {{ template "carto.featureFlags.configMapName" . }}
+            items:
+              - key: custom-feature-flags.yaml
+                path: custom-feature-flags.yaml
         {{- end }}
         {{- if .Values.aiApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.extraVolumes "context" $) | nindent 8 }}

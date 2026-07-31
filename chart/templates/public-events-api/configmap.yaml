@@ -12,6 +12,9 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
+  {{- if (include "carto.featureFlags.enabled" .) }}
+  CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
+  {{- end }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
