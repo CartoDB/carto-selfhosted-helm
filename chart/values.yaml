@@ -139,7 +139,9 @@ cartoConfigValues:
   ## @param cartoConfigValues.onlyRunRouter Enable only the router component in the installation. This will just deploy the router component. Useful to check the ingress layer together with the option `cartoConfigValues.ingressTestingMode`.
   onlyRunRouter: false
   ## @param cartoConfigValues.featureFlagsOverrides YAML configuration for overriding feature flags.
-  featureFlagsOverrides: []
+  featureFlagsOverrides:
+    - name: 2026-hosted-apps
+      value: true
   ## @param cartoConfigValues.usePubSubRestApi Enable the usage of PubSub via REST API instead of gRPC.
   usePubSubRestApi: false
   ## @param cartoConfigValues.enableAiProxyEndpoint Enable the aiProxy endpoint in the router.
