@@ -943,7 +943,7 @@ Return the proper Carto tenant-requirements-checker image name
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authApiMigrations.image .Values.accountsApi.image .Values.accountsSubscriber.image .Values.accountsMigrations.image) "context" $) -}}
+{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authMigrations.image .Values.accountsApi.image .Values.accountsSubscriber.image .Values.accountsMigrations.image) "context" $) -}}
 {{- end -}}
 
 {{/*
@@ -1626,8 +1626,8 @@ database always stay shared with the accounts stack.
 {{- end -}}
 {{- end -}}
 
-{{- define "carto.authApiMigrations.image" -}}
-{{- include "carto.images.image" (dict "imageRoot" .Values.authApiMigrations.image "global" .Values.global "Chart" .Chart) -}}
+{{- define "carto.authMigrations.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.authMigrations.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
 {{- define "carto.authApi.publicBaseUrl" -}}

@@ -276,7 +276,7 @@ Return common collectors for preflights and support-bundle
         - {{ template "carto.tenantRequirementsChecker.image" . }}
         {{- if (include "carto.disconnected.enabled" .) }}
         - {{ template "carto.authApi.image" . }}
-        - {{ template "carto.authApiMigrations.image" . }}
+        - {{ template "carto.authMigrations.image" . }}
         - {{ template "carto.accountsApi.image" . }}
         - {{ template "carto.accountsSubscriber.image" . }}
         - {{ template "carto.accountsMigrations.image" . }}

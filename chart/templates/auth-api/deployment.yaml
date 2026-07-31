@@ -70,22 +70,22 @@ spec:
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
         - name: internal-auth-migrations
-          image: {{ template "carto.authApiMigrations.image" . }}
-          imagePullPolicy: {{ .Values.authApiMigrations.image.pullPolicy }}
-          {{- if .Values.authApiMigrations.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.authApiMigrations.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          image: {{ template "carto.authMigrations.image" . }}
+          imagePullPolicy: {{ .Values.authMigrations.image.pullPolicy }}
+          {{- if .Values.authMigrations.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.authMigrations.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
-          {{- if .Values.authApiMigrations.resources }}
-          resources: {{- toYaml .Values.authApiMigrations.resources | nindent 12 }}
+          {{- if .Values.authMigrations.resources }}
+          resources: {{- toYaml .Values.authMigrations.resources | nindent 12 }}
           {{- end }}
-          {{- if .Values.authApiMigrations.command }}
-          command: {{- include "common.tplvalues.render" (dict "value" .Values.authApiMigrations.command "context" $) | nindent 12 }}
+          {{- if .Values.authMigrations.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.authMigrations.command "context" $) | nindent 12 }}
           {{- else }}
           command:
             - /bin/sh
           {{- end }}
-          {{- if .Values.authApiMigrations.args }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.authApiMigrations.args "context" $) | nindent 12 }}
+          {{- if .Values.authMigrations.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.authMigrations.args "context" $) | nindent 12 }}
           {{- else }}
           args:
             - -ec

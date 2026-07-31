@@ -6975,15 +6975,15 @@ authApi:
     ##
     extraPorts: []
 
-## @section auth-api Migrations Init Container Parameters
+## @section auth Migrations Init Container Parameters
 ##
-authApiMigrations:
+authMigrations:
   ## accounts-db image
-  ## @param authApiMigrations.image.registry accounts-db image registry
-  ## @param authApiMigrations.image.repository accounts-db image repository
-  ## @param authApiMigrations.image.tag accounts-db image tag (immutable tags are recommended)
-  ## @param authApiMigrations.image.pullPolicy accounts-db image pull policy
-  ## @param authApiMigrations.image.pullSecrets accounts-db image pull secrets
+  ## @param authMigrations.image.registry accounts-db image registry
+  ## @param authMigrations.image.repository accounts-db image repository
+  ## @param authMigrations.image.tag accounts-db image tag (immutable tags are recommended)
+  ## @param authMigrations.image.pullPolicy accounts-db image pull policy
+  ## @param authMigrations.image.pullSecrets accounts-db image pull secrets
   ##
   image:
     registry: gcr.io/carto-onprem-artifacts
@@ -6999,18 +6999,18 @@ authApiMigrations:
     ##   - myRegistryKeySecretName
     ##
     pullSecrets: []
-  ## @param authApiMigrations.command Override default container command (useful when using custom images)
+  ## @param authMigrations.command Override default container command (useful when using custom images)
   ##
   command: []
-  ## @param authApiMigrations.args Override default container args (useful when using custom images)
+  ## @param authMigrations.args Override default container args (useful when using custom images)
   ##
   args: []
   ## Init container's resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-  ## @param authApiMigrations.resources.limits.memory Container memory limits in MiB
-  ## @param authApiMigrations.resources.limits.cpu Container cpu limits in milliCPU cores
-  ## @param authApiMigrations.resources.requests.memory Container memory requests in MiB
-  ## @param authApiMigrations.resources.requests.cpu Container cpu requests in milliCPU cores
+  ## @param authMigrations.resources.limits.memory Container memory limits in MiB
+  ## @param authMigrations.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param authMigrations.resources.requests.memory Container memory requests in MiB
+  ## @param authMigrations.resources.requests.cpu Container cpu requests in milliCPU cores
   ##
   resources:
     limits:
@@ -7021,13 +7021,13 @@ authApiMigrations:
       cpu: "250m"
   ## Init container Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
-  ## @param authApiMigrations.containerSecurityContext.enabled Enable container security context
-  ## @param authApiMigrations.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
-  ## @param authApiMigrations.containerSecurityContext.runAsGroup Set init container's Security Context runAsGroup
-  ## @param authApiMigrations.containerSecurityContext.runAsNonRoot Force the init container to run as non root
-  ## @param authApiMigrations.containerSecurityContext.allowPrivilegeEscalation Set init container's Security Context allowPrivilegeEscalation
-  ## @param authApiMigrations.containerSecurityContext.readOnlyRootFilesystem Set init containers' Security Context readOnlyRootFilesystem
-  ## @param authApiMigrations.containerSecurityContext.capabilities.drop removes auth-api-migrations containers' Security Context capabilities
+  ## @param authMigrations.containerSecurityContext.enabled Enable container security context
+  ## @param authMigrations.containerSecurityContext.runAsUser Set init container's Security Context runAsUser
+  ## @param authMigrations.containerSecurityContext.runAsGroup Set init container's Security Context runAsGroup
+  ## @param authMigrations.containerSecurityContext.runAsNonRoot Force the init container to run as non root
+  ## @param authMigrations.containerSecurityContext.allowPrivilegeEscalation Set init container's Security Context allowPrivilegeEscalation
+  ## @param authMigrations.containerSecurityContext.readOnlyRootFilesystem Set init containers' Security Context readOnlyRootFilesystem
+  ## @param authMigrations.containerSecurityContext.capabilities.drop removes auth-api-migrations containers' Security Context capabilities
   ##
   containerSecurityContext:
     enabled: true

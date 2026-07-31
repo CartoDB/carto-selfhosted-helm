@@ -2212,28 +2212,28 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `authApi.service.annotations`              | Additional custom annotations for auth-api service                                  | `{}`        |
 | `authApi.service.extraPorts`               | Extra ports to expose in auth-api service (normally used with the `sidecars` value) | `[]`        |
 
-### auth-api Migrations Init Container Parameters
+### auth Migrations Init Container Parameters
 
-| Name                                                                  | Description                                                           | Value                           |
-| --------------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------- |
-| `authApiMigrations.image.registry`                                    | accounts-db image registry                                            | `gcr.io/carto-onprem-artifacts` |
-| `authApiMigrations.image.repository`                                  | accounts-db image repository                                          | `accounts-db`                   |
-| `authApiMigrations.image.tag`                                         | accounts-db image tag (immutable tags are recommended)                | `""`                            |
-| `authApiMigrations.image.pullPolicy`                                  | accounts-db image pull policy                                         | `IfNotPresent`                  |
-| `authApiMigrations.image.pullSecrets`                                 | accounts-db image pull secrets                                        | `[]`                            |
-| `authApiMigrations.command`                                           | Override default container command (useful when using custom images)  | `[]`                            |
-| `authApiMigrations.args`                                              | Override default container args (useful when using custom images)     | `[]`                            |
-| `authApiMigrations.resources.limits.memory`                           | Container memory limits in MiB                                        | `2048Mi`                        |
-| `authApiMigrations.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                | `1`                             |
-| `authApiMigrations.resources.requests.memory`                         | Container memory requests in MiB                                      | `512Mi`                         |
-| `authApiMigrations.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                              | `250m`                          |
-| `authApiMigrations.containerSecurityContext.enabled`                  | Enable container security context                                     | `true`                          |
-| `authApiMigrations.containerSecurityContext.runAsUser`                | Set init container's Security Context runAsUser                       | `1000`                          |
-| `authApiMigrations.containerSecurityContext.runAsGroup`               | Set init container's Security Context runAsGroup                      | `1000`                          |
-| `authApiMigrations.containerSecurityContext.runAsNonRoot`             | Force the init container to run as non root                           | `true`                          |
-| `authApiMigrations.containerSecurityContext.allowPrivilegeEscalation` | Set init container's Security Context allowPrivilegeEscalation        | `false`                         |
-| `authApiMigrations.containerSecurityContext.readOnlyRootFilesystem`   | Set init containers' Security Context readOnlyRootFilesystem          | `true`                          |
-| `authApiMigrations.containerSecurityContext.capabilities.drop`        | removes auth-api-migrations containers' Security Context capabilities | `["all"]`                       |
+| Name                                                               | Description                                                           | Value                           |
+| ------------------------------------------------------------------ | --------------------------------------------------------------------- | ------------------------------- |
+| `authMigrations.image.registry`                                    | accounts-db image registry                                            | `gcr.io/carto-onprem-artifacts` |
+| `authMigrations.image.repository`                                  | accounts-db image repository                                          | `accounts-db`                   |
+| `authMigrations.image.tag`                                         | accounts-db image tag (immutable tags are recommended)                | `""`                            |
+| `authMigrations.image.pullPolicy`                                  | accounts-db image pull policy                                         | `IfNotPresent`                  |
+| `authMigrations.image.pullSecrets`                                 | accounts-db image pull secrets                                        | `[]`                            |
+| `authMigrations.command`                                           | Override default container command (useful when using custom images)  | `[]`                            |
+| `authMigrations.args`                                              | Override default container args (useful when using custom images)     | `[]`                            |
+| `authMigrations.resources.limits.memory`                           | Container memory limits in MiB                                        | `2048Mi`                        |
+| `authMigrations.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                | `1`                             |
+| `authMigrations.resources.requests.memory`                         | Container memory requests in MiB                                      | `512Mi`                         |
+| `authMigrations.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                              | `250m`                          |
+| `authMigrations.containerSecurityContext.enabled`                  | Enable container security context                                     | `true`                          |
+| `authMigrations.containerSecurityContext.runAsUser`                | Set init container's Security Context runAsUser                       | `1000`                          |
+| `authMigrations.containerSecurityContext.runAsGroup`               | Set init container's Security Context runAsGroup                      | `1000`                          |
+| `authMigrations.containerSecurityContext.runAsNonRoot`             | Force the init container to run as non root                           | `true`                          |
+| `authMigrations.containerSecurityContext.allowPrivilegeEscalation` | Set init container's Security Context allowPrivilegeEscalation        | `false`                         |
+| `authMigrations.containerSecurityContext.readOnlyRootFilesystem`   | Set init containers' Security Context readOnlyRootFilesystem          | `true`                          |
+| `authMigrations.containerSecurityContext.capabilities.drop`        | removes auth-api-migrations containers' Security Context capabilities | `["all"]`                       |
 
 ### accounts-api Parameters
 
