@@ -1639,7 +1639,7 @@ database always stay shared with the accounts stack.
 {{- end -}}
 
 {{- define "carto.authApi.issuer" -}}
-{{- default (include "carto.authApi.publicBaseUrl" .) .Values.authApi.issuer -}}
+{{- include "carto.authApi.publicBaseUrl" . -}}
 {{- end -}}
 
 {{/*
@@ -1653,7 +1653,7 @@ auth-api mints with.
 {{- if (include "carto.disconnected.enabled" .) -}}
 CARTO_INTERNAL_JWKS_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}/.well-known/jwks.json"
 CARTO_INTERNAL_ISSUER: {{ include "carto.authApi.issuer" . | quote }}
-CARTO_AUTH_AUDIENCE: {{ .Values.authApi.audience | quote }}
+CARTO_AUTH_AUDIENCE: "carto-cloud-native-api"
 CARTO_AUTH_NAMESPACE: "http://app.carto.com"
 CARTO_AUTH_API_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
 {{- end -}}
@@ -1693,15 +1693,11 @@ REACT_APP_OIDC_CLIENT_ID: {{ include "carto.authApi.spaClient.clientId" . | quot
 {{- end -}}
 
 {{/*
-Base URL of the accounts-api service that auth-api calls for quota checks and SSO group sync.
-Defaults to the in-cluster accounts-api service when authApi.accountsApiUrl is not set.
+Base URL of the in-cluster accounts-api service that auth-api calls for quota checks and SSO
+group sync.
 */}}
 {{- define "carto.authApi.accountsApiUrl" -}}
-{{- if .Values.authApi.accountsApiUrl -}}
-{{- trimSuffix "/" .Values.authApi.accountsApiUrl -}}
-{{- else -}}
 {{- printf "http://%s.%s.svc.%s" (include "carto.accountsApi.fullname" .) .Release.Namespace .Values.clusterDomain -}}
-{{- end -}}
 {{- end -}}
 
 {{- define "carto.accountsApi.fullname" -}}

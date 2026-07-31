@@ -16,7 +16,7 @@ data:
   AUTH_API_PORT: {{ .Values.authApi.containerPorts.http | quote }}
   CARTO_AUTH_PROTOCOL: {{ .Values.authApi.protocol | quote }}
   CARTO_INTERNAL_ISSUER: {{ include "carto.authApi.issuer" . | quote }}
-  CARTO_AUTH_AUDIENCE: {{ .Values.authApi.audience | quote }}
+  CARTO_AUTH_AUDIENCE: "carto-cloud-native-api"
   CARTO_AUTH_NAMESPACE: "http://app.carto.com"
   CARTO_AUTH_PUBLIC_BASE_URL: {{ include "carto.authApi.publicBaseUrl" . | quote }}
   CARTO_AUTH_ALLOWED_ORIGINS: {{ default (printf "https://%s" .Values.appConfigValues.selfHostedDomain) (join "," .Values.authApi.allowedOrigins) | quote }}
