@@ -216,17 +216,90 @@ spec:
   ## Values from Advanced Configuration
   optionalValues:
     ## TEMPORAL PATCHED IMAGES
-    # - when: 'true'
-    #   recursiveMerge: true
-    #   values:
-    #     httpCache:
-    #       image:
-    #         registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
-    #         tag: "feature_sc_457242_add_an_easier_approach_for_enabling_the_debug"
-    #     httpCache:
-    #       image:
-    #         registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
-    #         tag: "latest"
+    ## Frozen to each component's current main build (immutable commit-sha tags), 2026-07-30.
+    - when: 'true'
+      recursiveMerge: true
+      values:
+        accountsWww:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "3767f79605ee9a8f3ede4144f5138bed454dfd01"
+        importApi:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "4642525312b68dcb4296fb134cceb24e6aa926f2"
+        importWorker:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "4642525312b68dcb4296fb134cceb24e6aa926f2"
+        ldsApi:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+        publicEventsApi:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+        mapsApi:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+        sqlWorker:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+        router:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+        routerMetrics:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+        httpCache:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+        notifier:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+        cdnInvalidatorSub:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+        workspaceApi:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+        workspaceSubscriber:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+        workspaceWww:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "b5253800862ade34ee87b03f7d04304b673959e8"
+        workspaceMigrations:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+        tenantRequirementsChecker:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "047a23a0866e88a5be8fede38e5d363c1db86a3b"
+        internalRedis:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+        aiApi:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
+        aiProxy:
+          image:
+            registry: registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-artifacts
+            tag: "c1374a9006e8a8e0e9b50ae83a96c332982bf237"
 
     ## Specify service account if workload identity is disabled
     - when: '{{repl ConfigOptionEquals "enableGoogleWorkloadIdentity" "0" }}'
