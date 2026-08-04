@@ -1285,23 +1285,12 @@ importWorker:
   ## @param importWorker.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
-  ## @param importWorker.defaultNodeProcessMaxOldSpace Node process max-old-space-size in MB. Not derived from container memory on purpose:
-  ## DuckDB allocates native memory outside the V8 heap, so the heap must not scale with the container.
-  ## If you size the worker below 8Gi, lower this (and duckdb.memoryLimit) accordingly.
+  ## @param importWorker.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
-  defaultNodeProcessMaxOldSpace: 4096
-  ## DuckDB import/export engine tuning. Memory limit bounds DuckDB's native allocations;
-  ## overflow spills to tempDirectory (disk-backed /tmp volume) up to maxTempDirectorySize, failing the job cleanly when exceeded.
-  ## @param importWorker.duckdb.memoryLimit DuckDB native memory limit (outside the Node heap)
-  ## @param importWorker.duckdb.threads DuckDB thread count
-  ## @param importWorker.duckdb.tempDirectory DuckDB spill directory (must live on the tmp volume)
-  ## @param importWorker.duckdb.maxTempDirectorySize Max size of the DuckDB spill directory
+  nodeProcessMaxOldSpacePercentage: 50
+  ## @param importWorker.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
-  duckdb:
-    memoryLimit: "6GB"
-    threads: 4
-    tempDirectory: "/tmp/duckdb-spill"
-    maxTempDirectorySize: "15GB"
+  defaultNodeProcessMaxOldSpace: 2048
   ## import-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param importWorker.resources.limits.memory Container memory limits in MiB
@@ -1311,11 +1300,11 @@ importWorker:
   ##
   resources:
     limits:
-      memory: "12288Mi"
-      cpu: "4000m"
+      memory: "8192Mi"
+      cpu: "2000m"
     requests:
-      memory: "6144Mi"
-      cpu: "1000m"
+      memory: "3072Mi"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importWorker.podSecurityContext.enabled Enabled import-worker pods' Security Context
@@ -5606,6 +5595,22 @@ externalPostgresql:
   awsRdsRegion: ""
   aiProxyDatabaseName: "aiproxy"
 
+## @section Trusted CA certificates
+## Extra CA certificate(s) to trust fleet-wide for OUTBOUND TLS (verifying servers CARTO connects to).
+## Use this to trust a private/self-signed CA for any external endpoint the app talks to over TLS
+## (e.g. an S3-compatible object store, a custom proxy, etc.) without needing an external proxy.
+## Provide the certificate inline via `trustedCACerts.value`, or reference a pre-existing ConfigMap
+## via `trustedCACerts.existingConfigmap`. Set at most one of the two.
+##
+## @param trustedCACerts.value Inline PEM CA certificate(s) to trust for OUTBOUND TLS (verifying servers CARTO connects to, e.g. a private-CA S3-compatible endpoint). May contain multiple concatenated PEM blocks. One of `trustedCACerts.value` or `trustedCACerts.existingConfigmap` may be set.
+## @param trustedCACerts.existingConfigmap.name Name of a pre-existing ConfigMap holding the CA bundle. Ignored if `trustedCACerts.value` is set.
+## @param trustedCACerts.existingConfigmap.key Key within that ConfigMap (default `ca.crt`). Ignored if `trustedCACerts.value` is set.
+trustedCACerts:
+  value: ""
+  existingConfigmap:
+    name: ""
+    key: ""
+
 ## @section External proxy configuration
 ## Configuration for an external proxy provided by the client. Only HTTP and HTTPS proxies are supported
 externalProxy:
@@ -5621,10 +5626,10 @@ externalProxy:
   excludedDomains: []
   ## @param externalProxy.sslRejectUnauthorized Whether or not verify the HTTPS proxy SSL certificate
   sslRejectUnauthorized: true
-  ## @param externalProxy.sslCA CA for the proxy SSL certificate in case is self-signed or signed by a not well-known CA
+  ## @param externalProxy.sslCA CA for the proxy SSL certificate in case is self-signed or signed by a not well-known CA. # DEPRECATED: use `trustedCACerts.value` instead. Still honoured and concatenated into the same trusted bundle during the transition (only while `externalProxy.enabled`), but prefer the global `trustedCACerts.value`.
   sslCA: ""
-  ## @param externalProxy.sslCAConfigmap.name Name of the pre-existent ConfigMap containing the `externalProxy.sslCAConfigmap.key`.
-  ## @param externalProxy.sslCAConfigmap.key Key to find in `externalProxy.sslCAConfigmap.name` where the custom CA certificate is stored.
+  ## @param externalProxy.sslCAConfigmap.name Name of the pre-existent ConfigMap containing the `externalProxy.sslCAConfigmap.key`. # DEPRECATED: use `trustedCACerts.existingConfigmap.name` instead. Still mounted during the transition (only while `externalProxy.enabled`).
+  ## @param externalProxy.sslCAConfigmap.key Key to find in `externalProxy.sslCAConfigmap.name` where the custom CA certificate is stored. # DEPRECATED: use `trustedCACerts.existingConfigmap.key` instead.
   sslCAConfigmap:
     name: ""
     key: ""

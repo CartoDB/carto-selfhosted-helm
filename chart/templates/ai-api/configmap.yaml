@@ -17,8 +17,19 @@ data:
   # AI_OPENAI_ENDPOINT points to aiProxy proxy service, not directly to OpenAI
   # aiProxy acts as a unified gateway that can route to various AI providers
   AI_OPENAI_ENDPOINT: "http://{{ include "carto.aiProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}/v1"
+  # AI_SQL_API_URL and AI_MAPS_API_URL both point to maps-api: it serves the SQL
+  # and the Maps API surfaces in self-hosted, unlike SaaS where they are split
   AI_SQL_API_URL: "http://{{ include "carto.mapsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+  AI_MAPS_API_URL: "http://{{ include "carto.mapsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   AI_LDS_API_URL: "http://{{ include "carto.ldsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+  AI_WORKSPACE_API_URL: "http://{{ include "carto.workspaceApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+  AI_IMPORT_API_URL: "http://{{ include "carto.importApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+  {{- if .Values.cartoConfigValues.cartoAccApiDomain }}
+  AI_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
+  {{- end }}
+  {{- if .Values.cartoConfigValues.cartoDoApiDomain }}
+  AI_DO_CATALOG_API_URL: "https://{{ .Values.cartoConfigValues.cartoDoApiDomain }}"
+  {{- end }}
   AI_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   AI_API_PUBLIC_URL_ALLOWED_HOSTS: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   AI_API_PUBLIC_URL_HOST: {{ .Values.appConfigValues.selfHostedDomain | quote }}
@@ -34,6 +45,9 @@ data:
   CARTO_TRACING_MODE: "local"
   {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
+  {{- if (include "carto.featureFlags.enabled" .) }}
+  CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
+  {{- end }}
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   {{- if .Values.externalProxy.enabled }}
@@ -43,17 +57,17 @@ data:
   https_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
   GRPC_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   grpc_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
-  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
-  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
-  {{- end }}
   {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
-  {{- if .Values.externalProxy.sslCA }}
-  NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
-  {{- end }}
   NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
+  {{- end }}
+  {{- if (include "carto.trustedCACerts.enabled" .) }}
+  NODE_EXTRA_CA_CERTS: {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . | quote }}
+  {{- end }}
+  {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+  GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   NODE_OPTIONS: {{ template "carto.aiApi.nodeOptions" . }}
