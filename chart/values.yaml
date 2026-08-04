@@ -2729,7 +2729,7 @@ router:
   ##
   image:
     registry: gcr.io/carto-onprem-artifacts
-    repository: router/router-http
+    repository: router-http
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -3832,7 +3832,7 @@ cdnInvalidatorSub:
   ##
   image:
     registry: gcr.io/carto-onprem-artifacts
-    repository: consumers/cdn-invalidator-sub
+    repository: cdn-invalidator-sub
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -5649,7 +5649,7 @@ upgradeCheck:
   ##
   image:
     registry: gcr.io/carto-onprem-artifacts
-    repository: router/router-http
+    repository: router-http
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
@@ -5724,7 +5724,7 @@ routerMetrics:
   ##
   image:
     registry: gcr.io/carto-onprem-artifacts
-    repository: router/router-metrics
+    repository: router-metrics
     ## Specify a custom image tag
     tag: ""
     ## Specify a imagePullPolicy
