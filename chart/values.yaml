@@ -15,8 +15,44 @@ appConfigValues:
   aiFeaturesEnabled: false
   ## @param appConfigValues.publicEventsApiEnabled Enable the public events API
   publicEventsApiEnabled: false
-  ## @param appConfigValues.disconnectedEnabled Enable the self-hosted disconnected mode: deploys the internal authentication service (auth-api) and the in-cluster accounts stack, and switches every backend service to internal authentication
-  disconnectedEnabled: false
+  disconnected:
+    ## @param appConfigValues.disconnected.enabled Enable the self-hosted disconnected mode: deploys the internal authentication service (auth-api) and the in-cluster accounts stack, and switches every backend service to internal authentication
+    enabled: false
+    ## @param appConfigValues.disconnected.protocol Protocol used to federate authentication to the external identity provider. Allowed values: `oidc` or `saml`
+    protocol: ""
+    ## @param appConfigValues.disconnected.publicBaseUrl External base URL where auth-api is exposed. If empty, `https://<appConfigValues.selfHostedDomain>/auth-api` is used
+    publicBaseUrl: ""
+    ## @param appConfigValues.disconnected.orgId Organization ID (`org_id` claim) of this self-hosted installation
+    orgId: "org_carto_sh_local"
+    ## @param appConfigValues.disconnected.allowedOrigins List of origins allowed by auth-api CORS. Empty defaults to the platform origin (`https://<appConfigValues.selfHostedDomain>`)
+    allowedOrigins: []
+    spaClient:
+      ## @param appConfigValues.disconnected.spaClient.clientId Client ID of the platform SPA client. Required when appConfigValues.disconnected.enabled is true
+      clientId: ""
+      ## @param appConfigValues.disconnected.spaClient.redirectUris Redirect URIs registered on the platform SPA client. Empty defaults to both SPA login callbacks (`https://<appConfigValues.selfHostedDomain>` and `.../acc/`)
+      redirectUris: []
+    oidc:
+      ## @param appConfigValues.disconnected.oidc.issuerUrl Issuer URL of the external OIDC identity provider
+      issuerUrl: ""
+      ## @param appConfigValues.disconnected.oidc.clientId Client ID of auth-api at the external OIDC identity provider
+      clientId: ""
+      ## @param appConfigValues.disconnected.oidc.emailKey Dot-path to the email claim in the identity provider id_token. Leave empty for the service default (`email`)
+      emailKey: ""
+      ## @param appConfigValues.disconnected.oidc.groupsKey Dot-path to the groups claim in the identity provider id_token. Leave empty for the service default (`groups`)
+      groupsKey: ""
+    saml:
+      ## @param appConfigValues.disconnected.saml.metadataUrl URL of the SAML identity provider metadata XML. Ignored if `appConfigValues.disconnected.saml.metadataXml` is defined
+      metadataUrl: ""
+      ## @param appConfigValues.disconnected.saml.metadataXml Inline SAML identity provider metadata XML. Preferred in production (no boot-time network dependency)
+      metadataXml: ""
+      ## @param appConfigValues.disconnected.saml.emailAttribute Assertion attribute holding the user email. Leave empty to fall back to the NameID
+      emailAttribute: ""
+      ## @param appConfigValues.disconnected.saml.groupsAttribute Assertion attribute holding the user groups. Leave empty for the service default (`groups`)
+      groupsAttribute: ""
+    ## @param appConfigValues.disconnected.accessTokenTtlSeconds Access token TTL in seconds. Leave empty for the service default
+    accessTokenTtlSeconds: ""
+    ## @param appConfigValues.disconnected.refreshTokenTtlSeconds Refresh token TTL in seconds. Leave empty for the service default
+    refreshTokenTtlSeconds: ""
   ## @param appConfigValues.httpCacheEnabled Enable the internal httpCache
   httpCacheEnabled: true
   ## @param appConfigValues.importAwsRoleArn ARN Role to be used to import files from the bucket
@@ -168,6 +204,16 @@ appSecrets:
     value: ""
     ## @param appSecrets.googleMapsApiKey.existingSecret.name Name of the pre-existent secret containing the `appSecrets.googleMapsApiKey.existingSecret.key`. If `appSecrets.googleMapsApiKey.value` is defined, this value is going to be ignored and not used.
     ## @param appSecrets.googleMapsApiKey.existingSecret.key Key to find in `appSecrets.googleMapsApiKey.existingSecret.name` where the value of `appSecrets.googleMapsApiKey` is found. If `appSecrets.googleMapsApiKey.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra appSecrets.authApiOidcClientSecret Client secret of auth-api at the external OIDC identity provider (self-hosted disconnected mode, `oidc` protocol only).
+  authApiOidcClientSecret:
+    ## @param appSecrets.authApiOidcClientSecret.value Value of the OIDC client secret. One of `appSecrets.authApiOidcClientSecret.value` or `appSecrets.authApiOidcClientSecret.existingSecret` could be defined.
+    value: ""
+    ## @param appSecrets.authApiOidcClientSecret.existingSecret.name Name of the pre-existent secret containing the `appSecrets.authApiOidcClientSecret.existingSecret.key`. If `appSecrets.authApiOidcClientSecret.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.authApiOidcClientSecret.existingSecret.key Key to find in `appSecrets.authApiOidcClientSecret.existingSecret.name` where the value of `appSecrets.authApiOidcClientSecret` is found. If `appSecrets.authApiOidcClientSecret.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""
@@ -332,6 +378,16 @@ cartoSecrets:
     value: ""
     ## @param cartoSecrets.jwtApiSecret.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.jwtApiSecret.existingSecret.key`. If `cartoSecrets.jwtApiSecret.value` is defined, this value is going to be ignored and not used.
     ## @param cartoSecrets.jwtApiSecret.existingSecret.key Key to find in `cartoSecrets.jwtApiSecret.existingSecret.name` where the value of `cartoSecrets.jwtApiSecret` is found. If `cartoSecrets.jwtApiSecret.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra cartoSecrets.authApiInternalServiceToken Shared secret between auth-api and accounts-api internal endpoints (self-hosted disconnected mode only).
+  authApiInternalServiceToken:
+    ## @param cartoSecrets.authApiInternalServiceToken.value Value of the shared secret between auth-api and accounts-api internal endpoints. One of `cartoSecrets.authApiInternalServiceToken.value` or `cartoSecrets.authApiInternalServiceToken.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.authApiInternalServiceToken.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.authApiInternalServiceToken.existingSecret.key`. If `cartoSecrets.authApiInternalServiceToken.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.authApiInternalServiceToken.existingSecret.key Key to find in `cartoSecrets.authApiInternalServiceToken.existingSecret.name` where the value of `cartoSecrets.authApiInternalServiceToken` is found. If `cartoSecrets.authApiInternalServiceToken.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""
@@ -5577,6 +5633,9 @@ internalPostgresql:
 ## @param externalPostgresql.awsRdsRegion Region of the RDS PostgreSQL database in AWS. Needed when EKS Pod Identity is enabled
 ## @param externalPostgresql.aiProxyDatabaseName Database name for aiProxy
 ## @param externalPostgresql.accountsDatabaseName Database name for the accounts model and internal-auth schema (self-hosted disconnected mode only). Lives on the same PostgreSQL and credentials as the main CARTO database and must be created beforehand, like the aiProxy one
+## @param externalPostgresql.authApiUser Dedicated PostgreSQL user for auth-api only, pre-created with its grants on the accounts database (self-hosted disconnected mode). Leave empty to reuse the shared platform user
+## @param externalPostgresql.authApiPassword Password for externalPostgresql.authApiUser
+## @param externalPostgresql.existingSecretAuthApiPasswordKey Name of the key inside the secret containing the auth-api DB password
 ##
 externalPostgresql:
   host: localhost
@@ -5597,9 +5656,10 @@ externalPostgresql:
   awsEksPodIdentityEnabled: false
   awsRdsRegion: ""
   aiProxyDatabaseName: "aiproxy"
-  ## The accounts database rides the main PostgreSQL on purpose: one instance, one service user,
-  ## separate database (industry-standard default — Keycloak/ZITADEL ship the same shape).
   accountsDatabaseName: "accounts"
+  authApiUser: ""
+  authApiPassword: ""
+  existingSecretAuthApiPasswordKey: ""
 
 ## @section External proxy configuration
 ## Configuration for an external proxy provided by the client. Only HTTP and HTTPS proxies are supported
@@ -6590,93 +6650,7 @@ authApi:
   ## @param authApi.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
   defaultNodeProcessMaxOldSpace: 768
-  ## @param authApi.protocol Protocol used to federate authentication to the external identity provider. Allowed values: `oidc` or `saml`
-  ##
-  protocol: ""
-  ## @param authApi.publicBaseUrl External base URL where auth-api is exposed. If empty, `https://<appConfigValues.selfHostedDomain>/auth-api` is used
-  ##
-  publicBaseUrl: ""
-  ## @param authApi.orgId Organization ID (`org_id` claim) of this self-hosted installation
-  ##
-  orgId: "org_carto_sh_local"
-  ## @param authApi.allowedOrigins List of origins allowed by auth-api CORS. Empty defaults to the platform origin (`https://<appConfigValues.selfHostedDomain>`)
-  ##
-  allowedOrigins: []
-  ## The boot-seeded platform SPA client, shared by workspace-www and accounts-www
-  spaClient:
-    ## @param authApi.spaClient.clientId Client ID of the platform SPA client. Empty defaults to `carto-spa`
-    ##
-    clientId: ""
-    ## @param authApi.spaClient.redirectUris Redirect URIs registered on the platform SPA client. Empty defaults to both SPA callbacks (`https://<appConfigValues.selfHostedDomain>` and `.../callback`)
-    ##
-    redirectUris: []
-  ## OIDC federation configuration. Only used when `authApi.protocol` is `oidc`
-  oidc:
-    ## @param authApi.oidc.issuerUrl Issuer URL of the external OIDC identity provider
-    ##
-    issuerUrl: ""
-    ## @param authApi.oidc.clientId Client ID of auth-api at the external OIDC identity provider
-    ##
-    clientId: ""
-    ## @param authApi.oidc.clientSecret Client secret of auth-api at the external OIDC identity provider. One of `authApi.oidc.clientSecret` or `authApi.oidc.existingSecret` could be defined
-    ##
-    clientSecret: ""
-    ## @param authApi.oidc.existingSecret.name Name of the pre-existent secret containing the `authApi.oidc.existingSecret.key`. If `authApi.oidc.clientSecret` is defined, this value is going to be ignored and not used.
-    ## @param authApi.oidc.existingSecret.key Key to find in `authApi.oidc.existingSecret.name` where the OIDC client secret is found. If `authApi.oidc.clientSecret` is defined, this value is going to be ignored and not used.
-    ##
-    existingSecret:
-      name: ""
-      key: ""
-    ## @param authApi.oidc.emailKey Dot-path to the email claim in the identity provider id_token. Leave empty for the service default (`email`)
-    ##
-    emailKey: ""
-    ## @param authApi.oidc.groupsKey Dot-path to the groups claim in the identity provider id_token. Leave empty for the service default (`groups`)
-    ##
-    groupsKey: ""
-  ## SAML federation configuration. Only used when `authApi.protocol` is `saml`
-  saml:
-    ## @param authApi.saml.metadataUrl URL of the SAML identity provider metadata XML. Ignored if `authApi.saml.metadataXml` is defined
-    ##
-    metadataUrl: ""
-    ## @param authApi.saml.metadataXml Inline SAML identity provider metadata XML. Preferred in production (no boot-time network dependency)
-    ##
-    metadataXml: ""
-    ## @param authApi.saml.emailAttribute Assertion attribute holding the user email. Leave empty to fall back to the NameID
-    ##
-    emailAttribute: ""
-    ## @param authApi.saml.groupsAttribute Assertion attribute holding the user groups. Leave empty for the service default (`groups`)
-    ##
-    groupsAttribute: ""
-  ## @extra authApi.internalServiceToken Shared secret between auth-api and accounts-api internal endpoints.
-  internalServiceToken:
-    ## @param authApi.internalServiceToken.value Value of the shared secret between auth-api and accounts-api internal endpoints. One of `authApi.internalServiceToken.value` or `authApi.internalServiceToken.existingSecret` could be defined.
-    value: ""
-    ## @param authApi.internalServiceToken.existingSecret.name Name of the pre-existent secret containing the `authApi.internalServiceToken.existingSecret.key`. If `authApi.internalServiceToken.value` is defined, this value is going to be ignored and not used.
-    ## @param authApi.internalServiceToken.existingSecret.key Key to find in `authApi.internalServiceToken.existingSecret.name` where the value of `authApi.internalServiceToken` is found. If `authApi.internalServiceToken.value` is defined, this value is going to be ignored and not used.
-    ##
-    existingSecret:
-      name: ""
-      key: ""
-  ## @extra authApi.postgresql Optional dedicated PostgreSQL credentials for auth-api only. auth-api owns the `auth` schema (JWT signing keys) inside the accounts database; a dedicated login role scoped to that schema keeps the shared platform user out of it. Only the user and password diverge — host, port and database stay shared with the accounts stack. Leave empty to reuse the shared platform PostgreSQL user (default). The role and its grants must be pre-created on the database; the chart only consumes the credentials. Choose the model before the first install — switching afterwards is not zero-downtime (auth migrations must be re-run as the new role).
-  postgresql:
-    ## @param authApi.postgresql.user Dedicated PostgreSQL user for auth-api. Leave empty to reuse the shared platform user
-    user: ""
-    ## @extra authApi.postgresql.password Password for authApi.postgresql.user
-    password:
-      ## @param authApi.postgresql.password.value Value of the password for authApi.postgresql.user. One of `authApi.postgresql.password.value` or `authApi.postgresql.password.existingSecret` could be defined.
-      value: ""
-      ## @param authApi.postgresql.password.existingSecret.name Name of the pre-existent secret containing the `authApi.postgresql.password.existingSecret.key`. If `authApi.postgresql.password.value` is defined, this value is going to be ignored and not used.
-      ## @param authApi.postgresql.password.existingSecret.key Key to find in `authApi.postgresql.password.existingSecret.name` where the value of `authApi.postgresql.password` is found. If `authApi.postgresql.password.value` is defined, this value is going to be ignored and not used.
-      ##
-      existingSecret:
-        name: ""
-        key: ""
-  ## @param authApi.accessTokenTtlSeconds Access token TTL in seconds. Leave empty for the service default
-  ##
-  accessTokenTtlSeconds: ""
-  ## @param authApi.refreshTokenTtlSeconds Refresh token TTL in seconds. Leave empty for the service default
-  ##
-  refreshTokenTtlSeconds: ""
+
   ## Configure extra options for auth-api containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param authApi.livenessProbe.enabled Enable livenessProbe on auth-api containers
@@ -7033,9 +7007,6 @@ authMigrations:
 
 ## @section accounts-api Parameters
 ##
-## accounts-api is only deployed when appConfigValues.disconnectedEnabled is true (self-hosted disconnected mode).
-## It shares the platform PostgreSQL connection, on the database named by externalPostgresql.accountsDatabaseName.
-##
 accountsApi:
   ##
   ## accounts-api image
@@ -7365,9 +7336,6 @@ accountsApi:
     extraPorts: []
 
 ## @section accounts-subscriber Parameters
-##
-## accounts-subscriber runs the accounts-api PubSub subscriber process. It reuses the accounts-api
-## ConfigMap and Secret; only its image and pod-level settings are configured here.
 ##
 accountsSubscriber:
   ##

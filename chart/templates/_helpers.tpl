@@ -82,7 +82,7 @@ LITELLM_MASTER_KEY: cartoSecrets.litellmMasterKey
 LITELLM_SALT_KEY: cartoSecrets.litellmSaltKey
 AI_OPENAI_API_KEY: cartoSecrets.litellmMasterKey
 GEMINI_API_KEY: cartoSecrets.geminiApiKey
-CARTO_INTERNAL_SERVICE_TOKEN: authApi.internalServiceToken
+CARTO_INTERNAL_SERVICE_TOKEN: cartoSecrets.authApiInternalServiceToken
 {{- end -}}
 
 {{/*
@@ -1557,7 +1557,7 @@ this helper instead of the raw value, so the public toggle can evolve without to
 Returns "true" when enabled, empty string (falsy) otherwise.
 */}}
 {{- define "carto.disconnected.enabled" -}}
-{{- if .Values.appConfigValues.disconnectedEnabled -}}true{{- end -}}
+{{- if .Values.appConfigValues.disconnected.enabled -}}true{{- end -}}
 {{- end -}}
 
 {{- define "carto.authApi.fullname" -}}
@@ -1586,22 +1586,19 @@ Returns "true" when enabled, empty string (falsy) otherwise.
 
 {{/*
 auth-api PostgreSQL credentials: dedicated role when set, otherwise the shared platform user.
-This is the only sanctioned per-service credential divergence — auth-api owns the `auth` schema
-(signing keys) inside the accounts database, so only its user/password may differ; host, port and
-database always stay shared with the accounts stack.
 */}}
 {{- define "carto.authApi.postgresql.user" -}}
-{{- if .Values.authApi.postgresql.user -}}
-{{- .Values.authApi.postgresql.user -}}
+{{- if .Values.externalPostgresql.authApiUser -}}
+{{- .Values.externalPostgresql.authApiUser -}}
 {{- else -}}
 {{- include "carto.postgresql.user" . -}}
 {{- end -}}
 {{- end -}}
 
 {{- define "carto.authApi.postgresql.secretName" -}}
-{{- if .Values.authApi.postgresql.password.existingSecret.name -}}
-{{- .Values.authApi.postgresql.password.existingSecret.name -}}
-{{- else if .Values.authApi.postgresql.password.value -}}
+{{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretAuthApiPasswordKey -}}
+{{- .Values.externalPostgresql.existingSecret -}}
+{{- else if .Values.externalPostgresql.authApiPassword -}}
 {{- include "carto.authApi.secretName" . -}}
 {{- else -}}
 {{- include "carto.postgresql.secretName" . -}}
@@ -1609,9 +1606,9 @@ database always stay shared with the accounts stack.
 {{- end -}}
 
 {{- define "carto.authApi.postgresql.secret.key" -}}
-{{- if .Values.authApi.postgresql.password.existingSecret.name -}}
-{{- .Values.authApi.postgresql.password.existingSecret.key -}}
-{{- else if .Values.authApi.postgresql.password.value -}}
+{{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretAuthApiPasswordKey -}}
+{{- .Values.externalPostgresql.existingSecretAuthApiPasswordKey -}}
+{{- else if .Values.externalPostgresql.authApiPassword -}}
 {{- printf "ACCOUNTS_POSTGRES_PASSWORD" -}}
 {{- else -}}
 {{- include "carto.postgresql.secret.key" . -}}
@@ -1631,8 +1628,8 @@ database always stay shared with the accounts stack.
 {{- end -}}
 
 {{- define "carto.authApi.publicBaseUrl" -}}
-{{- if .Values.authApi.publicBaseUrl -}}
-{{- trimSuffix "/" .Values.authApi.publicBaseUrl -}}
+{{- if .Values.appConfigValues.disconnected.publicBaseUrl -}}
+{{- trimSuffix "/" .Values.appConfigValues.disconnected.publicBaseUrl -}}
 {{- else -}}
 {{- printf "https://%s/auth-api" .Values.appConfigValues.selfHostedDomain -}}
 {{- end -}}
@@ -1660,22 +1657,15 @@ CARTO_AUTH_API_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release
 {{- end -}}
 
 {{/*
-Client ID of the boot-seeded platform SPA client. auth-api registers it and both SPAs
-authenticate with it, so all three must read this one helper or login breaks on a mismatch.
-*/}}
-{{- define "carto.authApi.spaClient.clientId" -}}
-{{- default "carto-spa" .Values.authApi.spaClient.clientId -}}
-{{- end -}}
-
-{{/*
-Redirect URIs registered on the platform SPA client. The default covers both SPAs: workspace-www
-redirects to the bare origin, accounts-www to /callback. Registering only one 400s the other.
+Redirect URIs registered on the platform SPA client: workspace-www logs in from the bare origin,
+accounts-www from its /acc/ app root. Must match accounts-api's tenant-up updateAuth0App
+derivation, which overwrites this seed on the first TenantUp.
 */}}
 {{- define "carto.authApi.spaClient.redirectUris" -}}
-{{- if .Values.authApi.spaClient.redirectUris -}}
-{{- join "," .Values.authApi.spaClient.redirectUris -}}
+{{- if .Values.appConfigValues.disconnected.spaClient.redirectUris -}}
+{{- join "," .Values.appConfigValues.disconnected.spaClient.redirectUris -}}
 {{- else -}}
-{{- printf "https://%s,https://%s/callback" .Values.appConfigValues.selfHostedDomain .Values.appConfigValues.selfHostedDomain -}}
+{{- printf "https://%s,https://%s/acc/" .Values.appConfigValues.selfHostedDomain .Values.appConfigValues.selfHostedDomain -}}
 {{- end -}}
 {{- end -}}
 
@@ -1688,7 +1678,7 @@ issuer auth-api mints with, hence the shared helper — a mismatch fails the OID
 {{- if (include "carto.disconnected.enabled" .) -}}
 REACT_APP_AUTH_PROVIDER: "oidc"
 REACT_APP_OIDC_AUTHORITY: {{ include "carto.authApi.issuer" . | quote }}
-REACT_APP_OIDC_CLIENT_ID: {{ include "carto.authApi.spaClient.clientId" . | quote }}
+REACT_APP_OIDC_CLIENT_ID: {{ .Values.appConfigValues.disconnected.spaClient.clientId | quote }}
 {{- end -}}
 {{- end -}}
 
@@ -1696,7 +1686,7 @@ REACT_APP_OIDC_CLIENT_ID: {{ include "carto.authApi.spaClient.clientId" . | quot
 Base URL of the in-cluster accounts-api service that auth-api calls for quota checks and SSO
 group sync.
 */}}
-{{- define "carto.authApi.accountsApiUrl" -}}
+{{- define "carto.authApi.internalAccountsApiUrl" -}}
 {{- printf "http://%s.%s.svc.%s" (include "carto.accountsApi.fullname" .) .Release.Namespace .Values.clusterDomain -}}
 {{- end -}}
 

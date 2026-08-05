@@ -148,13 +148,13 @@ spec:
                 secretKeyRef:
                   name: {{ include "carto.authApi.postgresql.secretName" . }}
                   key: {{ include "carto.authApi.postgresql.secret.key" . }}
-            {{- if eq .Values.authApi.protocol "oidc" }}
+            {{- if eq .Values.appConfigValues.disconnected.protocol "oidc" }}
             - name: CARTO_OIDC_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
-                  {{- if .Values.authApi.oidc.existingSecret.name }}
-                  name: {{ .Values.authApi.oidc.existingSecret.name | quote }}
-                  key: {{ .Values.authApi.oidc.existingSecret.key | quote }}
+                  {{- if .Values.appSecrets.authApiOidcClientSecret.existingSecret.name }}
+                  name: {{ .Values.appSecrets.authApiOidcClientSecret.existingSecret.name | quote }}
+                  key: {{ .Values.appSecrets.authApiOidcClientSecret.existingSecret.key | quote }}
                   {{- else }}
                   name: {{ include "carto.authApi.secretName" . }}
                   key: CARTO_OIDC_CLIENT_SECRET

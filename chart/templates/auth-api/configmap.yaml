@@ -14,46 +14,46 @@ metadata:
   {{- end }}
 data:
   AUTH_API_PORT: {{ .Values.authApi.containerPorts.http | quote }}
-  CARTO_AUTH_PROTOCOL: {{ .Values.authApi.protocol | quote }}
+  CARTO_AUTH_PROTOCOL: {{ .Values.appConfigValues.disconnected.protocol | quote }}
   CARTO_INTERNAL_ISSUER: {{ include "carto.authApi.issuer" . | quote }}
   CARTO_AUTH_AUDIENCE: "carto-cloud-native-api"
   CARTO_AUTH_NAMESPACE: "http://app.carto.com"
   CARTO_AUTH_PUBLIC_BASE_URL: {{ include "carto.authApi.publicBaseUrl" . | quote }}
-  CARTO_AUTH_ALLOWED_ORIGINS: {{ default (printf "https://%s" .Values.appConfigValues.selfHostedDomain) (join "," .Values.authApi.allowedOrigins) | quote }}
-  CARTO_SPA_CLIENT_ID: {{ include "carto.authApi.spaClient.clientId" . | quote }}
+  CARTO_AUTH_ALLOWED_ORIGINS: {{ default (printf "https://%s" .Values.appConfigValues.selfHostedDomain) (join "," .Values.appConfigValues.disconnected.allowedOrigins) | quote }}
+  CARTO_SPA_CLIENT_ID: {{ .Values.appConfigValues.disconnected.spaClient.clientId | quote }}
   CARTO_SPA_REDIRECT_URIS: {{ include "carto.authApi.spaClient.redirectUris" . | quote }}
-  CARTO_ORG_ID: {{ .Values.authApi.orgId | quote }}
-  CARTO_ACCOUNTS_API_URL: {{ include "carto.authApi.accountsApiUrl" . | quote }}
-  {{- if eq .Values.authApi.protocol "oidc" }}
-  CARTO_OIDC_ISSUER_URL: {{ .Values.authApi.oidc.issuerUrl | quote }}
-  CARTO_OIDC_CLIENT_ID: {{ .Values.authApi.oidc.clientId | quote }}
+  CARTO_ORG_ID: {{ .Values.appConfigValues.disconnected.orgId | quote }}
+  CARTO_ACCOUNTS_API_URL: {{ include "carto.authApi.internalAccountsApiUrl" . | quote }}
+  {{- if eq .Values.appConfigValues.disconnected.protocol "oidc" }}
+  CARTO_OIDC_ISSUER_URL: {{ .Values.appConfigValues.disconnected.oidc.issuerUrl | quote }}
+  CARTO_OIDC_CLIENT_ID: {{ .Values.appConfigValues.disconnected.oidc.clientId | quote }}
   CARTO_OIDC_CALLBACK_URL: "{{ include "carto.authApi.publicBaseUrl" . }}/oidc/callback"
-  {{- if .Values.authApi.oidc.emailKey }}
-  CARTO_OIDC_EMAIL_KEY: {{ .Values.authApi.oidc.emailKey | quote }}
+  {{- if .Values.appConfigValues.disconnected.oidc.emailKey }}
+  CARTO_OIDC_EMAIL_KEY: {{ .Values.appConfigValues.disconnected.oidc.emailKey | quote }}
   {{- end }}
-  {{- if .Values.authApi.oidc.groupsKey }}
-  CARTO_OIDC_GROUPS_KEY: {{ .Values.authApi.oidc.groupsKey | quote }}
+  {{- if .Values.appConfigValues.disconnected.oidc.groupsKey }}
+  CARTO_OIDC_GROUPS_KEY: {{ .Values.appConfigValues.disconnected.oidc.groupsKey | quote }}
   {{- end }}
   {{- end }}
-  {{- if eq .Values.authApi.protocol "saml" }}
-  {{- if trim (default "" .Values.authApi.saml.metadataXml) }}
-  CARTO_SAML_IDP_METADATA: {{ trim .Values.authApi.saml.metadataXml | quote }}
+  {{- if eq .Values.appConfigValues.disconnected.protocol "saml" }}
+  {{- if trim (default "" .Values.appConfigValues.disconnected.saml.metadataXml) }}
+  CARTO_SAML_IDP_METADATA: {{ trim .Values.appConfigValues.disconnected.saml.metadataXml | quote }}
   {{- else }}
-  CARTO_SAML_IDP_METADATA: {{ .Values.authApi.saml.metadataUrl | quote }}
+  CARTO_SAML_IDP_METADATA: {{ .Values.appConfigValues.disconnected.saml.metadataUrl | quote }}
   {{- end }}
   CARTO_SAML_CALLBACK_URL: "{{ include "carto.authApi.publicBaseUrl" . }}/saml/callback"
-  {{- if .Values.authApi.saml.emailAttribute }}
-  CARTO_SAML_EMAIL_ATTRIBUTE: {{ .Values.authApi.saml.emailAttribute | quote }}
+  {{- if .Values.appConfigValues.disconnected.saml.emailAttribute }}
+  CARTO_SAML_EMAIL_ATTRIBUTE: {{ .Values.appConfigValues.disconnected.saml.emailAttribute | quote }}
   {{- end }}
-  {{- if .Values.authApi.saml.groupsAttribute }}
-  CARTO_SAML_GROUPS_ATTRIBUTE: {{ .Values.authApi.saml.groupsAttribute | quote }}
+  {{- if .Values.appConfigValues.disconnected.saml.groupsAttribute }}
+  CARTO_SAML_GROUPS_ATTRIBUTE: {{ .Values.appConfigValues.disconnected.saml.groupsAttribute | quote }}
   {{- end }}
   {{- end }}
-  {{- if .Values.authApi.accessTokenTtlSeconds }}
-  CARTO_ACCESS_TOKEN_TTL_SECONDS: {{ .Values.authApi.accessTokenTtlSeconds | quote }}
+  {{- if .Values.appConfigValues.disconnected.accessTokenTtlSeconds }}
+  CARTO_ACCESS_TOKEN_TTL_SECONDS: {{ .Values.appConfigValues.disconnected.accessTokenTtlSeconds | quote }}
   {{- end }}
-  {{- if .Values.authApi.refreshTokenTtlSeconds }}
-  CARTO_REFRESH_TOKEN_TTL_SECONDS: {{ .Values.authApi.refreshTokenTtlSeconds | quote }}
+  {{- if .Values.appConfigValues.disconnected.refreshTokenTtlSeconds }}
+  CARTO_REFRESH_TOKEN_TTL_SECONDS: {{ .Values.appConfigValues.disconnected.refreshTokenTtlSeconds | quote }}
   {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   {{- if eq .Values.appConfigValues.logLevel "debug" }}
