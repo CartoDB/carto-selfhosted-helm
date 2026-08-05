@@ -85,4 +85,17 @@ stringData:
             - fail:
                 when: "!= Healthy" # Catch all unhealthy pods. A pod is considered healthy if it has a status of Completed, or Running and all of its containers are ready.
                 # {{ printf "{{ .Status.Reason }}" }} displays the current status of the pod, while {{ printf "{{ .Status.Message }}" }} provides a detailed explanation of why the pod is unhealthy, based on logged events.
-                message: Pod {{ printf "{{ .Namespace }}" }}/{{ printf "{{ .Name }}" }} is unhealthy with a status of {{ printf "{{ .Status.Reason }}" }}. Message is {{ printf "{{ .Status.Message }}" }} 
+                message: Pod {{ printf "{{ .Namespace }}" }}/{{ printf "{{ .Name }}" }} is unhealthy with a status of {{ printf "{{ .Status.Reason }}" }}. Message is {{ printf "{{ .Status.Message }}" }}
+    ---
+    # Redactors are delivered as a separate troubleshoot.sh/v1beta2 Redactor
+    # document in the same Secret. `spec.redactors:` inside the SupportBundle
+    # CR is NOT applied by the in-cluster `kubectl support-bundle secret/…`
+    # auto-discovery path (verified empirically against Replicated Troubleshoot
+    # 0.123.x — only the standalone Redactor kind fires during bundle capture).
+    apiVersion: troubleshoot.sh/v1beta2
+    kind: Redactor
+    metadata:
+      name: {{ .Release.Name }}-redactors
+    spec:
+      redactors:
+    {{- include "carto.replicated.commonChecks.redactors" . | indent 6 }}
