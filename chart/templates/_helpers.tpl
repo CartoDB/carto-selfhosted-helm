@@ -1658,11 +1658,7 @@ accounts-www from its /acc/ app root. Must match accounts-api's tenant-up update
 derivation, which overwrites this seed on the first TenantUp.
 */}}
 {{- define "carto.authApi.spaClient.redirectUris" -}}
-{{- if .Values.appConfigValues.disconnected.spaClient.redirectUris -}}
-{{- join "," .Values.appConfigValues.disconnected.spaClient.redirectUris -}}
-{{- else -}}
 {{- printf "https://%s,https://%s/acc/" .Values.appConfigValues.selfHostedDomain .Values.appConfigValues.selfHostedDomain -}}
-{{- end -}}
 {{- end -}}
 
 {{/*

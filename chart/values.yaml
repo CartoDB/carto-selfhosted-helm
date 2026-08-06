@@ -27,8 +27,6 @@ appConfigValues:
     spaClient:
       ## @param appConfigValues.disconnected.spaClient.clientId Client ID of the platform SPA client. Required when appConfigValues.disconnected.enabled is true
       clientId: ""
-      ## @param appConfigValues.disconnected.spaClient.redirectUris Redirect URIs registered on the platform SPA client. Empty defaults to both SPA login callbacks (`https://<appConfigValues.selfHostedDomain>` and `.../acc/`)
-      redirectUris: []
     oidc:
       ## @param appConfigValues.disconnected.oidc.issuerUrl Issuer URL of the external OIDC identity provider
       issuerUrl: ""
