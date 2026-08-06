@@ -1628,11 +1628,7 @@ auth-api PostgreSQL credentials: dedicated role when set, otherwise the shared p
 {{- end -}}
 
 {{- define "carto.authApi.publicBaseUrl" -}}
-{{- if .Values.appConfigValues.disconnected.publicBaseUrl -}}
-{{- trimSuffix "/" .Values.appConfigValues.disconnected.publicBaseUrl -}}
-{{- else -}}
 {{- printf "https://%s/auth-api" .Values.appConfigValues.selfHostedDomain -}}
-{{- end -}}
 {{- end -}}
 
 {{- define "carto.authApi.issuer" -}}
