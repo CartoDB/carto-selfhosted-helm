@@ -82,6 +82,7 @@ LITELLM_MASTER_KEY: cartoSecrets.litellmMasterKey
 LITELLM_SALT_KEY: cartoSecrets.litellmSaltKey
 AI_OPENAI_API_KEY: cartoSecrets.litellmMasterKey
 GEMINI_API_KEY: cartoSecrets.geminiApiKey
+CARTO_INTERNAL_SERVICE_TOKEN: cartoSecrets.authApiInternalServiceToken
 {{- end -}}
 
 {{/*
@@ -942,7 +943,7 @@ Return the proper Carto tenant-requirements-checker image name
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.aiProxy.image) "context" $) -}}
+{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authMigrations.image .Values.accountsApi.image .Values.accountsSubscriber.image .Values.accountsMigrations.image) "context" $) -}}
 {{- end -}}
 
 {{/*
@@ -1607,3 +1608,187 @@ httpGet:
     - name: Carto-Monitoring
       value: "True"
 {{- end -}}
+
+{{/*
+Whether this deployment runs in self-hosted disconnected mode. Every disconnected gate must read
+this helper instead of the raw value, so the public toggle can evolve without touching templates.
+Returns "true" when enabled, empty string (falsy) otherwise.
+*/}}
+{{- define "carto.disconnected.enabled" -}}
+{{- if .Values.appConfigValues.disconnected.enabled -}}true{{- end -}}
+{{- end -}}
+
+{{- define "carto.authApi.fullname" -}}
+{{- printf "%s-auth-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "carto.authApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.authApi.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{- define "carto.authApi.configmapName" -}}
+{{- if .Values.authApi.existingConfigMap -}}
+{{- .Values.authApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.authApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.authApi.secretName" -}}
+{{- if .Values.authApi.existingSecret -}}
+{{- .Values.authApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.authApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+auth-api PostgreSQL credentials: dedicated role when set, otherwise the shared platform user.
+*/}}
+{{- define "carto.authApi.postgresql.user" -}}
+{{- if .Values.externalPostgresql.authApiUser -}}
+{{- .Values.externalPostgresql.authApiUser -}}
+{{- else -}}
+{{- include "carto.postgresql.user" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.authApi.postgresql.secretName" -}}
+{{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretAuthApiPasswordKey -}}
+{{- .Values.externalPostgresql.existingSecret -}}
+{{- else if .Values.externalPostgresql.authApiPassword -}}
+{{- include "carto.authApi.secretName" . -}}
+{{- else -}}
+{{- include "carto.postgresql.secretName" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.authApi.postgresql.secret.key" -}}
+{{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretAuthApiPasswordKey -}}
+{{- .Values.externalPostgresql.existingSecretAuthApiPasswordKey -}}
+{{- else if .Values.externalPostgresql.authApiPassword -}}
+{{- printf "ACCOUNTS_POSTGRES_PASSWORD" -}}
+{{- else -}}
+{{- include "carto.postgresql.secret.key" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.authApi.nodeOptions" -}}
+{{- if eq (.Values.authApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.authApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.authApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- else -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.authApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.authMigrations.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.authMigrations.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{- define "carto.authApi.publicBaseUrl" -}}
+{{- printf "https://%s/auth-api" .Values.appConfigValues.selfHostedDomain -}}
+{{- end -}}
+
+{{- define "carto.authApi.issuer" -}}
+{{- include "carto.authApi.publicBaseUrl" . -}}
+{{- end -}}
+
+{{/*
+The complete disconnected-mode environment package for backend services. Self-gated: emits
+nothing unless disconnected mode is enabled, so consumers include it unconditionally and never
+branch on the toggle themselves. The identity variables must be consistent with the auth-api
+configmap: commons.validateJwt rejects tokens whose issuer/audience do not match the ones
+auth-api mints with.
+*/}}
+{{- define "carto.disconnected.commonEnv" -}}
+{{- if (include "carto.disconnected.enabled" .) -}}
+CARTO_INTERNAL_JWKS_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}/.well-known/jwks.json"
+CARTO_INTERNAL_ISSUER: {{ include "carto.authApi.issuer" . | quote }}
+CARTO_AUTH_AUDIENCE: "carto-cloud-native-api"
+CARTO_AUTH_NAMESPACE: "http://app.carto.com"
+CARTO_AUTH_API_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+{{- end -}}
+{{- end -}}
+
+{{/*
+Redirect URIs registered on the platform SPA client: workspace-www logs in from the bare origin,
+accounts-www from its /acc/ app root. Must match accounts-api's tenant-up updateAuth0App
+derivation, which overwrites this seed on the first TenantUp.
+*/}}
+{{- define "carto.authApi.spaClient.redirectUris" -}}
+{{- printf "https://%s,https://%s/acc/" .Values.appConfigValues.selfHostedDomain .Values.appConfigValues.selfHostedDomain -}}
+{{- end -}}
+
+{{/*
+The disconnected-mode environment package for the SPAs. Self-gated like
+carto.disconnected.commonEnv, so consumers include it unconditionally. The authority must be the
+issuer auth-api mints with, hence the shared helper — a mismatch fails the OIDC code flow.
+*/}}
+{{- define "carto.disconnected.wwwEnv" -}}
+{{- if (include "carto.disconnected.enabled" .) -}}
+REACT_APP_AUTH_PROVIDER: "oidc"
+REACT_APP_OIDC_AUTHORITY: {{ include "carto.authApi.issuer" . | quote }}
+REACT_APP_OIDC_CLIENT_ID: {{ .Values.appConfigValues.disconnected.spaClient.clientId | quote }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Base URL of the in-cluster accounts-api service that auth-api calls for quota checks and SSO
+group sync.
+*/}}
+{{- define "carto.authApi.internalAccountsApiUrl" -}}
+{{- printf "http://%s.%s.svc.%s" (include "carto.accountsApi.fullname" .) .Release.Namespace .Values.clusterDomain -}}
+{{- end -}}
+
+{{- define "carto.accountsApi.fullname" -}}
+{{- printf "%s-accounts-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "carto.accountsApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.accountsApi.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{- define "carto.accountsApi.configmapName" -}}
+{{- if .Values.accountsApi.existingConfigMap -}}
+{{- .Values.accountsApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.accountsApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.accountsApi.secretName" -}}
+{{- if .Values.accountsApi.existingSecret -}}
+{{- .Values.accountsApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.accountsApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.accountsApi.nodeOptions" -}}
+{{- if eq (.Values.accountsApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.accountsApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.accountsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- else -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.accountsApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.accountsSubscriber.fullname" -}}
+{{- printf "%s-accounts-subscriber" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "carto.accountsSubscriber.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.accountsSubscriber.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{- define "carto.accountsSubscriber.nodeOptions" -}}
+{{- if eq (.Values.accountsSubscriber.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.accountsSubscriber.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.accountsSubscriber.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- else -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.accountsSubscriber.defaultNodeProcessMaxOldSpace | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.accountsMigrations.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.accountsMigrations.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
