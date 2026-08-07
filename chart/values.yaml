@@ -1285,12 +1285,23 @@ importWorker:
   ## @param importWorker.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
-  ## @param importWorker.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ## @param importWorker.defaultNodeProcessMaxOldSpace Node process max-old-space-size in MB. Not derived from container memory on purpose:
+  ## DuckDB allocates native memory outside the V8 heap, so the heap must not scale with the container.
+  ## If you size the worker below 8Gi, lower this (and duckdb.memoryLimit) accordingly.
   ##
-  nodeProcessMaxOldSpacePercentage: 50
-  ## @param importWorker.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  defaultNodeProcessMaxOldSpace: 4096
+  ## DuckDB import/export engine tuning. Memory limit bounds DuckDB's native allocations;
+  ## overflow spills to tempDirectory (disk-backed /tmp volume) up to maxTempDirectorySize, failing the job cleanly when exceeded.
+  ## @param importWorker.duckdb.memoryLimit DuckDB native memory limit (outside the Node heap)
+  ## @param importWorker.duckdb.threads DuckDB thread count
+  ## @param importWorker.duckdb.tempDirectory DuckDB spill directory (must live on the tmp volume)
+  ## @param importWorker.duckdb.maxTempDirectorySize Max size of the DuckDB spill directory
   ##
-  defaultNodeProcessMaxOldSpace: 2048
+  duckdb:
+    memoryLimit: "6GB"
+    threads: 4
+    tempDirectory: "/tmp/duckdb-spill"
+    maxTempDirectorySize: "15GB"
   ## import-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param importWorker.resources.limits.memory Container memory limits in MiB
@@ -1300,11 +1311,11 @@ importWorker:
   ##
   resources:
     limits:
-      memory: "8192Mi"
-      cpu: "2000m"
+      memory: "12288Mi"
+      cpu: "4000m"
     requests:
-      memory: "3072Mi"
-      cpu: "350m"
+      memory: "6144Mi"
+      cpu: "1000m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importWorker.podSecurityContext.enabled Enabled import-worker pods' Security Context
