@@ -6,6 +6,36 @@ service, secret) per component. `valkey` is the current cache; `redis` is the
 legacy name kept for backward compatibility — **don't rename it**, it breaks
 existing installs (the `carto.redis.*` helpers resolve to Valkey on purpose).
 
+## Where a new `values.yaml` parameter goes
+
+Placement is by **what the parameter configures**, not by how many templates
+read it — several `appConfigValues`/`cartoConfigValues` keys already have
+exactly one consumer (`ldsGeocodingProvider`, `defaultDoLocation.*`) and stay
+in the shared block anyway.
+
+- **`appConfigValues`** — CARTO application/business behavior the *customer*
+  sets: feature toggles, storage/bucket config, provider selection (LDS/AT/DO
+  defaults), engine tuning for an app-level feature (e.g.
+  `appConfigValues.duckdb.*` for the import/export transfer engine).
+- **`cartoConfigValues`** — the same shape, but for wiring the customer
+  normally never touches (Auth0, CARTO's own GCP project IDs, LaunchDarkly,
+  feature-flag overrides) — changing it can break the install.
+- **A component's own block** (`importWorker:`, `mapsApi:`, …) — only that
+  component's Kubernetes deployment shape: image, resources, probes,
+  replicaCount, security context, affinity/scheduling, service, PDB,
+  sidecars/extraVolumes — or a setting that's conceptually process/pod sizing
+  for *that* pod. `<component>.defaultNodeProcessMaxOldSpace` (Node heap size)
+  is the precedent: it stays local in every one of the 10 components that have
+  it, because it's runtime sizing for that pod, not app behavior — true even
+  where it's no longer literally computed as a percentage of that pod's own
+  `resources.limits.memory` (`importWorker` decoupled the two once DuckDB
+  started allocating memory outside the V8 heap; the heap knob stayed put,
+  only the DuckDB memory/thread/spill knobs moved to `appConfigValues.duckdb`).
+
+`router.nginxConfig.*` and `aiApi.customHeaders` predate this rule and are
+app-behavior knobs sitting in a component block anyway — legacy, not
+precedent to copy.
+
 ## `_helpers.tpl` invariants
 
 Per-component helpers are uniform (`carto.<component>.fullname`,
