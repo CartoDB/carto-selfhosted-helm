@@ -36,6 +36,44 @@ in the shared block anyway.
 app-behavior knobs sitting in a component block anyway — legacy, not
 precedent to copy.
 
+**Corollary — whole-component enablement.** Whether an optional component
+deploys at all follows the same split: customer-facing feature components
+(`httpCache`, `publicEventsApi`, `aiApi`, `aiProxy`, `cdnInvalidatorSub`) are
+gated by an `appConfigValues.*Enabled` boolean plus `not
+cartoConfigValues.onlyRunRouter` — never a self `<component>.enabled` field.
+The exception is infra swap-components choosing between CARTO's bundled
+instance and a customer's own: `internalRedis.enabled`,
+`internalPostgresql.enabled`, and `gateway.enabled` gate themselves, because
+swapping infrastructure backends is that component's own concern, not an
+app-feature decision.
+
+## Feature flags vs `appConfigValues.*Enabled` toggles
+
+Two different mechanisms gate behavior — pick by axis of control, not by
+where the value happens to live:
+
+- **`cartoConfigValues.featureFlagsOverrides`** (LaunchDarkly-backed, see
+  `cartoConfigValues.launchDarklyClientSideId`) is CARTO's staged-rollout
+  mechanism. The test for wiring a new component into it is a fact about that
+  component's *code*, not about `values.yaml`: does its backend actually call
+  the internal `FeatureFlagsClient`? If yes, wire the same four pieces every
+  already-wired component has — the `CARTO_FEATURE_FLAGS_FILE_PATH` env var, a
+  `feature-flags` volume mount, the volume itself, and a
+  `checksum/feature-flags-config` pod annotation — gated on
+  `carto.featureFlags.enabled`. Don't wire infra (`router`, `httpCache`,
+  `gateway`) or third-party images (`aiProxy`/LiteLLM) that don't consume the
+  flag file — an unused mount just adds a spurious restart trigger. The chart
+  can also auto-derive an override from deployment config (an S3-compatible
+  `appConfigValues.s3Endpoint` auto-enables a storage-related flag) — still
+  CARTO's mechanism, just reacting to the customer's config instead of a human
+  toggling LaunchDarkly.
+- **`appConfigValues.*Enabled` booleans** are the customer's permanent,
+  structural choice — does this install have this component/route at all —
+  set once at install, not staged or gradually rolled out.
+
+Wiring a new backend feature and unsure which one: staged rollout across the
+fleet → feature flag; a customer's install-time decision → `appConfigValues`.
+
 ## `_helpers.tpl` invariants
 
 Per-component helpers are uniform (`carto.<component>.fullname`,
@@ -60,6 +98,20 @@ than trusting any list written here.
   is hand-maintained and unvalidated**: a typo in the values path renders an
   empty env var with no error. This is the most common "service starts without
   its credential" bug — changes here deserve a second reviewer.
+- **Three separate secret mechanisms — don't conflate them.** A field's own
+  `.existingSecret.name`/`.key` (nested inside `appSecrets.<field>` /
+  `cartoSecrets.<field>`) only affects that one env var via the
+  `secretAssociation` map above. A *component's* top-level
+  `<component>.existingSecret` is unrelated: it redirects that component's
+  whole generated Secret (`envFrom.secretRef.name`) to a customer-managed one,
+  independent of which individual fields are set — same shape as
+  `<component>.existingConfigMap`. Database credentials
+  (`internalPostgresql`/`externalPostgresql`/`externalRedis`,
+  `cartoSecrets.redisPassword`) sit outside `secretAssociation` entirely, on
+  an older `existingSecret`/`existingSecretPasswordKey` convention — don't
+  expect them in the map. `extraEnvVarsSecret`/`extraEnvVarsCM` is a third,
+  generic escape hatch for arbitrary customer-supplied env vars, unrelated to
+  both.
 - **`nodeOptions` assume `Mi`.** The Node.js `--max-old-space-size` helpers
   parse the memory limit only when its unit is `Mi`; anything else silently
   falls back to the default instead of erroring.
