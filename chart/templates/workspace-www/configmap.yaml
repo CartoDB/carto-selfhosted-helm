@@ -35,6 +35,7 @@ data:
   REACT_APP_AI_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/ai-api"
   REACT_APP_API_BASE_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api"
   {{- if not (include "carto.disconnected.enabled" .) }}
+  REACT_APP_AUTH_PROVIDER: "auth0"
   REACT_APP_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   REACT_APP_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   {{- end }}

@@ -26,6 +26,7 @@ data:
   {{- end }}
   REACT_APP_ACCOUNTS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/"
   {{- if not (include "carto.disconnected.enabled" .) }}
+  REACT_APP_AUTH_PROVIDER: "auth0"
   REACT_APP_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   REACT_APP_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
   {{- end }}
