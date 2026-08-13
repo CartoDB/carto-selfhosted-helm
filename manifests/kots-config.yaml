@@ -1038,7 +1038,6 @@ spec:
           type: bool
           default: "0"
 
-
     # Custom configuration
     - name: platformAdvancedTuning
       title: Custom Configuration

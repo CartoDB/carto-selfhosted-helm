@@ -23,12 +23,22 @@ data:
   {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
+  {{- with include "carto.disconnected.wwwEnv" . }}
+  {{- . | nindent 2 }}
+  {{- end }}
+  {{- if (include "carto.disconnected.enabled" .) }}
+  REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/accounts-api"
+  {{- else }}
   REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
+  {{- end }}
   REACT_APP_ACCOUNTS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/"
   REACT_APP_AI_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/ai-api"
   REACT_APP_API_BASE_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api"
+  {{- if not (include "carto.disconnected.enabled" .) }}
+  REACT_APP_AUTH_PROVIDER: "auth0"
   REACT_APP_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   REACT_APP_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
+  {{- end }}
   REACT_APP_DO_API_URL: "https://{{ .Values.cartoConfigValues.cartoDoApiDomain }}"
   REACT_APP_DO_ASSETS_URL: "https://{{ .Values.cartoConfigValues.cartoDoAssetsDomain }}"
   REACT_APP_HUBSPOT_ID: "474999"

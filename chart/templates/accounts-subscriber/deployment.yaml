@@ -1,0 +1,204 @@
+{{- if and ((include "carto.disconnected.enabled" .)) (not .Values.cartoConfigValues.onlyRunRouter) }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "carto.accountsSubscriber.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: accounts-subscriber
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.accountsSubscriber.replicaCount }}
+  {{- if .Values.accountsSubscriber.updateStrategy }}
+  strategy: {{- toYaml .Values.accountsSubscriber.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: accounts-subscriber
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/accounts-api/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/accounts-api/secret.yaml") . | sha256sum }}
+        checksum/postgresql-password: {{ include "carto.postgresql.passwordChecksum" . }}
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+        {{- if .Values.accountsSubscriber.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.podAnnotations "context" $) | nindent 8 }}
+        {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: accounts-subscriber
+        {{- if .Values.accountsSubscriber.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.accountsSubscriber.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.accountsSubscriber.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.accountsSubscriber.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.accountsSubscriber.podAffinityPreset "component" "accounts-subscriber" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.accountsSubscriber.podAntiAffinityPreset "component" "accounts-subscriber" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.accountsSubscriber.nodeAffinityPreset.type "key" .Values.accountsSubscriber.nodeAffinityPreset.key "values" .Values.accountsSubscriber.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.accountsSubscriber.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.accountsSubscriber.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.accountsSubscriber.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.accountsSubscriber.priorityClassName }}
+      priorityClassName: {{ .Values.accountsSubscriber.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.accountsSubscriber.schedulerName }}
+      schedulerName: {{ .Values.accountsSubscriber.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.accountsSubscriber.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.accountsSubscriber.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if not .Values.diagnosticMode.enabled }}
+      initContainers:
+        {{- if .Values.accountsSubscriber.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.accountsSubscriber.terminationGracePeriodSeconds }}
+      containers:
+        - name: accounts-subscriber
+          image: {{ template "carto.accountsSubscriber.image" . }}
+          imagePullPolicy: {{ .Values.accountsSubscriber.image.pullPolicy }}
+          {{- if .Values.accountsSubscriber.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.accountsSubscriber.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.accountsSubscriber.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.command "context" $) | nindent 12 }}
+          {{- else }}
+          command:
+            - /bin/sh
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.accountsSubscriber.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.args "context" $) | nindent 12 }}
+          {{ else }}
+          args:
+            - -ec
+            - |
+              exec node dist/accounts-api/subscriber/index.js
+          {{- end }}
+          env:
+            - name: ACCOUNTS_POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ include "carto.postgresql.secret.key" . }}
+            - name: ACCOUNTS_INVITE_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.cartoSecrets.encryptionSecretKey.existingSecret.name }}
+                  name: {{ .Values.cartoSecrets.encryptionSecretKey.existingSecret.name | quote }}
+                  key: {{ .Values.cartoSecrets.encryptionSecretKey.existingSecret.key | quote }}
+                  {{- else }}
+                  name: {{ include "carto.accountsApi.secretName" . }}
+                  key: ENCRYPTION_SECRET_KEY
+                  {{- end }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+              "CARTO_INTERNAL_SERVICE_TOKEN"
+              "ENCRYPTION_SECRET_KEY"
+             ) "context" $ ) | nindent 12 }}
+            {{- if .Values.accountsSubscriber.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "carto.accountsApi.configmapName" . }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+              "CARTO_INTERNAL_SERVICE_TOKEN"
+              "ENCRYPTION_SECRET_KEY"
+             ) "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.accountsApi.secretName" . }}
+            {{- end }}
+            {{- if .Values.accountsSubscriber.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.accountsSubscriber.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.accountsSubscriber.resources }}
+          resources: {{- toYaml .Values.accountsSubscriber.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.accountsSubscriber.containerPorts.http }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.accountsSubscriber.livenessProbe.enabled }}
+          livenessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.accountsSubscriber.livenessProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
+          {{- else if .Values.accountsSubscriber.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.accountsSubscriber.readinessProbe.enabled }}
+          readinessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.accountsSubscriber.readinessProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
+          {{- else if .Values.accountsSubscriber.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.accountsSubscriber.startupProbe.enabled }}
+          startupProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.accountsSubscriber.startupProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
+          {{- else if .Values.accountsSubscriber.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.accountsSubscriber.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+            - name: postgresql-ssl-ca
+              mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+            {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+            - name: proxy-ssl-ca
+              mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+            {{- if .Values.accountsSubscriber.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+        {{- if .Values.accountsSubscriber.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.accountsSubscriber.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
+        - name: postgresql-ssl-ca
+          configMap:
+            name: {{ include "carto.postgresql.configMapName" . }}
+        {{- end }}
+        {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+        - name: proxy-ssl-ca
+          configMap:
+            name: {{ include "carto.proxy.configMapName" . }}
+        {{- end }}
+        {{- if .Values.accountsSubscriber.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+{{- end }}

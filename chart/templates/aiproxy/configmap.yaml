@@ -13,9 +13,14 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
+  {{- if not (include "carto.disconnected.enabled" .) }}
   AUTH0_AUDIENCE: "carto-cloud-native-api"
   AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   AUTH0_NAMESPACE: "http://app.carto.com"
+  {{- end }}
+  {{- with include "carto.disconnected.commonEnv" . }}
+  {{- . | nindent 2 }}
+  {{- end }}
   AI_API_URL: "http://{{ include "carto.aiApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . | quote }}
