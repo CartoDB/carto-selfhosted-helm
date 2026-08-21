@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    troubleshoot.sh/kind: support-bundle
+  name: {{ .Release.Name }}-support-bundle-redactor
+  namespace: {{ .Release.Namespace | quote }}
+stringData:
+  # Discovered alongside the support-bundle spec (same label, `redactor-spec` key)
+  # by `kubectl support-bundle --load-cluster-specs` and by KOTS bundle generation.
+  redactor-spec: |
+    apiVersion: troubleshoot.sh/v1beta2
+    kind: Redactor
+    metadata:
+      name: {{ .Release.Name }}-support-bundle-redactor
+    spec:
+      redactors:
+        - name: api-key-values
+          removals:
+            regex:
+              # API keys surface in collected pod logs both as plain JSON and as
+              # escaped JSON embedded in a log line ("apiKey":"…" vs \"apiKey\":\"…\"),
+              # which the default redactors miss. Everything outside the capture
+              # groups is removed, so the prefix stays and the value becomes ***HIDDEN***.
+              - redactor: '(?i)((?:"|\\")api[_-]?key(?:"|\\")\s*:\s*(?:"|\\"))(?P<mask>[^"\\]+)'
