@@ -513,7 +513,7 @@ spec:
           help_text: The GCP Project Id of these buckets.
           type: text
           required: true
-          default: repl{{ if ConfigOptionEquals "replicatedLicenseType" "dev"}}repl{{ ConfigOption "derivedSelfHostedGCPProjectId"}}repl{{ end }}
+          default: repl{{ if and (ConfigOptionEquals "replicatedLicenseType" "dev") (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs")}}repl{{ ConfigOption "derivedSelfHostedGCPProjectId"}}repl{{ end }}
 
         # AWS
         - name: storageBucketsAwsAccessKeyId
