@@ -34,5 +34,8 @@ jobs:
         # `helm dependency update`. Future tests inherit this setup for
         # free — they only add their own step below.
 
+      - name: Verify redactor render contract
+        run: bash chart/tests/test-redactor-render-contract.sh
+
       - name: Verify support-bundle redactors
         run: bash chart/tests/test-redactors.sh
