@@ -723,6 +723,15 @@ useful debug data. Verify changes with chart/tests/test-redactors.sh.
   removals:
     regex:
       - redactor: '(?P<mask>\bZXlK[A-Za-z0-9+/=]{50,}\b)'
+# Provider API keys can surface in collected pod logs as a JSON field, both
+# plain ("apiKey":"…") and escaped inside a logged JSON string
+# (\"apiKey\":\"…\"). Custom-provider keys have no fixed value shape a
+# value-pattern rule could target, so match the field name; the prefix stays
+# in a capture group so the redacted output keeps the field readable.
+- name: api-key-json-fields
+  removals:
+    regex:
+      - redactor: '(?i)((?:"|\\")api[_-]?key(?:"|\\")\s*:\s*(?:"|\\"))(?P<mask>[^"\\]+)'
 # Catches shapeless entitlement values. fileSelector globs match against
 # bundle-root-relative paths and `**/` requires at least one parent directory
 # (troubleshoot compiles them with gobwas/glob) — list a root-relative form

@@ -131,6 +131,14 @@ cat > "$BUNDLE_ROOT/replicated-sdk/test-ns/replicated-test/replicated-license-in
 }
 TXT
 
+# Synthetic service log — API keys leak into pod logs as JSON fields, both
+# escaped inside a logged query-args string and as plain JSON.
+mkdir -p "$BUNDLE_ROOT/namespace-test-ns-logs/api-pod"
+cat > "$BUNDLE_ROOT/namespace-test-ns-logs/api-pod/api.log" <<'LOG'
+{"time":"2026-01-01T00:00:00.000Z","data":{"meta.type":"pg","db.query":"UPDATE settings SET value = $1","db.query_args":["{\"custom\":{\"enabled\":true,\"apiKey\":\"gw-secret-0f9e8d7c6b5a4321\",\"baseUrl\":\"https://llm.example.com/api/v1\"}}"]}}
+{"time":"2026-01-01T00:00:01.000Z","provider":{"api_key":"snake-secret-1a2b3c4d5e6f7890"}}
+LOG
+
 # A pod OUTSIDE the env-fallback's fileSelector scope. Its non-sensitive env
 # values must survive redaction — this is what proves the env-value wildcard
 # stays scoped to the tenant-requirements-check file instead of stripping
@@ -200,6 +208,9 @@ SENTINELS=(
   'mcaI8oSWt9CBZEarrPJXLgKs4D1h7UY1'
   '2KMJ5T5hUo58O2OB'
   'YhwtukDuLyfVTmJ6aShFmjpy7hs0KjVk'
+  # Custom AI provider keys — field-name shape, escaped + plain JSON forms
+  'gw-secret-0f9e8d7c6b5a4321'
+  'snake-secret-1a2b3c4d5e6f7890'
 )
 
 LEAKS=0
