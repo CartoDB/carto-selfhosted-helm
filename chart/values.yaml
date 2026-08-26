@@ -103,18 +103,6 @@ appConfigValues:
     postgres: ""
   ## @param appConfigValues.workspaceExportsBucket Bucket to be used to store the exports generated in the app
   workspaceExportsBucket: ""
-  ## DuckDB tuning for the import-worker transfer engine, used for both imports and exports. Memory limit
-  ## bounds DuckDB's native allocations; overflow spills to tempDirectory (disk-backed /tmp volume) up to
-  ## maxTempDirectorySize, failing the job cleanly when exceeded.
-  duckdb:
-    ## @param appConfigValues.duckdb.memoryLimit DuckDB native memory limit (outside the Node heap)
-    memoryLimit: "6GB"
-    ## @param appConfigValues.duckdb.threads DuckDB thread count
-    threads: 4
-    ## @param appConfigValues.duckdb.tempDirectory DuckDB spill directory (must live on the tmp volume)
-    tempDirectory: "/tmp/duckdb-spill"
-    ## @param appConfigValues.duckdb.maxTempDirectorySize Max size of the DuckDB spill directory
-    maxTempDirectorySize: "15GB"
   workloadIdentityConnection:
     ## @param appConfigValues.workloadIdentityConnection.enabled Enable the creation of a default connection using Workload Identity
     enabled: false
@@ -1351,11 +1339,12 @@ importWorker:
   ## @param importWorker.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
-  ## @param importWorker.defaultNodeProcessMaxOldSpace Node process max-old-space-size in MB. Not derived from container memory on purpose:
-  ## DuckDB allocates native memory outside the V8 heap, so the heap must not scale with the container.
-  ## If you size the worker below 8Gi, lower this (and appConfigValues.duckdb.memoryLimit) accordingly.
+  ## @param importWorker.nodeProcessMaxOldSpacePercentage Memory percentage for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
   ##
-  defaultNodeProcessMaxOldSpace: 4096
+  nodeProcessMaxOldSpacePercentage: 50
+  ## @param importWorker.defaultNodeProcessMaxOldSpace Default memory for node process max-old-space-size param https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  ##
+  defaultNodeProcessMaxOldSpace: 2048
   ## import-worker resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ## @param importWorker.resources.limits.memory Container memory limits in MiB
@@ -1365,11 +1354,11 @@ importWorker:
   ##
   resources:
     limits:
-      memory: "12288Mi"
-      cpu: "4000m"
+      memory: "8192Mi"
+      cpu: "2000m"
     requests:
-      memory: "6144Mi"
-      cpu: "1000m"
+      memory: "3072Mi"
+      cpu: "350m"
   ## Configure Pods Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param importWorker.podSecurityContext.enabled Enabled import-worker pods' Security Context
