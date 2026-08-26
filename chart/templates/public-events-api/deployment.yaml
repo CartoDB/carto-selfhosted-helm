@@ -13,7 +13,9 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
+  {{- if not .Values.publicEventsApi.autoscaling.enabled }}
   replicas: {{ .Values.publicEventsApi.replicaCount }}
+  {{- end }}
   {{- if .Values.publicEventsApi.updateStrategy }}
   strategy: {{- toYaml .Values.publicEventsApi.updateStrategy | nindent 4 }}
   {{- end }}
@@ -24,6 +26,7 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/public-events-api/configmap.yaml") . | sha256sum }}
+        checksum/feature-flags-config: {{ include (print $.Template.BasePath "/custom-feature-flags-configmap.yaml") . | sha256sum }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.publicEventsApi.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.podAnnotations "context" $) | nindent 8 }}
@@ -145,9 +148,15 @@ spec:
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
-            {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
-            - name: proxy-ssl-ca
-              mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+            {{- if (include "carto.trustedCACerts.enabled" .) }}
+            - name: trusted-ca-certs
+              mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+            {{- if (include "carto.featureFlags.enabled" .) }}
+            - name: feature-flags
+              mountPath: {{ include "carto.featureFlags.configMapMountDir" . }}
+              subPath: custom-feature-flags.yaml
               readOnly: true
             {{- end }}
           {{- if .Values.publicEventsApi.extraVolumeMounts }}
@@ -163,10 +172,18 @@ spec:
             items:
               - key: {{ include "carto.google.secretKey" . }}
                 path: {{ include "carto.google.secretMountFilename" . }}
-        {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
-        - name: proxy-ssl-ca
+        {{- if (include "carto.trustedCACerts.enabled" .) }}
+        - name: trusted-ca-certs
           configMap:
-            name: {{ include "carto.proxy.configMapName" . }}
+            name: {{ include "carto.trustedCACerts.configMapName" . }}
+        {{- end }}
+        {{- if (include "carto.featureFlags.enabled" .) }}
+        - name: feature-flags
+          configMap:
+            name: {{ template "carto.featureFlags.configMapName" . }}
+            items:
+              - key: custom-feature-flags.yaml
+                path: custom-feature-flags.yaml
         {{- end }}
         {{- if .Values.publicEventsApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.extraVolumes "context" $) | nindent 8 }}
