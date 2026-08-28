@@ -32,6 +32,10 @@ Fine, because it is already public here or established practice:
 - Short Shortcut refs `[sc-XXXXXX]` in commit messages and PR titles — the ID
   only, never the full URL.
 - Links to public docs (`docs.carto.com`).
+- The one sanctioned internal link: `gatekeeper-selfhosted-kubernetes` (the
+  admission-ceiling source of truth) in the resource-limit note below and in
+  `lint-codebase.yaml`. A dev who trips that check must reach it, so the pointer
+  is deliberate — not a precedent for other internal repos/URLs.
 
 ## What this repo is
 
@@ -86,6 +90,23 @@ CI is the gate — push and track it. The one thing CI won't fix for you: if you
 change `chart/values.yaml`, regenerate `chart/README.md` (commands in
 `CONTRIBUTING.md`) or the drift check blocks the PR. For a quick local sanity
 check, `helm template` both paths: plain and `--set replicated.enabled=true`.
+
+## Resource limits and the admission ceiling
+
+CARTO-managed clusters (and customer installs running Gatekeeper/OPA) enforce a
+single global max on container limits. A `chart/values.yaml` component whose
+`resources.limits` exceed it is **rejected at admission** — the pod never
+schedules and the Deployment silently wedges at 0 replicas. So before raising
+any component's CPU/memory limits, humans and AI agents both need to check the
+ceiling.
+
+The `check-helm-resources-changed` job in `.github/workflows/lint-codebase.yaml`
+fails the PR when a limit goes over it. To actually raise the ceiling, edit the
+constraint in
+[`gatekeeper-selfhosted-kubernetes`](https://github.com/CartoDB/gatekeeper-selfhosted-kubernetes)
+(`gatekeeper/constraints/psp-container-limits.yaml`), get it applied to the
+clusters, then bump `MAX_CPU_M` / `MAX_MEMORY_MI` in that workflow to match — in
+the same PR that raises the component's limits.
 
 ## Conventions
 

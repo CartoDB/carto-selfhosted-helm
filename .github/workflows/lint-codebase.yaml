@@ -56,7 +56,9 @@ jobs:
       - name: Check resource limits against the admission ceiling
         # Max container limits admitted on CARTO-managed clusters. A component above
         # this is rejected at admission and its Deployment sits at 0 replicas, so
-        # raise the cluster policy first, then bump these.
+        # raise the cluster policy first, then bump these. Source of truth for the
+        # ceiling (keep MAX_* in sync with it):
+        # https://github.com/CartoDB/gatekeeper-selfhosted-kubernetes/blob/main/gatekeeper/constraints/psp-container-limits.yaml
         env:
           MAX_CPU_M: 4000
           MAX_MEMORY_MI: 12288
@@ -71,6 +73,7 @@ jobs:
           if [ -n "$BAD" ]; then
             echo "Resource limits above the admission ceiling ($MAX_CPU_M m CPU / $MAX_MEMORY_MI Mi):"
             echo "$BAD"
+            echo "Raise the ceiling in https://github.com/CartoDB/gatekeeper-selfhosted-kubernetes (gatekeeper/constraints/psp-container-limits.yaml) and get it applied to the CARTO-managed clusters, then bump MAX_CPU_M / MAX_MEMORY_MI in this workflow."
             exit 1
           fi
 
