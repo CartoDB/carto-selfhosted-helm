@@ -23,3 +23,6 @@
 .vscode/
 # AI assistant guidance — repo-only, not part of the packaged chart
 CLAUDE.md
+# CI test scripts — repo-only; fixtures embed credential-shaped sentinels
+# that would trip customers' secret scanners if shipped in the package
+tests/
