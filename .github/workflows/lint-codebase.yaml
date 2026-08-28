@@ -53,6 +53,27 @@ jobs:
           body: |
             :warning: Helm Chart resources have changed. Please make sure to update the documentation accordingly. You can find more information [here](https://cartodb.getoutline.com/doc/helm-chart-yJ3vxi6icN#h-deployment-resources).
 
+      - name: Check resource limits against the admission ceiling
+        # Max container limits admitted on CARTO-managed clusters. A component above
+        # this is rejected at admission and its Deployment sits at 0 replicas, so
+        # raise the cluster policy first, then bump these.
+        env:
+          MAX_CPU_M: 4000
+          MAX_MEMORY_MI: 12288
+        shell: bash
+        run: |
+          BAD=$(yq -r '.. | select(type == "!!map" and has("resources")) | [(path | join(".")), .resources.limits.cpu, .resources.limits.memory] | @tsv' chart/values.yaml \
+            | awk -F'\t' -v max_cpu="$MAX_CPU_M" -v max_mem="$MAX_MEMORY_MI" '
+                { cpu = $2; mem = $3
+                  if (cpu ~ /m$/) sub(/m$/, "", cpu); else cpu *= 1000
+                  if (mem ~ /Gi$/) { sub(/Gi$/, "", mem); mem *= 1024 } else sub(/Mi$/, "", mem)
+                  if (cpu + 0 > max_cpu || mem + 0 > max_mem) print "  " $1 ": cpu=" $2 " memory=" $3 }')
+          if [ -n "$BAD" ]; then
+            echo "Resource limits above the admission ceiling ($MAX_CPU_M m CPU / $MAX_MEMORY_MI Mi):"
+            echo "$BAD"
+            exit 1
+          fi
+
   helm-readme-generator:
     runs-on: ubuntu-24.04
     steps:
