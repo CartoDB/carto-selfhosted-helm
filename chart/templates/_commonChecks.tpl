@@ -396,10 +396,6 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   */}}
   {{- if .Values.replicated.platformDistribution }}
   - clusterVersion:
-      docString: |
-        CARTO Self-Hosted requires Kubernetes 1.29.0 or later.
-        Recommended version: 1.30.0 or later for optimal performance and security patches.
-        Reference: https://docs.carto.com/carto-self-hosted/requirements
       outcomes:
         - fail:
             when: "< 1.29.0"
@@ -412,9 +408,6 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
         - pass:
             message: Your cluster meets the recommended and required versions of Kubernetes.
   - containerRuntime:
-      docString: |
-        CARTO Self-Hosted requires containerd as the container runtime.
-        Other runtimes (Docker, CRI-O) are not supported.
       outcomes:
         - pass:
             when: "== containerd"
@@ -422,14 +415,6 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
         - fail:
             message: Did not find containerd container runtime.
   - distribution:
-      docString: |
-        CARTO Self-Hosted supports the following Kubernetes distributions:
-        - Amazon EKS
-        - Google GKE
-        - Azure AKS
-        - OpenShift
-        - Single VM (Embedded Cluster)
-        Local development clusters (Docker Desktop, minikube, MicroK8s) and DigitalOcean are not supported.
       outcomes:
         - fail:
             when: "== docker-desktop"
@@ -463,9 +448,6 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
             message: Unable to determine the distribution of Kubernetes.
   - nodeResources:
       checkName: The cluster should contain at least 6 cores
-      docString: |
-        CARTO Self-Hosted requires a minimum of 6 CPU cores across the cluster.
-        This requirement can be ignored if cluster autoscaling is enabled.
       outcomes:
         - fail:
             when: "sum(cpuCapacity) < 6"
@@ -474,9 +456,6 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
             message: There are at least 6 cores in the cluster.
   - nodeResources:
       checkName: The cluster should contain at least 32 Gi of RAM memory
-      docString: |
-        CARTO Self-Hosted requires a minimum of 32 GiB of allocatable memory across the cluster.
-        This requirement can be ignored if cluster autoscaling is enabled.
       outcomes:
         - fail:
             when: "sum(memoryAllocatable) < 32Gi"
@@ -488,10 +467,6 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   - customResourceDefinition:
       checkName: Gateway API available
       customResourceDefinitionName: gateways.gateway.networking.k8s.io
-      docString: |
-        CARTO Self-Hosted requires the Kubernetes Gateway API when gateway mode is enabled.
-        Install Gateway API CRDs before deploying CARTO.
-        Reference: https://gateway-api.sigs.k8s.io/guides/#installing-gateway-api
       outcomes:
         - fail:
             message: Gateway API is not enabled for your cluster. Please enable it to continue.
