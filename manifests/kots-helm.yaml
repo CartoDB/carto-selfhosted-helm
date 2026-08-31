@@ -322,15 +322,17 @@ spec:
             value: '{{repl ConfigOption "storageBucketsAwsAccessKeySecret" }}'
         appConfigValues:
           importAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
-    ## Snowflake and Redshift exports
+    ## Snowflake and Redshift exports. Credentials: the dedicated exports
+    ## AccessKey wins; on custom_aws_s3 it is hidden, so the platform storage
+    ## AccessKey is reused as before.
     - when: '{{repl not (empty (ConfigOption "storageBucketsExportAws")) }}'
       recursiveMerge: true
       values:
         appSecrets:
           exportAwsSecretAccessKey:
-            value: '{{repl ConfigOption "storageBucketsAwsAccessKeySecret" }}'
+            value: '{{repl or (ConfigOption "storageBucketsExportAwsAccessKeySecret") (ConfigOption "storageBucketsAwsAccessKeySecret") }}'
           exportAwsAccessKeyId:
-            value: '{{repl ConfigOption "storageBucketsAwsAccessKeyId" }}'
+            value: '{{repl or (ConfigOption "storageBucketsExportAwsAccessKeyId") (ConfigOption "storageBucketsAwsAccessKeyId") }}'
         appConfigValues:
           exportAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
           awsExportBucket: '{{repl ConfigOption "storageBucketsExportAws" }}'
