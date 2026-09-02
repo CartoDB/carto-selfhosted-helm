@@ -47,6 +47,9 @@ data:
   LITELLM_LOG_LEVEL: {{ ternary "DEBUG" "INFO" (eq .Values.appConfigValues.logLevel "debug") | quote }}
   LITELLM_MIGRATION_DIR: "/app/migrations"
   LITELLM_MODE: "PRODUCTION"
+  # Pin to one worker: the entrypoint derives two from the CPU limit and the pair
+  # crash-loops at boot. Override via aiProxy.extraEnvVars.
+  LITELLM_NUM_WORKERS: "1"
   LITELLM_REDIS_DB: "1"
   LITELLM_REDIS_HOST: {{ include "carto.redis.host" . | quote }}
   LITELLM_REDIS_PORT: {{ include "carto.redis.port" . | quote }}
