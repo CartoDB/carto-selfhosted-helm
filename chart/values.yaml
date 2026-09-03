@@ -2804,10 +2804,12 @@ router:
   replicaCount: 1
   ## @param router.containerPorts.http router HTTP container port
   ## @param router.containerPorts.https router HTTPS container port
+  ## @param router.containerPorts.internalHttp router plain-HTTP port for in-cluster callers (ai-api usage metering). Served by the internal ClusterIP Service only, never by the public Service.
   ##
   containerPorts:
     http: 8080
     https: 8443
+    internalHttp: 8085
   ## Configure extra options for router containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param router.livenessProbe.enabled Enable livenessProbe on router containers
