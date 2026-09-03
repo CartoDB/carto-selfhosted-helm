@@ -176,6 +176,8 @@ cartoConfigValues:
   featureFlagsOverrides: []
   ## @param cartoConfigValues.usePubSubRestApi Enable the usage of PubSub via REST API instead of gRPC.
   usePubSubRestApi: false
+  ## @param cartoConfigValues.aiApiEdgeRoutingEnabled Route ai-api's CARTO backend calls through the router so MCP-driven usage is metered like any other client's. With `tlsCerts.httpsEnabled` the calls go to `https://<selfHostedDomain>` (self-signed certs need `trustedCACerts`); otherwise to the in-cluster router service.
+  aiApiEdgeRoutingEnabled: false
   ## @param cartoConfigValues.enableAiProxyEndpoint Enable the aiProxy endpoint in the router.
   enableAiProxyEndpoint: false
   ## @param cartoConfigValues.pubsubDomain PubSub domain to be used in the installation.

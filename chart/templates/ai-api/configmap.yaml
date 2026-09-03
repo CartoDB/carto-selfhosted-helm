@@ -17,6 +17,19 @@ data:
   # AI_OPENAI_ENDPOINT points to aiProxy proxy service, not directly to OpenAI
   # aiProxy acts as a unified gateway that can route to various AI providers
   AI_OPENAI_ENDPOINT: "http://{{ include "carto.aiProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}/v1"
+  {{- if .Values.cartoConfigValues.aiApiEdgeRoutingEnabled }}
+  {{- /* Backend calls traverse the router (nginx access log -> router-metrics) so
+  MCP-driven usage generates consumption. With HTTPS on the router its HTTP port
+  only redirects, so the calls use the public domain; otherwise the in-cluster
+  router service. Paths mirror the public routes: /api/* for the v3 APIs,
+  /workspace-api/* for the full workspace-api surface. */}}
+  {{- $routerBase := ternary (printf "https://%s" .Values.appConfigValues.selfHostedDomain) (printf "http://%s.%s.svc.%s" (include "carto.router.fullname" .) .Release.Namespace .Values.clusterDomain) (eq (toString .Values.tlsCerts.httpsEnabled) "true") }}
+  AI_SQL_API_URL: "{{ $routerBase }}/api"
+  AI_MAPS_API_URL: "{{ $routerBase }}/api"
+  AI_LDS_API_URL: "{{ $routerBase }}/api"
+  AI_WORKSPACE_API_URL: "{{ $routerBase }}/workspace-api"
+  AI_IMPORT_API_URL: "{{ $routerBase }}/api"
+  {{- else }}
   # AI_SQL_API_URL and AI_MAPS_API_URL both point to maps-api: it serves the SQL
   # and the Maps API surfaces in self-hosted, unlike SaaS where they are split
   AI_SQL_API_URL: "http://{{ include "carto.mapsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
@@ -24,6 +37,7 @@ data:
   AI_LDS_API_URL: "http://{{ include "carto.ldsApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   AI_WORKSPACE_API_URL: "http://{{ include "carto.workspaceApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   AI_IMPORT_API_URL: "http://{{ include "carto.importApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+  {{- end }}
   {{- if .Values.cartoConfigValues.cartoAccApiDomain }}
   AI_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
   {{- end }}
