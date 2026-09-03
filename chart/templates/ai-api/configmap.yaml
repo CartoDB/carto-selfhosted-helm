@@ -18,13 +18,13 @@ data:
   # aiProxy acts as a unified gateway that can route to various AI providers
   AI_OPENAI_ENDPOINT: "http://{{ include "carto.aiProxy.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}/v1"
   {{- /* Backend calls traverse the router (nginx access log -> router-metrics) so
-  MCP-driven usage generates consumption. With HTTPS on the router its HTTP port
-  only redirects, so the calls use the public domain (self-signed certs need
-  trustedCACerts); otherwise the in-cluster router service. Paths mirror the
-  public routes: /api/* for the v3 APIs (SQL and Maps both resolve to maps-api,
-  which serves both surfaces in self-hosted), /workspace-api/* for the full
-  workspace-api surface. */}}
-  {{- $routerBase := ternary (printf "https://%s" .Values.appConfigValues.selfHostedDomain) (printf "http://%s.%s.svc.%s" (include "carto.router.fullname" .) .Release.Namespace .Values.clusterDomain) (eq (toString .Values.tlsCerts.httpsEnabled) "true") }}
+  MCP-driven usage generates consumption. They target the router's internal
+  plain-HTTP Service: the public HTTP port is redirect-only when the router
+  terminates TLS, and the public HTTPS port serves a cert for the external
+  domain. Paths mirror the public routes: /api/* for the v3 APIs (SQL and Maps
+  both resolve to maps-api, which serves both surfaces in self-hosted),
+  /workspace-api/* for the full workspace-api surface. */}}
+  {{- $routerBase := printf "http://%s-internal.%s.svc.%s" (include "carto.router.fullname" .) .Release.Namespace .Values.clusterDomain }}
   AI_SQL_API_URL: "{{ $routerBase }}/api"
   AI_MAPS_API_URL: "{{ $routerBase }}/api"
   AI_LDS_API_URL: "{{ $routerBase }}/api"

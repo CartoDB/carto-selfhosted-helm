@@ -1,0 +1,31 @@
+{{- /* ClusterIP-only companion to the router Service: exposes the plain-HTTP
+listener that in-cluster callers (ai-api) use so their backend calls traverse
+the metered router path. Kept out of the public Service so this port is never
+reachable through the LoadBalancer, where it would bypass edge TLS. */}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "carto.router.fullname" . }}-internal
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: router
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: internal-http
+      protocol: TCP
+      name: http
+  selector:
+    {{- if .Values.router.service.labelSelectorsOverride }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.router.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- else }}
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: router
+    {{- end }}
