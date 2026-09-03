@@ -14,9 +14,12 @@ inputs:
   trigger-action:
     description: "Action that triggered the release"
     required: true
-  gcloud-service-account:
-    description: "Service account key for Google Cloud"
-    required: true
+  workload-identity-provider:
+    description: "Workload Identity Federation provider resource name for Google Cloud auth"
+    default: projects/1086647180948/locations/global/workloadIdentityPools/github-actions-pool/providers/github-carto-selfhosted-helm
+  service-account:
+    description: "Service account email to impersonate via Workload Identity Federation"
+    default: github-actions-artifacts@carto-artifacts.iam.gserviceaccount.com
   replicated-api-token:
     description: "API token for Replicated"
     required: true
@@ -41,7 +44,8 @@ runs:
     - name: Google Cloud Auth
       uses: google-github-actions/auth@v2
       with:
-        credentials_json: ${{ inputs.gcloud-service-account }}
+        workload_identity_provider: ${{ inputs.workload-identity-provider }}
+        service_account: ${{ inputs.service-account }}
         project_id: ${{ inputs.artifacts-gcp-project-id }}
 
     # Step 2: Install Gcloud CLI
