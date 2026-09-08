@@ -1,7 +1,3 @@
-{{- /* ClusterIP-only companion to the router Service: exposes the plain-HTTP
-listener that in-cluster callers (ai-api) use so their backend calls traverse
-the metered router path. Kept out of the public Service so this port is never
-reachable through the LoadBalancer, where it would bypass edge TLS. */}}
 apiVersion: v1
 kind: Service
 metadata:

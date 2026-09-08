@@ -2804,7 +2804,7 @@ router:
   replicaCount: 1
   ## @param router.containerPorts.http router HTTP container port
   ## @param router.containerPorts.https router HTTPS container port
-  ## @param router.containerPorts.internalHttp router plain-HTTP port for in-cluster callers (ai-api usage metering). Served by the internal ClusterIP Service only, never by the public Service.
+  ## @param router.containerPorts.internalHttp router plain-HTTP port for in-cluster callers, served by the internal ClusterIP Service only
   ##
   containerPorts:
     http: 8080
