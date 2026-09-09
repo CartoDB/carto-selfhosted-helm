@@ -215,6 +215,7 @@ spec:
     workspaceWww:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+        tag: "2026.8.11-patch1"
     workspaceMigrations:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
