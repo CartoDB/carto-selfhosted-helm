@@ -587,23 +587,23 @@ spec:
           type: bool
           default: "1"
 
-        # Exports GCP
+        # Exports GCP — warehouse-scoped: BigQuery can only stage exports through
+        # GCS, so this applies on every platform storage provider, not just GCS.
         - name: storageBucketsExportGcp
-          title: Exports Bucket
-          help_text: |- 
-            Bucket name to store exported data. Leave it blank to disable exports.
+          title: GCS exports bucket
+          help_text: |-
+            GCS bucket used to stage BigQuery exports (required for BigQuery exports on any storage provider) and, when GCS is the storage provider, to store exported data. Leave it blank to disable exports.
           type: text
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_gcs") }}'
           required: false
           default: repl{{ if ConfigOptionEquals "replicatedLicenseType" "dev"}}repl{{ print (ConfigOption "derivedSelfHostedGCPProjectId") "-export-storage"}}repl{{ end }}
             
 
-        # Exports for AWS
+        # Exports for AWS — warehouse-scoped: Snowflake and Redshift stage exports
+        # through S3, so this applies on every platform storage provider.
         - name: storageBucketsExportAws
           title: AWS exports bucket name
-          help_text: Bucket name to store exported data. Leave it blank to disable exports.
+          help_text: S3 bucket used to stage Snowflake and Redshift exports (on any storage provider) and, when AWS S3 is the storage provider, to store exported data. Leave it blank to disable exports.
           type: text
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
           required: false
         - name: storageBucketsImportExportAwsArnRole
           title: AWS arn bucket role
@@ -611,7 +611,22 @@ spec:
             A AWS arn role must be provided. Check the following instructions for [Redshift](https://docs.carto.com/carto-self-hosted/guides/configure-your-own-buckets#configuration-for-redshift) or [Snowflake](https://docs.carto.com/carto-self-hosted/guides/configure-your-own-buckets#configuration-for-snowflake) 
            
           type: text
-          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+          required: false
+
+        # Dedicated credentials for the S3 exports bucket, needed only when the
+        # platform storage provider is not AWS S3 (the platform AccessKey items
+        # are hidden there and can't be reused).
+        - name: storageBucketsExportAwsAccessKeyId
+          title: AccessKey ID for the S3 exports bucket
+          help_text: Only needed when AWS S3 is not the storage provider — otherwise the storage AccessKey is reused.
+          type: text
+          when: '{{repl and (not (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3")) (not (empty (ConfigOption "storageBucketsExportAws"))) }}'
+          required: false
+        - name: storageBucketsExportAwsAccessKeySecret
+          title: AccessKey Secret for the S3 exports bucket
+          help_text: Only needed when AWS S3 is not the storage provider — otherwise the storage AccessKey is reused.
+          type: password
+          when: '{{repl and (not (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3")) (not (empty (ConfigOption "storageBucketsExportAws"))) }}'
           required: false
 
     # Advanced Config
