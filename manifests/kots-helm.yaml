@@ -335,6 +335,12 @@ spec:
           exportAwsRoleArn: '{{repl ConfigOption "storageBucketsImportExportAwsArnRole" }}'
           awsExportBucket: '{{repl ConfigOption "storageBucketsExportAws" }}'
           awsExportBucketRegion: '{{repl ConfigOption "storageBucketsAwsS3Region" }}'
+    ## Azure exports
+    - when: '{{repl not (empty (ConfigOption "storageBucketsExportAzure")) }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          azureExportContainer: '{{repl ConfigOption "storageBucketsExportAzure" }}'
     ## S3-compatible custom endpoint (only set when provided, so standard AWS S3 keeps its default regional endpoints)
     - when: '{{repl not (empty (ConfigOption "storageBucketsS3Endpoint")) }}'
       recursiveMerge: true
