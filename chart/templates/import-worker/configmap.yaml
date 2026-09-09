@@ -47,6 +47,7 @@ data:
   PUBSUB_USE_REST_API: {{ .Values.cartoConfigValues.usePubSubRestApi | quote }}
   WORKSPACE_THUMBNAILS_BUCKET: {{ .Values.appConfigValues.workspaceThumbnailsBucket | quote }}
   WORKSPACE_THUMBNAILS_PROVIDER: {{ .Values.appConfigValues.storageProvider | quote }}
+  {{- if eq .Values.appConfigValues.storageProvider "gcp" }}
   {{- if .Values.appConfigValues.googleCloudStorageProjectId }}
   WORKSPACE_THUMBNAILS_PROJECTID: {{ .Values.appConfigValues.googleCloudStorageProjectId | quote }}
   {{- end }}
@@ -55,6 +56,7 @@ data:
   {{- else }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   WORKSPACE_THUMBNAILS_KEYFILENAME: {{ include "carto.google.secretMountAbsolutePath" . }}
+  {{- end }}
   {{- end }}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "s3" }}
