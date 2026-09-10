@@ -5904,6 +5904,18 @@ routerMetrics:
   ## @param routerMetrics.customStartupProbe Custom startupProbe that overrides the default one
   ##
   customStartupProbe: {}
+  ## @skip routerMetrics.lifecycleHooks [object] for the router-metrics container to automate configuration before or after startup
+  ## @skip routerMetrics.lifecycleHooks.preStop.exec.command
+  ## The sidecar must outlive router-http's preStop (sleep 30 && nginx -s quit): every request nginx
+  ## serves while draining logs a usage line to this container, which only flushes them on SIGTERM.
+  ##
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 60"
 
 gateway:
   ## @param gateway.enabled Enable gateway api.
