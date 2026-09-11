@@ -17,3 +17,14 @@ stringData:
     {{- include "carto.replicated.commonChecks.collectors" . | indent 6 }}
       analyzers:
     {{- include "carto.replicated.commonChecks.analyzers" . | indent 6 }}
+    ---
+    # Preflight bundles also pass through redaction; ship a standalone Redactor
+    # CR alongside the Preflight spec. (`spec.redactors:` is not a field on
+    # kind: Preflight — the standalone Redactor kind is the supported form.)
+    apiVersion: troubleshoot.sh/v1beta2
+    kind: Redactor
+    metadata:
+      name: {{ .Release.Name }}-redactors
+    spec:
+      redactors:
+    {{- include "carto.replicated.commonChecks.redactors" . | indent 6 }}
