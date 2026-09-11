@@ -27,6 +27,10 @@ spec:
     - '{{repl if ConfigOptionEquals "aiFeaturesEnabled" "1" }}deployment/carto-ai-api{{repl else}}{{repl end }}'
     - '{{repl if ConfigOptionEquals "aiFeaturesEnabled" "1" }}deployment/carto-aiproxy{{repl else}}{{repl end }}'
     - '{{repl if ConfigOptionEquals "publicEventsApiEnabled" "1" }}deployment/carto-public-events-api{{repl else}}{{repl end }}'
+  # Minimum KOTS Admin Console version customers must run. The Admin Console
+  # blocks a CARTO upgrade when the installed KOTS is below this value.
+  # If you raise it, note the required KOTS upgrade in that release's Self-Hosted
+  # release notes (docs.carto.com/carto-self-hosted/release-notes).
   minKotsVersion: 1.117.3
   additionalImages:
     - gcr.io/carto-onprem-artifacts/tenant-requirements-checker:2025.6.10
