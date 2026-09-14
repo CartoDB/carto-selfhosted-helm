@@ -14,7 +14,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 80
+    - port: {{ .Values.router.service.ports.internalHttp }}
       targetPort: internal-http
       protocol: TCP
       name: http

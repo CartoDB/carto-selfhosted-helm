@@ -3089,12 +3089,14 @@ router:
     ## @param router.service.ports.httpTargetPort router service HTTP Target port
     ## @param router.service.ports.https router service HTTPS port
     ## @param router.service.ports.httpsTargetPort router service HTTPS Target port
+    ## @param router.service.ports.internalHttp router internal ClusterIP service HTTP port
     ##
     ports:
       http: 80
       httpTargetPort: "http"
       https: 443
       httpsTargetPort: "https"
+      internalHttp: 80
 
     ## Node.js ports to expose
     ## @param router.service.nodePorts.http Node.js port for HTTP
