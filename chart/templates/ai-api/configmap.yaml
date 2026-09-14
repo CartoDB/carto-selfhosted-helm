@@ -21,7 +21,7 @@ data:
   AI_SQL_API_URL: "{{ $routerBase }}/api"
   AI_MAPS_API_URL: "{{ $routerBase }}/api"
   AI_LDS_API_URL: "{{ $routerBase }}/api"
-  AI_WORKSPACE_API_URL: "{{ $routerBase }}/workspace-api"
+  AI_WORKSPACE_API_URL: "http://{{ include "carto.workspaceApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   AI_IMPORT_API_URL: "{{ $routerBase }}/api"
   {{- if .Values.cartoConfigValues.cartoAccApiDomain }}
   AI_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
