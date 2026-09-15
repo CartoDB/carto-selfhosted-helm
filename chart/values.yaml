@@ -63,6 +63,8 @@ appConfigValues:
   workspaceThumbnailsBucket: ""
   ## @param appConfigValues.azureStorageAccount Azure storage account to be used in the app if Azure Blob is the storage provider
   azureStorageAccount: ""
+  ## @param appConfigValues.azureExportContainer Azure Blob container to be used to store the exports generated in the app
+  azureExportContainer: ""
   ## @param appConfigValues.awsExportBucket Bucket to be used to store the exports generated in the app
   awsExportBucket: ""
   ## @param appConfigValues.awsExportBucketRegion Region of the bucket to be used to store the exports generated in the app
