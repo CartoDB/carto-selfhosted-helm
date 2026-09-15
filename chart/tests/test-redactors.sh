@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 #
-# Verify the chart's support-bundle Redactor scrubs every known credential
-# shape from a captured bundle.
+# Verify the chart's support-bundle Redactor scrubs sensitive values from each
+# known leak context without depending on credential formats.
 #
 # This test exists because PR #854 shipped a chart whose `spec.redactors:`
 # block inside the SupportBundle CR was silently ignored by Replicated
 # Troubleshoot — the fix was to render redactors as a standalone
 # `kind: Redactor` document. A regression of that structural shape (or an
-# accidental rename of any redactor pattern) would silently leak customer
+# accidental change to any redactor rule) would silently leak customer
 # credentials in production support bundles. This test catches it.
 #
 # Strategy:
 #   1. helm template the chart and extract the Redactor CR from the
 #      rendered support-bundle Secret stringData
-#   2. Build a synthetic support-bundle archive that contains files with
-#      every known plaintext sentinel shape
+#   2. Build a synthetic support-bundle archive containing every known leak
+#      context and representative plaintext sentinels
 #   3. Run `kubectl support-bundle redact` with the extracted Redactor CR
 #      against the synthetic bundle
 #   4. Grep the redacted bundle for each sentinel — must report zero hits
@@ -67,6 +67,7 @@ PY
 # The redact tool requires this layout.
 BUNDLE_ROOT="$WORK_DIR/bundle/fixture"
 mkdir -p "$BUNDLE_ROOT/tenant-requirements-check"
+mkdir -p "$BUNDLE_ROOT/nested/tenant-requirements-check"
 mkdir -p "$BUNDLE_ROOT/replicated-sdk/test-ns/replicated-test/"
 mkdir -p "$BUNDLE_ROOT/cluster-resources/pods"
 cat > "$BUNDLE_ROOT/version.yaml" <<'YAML'
@@ -77,9 +78,9 @@ spec:
 YAML
 
 # Synthetic runPod podSpec — the file the redactors target most directly.
-# The env-fallback redactor masks EVERY env value in this file (that is its
-# job: shapeless secrets like the Azure storage key have no pattern to match),
-# so non-sensitive values here are expected to be scrubbed too.
+# The scoped checker env-value redactor masks EVERY env value in this file, so
+# shapeless secrets need no format-specific rule. Non-sensitive values here
+# are expected to be scrubbed too.
 cat > "$BUNDLE_ROOT/tenant-requirements-check/tenant-requirements-check.json" <<'JSON'
 {
   "kind": "Pod",
@@ -112,6 +113,19 @@ cat > "$BUNDLE_ROOT/tenant-requirements-check/tenant-requirements-check.json" <<
 }
 JSON
 
+# Exercise the nested file-selector alternative used by some bundle layouts.
+cat > "$BUNDLE_ROOT/nested/tenant-requirements-check/tenant-requirements-check.json" <<'JSON'
+{
+  "kind": "Pod",
+  "spec": {
+    "containers": [{
+      "name": "main",
+      "env": [{"name": "FUTURE_CREDENTIAL", "value": "nested-checker-secret"}]
+    }]
+  }
+}
+JSON
+
 # Synthetic Replicated SDK license-info dump — second leak surface.
 cat > "$BUNDLE_ROOT/replicated-sdk/test-ns/replicated-test/replicated-license-info-stdout.txt" <<'TXT'
 {
@@ -126,7 +140,17 @@ cat > "$BUNDLE_ROOT/replicated-sdk/test-ns/replicated-test/replicated-license-in
     "cartoFeaturesFlagSdkKey": {"title": "x", "value": "sdk-deadbeef-aaaa-bbbb-cccc-dddddddddddd", "valueType": "String"},
     "databaseEncryptionKey": {"title": "x", "value": "mcaI8oSWt9CBZEarrPJXLgKs4D1h7UY1", "valueType": "String"},
     "jwtEncryptionKey": {"title": "x", "value": "2KMJ5T5hUo58O2OB", "valueType": "String"},
-    "instanceId": {"title": "x", "value": "YhwtukDuLyfVTmJ6aShFmjpy7hs0KjVk", "valueType": "String"}
+    "instanceId": {"title": "x", "value": "YhwtukDuLyfVTmJ6aShFmjpy7hs0KjVk", "valueType": "String"},
+    "futureCredential": {"title": "x", "value": "new-unregistered-secret-format", "valueType": "String"}
+  }
+}
+TXT
+
+# stderr uses the same structured entitlement redaction as stdout.
+cat > "$BUNDLE_ROOT/replicated-sdk/test-ns/replicated-test/replicated-license-info-stderr.txt" <<'TXT'
+{
+  "entitlements": {
+    "futureCredential": {"title": "x", "value": "stderr-license-secret", "valueType": "String"}
   }
 }
 TXT
@@ -137,12 +161,14 @@ mkdir -p "$BUNDLE_ROOT/namespace-test-ns-logs/api-pod"
 cat > "$BUNDLE_ROOT/namespace-test-ns-logs/api-pod/api.log" <<'LOG'
 {"time":"2026-01-01T00:00:00.000Z","data":{"meta.type":"pg","db.query":"UPDATE settings SET value = $1","db.query_args":["{\"custom\":{\"enabled\":true,\"apiKey\":\"gw-secret-0f9e8d7c6b5a4321\",\"baseUrl\":\"https://llm.example.com/api/v1\"}}"]}}
 {"time":"2026-01-01T00:00:01.000Z","provider":{"api_key":"snake-secret-1a2b3c4d5e6f7890"}}
+{"time":"2026-01-01T00:00:02.000Z","message":"keep-this-log-context","provider":{"API-KEY":"hyphen-secret-a1b2c3d4"}}
 LOG
 
-# A pod OUTSIDE the env-fallback's fileSelector scope. Its non-sensitive env
+# A pod OUTSIDE the checker redactor's fileSelector scope. Its non-sensitive env
 # values must survive redaction — this is what proves the env-value wildcard
 # stays scoped to the tenant-requirements-check file instead of stripping
-# debug data from every pod in the bundle.
+# debug data from every pod in the bundle. Sensitive names here exercise
+# Troubleshoot's built-in redactors rather than any custom rule.
 cat > "$BUNDLE_ROOT/cluster-resources/pods/other-app-pod.json" <<'JSON'
 {
   "kind": "Pod",
@@ -152,7 +178,19 @@ cat > "$BUNDLE_ROOT/cluster-resources/pods/other-app-pod.json" <<'JSON'
       "env": [
         {"name": "WORKSPACE_POSTGRES_PORT", "value": "5432"},
         {"name": "LOG_LEVEL", "value": "info"},
-        {"name": "NODE_ENV", "value": "production"}
+        {"name": "NODE_ENV", "value": "production"},
+        {
+          "name": "DATABASE_PASSWORD",
+          "value": "builtin-password-secret"
+        },
+        {
+          "name": "SERVICE_TOKEN",
+          "value": "builtin-token-secret"
+        },
+        {
+          "name": "AWS_SECRET_ACCESS_KEY",
+          "value": "builtin-aws-secret"
+        }
       ]
     }]
   }
@@ -176,9 +214,9 @@ tar -xzf "$WORK_DIR/redacted.tar.gz" -C "$WORK_DIR/redacted-extracted"
 
 # ---------- Step 4: grep for sentinels and report ----------
 
-# Every entry here is a known plaintext credential shape that the redactor
-# set MUST scrub. Adding a new credential shape to the platform means adding
-# both a redactor rule AND a sentinel here.
+# Every entry here is sensitive data in a known leak context and MUST be
+# scrubbed. New formats in the checker or license dump should require no new
+# redactor rule; add sentinels only when introducing a new leak context.
 SENTINELS=(
   # LD shapes
   'sdk-aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
@@ -208,9 +246,18 @@ SENTINELS=(
   'mcaI8oSWt9CBZEarrPJXLgKs4D1h7UY1'
   '2KMJ5T5hUo58O2OB'
   'YhwtukDuLyfVTmJ6aShFmjpy7hs0KjVk'
+  'new-unregistered-secret-format'
+  'stderr-license-secret'
+  # Nested checker path
+  'nested-checker-secret'
   # Custom AI provider keys — field-name shape, escaped + plain JSON forms
   'gw-secret-0f9e8d7c6b5a4321'
   'snake-secret-1a2b3c4d5e6f7890'
+  'hyphen-secret-a1b2c3d4'
+  # Troubleshoot built-ins outside custom file scopes
+  'builtin-password-secret'
+  'builtin-token-secret'
+  'builtin-aws-secret'
 )
 
 LEAKS=0
@@ -226,7 +273,7 @@ for S in "${SENTINELS[@]}"; do
   fi
 done
 
-# Non-sensitive values in pods OUTSIDE the env-fallback's scope MUST remain
+# Non-sensitive values in pods OUTSIDE the checker redactor's scope MUST remain
 # unredacted — over-redaction breaks debug bundles. Checked only against the
 # out-of-scope pod: inside tenant-requirements-check.json the fallback masks
 # every env value by design.
@@ -242,13 +289,33 @@ for V in '5432' 'info' 'production'; do
   fi
 done
 
+LICENSE_FILE="$WORK_DIR/redacted-extracted/fixture/replicated-sdk/test-ns/replicated-test/replicated-license-info-stdout.txt"
+for V in 'test-license-id' 'cartoPlatformDefaultSA' 'futureCredential'; do
+  if grep -q -- "$V" "$LICENSE_FILE" 2>/dev/null; then
+    PRESERVED_FOUND=$((PRESERVED_FOUND + 1))
+  else
+    PRESERVED_MISSING=$((PRESERVED_MISSING + 1))
+    echo "OVER-REDACT  license metadata '$V' was scrubbed"
+  fi
+done
+
+LOG_FILE="$WORK_DIR/redacted-extracted/fixture/namespace-test-ns-logs/api-pod/api.log"
+for V in 'UPDATE settings SET value = $1' 'https://llm.example.com/api/v1' 'keep-this-log-context'; do
+  if grep -qF -- "$V" "$LOG_FILE" 2>/dev/null; then
+    PRESERVED_FOUND=$((PRESERVED_FOUND + 1))
+  else
+    PRESERVED_MISSING=$((PRESERVED_MISSING + 1))
+    echo "OVER-REDACT  log context '$V' was scrubbed"
+  fi
+done
+
 HIDDEN=$(grep -roh '\*\*\*HIDDEN\*\*\*' "$WORK_DIR/redacted-extracted" 2>/dev/null | wc -l | tr -d ' ')
 
 echo ""
 echo "Summary:"
 echo "  Sentinels scrubbed:        $PASSES / ${#SENTINELS[@]}"
 echo "  Leaks:                     $LEAKS"
-echo "  Non-sensitive preserved:   $PRESERVED_FOUND / 3"
+echo "  Non-sensitive preserved:   $PRESERVED_FOUND / 9"
 echo "  ***HIDDEN*** insertions:   $HIDDEN"
 
 if [ "$LEAKS" -gt 0 ] || [ "$PRESERVED_MISSING" -gt 0 ]; then

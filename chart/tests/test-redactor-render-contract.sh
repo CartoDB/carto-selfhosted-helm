@@ -14,7 +14,7 @@
 #      embeds a multi-doc spec: kind SupportBundle + standalone kind Redactor.
 #   2. The preflight Secret (label troubleshoot.sh/kind: preflight) embeds
 #      kind Preflight + the same standalone Redactor.
-#   3. Both Redactor docs carry the identical rule-name list (same include).
+#   3. Both Redactor docs carry the expected context-first rule list.
 #   4. Every rule has at least one removal (regex, yamlPath or values); every
 #      regex compiles and contains a (?P<mask>…) group — mask is what
 #      troubleshoot replaces with ***HIDDEN***, so a regex rule without one
@@ -84,6 +84,13 @@ def rule_names(r):
 sb_rules, pf_rules = rule_names(sb), rule_names(pf)
 if sb and pf and sb_rules != pf_rules:
     failures.append(f"rule lists diverge: support-bundle={sb_rules} preflight={pf_rules}")
+expected_rules = [
+    'api-key-json-fields',
+    'replicated-license-entitlement-values',
+    'tenant-requirements-check-env-values',
+]
+if sb and sb_rules != expected_rules:
+    failures.append(f"unexpected redactor rules: expected={expected_rules} actual={sb_rules}")
 
 checked = 0
 for rule in (sb['spec']['redactors'] if sb else []):

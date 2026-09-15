@@ -668,61 +668,14 @@ Return customer secrets to use in preflights and support-bundle
 
 
 {{/*
-Redactor specs for the preflight and support-bundle collectors. Troubleshoot
-runs these in-stream before the bundle is archived, replacing each `mask`
-group with ***HIDDEN***. Layered on top of Replicated's built-in redactors
-(*PASSWORD*, *TOKEN*, *ACCESS_KEY_ID, *SECRET_ACCESS_KEY env vars + conn
-strings). Patterns target known credential shapes only, to avoid redacting
-useful debug data. Verify changes with chart/tests/test-redactors.sh.
+Redactor specs for the preflight and support-bundle collectors. Prefer scoped
+structured redaction over credential-shape regexes so new secret formats are
+covered without maintaining a second secret inventory. Replicated's built-ins
+cover common password, token, and AWS credential env names plus connection
+string patterns, but are not exhaustive.
+Verify changes with chart/tests/test-redactors.sh.
 */}}
 {{- define "carto.replicated.commonChecks.redactors" }}
-# Order matters: redacting the inner base64 PEM first would shorten the
-# outer GCP-SA-JSON match below its length floor, so the outer rule runs first.
-- name: gcp-sa-json-base64
-  removals:
-    regex:
-      - redactor: '(?P<mask>(?:eyAidHlwZSI6|ewogICJ0eXBlIjogInNlcnZpY2VfYWNjb3VudCI|eyJ0eXBlIjoic2VydmljZV9hY2NvdW50)[A-Za-z0-9+/=]{50,})'
-- name: gcp-sa-private-key-field
-  removals:
-    regex:
-      - redactor: '"private_key"\s*:\s*"(?P<mask>-----BEGIN[^"]+)"'
-- name: pem-private-keys-raw
-  removals:
-    regex:
-      - redactor: '(?P<mask>-----BEGIN [A-Z ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z ]*PRIVATE KEY-----)'
-- name: pem-private-keys-base64
-  removals:
-    regex:
-      - redactor: '(?P<mask>LS0tLS1CRUdJTi[A-Za-z0-9+/=]{200,})'
-- name: launchdarkly-sdk-keys
-  removals:
-    regex:
-      - redactor: '(?P<mask>\bsdk-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b)'
-- name: launchdarkly-mobile-keys
-  removals:
-    regex:
-      - redactor: '(?P<mask>\bmob-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b)'
-- name: aws-access-key-ids
-  removals:
-    regex:
-      - redactor: '(?P<mask>\b(?:AKIA|ASIA)[0-9A-Z]{16}\b)'
-- name: openai-sk-keys
-  removals:
-    regex:
-      - redactor: '(?P<mask>\bsk-(?:svcacct-|proj-|None-)?[A-Za-z0-9_-]{20,}\b)'
-- name: google-api-keys
-  removals:
-    regex:
-      - redactor: '(?P<mask>\bAIza[0-9A-Za-z_-]{35}\b)'
-- name: jwt-tokens
-  removals:
-    regex:
-      - redactor: '(?P<mask>\beyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b)'
-# base64 of a JWT starts with ZXlK (e.g. vitallyToken).
-- name: jwt-tokens-base64-wrapped
-  removals:
-    regex:
-      - redactor: '(?P<mask>\bZXlK[A-Za-z0-9+/=]{50,}\b)'
 # Provider API keys can surface in collected pod logs as a JSON field, both
 # plain ("apiKey":"…") and escaped inside a logged JSON string
 # (\"apiKey\":\"…\"). Custom-provider keys have no fixed value shape a
@@ -732,21 +685,20 @@ useful debug data. Verify changes with chart/tests/test-redactors.sh.
   removals:
     regex:
       - redactor: '(?i)((?:"|\\")api[_-]?key(?:"|\\")\s*:\s*(?:"|\\"))(?P<mask>[^"\\]+)'
-# Catches shapeless entitlement values. fileSelector globs match against
-# bundle-root-relative paths and `**/` requires at least one parent directory
-# (troubleshoot compiles them with gobwas/glob) — list a root-relative form
-# alongside any `**/` form when the file can sit near the bundle root.
-- name: carto-license-sensitive-entitlements
+# License values can contain credentials with no stable format. Mask every
+# entitlement value while preserving names and surrounding license metadata.
+- name: replicated-license-entitlement-values
   fileSelector:
     files:
       - "**/replicated-license-info-stdout.txt"
       - "**/replicated-license-info-stderr.txt"
   removals:
-    regex:
-      - redactor: '"(?:cartoPlatformDefaultSA|cartoFeaturesFlagSdkKey|openAiApiKey|geminiApiKey|vitallyToken|databaseEncryptionKey|jwtEncryptionKey|ldsConfiguration|cartoAuthClientId|instanceId)"[^}]*"value"\s*:\s*"(?P<mask>[^"]+)"'
-# Catch-all for shapeless env values (e.g. Azure storage keys); fileSelector
-# keeps the env-value wildcard from touching other pods in the bundle.
-- name: tenant-requirements-check-env-fallback
+    yamlPath:
+      - "entitlements.*.value"
+# The pre-install checker must inline values that would otherwise come from
+# chart-generated Secrets, which do not exist yet. Mask its complete env
+# surface without affecting pod snapshots elsewhere in the bundle.
+- name: tenant-requirements-check-env-values
   fileSelector:
     files:
       # In-cluster captures store this file bundle-root-relative (depth 2),
