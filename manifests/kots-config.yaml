@@ -739,6 +739,13 @@ spec:
           value: 'repl{{ PrivateCACert }}'
           readonly: true
 
+        ## Trusted CA certificates
+        - name: trustedCaCertsValue
+          title: Trusted CA certificate(s)
+          type: textarea
+          help_text: |-
+            PEM-encoded CA certificate(s) added to the standard trusted CAs (extends, does not replace them) for outbound TLS — verifying servers CARTO connects to that are signed by a private or self-signed CA (e.g. a private-CA S3-compatible store). Paste multiple concatenated PEM blocks if needed. Leave empty if not needed.
+
         ## SSO
         - name: ssoEnabled
           title: Single Sign-On
@@ -897,7 +904,7 @@ spec:
           required: true
           type: text
         - name: bigqueryWorkloadIdentityConnectionBillingProject
-          title: Google billing broject
+          title: Google billing project
           when: *when_google_workload_identity_and_connections
           help_text: |-
             GCP project to be charged with the BigQuery costs when using Workload Identity
@@ -1030,7 +1037,6 @@ spec:
             Enable if you want to enable debug mode.
           type: bool
           default: "0"
-
 
     # Custom configuration
     - name: platformAdvancedTuning

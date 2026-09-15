@@ -82,6 +82,7 @@ LITELLM_MASTER_KEY: cartoSecrets.litellmMasterKey
 LITELLM_SALT_KEY: cartoSecrets.litellmSaltKey
 AI_OPENAI_API_KEY: cartoSecrets.litellmMasterKey
 GEMINI_API_KEY: cartoSecrets.geminiApiKey
+CARTO_INTERNAL_SERVICE_TOKEN: cartoSecrets.authApiInternalServiceToken
 {{- end -}}
 
 {{/*
@@ -942,7 +943,7 @@ Return the proper Carto tenant-requirements-checker image name
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.aiProxy.image) "context" $) -}}
+{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authMigrations.image .Values.accountsApi.image .Values.accountsSubscriber.image .Values.accountsMigrations.image) "context" $) -}}
 {{- end -}}
 
 {{/*
@@ -1331,29 +1332,87 @@ Return the proxy connection string if the config does not include the complete U
 {{- end -}}
 
 {{/*
-Get the proxy config map name
+Return "true" when there is inline CA content the chart must write into its own
+generated ConfigMap: the new `trustedCACerts.value`, or the deprecated
+`externalProxy.sslCA` (the latter only while an external proxy is configured).
+This distinguishes the "generate our own ConfigMap" sources from the "mount a
+pre-existing ConfigMap" sources.
 */}}
-{{- define "carto.proxy.configMapName" -}}
-{{- if .Values.externalProxy.sslCA -}}
-{{- printf "%s-%s" .Release.Name "externalproxy" -}}
-{{- else if .Values.externalProxy.sslCAConfigmap.name -}}
+{{- define "carto.trustedCACerts.hasInline" -}}
+{{- if or .Values.trustedCACerts.value (and .Values.externalProxy.enabled .Values.externalProxy.sslCA) -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return "true" when there is any custom CA to trust fleet-wide, from any source.
+This is the single source of truth for whether the CA bundle ConfigMap is
+created and the `trusted-ca-certs` volume/mount + `NODE_EXTRA_CA_CERTS` env are
+rendered.
+
+The new `trustedCACerts.*` sources are intentionally decoupled from
+`externalProxy.enabled`, so a private-CA endpoint (e.g. an S3-compatible store)
+is trusted even without a proxy. The deprecated `externalProxy.sslCA` /
+`externalProxy.sslCAConfigmap` sources stay gated on `externalProxy.enabled`,
+matching the historical behaviour they replace.
+*/}}
+{{- define "carto.trustedCACerts.enabled" -}}
+{{- if or .Values.trustedCACerts.value .Values.trustedCACerts.existingConfigmap.name (and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name)) -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the concatenation of every inline custom CA PEM the chart manages, so a
+single `NODE_EXTRA_CA_CERTS` file can hold multiple certs. Order: the new
+`trustedCACerts.value` first, then the deprecated `externalProxy.sslCA` (kept
+working during the transition, only while an external proxy is configured).
+Only covers inline sources written into the generated ConfigMap; the existing
+ConfigMap sources are mounted directly instead.
+*/}}
+{{- define "carto.trustedCACerts.bundle" -}}
+{{- $certs := list -}}
+{{- if .Values.trustedCACerts.value -}}{{- $certs = append $certs .Values.trustedCACerts.value -}}{{- end -}}
+{{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA -}}{{- $certs = append $certs .Values.externalProxy.sslCA -}}{{- end -}}
+{{- join "\n" $certs -}}
+{{- end -}}
+
+{{/*
+Get the trusted CA ConfigMap name. The chart generates its own ConfigMap
+(`<release>-trusted-ca-certs`) whenever there is inline CA content; otherwise it
+points at the customer-provided ConfigMap (`trustedCACerts.existingConfigmap`
+first, then the deprecated `externalProxy.sslCAConfigmap` while a proxy is set).
+*/}}
+{{- define "carto.trustedCACerts.configMapName" -}}
+{{- if (include "carto.trustedCACerts.hasInline" .) -}}
+{{- printf "%s-%s" .Release.Name "trusted-ca-certs" -}}
+{{- else if .Values.trustedCACerts.existingConfigmap.name -}}
+{{- printf "%s" .Values.trustedCACerts.existingConfigmap.name -}}
+{{- else if and .Values.externalProxy.enabled .Values.externalProxy.sslCAConfigmap.name -}}
 {{- printf "%s" .Values.externalProxy.sslCAConfigmap.name -}}
 {{- end -}}
 {{- end -}}
 
 {{/*
-Return the directory where the proxy CA cert will be mounted
+Return the directory where the trusted CA cert will be mounted
 */}}
-{{- define "carto.proxy.configMapMountDir" -}}
-{{- print "/usr/src/certs/proxy-ssl-ca" -}}
+{{- define "carto.trustedCACerts.configMapMountDir" -}}
+{{- print "/usr/src/certs/trusted-ca-certs" -}}
 {{- end -}}
 
 {{/*
-Return the filename where the proxy CA will be mounted when injecting the CA value directly
+Return the filename where the trusted CA will be mounted. The generated
+(inline) ConfigMap always uses `ca.crt`; an existing ConfigMap uses its
+configured key (`trustedCACerts.existingConfigmap.key`, or the deprecated
+`externalProxy.sslCAConfigmap.key`), defaulting to `ca.crt`.
 */}}
-{{- define "carto.proxy.configMapMountFilename" -}}
-{{- if .Values.externalProxy.sslCAConfigmap.key -}}
-{{- printf "%s" .Values.externalProxy.sslCAConfigmap.key -}}
+{{- define "carto.trustedCACerts.configMapMountFilename" -}}
+{{- if (include "carto.trustedCACerts.hasInline" .) -}}
+{{- print "ca.crt" -}}
+{{- else if .Values.trustedCACerts.existingConfigmap.name -}}
+{{- .Values.trustedCACerts.existingConfigmap.key | default "ca.crt" -}}
+{{- else if and .Values.externalProxy.enabled .Values.externalProxy.sslCAConfigmap.name -}}
+{{- .Values.externalProxy.sslCAConfigmap.key | default "ca.crt" -}}
 {{- else -}}
 {{- print "ca.crt" -}}
 {{- end -}}
@@ -1362,8 +1421,8 @@ Return the filename where the proxy CA will be mounted when injecting the CA val
 {{/*
 Return the absolute path where the proxy CA cert will be mounted
 */}}
-{{- define "carto.proxy.configMapMountAbsolutePath" -}}
-{{- printf "%s/%s" (include "carto.proxy.configMapMountDir" .) (include "carto.proxy.configMapMountFilename" .) -}}
+{{- define "carto.trustedCACerts.configMapMountAbsolutePath" -}}
+{{- printf "%s/%s" (include "carto.trustedCACerts.configMapMountDir" .) (include "carto.trustedCACerts.configMapMountFilename" .) -}}
 {{- end -}}
 
 {{/*
@@ -1381,16 +1440,53 @@ Return the directory where the custom feature flags config file will be mounted
 {{- end -}}
 
 {{/*
+Effective feature-flag overrides = the operator-provided list plus any flags the
+chart auto-enables from deployment config. An auto-enabled flag never clobbers an
+explicit operator override of the same flag.
+
+Today the only auto-enabled flag is 2024-private-buckets, switched on when an
+S3-compatible endpoint is set: private main buckets need it for markers/branding
+to resolve (compat-analysis D-ACL), and it's safe because such a deployment is a
+fresh install with no legacy public-URL maps to migrate.
+*/}}
+{{- define "carto.featureFlags.effectiveOverrides" -}}
+{{- $overrides := .Values.cartoConfigValues.featureFlagsOverrides | default list -}}
+{{- $result := $overrides -}}
+{{- if .Values.appConfigValues.s3Endpoint -}}
+{{- $names := list -}}
+{{- range $overrides -}}{{- $names = append $names .name -}}{{- end -}}
+{{- if not (has "2024-private-buckets" $names) -}}
+{{- $result = append $result (dict "name" "2024-private-buckets" "value" true) -}}
+{{- end -}}
+{{- end -}}
+{{- $result | toYaml -}}
+{{- end -}}
+
+{{/*
+Whether any feature-flag override is in effect (operator-provided or the
+S3-compatible auto-injected one). Emits "true" or nothing; use with `eq`.
+*/}}
+{{- define "carto.featureFlags.enabled" -}}
+{{- if or .Values.cartoConfigValues.featureFlagsOverrides .Values.appConfigValues.s3Endpoint -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the list of overridden feature flags as a comma-separated string
 */}}
 {{- define "carto.featureFlags.overriddenFeatureFlags" -}}
-{{- $featureFlags := .Values.cartoConfigValues.featureFlagsOverrides -}}
+{{- $overrides := .Values.cartoConfigValues.featureFlagsOverrides | default list -}}
 {{- $ffNames := list -}}
-{{- range $featureFlags -}}
+{{- range $overrides -}}
 {{- $ffNames = append $ffNames .name -}}
 {{- end -}}
-{{- $nameList := join "," $ffNames -}}
-{{- $nameList -}}
+{{- if .Values.appConfigValues.s3Endpoint -}}
+{{- if not (has "2024-private-buckets" $ffNames) -}}
+{{- $ffNames = append $ffNames "2024-private-buckets" -}}
+{{- end -}}
+{{- end -}}
+{{- join "," $ffNames -}}
 {{- end -}}
 
 {{/*
@@ -1512,3 +1608,187 @@ httpGet:
     - name: Carto-Monitoring
       value: "True"
 {{- end -}}
+
+{{/*
+Whether this deployment runs in self-hosted disconnected mode. Every disconnected gate must read
+this helper instead of the raw value, so the public toggle can evolve without touching templates.
+Returns "true" when enabled, empty string (falsy) otherwise.
+*/}}
+{{- define "carto.disconnected.enabled" -}}
+{{- if .Values.appConfigValues.disconnected.enabled -}}true{{- end -}}
+{{- end -}}
+
+{{- define "carto.authApi.fullname" -}}
+{{- printf "%s-auth-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "carto.authApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.authApi.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{- define "carto.authApi.configmapName" -}}
+{{- if .Values.authApi.existingConfigMap -}}
+{{- .Values.authApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.authApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.authApi.secretName" -}}
+{{- if .Values.authApi.existingSecret -}}
+{{- .Values.authApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.authApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+auth-api PostgreSQL credentials: dedicated role when set, otherwise the shared platform user.
+*/}}
+{{- define "carto.authApi.postgresql.user" -}}
+{{- if .Values.externalPostgresql.authApiUser -}}
+{{- .Values.externalPostgresql.authApiUser -}}
+{{- else -}}
+{{- include "carto.postgresql.user" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.authApi.postgresql.secretName" -}}
+{{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretAuthApiPasswordKey -}}
+{{- .Values.externalPostgresql.existingSecret -}}
+{{- else if .Values.externalPostgresql.authApiPassword -}}
+{{- include "carto.authApi.secretName" . -}}
+{{- else -}}
+{{- include "carto.postgresql.secretName" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.authApi.postgresql.secret.key" -}}
+{{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretAuthApiPasswordKey -}}
+{{- .Values.externalPostgresql.existingSecretAuthApiPasswordKey -}}
+{{- else if .Values.externalPostgresql.authApiPassword -}}
+{{- printf "ACCOUNTS_POSTGRES_PASSWORD" -}}
+{{- else -}}
+{{- include "carto.postgresql.secret.key" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.authApi.nodeOptions" -}}
+{{- if eq (.Values.authApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.authApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.authApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- else -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.authApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.authMigrations.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.authMigrations.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{- define "carto.authApi.publicBaseUrl" -}}
+{{- printf "https://%s/auth-api" .Values.appConfigValues.selfHostedDomain -}}
+{{- end -}}
+
+{{- define "carto.authApi.issuer" -}}
+{{- include "carto.authApi.publicBaseUrl" . -}}
+{{- end -}}
+
+{{/*
+The complete disconnected-mode environment package for backend services. Self-gated: emits
+nothing unless disconnected mode is enabled, so consumers include it unconditionally and never
+branch on the toggle themselves. The identity variables must be consistent with the auth-api
+configmap: commons.validateJwt rejects tokens whose issuer/audience do not match the ones
+auth-api mints with.
+*/}}
+{{- define "carto.disconnected.commonEnv" -}}
+{{- if (include "carto.disconnected.enabled" .) -}}
+CARTO_INTERNAL_JWKS_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}/.well-known/jwks.json"
+CARTO_INTERNAL_ISSUER: {{ include "carto.authApi.issuer" . | quote }}
+CARTO_AUTH_AUDIENCE: "carto-cloud-native-api"
+CARTO_AUTH_NAMESPACE: "http://app.carto.com"
+CARTO_AUTH_API_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+{{- end -}}
+{{- end -}}
+
+{{/*
+Redirect URIs registered on the platform SPA client: workspace-www logs in from the bare origin,
+accounts-www from its /acc/ app root. Must match accounts-api's tenant-up updateAuth0App
+derivation, which overwrites this seed on the first TenantUp.
+*/}}
+{{- define "carto.authApi.spaClient.redirectUris" -}}
+{{- printf "https://%s,https://%s/acc/" .Values.appConfigValues.selfHostedDomain .Values.appConfigValues.selfHostedDomain -}}
+{{- end -}}
+
+{{/*
+The disconnected-mode environment package for the SPAs. Self-gated like
+carto.disconnected.commonEnv, so consumers include it unconditionally. The authority must be the
+issuer auth-api mints with, hence the shared helper — a mismatch fails the OIDC code flow.
+*/}}
+{{- define "carto.disconnected.wwwEnv" -}}
+{{- if (include "carto.disconnected.enabled" .) -}}
+REACT_APP_AUTH_PROVIDER: "oidc"
+REACT_APP_OIDC_AUTHORITY: {{ include "carto.authApi.issuer" . | quote }}
+REACT_APP_OIDC_CLIENT_ID: {{ .Values.appConfigValues.disconnected.spaClient.clientId | quote }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Base URL of the in-cluster accounts-api service that auth-api calls for quota checks and SSO
+group sync.
+*/}}
+{{- define "carto.authApi.internalAccountsApiUrl" -}}
+{{- printf "http://%s.%s.svc.%s" (include "carto.accountsApi.fullname" .) .Release.Namespace .Values.clusterDomain -}}
+{{- end -}}
+
+{{- define "carto.accountsApi.fullname" -}}
+{{- printf "%s-accounts-api" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "carto.accountsApi.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.accountsApi.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{- define "carto.accountsApi.configmapName" -}}
+{{- if .Values.accountsApi.existingConfigMap -}}
+{{- .Values.accountsApi.existingConfigMap -}}
+{{- else -}}
+{{- include "carto.accountsApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.accountsApi.secretName" -}}
+{{- if .Values.accountsApi.existingSecret -}}
+{{- .Values.accountsApi.existingSecret -}}
+{{- else -}}
+{{- include "carto.accountsApi.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.accountsApi.nodeOptions" -}}
+{{- if eq (.Values.accountsApi.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.accountsApi.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.accountsApi.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- else -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.accountsApi.defaultNodeProcessMaxOldSpace | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.accountsSubscriber.fullname" -}}
+{{- printf "%s-accounts-subscriber" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "carto.accountsSubscriber.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.accountsSubscriber.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{- define "carto.accountsSubscriber.nodeOptions" -}}
+{{- if eq (.Values.accountsSubscriber.resources.limits.memory | toString | regexFind "[^0-9.]+") ("Mi") -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" (div (mul (.Values.accountsSubscriber.resources.limits.memory | toString | regexFind "[0-9.]+") .Values.accountsSubscriber.nodeProcessMaxOldSpacePercentage) 100) | quote -}}
+{{- else -}}
+{{- printf "--max-old-space-size=%d --max-semi-space-size=32" .Values.accountsSubscriber.defaultNodeProcessMaxOldSpace | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.accountsMigrations.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.accountsMigrations.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+

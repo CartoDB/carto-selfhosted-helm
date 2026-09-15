@@ -77,6 +77,38 @@ s3Endpoint, s3ExternalUrl and s3ForcePathStyle only apply when appConfigValues.s
 {{- end -}}
 
 {{/*
+Validate auth-api (internal authentication) config
+*/}}
+{{- define "carto.validateValues.authApi" -}}
+{{- if (include "carto.disconnected.enabled" .) -}}
+{{- $messages := list -}}
+{{- if not (has .Values.appConfigValues.disconnected.protocol (list "oidc" "saml")) -}}
+{{- $messages = append $messages "CARTO: Invalid auth-api protocol\n\nIf appConfigValues.disconnected.enabled=true you need to set appConfigValues.disconnected.protocol to \"oidc\" or \"saml\"" -}}
+{{- end -}}
+{{- if and (eq .Values.appConfigValues.disconnected.protocol "oidc") (or (not .Values.appConfigValues.disconnected.oidc.issuerUrl) (not .Values.appConfigValues.disconnected.oidc.clientId) (and (not .Values.appSecrets.authApiOidcClientSecret.value) (not .Values.appSecrets.authApiOidcClientSecret.existingSecret.name))) -}}
+{{- $messages = append $messages "CARTO: Missing auth-api OIDC configuration\n\nIf appConfigValues.disconnected.protocol=oidc you need to set appConfigValues.disconnected.oidc.issuerUrl, appConfigValues.disconnected.oidc.clientId and one of appSecrets.authApiOidcClientSecret.value or appSecrets.authApiOidcClientSecret.existingSecret" -}}
+{{- end -}}
+{{- if and (eq .Values.appConfigValues.disconnected.protocol "saml") (not .Values.appConfigValues.disconnected.saml.metadataUrl) (not (trim (default "" .Values.appConfigValues.disconnected.saml.metadataXml))) -}}
+{{- $messages = append $messages "CARTO: Missing auth-api SAML configuration\n\nIf appConfigValues.disconnected.protocol=saml you need to set one of appConfigValues.disconnected.saml.metadataUrl or appConfigValues.disconnected.saml.metadataXml" -}}
+{{- end -}}
+{{- if and (not .Values.cartoSecrets.authApiInternalServiceToken.value) (not .Values.cartoSecrets.authApiInternalServiceToken.existingSecret.name) -}}
+{{- $messages = append $messages "CARTO: Missing auth-api internal service token\n\nIf appConfigValues.disconnected.enabled=true you need to set one of cartoSecrets.authApiInternalServiceToken.value or cartoSecrets.authApiInternalServiceToken.existingSecret" -}}
+{{- end -}}
+{{- if not .Values.appConfigValues.disconnected.spaClient.clientId -}}
+{{- $messages = append $messages "CARTO: Missing platform SPA client ID\n\nIf appConfigValues.disconnected.enabled=true you need to set appConfigValues.disconnected.spaClient.clientId" -}}
+{{- end -}}
+{{- if and (not .Values.cartoSecrets.encryptionSecretKey.value) (not .Values.cartoSecrets.encryptionSecretKey.existingSecret.name) -}}
+{{- $messages = append $messages "CARTO: Missing encryption secret key for auth-api\n\nIf appConfigValues.disconnected.enabled=true you need to set one of cartoSecrets.encryptionSecretKey.value or cartoSecrets.encryptionSecretKey.existingSecret" -}}
+{{- end -}}
+{{- $pgPasswordSet := or .Values.externalPostgresql.authApiPassword (and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretAuthApiPasswordKey) -}}
+{{- if or (and .Values.externalPostgresql.authApiUser (not $pgPasswordSet)) (and $pgPasswordSet (not .Values.externalPostgresql.authApiUser)) -}}
+{{- $messages = append $messages "CARTO: Incomplete auth-api dedicated PostgreSQL credentials\n\nTo give auth-api a dedicated PostgreSQL role set BOTH externalPostgresql.authApiUser and one of externalPostgresql.authApiPassword or externalPostgresql.existingSecretAuthApiPasswordKey. Leave all of them empty to reuse the shared platform user." -}}
+{{- end -}}
+{{- join "\n" $messages -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Compile all warnings into a single message, and call fail.
 */}}
 {{- define "carto.validateValues" -}}
@@ -87,6 +119,7 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := append $messages (include "carto.validateValues.logLevel" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.serviceAccount" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.s3Compatible" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.authApi" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 

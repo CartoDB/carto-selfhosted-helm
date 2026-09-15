@@ -13,7 +13,7 @@ metadata:
   {{- end }}
 data:
   CARTO_DATA_WAREHOUSE_ENABLED: {{ .Values.cartoConfigValues.cartoDataWarehouseEnabled | quote }}
-  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+  {{- if (include "carto.featureFlags.enabled" .) }}
   CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
   {{- end }}
   {{- if $.Values.appConfigValues.bigqueryOauth2ClientId }}
@@ -23,12 +23,22 @@ data:
   {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
+  {{- with include "carto.disconnected.wwwEnv" . }}
+  {{- . | nindent 2 }}
+  {{- end }}
+  {{- if (include "carto.disconnected.enabled" .) }}
+  REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/accounts-api"
+  {{- else }}
   REACT_APP_ACCOUNTS_API_URL: "https://{{ .Values.cartoConfigValues.cartoAccApiDomain }}"
+  {{- end }}
   REACT_APP_ACCOUNTS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/acc/"
   REACT_APP_AI_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/ai-api"
   REACT_APP_API_BASE_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api"
+  {{- if not (include "carto.disconnected.enabled" .) }}
+  REACT_APP_AUTH_PROVIDER: "auth0"
   REACT_APP_AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
   REACT_APP_CLIENT_ID: {{ .Values.cartoConfigValues.cartoAuth0ClientId | quote }}
+  {{- end }}
   REACT_APP_DO_API_URL: "https://{{ .Values.cartoConfigValues.cartoDoApiDomain }}"
   REACT_APP_DO_ASSETS_URL: "https://{{ .Values.cartoConfigValues.cartoDoAssetsDomain }}"
   REACT_APP_HUBSPOT_ID: "474999"
@@ -37,6 +47,7 @@ data:
   REACT_APP_LAUNCH_DARKLY_CLIENT_SIDE_ID: {{ .Values.cartoConfigValues.launchDarklyClientSideId | quote }}
   REACT_APP_PUBLIC_MAP_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/api/v3/maps/public"
   REACT_APP_WORKSPACE_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/workspace-api"
+  REACT_APP_HOSTED_APPS_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/app"
   REACT_APP_NOTIFIER_API_URL: "https://{{ .Values.appConfigValues.selfHostedDomain }}/notifier"
   REACT_APP_WORKSPACE_URL_TEMPLATE: "https://{tenantDomain}"
   THUMBNAILS_BUCKET_EXTERNAL_URL: {{ .Values.appConfigValues.thumbnailsBucketExternalURL | quote }}
