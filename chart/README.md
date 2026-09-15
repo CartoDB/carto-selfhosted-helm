@@ -1020,6 +1020,7 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `router.service.ports.httpTargetPort`     | router service HTTP Target port                                                                                                  | `http`                   |
 | `router.service.ports.https`              | router service HTTPS port                                                                                                        | `443`                    |
 | `router.service.ports.httpsTargetPort`    | router service HTTPS Target port                                                                                                 | `https`                  |
+| `router.service.ports.internalHttp`       | router internal ClusterIP service HTTP port                                                                                      | `80`                     |
 | `router.service.nodePorts.http`           | Node.js port for HTTP                                                                                                            | `""`                     |
 | `router.service.nodePorts.https`          | Node.js port for HTTPS                                                                                                           | `""`                     |
 | `router.service.clusterIP`                | router service Cluster IP                                                                                                        | `""`                     |
