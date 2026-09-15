@@ -16,6 +16,7 @@ We encourage everyone to follow them with their best judgement.
 - [Branching Strategy](#branching-strategy)
   - [Key branches](#key-branches)
   - [Supporting branches](#supporting-branches)
+  - [Release branches](#release-branches)
 - [Merging a Pull Request](#merging-a-pull-request)
 
 ## How to Prepare a PR
@@ -34,7 +35,7 @@ Here we cover the configuration of the tools that will help you write code that 
 
 First things first, Git is the base from which everything is built upon, so we want to make it as solid as possible.
 
-- Start off by configuring your `user.name` and `user.email` as seen in [Customizing Git](https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration). The `user.email` parameter should always be the VMware corporate one. For your convenience, here is a good resource on [Maintaining Different Git Identities](https://xam.io/2017/gitconfig/).
+- Start off by configuring your `user.name` and `user.email` as seen in [Customizing Git](https://git-scm.com/book/en/v2/Customizing-Git-Git-Configuration). The `user.email` parameter should always be the CARTO corporate one. For your convenience, here is a good resource on [Maintaining Different Git Identities](https://xam.io/2017/gitconfig/).
 - Next, we want to be able to verify that commits are actually from a trusted source, so we are going to sign and verify our work with GPG.
   - GitHub has a neat set of guides that will help you [check for existing GPG keys](https://docs.github.com/en/articles/checking-for-existing-gpg-keys),
   [generate a new GPG key](https://docs.github.com/en/articles/generating-a-new-gpg-key) in case you don't already have one,
@@ -44,7 +45,7 @@ First things first, Git is the base from which everything is built upon, so we w
 
 #### Making your Changes Clear and Traceable
 
-There's a **Golden Rule** when adressing code changes: **Modify only what is related to the task**.
+There's a **Golden Rule** when addressing code changes: **Modify only what is related to the task**.
 
 When developing the next feature or bugfix we should also strive for small, atomic commits or, in other words, commits that group changes focused on one context and one context only.
 They are easier to read, understand, review, track and revert.
@@ -60,10 +61,14 @@ A final caveat to be aware of is that the fast-forward strategy requires that yo
 
 #### Generating Documentation
 
-The chart documentation is auto generated with [helm-readme-generator](https://github.com/bitnami-labs/readme-generator-for-helm), you can run it locally with docker, Pull request check will fail if documentation is no updated.
+The chart documentation is auto generated with [helm-readme-generator](https://github.com/bitnami-labs/readme-generator-for-helm), you can run it locally with docker. The pull request check will fail if `chart/values.yaml` changed and the documentation was not regenerated.
 
 ```bash
-# On the repository root
+# On the repository root: build the generator image (first time only)
+git clone https://github.com/bitnami-labs/readme-generator-for-helm
+docker build -t helm-readme-generator readme-generator-for-helm/
+
+# Regenerate chart/README.md
 docker run --rm \
 -v $(pwd)/chart:/my_helm \
 -w /my_helm \
@@ -73,7 +78,7 @@ helm-readme-generator readme-generator \
 ```
 
 #### Linting chart files
-We use [super- linter](https://github.com/github/super-linter) to maintain the files clean, you can run it locally with docker this way:
+We use [super-linter](https://github.com/github/super-linter) to maintain the files clean, you can run it locally with docker this way:
 
 ```bash
 #Move to the root of the repository
@@ -99,9 +104,9 @@ There are three important parts in a pull request:
 
 Additionally, there are other fields that can be useful:
 
-- **Asignee**. Set one or multiple assignees.
+- **Assignee**. Set one or multiple assignees.
 
-Finally, when the work is still in progress remember to set the PR as draft like explaine in the [GitHub documentation](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-stage-of-a-pull-request).
+Finally, when the work is still in progress remember to set the PR as draft like explained in the [GitHub documentation](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-stage-of-a-pull-request).
 
 ## Branching Strategy
 
@@ -110,29 +115,24 @@ So we need an orderly, controlled way of dealing with them: Enter Branching Stra
 
 ### Key branches
 
-**stable**.
-- Protected branch
+**main**.
+- Protected branch and default branch
 - Prevent changes without a pull request
-- Changes come from a `feature` or `bugfix` branch
+- Changes come from a supporting branch (`feature/`, `fix/`, `bug/`, `chore/`, …)
 - Merge strategy is **always** `--squash`
-- Releases are triggered manually from this branch
 
 ### Supporting branches
 
-**feature branches**
-- One branch per *feature*
-- May branch off from `stable`
-- Naming convention is `feature/FEAT-NAME`
+- One branch per change, branched off from `main`
+- Naming convention is `<type>/<short-description>`, where `<type>` matches the
+  conventional-commit type of the change (`feature/`, `fix/`, `bug/`, `chore/`, `revert/`, …)
+- When the change tracks a Shortcut story, include its id so the PR auto-links:
+  `<type>/sc-XXXXXX/<short-description>` (e.g. `fix/sc-559408/preflight-buckets-validator`)
 
-**bugfix branches**
-- One branch per *bugfix*
-- May branch off from `stable`
-- Naming convention is `bugfix/BUGFIX-NAME`
+### Release branches
 
-**revert branches**
-- One branch per *revert*
-- May branch off from `stable`
-- Naming convention is `revert/REVERT-NAME`
+`release/*` branches (e.g. `release/1.275.1-2026.6.12`) are opened automatically
+by the release pipeline to bump version files. Don't create or edit them by hand.
 
 ## Merging a Pull Request
 

@@ -153,35 +153,23 @@ spec:
               containerPort: {{ .Values.workspaceSubscriber.containerPorts.http }}
           {{- if not .Values.diagnosticMode.enabled }}
           {{- if .Values.workspaceSubscriber.livenessProbe.enabled }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceSubscriber.livenessProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /health
-              port: http
-              httpHeaders:
-                - name: Carto-Monitoring
-                  value: "True"
+          livenessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceSubscriber.livenessProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
           {{- else if .Values.workspaceSubscriber.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.workspaceSubscriber.readinessProbe.enabled }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceSubscriber.readinessProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /health
-              port: http
-              httpHeaders:
-                - name: Carto-Monitoring
-                  value: "True"
+          readinessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceSubscriber.readinessProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
           {{- else if .Values.workspaceSubscriber.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.workspaceSubscriber.startupProbe.enabled }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceSubscriber.startupProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /health
-              port: http
-              httpHeaders:
-                - name: Carto-Monitoring
-                  value: "True"
+          startupProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.workspaceSubscriber.startupProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
           {{- else if .Values.workspaceSubscriber.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
@@ -203,12 +191,12 @@ spec:
               mountPath: {{ include "carto.redis.configMapMountDir" . }}
               readOnly: true
             {{- end }}
-            {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
-            - name: proxy-ssl-ca
-              mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+            {{- if (include "carto.trustedCACerts.enabled" .) }}
+            - name: trusted-ca-certs
+              mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
               readOnly: true
             {{- end }}
-            {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+            {{- if (include "carto.featureFlags.enabled" .) }}
             - name: feature-flags
               mountPath: {{ include "carto.featureFlags.configMapMountDir" . }}
               subPath: custom-feature-flags.yaml
@@ -237,12 +225,12 @@ spec:
           configMap:
             name: {{ include "carto.redis.configMapName" . }}
         {{- end }}
-        {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
-        - name: proxy-ssl-ca
+        {{- if (include "carto.trustedCACerts.enabled" .) }}
+        - name: trusted-ca-certs
           configMap:
-            name: {{ include "carto.proxy.configMapName" . }}
+            name: {{ include "carto.trustedCACerts.configMapName" . }}
         {{- end }}
-        {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+        {{- if (include "carto.featureFlags.enabled" .) }}
         - name: feature-flags
           configMap:
             name: {{ template "carto.featureFlags.configMapName" . }}

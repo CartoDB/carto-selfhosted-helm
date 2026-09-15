@@ -6,7 +6,12 @@ Return common collectors for preflights and support-bundle
       collectorName: tenant-requirements-check
       name: tenant-requirements-check
       namespace: {{ .Release.Namespace | quote }}
-      timeout: 180s
+      {{/*
+      The pod runs every validator sequentially and only emits results once the whole pass
+      finishes, so this budget must cover image pull plus the slowest full run. Keep headroom:
+      too tight and transient image-pull/egress latency trips a false timeout that blocks install.
+      */}}
+      timeout: 300s
       podSpec:
         {{- if include "carto.podIdentity.enabled" . }}
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
@@ -107,11 +112,11 @@ Return common collectors for preflights and support-bundle
               - name: REDIS_TLS_CA__FILE_PATH
                 value: {{ include "carto.redis.configMapMountAbsolutePath" . }}
               {{- end }}
-              {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+              {{- if (include "carto.trustedCACerts.hasInline" .) }}
               - name: PROXY_SSL_CA__FILE_CONTENT
-                value: {{ .Values.externalProxy.sslCA | b64enc | quote }}
+                value: {{ include "carto.trustedCACerts.bundle" . | b64enc | quote }}
               - name: PROXY_SSL_CA__FILE_PATH
-                value: {{ include "carto.proxy.configMapMountAbsolutePath" . }}
+                value: {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . }}
               {{- end }}
               {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
               - name: ROUTER_SSL_CERT__FILE_CONTENT
@@ -142,9 +147,9 @@ Return common collectors for preflights and support-bundle
                 mountPath: {{ include "carto.redis.configMapMountDir" . }}
                 readOnly: false
               {{- end }}
-              {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
-              - name: proxy-ssl-ca
-                mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+              {{- if (include "carto.trustedCACerts.hasInline" .) }}
+              - name: trusted-ca-certs
+                mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
                 readOnly: false
               {{- end }}
               {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
@@ -169,7 +174,7 @@ Return common collectors for preflights and support-bundle
               - name: CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_S3_ENABLED
                 value: "true"
               {{- end }}
-              {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+              {{- if (include "carto.featureFlags.enabled" .) }}
               - name: OVERRIDDEN_FEATURE_FLAGS
                 value: {{ include "carto.featureFlags.overriddenFeatureFlags" . | quote }}
               {{- end }}
@@ -202,9 +207,9 @@ Return common collectors for preflights and support-bundle
                 mountPath: {{ include "carto.redis.configMapMountDir" . }}
                 readOnly: true
               {{- end }}
-              {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
-              - name: proxy-ssl-ca
-                mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+              {{- if (include "carto.trustedCACerts.enabled" .) }}
+              - name: trusted-ca-certs
+                mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
                 readOnly: true
               {{- end }}
               {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
@@ -231,15 +236,14 @@ Return common collectors for preflights and support-bundle
             emptyDir:
               sizeLimit: 8Mi
           {{- end }}
-          {{- if .Values.externalProxy.sslCAConfigmap.name }}
-          - name: proxy-ssl-ca
-            configMap:
-              name: {{ .Values.externalProxy.sslCAConfigmap.name }}
-          {{- end }}
-          {{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
-          - name: proxy-ssl-ca
+          {{- if (include "carto.trustedCACerts.hasInline" .) }}
+          - name: trusted-ca-certs
             emptyDir:
               sizeLimit: 1Mi
+          {{- else if (include "carto.trustedCACerts.enabled" .) }}
+          - name: trusted-ca-certs
+            configMap:
+              name: {{ include "carto.trustedCACerts.configMapName" . }}
           {{- end }}
           {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
           - name: router-tls-cert-and-key
@@ -255,14 +259,11 @@ Return common collectors for preflights and support-bundle
       imagePullSecret:
         name: carto-registry
       images:
-        {{ if not .Values.global.imageRegistry }}
-        - {{ template "carto.tenantRequirementsChecker.image" . }}
-        {{ else }}
         - {{ template "carto.accountsWww.image" . }}
-        {{ if .Values.appConfigValues.aiFeaturesEnabled }}
+        {{- if .Values.appConfigValues.aiFeaturesEnabled }}
         - {{ template "carto.aiApi.image" . }}
         - {{ template "carto.aiProxy.image" . }}
-        {{ end }}
+        {{- end }}
         - {{ template "carto.cdnInvalidatorSub.image" . }}
         - {{ template "carto.httpCache.image" . }}
         - {{ template "carto.importApi.image" . }}
@@ -280,7 +281,13 @@ Return common collectors for preflights and support-bundle
         - {{ template "carto.workspaceMigrations.image" . }}
         - {{ template "carto.workspaceSubscriber.image" . }}
         - {{ template "carto.workspaceWww.image" . }}
-        {{ end }}
+        {{- if (include "carto.disconnected.enabled" .) }}
+        - {{ template "carto.authApi.image" . }}
+        - {{ template "carto.authMigrations.image" . }}
+        - {{ template "carto.accountsApi.image" . }}
+        - {{ template "carto.accountsSubscriber.image" . }}
+        - {{ template "carto.accountsMigrations.image" . }}
+        {{- end }}
 {{- end -}}
 
 {{/*
@@ -324,9 +331,28 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
       "Check_TomTom_connectivity"
   }}
   {{/*
+  When an S3-compatible split-horizon external URL is configured, the checker also emits the
+  browser-facing (external) bucket checks. They are non-authoritative (CORS is enforced by the
+  browser, not by the checker), so they are registered as warn outcomes rather than fail.
+  */}}
+  {{- if and (eq .Values.appConfigValues.storageProvider "s3") .Values.appConfigValues.s3ExternalUrl }}
+  {{- $_ := set $preflightsDict "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket" "Check_assets_bucket_external" "Check_temp_bucket_external") -}}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_assets_bucket_external" -}}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_temp_bucket_external" -}}
+  {{- end }}
+
+  {{/*
+  Browser direct uploads/downloads hit the bucket host (a different origin than the app) on
+  every storage provider, so the bucket needs a CORS policy allowing the app origin. The
+  checker probes this with a live OPTIONS preflight; these checks always run and block install
+  (fail, not warn) because import and asset flows are broken without a correct CORS policy.
+  */}}
+  {{- $_ := set $preflightsDict "BucketsValidator" (concat (index $preflightsDict "BucketsValidator") (list "Check_assets_bucket_CORS_sanity_check" "Check_temp_bucket_CORS_sanity_check")) -}}
+
+  {{/*
   We push conditionally new analyzers for the feature flags if the customer defined overridden feature flags
   */}}
-  {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+  {{- if (include "carto.featureFlags.enabled" .) }}
   {{- $_ := set $preflightsDict "FeatureFlagsValidator" (list "Check_valid_feature_flags") -}}
   {{- end }}
   {{/*
@@ -351,7 +377,21 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   We just need to add the RedisValidator to the preflightsDict if the externalRedis is enabled
   */}}
   {{- if not .Values.internalRedis.enabled }}
-  {{- $_ := set $preflightsDict "RedisValidator" (list "Check_redis_connection") }}
+  {{- $_ := set $preflightsDict "RedisValidator" (list "Check_redis_connection" "Check_redis_multiple_databases_support") }}
+  {{- end }}
+  {{/*
+  The aiProxy/LiteLLM database (externalPostgresql.aiProxyDatabaseName) is a customer-precreated
+  database on the platform PostgreSQL, used only when AI features are enabled; fail early if unreachable.
+  */}}
+  {{- if .Values.appConfigValues.aiFeaturesEnabled }}
+  {{- $_ := set $preflightsDict "AiDatabaseValidator" (list "Check_AI_proxy_database_connection") -}}
+  {{- end }}
+  {{/*
+  Disconnected mode requires the pre-created accounts database (same PostgreSQL and credentials
+  as the workspace one, separate database); fail early if it is missing or unreachable.
+  */}}
+  {{- if (include "carto.disconnected.enabled" .) }}
+  {{- $_ := set $preflightsDict "AccountsDatabaseValidator" (list "Check_accounts_database_connection") -}}
   {{- end }}
   {{- range $preflight, $preflightChecks  := $preflightsDict }}
   {{- range $preflightCheckName := $preflightChecks }}
@@ -481,12 +521,18 @@ Return customer values to use in preflights and support-bundle
 {{- define "carto.replicated.tenantRequirementsChecker.customerValues" }}
   - name: CARTO_SELFHOSTED_VERSION
     value: {{ .Chart.AppVersion | quote }}
+  - name: CARTO_SELFHOSTED_DOMAIN
+    value: {{ .Values.appConfigValues.selfHostedDomain | quote }}
   - name: REDIS_CACHE_PREFIX 
     value: "onprem"
   - name: REDIS_HOST
     value: {{ include "carto.redis.host" . | quote }}
   - name: REDIS_PORT
     value: {{ include "carto.redis.port" . | quote }}
+  - name: REDIS_DB
+    value: "0"
+  - name: LITELLM_REDIS_DB
+    value: "1"
   - name: REDIS_TLS_ENABLED
     value: {{ .Values.externalRedis.tlsEnabled | quote }}
   {{- if and .Values.externalRedis.tlsEnabled .Values.externalRedis.tlsCA }}
@@ -506,6 +552,14 @@ Return customer values to use in preflights and support-bundle
   {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
   - name: WORKSPACE_POSTGRES_SSL_CA
     value: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
+  {{- end }}
+  {{- if .Values.appConfigValues.aiFeaturesEnabled }}
+  - name: AIPROXY_POSTGRES_DB
+    value: {{ .Values.externalPostgresql.aiProxyDatabaseName | quote }}
+  {{- end }}
+  {{- if (include "carto.disconnected.enabled" .) }}
+  - name: ACCOUNTS_POSTGRES_DB
+    value: {{ .Values.externalPostgresql.accountsDatabaseName | quote }}
   {{- end }}
   - name: WORKSPACE_TENANT_ID
     value: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
@@ -551,12 +605,34 @@ Return customer values to use in preflights and support-bundle
     value: {{ .Values.appConfigValues.awsS3Region | quote }}
   - name: WORKSPACE_IMPORTS_REGION
     value: {{ .Values.appConfigValues.awsS3Region | quote }}
+  {{- if .Values.appConfigValues.s3Endpoint }}
+  - name: WORKSPACE_THUMBNAILS_ENDPOINT
+    value: {{ .Values.appConfigValues.s3Endpoint | quote }}
+  - name: WORKSPACE_IMPORTS_ENDPOINT
+    value: {{ .Values.appConfigValues.s3Endpoint | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.s3ExternalUrl }}
+  - name: WORKSPACE_THUMBNAILS_EXTERNAL_URL
+    value: {{ .Values.appConfigValues.s3ExternalUrl | quote }}
+  - name: WORKSPACE_IMPORTS_EXTERNAL_URL
+    value: {{ .Values.appConfigValues.s3ExternalUrl | quote }}
+  {{- end }}
+  {{- if .Values.appConfigValues.s3ForcePathStyle }}
+  - name: WORKSPACE_THUMBNAILS_FORCE_PATH_STYLE
+    value: {{ .Values.appConfigValues.s3ForcePathStyle | quote }}
+  - name: WORKSPACE_IMPORTS_FORCE_PATH_STYLE
+    value: {{ .Values.appConfigValues.s3ForcePathStyle | quote }}
+  {{- end }}
   {{- end }}
   {{- if eq .Values.appConfigValues.storageProvider "azure-blob" }}
   - name: WORKSPACE_THUMBNAILS_STORAGE_ACCOUNT
     value: {{ .Values.appConfigValues.azureStorageAccount | quote }}
   - name: WORKSPACE_IMPORTS_STORAGE_ACCOUNT
     value: {{ .Values.appConfigValues.azureStorageAccount | quote }}
+  {{- end }}
+  {{- if (include "carto.trustedCACerts.enabled" .) }}
+  - name: NODE_EXTRA_CA_CERTS
+    value: {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   {{- if .Values.externalProxy.enabled }}
   - name: HTTP_PROXY
@@ -578,10 +654,6 @@ Return customer values to use in preflights and support-bundle
     value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   - name: no_proxy
     value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
-  {{- end }}
-  {{- if (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
-  - name: NODE_EXTRA_CA_CERTS
-    value: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
   {{- end }}
   {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}

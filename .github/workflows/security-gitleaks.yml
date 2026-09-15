@@ -1,0 +1,114 @@
+name: Security - Gitleaks Secret Scan
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+concurrency:
+  group: gitleaks-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  gitleaks:
+    name: Scan for secrets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine scan range
+        id: range
+        shell: bash
+        run: |
+          MERGE_BASE=$(git merge-base origin/${{ github.base_ref }} ${{ github.event.pull_request.head.sha }})
+          echo "base=${MERGE_BASE}" >> $GITHUB_OUTPUT
+          echo "head=${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
+          echo "Scanning range: ${MERGE_BASE}...${{ github.event.pull_request.head.sha }}"
+
+      - name: Run Gitleaks scan
+        id: scan
+        shell: bash
+        run: |
+          set +e
+
+          docker run --rm \
+            -v "${{ github.workspace }}:/workdir" \
+            zricethezav/gitleaks:v8.30.0 \
+            detect \
+            --source /workdir \
+            --report-format json \
+            --report-path /workdir/gitleaks-report.json \
+            --no-color \
+            --log-opts=${{ steps.range.outputs.base }}...${{ steps.range.outputs.head }}
+
+          EXIT_CODE=$?
+
+          if [[ ${EXIT_CODE} -eq 1 ]]; then
+            echo "secrets-found=true" >> $GITHUB_OUTPUT
+            exit 0
+          else
+            echo "secrets-found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Format scan results
+        id: format
+        if: steps.scan.outputs.secrets-found == 'true'
+        shell: bash
+        run: |
+          # Extract ONLY file paths, line numbers, rule IDs - NEVER the secret value
+          SUMMARY=$(jq -r '.[] | "- \(.File):\(.StartLine) (\(.RuleID))"' \
+            gitleaks-report.json 2>/dev/null | sort -u | head -50)
+
+          {
+            echo "summary<<EOF"
+            echo "${SUMMARY:-Secrets detected. Check workflow logs for details.}"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+          # Clean up report file
+          rm -f gitleaks-report.json
+
+      - name: Comment on PR
+        if: steps.scan.outputs.secrets-found == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const summary = `${{ steps.format.outputs.summary }}`;
+            const body = `## :rotating_light: Gitleaks Security Scan Failed
+
+            **Potential secrets detected in this pull request.**
+
+            ### Affected Files
+            \`\`\`
+            ${summary}
+            \`\`\`
+
+            ### Required Actions
+            1. **Remove** the secrets from your commits using \`git rebase -i\` to edit commits
+            2. **Rotate** any exposed credentials immediately
+            3. **Add** sensitive patterns to \`.gitignore\`
+
+            > :warning: **Important:** Removing secrets in a new commit does NOT remove them from git history. You must rewrite the commits that introduced them.`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Fail on secrets
+        if: steps.scan.outputs.secrets-found == 'true'
+        shell: bash
+        run: |
+          echo "::error::Secrets detected in pull request. See PR comment for details."
+          exit 1

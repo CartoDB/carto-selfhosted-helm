@@ -13,7 +13,9 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
+  {{- if not .Values.importApi.autoscaling.enabled }}
   replicas: {{ .Values.importApi.replicaCount }}
+  {{- end }}
   {{- if .Values.importApi.updateStrategy }}
   strategy: {{- toYaml .Values.importApi.updateStrategy | nindent 4 }}
   {{- end }}
@@ -24,6 +26,7 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/import-api/configmap.yaml") . | sha256sum }}
+        checksum/feature-flags-config: {{ include (print $.Template.BasePath "/custom-feature-flags-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/import-api/secret.yaml") . | sha256sum }}
         checksum/redis-password: {{ include "carto.redis.passwordChecksum" . }}
         checksum/postgresql-password: {{ include "carto.postgresql.passwordChecksum" . }}
@@ -111,10 +114,10 @@ spec:
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "CARTO_SELFHOSTED_INSTANCE_ID"
               "ENCRYPTION_SECRET_KEY"
-              "IMPORT_JWT_SECRET"
+              "IMPORT_ACCESSKEYID"
               "IMPORT_AWS_ACCESS_KEY_ID"
               "IMPORT_AWS_SECRET_ACCESS_KEY"
-              "IMPORT_ACCESSKEYID"
+              "IMPORT_JWT_SECRET"
               "IMPORT_SECRETACCESSKEY"
               "IMPORT_STORAGE_ACCESSKEY"
               "LAUNCHDARKLY_SDK_KEY"
@@ -128,10 +131,10 @@ spec:
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "CARTO_SELFHOSTED_INSTANCE_ID"
               "ENCRYPTION_SECRET_KEY"
-              "IMPORT_JWT_SECRET"
+              "IMPORT_ACCESSKEYID"
               "IMPORT_AWS_ACCESS_KEY_ID"
               "IMPORT_AWS_SECRET_ACCESS_KEY"
-              "IMPORT_ACCESSKEYID"
+              "IMPORT_JWT_SECRET"
               "IMPORT_SECRETACCESSKEY"
               "IMPORT_STORAGE_ACCESSKEY"
               "LAUNCHDARKLY_SDK_KEY"
@@ -156,35 +159,23 @@ spec:
               containerPort: {{ .Values.importApi.containerPorts.http }}
           {{- if not .Values.diagnosticMode.enabled }}
           {{- if .Values.importApi.livenessProbe.enabled }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.livenessProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /health
-              port: http
-              httpHeaders:
-                - name: Carto-Monitoring
-                  value: "True"
+          livenessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.livenessProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
           {{- else if .Values.importApi.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.importApi.readinessProbe.enabled }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.readinessProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /health
-              port: http
-              httpHeaders:
-                - name: Carto-Monitoring
-                  value: "True"
+          readinessProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.readinessProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
           {{- else if .Values.importApi.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.importApi.startupProbe.enabled }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.startupProbe "enabled") "context" $) | nindent 12 }}
-            httpGet:
-              path: /health
-              port: http
-              httpHeaders:
-                - name: Carto-Monitoring
-                  value: "True"
+          startupProbe:
+            {{- include "common.tplvalues.render" (dict "value" (omit .Values.importApi.startupProbe "enabled") "context" $) | nindent 12 }}
+            {{- include "carto.healthCheckProbe" . | nindent 12 }}
           {{- else if .Values.importApi.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
@@ -211,12 +202,12 @@ spec:
               mountPath: {{ include "carto.redis.configMapMountDir" . }}
               readOnly: true
             {{- end }}
-            {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
-            - name: proxy-ssl-ca
-              mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+            {{- if (include "carto.trustedCACerts.enabled" .) }}
+            - name: trusted-ca-certs
+              mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
               readOnly: true
             {{- end }}
-            {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+            {{- if (include "carto.featureFlags.enabled" .) }}
             - name: feature-flags
               mountPath: {{ include "carto.featureFlags.configMapMountDir" . }}
               subPath: custom-feature-flags.yaml
@@ -253,12 +244,12 @@ spec:
           configMap:
             name: {{ include "carto.redis.configMapName" . }}
         {{- end }}
-        {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
-        - name: proxy-ssl-ca
+        {{- if (include "carto.trustedCACerts.enabled" .) }}
+        - name: trusted-ca-certs
           configMap:
-            name: {{ include "carto.proxy.configMapName" . }}
+            name: {{ include "carto.trustedCACerts.configMapName" . }}
         {{- end }}
-        {{- if .Values.cartoConfigValues.featureFlagsOverrides }}
+        {{- if (include "carto.featureFlags.enabled" .) }}
         - name: feature-flags
           configMap:
             name: {{ template "carto.featureFlags.configMapName" . }}

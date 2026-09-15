@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: redis
+    app.kubernetes.io/component: valkey
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
     {{- end }}
@@ -34,10 +34,10 @@ spec:
   loadBalancerSourceRanges: {{- toYaml .Values.internalRedis.service.loadBalancerSourceRanges | nindent 4 }}
   {{- end }}
   ports:
-    - port: {{ .Values.internalRedis.service.ports.http }}   
-      targetPort: redis                                     
+    - port: {{ .Values.internalRedis.service.ports.http }}
+      targetPort: valkey
       protocol: TCP
-      name: redis
+      name: valkey
       {{- if and (or (eq .Values.internalRedis.service.type "NodePort") (eq .Values.internalRedis.service.type "LoadBalancer")) .Values.internalRedis.service.nodePorts.redis }}
       nodePort: {{ .Values.internalRedis.service.nodePorts.redis }}
       {{- else if eq .Values.internalRedis.service.type "ClusterIP" }}
@@ -51,6 +51,6 @@ spec:
     {{- include "common.tplvalues.render" (dict "value" .Values.internalRedis.service.labelSelectorsOverride "context" $) | nindent 4 }}
     {{- else }}
     {{- include "common.labels.matchLabels" . | nindent 4 }}
-    app.kubernetes.io/component: redis
+    app.kubernetes.io/component: valkey
     {{- end }}
 {{- end }}

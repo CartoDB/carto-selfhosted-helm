@@ -13,7 +13,9 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
+  {{- if not .Values.router.autoscaling.enabled }}
   replicas: {{ .Values.router.replicaCount }}
+  {{- end }}
   {{- if .Values.router.updateStrategy }}
   strategy: {{- toYaml .Values.router.updateStrategy | nindent 4 }}
   {{- end }}
@@ -118,6 +120,8 @@ spec:
               containerPort: {{ .Values.router.containerPorts.http }}
             - name: https
               containerPort: {{ .Values.router.containerPorts.https }}
+            - name: internal-http
+              containerPort: {{ .Values.router.containerPorts.internalHttp }}
           {{- if not .Values.diagnosticMode.enabled }}
           {{- if .Values.router.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.router.livenessProbe "enabled") "context" $) | nindent 12 }}
@@ -231,6 +235,11 @@ spec:
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
+            {{- if (include "carto.trustedCACerts.enabled" .) }}
+            - name: trusted-ca-certs
+              mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
           {{- if .Values.routerMetrics.extraVolumeMounts }}
           {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.extraVolumeMounts "context" $) | nindent 12 }}
           {{- end }}
@@ -255,6 +264,11 @@ spec:
             items:
               - key: {{ include "carto.google.secretKey" . }}
                 path: {{ include "carto.google.secretMountFilename" . }}
+        {{- if (include "carto.trustedCACerts.enabled" .) }}
+        - name: trusted-ca-certs
+          configMap:
+            name: {{ include "carto.trustedCACerts.configMapName" . }}
+        {{- end }}
         {{- if .Values.router.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.router.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

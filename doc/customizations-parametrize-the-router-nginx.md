@@ -18,9 +18,9 @@ Carto Router uses Nginx to manage the requests inside the namespace. These are t
   ```bash
   gzip_buffers: "16 8k"
   gzip_min_length: "1100"
-  proxy_buffers: "16 8k"
-  proxy_buffer_size: "8k"
-  proxy_busy_buffers_size: "8k"
+  proxy_buffers: "16 32k"
+  proxy_buffer_size: "32k"
+  proxy_busy_buffers_size: "64k"
   client_max_body_size: "10M"
   ```
 
