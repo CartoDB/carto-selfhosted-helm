@@ -22,9 +22,9 @@ EAD: <!-- Google Docs link to EAD, or "N/A - small change" -->
 
 **Architectural Decisions Made:**
 <!-- Answer these if your change involves architecture decisions: -->
-- Sync vs Async: <!-- e.g., "Sync endpoint - simple CRUD, responds <1s" or "Async subscriber - bulk import, emits event" -->
-- Communication pattern: <!-- e.g., "REST endpoint", "PubSub subscriber", "Event-driven" -->
-- Data access: <!-- e.g., "Query with tenant filter", "New repository method" -->
+- Where the value lives: <!-- e.g., "chart value with a KOTS item", "chart-internal helper only", "hardcoded in the template" -->
+- Customer-facing or not: <!-- if customer-set, it needs values.yaml + kots-config.yaml + kots-helm.yaml together -->
+- Default and upgrade behaviour: <!-- what an existing install gets on upgrade if it never sets this -->
 - Why this approach: <!-- Explain trade-offs, alternatives considered -->
 
 ## Review Focus Areas
@@ -36,22 +36,25 @@ EAD: <!-- Google Docs link to EAD, or "N/A - small change" -->
 **Safe to skip**: [List files with trivial changes - formatting, config, auto-generated]
 
 ## Deployment Impact
-- [ ] SaaS only
-- [ ] Selfhosted only
-- [ ] Both SaaS and Selfhosted
-- [ ] Not applicable (docs, tests only)
+<!-- Every change here ships to Self-Hosted; pick the install paths it reaches -->
+- [ ] Pure Helm installs
+- [ ] Replicated / KOTS installs (Admin Console, embedded cluster)
+- [ ] Both install paths
+- [ ] Not applicable (docs, CI only)
 
 ## Migration & Breaking Changes
 - [ ] No migrations or breaking changes
-- [ ] Database migration (backward compatible?)
-- [ ] API contract change (versioned?)
-- [ ] Configuration change (env-specific handling?)
+- [ ] Existing installs change behaviour on upgrade (describe the before/after)
+- [ ] Renamed or removed a chart value (back-compat alias kept?)
+- [ ] Requires a customer config or infrastructure change before upgrading
+- [ ] Raises `minKotsVersion` (must be called out in the release notes)
 
 ## Security Considerations
 - [ ] No security impact
-- [ ] Auth/authorization changes
-- [ ] New API endpoints exposed
-- [ ] Data exposure or multi-tenant isolation changes
+- [ ] Secret handling changed (`secretAssociation`, existing-secret support, mounts)
+- [ ] RBAC, ServiceAccount or securityContext changed
+- [ ] Network exposure changed (Service type, Ingress, egress requirements)
+- [ ] Affects what preflight or support-bundle artifacts capture
 
 ## Performance Impact
 <!-- If applicable: database queries, API calls, algorithm complexity, bundle size -->
@@ -61,10 +64,10 @@ EAD: <!-- Google Docs link to EAD, or "N/A - small change" -->
 <!-- If performance impact: explain changes to queries, API calls, rendering, etc. -->
 
 ## Tests
-- [ ] Unit tests added/updated (coverage: XX%)
-- [ ] Integration tests added/updated
-- [ ] E2E tests added/updated
-- [ ] Selfhosted validation done
+- [ ] Renders on both install paths (plain Helm and `--set replicated.enabled=true`)
+- [ ] Validated on a real install — new install
+- [ ] Validated on a real install — upgrade from the released chart
+- [ ] Chart tests / preflight specs added or updated
 - [ ] Edge cases verified: [list specific scenarios]
 - [ ] No tests needed (explain why)
 
@@ -81,8 +84,8 @@ EAD: <!-- Google Docs link to EAD, or "N/A - small change" -->
 2. ...
 
 ## Screenshots/Demos
-<!-- If UI changes: attach before/after screenshots or video demo -->
-<!-- If backend/API: provide curl examples or API response samples -->
+<!-- KOTS config changes: screenshot of the Admin Console config screen -->
+<!-- Template changes: the relevant rendered diff, or the before/after configmap keys -->
 
 ## AI-Generated Code Notice
 <!-- If this PR contains AI-generated code (Claude Code, Copilot, etc.): -->
@@ -91,14 +94,19 @@ EAD: <!-- Google Docs link to EAD, or "N/A - small change" -->
 - [ ] Not applicable
 
 ## Coding Standards Compliance
-- [ ] Changes follow team coding standards
+<!-- Conventions live in CLAUDE.md and CONTRIBUTING.md -->
+- [ ] Changes follow the repo conventions
 - [ ] Chart documentation updated (via helm-readme-generator)
 - [ ] Chart templates linted and validated
+- [ ] Customer-set values wired end to end (`values.yaml` + `kots-config.yaml` + `kots-helm.yaml`)
+- [ ] New values carry a `## @param` comment
+- [ ] Version fields left to the release bot (`VERSION`, `Chart.yaml`, `chartVersion`)
+- [ ] No secrets, internal hostnames/project IDs, or customer data added (public repo)
 
 ## Checklist
 - [ ] PR title follows convention
 - [ ] Shortcut story linked
 - [ ] One issue per PR
-- [ ] Appropriate labels applied
+- [ ] Appropriate labels applied (`release-changes` if install testing is needed)
 - [ ] Reviewers assigned (or auto-assigned)
 - [ ] AI review findings addressed (if applicable)
