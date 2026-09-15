@@ -258,35 +258,47 @@ Return common collectors for preflights and support-bundle
       */}}
       imagePullSecret:
         name: carto-registry
+      {{/*
+        Several components share one image (import-api/import-worker,
+        maps-api/sql-worker, workspace-api/workspace-subscriber, ...), so the
+        resolved list is deduplicated — the collector only verifies that each
+        image is pullable, and checking the same one twice just adds pulls.
+      */}}
+      {{- $images := list
+          (include "carto.accountsWww.image" .)
+          (include "carto.cdnInvalidatorSub.image" .)
+          (include "carto.httpCache.image" .)
+          (include "carto.importApi.image" .)
+          (include "carto.importWorker.image" .)
+          (include "carto.ldsApi.image" .)
+          (include "carto.mapsApi.image" .)
+          (include "carto.notifier.image" .)
+          (include "carto.redis.image" .)
+          (include "carto.router.image" .)
+          (include "carto.routerMetrics.image" .)
+          (include "carto.sqlWorker.image" .)
+          (include "carto.tenantRequirementsChecker.image" .)
+          (include "carto.upgradeCheck.image" .)
+          (include "carto.workspaceApi.image" .)
+          (include "carto.workspaceMigrations.image" .)
+          (include "carto.workspaceSubscriber.image" .)
+          (include "carto.workspaceWww.image" .)
+      }}
+      {{- if .Values.appConfigValues.aiFeaturesEnabled }}
+      {{- $images = concat $images (list (include "carto.aiApi.image" .) (include "carto.aiProxy.image" .)) }}
+      {{- end }}
+      {{- if (include "carto.disconnected.enabled" .) }}
+      {{- $images = concat $images (list
+          (include "carto.authApi.image" .)
+          (include "carto.authMigrations.image" .)
+          (include "carto.accountsApi.image" .)
+          (include "carto.accountsSubscriber.image" .)
+          (include "carto.accountsMigrations.image" .)
+      ) }}
+      {{- end }}
       images:
-        - {{ template "carto.accountsWww.image" . }}
-        {{- if .Values.appConfigValues.aiFeaturesEnabled }}
-        - {{ template "carto.aiApi.image" . }}
-        - {{ template "carto.aiProxy.image" . }}
-        {{- end }}
-        - {{ template "carto.cdnInvalidatorSub.image" . }}
-        - {{ template "carto.httpCache.image" . }}
-        - {{ template "carto.importApi.image" . }}
-        - {{ template "carto.importWorker.image" . }}
-        - {{ template "carto.ldsApi.image" . }}
-        - {{ template "carto.mapsApi.image" . }}
-        - {{ template "carto.notifier.image" . }}
-        - {{ template "carto.redis.image" . }}
-        - {{ template "carto.router.image" . }}
-        - {{ template "carto.routerMetrics.image" . }}
-        - {{ template "carto.sqlWorker.image" . }}
-        - {{ template "carto.tenantRequirementsChecker.image" . }}
-        - {{ template "carto.upgradeCheck.image" . }}
-        - {{ template "carto.workspaceApi.image" . }}
-        - {{ template "carto.workspaceMigrations.image" . }}
-        - {{ template "carto.workspaceSubscriber.image" . }}
-        - {{ template "carto.workspaceWww.image" . }}
-        {{- if (include "carto.disconnected.enabled" .) }}
-        - {{ template "carto.authApi.image" . }}
-        - {{ template "carto.authMigrations.image" . }}
-        - {{ template "carto.accountsApi.image" . }}
-        - {{ template "carto.accountsSubscriber.image" . }}
-        - {{ template "carto.accountsMigrations.image" . }}
+        {{- range ($images | uniq | sortAlpha) }}
+        - {{ . }}
         {{- end }}
 {{- end -}}
 
