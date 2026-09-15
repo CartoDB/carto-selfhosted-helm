@@ -34,8 +34,9 @@ Fine, because it is already public here or established practice:
 - Links to public docs (`docs.carto.com`).
 - The one sanctioned internal link: `gatekeeper-selfhosted-kubernetes` (the
   admission-ceiling source of truth) in the resource-limit note below and in
-  `lint-codebase.yaml`. A dev who trips that check must reach it, so the pointer
-  is deliberate — not a precedent for other internal repos/URLs.
+  `.github/scripts/check-resource-limits.sh`. A dev who trips that check must
+  reach it, so the pointer is deliberate — not a precedent for other internal
+  repos/URLs.
 
 ## What this repo is
 
@@ -101,8 +102,10 @@ any component's CPU/memory limits, humans and AI agents both need to check the
 ceiling.
 
 The `check-helm-resources-changed` job in `.github/workflows/lint-codebase.yaml`
-fails the PR when a limit goes over it. To actually raise the ceiling, edit the
-constraint in
+fails the PR when a limit goes over it, via
+`.github/scripts/check-resource-limits.sh` (self-tested against
+`.github/scripts/testdata/resource-limits-fixture.yaml`, so the guard can't rot
+into a no-op unnoticed). To actually raise the ceiling, edit the constraint in
 [`gatekeeper-selfhosted-kubernetes`](https://github.com/CartoDB/gatekeeper-selfhosted-kubernetes)
 (`gatekeeper/constraints/psp-container-limits.yaml`), get it applied to the
 clusters, then bump `MAX_CPU_M` / `MAX_MEMORY_MI` in that workflow to match — in

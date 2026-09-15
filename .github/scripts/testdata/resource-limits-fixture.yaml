@@ -1,0 +1,76 @@
+# Fixture for check-resource-limits-test.sh. Every entry documents one shape the
+# real check has to get right. Not a deployable values file.
+
+# --- must NOT be flagged ---
+
+# requests only: nothing to compare against the ceiling
+requestsOnly:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# explicit nulls (the "remove the default limits" pattern)
+nullLimits:
+  resources:
+    limits:
+      cpu: null
+      memory: null
+
+# limits present but empty
+emptyLimits:
+  resources:
+    limits: {}
+
+# exactly at the ceiling: allowed, importWorker really sits here
+atCeiling:
+  resources:
+    limits:
+      cpu: 4000m
+      memory: 12288Mi
+
+# bare cores below the ceiling, must not be read as 2 milliCPU
+bareCoresUnder:
+  resources:
+    limits:
+      cpu: 2
+      memory: 512Mi
+
+# --- must be flagged ---
+
+# milliCPU over the ceiling
+overCpuMillis:
+  resources:
+    limits:
+      cpu: 8000m
+      memory: 512Mi
+
+# bare cores over the ceiling
+overCpuBareCores:
+  resources:
+    limits:
+      cpu: 6
+      memory: 512Mi
+
+# Gi memory over the ceiling, must be converted before comparing
+overMemoryGi:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 16Gi
+
+# Mi memory over the ceiling
+overMemoryMi:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 20480Mi
+
+# inside a list: sidecars and initContainers must be traversed too
+nestedList:
+  sidecars:
+    - name: over-limit-sidecar
+      resources:
+        limits:
+          cpu: 9000m
+          memory: 32Gi
