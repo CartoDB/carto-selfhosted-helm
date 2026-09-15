@@ -648,7 +648,7 @@ Return customer secrets to use in preflights and support-bundle
     valueFrom:
       secretKeyRef:
         name: {{ include "carto.postgresql.secretName" . }}
-        key: {{ include "carto.postgresql.secret.key" . }}
+        key: {{ include "carto.postgresql.secret.key" . | quote }}
   {{- end -}}
   {{- if eq .Values.externalRedis.existingSecret "" }}
   - name: REDIS_PASSWORD
