@@ -19,6 +19,7 @@ Return common collectors for preflights and support-bundle
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
         {{- end }}
         restartPolicy: Never
+        {{- include "carto.imagePullSecrets" . | nindent 8 }}
         securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
         initContainers:
           - name: init-tenant-requirements-check
@@ -259,28 +260,47 @@ Return common collectors for preflights and support-bundle
       */}}
       imagePullSecret:
         name: carto-registry
+      {{/*
+        Several components share one image (import-api/import-worker,
+        maps-api/sql-worker, workspace-api/workspace-subscriber, ...), so the
+        resolved list is deduplicated — the collector only verifies that each
+        image is pullable, and checking the same one twice just adds pulls.
+      */}}
+      {{- $images := list
+          (include "carto.accountsWww.image" .)
+          (include "carto.cdnInvalidatorSub.image" .)
+          (include "carto.httpCache.image" .)
+          (include "carto.importApi.image" .)
+          (include "carto.importWorker.image" .)
+          (include "carto.ldsApi.image" .)
+          (include "carto.mapsApi.image" .)
+          (include "carto.notifier.image" .)
+          (include "carto.redis.image" .)
+          (include "carto.router.image" .)
+          (include "carto.routerMetrics.image" .)
+          (include "carto.sqlWorker.image" .)
+          (include "carto.tenantRequirementsChecker.image" .)
+          (include "carto.upgradeCheck.image" .)
+          (include "carto.workspaceApi.image" .)
+          (include "carto.workspaceMigrations.image" .)
+          (include "carto.workspaceSubscriber.image" .)
+          (include "carto.workspaceWww.image" .)
+      }}
+      {{- if .Values.appConfigValues.aiFeaturesEnabled }}
+      {{- $images = concat $images (list (include "carto.aiApi.image" .) (include "carto.aiProxy.image" .)) }}
+      {{- end }}
+      {{- if (include "carto.disconnected.enabled" .) }}
+      {{- $images = concat $images (list
+          (include "carto.authApi.image" .)
+          (include "carto.authMigrations.image" .)
+          (include "carto.accountsApi.image" .)
+          (include "carto.accountsSubscriber.image" .)
+          (include "carto.accountsMigrations.image" .)
+      ) }}
+      {{- end }}
       images:
-        - {{ template "carto.accountsWww.image" . }}
-        - {{ template "carto.cdnInvalidatorSub.image" . }}
-        - {{ template "carto.httpCache.image" . }}
-        - {{ template "carto.importApi.image" . }}
-        - {{ template "carto.importWorker.image" . }}
-        - {{ template "carto.ldsApi.image" . }}
-        - {{ template "carto.mapsApi.image" . }}
-        - {{ template "carto.notifier.image" . }}
-        - {{ template "carto.router.image" . }}
-        - {{ template "carto.sqlWorker.image" . }}
-        - {{ template "carto.workspaceApi.image" . }}
-        - {{ template "carto.workspaceMigrations.image" . }}
-        - {{ template "carto.workspaceSubscriber.image" . }}
-        - {{ template "carto.workspaceWww.image" . }}
-        - {{ template "carto.tenantRequirementsChecker.image" . }}
-        {{- if (include "carto.disconnected.enabled" .) }}
-        - {{ template "carto.authApi.image" . }}
-        - {{ template "carto.authMigrations.image" . }}
-        - {{ template "carto.accountsApi.image" . }}
-        - {{ template "carto.accountsSubscriber.image" . }}
-        - {{ template "carto.accountsMigrations.image" . }}
+        {{- range ($images | uniq | sortAlpha) }}
+        - {{ . }}
         {{- end }}
 {{- end -}}
 
@@ -289,21 +309,41 @@ Return common analyzers for preflights and support-bundle.
 NOTE: Remember that with the ingress testing mode the components are not deployed, so take it into account when adding a new preflight!!
 */}}
 {{- define "carto.replicated.commonChecks.analyzers" }}
+  {{/* Build Preflight Checks conditionals */}}
+  {{/* Build EgressRequirementsValidator checks list */}}
+  {{- $egressChecks := list
+      "Check_CARTO_Auth_connectivity"
+      "Check_PubSub_connectivity"
+      "Check_Google_Storage_connectivity"
+      "Check_release_channels_connectivity"
+      "Check_CARTO_images_registry_connectivity"
+      "Check_BigQuery_connectivity"
+      "Check_TomTom_connectivity"
+      "Check_TravelTime_connectivity"
+  }}
+  {{- if .Values.cartoSecrets.launchDarklySdkKey.value }}
+  {{- $egressChecks = append $egressChecks "Check_LaunchDarkly_connectivity" }}
+  {{- end }}
+  {{/* Build PubSubValidator checks list */}}
+  {{- $pubSubChecks := list
+      "Check_publish_and_listen_to_topic"
+  }}
+  {{- if .Values.cartoConfigValues.usePubSubRestApi }}
+  {{- $pubSubChecks = append $pubSubChecks "Check_publish_and_listen_to_topic_via_REST_API" }}
+  {{- end }}
+  {{/* Assemble the preflights dict */}}
   {{- $preflightsDict := dict
-      "WorkspaceDatabaseValidator" (list "Check_database_connection" "Check_database_encoding" "Check_user_has_right_permissions" "Check_database_version") 
+      "WorkspaceDatabaseValidator" (list "Check_database_connection" "Check_database_encoding" "Check_user_has_right_permissions" "Check_database_version")
       "ServiceAccountValidator" (list "Check_valid_service_account")
       "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket")
-      "EgressRequirementsValidator" (list "Check_CARTO_Auth_connectivity" "Check_PubSub_connectivity" "Check_Google_Storage_connectivity" "Check_release_channels_connectivity" "Check_Google_Storage_connectivity" "Check_CARTO_images_registry_connectivity" "Check_TomTom_connectivity" "Check_TravelTime_connectivity")
-      "PubSubValidator" (list "Check_publish_and_listen_to_topic")
+      "EgressRequirementsValidator" $egressChecks
+      "PubSubValidator" $pubSubChecks
   }}
-  
   {{/* Add optional analyzers to the preflightsDict */}}
-
   {{- $preflightOptionalList := list
       "Check_TravelTime_connectivity"
       "Check_TomTom_connectivity"
   }}
-
   {{/*
   When an S3-compatible split-horizon external URL is configured, the checker also emits the
   browser-facing (external) bucket checks. They are non-authoritative (CORS is enforced by the
@@ -387,7 +427,7 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
         - fail:
             when: "false"
             message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
-      {{- end }}  
+      {{- end }}
   {{- end }}
   {{- end }}
   {{/*
@@ -408,7 +448,7 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   We only can run the following preflight checks and get the platform distribution when a cluster role is created.
   Otherwise, we cannot obtain this info
   */}}
-  {{- if ne .Values.replicated.platformDistribution "" }}
+  {{- if .Values.replicated.platformDistribution }}
   - clusterVersion:
       outcomes:
         - fail:
@@ -469,13 +509,13 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
         - pass:
             message: There are at least 6 cores in the cluster.
   - nodeResources:
-      checkName: The cluster should contain at least 16 Gi of RAM memory
+      checkName: The cluster should contain at least 32 Gi of RAM memory
       outcomes:
         - fail:
-            when: "sum(memoryAllocatable) < 16Gi"
-            message: The cluster must contain at least 16Gi of RAM memory. ➡️ Ignore if you have auto-scale enabled in your cluster.
+            when: "sum(memoryAllocatable) < 32Gi"
+            message: The cluster must contain at least 32Gi of RAM memory. ➡️ Ignore if you have auto-scale enabled in your cluster.
         - pass:
-            message: There are at least 16 Gi in the cluster.
+            message: There are at least 32 GiB of RAM memory in the cluster.
   {{- end }}
   {{- if .Values.gateway.enabled }}
   - customResourceDefinition:
