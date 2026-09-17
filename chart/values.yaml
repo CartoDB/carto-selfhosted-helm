@@ -497,6 +497,16 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
+  ## @extra cartoSecrets.natsAuthToken Auth token of the internal NATS event bus (self-hosted disconnected mode only). Required when `appConfigValues.disconnected.enabled` is true.
+  natsAuthToken:
+    ## @param cartoSecrets.natsAuthToken.value Value of the auth token of the internal NATS event bus. One of `cartoSecrets.natsAuthToken.value` or `cartoSecrets.natsAuthToken.existingSecret` could be defined.
+    value: ""
+    ## @param cartoSecrets.natsAuthToken.existingSecret.name Name of the pre-existent secret containing the `cartoSecrets.natsAuthToken.existingSecret.key`. If `cartoSecrets.natsAuthToken.value` is defined, this value is going to be ignored and not used.
+    ## @param cartoSecrets.natsAuthToken.existingSecret.key Key to find in `cartoSecrets.natsAuthToken.existingSecret.name` where the value of `cartoSecrets.natsAuthToken` is found. If `cartoSecrets.natsAuthToken.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
 
 ## FIXME: Deprecated in favor of router.tlsCertificates and ingress.tlsCertificates
 ## @section TLS parameters
@@ -5545,6 +5555,276 @@ internalRedis:
     ##
     annotations: {}
     ## @param internalRedis.service.extraPorts Extra ports for internal-valkey service
+    ##
+    extraPorts: []
+
+## @section NATS parameters
+## Internal NATS JetStream event bus. Deployed only when `appConfigValues.disconnected.enabled` is true.
+##
+nats:
+  ## CARTO NATS image
+  ## @param nats.image.registry NATS image registry
+  ## @param nats.image.repository NATS image repository
+  ## @param nats.image.tag NATS image tag (immutable tags are recommended)
+  ## @param nats.image.pullPolicy NATS image pull policy
+  ## @param nats.image.pullSecrets Image-pull secrets for private registries
+  ##
+  image:
+    registry: *defaultRegistry
+    repository: nats
+    tag: ""
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+
+  ## @param nats.containerPorts.client NATS client container port
+  ## @param nats.containerPorts.monitoring NATS HTTP monitoring container port
+  ##
+  containerPorts:
+    client: 4222
+    monitoring: 8222
+
+  ## @param nats.maxPayload Maximum size of a single NATS message
+  ##
+  maxPayload: "8MB"
+
+  ## @param nats.jetstream.maxFileStore Maximum disk usage of the JetStream file store. Keep it below `nats.persistence.size`
+  ##
+  jetstream:
+    maxFileStore: "8GiB"
+
+  ## NATS JetStream persistent storage
+  ## @param nats.persistence.size Size of the persistent volume backing the JetStream file store
+  ## @param nats.persistence.storageClass StorageClass for the NATS persistent volume. Empty uses `global.storageClass` or the cluster default
+  ##
+  persistence:
+    size: 10Gi
+    storageClass: ""
+
+  ## Configure extra options for NATS containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param nats.livenessProbe.enabled Enable livenessProbe on NATS containers
+  ## @param nats.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param nats.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param nats.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param nats.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param nats.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+
+  ## @param nats.readinessProbe.enabled Enable readinessProbe on NATS containers
+  ## @param nats.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param nats.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param nats.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param nats.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param nats.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+
+  ## @param nats.startupProbe.enabled Enable startupProbe on NATS containers
+  ## @param nats.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param nats.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param nats.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param nats.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param nats.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false
+    initialDelaySeconds: 10
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+
+  ## @param nats.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+
+  ## @param nats.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+
+  ## @param nats.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+
+  ## NATS resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param nats.resources.limits.memory Container memory limits in MiB
+  ## @param nats.resources.limits.cpu Container cpu limits in milliCPU cores
+  ## @param nats.resources.requests.memory Container memory requests in MiB
+  ## @param nats.resources.requests.cpu Container cpu requests in milliCPU cores
+  ##
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "250m"
+
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param nats.podSecurityContext.enabled Enabled NATS pods' Security Context
+  ## @param nats.podSecurityContext.fsGroup Set NATS pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 101
+
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+  ## @param nats.containerSecurityContext.enabled Enabled NATS containers' Security Context
+  ## @param nats.containerSecurityContext.runAsUser Set NATS containers' Security Context runAsUser
+  ## @param nats.containerSecurityContext.runAsGroup Set NATS containers' Security Context runAsGroup
+  ## @param nats.containerSecurityContext.runAsNonRoot Set NATS containers' Security Context runAsNonRoot
+  ## @param nats.containerSecurityContext.allowPrivilegeEscalation Set NATS containers' Security Context allowPrivilegeEscalation
+  ## @param nats.containerSecurityContext.readOnlyRootFilesystem Set NATS containers' Security Context readOnlyRootFilesystem
+  ## @param nats.containerSecurityContext.capabilities.drop Removes NATS containers' Security Context capabilities
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 100
+    runAsGroup: 101
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - all
+
+  ## @param nats.terminationGracePeriodSeconds Time to wait before force killing the container
+  ##
+  terminationGracePeriodSeconds: 30
+
+  ## @param nats.updateStrategy.type NATS statefulset strategy type
+  ##
+  updateStrategy:
+    type: RollingUpdate
+
+  ## @param nats.existingSecret The name of an existing Secret with your custom auth token for NATS
+  ##
+  existingSecret: ""
+
+  ## @param nats.command Override default container command (useful when using custom images)
+  ##
+  command: []
+
+  ## @param nats.args Override default container args (useful when using custom images)
+  ##
+  args: []
+
+  ## @param nats.hostAliases NATS pods host aliases
+  ##
+  hostAliases: []
+
+  ## @param nats.podLabels Extra labels for NATS pods
+  ##
+  podLabels: {}
+
+  ## @param nats.podAnnotations Annotations for NATS pods
+  ##
+  podAnnotations: {}
+
+  ## @param nats.podAffinityPreset Pod affinity preset. Ignored if `nats.affinity` is set. Allowed values: `soft` or `hard`
+  ##
+  podAffinityPreset: ""
+
+  ## @param nats.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `nats.affinity` is set. Allowed values: `soft` or `hard`
+  ##
+  podAntiAffinityPreset: soft
+
+  ## NATS affinity preset
+  ##
+  nodeAffinityPreset:
+    ## @param nats.nodeAffinityPreset.type Node affinity preset type. Ignored if `nats.affinity` is set
+    ##
+    type: ""
+    ## @param nats.nodeAffinityPreset.key Node label key to match. Ignored if `nats.affinity` is set
+    ##
+    key: ""
+    ## @param nats.nodeAffinityPreset.values Node label values to match. Ignored if `nats.affinity` is set
+    ##
+    values: []
+
+  ## @param nats.affinity Affinity for NATS pods assignment
+  ##
+  affinity: {}
+
+  ## @param nats.nodeSelector Node labels for NATS pods assignment
+  ##
+  nodeSelector: {}
+
+  ## @param nats.tolerations Tolerations for NATS pods assignment
+  ##
+  tolerations: []
+
+  ## @param nats.priorityClassName NATS pods' priorityClassName
+  ##
+  priorityClassName: ""
+
+  ## @param nats.schedulerName Name of the k8s scheduler (other than default) for NATS pods
+  ##
+  schedulerName: ""
+
+  ## @param nats.extraEnvVars Extra environment variables for NATS pods
+  ##
+  extraEnvVars: []
+
+  ## @param nats.extraEnvVarsCM Name of existing ConfigMap with extra env vars
+  ##
+  extraEnvVarsCM: ""
+
+  ## @param nats.extraEnvVarsSecret Name of existing Secret with extra env vars
+  ##
+  extraEnvVarsSecret: ""
+
+  ## @param nats.extraVolumes Optionally specify extra volumes for NATS pod(s)
+  ##
+  extraVolumes: []
+
+  ## @param nats.extraVolumeMounts Optionally specify extra volumeMounts for NATS container(s)
+  ##
+  extraVolumeMounts: []
+
+  ## @param nats.sidecars Add additional sidecar containers to NATS pod(s)
+  ##
+  sidecars: {}
+
+  ## @param nats.initContainers Add additional init containers to NATS pod(s)
+  ##
+  initContainers: {}
+
+  ## @section NATS Service Parameters
+  ##
+  service:
+    ## @param nats.service.type NATS service type
+    ##
+    type: ClusterIP
+    ## @param nats.service.ports.client NATS service client port
+    ## @param nats.service.ports.monitoring NATS service HTTP monitoring port
+    ##
+    ports:
+      client: 4222
+      monitoring: 8222
+    ## @param nats.service.clusterIP NATS service ClusterIP
+    ##
+    clusterIP: ""
+    ## @param nats.service.annotations Additional annotations for NATS service
+    ##
+    annotations: {}
+    ## @param nats.service.extraPorts Extra ports for NATS service
     ##
     extraPorts: []
 

@@ -111,6 +111,18 @@ Validate auth-api (internal authentication) config
 {{- end -}}
 
 {{/*
+Validate NATS config (self-hosted disconnected mode). The NATS server refuses to start without a
+token: it never falls back to an open listener.
+*/}}
+{{- define "carto.validateValues.nats" -}}
+{{- if and (include "carto.disconnected.enabled" .) (not .Values.cartoSecrets.natsAuthToken.value) (not .Values.cartoSecrets.natsAuthToken.existingSecret.name) -}}
+CARTO: Missing NATS auth token
+
+If appConfigValues.disconnected.enabled=true you need to set one of cartoSecrets.natsAuthToken.value or cartoSecrets.natsAuthToken.existingSecret
+{{- end -}}
+{{- end -}}
+
+{{/*
 Compile all warnings into a single message, and call fail.
 */}}
 {{- define "carto.validateValues" -}}
@@ -122,6 +134,7 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := append $messages (include "carto.validateValues.serviceAccount" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.s3Compatible" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.authApi" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.nats" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 

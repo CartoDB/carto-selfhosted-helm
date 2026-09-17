@@ -241,6 +241,10 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `cartoSecrets.geminiApiKey.value`                              | Value of the secret used to define the API key for the Gemini instance. One of `cartoSecrets.geminiApiKey.value` or `cartoSecrets.geminiApiKey.existingSecret` could be defined.                                                                                      | `""`             |
 | `cartoSecrets.geminiApiKey.existingSecret.name`                | Name of the pre-existent secret containing the `cartoSecrets.geminiApiKey.existingSecret.key`. If `cartoSecrets.geminiApiKey.value` is defined, this value is going to be ignored and not used.                                                                       | `""`             |
 | `cartoSecrets.geminiApiKey.existingSecret.key`                 | Key to find in `cartoSecrets.geminiApiKey.existingSecret.name` where the value of `cartoSecrets.geminiApiKey` is found. If `cartoSecrets.geminiApiKey.value` is defined, this value is going to be ignored and not used.                                              | `""`             |
+| `cartoSecrets.natsAuthToken`                                   | Auth token of the internal NATS event bus (self-hosted disconnected mode only). Required when `appConfigValues.disconnected.enabled` is true.                                                                                                                         |                  |
+| `cartoSecrets.natsAuthToken.value`                             | Value of the auth token of the internal NATS event bus. One of `cartoSecrets.natsAuthToken.value` or `cartoSecrets.natsAuthToken.existingSecret` could be defined.                                                                                                    | `""`             |
+| `cartoSecrets.natsAuthToken.existingSecret.name`               | Name of the pre-existent secret containing the `cartoSecrets.natsAuthToken.existingSecret.key`. If `cartoSecrets.natsAuthToken.value` is defined, this value is going to be ignored and not used.                                                                     | `""`             |
+| `cartoSecrets.natsAuthToken.existingSecret.key`                | Key to find in `cartoSecrets.natsAuthToken.existingSecret.name` where the value of `cartoSecrets.natsAuthToken` is found. If `cartoSecrets.natsAuthToken.value` is defined, this value is going to be ignored and not used.                                           | `""`             |
 
 ### TLS parameters
 
@@ -1752,6 +1756,92 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 | `internalRedis.service.externalTrafficPolicy`    | internal-valkey service external traffic policy      | `Cluster`   |
 | `internalRedis.service.annotations`              | Additional annotations for internal-valkey service   | `{}`        |
 | `internalRedis.service.extraPorts`               | Extra ports for internal-valkey service              | `[]`        |
+
+### NATS parameters
+
+| Name                                                     | Description                                                                                          | Value                                             |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `nats.image.registry`                                    | NATS image registry                                                                                  | `us-docker.pkg.dev/carto-onprem-artifacts/gcr.io` |
+| `nats.image.repository`                                  | NATS image repository                                                                                | `nats`                                            |
+| `nats.image.tag`                                         | NATS image tag (immutable tags are recommended)                                                      | `""`                                              |
+| `nats.image.pullPolicy`                                  | NATS image pull policy                                                                               | `IfNotPresent`                                    |
+| `nats.image.pullSecrets`                                 | Image-pull secrets for private registries                                                            | `[]`                                              |
+| `nats.containerPorts.client`                             | NATS client container port                                                                           | `4222`                                            |
+| `nats.containerPorts.monitoring`                         | NATS HTTP monitoring container port                                                                  | `8222`                                            |
+| `nats.maxPayload`                                        | Maximum size of a single NATS message                                                                | `8MB`                                             |
+| `nats.jetstream.maxFileStore`                            | Maximum disk usage of the JetStream file store. Keep it below `nats.persistence.size`                | `8GiB`                                            |
+| `nats.persistence.size`                                  | Size of the persistent volume backing the JetStream file store                                       | `10Gi`                                            |
+| `nats.persistence.storageClass`                          | StorageClass for the NATS persistent volume. Empty uses `global.storageClass` or the cluster default | `""`                                              |
+| `nats.livenessProbe.enabled`                             | Enable livenessProbe on NATS containers                                                              | `true`                                            |
+| `nats.livenessProbe.initialDelaySeconds`                 | Initial delay seconds for livenessProbe                                                              | `10`                                              |
+| `nats.livenessProbe.periodSeconds`                       | Period seconds for livenessProbe                                                                     | `30`                                              |
+| `nats.livenessProbe.timeoutSeconds`                      | Timeout seconds for livenessProbe                                                                    | `5`                                               |
+| `nats.livenessProbe.failureThreshold`                    | Failure threshold for livenessProbe                                                                  | `5`                                               |
+| `nats.livenessProbe.successThreshold`                    | Success threshold for livenessProbe                                                                  | `1`                                               |
+| `nats.readinessProbe.enabled`                            | Enable readinessProbe on NATS containers                                                             | `true`                                            |
+| `nats.readinessProbe.initialDelaySeconds`                | Initial delay seconds for readinessProbe                                                             | `5`                                               |
+| `nats.readinessProbe.periodSeconds`                      | Period seconds for readinessProbe                                                                    | `10`                                              |
+| `nats.readinessProbe.timeoutSeconds`                     | Timeout seconds for readinessProbe                                                                   | `5`                                               |
+| `nats.readinessProbe.failureThreshold`                   | Failure threshold for readinessProbe                                                                 | `5`                                               |
+| `nats.readinessProbe.successThreshold`                   | Success threshold for readinessProbe                                                                 | `1`                                               |
+| `nats.startupProbe.enabled`                              | Enable startupProbe on NATS containers                                                               | `false`                                           |
+| `nats.startupProbe.initialDelaySeconds`                  | Initial delay seconds for startupProbe                                                               | `10`                                              |
+| `nats.startupProbe.periodSeconds`                        | Period seconds for startupProbe                                                                      | `30`                                              |
+| `nats.startupProbe.timeoutSeconds`                       | Timeout seconds for startupProbe                                                                     | `5`                                               |
+| `nats.startupProbe.failureThreshold`                     | Failure threshold for startupProbe                                                                   | `5`                                               |
+| `nats.startupProbe.successThreshold`                     | Success threshold for startupProbe                                                                   | `1`                                               |
+| `nats.customLivenessProbe`                               | Custom livenessProbe that overrides the default one                                                  | `{}`                                              |
+| `nats.customReadinessProbe`                              | Custom readinessProbe that overrides the default one                                                 | `{}`                                              |
+| `nats.customStartupProbe`                                | Custom startupProbe that overrides the default one                                                   | `{}`                                              |
+| `nats.resources.limits.memory`                           | Container memory limits in MiB                                                                       | `512Mi`                                           |
+| `nats.resources.limits.cpu`                              | Container cpu limits in milliCPU cores                                                               | `250m`                                            |
+| `nats.resources.requests.memory`                         | Container memory requests in MiB                                                                     | `512Mi`                                           |
+| `nats.resources.requests.cpu`                            | Container cpu requests in milliCPU cores                                                             | `250m`                                            |
+| `nats.podSecurityContext.enabled`                        | Enabled NATS pods' Security Context                                                                  | `true`                                            |
+| `nats.podSecurityContext.fsGroup`                        | Set NATS pod's Security Context fsGroup                                                              | `101`                                             |
+| `nats.containerSecurityContext.enabled`                  | Enabled NATS containers' Security Context                                                            | `true`                                            |
+| `nats.containerSecurityContext.runAsUser`                | Set NATS containers' Security Context runAsUser                                                      | `100`                                             |
+| `nats.containerSecurityContext.runAsGroup`               | Set NATS containers' Security Context runAsGroup                                                     | `101`                                             |
+| `nats.containerSecurityContext.runAsNonRoot`             | Set NATS containers' Security Context runAsNonRoot                                                   | `true`                                            |
+| `nats.containerSecurityContext.allowPrivilegeEscalation` | Set NATS containers' Security Context allowPrivilegeEscalation                                       | `false`                                           |
+| `nats.containerSecurityContext.readOnlyRootFilesystem`   | Set NATS containers' Security Context readOnlyRootFilesystem                                         | `true`                                            |
+| `nats.containerSecurityContext.capabilities.drop`        | Removes NATS containers' Security Context capabilities                                               | `["all"]`                                         |
+| `nats.terminationGracePeriodSeconds`                     | Time to wait before force killing the container                                                      | `30`                                              |
+| `nats.updateStrategy.type`                               | NATS statefulset strategy type                                                                       | `RollingUpdate`                                   |
+| `nats.existingSecret`                                    | The name of an existing Secret with your custom auth token for NATS                                  | `""`                                              |
+| `nats.command`                                           | Override default container command (useful when using custom images)                                 | `[]`                                              |
+| `nats.args`                                              | Override default container args (useful when using custom images)                                    | `[]`                                              |
+| `nats.hostAliases`                                       | NATS pods host aliases                                                                               | `[]`                                              |
+| `nats.podLabels`                                         | Extra labels for NATS pods                                                                           | `{}`                                              |
+| `nats.podAnnotations`                                    | Annotations for NATS pods                                                                            | `{}`                                              |
+| `nats.podAffinityPreset`                                 | Pod affinity preset. Ignored if `nats.affinity` is set. Allowed values: `soft` or `hard`             | `""`                                              |
+| `nats.podAntiAffinityPreset`                             | Pod anti-affinity preset. Ignored if `nats.affinity` is set. Allowed values: `soft` or `hard`        | `soft`                                            |
+| `nats.nodeAffinityPreset.type`                           | Node affinity preset type. Ignored if `nats.affinity` is set                                         | `""`                                              |
+| `nats.nodeAffinityPreset.key`                            | Node label key to match. Ignored if `nats.affinity` is set                                           | `""`                                              |
+| `nats.nodeAffinityPreset.values`                         | Node label values to match. Ignored if `nats.affinity` is set                                        | `[]`                                              |
+| `nats.affinity`                                          | Affinity for NATS pods assignment                                                                    | `{}`                                              |
+| `nats.nodeSelector`                                      | Node labels for NATS pods assignment                                                                 | `{}`                                              |
+| `nats.tolerations`                                       | Tolerations for NATS pods assignment                                                                 | `[]`                                              |
+| `nats.priorityClassName`                                 | NATS pods' priorityClassName                                                                         | `""`                                              |
+| `nats.schedulerName`                                     | Name of the k8s scheduler (other than default) for NATS pods                                         | `""`                                              |
+| `nats.extraEnvVars`                                      | Extra environment variables for NATS pods                                                            | `[]`                                              |
+| `nats.extraEnvVarsCM`                                    | Name of existing ConfigMap with extra env vars                                                       | `""`                                              |
+| `nats.extraEnvVarsSecret`                                | Name of existing Secret with extra env vars                                                          | `""`                                              |
+| `nats.extraVolumes`                                      | Optionally specify extra volumes for NATS pod(s)                                                     | `[]`                                              |
+| `nats.extraVolumeMounts`                                 | Optionally specify extra volumeMounts for NATS container(s)                                          | `[]`                                              |
+| `nats.sidecars`                                          | Add additional sidecar containers to NATS pod(s)                                                     | `{}`                                              |
+| `nats.initContainers`                                    | Add additional init containers to NATS pod(s)                                                        | `{}`                                              |
+
+### NATS Service Parameters
+
+| Name                            | Description                             | Value       |
+| ------------------------------- | --------------------------------------- | ----------- |
+| `nats.service.type`             | NATS service type                       | `ClusterIP` |
+| `nats.service.ports.client`     | NATS service client port                | `4222`      |
+| `nats.service.ports.monitoring` | NATS service HTTP monitoring port       | `8222`      |
+| `nats.service.clusterIP`        | NATS service ClusterIP                  | `""`        |
+| `nats.service.annotations`      | Additional annotations for NATS service | `{}`        |
+| `nats.service.extraPorts`       | Extra ports for NATS service            | `[]`        |
 
 ### External Valkey parameters
 
