@@ -1,3 +1,5 @@
+{{/* vim: set filetype=helm: */}}
+
 {{/*
 Return common collectors for preflights and support-bundle
 */}}

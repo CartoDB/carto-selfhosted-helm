@@ -1,4 +1,4 @@
-{{/* vim: set filetype=mustache: */}}
+{{/* vim: set filetype=helm: */}}
 
 {{/*
 Return the version of the chart without removing `-*` from the version
