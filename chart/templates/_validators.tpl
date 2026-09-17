@@ -1,3 +1,5 @@
+{{/* vim: set filetype=helm: */}}
+
 {{/*
 Validate external Valkey / Redis-compatible cache config
 */}}
