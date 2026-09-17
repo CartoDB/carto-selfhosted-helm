@@ -157,6 +157,21 @@ Gotchas:
 - **The checker pod holds real customer secrets — never let a check echo them
   into its `.info` message**; that string surfaces in preflight output and
   support bundles that customers share.
+- **Redaction is context-first, not a catalog of credential formats.** Prefer a
+  file-scoped `yamlPath` or field-name rule over provider-specific regexes, and
+  rely on [Troubleshoot's built-ins](https://troubleshoot.sh/docs/redact/built-in)
+  for common password, token, and AWS credential env names plus connection
+  string patterns. Built-ins are not exhaustive. Add a credential-shape regex
+  only when an unavoidable unstructured artifact has no stable field or file
+  structure. Never put literal secret values in a Redactor spec; Troubleshoot
+  can store specs in plaintext. Fix producers that log secrets whenever
+  possible instead of growing chart-side redactors.
+- Preflights run before chart-generated Secrets exist. Values backed by those
+  Secrets must remain inline, while customer-provided `existingSecret`
+  references are safe to use. Keep the complete checker snapshot covered by
+  the scoped env-value redactor.
+- Any redactor change must update `chart/tests/test-redactors.sh` and pass the
+  render-contract test for both plain Helm and Replicated paths.
 - Everything runs in `.Release.Namespace` — never hardcode a namespace.
 - `onlyRunRouter` (ingress-only test mode) deploys no backends — account for
   it in checks and validators.
