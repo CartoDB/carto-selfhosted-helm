@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(make help)",
+      "Bash(make check)",
+      "Bash(make lint)",
+      "Bash(make template)",
+      "Bash(make render-checks)",
+      "Bash(make unittest)",
+      "Bash(make readme)",
+      "Bash(make readme-check)",
+      "Bash(make kots)",
+      "Bash(helm lint *)",
+      "Bash(helm template *)",
+      "Bash(helm unittest *)"
+    ]
+  }
+}
