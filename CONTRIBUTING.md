@@ -62,13 +62,21 @@ A final caveat to be aware of is that the fast-forward strategy requires that yo
 
 #### Validating your change locally
 
-`make check` runs the same checks as the pull request CI: `helm lint`, a render of every install scenario in `chart/ci/*-values.yaml` with duplicate-key ([yamllint](https://github.com/adrienverge/yamllint)) and Kubernetes-schema ([kubeconform](https://github.com/yannh/kubeconform)) validation, the `chart/README.md` drift check and the KOTS static checks. `make help` lists every target.
+`make check` runs the same checks as the pull request CI. `make help` lists every target:
+
+- `helm lint`, with default values and with `replicated.enabled=true`
+- a render of every install scenario in `chart/ci/*-values.yaml`, checked for duplicate keys ([yamllint](https://github.com/adrienverge/yamllint)) and against the Kubernetes API schema ([kubeconform](https://github.com/yannh/kubeconform))
+- the [helm-unittest](https://github.com/helm-unittest/helm-unittest) suites in `chart/tests/`
+- the `chart/README.md` drift check and the KOTS static checks
 
 ```bash
 # Required tools: helm, yq, kubeconform, yamllint, node (for npx)
 #   macOS: brew install helm yq kubeconform yamllint node
+#   helm plugin install https://github.com/helm-unittest/helm-unittest.git --version 1.0.3
 make check
 ```
+
+The unit tests in `chart/tests/*_test.yaml` assert on rendered manifests (no snapshots) and reuse the `chart/ci` scenarios as inputs. Each suite starts with a comment naming the bug or invariant it protects; when you fix a rendering bug, add the assertion that would have caught it.
 
 Rendered manifests are written to `.render/` (git-ignored) so you can inspect them.
 

@@ -1,7 +1,7 @@
 # Local verification loop for the CARTO Self-Hosted Helm chart.
 #
 #   make check    runs the same checks CI runs (lint, render matrix, schema,
-#                 duplicate keys, README drift, KOTS manifest checks)
+#                 duplicate keys, unit tests, README drift, KOTS manifest checks)
 #   make help     lists every target
 #
 # Rendered output lands in .render/ (git-ignored).
@@ -23,8 +23,9 @@ README_GENERATOR := npx -y @bitnami/readme-generator-for-helm@2.7.2
 SCENARIOS := $(sort $(wildcard $(CHART)/ci/*-values.yaml))
 
 REQUIRED_TOOLS := helm yq kubeconform yamllint npx
+HELM_UNITTEST_VERSION := 1.0.3
 
-.PHONY: help tools deps lint template render-checks readme readme-check kots secrets check clean
+.PHONY: help tools deps lint template render-checks unittest readme readme-check kots secrets check clean
 
 help: ## Show this help
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -35,6 +36,11 @@ tools: ## Verify the required CLI tools are installed
 	if [ -n "$$missing" ]; then \
 	  echo "missing tools:$$missing"; \
 	  echo "  macOS: brew install helm yq kubeconform yamllint node"; \
+	  exit 1; \
+	fi; \
+	if ! helm plugin list 2>/dev/null | grep -q '^unittest'; then \
+	  echo "missing helm plugin: unittest"; \
+	  echo "  helm plugin install https://github.com/helm-unittest/helm-unittest.git --version $(HELM_UNITTEST_VERSION)"; \
 	  exit 1; \
 	fi
 
@@ -69,6 +75,9 @@ render-checks: template ## Duplicate-key (yamllint) and schema (kubeconform) che
 	  kubeconform -strict -ignore-missing-schemas -kubernetes-version $(KUBE_VERSION) -summary "$(RENDER_DIR)/$$name.yaml"; \
 	done
 
+unittest: $(CHART)/charts ## Run the helm-unittest suites in chart/tests
+	helm unittest $(CHART) --with-subchart=false
+
 readme: ## Regenerate chart/README.md from the @param comments in chart/values.yaml
 	cd $(CHART) && $(README_GENERATOR) --readme README.md --values values.yaml
 
@@ -86,7 +95,7 @@ kots: ## Static checks for the KOTS manifests (scripts/test-kots-config.sh)
 secrets: ## Scan the working tree for secrets with gitleaks (same config as CI and pre-commit)
 	gitleaks detect --source . --no-banner --redact
 
-check: tools lint render-checks readme-check kots ## Run everything CI runs
+check: tools lint render-checks unittest readme-check kots ## Run everything CI runs
 	@echo; echo "all checks passed"
 
 clean: ## Remove rendered output

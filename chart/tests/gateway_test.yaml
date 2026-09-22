@@ -1,0 +1,51 @@
+# The Gateway API path is only exercised by KOTS installs in practice, so a
+# pure-Helm regression here goes unnoticed for a long time.
+suite: gateway api
+templates:
+  - templates/gateway/gateway-api.yaml
+release:
+  name: carto
+  namespace: default
+tests:
+  - it: renders nothing by default
+    asserts:
+      - hasDocuments: {count: 0}
+
+  - it: renders the Gateway and both HTTPRoutes when enabled
+    values: &gateway [../ci/gateway-values.yaml]
+    asserts:
+      - hasDocuments: {count: 3}
+      - containsDocument:
+          kind: Gateway
+          apiVersion: gateway.networking.k8s.io/v1beta1
+          name: carto-gateway
+          any: true
+      - containsDocument:
+          kind: HTTPRoute
+          apiVersion: gateway.networking.k8s.io/v1beta1
+          name: carto-gateway-https
+          any: true
+      - containsDocument:
+          kind: HTTPRoute
+          apiVersion: gateway.networking.k8s.io/v1beta1
+          name: carto-gateway-http-to-https
+          any: true
+
+  - it: uses the configured gateway class
+    values: *gateway
+    documentIndex: 0
+    asserts:
+      - isKind: {of: Gateway}
+      - equal: {path: spec.gatewayClassName, value: example-gateway-class}
+
+  - it: renders with default values once gateway.staticIP has a default
+    skip:
+      reason: gateway.staticIP is missing from values.yaml [sc-575799]; remove this skip with the fix
+    set:
+      gateway.enabled: true
+      gateway.gatewayClassName: example-gateway-class
+    asserts:
+      - containsDocument:
+          kind: Gateway
+          apiVersion: gateway.networking.k8s.io/v1beta1
+          name: carto-gateway

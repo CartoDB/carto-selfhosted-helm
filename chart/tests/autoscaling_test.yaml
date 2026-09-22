@@ -1,0 +1,79 @@
+# A Deployment must not set `replicas` when an HPA owns the replica count,
+# otherwise every upgrade resets the scaled count (regression: #891).
+suite: autoscaling
+templates:
+  - templates/*/deployment.yaml
+  - templates/*/hpa.yaml
+  # Included by the deployments for their checksum annotations.
+  - templates/*/configmap.yaml
+  - templates/*/secret.yaml
+  - templates/custom-feature-flags-configmap.yaml
+release:
+  name: carto
+  namespace: default
+tests:
+  - it: sets replicas by default
+    template: templates/maps-api/deployment.yaml
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 2
+
+  - it: renders no HPA by default
+    template: templates/maps-api/hpa.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  # One test per autoscaled component; the scenario enables all of them.
+  - it: omits replicas on accounts-www when autoscaled
+    template: templates/accounts-www/deployment.yaml
+    values: &autoscaled [../ci/autoscaling-values.yaml]
+    asserts: &no-replicas
+      - notExists: {path: spec.replicas}
+  - it: omits replicas on import-api when autoscaled
+    template: templates/import-api/deployment.yaml
+    values: *autoscaled
+    asserts: *no-replicas
+  - it: omits replicas on lds-api when autoscaled
+    template: templates/lds-api/deployment.yaml
+    values: *autoscaled
+    asserts: *no-replicas
+  - it: omits replicas on maps-api when autoscaled
+    template: templates/maps-api/deployment.yaml
+    values: *autoscaled
+    asserts: *no-replicas
+  - it: omits replicas on router when autoscaled
+    template: templates/router/deployment.yaml
+    values: *autoscaled
+    asserts: *no-replicas
+  - it: omits replicas on workspace-api when autoscaled
+    template: templates/workspace-api/deployment.yaml
+    values: *autoscaled
+    asserts: *no-replicas
+  - it: omits replicas on workspace-www when autoscaled
+    template: templates/workspace-www/deployment.yaml
+    values: *autoscaled
+    asserts: *no-replicas
+
+  - it: renders the maps-api HPA targeting its Deployment
+    template: templates/maps-api/hpa.yaml
+    values: *autoscaled
+    asserts:
+      - hasDocuments: {count: 1}
+      - isKind: {of: HorizontalPodAutoscaler}
+      - equal: {path: spec.scaleTargetRef.kind, value: Deployment}
+      - equal: {path: spec.scaleTargetRef.name, value: carto-maps-api}
+
+  - it: renders the router HPA targeting its Deployment
+    template: templates/router/hpa.yaml
+    values: *autoscaled
+    asserts:
+      - hasDocuments: {count: 1}
+      - equal: {path: spec.scaleTargetRef.name, value: carto-router}
+
+  - it: keeps replicas on a component that is not autoscaled
+    template: templates/sql-worker/deployment.yaml
+    values: *autoscaled
+    asserts:
+      - exists: {path: spec.replicas}

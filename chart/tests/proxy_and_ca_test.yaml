@@ -1,0 +1,58 @@
+# Proxy and trusted-CA env vars are emitted by a conditional block in every
+# component ConfigMap. Rendering the same key twice produces a manifest that
+# helm accepts and the API server rejects (regression: #894).
+suite: external proxy and trusted CA certificates
+templates:
+  - templates/maps-api/configmap.yaml
+  - templates/import-worker/configmap.yaml
+release:
+  name: carto
+  namespace: default
+tests:
+  - it: sets no proxy or CA variables by default
+    template: templates/maps-api/configmap.yaml
+    asserts:
+      - notExists: {path: data.HTTPS_PROXY}
+      - notExists: {path: data.NODE_EXTRA_CA_CERTS}
+
+  - it: builds the proxy URL from type, host and port
+    template: templates/maps-api/configmap.yaml
+    set:
+      externalProxy.enabled: true
+      externalProxy.type: http
+      externalProxy.host: proxy.example.invalid
+      externalProxy.port: 3128
+      externalProxy.excludedDomains: [localhost, .svc]
+    asserts:
+      - equal: {path: data.HTTPS_PROXY, value: http://proxy.example.invalid:3128}
+      - equal: {path: data.https_proxy, value: http://proxy.example.invalid:3128}
+      - equal: {path: data.NO_PROXY, value: "localhost,.svc"}
+
+  - it: prefers connectionString over type, host and port
+    template: templates/maps-api/configmap.yaml
+    set:
+      externalProxy.enabled: true
+      externalProxy.connectionString: http://user@proxy.example.invalid:8080
+      externalProxy.host: ignored.example.invalid
+    asserts:
+      - equal: {path: data.HTTPS_PROXY, value: http://user@proxy.example.invalid:8080}
+
+  - it: points maps-api NODE_EXTRA_CA_CERTS at the trusted CA mount with proxy and CA both enabled
+    template: templates/maps-api/configmap.yaml
+    values: &ca-and-proxy [../ci/custom-ca-external-proxy-values.yaml]
+    asserts: &ca-mount
+      - equal: {path: data.NODE_EXTRA_CA_CERTS, value: /usr/src/certs/trusted-ca-certs/ca.crt}
+
+  - it: points import-worker NODE_EXTRA_CA_CERTS at the trusted CA mount with proxy and CA both enabled
+    template: templates/import-worker/configmap.yaml
+    values: *ca-and-proxy
+    asserts: *ca-mount
+
+  - it: sets NODE_EXTRA_CA_CERTS from an existing ConfigMap without any proxy
+    template: templates/maps-api/configmap.yaml
+    set:
+      trustedCACerts.existingConfigmap.name: example-ca-bundle
+      trustedCACerts.existingConfigmap.key: ca.crt
+    asserts:
+      - exists: {path: data.NODE_EXTRA_CA_CERTS}
+      - notExists: {path: data.HTTPS_PROXY}

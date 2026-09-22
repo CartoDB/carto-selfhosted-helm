@@ -1,0 +1,80 @@
+# `affinity`, `sidecars` and `initContainers` default to `{}`. Go templates
+# treat an empty map as false, so the defaults must fall through to the
+# affinity presets and add nothing else. Automated review has claimed the
+# opposite (#890); this pins the real behaviour.
+suite: affinity and optional pod extras
+templates:
+  - templates/*/deployment.yaml
+  - templates/*/configmap.yaml
+  - templates/*/secret.yaml
+  - templates/custom-feature-flags-configmap.yaml
+release:
+  name: carto
+  namespace: default
+tests:
+  - it: renders the anti-affinity preset when affinity is left empty
+    template: templates/maps-api/deployment.yaml
+    asserts:
+      - exists:
+          path: spec.template.spec.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution
+      - equal:
+          path: spec.template.spec.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution[0].podAffinityTerm.labelSelector.matchLabels["app.kubernetes.io/component"]
+          value: maps-api
+
+  - it: uses a custom affinity verbatim and drops the presets
+    template: templates/maps-api/deployment.yaml
+    set:
+      mapsApi.affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: example.invalid/pool
+                    operator: In
+                    values: [api]
+    asserts:
+      - equal:
+          path: spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key
+          value: example.invalid/pool
+      - notExists:
+          path: spec.template.spec.affinity.podAntiAffinity
+
+  - it: adds no sidecar or init container when they are left empty
+    template: templates/maps-api/deployment.yaml
+    asserts:
+      - lengthEqual:
+          path: spec.template.spec.containers
+          count: 1
+      - isNullOrEmpty:
+          path: spec.template.spec.initContainers
+
+  - it: appends sidecars and init containers when set
+    template: templates/maps-api/deployment.yaml
+    set:
+      mapsApi.sidecars:
+        - name: example-sidecar
+          image: example.invalid/sidecar:1
+      mapsApi.initContainers:
+        - name: example-init
+          image: example.invalid/init:1
+    asserts:
+      - lengthEqual:
+          path: spec.template.spec.containers
+          count: 2
+      - equal:
+          path: spec.template.spec.containers[1].name
+          value: example-sidecar
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: example-init
+
+  - it: applies the same defaults to auth-api in disconnected mode
+    template: templates/auth-api/deployment.yaml
+    values:
+      - ../ci/disconnected-oidc-values.yaml
+    asserts:
+      - exists:
+          path: spec.template.spec.affinity.podAntiAffinity.preferredDuringSchedulingIgnoredDuringExecution
+      - lengthEqual:
+          path: spec.template.spec.containers
+          count: 1
