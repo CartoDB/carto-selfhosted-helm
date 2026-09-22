@@ -53,35 +53,29 @@ jobs:
           body: |
             :warning: Helm Chart resources have changed. Please make sure to update the documentation accordingly. You can find more information [here](https://cartodb.getoutline.com/doc/helm-chart-yJ3vxi6icN#h-deployment-resources).
 
-  helm-readme-generator:
+  # Same checks as a local `make check`: helm lint, the chart/ci render matrix
+  # with duplicate-key and schema validation, README drift, KOTS static checks.
+  helm-check:
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      HELM_VERSION: v3.18.2
+      KUBECONFORM_VERSION: 0.8.0
+      YAMLLINT_VERSION: 1.38.0
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
-      - name: Generate container 'helm-readme-generator'
-        run: |
-          git clone https://github.com/bitnami-labs/readme-generator-for-helm
-          docker build \
-            -t helm-readme-generator \
-            readme-generator-for-helm/
-      - name: Check README values synced
-        run: |
-          set -ex
-          cd chart/
-          cp README.md README_old.md
-          docker run --rm \
-            -v "${PWD}":/my_helm \
-            -w /my_helm \
-            helm-readme-generator \
-            readme-generator \
-              --readme README.md \
-              --values values.yaml
+        uses: actions/checkout@v4
 
-          if ! cmp README.md README_old.md >/dev/null 2>&1
-          then
-            echo "Files aren't equal"
-            diff README_old.md README.md
-            exit 1
-          else
-            echo "Files look equal!"
-          fi
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: ${{ env.HELM_VERSION }}
+
+      - name: Install kubeconform and yamllint
+        run: |
+          curl -sSL "https://github.com/yannh/kubeconform/releases/download/v${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin kubeconform
+          pipx install "yamllint==${YAMLLINT_VERSION}"
+
+      - name: make check
+        run: make check

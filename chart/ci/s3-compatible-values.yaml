@@ -1,0 +1,10 @@
+# S3-compatible object storage (custom endpoint, path-style addressing).
+# Also exercises the chart-derived feature-flag override this configuration enables.
+appConfigValues:
+  selfHostedDomain: carto.example.invalid
+  storageProvider: s3
+  s3Endpoint: https://s3.example.invalid
+  s3ForcePathStyle: true
+  awsS3Region: us-east-1
+  workspaceImportsBucket: example-imports
+  workspaceThumbnailsBucket: example-thumbnails

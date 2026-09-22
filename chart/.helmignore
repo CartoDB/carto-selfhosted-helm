@@ -23,3 +23,6 @@
 .vscode/
 # AI assistant guidance — repo-only, not part of the packaged chart
 CLAUDE.md
+# CI render scenarios and unit tests — repo-only, not part of the packaged chart
+ci/
+tests/

@@ -82,10 +82,14 @@ and leave the rest alone. `minVersion` semantics are in `chart/CLAUDE.md`.
 
 ## Validating a change
 
-CI is the gate — push and track it. The one thing CI won't fix for you: if you
-change `chart/values.yaml`, regenerate `chart/README.md` (commands in
-`CONTRIBUTING.md`) or the drift check blocks the PR. For a quick local sanity
-check, `helm template` both paths: plain and `--set replicated.enabled=true`.
+Run **`make check`** before pushing — it is exactly what CI runs: `helm lint`
+(plain and `--set replicated.enabled=true`), a render of every install
+scenario in `chart/ci/*-values.yaml` with duplicate-key and Kubernetes-schema
+validation, the `chart/README.md` drift check, and the KOTS static checks.
+`make help` lists the individual targets. If you change `chart/values.yaml`,
+run `make readme` and commit the regenerated `chart/README.md`, or the drift
+check blocks the PR. A change that only works in one scenario is a bug: add a
+`chart/ci/<scenario>-values.yaml` when you introduce a new install mode.
 
 ## Conventions
 

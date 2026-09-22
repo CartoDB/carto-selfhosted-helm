@@ -1,0 +1,29 @@
+# Disconnected mode with an external OIDC identity provider.
+# The required secrets are referenced from pre-existing Secrets so no value is
+# inlined; the validators reject the configuration otherwise.
+appConfigValues:
+  selfHostedDomain: carto.example.invalid
+  disconnected:
+    enabled: true
+    protocol: oidc
+    spaClient:
+      clientId: example-spa-client
+    oidc:
+      issuerUrl: https://idp.example.invalid
+      clientId: example-auth-api-client
+
+appSecrets:
+  authApiOidcClientSecret:
+    existingSecret:
+      name: example-auth-secrets
+      key: oidc-client-secret
+
+cartoSecrets:
+  authApiInternalServiceToken:
+    existingSecret:
+      name: example-auth-secrets
+      key: internal-service-token
+  encryptionSecretKey:
+    existingSecret:
+      name: example-auth-secrets
+      key: encryption-secret-key

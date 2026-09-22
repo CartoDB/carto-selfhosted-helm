@@ -1,0 +1,23 @@
+# Customer-managed PostgreSQL and Valkey/Redis instead of the bundled ones,
+# with database credentials supplied through pre-existing Secrets.
+appConfigValues:
+  selfHostedDomain: carto.example.invalid
+
+internalPostgresql:
+  enabled: false
+
+externalPostgresql:
+  host: postgres.example.invalid
+  sslEnabled: true
+  existingSecret: example-postgres-credentials
+  existingSecretPasswordKey: password
+  existingSecretAdminPasswordKey: admin-password
+
+internalRedis:
+  enabled: false
+
+externalRedis:
+  host: cache.example.invalid
+  tlsEnabled: true
+  existingSecret: example-cache-credentials
+  existingSecretPasswordKey: password

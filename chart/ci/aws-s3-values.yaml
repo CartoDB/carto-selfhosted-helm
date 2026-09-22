@@ -1,0 +1,9 @@
+# AWS S3 storage provider with the export bucket configured.
+appConfigValues:
+  selfHostedDomain: carto.example.invalid
+  storageProvider: s3
+  awsS3Region: us-east-1
+  workspaceImportsBucket: example-imports
+  workspaceThumbnailsBucket: example-thumbnails
+  awsExportBucket: example-exports
+  awsExportBucketRegion: us-east-1
