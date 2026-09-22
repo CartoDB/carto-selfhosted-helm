@@ -1,13 +1,9 @@
-# HorizontalPodAutoscalers enabled on a mix of API, worker and edge components.
-# Deployments must omit `replicas` when autoscaling owns the count.
+# HorizontalPodAutoscalers enabled on every always-on component that supports
+# autoscaling. Deployments must omit `replicas` when autoscaling owns the count.
 appConfigValues:
   selfHostedDomain: carto.example.invalid
 
-mapsApi:
-  autoscaling:
-    enabled: true
-
-workspaceApi:
+accountsWww:
   autoscaling:
     enabled: true
 
@@ -15,10 +11,22 @@ importApi:
   autoscaling:
     enabled: true
 
-sqlWorker:
+ldsApi:
+  autoscaling:
+    enabled: true
+
+mapsApi:
   autoscaling:
     enabled: true
 
 router:
+  autoscaling:
+    enabled: true
+
+workspaceApi:
+  autoscaling:
+    enabled: true
+
+workspaceWww:
   autoscaling:
     enabled: true
