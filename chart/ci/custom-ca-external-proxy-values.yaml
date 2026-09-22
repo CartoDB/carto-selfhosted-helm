@@ -5,6 +5,7 @@ appConfigValues:
 
 externalProxy:
   enabled: true
+  type: http
   host: proxy.example.invalid
   port: 3128
 
