@@ -85,11 +85,14 @@ and leave the rest alone. `minVersion` semantics are in `chart/CLAUDE.md`.
 Run **`make check`** before pushing — it is exactly what CI runs: `helm lint`
 (plain and `--set replicated.enabled=true`), a render of every install
 scenario in `chart/ci/*-values.yaml` with duplicate-key and Kubernetes-schema
-validation, the `chart/README.md` drift check, and the KOTS static checks.
-`make help` lists the individual targets. If you change `chart/values.yaml`,
-run `make readme` and commit the regenerated `chart/README.md`, or the drift
-check blocks the PR. A change that only works in one scenario is a bug: add a
-`chart/ci/<scenario>-values.yaml` when you introduce a new install mode.
+validation, the `helm unittest` suites in `chart/tests/`, the `chart/README.md`
+drift check, and the KOTS static checks. `make help` lists the individual
+targets. If you change `chart/values.yaml`, run `make readme` and commit the
+regenerated `chart/README.md`, or the drift check blocks the PR. A change that
+only works in one scenario is a bug: add a `chart/ci/<scenario>-values.yaml`
+when you introduce a new install mode. When you fix a rendering bug, add the
+assertion that would have caught it to `chart/tests/` — that is how the suite
+grew, and how it stays honest.
 
 ## Conventions
 

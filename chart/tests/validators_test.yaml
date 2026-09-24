@@ -1,0 +1,56 @@
+# `carto.validateValues` runs from NOTES.txt on every render and must fail
+# fast on config-time mistakes, and only on those: too broad blocks every
+# install, too narrow ships a broken config (see chart/CLAUDE.md).
+suite: values validators
+templates:
+  - templates/NOTES.txt
+release:
+  name: carto
+  namespace: default
+tests:
+  - it: accepts the chart defaults
+    asserts:
+      - notFailedTemplate: {}
+
+  - it: accepts every chart/ci scenario
+    values:
+      - ../ci/aws-s3-values.yaml
+    asserts:
+      - notFailedTemplate: {}
+
+  - it: rejects S3-compatible settings when the storage provider is not s3
+    set:
+      appConfigValues.s3Endpoint: https://s3.example.invalid
+    asserts:
+      - failedTemplate:
+          errorPattern: only apply when appConfigValues.storageProvider is "s3"
+
+  - it: rejects both an inline proxy CA and a proxy CA ConfigMap
+    set:
+      externalProxy.enabled: true
+      externalProxy.type: http
+      externalProxy.host: proxy.example.invalid
+      externalProxy.port: 3128
+      externalProxy.sslCA: placeholder
+      externalProxy.sslCAConfigmap.name: example-proxy-ca
+      externalProxy.sslCAConfigmap.key: ca.crt
+    asserts:
+      - failedTemplate:
+          errorPattern: either externalProxy.sslCA or externalProxy.sslCAConfigmap, not both
+
+  - it: rejects disconnected mode without its secrets
+    set:
+      appConfigValues.disconnected.enabled: true
+      appConfigValues.disconnected.protocol: oidc
+      appConfigValues.disconnected.oidc.issuerUrl: https://idp.example.invalid
+      appConfigValues.disconnected.oidc.clientId: example
+      appConfigValues.disconnected.spaClient.clientId: example-spa
+    asserts:
+      - failedTemplate:
+          errorPattern: Missing auth-api internal service token
+
+  - it: accepts disconnected mode once the secrets come from existing Secrets
+    values:
+      - ../ci/disconnected-oidc-values.yaml
+    asserts:
+      - notFailedTemplate: {}

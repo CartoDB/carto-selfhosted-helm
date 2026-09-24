@@ -1,0 +1,177 @@
+# `global.imageRegistry` is how air-gapped installs redirect every image, and
+# `carto.imagePullSecrets` must aggregate every component image. A component
+# that hardcodes a registry or is missing from the aggregate breaks both
+# (see chart/CLAUDE.md, "_helpers.tpl invariants").
+#
+# When you add a component, add it to each block below.
+suite: image registry and pull secrets
+templates:
+  - templates/*/deployment.yaml
+  - templates/*/configmap.yaml
+  - templates/*/secret.yaml
+  - templates/custom-feature-flags-configmap.yaml
+release:
+  name: carto
+  namespace: default
+tests:
+  # --- global.imageRegistry reaches every image --------------------------
+  - it: accounts-www image comes from global.imageRegistry
+    template: templates/accounts-www/deployment.yaml
+    set: &registry {global.imageRegistry: registry.example.invalid}
+    asserts: &image-from-registry
+      - matchRegex: {path: "spec.template.spec.containers[0].image", pattern: ^registry\.example\.invalid/}
+  - it: cdn-invalidator-sub image comes from global.imageRegistry
+    template: templates/cdn-invalidator-sub/deployment.yaml
+    set: *registry
+    asserts: *image-from-registry
+  - it: http-cache image comes from global.imageRegistry
+    template: templates/http-cache/deployment.yaml
+    set: *registry
+    asserts: *image-from-registry
+  - it: import-api image comes from global.imageRegistry
+    template: templates/import-api/deployment.yaml
+    set: *registry
+    asserts: *image-from-registry
+  - it: import-worker image comes from global.imageRegistry
+    template: templates/import-worker/deployment.yaml
+    set: *registry
+    asserts: *image-from-registry
+  - it: lds-api image comes from global.imageRegistry
+    template: templates/lds-api/deployment.yaml
+    set: *registry
+    asserts: *image-from-registry
+  - it: maps-api image comes from global.imageRegistry
+    template: templates/maps-api/deployment.yaml
+    set: *registry
+    asserts: *image-from-registry
+  - it: notifier image comes from global.imageRegistry
+    template: templates/notifier/deployment.yaml
+    set: *registry
+    asserts: *image-from-registry
+  - it: router image comes from global.imageRegistry
+    template: templates/router/deployment.yaml
+    set: *registry
+    asserts: *image-from-registry
+  - it: sql-worker image comes from global.imageRegistry
+    template: templates/sql-worker/deployment.yaml
+    set: *registry
+    asserts: *image-from-registry
+  - it: valkey image comes from global.imageRegistry
+    template: templates/valkey/deployment.yaml
+    set: *registry
+    asserts: *image-from-registry
+  - it: workspace-api image comes from global.imageRegistry
+    template: templates/workspace-api/deployment.yaml
+    set: *registry
+    asserts: *image-from-registry
+  - it: workspace-subscriber image comes from global.imageRegistry
+    template: templates/workspace-subscriber/deployment.yaml
+    set: *registry
+    asserts: *image-from-registry
+  - it: workspace-www image comes from global.imageRegistry
+    template: templates/workspace-www/deployment.yaml
+    set: *registry
+    asserts: *image-from-registry
+
+  - it: ai-api image comes from global.imageRegistry
+    template: templates/ai-api/deployment.yaml
+    values: &optional [../ci/optional-components-values.yaml]
+    set: *registry
+    asserts: *image-from-registry
+  - it: aiproxy image comes from global.imageRegistry
+    template: templates/aiproxy/deployment.yaml
+    values: *optional
+    set: *registry
+    asserts: *image-from-registry
+  - it: public-events-api image comes from global.imageRegistry
+    template: templates/public-events-api/deployment.yaml
+    values: *optional
+    set: *registry
+    asserts: *image-from-registry
+
+  - it: auth-api image comes from global.imageRegistry
+    template: templates/auth-api/deployment.yaml
+    values: &disconnected [../ci/disconnected-oidc-values.yaml]
+    set: *registry
+    asserts: *image-from-registry
+  - it: accounts-api image comes from global.imageRegistry
+    template: templates/accounts-api/deployment.yaml
+    values: *disconnected
+    set: *registry
+    asserts: *image-from-registry
+  - it: accounts-subscriber image comes from global.imageRegistry
+    template: templates/accounts-subscriber/deployment.yaml
+    values: *disconnected
+    set: *registry
+    asserts: *image-from-registry
+
+  # --- pull secrets ------------------------------------------------------
+  - it: renders no imagePullSecrets by default
+    template: templates/maps-api/deployment.yaml
+    asserts:
+      - notExists: {path: spec.template.spec.imagePullSecrets}
+
+  - it: accounts-www carries global.imagePullSecrets
+    template: templates/accounts-www/deployment.yaml
+    set: &pull-secret {global.imagePullSecrets: [example-pull-secret]}
+    asserts: &has-pull-secret
+      - contains: {path: spec.template.spec.imagePullSecrets, content: {name: example-pull-secret}}
+  - it: cdn-invalidator-sub carries global.imagePullSecrets
+    template: templates/cdn-invalidator-sub/deployment.yaml
+    set: *pull-secret
+    asserts: *has-pull-secret
+  - it: http-cache carries global.imagePullSecrets
+    template: templates/http-cache/deployment.yaml
+    set: *pull-secret
+    asserts: *has-pull-secret
+  - it: import-api carries global.imagePullSecrets
+    template: templates/import-api/deployment.yaml
+    set: *pull-secret
+    asserts: *has-pull-secret
+  - it: import-worker carries global.imagePullSecrets
+    template: templates/import-worker/deployment.yaml
+    set: *pull-secret
+    asserts: *has-pull-secret
+  - it: lds-api carries global.imagePullSecrets
+    template: templates/lds-api/deployment.yaml
+    set: *pull-secret
+    asserts: *has-pull-secret
+  - it: maps-api carries global.imagePullSecrets
+    template: templates/maps-api/deployment.yaml
+    set: *pull-secret
+    asserts: *has-pull-secret
+  - it: notifier carries global.imagePullSecrets
+    template: templates/notifier/deployment.yaml
+    set: *pull-secret
+    asserts: *has-pull-secret
+  - it: router carries global.imagePullSecrets
+    template: templates/router/deployment.yaml
+    set: *pull-secret
+    asserts: *has-pull-secret
+  - it: sql-worker carries global.imagePullSecrets
+    template: templates/sql-worker/deployment.yaml
+    set: *pull-secret
+    asserts: *has-pull-secret
+  - it: valkey carries global.imagePullSecrets
+    template: templates/valkey/deployment.yaml
+    set: *pull-secret
+    asserts: *has-pull-secret
+  - it: workspace-api carries global.imagePullSecrets
+    template: templates/workspace-api/deployment.yaml
+    set: *pull-secret
+    asserts: *has-pull-secret
+  - it: workspace-subscriber carries global.imagePullSecrets
+    template: templates/workspace-subscriber/deployment.yaml
+    set: *pull-secret
+    asserts: *has-pull-secret
+  - it: workspace-www carries global.imagePullSecrets
+    template: templates/workspace-www/deployment.yaml
+    set: *pull-secret
+    asserts: *has-pull-secret
+
+  - it: aggregates one component's own pull secret into every Deployment
+    template: templates/workspace-api/deployment.yaml
+    set:
+      mapsApi.image.pullSecrets: [example-maps-api-pull-secret]
+    asserts:
+      - contains: {path: spec.template.spec.imagePullSecrets, content: {name: example-maps-api-pull-secret}}
