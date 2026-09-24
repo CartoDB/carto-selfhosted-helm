@@ -1,31 +1,53 @@
 <!--
- Before you open the request please review the following guidelines and tips to help it be more easily integrated:
+Keep it short. Delete any section that does not apply instead of leaving it
+blank. Everything here is public: no secrets, internal hostnames, project IDs
+or customer data (see CLAUDE.md). Shortcut IDs are fine, full URLs are not.
+-->
 
- - Describe the scope of your change - i.e. what the change does.
- - Describe any known limitations with your change.
- - Please run any tests or examples that can exercise your modified code.
+## Summary
+<!-- 1-2 sentences: what changed and why -->
 
- Thank you for contributing!
- -->
+Story: [sc-XXXXXX]
 
-**Description of the change**
+## Decisions
+<!-- Answer the ones that apply; delete the rest -->
+- Where the value lives: <!-- values.yaml + KOTS item / values.yaml only (why no KOTS field?) / chart-internal helper / hardcoded -->
+- Upgrade behaviour: <!-- what an existing install gets on upgrade if it never sets this -->
+- Alternatives considered: <!-- and where the approach was agreed, if it was -->
 
-<!-- Describe the scope of your change - i.e. what the change does. -->
+## Install paths affected
+- [ ] Pure Helm
+- [ ] Replicated / KOTS (Admin Console, embedded cluster)
+- [ ] Both
+- [ ] Not applicable (docs, CI, tests)
 
-**Benefits**
+## Breaking changes and upgrades
+- [ ] None
+- [ ] Existing installs change behaviour on upgrade (describe the before/after)
+- [ ] Renamed or removed a chart value or KOTS `ConfigOption` (back-compat kept?)
+- [ ] Requires a customer config or infrastructure change before upgrading
+- [ ] Raises `minVersion` / `minKotsVersion` (call it out in the release notes)
+- [ ] Changes default `resources` (public docs + release-notes ticket needed)
 
-<!-- What benefits will be realized by the code change? -->
+## Security
+- [ ] No security impact
+- [ ] Secret handling changed (`secretAssociation`, existing-secret support, mounts) — ask for a second reviewer
+- [ ] RBAC, ServiceAccount or securityContext changed
+- [ ] Network exposure changed (Service type, Ingress, egress requirements)
+- [ ] Changes what preflights or the support bundle capture
 
-**Possible drawbacks**
+## Validation
+- [ ] Lints and renders on both install paths (plain Helm and `--set replicated.enabled=true`)
+- [ ] `chart/README.md` regenerated (if `chart/values.yaml` changed)
+- [ ] Install-tested through the `release-changes` channel: <!-- channel name -->
+- [ ] Upgrade-tested from the released chart
+- [ ] Not needed (explain why)
 
-<!-- Describe any known limitations with your change -->
+<!-- How to validate: steps for the reviewer, or the rendered diff / Admin Console screenshot for KOTS changes -->
 
-**Applicable issues**
+## Review focus
+<!-- Where to look hard, and what is safe to skip (generated README, formatting) -->
 
-<!-- Enter any applicable Issues here (You can reference an issue using #) -->
-  - fixes #
-
-**Additional information**
-
-<!-- If there's anything else that's important and relevant to your pull
-request, mention that information here.-->
+## AI-generated code
+- [ ] This PR contains AI-generated code — areas needing extra verification: <!-- list -->
+- [ ] Not applicable
