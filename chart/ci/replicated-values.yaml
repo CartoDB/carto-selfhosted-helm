@@ -1,0 +1,6 @@
+# Replicated / KOTS install path: enables the replicated SDK subchart.
+appConfigValues:
+  selfHostedDomain: carto.example.invalid
+
+replicated:
+  enabled: true

@@ -1,0 +1,9 @@
+# Every optional, customer-toggled component enabled at once:
+# public-events-api, ai-api and the AI proxy (aiproxy).
+appConfigValues:
+  selfHostedDomain: carto.example.invalid
+  publicEventsApiEnabled: true
+  aiFeaturesEnabled: true
+
+cartoConfigValues:
+  enableAiProxyEndpoint: true

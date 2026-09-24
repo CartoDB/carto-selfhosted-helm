@@ -1,0 +1,12 @@
+# Kubernetes Gateway API instead of the default Ingress/LoadBalancer.
+appConfigValues:
+  selfHostedDomain: carto.example.invalid
+
+gateway:
+  enabled: true
+  gatewayClassName: example-gateway-class
+  # Workaround: gateway.staticIP has no default in values.yaml yet, so the
+  # template fails without it [sc-575799]. Remove once the default exists.
+  staticIP:
+    enabled: false
+    value: ""

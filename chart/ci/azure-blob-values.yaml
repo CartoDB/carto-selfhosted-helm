@@ -1,0 +1,7 @@
+# Azure Blob storage provider.
+appConfigValues:
+  selfHostedDomain: carto.example.invalid
+  storageProvider: azure-blob
+  azureStorageAccount: exampleaccount
+  workspaceImportsBucket: example-imports
+  workspaceThumbnailsBucket: example-thumbnails

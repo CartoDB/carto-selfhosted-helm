@@ -1,0 +1,15 @@
+# Egress through a customer HTTP proxy plus a fleet-wide trusted CA bundle.
+# Together they exercise every NODE_EXTRA_CA_CERTS / proxy env-var block.
+appConfigValues:
+  selfHostedDomain: carto.example.invalid
+
+externalProxy:
+  enabled: true
+  type: http
+  host: proxy.example.invalid
+  port: 3128
+
+trustedCACerts:
+  # Any non-empty string exercises the inline wiring; the chart does not
+  # parse the certificate.
+  value: placeholder

@@ -1,0 +1,4 @@
+# Baseline: chart defaults with only the domain set.
+# Every other file in this directory layers one install scenario on top of this.
+appConfigValues:
+  selfHostedDomain: carto.example.invalid

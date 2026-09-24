@@ -10,6 +10,7 @@ We encourage everyone to follow them with their best judgement.
   - [The Essentials of a Code Contribution](#the-essentials-of-a-code-contribution)
     - [Git Client Configuration](#git-client-configuration)
     - [Making your Changes Clear and Traceable](#making-your-changes-clear-and-traceable)
+    - [Validating your change locally](#validating-your-change-locally)
     - [Generating Documentation](#generating-documentation)
     - [Linting chart files](#linting-chart-files)
   - [Creating a Pull Request](#creating-a-pull-request)
@@ -59,22 +60,25 @@ Also, note that the commits will be squashed when merging the pull request, by d
 
 A final caveat to be aware of is that the fast-forward strategy requires that your branch is up-to-date with the target branch, so you will have to rebase / merge the target branch into your branch before merging the pull request.
 
-#### Generating Documentation
+#### Validating your change locally
 
-The chart documentation is auto generated with [helm-readme-generator](https://github.com/bitnami-labs/readme-generator-for-helm), you can run it locally with docker. The pull request check will fail if `chart/values.yaml` changed and the documentation was not regenerated.
+`make check` runs the same checks as the pull request CI: `helm lint`, a render of every install scenario in `chart/ci/*-values.yaml` with duplicate-key ([yamllint](https://github.com/adrienverge/yamllint)) and Kubernetes-schema ([kubeconform](https://github.com/yannh/kubeconform)) validation, the `chart/README.md` drift check and the KOTS static checks. `make help` lists every target.
 
 ```bash
-# On the repository root: build the generator image (first time only)
-git clone https://github.com/bitnami-labs/readme-generator-for-helm
-docker build -t helm-readme-generator readme-generator-for-helm/
+# Required tools: helm, yq, kubeconform, yamllint, node (for npx)
+#   macOS: brew install helm yq kubeconform yamllint node
+make check
+```
 
-# Regenerate chart/README.md
-docker run --rm \
--v $(pwd)/chart:/my_helm \
--w /my_helm \
-helm-readme-generator readme-generator \
---readme README.md \
---values values.yaml
+Rendered manifests are written to `.render/` (git-ignored) so you can inspect them.
+
+#### Generating Documentation
+
+The chart documentation is auto generated with [helm-readme-generator](https://github.com/bitnami-labs/readme-generator-for-helm) from the `## @param` comments in `chart/values.yaml`. The pull request check will fail if `chart/values.yaml` changed and the documentation was not regenerated.
+
+```bash
+# Regenerate chart/README.md (pinned generator version, same as CI)
+make readme
 ```
 
 #### Linting chart files

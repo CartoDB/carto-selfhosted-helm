@@ -1,0 +1,7 @@
+# Ingress-only test mode: deploys the router and nothing else.
+# Checks and validators must tolerate the absence of every backend.
+appConfigValues:
+  selfHostedDomain: carto.example.invalid
+
+cartoConfigValues:
+  onlyRunRouter: true

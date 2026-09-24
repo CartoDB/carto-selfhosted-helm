@@ -1,0 +1,6 @@
+# TLS terminated outside the cluster: the router serves plain HTTP.
+appConfigValues:
+  selfHostedDomain: carto.example.invalid
+
+tlsCerts:
+  httpsEnabled: false
