@@ -1,0 +1,13 @@
+# Review routing only: branch protection does not require code-owner approval,
+# so these entries auto-request reviewers and nothing more.
+#
+# Guardrail surfaces: agent instructions, the verification loop, CI.
+/AGENTS.md            @mateo-di @ManuelLR @moicalcob
+/CLAUDE.md            @mateo-di @ManuelLR @moicalcob
+/chart/CLAUDE.md      @mateo-di @ManuelLR @moicalcob
+/manifests/CLAUDE.md  @mateo-di @ManuelLR @moicalcob
+/.claude/             @mateo-di @ManuelLR @moicalcob
+/Makefile             @mateo-di @ManuelLR @moicalcob
+/chart/ci/            @mateo-di @ManuelLR @moicalcob
+/chart/tests/         @mateo-di @ManuelLR @moicalcob
+/.github/             @mateo-di @ManuelLR @moicalcob

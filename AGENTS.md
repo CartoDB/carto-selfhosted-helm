@@ -1,0 +1,153 @@
+# AGENTS.md
+
+Instructions for AI coding agents and the people pairing with them. Every tool
+reads this file; `CLAUDE.md` only imports it. Subtree specifics live next to
+the code in `chart/CLAUDE.md` and `manifests/CLAUDE.md`; path-scoped rules in
+`.claude/rules/` — see [Path-scoped guidance](#path-scoped-guidance).
+
+## ⚠️ PUBLIC repository — information disclosure rules
+
+Everything pushed here is world-readable the moment it lands: code, comments,
+commit messages, branch names, PR titles and bodies, and these instruction
+files themselves.
+
+Before writing **any** name, value, URL, or process detail, apply one test:
+**is it already public in this repo?** (`git grep` it). If it isn't, and it
+comes from CARTO's internal world, leave it out or genericize it.
+
+Never write:
+
+- **Secrets — real or realistic-looking.** A placeholder like
+  `jwtApiSecret: "8f3a2c91e0b4..."` gets copy-pasted and triggers scanners;
+  defaults in `values.yaml` are empty strings, keep it that way.
+- **Internal infrastructure names**: GCP project IDs, cluster or hostnames, IPs.
+  A debug crumb like `# tested on gke_carto-internal-x_us-east1` is a leak.
+- **Anything from a customer**: company names, tenant IDs, domains, support
+  bundle contents, their `values.yaml`. Not in code, not in PR bodies, not in
+  test fixtures.
+- **Internal URLs**: Slack channels or archive links, Shortcut story URLs,
+  internal dashboards or wiki pages.
+- **Internal-only tooling or process** that isn't observable from this repo's
+  own files and workflows.
+
+Fine, because it is already public here or established practice:
+
+- `registry.self-hosted.carto.com` and the default image registries/repos in
+  `chart/values.yaml` and `manifests/kots-helm.yaml`.
+- Short Shortcut refs `[sc-XXXXXX]` in commit messages and PR titles — the ID
+  only, never the full URL.
+- Links to public docs (`docs.carto.com`).
+
+## What this repo is
+
+A **Helm chart** that deploys CARTO Self-Hosted, shipped two ways:
+
+1. **Pure Helm** — `helm install carto ./chart -f values.yaml`.
+2. **Replicated / KOTS** — the same chart wrapped by `manifests/kots-*.yaml`
+   for the KOTS Admin Console and embedded-cluster (single-VM) installs.
+
+Container images come from CARTO's application services; what lives here is
+values, templates, validation, and the KOTS translation layer.
+
+**Two rules everything follows:** the Helm chart is the **source of truth**,
+and KOTS only **translates** customer input into chart values. A change must
+work in *both* paths — Helm-only or KOTS-only is half done.
+
+Process detail (git setup, doc generation, linting, branching) is in
+[`CONTRIBUTING.md`](./CONTRIBUTING.md). Full chart params are in the generated
+[`chart/README.md`](./chart/README.md).
+
+## The values flow
+
+```text
+manifests/kots-config.yaml   (KOTS UI: items + RandomString secrets)
+   └─► manifests/kots-helm.yaml   (ConfigOption → chart values)
+        └─► chart/values.yaml   (Helm defaults)
+             └─► chart/templates/<component>/*   (consume the value, usually via _helpers.tpl)
+                  └─► Kubernetes resources
+```
+
+The most common change here is wiring an env var. Plain config → the
+component's `configmap.yaml` and done. **Customer-set** → also `values.yaml`
+(with a `## @param` comment), `kots-config.yaml`, and `kots-helm.yaml`, shipped
+together. **Secret** → the `secretAssociation` machinery (see
+`chart/CLAUDE.md`).
+
+## Finding your way
+
+The big files are uniform or generated: grep them, don't read them.
+
+| Looking for | Do |
+|---|---|
+| A parameter in `chart/values.yaml` (7,000+ lines) | `grep -n '^## @section' chart/values.yaml` is the table of contents; then `grep -n '@param <dotted.path>'` |
+| A component's helpers | `grep -n 'define "carto.<component>\.' chart/templates/_helpers.tpl` — uniform per component (`fullname`, `configmapName`, `secretName`, `image`, …) |
+| The validators | `grep -n 'define "carto.validateValues\.' chart/templates/_validators.tpl` |
+| What feeds an env var | `grep -rn 'THE_ENV_VAR' chart/templates/` — a hit in a `configmap.yaml` is plain config; a hit in `_helpers.tpl` is the `secretAssociation` map |
+| Which KOTS field sets a value | `grep -n '<valuesKey>' manifests/kots-helm.yaml`, then that `ConfigOption` name in `manifests/kots-config.yaml` |
+| What an install scenario renders | `make template`, then read `.render/<scenario>.yaml` |
+
+`chart/README.md` is generated from `chart/values.yaml` — never edit it by hand.
+
+## Versioning
+
+Version fields (`VERSION`, `Chart.yaml#version`/`appVersion`/`minVersion`,
+`kots-helm.yaml#chartVersion`) are **bot-driven**: the release pipeline opens a
+`:rocket: Update to …` PR that sets them all atomically. **Don't bump them by
+hand.** The only exception is a chart-only hotfix with no app release — then
+keep `Chart.yaml#version` == `kots-helm.yaml#spec.chart.chartVersion` yourself
+and leave the rest alone. `minVersion` semantics are in `chart/CLAUDE.md`.
+
+## Validating a change
+
+Run **`make check`** before pushing — it is exactly what CI runs: `helm lint`
+(plain and `--set replicated.enabled=true`), a render of every install
+scenario in `chart/ci/*-values.yaml` with duplicate-key and Kubernetes-schema
+validation, the `helm unittest` suites in `chart/tests/`, the `chart/README.md`
+drift check, and the KOTS static checks. `make help` lists the individual
+targets. If you change `chart/values.yaml`, run `make readme` and commit the
+regenerated `chart/README.md`, or the drift check blocks the PR. A change that
+only works in one scenario is a bug: add a `chart/ci/<scenario>-values.yaml`
+when you introduce a new install mode. When you fix a rendering bug, add the
+assertion that would have caught it to `chart/tests/` — that is how the suite
+grew, and how it stays honest.
+
+## Before you push
+
+`make check` is green, and:
+
+- **Both install paths.** A customer-set value has its KOTS field
+  (`kots-config.yaml` + `kots-helm.yaml`), or the PR says why it is Helm-only.
+- **Tests grew.** A fixed rendering bug has its assertion in `chart/tests/`; a
+  new install mode has its `chart/ci/` scenario.
+- **Resources.** A changed `resources` block needs the public docs updated and
+  a release-notes ticket.
+- **Version fields** untouched.
+- **No AI residue.** No comments narrating what was generated or why an
+  alternative was rejected, no commented-out code, no debug values, no
+  placeholder secrets. Reviewers have caught these and asked for them to go.
+- **Terse, public PR body** — what changed, why, how it was validated.
+
+## Conventions
+
+- **Conventional commits**, scoped to what you touched (common scopes:
+  `chart`, `selfhosted`, `router`, `ci`).
+- Branch off `main`; use `sc-<id>/` in the branch name to auto-link the
+  Shortcut story. Open PRs as **draft**.
+- The **`release-changes`** PR label publishes the branch's chart to a
+  per-branch Replicated dev channel for install testing; removing the label or
+  closing the PR tears it down.
+
+## Path-scoped guidance
+
+Claude Code loads `.claude/rules/*.md` by path automatically. Other tools: read
+the row's files before editing that path.
+
+| Editing | Read first |
+|---|---|
+| `chart/templates/**` | `chart/CLAUDE.md`, `.claude/rules/helm-templates.md` |
+| `chart/values.yaml`, `chart/README.md` | `chart/CLAUDE.md`, `.claude/rules/values-yaml.md` |
+| `manifests/**` | `manifests/CLAUDE.md`, `.claude/rules/kots-manifests.md` |
+
+Every change ships to customers running on their own infrastructure. They
+cannot quickly roll back, and we cannot quickly redeploy. Measure twice, cut
+once.
