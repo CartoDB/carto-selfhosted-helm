@@ -83,6 +83,7 @@ LITELLM_SALT_KEY: cartoSecrets.litellmSaltKey
 AI_OPENAI_API_KEY: cartoSecrets.litellmMasterKey
 GEMINI_API_KEY: cartoSecrets.geminiApiKey
 CARTO_INTERNAL_SERVICE_TOKEN: cartoSecrets.authApiInternalServiceToken
+NATS_AUTH_TOKEN: cartoSecrets.natsAuthToken
 {{- end -}}
 
 {{/*
@@ -943,7 +944,7 @@ Return the proper Carto tenant-requirements-checker image name
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authMigrations.image .Values.accountsApi.image .Values.accountsSubscriber.image .Values.accountsMigrations.image) "context" $) -}}
+{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.nats.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authMigrations.image .Values.accountsApi.image .Values.accountsSubscriber.image .Values.accountsMigrations.image) "context" $) -}}
 {{- end -}}
 
 {{/*
@@ -1707,7 +1708,31 @@ CARTO_INTERNAL_ISSUER: {{ include "carto.authApi.issuer" . | quote }}
 CARTO_AUTH_AUDIENCE: "carto-cloud-native-api"
 CARTO_AUTH_NAMESPACE: "http://app.carto.com"
 CARTO_AUTH_API_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+{{/* Stays "pubsub" until the event-bus transport library ships in the services; the NATS URL is
+     already published so the flip is a single value change */}}
+EVENT_BUS_TRANSPORT: "pubsub"
+EVENT_BUS_NATS_URL: {{ include "carto.nats.url" . | quote }}
 {{- end -}}
+{{- end -}}
+
+{{- define "carto.nats.fullname" -}}
+{{- printf "%s-nats" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "carto.nats.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.nats.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{- define "carto.nats.secretName" -}}
+{{- if .Values.nats.existingSecret -}}
+{{- .Values.nats.existingSecret -}}
+{{- else -}}
+{{- include "carto.nats.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.nats.url" -}}
+{{- printf "nats://%s.%s.svc.%s:%v" (include "carto.nats.fullname" .) .Release.Namespace .Values.clusterDomain .Values.nats.service.ports.client -}}
 {{- end -}}
 
 {{/*
