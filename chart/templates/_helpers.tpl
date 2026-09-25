@@ -803,6 +803,13 @@ Return the proper Carto http-cache full name
 {{- end -}}
 
 {{/*
+Return the name of the headless http-cache control Service
+*/}}
+{{- define "carto.httpCache.controlServiceName" -}}
+{{- printf "%s-http-cache-control" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto http-cache image name
 */}}
 {{- define "carto.httpCache.image" -}}
