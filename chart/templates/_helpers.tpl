@@ -850,6 +850,13 @@ Return the proper Carto notifier full name
 {{- end -}}
 
 {{/*
+Return the name of the headless notifier control Service
+*/}}
+{{- define "carto.notifier.controlServiceName" -}}
+{{- printf "%s-notifier-control" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto notifier image name
 */}}
 {{- define "carto.notifier.image" -}}
