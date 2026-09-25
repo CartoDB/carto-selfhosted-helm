@@ -23,6 +23,10 @@ data:
   CDN_INVALIDATOR_SUBSCRIBER_SUBSCRIPTION: "projects/{{ .Values.cartoConfigValues.selfHostedGcpProjectId }}/subscriptions/event-bus-cdn-inval-sub"
   CDN_INVALIDATOR_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   CDN_INVALIDATOR_VARNISH_PURGE_BASE_URL: "http://{{ include "carto.httpCache.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+  {{- if .Values.cdnInvalidatorSub.varnishFanout.enabled }}
+  CDN_INVALIDATOR_VARNISH_FANOUT_ENABLED: "true"
+  CDN_INVALIDATOR_VARNISH_CONTROL_SERVICE_HOST: "{{ include "carto.httpCache.controlServiceName" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+  {{- end }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   NODE_OPTIONS: {{ template "carto.cdnInvalidatorSub.nodeOptions" . }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
