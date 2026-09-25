@@ -26,6 +26,7 @@ data:
   {{- if .Values.cdnInvalidatorSub.varnishFanout.enabled }}
   CDN_INVALIDATOR_VARNISH_FANOUT_ENABLED: "true"
   CDN_INVALIDATOR_VARNISH_CONTROL_SERVICE_HOST: "{{ include "carto.httpCache.controlServiceName" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+  CDN_INVALIDATOR_VARNISH_CONTROL_SERVICE_PORT: {{ .Values.httpCache.containerPorts.http | quote }}
   {{- end }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   NODE_OPTIONS: {{ template "carto.cdnInvalidatorSub.nodeOptions" . }}
