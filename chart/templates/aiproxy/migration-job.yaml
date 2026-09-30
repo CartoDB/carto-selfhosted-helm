@@ -1,4 +1,4 @@
-{{- if and (.Values.appConfigValues.aiFeaturesEnabled) (not .Values.cartoConfigValues.onlyRunRouter) (.Values.aiProxy.migrationJob.enabled) }}
+{{- if and (.Values.appConfigValues.aiFeaturesEnabled) (not .Values.cartoConfigValues.onlyRunRouter) (include "carto.aiProxy.migrationJobEnabled" .) }}
 apiVersion: batch/v1
 kind: Job
 metadata:

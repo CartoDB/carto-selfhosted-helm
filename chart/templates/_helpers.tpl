@@ -1634,6 +1634,15 @@ Return the aiProxy salt key checksum
 {{- end -}}
 
 {{/*
+Return true when aiProxy can run more than one pod, so its database migrations run in a Job instead of in every pod
+*/}}
+{{- define "carto.aiProxy.migrationJobEnabled" -}}
+{{- if or .Values.aiProxy.autoscaling.enabled (gt (int .Values.aiProxy.replicaCount) 1) -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
 HTTP Get health check probe
 */}}
 {{- define "carto.healthCheckProbe" -}}
