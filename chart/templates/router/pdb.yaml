@@ -14,6 +14,6 @@ spec:
   maxUnavailable: {{ .Values.router.podDisruptionBudget.maxUnavailable }}
 {{- end }}
   selector:
-    matchLabels:
-      app.kubernetes.io/name: {{ include "carto.router.fullname" . }}
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: router
 {{- end }}
