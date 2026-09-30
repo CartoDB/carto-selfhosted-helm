@@ -113,7 +113,8 @@ spec:
             {{- if .Values.aiProxy.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
-            {{- if .Values.aiProxy.migrationJob.enabled }}
+            {{- /* The migration Job only runs on upgrades, so on first install the pods still migrate */}}
+            {{- if and (include "carto.aiProxy.migrationJobEnabled" .) .Release.IsUpgrade }}
             - name: DISABLE_SCHEMA_UPDATE
               value: "true"
             {{- end }}
