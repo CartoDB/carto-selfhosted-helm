@@ -857,6 +857,17 @@ Return the name of the headless notifier control Service
 {{- end -}}
 
 {{/*
+Return true when events must be published to every notifier replica.
+Derived from the replica count, never set directly: with more than one
+replica, publishing through the regular Service reaches only one of them.
+*/}}
+{{- define "carto.notifier.fanoutEnabled" -}}
+{{- if gt (int .Values.notifier.replicaCount) 1 -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto notifier image name
 */}}
 {{- define "carto.notifier.image" -}}

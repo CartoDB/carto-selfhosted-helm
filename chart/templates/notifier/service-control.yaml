@@ -1,4 +1,4 @@
-{{- if .Values.notifier.fanout.enabled }}
+{{- if include "carto.notifier.fanoutEnabled" . }}
 apiVersion: v1
 kind: Service
 metadata:
