@@ -6568,15 +6568,7 @@ aiProxy:
   ## @param aiProxy.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the aiProxy container(s)
   ##
   extraVolumeMounts: []
-  ## aiProxy database migration Job
-  ## With a single replica every aiProxy pod applies the database migrations when it starts. With more than one replica
-  ## or autoscaling enabled, a Job applies them once before each upgrade (Helm pre-upgrade hook, Argo CD PreSync hook) and
-  ## the pods start with schema updates disabled, so several replicas never migrate the same database at the same time.
-  ## The Job does not run on the first install, because it reads the aiProxy ConfigMap and Secret, which the hook runs
-  ## before; the pods apply the migrations then. With Argo CD, run the first sync with aiProxy at one replica and
-  ## autoscaling disabled, since the PreSync hook also runs on the first sync. The Job requires an aiProxy image whose
-  ## entrypoint supports the `migrate` argument; with an older image the Job never completes and the upgrade waits for
-  ## activeDeadlineSeconds.
+  ## aiProxy database migration Job, used on upgrades when aiProxy runs more than one replica or autoscaling
   ## @param aiProxy.migrationJob.backoffLimit Number of retries before the migration Job is considered failed
   ## @param aiProxy.migrationJob.activeDeadlineSeconds Maximum duration of the migration Job, across all retries
   ## @param aiProxy.migrationJob.resources Resources for the migration Job container
