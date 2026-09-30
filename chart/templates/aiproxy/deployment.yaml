@@ -113,6 +113,10 @@ spec:
             {{- if .Values.aiProxy.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
+            {{- if .Values.aiProxy.migrationJob.enabled }}
+            - name: DISABLE_SCHEMA_UPDATE
+              value: "true"
+            {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ template "carto.aiProxy.configmapName" . }}

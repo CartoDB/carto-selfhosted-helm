@@ -1,0 +1,161 @@
+{{- if and (.Values.appConfigValues.aiFeaturesEnabled) (not .Values.cartoConfigValues.onlyRunRouter) (.Values.aiProxy.migrationJob.enabled) }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "carto.aiProxy.fullname" . }}-migrations
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: aiproxy-migrations
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation, HookSucceeded
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+spec:
+  backoffLimit: {{ .Values.aiProxy.migrationJob.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.aiProxy.migrationJob.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: aiproxy-migrations
+        {{- if .Values.aiProxy.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+      {{- if .Values.aiProxy.podAnnotations }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.aiProxy.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.aiProxy.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.aiProxy.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.aiProxy.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.aiProxy.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.aiProxy.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: aiproxy-migrations
+          image: {{ template "carto.aiProxy.image" . }}
+          imagePullPolicy: {{ .Values.aiProxy.image.pullPolicy }}
+          terminationMessagePolicy: FallbackToLogsOnError
+          {{- if .Values.aiProxy.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.aiProxy.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          args: ["migrate"]
+          env:
+            - name: LITELLM_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.postgresql.secretName" . }}
+                  key: {{ include "carto.postgresql.secret.key" . }}
+            - name: LITELLM_REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "carto.redis.secretName" . }}
+                  key: {{ include "carto.redis.existingsecret.key" . }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+                "LITELLM_MASTER_KEY"
+                "LITELLM_SALT_KEY"
+                "GEMINI_API_KEY"
+                "LITELLM_JWT_SECRET"
+             ) "context" $ ) | nindent 12 }}
+            {{- if .Values.aiProxy.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "carto.aiProxy.configmapName" . }}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+                "LITELLM_MASTER_KEY"
+                "LITELLM_SALT_KEY"
+                "GEMINI_API_KEY"
+                "LITELLM_JWT_SECRET"
+             ) "context" $ ) -}}
+            {{- if $secretContent }}
+            - secretRef:
+                name: {{ include "carto.aiProxy.secretName" . }}
+            {{- end }}
+            {{- if .Values.aiProxy.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.aiProxy.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.aiProxy.migrationJob.resources }}
+          resources: {{- toYaml .Values.aiProxy.migrationJob.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+            - name: gcp-default-service-account-key
+              mountPath: {{ include "carto.google.secretMountDir" . }}
+              readOnly: true
+            {{- end }}
+            - name: tmp
+              mountPath: /tmp
+            - name: app-cache
+              mountPath: /app/cache
+            - name: app-migrations
+              mountPath: /app/migrations
+            {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
+            - name: postgresql-ssl-ca
+              mountPath: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
+              subPath: {{ include "carto.postgresql.configMapMountFilename" . }}
+              readOnly: true
+            {{- end }}
+            {{- if (include "carto.trustedCACerts.enabled" .) }}
+            - name: trusted-ca-certs
+              mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
+            {{- if .Values.aiProxy.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+      volumes:
+        {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+        - name: gcp-default-service-account-key
+          secret:
+            secretName: {{ include "carto.google.secretName" . }}
+            items:
+              - key: {{ include "carto.google.secretKey" . }}
+                path: {{ include "carto.google.secretMountFilename" . }}
+        {{- end }}
+        - name: tmp
+          emptyDir:
+            medium: Memory
+        - name: app-cache
+          emptyDir: {}
+        - name: app-migrations
+          emptyDir: {}
+        {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
+        - name: postgresql-ssl-ca
+          configMap:
+            name: {{ include "carto.postgresql.configMapName" . }}
+            items:
+              - key: {{ include "carto.postgresql.configMapMountFilename" . }}
+                path: {{ include "carto.postgresql.configMapMountFilename" . }}
+        {{- end }}
+        {{- if (include "carto.trustedCACerts.enabled" .) }}
+        - name: trusted-ca-certs
+          configMap:
+            name: {{ include "carto.trustedCACerts.configMapName" . }}
+        {{- end }}
+        {{- if .Values.aiProxy.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
+{{- end }}
