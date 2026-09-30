@@ -6569,19 +6569,19 @@ aiProxy:
   ##
   extraVolumeMounts: []
   ## aiProxy database migration Job
-  ## By default every aiProxy pod applies the database migrations when it starts. When enabled, a Job applies them once
-  ## before each upgrade (Helm pre-upgrade hook, Argo CD PreSync hook) and the pods start with schema updates disabled,
-  ## so several replicas never migrate the same database at the same time. Enable it on an existing installation, not on
-  ## the first install: the Job reads the aiProxy ConfigMap and Secret, which the hook runs before. It requires an aiProxy
-  ## image whose entrypoint supports the `migrate` argument; with an older image the Job never completes and the upgrade
-  ## waits for activeDeadlineSeconds.
-  ## @param aiProxy.migrationJob.enabled Run the aiProxy database migrations in a Job instead of in every aiProxy pod
+  ## With a single replica every aiProxy pod applies the database migrations when it starts. With more than one replica
+  ## or autoscaling enabled, a Job applies them once before each upgrade (Helm pre-upgrade hook, Argo CD PreSync hook) and
+  ## the pods start with schema updates disabled, so several replicas never migrate the same database at the same time.
+  ## The Job does not run on the first install, because it reads the aiProxy ConfigMap and Secret, which the hook runs
+  ## before; the pods apply the migrations then. With Argo CD, run the first sync with aiProxy at one replica and
+  ## autoscaling disabled, since the PreSync hook also runs on the first sync. The Job requires an aiProxy image whose
+  ## entrypoint supports the `migrate` argument; with an older image the Job never completes and the upgrade waits for
+  ## activeDeadlineSeconds.
   ## @param aiProxy.migrationJob.backoffLimit Number of retries before the migration Job is considered failed
   ## @param aiProxy.migrationJob.activeDeadlineSeconds Maximum duration of the migration Job, across all retries
   ## @param aiProxy.migrationJob.resources Resources for the migration Job container
   ##
   migrationJob:
-    enabled: false
     backoffLimit: 3
     activeDeadlineSeconds: 1800
     resources: {}
