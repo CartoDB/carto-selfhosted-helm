@@ -1,4 +1,4 @@
-{{- if .Values.cdnInvalidatorSub.varnishFanout.enabled }}
+{{- if include "carto.httpCache.fanoutEnabled" . }}
 apiVersion: v1
 kind: Service
 metadata:

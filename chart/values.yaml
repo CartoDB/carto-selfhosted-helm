@@ -4021,10 +4021,6 @@ cdnInvalidatorSub:
   ##
   podDisruptionBudget:
     enabled: false
-  ## @param cdnInvalidatorSub.varnishFanout.enabled Purge every http-cache replica through a headless control Service
-  ##
-  varnishFanout:
-    enabled: false
   ## @param cdnInvalidatorSub.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 300
