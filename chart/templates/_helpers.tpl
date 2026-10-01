@@ -1643,6 +1643,16 @@ true
 {{- end -}}
 
 {{/*
+Return true when aiProxy must start with a single replica: the migration Job only runs on upgrades, so on a fresh
+install one pod applies the migrations and the configured replicas or autoscaling take effect on the next upgrade
+*/}}
+{{- define "carto.aiProxy.singleReplicaOnInstall" -}}
+{{- if and .Release.IsInstall (include "carto.aiProxy.migrationJobEnabled" .) -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
 HTTP Get health check probe
 */}}
 {{- define "carto.healthCheckProbe" -}}
