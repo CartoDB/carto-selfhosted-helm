@@ -53,6 +53,9 @@ spec:
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.ldsApi.podAntiAffinityPreset "component" "lds-api" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.ldsApi.nodeAffinityPreset.type "key" .Values.ldsApi.nodeAffinityPreset.key "values" .Values.ldsApi.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
+      {{- if .Values.ldsApi.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.topologySpreadConstraints "context" $) | nindent 8 }}
+      {{- end }}
       {{- if .Values.ldsApi.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.ldsApi.nodeSelector "context" $) | nindent 8 }}
       {{- end }}
