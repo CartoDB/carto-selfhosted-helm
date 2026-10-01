@@ -13,7 +13,9 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  {{- if not .Values.aiProxy.autoscaling.enabled }}
+  {{- if (include "carto.aiProxy.singleReplicaOnInstall" .) }}
+  replicas: 1
+  {{- else if not .Values.aiProxy.autoscaling.enabled }}
   replicas: {{ .Values.aiProxy.replicaCount }}
   {{- end }}
   {{- if .Values.aiProxy.updateStrategy }}
