@@ -53,6 +53,9 @@ spec:
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.mapsApi.podAntiAffinityPreset "component" "maps-api" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.mapsApi.nodeAffinityPreset.type "key" .Values.mapsApi.nodeAffinityPreset.key "values" .Values.mapsApi.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
+      {{- if .Values.mapsApi.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.topologySpreadConstraints "context" $) | nindent 8 }}
+      {{- end }}
       {{- if .Values.mapsApi.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.mapsApi.nodeSelector "context" $) | nindent 8 }}
       {{- end }}

@@ -57,6 +57,9 @@ spec:
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.importWorker.podAntiAffinityPreset "component" "import-worker" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.importWorker.nodeAffinityPreset.type "key" .Values.importWorker.nodeAffinityPreset.key "values" .Values.importWorker.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
+      {{- if .Values.importWorker.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.topologySpreadConstraints "context" $) | nindent 8 }}
+      {{- end }}
       {{- if .Values.importWorker.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.importWorker.nodeSelector "context" $) | nindent 8 }}
       {{- end }}

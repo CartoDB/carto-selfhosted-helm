@@ -53,6 +53,9 @@ spec:
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.workspaceApi.podAntiAffinityPreset "component" "workspace-api" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.workspaceApi.nodeAffinityPreset.type "key" .Values.workspaceApi.nodeAffinityPreset.key "values" .Values.workspaceApi.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
+      {{- if .Values.workspaceApi.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.topologySpreadConstraints "context" $) | nindent 8 }}
+      {{- end }}
       {{- if .Values.workspaceApi.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceApi.nodeSelector "context" $) | nindent 8 }}
       {{- end }}

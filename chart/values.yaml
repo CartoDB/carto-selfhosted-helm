@@ -796,6 +796,10 @@ accountsWww:
   ## NOTE: `accountsWww.podAffinityPreset`, `accountsWww.podAntiAffinityPreset`, and `accountsWww.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param accountsWww.topologySpreadConstraints Topology spread constraints for accountsWww pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param accountsWww.nodeSelector Node.js labels for accounts-www pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -1138,6 +1142,10 @@ importApi:
   ## NOTE: `importApi.podAffinityPreset`, `importApi.podAntiAffinityPreset`, and `importApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param importApi.topologySpreadConstraints Topology spread constraints for importApi pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param importApi.nodeSelector Node.js labels for import-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -1455,6 +1463,10 @@ importWorker:
   ## NOTE: `importWorker.podAffinityPreset`, `importWorker.podAntiAffinityPreset`, and `importWorker.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param importWorker.topologySpreadConstraints Topology spread constraints for importWorker pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param importWorker.nodeSelector Node.js labels for import-worker pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -1738,6 +1750,10 @@ ldsApi:
   ## NOTE: `ldsApi.podAffinityPreset`, `ldsApi.podAntiAffinityPreset`, and `ldsApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param ldsApi.topologySpreadConstraints Topology spread constraints for ldsApi pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param ldsApi.nodeSelector Node.js labels for lds-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -2067,6 +2083,10 @@ publicEventsApi:
   ## NOTE: `publicEventsApi.podAffinityPreset`, `publicEventsApi.podAntiAffinityPreset`, and `publicEventsApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param publicEventsApi.topologySpreadConstraints Topology spread constraints for publicEventsApi pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param publicEventsApi.nodeSelector Node.js labels for public-events-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -2396,6 +2416,10 @@ mapsApi:
   ## NOTE: `mapsApi.podAffinityPreset`, `mapsApi.podAntiAffinityPreset`, and `mapsApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param mapsApi.topologySpreadConstraints Topology spread constraints for mapsApi pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param mapsApi.nodeSelector Node.js labels for maps-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -2704,6 +2728,10 @@ sqlWorker:
   ## NOTE: `sqlWorker.podAffinityPreset`, `sqlWorker.podAntiAffinityPreset`, and `sqlWorker.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param sqlWorker.topologySpreadConstraints Topology spread constraints for sqlWorker pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param sqlWorker.nodeSelector Node.js labels for sql-worker pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -3004,6 +3032,10 @@ router:
   ## NOTE: `router.podAffinityPreset`, `router.podAntiAffinityPreset`, and `router.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param router.topologySpreadConstraints Topology spread constraints for router pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param router.nodeSelector Node.js labels for router pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -3420,6 +3452,10 @@ httpCache:
   ## NOTE: `httpCache.podAffinityPreset`, `httpCache.podAntiAffinityPreset`, and `httpCache.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param httpCache.topologySpreadConstraints Topology spread constraints for httpCache pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param httpCache.nodeSelector Node.js labels for http-cache pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -3749,6 +3785,10 @@ notifier:
   ## NOTE: `notifier.podAffinityPreset`, `notifier.podAntiAffinityPreset`, and `notifier.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param notifier.topologySpreadConstraints Topology spread constraints for notifier pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param notifier.nodeSelector Node labels for notifier pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -4082,6 +4122,10 @@ cdnInvalidatorSub:
   ## NOTE: `cdnInvalidatorSub.podAffinityPreset`, `cdnInvalidatorSub.podAntiAffinityPreset`, and `cdnInvalidatorSub.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param cdnInvalidatorSub.topologySpreadConstraints Topology spread constraints for cdnInvalidatorSub pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param cdnInvalidatorSub.nodeSelector Node.js labels for cdnInvalidatorSub pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -4414,6 +4458,10 @@ workspaceApi:
   ## NOTE: `workspaceApi.podAffinityPreset`, `workspaceApi.podAntiAffinityPreset`, and `workspaceApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param workspaceApi.topologySpreadConstraints Topology spread constraints for workspaceApi pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param workspaceApi.nodeSelector Node.js labels for workspace-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -4731,6 +4779,10 @@ workspaceSubscriber:
   ## NOTE: `workspaceSubscriber.podAffinityPreset`, `workspaceSubscriber.podAntiAffinityPreset`, and `workspaceSubscriber.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param workspaceSubscriber.topologySpreadConstraints Topology spread constraints for workspaceSubscriber pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param workspaceSubscriber.nodeSelector Node.js labels for workspace-subscriber pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -5004,6 +5056,10 @@ workspaceWww:
   ## NOTE: `workspaceWww.podAffinityPreset`, `workspaceWww.podAntiAffinityPreset`, and `workspaceWww.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param workspaceWww.topologySpreadConstraints Topology spread constraints for workspaceWww pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param workspaceWww.nodeSelector Node.js labels for workspace-www pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -6192,6 +6248,10 @@ aiApi:
   ## NOTE: `aiApi.podAffinityPreset`, `aiApi.podAntiAffinityPreset`, and `aiApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param aiApi.topologySpreadConstraints Topology spread constraints for aiApi pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param aiApi.nodeSelector Node.js labels for ai-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -6523,6 +6583,10 @@ aiProxy:
   ## NOTE: `aiProxy.podAffinityPreset`, `aiProxy.podAntiAffinityPreset`, and `aiProxy.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param aiProxy.topologySpreadConstraints Topology spread constraints for aiProxy pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param aiProxy.nodeSelector Node.js labels for aiProxy pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -6864,6 +6928,10 @@ authApi:
   ## NOTE: `authApi.podAffinityPreset`, `authApi.podAntiAffinityPreset`, and `authApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param authApi.topologySpreadConstraints Topology spread constraints for authApi pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param authApi.nodeSelector Node.js labels for auth-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -7259,6 +7327,10 @@ accountsApi:
   ## NOTE: `accountsApi.podAffinityPreset`, `accountsApi.podAntiAffinityPreset`, and `accountsApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param accountsApi.topologySpreadConstraints Topology spread constraints for accountsApi pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param accountsApi.nodeSelector Node.js labels for accounts-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -7538,6 +7610,10 @@ accountsSubscriber:
   ## @param accountsSubscriber.affinity Affinity for accounts-subscriber pods assignment
   ##
   affinity: {}
+  ## @param accountsSubscriber.topologySpreadConstraints Topology spread constraints for accountsSubscriber pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param accountsSubscriber.nodeSelector Node.js labels for accounts-subscriber pods assignment
   ##
   nodeSelector: {}
