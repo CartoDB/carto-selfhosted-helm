@@ -815,7 +815,7 @@ Derived from the replica count, never set directly: with more than one
 replica, purging through the regular Service clears only one of them.
 */}}
 {{- define "carto.httpCache.fanoutEnabled" -}}
-{{- if and .Values.appConfigValues.httpCacheEnabled (not .Values.cartoConfigValues.onlyRunRouter) (gt (int (include "carto.replicas" (dict "value" .Values.httpCache "context" .))) 1) -}}
+{{- if and .Values.appConfigValues.httpCacheEnabled (not .Values.cartoConfigValues.onlyRunRouter) (gt (int (include "carto.replicas" (dict "replicas" .Values.httpCache.replicaCount "context" .))) 1) -}}
 true
 {{- end -}}
 {{- end -}}
@@ -880,7 +880,7 @@ Derived from the replica count, never set directly: with more than one
 replica, publishing through the regular Service reaches only one of them.
 */}}
 {{- define "carto.notifier.fanoutEnabled" -}}
-{{- if gt (int (include "carto.replicas" (dict "value" .Values.notifier "context" .))) 1 -}}
+{{- if gt (int (include "carto.replicas" (dict "replicas" .Values.notifier.replicaCount "context" .))) 1 -}}
 true
 {{- end -}}
 {{- end -}}
@@ -1862,35 +1862,16 @@ group sync.
 
 
 {{/*
-Return a component's replica count: its own replicaCount, raised to highAvailability.replicas when
-highAvailability.enabled. Every reader of a component's replica count goes through it, so the fan-out
-and migration helpers always see the same number as the Deployment.
-Usage: include "carto.replicas" (dict "value" .Values.<component> "context" $)
+Return a replica count ("replicas"), raised to highAvailability.replicas when highAvailability.enabled.
+Deployments, HPA minReplicas and the fan-out and migration helpers all go through it, so they always
+agree on the number.
+Usage: include "carto.replicas" (dict "replicas" .Values.<component>.replicaCount "context" $)
 */}}
 {{- define "carto.replicas" -}}
-{{- $replicas := int .value.replicaCount -}}
 {{- if .context.Values.highAvailability.enabled -}}
-{{- $replicas = max $replicas (int .context.Values.highAvailability.replicas) -}}
-{{- end -}}
-{{- $replicas -}}
-{{- end -}}
-
-{{/*
-Return a component's HPA minReplicas or maxReplicas ("field"): its own autoscaling value, with
-minReplicas raised to highAvailability.replicas (and maxReplicas to at least that minimum) when
-highAvailability.enabled, so an autoscaled component never runs fewer replicas than the preset asks for.
-Usage: include "carto.autoscaling.replicas" (dict "value" .Values.<component>.autoscaling "field" "minReplicas" "context" $)
-*/}}
-{{- define "carto.autoscaling.replicas" -}}
-{{- if .context.Values.highAvailability.enabled -}}
-{{- $min := max (int .value.minReplicas) (int .context.Values.highAvailability.replicas) -}}
-{{- if eq .field "minReplicas" -}}
-{{- $min -}}
+{{- max (int .replicas) (int .context.Values.highAvailability.replicas) -}}
 {{- else -}}
-{{- max (int .value.maxReplicas) $min -}}
-{{- end -}}
-{{- else -}}
-{{- index .value .field -}}
+{{- .replicas -}}
 {{- end -}}
 {{- end -}}
 
