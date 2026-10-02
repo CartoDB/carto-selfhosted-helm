@@ -1860,3 +1860,24 @@ group sync.
 {{- include "carto.images.image" (dict "imageRoot" .Values.accountsMigrations.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
+
+{{/*
+Return a component's topologySpreadConstraints: its own value when set, otherwise the chart-wide
+zone spread when topologySpread.enabled. Each component passes its own label so the selector
+matches only its pods; pod-template-hash keeps a rollout's old ReplicaSet out of the count.
+Usage: include "carto.topologySpreadConstraints" (dict "value" .Values.<component>.topologySpreadConstraints "component" "<component-label>" "context" $)
+*/}}
+{{- define "carto.topologySpreadConstraints" -}}
+{{- if .value -}}
+{{- include "common.tplvalues.render" (dict "value" .value "context" .context) -}}
+{{- else if .context.Values.topologySpread.enabled -}}
+- maxSkew: {{ .context.Values.topologySpread.maxSkew }}
+  topologyKey: {{ .context.Values.topologySpread.topologyKey }}
+  whenUnsatisfiable: {{ .context.Values.topologySpread.whenUnsatisfiable }}
+  labelSelector:
+    matchLabels: {{- include "common.labels.matchLabels" .context | nindent 6 }}
+      app.kubernetes.io/component: {{ .component }}
+  matchLabelKeys:
+    - pod-template-hash
+{{- end -}}
+{{- end -}}

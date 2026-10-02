@@ -273,18 +273,22 @@ To install, upgrade or uninstall this chart, please refer to [the root README.md
 
 ### Common parameters
 
-| Name                     | Description                                                                             | Value           |
-| ------------------------ | --------------------------------------------------------------------------------------- | --------------- |
-| `kubeVersion`            | Override Kubernetes version                                                             | `""`            |
-| `nameOverride`           | String to partially override common.names.fullname                                      | `""`            |
-| `fullnameOverride`       | String to fully override common.names.fullname                                          | `""`            |
-| `commonLabels`           | Labels to add to all deployed objects                                                   | `{}`            |
-| `commonAnnotations`      | Annotations to add to all deployed objects                                              | `{}`            |
-| `clusterDomain`          | Kubernetes cluster domain name                                                          | `cluster.local` |
-| `extraDeploy`            | Array of extra objects to deploy with the release                                       | `[]`            |
-| `diagnosticMode.enabled` | Enable diagnostic mode (all probes will be disabled and the command will be overridden) | `false`         |
-| `diagnosticMode.command` | Command to override all containers in the deployment                                    | `["sleep"]`     |
-| `diagnosticMode.args`    | Args to override all containers in the deployment                                       | `["999d"]`      |
+| Name                               | Description                                                                                                                                                            | Value                         |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `kubeVersion`                      | Override Kubernetes version                                                                                                                                            | `""`                          |
+| `nameOverride`                     | String to partially override common.names.fullname                                                                                                                     | `""`                          |
+| `fullnameOverride`                 | String to fully override common.names.fullname                                                                                                                         | `""`                          |
+| `commonLabels`                     | Labels to add to all deployed objects                                                                                                                                  | `{}`                          |
+| `commonAnnotations`                | Annotations to add to all deployed objects                                                                                                                             | `{}`                          |
+| `topologySpread.enabled`           | Spread the replicas of every component across `topologySpread.topologyKey` domains; a component's own `topologySpreadConstraints` value replaces it for that component | `false`                       |
+| `topologySpread.topologyKey`       | Node label that defines the spread domain                                                                                                                              | `topology.kubernetes.io/zone` |
+| `topologySpread.maxSkew`           | Maximum difference in replica count between any two domains                                                                                                            | `1`                           |
+| `topologySpread.whenUnsatisfiable` | `ScheduleAnyway` keeps scheduling when the spread can't be met; `DoNotSchedule` leaves the pod Pending instead                                                         | `ScheduleAnyway`              |
+| `clusterDomain`                    | Kubernetes cluster domain name                                                                                                                                         | `cluster.local`               |
+| `extraDeploy`                      | Array of extra objects to deploy with the release                                                                                                                      | `[]`                          |
+| `diagnosticMode.enabled`           | Enable diagnostic mode (all probes will be disabled and the command will be overridden)                                                                                | `false`                       |
+| `diagnosticMode.command`           | Command to override all containers in the deployment                                                                                                                   | `["sleep"]`                   |
+| `diagnosticMode.args`              | Args to override all containers in the deployment                                                                                                                      | `["999d"]`                    |
 
 ### accounts-www Deployment Parameters
 

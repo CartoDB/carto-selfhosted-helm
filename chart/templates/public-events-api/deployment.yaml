@@ -50,8 +50,8 @@ spec:
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.publicEventsApi.podAntiAffinityPreset "component" "public-events-api" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.publicEventsApi.nodeAffinityPreset.type "key" .Values.publicEventsApi.nodeAffinityPreset.key "values" .Values.publicEventsApi.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
-      {{- if .Values.publicEventsApi.topologySpreadConstraints }}
-      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.topologySpreadConstraints "context" $) | nindent 8 }}
+      {{- with include "carto.topologySpreadConstraints" (dict "value" .Values.publicEventsApi.topologySpreadConstraints "component" "public-events-api" "context" $) }}
+      topologySpreadConstraints: {{- . | nindent 8 }}
       {{- end }}
       {{- if .Values.publicEventsApi.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.publicEventsApi.nodeSelector "context" $) | nindent 8 }}
