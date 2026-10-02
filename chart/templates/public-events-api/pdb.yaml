@@ -14,6 +14,6 @@ spec:
   maxUnavailable: {{ .Values.publicEventsApi.podDisruptionBudget.maxUnavailable }}
 {{- end }}
   selector:
-    matchLabels:
-      app.kubernetes.io/name: {{ include "carto.publicEventsApi.fullname" . }}
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: public-events-api
 {{- end }}

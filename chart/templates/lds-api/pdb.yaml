@@ -14,6 +14,6 @@ spec:
   maxUnavailable: {{ .Values.ldsApi.podDisruptionBudget.maxUnavailable }}
 {{- end }}
   selector:
-    matchLabels:
-      app.kubernetes.io/name: {{ include "carto.ldsApi.fullname" . }}
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: lds-api
 {{- end }}
