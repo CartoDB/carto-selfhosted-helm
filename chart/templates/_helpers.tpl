@@ -1863,6 +1863,25 @@ Usage: include "carto.replicas" (dict "value" .Values.<component> "context" $)
 {{- end -}}
 
 {{/*
+Return a component's HPA minReplicas or maxReplicas ("field"): its own autoscaling value, with
+minReplicas raised to highAvailability.replicas (and maxReplicas to at least that minimum) when
+highAvailability.enabled, so an autoscaled component never runs fewer replicas than the preset asks for.
+Usage: include "carto.autoscaling.replicas" (dict "value" .Values.<component>.autoscaling "field" "minReplicas" "context" $)
+*/}}
+{{- define "carto.autoscaling.replicas" -}}
+{{- if .context.Values.highAvailability.enabled -}}
+{{- $min := max (int .value.minReplicas) (int .context.Values.highAvailability.replicas) -}}
+{{- if eq .field "minReplicas" -}}
+{{- $min -}}
+{{- else -}}
+{{- max (int .value.maxReplicas) $min -}}
+{{- end -}}
+{{- else -}}
+{{- index .value .field -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return a component's PodDisruptionBudget settings as YAML: its own podDisruptionBudget when enabled,
 otherwise the highAvailability one when highAvailability.enabled, otherwise nothing (no PDB).
 Usage: include "carto.podDisruptionBudget" (dict "value" .Values.<component>.podDisruptionBudget "context" $) | fromYaml
