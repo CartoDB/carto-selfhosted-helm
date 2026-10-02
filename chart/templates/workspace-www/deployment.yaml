@@ -51,8 +51,8 @@ spec:
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.workspaceWww.podAntiAffinityPreset "component" "workspace-www" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.workspaceWww.nodeAffinityPreset.type "key" .Values.workspaceWww.nodeAffinityPreset.key "values" .Values.workspaceWww.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
-      {{- if .Values.workspaceWww.topologySpreadConstraints }}
-      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceWww.topologySpreadConstraints "context" $) | nindent 8 }}
+      {{- with include "carto.topologySpreadConstraints" (dict "value" .Values.workspaceWww.topologySpreadConstraints "component" "workspace-www" "context" $) }}
+      topologySpreadConstraints: {{- . | nindent 8 }}
       {{- end }}
       {{- if .Values.workspaceWww.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceWww.nodeSelector "context" $) | nindent 8 }}

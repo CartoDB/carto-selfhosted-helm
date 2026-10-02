@@ -568,6 +568,17 @@ commonLabels: {}
 ## @param commonAnnotations Annotations to add to all deployed objects
 ##
 commonAnnotations: {}
+## @param topologySpread.enabled Spread the replicas of every component across `topologySpread.topologyKey` domains; a component's own `topologySpreadConstraints` value replaces it for that component
+## @param topologySpread.topologyKey Node label that defines the spread domain
+## @param topologySpread.maxSkew Maximum difference in replica count between any two domains
+## @param topologySpread.whenUnsatisfiable `ScheduleAnyway` keeps scheduling when the spread can't be met; `DoNotSchedule` leaves the pod Pending instead
+## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+##
+topologySpread:
+  enabled: false
+  topologyKey: topology.kubernetes.io/zone
+  maxSkew: 1
+  whenUnsatisfiable: ScheduleAnyway
 ## @param clusterDomain Kubernetes cluster domain name
 ##
 clusterDomain: cluster.local

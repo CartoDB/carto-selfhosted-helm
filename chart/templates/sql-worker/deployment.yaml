@@ -57,8 +57,8 @@ spec:
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.sqlWorker.podAntiAffinityPreset "component" "sql-worker" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.sqlWorker.nodeAffinityPreset.type "key" .Values.sqlWorker.nodeAffinityPreset.key "values" .Values.sqlWorker.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
-      {{- if .Values.sqlWorker.topologySpreadConstraints }}
-      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.topologySpreadConstraints "context" $) | nindent 8 }}
+      {{- with include "carto.topologySpreadConstraints" (dict "value" .Values.sqlWorker.topologySpreadConstraints "component" "sql-worker" "context" $) }}
+      topologySpreadConstraints: {{- . | nindent 8 }}
       {{- end }}
       {{- if .Values.sqlWorker.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.sqlWorker.nodeSelector "context" $) | nindent 8 }}
