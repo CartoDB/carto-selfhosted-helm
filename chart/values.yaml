@@ -568,7 +568,7 @@ commonLabels: {}
 ## @param commonAnnotations Annotations to add to all deployed objects
 ##
 commonAnnotations: {}
-## @param highAvailability.enabled Run every component with at least `highAvailability.replicas` fixed replicas and a PodDisruptionBudget; components with autoscaling enabled keep their HPA
+## @param highAvailability.enabled Run every component with at least `highAvailability.replicas` replicas and a PodDisruptionBudget; components with autoscaling enabled keep their HPA, with `minReplicas` raised to at least `highAvailability.replicas`
 ## @param highAvailability.replicas Minimum replicas per component; a component's own higher `replicaCount` is kept
 ## @param highAvailability.podDisruptionBudget.maxUnavailable `maxUnavailable` of the PodDisruptionBudget for components that don't enable their own `podDisruptionBudget`
 ## @param highAvailability.topologySpread.enabled Spread the replicas of every component across `highAvailability.topologySpread.topologyKey` domains; a component's own `topologySpreadConstraints` value replaces it for that component
