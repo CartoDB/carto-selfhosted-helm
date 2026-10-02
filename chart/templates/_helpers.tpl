@@ -1634,6 +1634,25 @@ Return the aiProxy salt key checksum
 {{- end -}}
 
 {{/*
+Return true when aiProxy can run more than one pod, so its database migrations run in a Job instead of in every pod
+*/}}
+{{- define "carto.aiProxy.migrationJobEnabled" -}}
+{{- if or .Values.aiProxy.autoscaling.enabled (gt (int .Values.aiProxy.replicaCount) 1) -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return true when aiProxy must start with a single replica: the migration Job only runs on upgrades, so on a fresh
+install one pod applies the migrations and the configured replicas or autoscaling take effect on the next upgrade
+*/}}
+{{- define "carto.aiProxy.singleReplicaOnInstall" -}}
+{{- if and .Release.IsInstall (include "carto.aiProxy.migrationJobEnabled" .) -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
 HTTP Get health check probe
 */}}
 {{- define "carto.healthCheckProbe" -}}
