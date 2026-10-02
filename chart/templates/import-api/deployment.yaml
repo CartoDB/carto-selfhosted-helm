@@ -53,8 +53,10 @@ spec:
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.importApi.podAntiAffinityPreset "component" "import-api" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.importApi.nodeAffinityPreset.type "key" .Values.importApi.nodeAffinityPreset.key "values" .Values.importApi.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
-      {{- with include "carto.topologySpreadConstraints" (dict "value" .Values.importApi.topologySpreadConstraints "component" "import-api" "context" $) }}
-      topologySpreadConstraints: {{- . | nindent 8 }}
+      {{- if .Values.importApi.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.importApi.topologySpreadConstraints "context" $) | nindent 8 }}
+      {{- else if .Values.highAvailability.topologySpread.enabled }}
+      topologySpreadConstraints: {{- include "carto.topologySpreadConstraints" (dict "component" "import-api" "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.importApi.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.importApi.nodeSelector "context" $) | nindent 8 }}
