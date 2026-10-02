@@ -431,8 +431,6 @@ spec:
     - when: '{{repl ConfigOptionEquals "enablePlatformHighAvailability" "1" }}'
       recursiveMerge: true
       values:
-        topologySpread:
-          enabled: true
         importApi:
           affinity:
             podAntiAffinity:
