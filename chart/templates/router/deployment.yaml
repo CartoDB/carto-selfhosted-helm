@@ -14,7 +14,7 @@ metadata:
   {{- end }}
 spec:
   {{- if not .Values.router.autoscaling.enabled }}
-  replicas: {{ include "carto.replicas" (dict "value" .Values.router "context" $) }}
+  replicas: {{ include "carto.replicas" (dict "replicas" .Values.router.replicaCount "context" $) }}
   {{- end }}
   {{- if .Values.router.updateStrategy }}
   strategy: {{- toYaml .Values.router.updateStrategy | nindent 4 }}

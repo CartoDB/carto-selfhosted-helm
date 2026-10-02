@@ -14,7 +14,7 @@ metadata:
   {{- end }}
 spec:
   {{- if not .Values.ldsApi.autoscaling.enabled }}
-  replicas: {{ include "carto.replicas" (dict "value" .Values.ldsApi "context" $) }}
+  replicas: {{ include "carto.replicas" (dict "replicas" .Values.ldsApi.replicaCount "context" $) }}
   {{- end }}
   {{- if .Values.ldsApi.updateStrategy }}
   strategy: {{- toYaml .Values.ldsApi.updateStrategy | nindent 4 }}
