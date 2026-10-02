@@ -3692,11 +3692,6 @@ notifier:
   ##
   podDisruptionBudget:
     enabled: false
-  ## @param notifier.networkPolicy.enabled Restrict ingress to notifier pods to router (HTTP) and workspace-subscriber (internal) pods
-  ## ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
-  ##
-  networkPolicy:
-    enabled: false
   ## @param notifier.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 60
