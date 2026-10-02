@@ -568,17 +568,25 @@ commonLabels: {}
 ## @param commonAnnotations Annotations to add to all deployed objects
 ##
 commonAnnotations: {}
-## @param topologySpread.enabled Spread the replicas of every component across `topologySpread.topologyKey` domains; a component's own `topologySpreadConstraints` value replaces it for that component
-## @param topologySpread.topologyKey Node label that defines the spread domain
-## @param topologySpread.maxSkew Maximum difference in replica count between any two domains
-## @param topologySpread.whenUnsatisfiable `ScheduleAnyway` keeps scheduling when the spread can't be met; `DoNotSchedule` leaves the pod Pending instead
+## @param highAvailability.enabled Run every component with at least `highAvailability.replicas` fixed replicas and a PodDisruptionBudget; components with autoscaling enabled keep their HPA
+## @param highAvailability.replicas Minimum replicas per component; a component's own higher `replicaCount` is kept
+## @param highAvailability.podDisruptionBudget.maxUnavailable `maxUnavailable` of the PodDisruptionBudget for components that don't enable their own `podDisruptionBudget`
+## @param highAvailability.topologySpread.enabled Spread the replicas of every component across `highAvailability.topologySpread.topologyKey` domains; a component's own `topologySpreadConstraints` value replaces it for that component
+## @param highAvailability.topologySpread.topologyKey Node label that defines the spread domain
+## @param highAvailability.topologySpread.maxSkew Maximum difference in replica count between any two domains
+## @param highAvailability.topologySpread.whenUnsatisfiable `ScheduleAnyway` keeps scheduling when the spread can't be met; `DoNotSchedule` leaves the pod Pending instead
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
 ##
-topologySpread:
+highAvailability:
   enabled: false
-  topologyKey: topology.kubernetes.io/zone
-  maxSkew: 1
-  whenUnsatisfiable: ScheduleAnyway
+  replicas: 2
+  podDisruptionBudget:
+    maxUnavailable: 1
+  topologySpread:
+    enabled: false
+    topologyKey: topology.kubernetes.io/zone
+    maxSkew: 1
+    whenUnsatisfiable: ScheduleAnyway
 ## @param clusterDomain Kubernetes cluster domain name
 ##
 clusterDomain: cluster.local

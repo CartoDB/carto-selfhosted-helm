@@ -14,7 +14,7 @@ metadata:
   {{- end }}
 spec:
   {{- if not .Values.workspaceApi.autoscaling.enabled }}
-  replicas: {{ .Values.workspaceApi.replicaCount }}
+  replicas: {{ include "carto.replicas" (dict "value" .Values.workspaceApi "context" $) }}
   {{- end }}
   {{- if .Values.workspaceApi.updateStrategy }}
   strategy: {{- toYaml .Values.workspaceApi.updateStrategy | nindent 4 }}
