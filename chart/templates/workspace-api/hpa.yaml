@@ -13,8 +13,8 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  minReplicas: {{ .Values.workspaceApi.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.workspaceApi.autoscaling.maxReplicas }}
+  minReplicas: {{ include "carto.autoscaling.replicas" (dict "value" .Values.workspaceApi.autoscaling "field" "minReplicas" "context" $) }}
+  maxReplicas: {{ include "carto.autoscaling.replicas" (dict "value" .Values.workspaceApi.autoscaling "field" "maxReplicas" "context" $) }}
   scaleTargetRef:
     apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
     kind: Deployment
