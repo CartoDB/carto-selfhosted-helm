@@ -13,7 +13,7 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ .Values.httpCache.replicaCount }}
+  replicas: {{ include "carto.replicas" (dict "value" .Values.httpCache "context" $) }}
   {{- if .Values.httpCache.updateStrategy }}
   strategy: {{- toYaml .Values.httpCache.updateStrategy | nindent 4 }}
   {{- end }}

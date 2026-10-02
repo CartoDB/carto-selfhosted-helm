@@ -815,7 +815,7 @@ Derived from the replica count, never set directly: with more than one
 replica, purging through the regular Service clears only one of them.
 */}}
 {{- define "carto.httpCache.fanoutEnabled" -}}
-{{- if and .Values.appConfigValues.httpCacheEnabled (not .Values.cartoConfigValues.onlyRunRouter) (gt (int .Values.httpCache.replicaCount) 1) -}}
+{{- if and .Values.appConfigValues.httpCacheEnabled (not .Values.cartoConfigValues.onlyRunRouter) (gt (int (include "carto.replicas" (dict "value" .Values.httpCache "context" .))) 1) -}}
 true
 {{- end -}}
 {{- end -}}
@@ -880,7 +880,7 @@ Derived from the replica count, never set directly: with more than one
 replica, publishing through the regular Service reaches only one of them.
 */}}
 {{- define "carto.notifier.fanoutEnabled" -}}
-{{- if gt (int .Values.notifier.replicaCount) 1 -}}
+{{- if gt (int (include "carto.replicas" (dict "value" .Values.notifier "context" .))) 1 -}}
 true
 {{- end -}}
 {{- end -}}
@@ -1637,7 +1637,7 @@ Return the aiProxy salt key checksum
 Return true when aiProxy can run more than one pod, so its database migrations run in a Job instead of in every pod
 */}}
 {{- define "carto.aiProxy.migrationJobEnabled" -}}
-{{- if or .Values.aiProxy.autoscaling.enabled (gt (int .Values.aiProxy.replicaCount) 1) -}}
+{{- if or .Values.aiProxy.autoscaling.enabled (gt (int (include "carto.replicas" (dict "value" .Values.aiProxy "context" .))) 1) -}}
 true
 {{- end -}}
 {{- end -}}
@@ -1849,18 +1849,47 @@ group sync.
 
 
 {{/*
+Return a component's replica count: its own replicaCount, raised to highAvailability.replicas when
+highAvailability.enabled. Every reader of a component's replica count goes through it, so the fan-out
+and migration helpers always see the same number as the Deployment.
+Usage: include "carto.replicas" (dict "value" .Values.<component> "context" $)
+*/}}
+{{- define "carto.replicas" -}}
+{{- $replicas := int .value.replicaCount -}}
+{{- if .context.Values.highAvailability.enabled -}}
+{{- $replicas = max $replicas (int .context.Values.highAvailability.replicas) -}}
+{{- end -}}
+{{- $replicas -}}
+{{- end -}}
+
+{{/*
+Return a component's PodDisruptionBudget settings as YAML: its own podDisruptionBudget when enabled,
+otherwise the highAvailability one when highAvailability.enabled, otherwise nothing (no PDB).
+Usage: include "carto.podDisruptionBudget" (dict "value" .Values.<component>.podDisruptionBudget "context" $) | fromYaml
+*/}}
+{{- define "carto.podDisruptionBudget" -}}
+{{- if .value.enabled -}}
+{{- toYaml .value -}}
+{{- else if .context.Values.highAvailability.enabled -}}
+enabled: true
+maxUnavailable: {{ .context.Values.highAvailability.podDisruptionBudget.maxUnavailable }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return a component's topologySpreadConstraints: its own value when set, otherwise the chart-wide
-zone spread when topologySpread.enabled. Each component passes its own label so the selector
+spread when highAvailability.topologySpread.enabled. Each component passes its own label so the selector
 matches only its pods; pod-template-hash keeps a rollout's old ReplicaSet out of the count.
 Usage: include "carto.topologySpreadConstraints" (dict "value" .Values.<component>.topologySpreadConstraints "component" "<component-label>" "context" $)
 */}}
 {{- define "carto.topologySpreadConstraints" -}}
+{{- $spread := .context.Values.highAvailability.topologySpread -}}
 {{- if .value -}}
 {{- include "common.tplvalues.render" (dict "value" .value "context" .context) -}}
-{{- else if .context.Values.topologySpread.enabled -}}
-- maxSkew: {{ .context.Values.topologySpread.maxSkew }}
-  topologyKey: {{ .context.Values.topologySpread.topologyKey }}
-  whenUnsatisfiable: {{ .context.Values.topologySpread.whenUnsatisfiable }}
+{{- else if $spread.enabled -}}
+- maxSkew: {{ $spread.maxSkew }}
+  topologyKey: {{ $spread.topologyKey }}
+  whenUnsatisfiable: {{ $spread.whenUnsatisfiable }}
   labelSelector:
     matchLabels: {{- include "common.labels.matchLabels" .context | nindent 6 }}
       app.kubernetes.io/component: {{ .component }}

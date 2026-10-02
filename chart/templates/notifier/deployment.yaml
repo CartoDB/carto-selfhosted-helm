@@ -13,7 +13,7 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ .Values.notifier.replicaCount }}
+  replicas: {{ include "carto.replicas" (dict "value" .Values.notifier "context" $) }}
   {{- if .Values.notifier.updateStrategy }}
   strategy: {{- toYaml .Values.notifier.updateStrategy | nindent 4 }}
   {{- end }}

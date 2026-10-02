@@ -16,7 +16,7 @@ spec:
   {{- if (include "carto.aiProxy.singleReplicaOnInstall" .) }}
   replicas: 1
   {{- else if not .Values.aiProxy.autoscaling.enabled }}
-  replicas: {{ .Values.aiProxy.replicaCount }}
+  replicas: {{ include "carto.replicas" (dict "value" .Values.aiProxy "context" $) }}
   {{- end }}
   {{- if .Values.aiProxy.updateStrategy }}
   strategy: {{- toYaml .Values.aiProxy.updateStrategy | nindent 4 }}
