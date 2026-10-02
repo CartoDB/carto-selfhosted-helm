@@ -14,7 +14,7 @@ metadata:
   {{- end }}
 spec:
   {{- if not .Values.publicEventsApi.autoscaling.enabled }}
-  replicas: {{ include "carto.replicas" (dict "value" .Values.publicEventsApi "context" $) }}
+  replicas: {{ include "carto.replicas" (dict "replicas" .Values.publicEventsApi.replicaCount "context" $) }}
   {{- end }}
   {{- if .Values.publicEventsApi.updateStrategy }}
   strategy: {{- toYaml .Values.publicEventsApi.updateStrategy | nindent 4 }}

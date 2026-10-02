@@ -14,7 +14,7 @@ metadata:
   {{- end }}
 spec:
   {{- if not .Values.accountsWww.autoscaling.enabled }}
-  replicas: {{ include "carto.replicas" (dict "value" .Values.accountsWww "context" $) }}
+  replicas: {{ include "carto.replicas" (dict "replicas" .Values.accountsWww.replicaCount "context" $) }}
   {{- end }}
   {{- if .Values.accountsWww.updateStrategy }}
   strategy: {{- toYaml .Values.accountsWww.updateStrategy | nindent 4 }}
