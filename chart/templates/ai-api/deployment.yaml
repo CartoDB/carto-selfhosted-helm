@@ -14,7 +14,7 @@ metadata:
   {{- end }}
 spec:
   {{- if not .Values.aiApi.autoscaling.enabled }}
-  replicas: {{ .Values.aiApi.replicaCount }}
+  replicas: {{ include "carto.replicas" (dict "value" .Values.aiApi "context" $) }}
   {{- end }}
   {{- if .Values.aiApi.updateStrategy }}
   strategy: {{- toYaml .Values.aiApi.updateStrategy | nindent 4 }}
