@@ -13,7 +13,7 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ .Values.accountsSubscriber.replicaCount }}
+  replicas: {{ include "carto.replicas" (dict "replicas" .Values.accountsSubscriber.replicaCount "context" $) }}
   {{- if .Values.accountsSubscriber.updateStrategy }}
   strategy: {{- toYaml .Values.accountsSubscriber.updateStrategy | nindent 4 }}
   {{- end }}
@@ -48,6 +48,11 @@ spec:
         podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.accountsSubscriber.podAffinityPreset "component" "accounts-subscriber" "context" $) | nindent 10 }}
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.accountsSubscriber.podAntiAffinityPreset "component" "accounts-subscriber" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.accountsSubscriber.nodeAffinityPreset.type "key" .Values.accountsSubscriber.nodeAffinityPreset.key "values" .Values.accountsSubscriber.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.accountsSubscriber.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.topologySpreadConstraints "context" $) | nindent 8 }}
+      {{- else if .Values.highAvailability.topologySpread.enabled }}
+      topologySpreadConstraints: {{- include "carto.topologySpreadConstraints" (dict "component" "accounts-subscriber" "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.accountsSubscriber.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.accountsSubscriber.nodeSelector "context" $) | nindent 8 }}

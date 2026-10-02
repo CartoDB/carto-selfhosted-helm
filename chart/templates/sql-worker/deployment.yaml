@@ -16,7 +16,7 @@ spec:
   # In order to publish the charts in official marketplaces, it's necessary that all components are able to start with default values without errors
   # Components which needs other configuration requirements such as client specific parameters should not boot if these values ​​are not provided
   {{- if .Values.cartoConfigValues.selfHostedTenantId }}
-  replicas: {{ .Values.sqlWorker.replicaCount }}
+  replicas: {{ include "carto.replicas" (dict "replicas" .Values.sqlWorker.replicaCount "context" $) }}
   {{- else }}
   replicas: 0
   {{- end }}
@@ -56,6 +56,11 @@ spec:
         podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.sqlWorker.podAffinityPreset "component" "sql-worker" "context" $) | nindent 10 }}
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.sqlWorker.podAntiAffinityPreset "component" "sql-worker" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.sqlWorker.nodeAffinityPreset.type "key" .Values.sqlWorker.nodeAffinityPreset.key "values" .Values.sqlWorker.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.sqlWorker.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.topologySpreadConstraints "context" $) | nindent 8 }}
+      {{- else if .Values.highAvailability.topologySpread.enabled }}
+      topologySpreadConstraints: {{- include "carto.topologySpreadConstraints" (dict "component" "sql-worker" "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.sqlWorker.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.sqlWorker.nodeSelector "context" $) | nindent 8 }}

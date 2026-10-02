@@ -14,7 +14,7 @@ metadata:
   {{- end }}
 spec:
   {{- if not .Values.publicEventsApi.autoscaling.enabled }}
-  replicas: {{ .Values.publicEventsApi.replicaCount }}
+  replicas: {{ include "carto.replicas" (dict "replicas" .Values.publicEventsApi.replicaCount "context" $) }}
   {{- end }}
   {{- if .Values.publicEventsApi.updateStrategy }}
   strategy: {{- toYaml .Values.publicEventsApi.updateStrategy | nindent 4 }}
@@ -49,6 +49,11 @@ spec:
         podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.publicEventsApi.podAffinityPreset "component" "public-events-api" "context" $) | nindent 10 }}
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.publicEventsApi.podAntiAffinityPreset "component" "public-events-api" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.publicEventsApi.nodeAffinityPreset.type "key" .Values.publicEventsApi.nodeAffinityPreset.key "values" .Values.publicEventsApi.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.publicEventsApi.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.topologySpreadConstraints "context" $) | nindent 8 }}
+      {{- else if .Values.highAvailability.topologySpread.enabled }}
+      topologySpreadConstraints: {{- include "carto.topologySpreadConstraints" (dict "component" "public-events-api" "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.publicEventsApi.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.publicEventsApi.nodeSelector "context" $) | nindent 8 }}
