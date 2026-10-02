@@ -803,6 +803,24 @@ Return the proper Carto http-cache full name
 {{- end -}}
 
 {{/*
+Return the name of the headless http-cache control Service
+*/}}
+{{- define "carto.httpCache.controlServiceName" -}}
+{{- printf "%s-http-cache-control" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return true when purges must be sent to every http-cache replica.
+Derived from the replica count, never set directly: with more than one
+replica, purging through the regular Service clears only one of them.
+*/}}
+{{- define "carto.httpCache.fanoutEnabled" -}}
+{{- if and .Values.appConfigValues.httpCacheEnabled (not .Values.cartoConfigValues.onlyRunRouter) (gt (int .Values.httpCache.replicaCount) 1) -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto http-cache image name
 */}}
 {{- define "carto.httpCache.image" -}}
