@@ -6568,6 +6568,15 @@ aiProxy:
   ## @param aiProxy.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the aiProxy container(s)
   ##
   extraVolumeMounts: []
+  ## aiProxy database migration Job, run before every install and upgrade so the pods never migrate (not with internalPostgresql)
+  ## @param aiProxy.migrationJob.backoffLimit Number of retries before the migration Job is considered failed
+  ## @param aiProxy.migrationJob.activeDeadlineSeconds Maximum duration of the migration Job, across all retries
+  ## @param aiProxy.migrationJob.resources Resources for the migration Job container
+  ##
+  migrationJob:
+    backoffLimit: 3
+    activeDeadlineSeconds: 1800
+    resources: {}
   ## @param aiProxy.sidecars Add additional sidecar containers to the aiProxy pod(s)
   ## e.g:
   ## sidecars:
