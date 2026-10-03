@@ -1634,22 +1634,70 @@ Return the aiProxy salt key checksum
 {{- end -}}
 
 {{/*
-Return true when aiProxy can run more than one pod, so its database migrations run in a Job instead of in every pod
+Return true when the aiProxy database migrations run in a Job instead of in every pod. Not with the bundled
+PostgreSQL: the Job is a pre-install hook, and the bundled database does not exist yet when it runs
 */}}
 {{- define "carto.aiProxy.migrationJobEnabled" -}}
-{{- if or .Values.aiProxy.autoscaling.enabled (gt (int .Values.aiProxy.replicaCount) 1) -}}
+{{- if not .Values.internalPostgresql.enabled -}}
 true
 {{- end -}}
 {{- end -}}
 
 {{/*
-Return true when aiProxy must start with a single replica: the migration Job only runs on upgrades, so on a fresh
-install one pod applies the migrations and the configured replicas or autoscaling take effect on the next upgrade
+Return the aiProxy environment, shared by its ConfigMap and by the migration Job's hook ConfigMap
 */}}
-{{- define "carto.aiProxy.singleReplicaOnInstall" -}}
-{{- if and .Release.IsInstall (include "carto.aiProxy.migrationJobEnabled" .) -}}
-true
-{{- end -}}
+{{- define "carto.aiProxy.configData" -}}
+{{- if not (include "carto.disconnected.enabled" .) }}
+AUTH0_AUDIENCE: "carto-cloud-native-api"
+AUTH0_DOMAIN: {{ .Values.cartoConfigValues.cartoAuth0CustomDomain | quote }}
+AUTH0_NAMESPACE: "http://app.carto.com"
+{{- end }}
+{{- with include "carto.disconnected.commonEnv" . }}
+{{ . }}
+{{- end }}
+AI_API_URL: "http://{{ include "carto.aiApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+{{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
+GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . | quote }}
+{{- end }}
+{{- if .Values.externalProxy.enabled }}
+HTTP_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+HTTPS_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+https_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+GRPC_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
+grpc_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
+NODE_TLS_REJECT_UNAUTHORIZED: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
+{{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
+NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+{{- end }}
+{{- end }}
+LITELLM_DATABASE_HOST: {{ include "carto.postgresql.host" . | quote }}
+LITELLM_DATABASE_USERNAME: {{ include "carto.postgresql.user" . | quote }}
+LITELLM_DATABASE_NAME: {{ .Values.externalPostgresql.aiProxyDatabaseName | quote }}
+LITELLM_DATABASE_PORT: {{ include "carto.postgresql.port" . | quote }}
+LITELLM_DATABASE_SSL_MODE: {{ include "carto.aiProxy.databaseSslMode" . | quote }}
+LITELLM_DATABASE_SSL_CA_PATH: {{ include "carto.postgresql.configMapMountAbsolutePath" . | quote }}
+LITELLM_LOG_LEVEL: {{ ternary "DEBUG" "INFO" (eq .Values.appConfigValues.logLevel "debug") | quote }}
+LITELLM_MIGRATION_DIR: "/app/migrations"
+LITELLM_MODE: "PRODUCTION"
+# Pin to one worker: the entrypoint derives two from the CPU limit and the pair
+# crash-loops at boot. Override via aiProxy.extraEnvVars.
+LITELLM_NUM_WORKERS: "1"
+LITELLM_REDIS_DB: "1"
+LITELLM_REDIS_HOST: {{ include "carto.redis.host" . | quote }}
+LITELLM_REDIS_PORT: {{ include "carto.redis.port" . | quote }}
+LITELLM_REDIS_TLS_ENABLED: {{ .Values.externalRedis.tlsEnabled | quote }}
+LITELLM_VERTEXAI_PROJECT: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
+LITELLM_VERTEXAI_LOCATION: {{ .Values.cartoConfigValues.selfHostedGcpProjectRegion | quote }}
+LITELLM_TENANT_ID: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
+LITELLM_NON_ROOT: "true"
+SERVER_ROOT_PATH: "/litellm"
+{{- if (include "carto.trustedCACerts.enabled" .) }}
+# aiproxy python httpx requirement
+SSL_CERT_FILE: {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . | quote }}
+{{- end }}
+XDG_CACHE_HOME: "/app/cache"
 {{- end -}}
 
 {{/*
