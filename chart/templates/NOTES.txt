@@ -43,13 +43,6 @@ proxy is configured.
 
 {{- end }}
 
-{{- if and .Values.appConfigValues.aiFeaturesEnabled (not .Values.cartoConfigValues.onlyRunRouter) (include "carto.aiProxy.singleReplicaOnInstall" .) }}
-
-NOTE: aiProxy starts with 1 replica on a fresh install, so its database migrations run only once.
-Run an upgrade (or redeploy from the KOTS Admin Console) to scale it to the configured replicas or autoscaling.
-
-{{- end }}
-
 ** Please be patient while the chart is being deployed **
 
 ** Did you check our recommendations to customize your app in production mode? **
