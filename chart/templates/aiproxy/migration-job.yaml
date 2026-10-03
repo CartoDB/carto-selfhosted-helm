@@ -1,41 +1,9 @@
 {{- /*
-The Job is a pre-install hook, so it runs before any regular release resource exists. Everything it reads is either
-created by a hook at a lower weight below, or owned by the customer (existing Secrets and ConfigMaps).
+The Job is a pre-install hook, so it runs before any regular release resource exists. It only reads plain values,
+the Secret below (created by a hook at a lower weight) or Secrets and ConfigMaps the customer already owns.
 */}}
 {{- if and (.Values.appConfigValues.aiFeaturesEnabled) (not .Values.cartoConfigValues.onlyRunRouter) (include "carto.aiProxy.migrationJobEnabled" .) }}
 {{- $name := printf "%s-migrations" (include "carto.aiProxy.fullname" .) }}
-{{- $trustedCAInline := include "carto.trustedCACerts.hasInline" . }}
-{{- if not .Values.aiProxy.existingConfigMap }}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ $name }}
-  namespace: {{ .Release.Namespace | quote }}
-  labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: aiproxy-migrations
-  annotations:
-    "helm.sh/hook": pre-install, pre-upgrade
-    "helm.sh/hook-weight": "-1"
-    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
-data: {{- include "carto.aiProxy.configData" . | trim | nindent 2 }}
----
-{{- end }}
-{{- if $trustedCAInline }}
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ $name }}-ca
-  namespace: {{ .Release.Namespace | quote }}
-  labels: {{- include "common.labels.standard" . | nindent 4 }}
-    app.kubernetes.io/component: aiproxy-migrations
-  annotations:
-    "helm.sh/hook": pre-install, pre-upgrade
-    "helm.sh/hook-weight": "-1"
-    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
-data:
-  {{ include "carto.trustedCACerts.configMapMountFilename" . }}: {{ include "carto.trustedCACerts.bundle" . | quote }}
----
-{{- end }}
 {{- if not .Values.externalPostgresql.existingSecret }}
 apiVersion: v1
 kind: Secret
@@ -110,6 +78,11 @@ spec:
           {{- end }}
           args: ["migrate"]
           env:
+            {{- /* The aiProxy ConfigMap does not exist yet on install, so its shared keys are set as plain values */}}
+            {{- range $key, $value := include "carto.aiProxy.commonEnv" . | fromYaml }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
             - name: LITELLM_DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -118,9 +91,8 @@ spec:
             {{- if .Values.aiProxy.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
+          {{- if or .Values.aiProxy.extraEnvVarsCM .Values.aiProxy.extraEnvVarsSecret }}
           envFrom:
-            - configMapRef:
-                name: {{ .Values.aiProxy.existingConfigMap | default $name }}
             {{- if .Values.aiProxy.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraEnvVarsCM "context" $) }}
@@ -129,6 +101,7 @@ spec:
             - secretRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraEnvVarsSecret "context" $) }}
             {{- end }}
+          {{- end }}
           {{- if .Values.aiProxy.migrationJob.resources }}
           resources: {{- toYaml .Values.aiProxy.migrationJob.resources | nindent 12 }}
           {{- end }}
@@ -139,11 +112,6 @@ spec:
               mountPath: /app/cache
             - name: app-migrations
               mountPath: /app/migrations
-            {{- if (include "carto.trustedCACerts.enabled" .) }}
-            - name: trusted-ca-certs
-              mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
-              readOnly: true
-            {{- end }}
             {{- if .Values.aiProxy.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
@@ -155,11 +123,6 @@ spec:
           emptyDir: {}
         - name: app-migrations
           emptyDir: {}
-        {{- if (include "carto.trustedCACerts.enabled" .) }}
-        - name: trusted-ca-certs
-          configMap:
-            name: {{ ternary (printf "%s-ca" $name) (include "carto.trustedCACerts.configMapName" .) (not (empty $trustedCAInline)) }}
-        {{- end }}
         {{- if .Values.aiProxy.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
