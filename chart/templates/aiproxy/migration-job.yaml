@@ -1,8 +1,62 @@
+{{- /*
+The Job is a pre-install hook, so it runs before any regular release resource exists. Everything it reads is either
+created by a hook at a lower weight below, or owned by the customer (existing Secrets and ConfigMaps).
+*/}}
 {{- if and (.Values.appConfigValues.aiFeaturesEnabled) (not .Values.cartoConfigValues.onlyRunRouter) (include "carto.aiProxy.migrationJobEnabled" .) }}
+{{- $name := printf "%s-migrations" (include "carto.aiProxy.fullname" .) }}
+{{- $trustedCAInline := include "carto.trustedCACerts.hasInline" . }}
+{{- if not .Values.aiProxy.existingConfigMap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: aiproxy-migrations
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+data: {{- include "carto.aiProxy.configData" . | trim | nindent 2 }}
+---
+{{- end }}
+{{- if $trustedCAInline }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}-ca
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: aiproxy-migrations
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+data:
+  {{ include "carto.trustedCACerts.configMapMountFilename" . }}: {{ include "carto.trustedCACerts.bundle" . | quote }}
+---
+{{- end }}
+{{- if not .Values.externalPostgresql.existingSecret }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $name }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: aiproxy-migrations
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
+type: Opaque
+data:
+  db-password: {{ .Values.externalPostgresql.password | b64enc | quote }}
+---
+{{- end }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "carto.aiProxy.fullname" . }}-migrations
+  name: {{ $name }}
   namespace: {{ .Release.Namespace | quote }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
     app.kubernetes.io/component: aiproxy-migrations
@@ -10,7 +64,7 @@ metadata:
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
     {{- end }}
   annotations:
-    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook": pre-install, pre-upgrade
     "helm.sh/hook-weight": "0"
     "helm.sh/hook-delete-policy": before-hook-creation, hook-succeeded
     {{- if .Values.commonAnnotations }}
@@ -31,7 +85,8 @@ spec:
       {{- end }}
     spec:
       restartPolicy: Never
-      serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+      {{- /* The release ServiceAccount does not exist yet on install; the migrations only talk to PostgreSQL */}}
+      automountServiceAccountToken: false
       {{- include "carto.imagePullSecrets" . | nindent 6 }}
       {{- if .Values.aiProxy.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.hostAliases "context" $) | nindent 8 }}
@@ -58,35 +113,14 @@ spec:
             - name: LITELLM_DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "carto.postgresql.secretName" . }}
+                  name: {{ .Values.externalPostgresql.existingSecret | default $name }}
                   key: {{ include "carto.postgresql.secret.key" . }}
-            - name: LITELLM_REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "carto.redis.secretName" . }}
-                  key: {{ include "carto.redis.existingsecret.key" . }}
-            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
-                "LITELLM_MASTER_KEY"
-                "LITELLM_SALT_KEY"
-                "GEMINI_API_KEY"
-                "LITELLM_JWT_SECRET"
-             ) "context" $ ) | nindent 12 }}
             {{- if .Values.aiProxy.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
             - configMapRef:
-                name: {{ template "carto.aiProxy.configmapName" . }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
-                "LITELLM_MASTER_KEY"
-                "LITELLM_SALT_KEY"
-                "GEMINI_API_KEY"
-                "LITELLM_JWT_SECRET"
-             ) "context" $ ) -}}
-            {{- if $secretContent }}
-            - secretRef:
-                name: {{ include "carto.aiProxy.secretName" . }}
-            {{- end }}
+                name: {{ .Values.aiProxy.existingConfigMap | default $name }}
             {{- if .Values.aiProxy.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraEnvVarsCM "context" $) }}
@@ -99,23 +133,12 @@ spec:
           resources: {{- toYaml .Values.aiProxy.migrationJob.resources | nindent 12 }}
           {{- end }}
           volumeMounts:
-            {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
-            - name: gcp-default-service-account-key
-              mountPath: {{ include "carto.google.secretMountDir" . }}
-              readOnly: true
-            {{- end }}
             - name: tmp
               mountPath: /tmp
             - name: app-cache
               mountPath: /app/cache
             - name: app-migrations
               mountPath: /app/migrations
-            {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
-            - name: postgresql-ssl-ca
-              mountPath: {{ include "carto.postgresql.configMapMountAbsolutePath" . }}
-              subPath: {{ include "carto.postgresql.configMapMountFilename" . }}
-              readOnly: true
-            {{- end }}
             {{- if (include "carto.trustedCACerts.enabled" .) }}
             - name: trusted-ca-certs
               mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
@@ -125,14 +148,6 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
       volumes:
-        {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
-        - name: gcp-default-service-account-key
-          secret:
-            secretName: {{ include "carto.google.secretName" . }}
-            items:
-              - key: {{ include "carto.google.secretKey" . }}
-                path: {{ include "carto.google.secretMountFilename" . }}
-        {{- end }}
         - name: tmp
           emptyDir:
             medium: Memory
@@ -140,18 +155,10 @@ spec:
           emptyDir: {}
         - name: app-migrations
           emptyDir: {}
-        {{- if and (.Values.externalPostgresql.sslEnabled) (.Values.externalPostgresql.sslCA) }}
-        - name: postgresql-ssl-ca
-          configMap:
-            name: {{ include "carto.postgresql.configMapName" . }}
-            items:
-              - key: {{ include "carto.postgresql.configMapMountFilename" . }}
-                path: {{ include "carto.postgresql.configMapMountFilename" . }}
-        {{- end }}
         {{- if (include "carto.trustedCACerts.enabled" .) }}
         - name: trusted-ca-certs
           configMap:
-            name: {{ include "carto.trustedCACerts.configMapName" . }}
+            name: {{ ternary (printf "%s-ca" $name) (include "carto.trustedCACerts.configMapName" .) (not (empty $trustedCAInline)) }}
         {{- end }}
         {{- if .Values.aiProxy.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraVolumes "context" $) | nindent 8 }}

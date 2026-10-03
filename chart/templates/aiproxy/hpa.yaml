@@ -1,4 +1,4 @@
-{{- if and (.Values.appConfigValues.aiFeaturesEnabled) (.Values.aiProxy.autoscaling.enabled) (not (include "carto.aiProxy.singleReplicaOnInstall" .)) }}
+{{- if and (.Values.appConfigValues.aiFeaturesEnabled) (.Values.aiProxy.autoscaling.enabled) }}
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
