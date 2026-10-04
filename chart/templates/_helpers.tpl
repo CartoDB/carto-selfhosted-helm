@@ -1654,8 +1654,7 @@ LITELLM_DATABASE_NAME: {{ .Values.externalPostgresql.aiProxyDatabaseName | quote
 LITELLM_DATABASE_PORT: {{ include "carto.postgresql.port" . | quote }}
 LITELLM_DATABASE_SSL_MODE: {{ include "carto.aiProxy.databaseSslMode" . | quote }}
 LITELLM_LOG_LEVEL: {{ ternary "DEBUG" "INFO" (eq .Values.appConfigValues.logLevel "debug") | quote }}
-{{- /* Use the model cost map and Anthropic beta headers bundled in the image instead of fetching them from GitHub at startup */}}
-LITELLM_LOCAL_ANTHROPIC_BETA_HEADERS: "True"
+{{- /* Use the model cost map bundled in the image instead of fetching it from GitHub at startup */}}
 LITELLM_LOCAL_MODEL_COST_MAP: "True"
 LITELLM_MIGRATION_DIR: "/app/migrations"
 LITELLM_REDIS_DB: "1"
