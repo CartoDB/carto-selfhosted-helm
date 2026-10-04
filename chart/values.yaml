@@ -1185,9 +1185,17 @@ importApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param importApi.lifecycleHooks for the import-api container(s) to automate configuration before or after startup
+  ## @skip importApi.lifecycleHooks [object] for the import-api container(s) to automate configuration before or after startup
+  ## @skip importApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param importApi.extraEnvVars Array with extra environment variables to add to import-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -1793,9 +1801,17 @@ ldsApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param ldsApi.lifecycleHooks for the lds-api container(s) to automate configuration before or after startup
+  ## @skip ldsApi.lifecycleHooks [object] for the lds-api container(s) to automate configuration before or after startup
+  ## @skip ldsApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param ldsApi.extraEnvVars Array with extra environment variables to add to lds-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -2126,9 +2142,17 @@ publicEventsApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param publicEventsApi.lifecycleHooks for the public-events-api container(s) to automate configuration before or after startup
+  ## @skip publicEventsApi.lifecycleHooks [object] for the public-events-api container(s) to automate configuration before or after startup
+  ## @skip publicEventsApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param publicEventsApi.extraEnvVars Array with extra environment variables to add to public-events-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -2459,9 +2483,17 @@ mapsApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param mapsApi.lifecycleHooks for the maps-api container(s) to automate configuration before or after startup
+  ## @skip mapsApi.lifecycleHooks [object] for the maps-api container(s) to automate configuration before or after startup
+  ## @skip mapsApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param mapsApi.extraEnvVars Array with extra environment variables to add to maps-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -4504,9 +4536,17 @@ workspaceApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param workspaceApi.lifecycleHooks for the workspace-api container(s) to automate configuration before or after startup
+  ## @skip workspaceApi.lifecycleHooks [object] for the workspace-api container(s) to automate configuration before or after startup
+  ## @skip workspaceApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param workspaceApi.extraEnvVars Array with extra environment variables to add to workspace-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -6294,9 +6334,17 @@ aiApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param aiApi.lifecycleHooks for the ai-api container(s) to automate configuration before or after startup
+  ## @skip aiApi.lifecycleHooks [object] for the ai-api container(s) to automate configuration before or after startup
+  ## @skip aiApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param aiApi.customHeaders Custom HTTP headers to inject into every outgoing LLM request. Rendered as JSON into the AI_CUSTOM_HEADERS env var. Intended for corporate LLM gateways that require authentication or tracking headers. Supports template variables resolved per-request: `{{sso_user_id}}`, `{{client_ip}}`, `{{user_agent}}`, `{{account_id}}`, `{{ai_feature}}`, `{{ai_proxy_ip}}`.
   ## e.g:
   ## customHeaders:
@@ -6970,9 +7018,17 @@ authApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param authApi.lifecycleHooks for the auth-api container(s) to automate configuration before or after startup
+  ## @skip authApi.lifecycleHooks [object] for the auth-api container(s) to automate configuration before or after startup
+  ## @skip authApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param authApi.extraEnvVars Array with extra environment variables to add to auth-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -7365,9 +7421,17 @@ accountsApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param accountsApi.lifecycleHooks for the accounts-api container(s) to automate configuration before or after startup
+  ## @skip accountsApi.lifecycleHooks [object] for the accounts-api container(s) to automate configuration before or after startup
+  ## @skip accountsApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param accountsApi.extraEnvVars Array with extra environment variables to add to accounts-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
