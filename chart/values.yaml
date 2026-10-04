@@ -568,9 +568,9 @@ commonLabels: {}
 ## @param commonAnnotations Annotations to add to all deployed objects
 ##
 commonAnnotations: {}
-## @param highAvailability.enabled Run every component with at least `highAvailability.replicas` replicas and a PodDisruptionBudget (`maxUnavailable: 1`, unless the component enables its own `podDisruptionBudget`); components with autoscaling enabled keep their HPA, with `minReplicas` raised to at least `highAvailability.replicas`
+## @param highAvailability.enabled Run every component (except the disconnected-only accountsApi, accountsSubscriber and authApi) with at least `highAvailability.replicas` replicas and a PodDisruptionBudget (`maxUnavailable: 1`, unless the component enables its own `podDisruptionBudget`); components with autoscaling enabled keep their HPA, with `minReplicas` raised to at least `highAvailability.replicas`
 ## @param highAvailability.replicas Minimum replicas per component; a component's own higher `replicaCount` is kept
-## @param highAvailability.topologySpread.enabled Spread the replicas of every component across `highAvailability.topologySpread.topologyKey` domains; a component's own `topologySpreadConstraints` value replaces it for that component
+## @param highAvailability.topologySpread.enabled Spread the replicas of every component (except the disconnected-only ones) across `highAvailability.topologySpread.topologyKey` domains; a component's own `topologySpreadConstraints` value replaces it for that component
 ## @param highAvailability.topologySpread.topologyKey Node label that defines the spread domain
 ## @param highAvailability.topologySpread.maxSkew Maximum difference in replica count between any two domains
 ## @param highAvailability.topologySpread.whenUnsatisfiable `ScheduleAnyway` keeps scheduling when the spread can't be met; `DoNotSchedule` leaves the pod Pending instead
@@ -6947,10 +6947,6 @@ authApi:
   ## NOTE: `authApi.podAffinityPreset`, `authApi.podAntiAffinityPreset`, and `authApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param authApi.topologySpreadConstraints Topology spread constraints for authApi pods assignment, evaluated as a template
-  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
-  ##
-  topologySpreadConstraints: []
   ## @param authApi.nodeSelector Node.js labels for auth-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -7346,10 +7342,6 @@ accountsApi:
   ## NOTE: `accountsApi.podAffinityPreset`, `accountsApi.podAntiAffinityPreset`, and `accountsApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
-  ## @param accountsApi.topologySpreadConstraints Topology spread constraints for accountsApi pods assignment, evaluated as a template
-  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
-  ##
-  topologySpreadConstraints: []
   ## @param accountsApi.nodeSelector Node.js labels for accounts-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -7629,10 +7621,6 @@ accountsSubscriber:
   ## @param accountsSubscriber.affinity Affinity for accounts-subscriber pods assignment
   ##
   affinity: {}
-  ## @param accountsSubscriber.topologySpreadConstraints Topology spread constraints for accountsSubscriber pods assignment, evaluated as a template
-  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
-  ##
-  topologySpreadConstraints: []
   ## @param accountsSubscriber.nodeSelector Node.js labels for accounts-subscriber pods assignment
   ##
   nodeSelector: {}
