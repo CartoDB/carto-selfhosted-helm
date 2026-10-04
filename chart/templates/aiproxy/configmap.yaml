@@ -44,6 +44,9 @@ data:
   LITELLM_DATABASE_PORT: {{ include "carto.postgresql.port" . | quote }}
   LITELLM_DATABASE_SSL_MODE: {{ include "carto.aiProxy.databaseSslMode" . | quote }}
   LITELLM_DATABASE_SSL_CA_PATH: {{ include "carto.postgresql.configMapMountAbsolutePath" . | quote }}
+  # Use the model cost map bundled in the image instead of downloading it from GitHub at
+  # startup: no egress needed, and every pod of a release uses the same model data.
+  LITELLM_LOCAL_MODEL_COST_MAP: "True"
   LITELLM_LOG_LEVEL: {{ ternary "DEBUG" "INFO" (eq .Values.appConfigValues.logLevel "debug") | quote }}
   LITELLM_MIGRATION_DIR: "/app/migrations"
   LITELLM_MODE: "PRODUCTION"
