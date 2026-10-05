@@ -111,6 +111,22 @@ Validate auth-api (internal authentication) config
 {{- end -}}
 
 {{/*
+Validate SMTP relay config (disconnected mode)
+*/}}
+{{- define "carto.validateValues.smtp" -}}
+{{- if (include "carto.smtp.enabled" .) -}}
+{{- $messages := list -}}
+{{- if not .Values.appConfigValues.disconnected.smtp.from -}}
+{{- $messages = append $messages "CARTO: Missing SMTP From header\n\nIf appConfigValues.disconnected.smtp.host is set you need to set appConfigValues.disconnected.smtp.from" -}}
+{{- end -}}
+{{- if and .Values.appConfigValues.disconnected.smtp.user (not .Values.appSecrets.smtpPassword.value) (not .Values.appSecrets.smtpPassword.existingSecret.name) -}}
+{{- $messages = append $messages "CARTO: Missing SMTP password\n\nIf appConfigValues.disconnected.smtp.user is set you need to set one of appSecrets.smtpPassword.value or appSecrets.smtpPassword.existingSecret" -}}
+{{- end -}}
+{{- join "\n" $messages -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Compile all warnings into a single message, and call fail.
 */}}
 {{- define "carto.validateValues" -}}
@@ -122,6 +138,7 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := append $messages (include "carto.validateValues.serviceAccount" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.s3Compatible" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.authApi" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.smtp" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 

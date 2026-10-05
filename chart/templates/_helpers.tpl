@@ -83,6 +83,7 @@ LITELLM_SALT_KEY: cartoSecrets.litellmSaltKey
 AI_OPENAI_API_KEY: cartoSecrets.litellmMasterKey
 GEMINI_API_KEY: cartoSecrets.geminiApiKey
 CARTO_INTERNAL_SERVICE_TOKEN: cartoSecrets.authApiInternalServiceToken
+CARTO_SMTP_PASSWORD: appSecrets.smtpPassword
 {{- end -}}
 
 {{/*
@@ -1733,6 +1734,50 @@ REACT_APP_OIDC_CLIENT_ID: {{ .Values.appConfigValues.disconnected.spaClient.clie
 {{- end -}}
 
 {{/*
+Shared by accounts-api and the tenant-requirements-checker so the preflight validates the relay the app uses.
+*/}}
+{{- define "carto.smtp.enabled" -}}
+{{- if and (include "carto.disconnected.enabled" .) .Values.appConfigValues.disconnected.smtp.host -}}true{{- end -}}
+{{- end -}}
+
+{{- define "carto.smtp.env" -}}
+{{- if (include "carto.smtp.enabled" .) -}}
+{{- $smtp := .Values.appConfigValues.disconnected.smtp -}}
+CARTO_SMTP_HOST: {{ $smtp.host | quote }}
+CARTO_SMTP_PORT: {{ $smtp.port | quote }}
+CARTO_SMTP_SECURE: {{ $smtp.secure | quote }}
+CARTO_SMTP_FROM: {{ $smtp.from | quote }}
+CARTO_SMTP_REJECT_UNAUTHORIZED: {{ $smtp.rejectUnauthorized | quote }}
+{{- if $smtp.user }}
+CARTO_SMTP_USER: {{ $smtp.user | quote }}
+{{- end }}
+{{- if $smtp.ca }}
+CARTO_SMTP_CA: {{ include "carto.smtp.caMountAbsolutePath" . | quote }}
+{{- end }}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.smtp.auth.enabled" -}}
+{{- if and (include "carto.smtp.enabled" .) .Values.appConfigValues.disconnected.smtp.user -}}true{{- end -}}
+{{- end -}}
+
+{{- define "carto.smtp.ca.enabled" -}}
+{{- if and (include "carto.smtp.enabled" .) .Values.appConfigValues.disconnected.smtp.ca -}}true{{- end -}}
+{{- end -}}
+
+{{- define "carto.smtp.caConfigMapName" -}}
+{{- printf "%s-%s" .Release.Name "smtp-ca" -}}
+{{- end -}}
+
+{{- define "carto.smtp.caMountDir" -}}
+{{- print "/usr/src/certs/smtp-ca" -}}
+{{- end -}}
+
+{{- define "carto.smtp.caMountAbsolutePath" -}}
+{{- printf "%s/ca.crt" (include "carto.smtp.caMountDir" .) -}}
+{{- end -}}
+
+{{/*
 Base URL of the in-cluster accounts-api service that auth-api calls for quota checks and SSO
 group sync.
 */}}
@@ -1762,6 +1807,14 @@ group sync.
 {{- else -}}
 {{- include "carto.accountsApi.fullname" . -}}
 {{- end -}}
+{{- end -}}
+
+{{- define "carto.accountsApi.secretVars" -}}
+- CARTO_INTERNAL_SERVICE_TOKEN
+- ENCRYPTION_SECRET_KEY
+{{- if (include "carto.smtp.auth.enabled" .) }}
+- CARTO_SMTP_PASSWORD
+{{- end }}
 {{- end -}}
 
 {{- define "carto.accountsApi.nodeOptions" -}}
