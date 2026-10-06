@@ -1,0 +1,6 @@
+# Rules shared across the team.
+# Anything not listed here is a personal rule and stays ignored, so committing
+# a new shared rule means adding `!<name>.md` below.
+!helm-templates.md
+!values-yaml.md
+!kots-manifests.md
