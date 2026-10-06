@@ -2,19 +2,18 @@
 #
 # Unit-level render contract for the redaction machinery. The behavioral test
 # (test-redactors.sh) runs the real redact engine but only exercises the
-# Redactor extracted from the support-bundle Secret — the preflight Secret
-# ships its own copy of the same include, and a broken indent or dropped
-# include there would leak credentials from preflight bundles with every
-# behavioral test still green. This test pins the rendered shape of BOTH
-# Secrets, on both install paths, without needing a cluster or the
-# troubleshoot CLI.
+# Redactor extracted from the support-bundle Secret. KOTS Admin Console bundles
+# never see that Secret's Redactor — they use the release-level copy in
+# manifests/kots-redactor.yaml — so a drift between the two would leak
+# credentials from KOTS bundles with every behavioral test still green. This
+# test pins the rendered shape on both install paths, without needing a
+# cluster or the troubleshoot CLI.
 #
 # Contract:
 #   1. The support-bundle Secret (label troubleshoot.sh/kind: support-bundle)
 #      embeds a multi-doc spec: kind SupportBundle + standalone kind Redactor.
-#   2. The preflight Secret (label troubleshoot.sh/kind: preflight) embeds
-#      kind Preflight + the same standalone Redactor.
-#   3. Both Redactor docs carry the expected context-first rule list.
+#   2. That Redactor carries the expected context-first rule list.
+#   3. manifests/kots-redactor.yaml carries exactly the same rules.
 #   4. Every rule has at least one removal (regex, yamlPath or values); every
 #      regex compiles and contains a (?P<mask>…) group — mask is what
 #      troubleshoot replaces with ***HIDDEN***, so a regex rule without one
@@ -26,6 +25,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CHART_DIR="$(dirname "$SCRIPT_DIR")"
+KOTS_REDACTOR="$(dirname "$CHART_DIR")/manifests/kots-redactor.yaml"
 WORK_DIR="$(mktemp -d)"
 trap 'rm -rf "$WORK_DIR"' EXIT
 
@@ -40,10 +40,10 @@ for MODE in default replicated; do
     helm template carto . -n test > "$WORK_DIR/rendered-$MODE.yaml"
   fi
 
-  python3 - "$WORK_DIR/rendered-$MODE.yaml" "$MODE" <<'PY'
+  python3 - "$WORK_DIR/rendered-$MODE.yaml" "$MODE" "$KOTS_REDACTOR" <<'PY'
 import re, sys, yaml
 
-path, mode = sys.argv[1], sys.argv[2]
+path, mode, kots_path = sys.argv[1], sys.argv[2], sys.argv[3]
 failures = []
 
 # Select the release's own Secret by exact name — in replicated mode the SDK
@@ -76,24 +76,25 @@ def redactor_from_secret(docs, name, label, key, expected_kind):
 
 docs = list(yaml.safe_load_all(open(path)))
 sb = redactor_from_secret(docs, 'carto-support-bundle', 'support-bundle', 'support-bundle-spec', 'SupportBundle')
-pf = redactor_from_secret(docs, 'carto-preflight-config', 'preflight', 'preflight.yaml', 'Preflight')
+sb_rules = sb['spec']['redactors'] if sb else []
 
-def rule_names(r):
-    return [x.get('name') for x in r['spec']['redactors']] if r else []
-
-sb_rules, pf_rules = rule_names(sb), rule_names(pf)
-if sb and pf and sb_rules != pf_rules:
-    failures.append(f"rule lists diverge: support-bundle={sb_rules} preflight={pf_rules}")
 expected_rules = [
     'api-key-json-fields',
     'replicated-license-entitlement-values',
     'tenant-requirements-check-env-values',
 ]
-if sb and sb_rules != expected_rules:
-    failures.append(f"unexpected redactor rules: expected={expected_rules} actual={sb_rules}")
+sb_names = [x.get('name') for x in sb_rules]
+if sb and sb_names != expected_rules:
+    failures.append(f"unexpected redactor rules: expected={expected_rules} actual={sb_names}")
+
+kots = yaml.safe_load(open(kots_path))
+if kots.get('kind') != 'Redactor':
+    failures.append(f"{kots_path}: expected kind Redactor, found {kots.get('kind')}")
+elif sb and kots['spec']['redactors'] != sb_rules:
+    failures.append("manifests/kots-redactor.yaml rules diverge from the chart's support-bundle Redactor")
 
 checked = 0
-for rule in (sb['spec']['redactors'] if sb else []):
+for rule in sb_rules:
     removals = rule.get('removals', {})
     if not any(removals.get(k) for k in ('regex', 'yamlPath', 'values')):
         failures.append(f"rule '{rule.get('name')}' has no removals (regex/yamlPath/values)")
@@ -111,7 +112,7 @@ for f in failures:
     print(f"FAIL  [{mode}] {f}")
 if failures:
     sys.exit(1)
-print(f"OK    [{mode}] {len(sb_rules)} rules, {checked} regexes, preflight/support-bundle in sync")
+print(f"OK    [{mode}] {len(sb_rules)} rules, {checked} regexes, chart/KOTS redactors in sync")
 PY
 done
 

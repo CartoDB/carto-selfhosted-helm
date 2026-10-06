@@ -3,12 +3,11 @@
 # Verify the chart's support-bundle Redactor scrubs sensitive values from each
 # known leak context without depending on credential formats.
 #
-# This test exists because PR #854 shipped a chart whose `spec.redactors:`
-# block inside the SupportBundle CR was silently ignored by Replicated
-# Troubleshoot — the fix was to render redactors as a standalone
-# `kind: Redactor` document. A regression of that structural shape (or an
-# accidental change to any redactor rule) would silently leak customer
-# credentials in production support bundles. This test catches it.
+# Troubleshoot silently ignores a `spec.redactors:` block inside the
+# SupportBundle CR; only a standalone `kind: Redactor` document is applied.
+# A regression of that structural shape (or an accidental change to any
+# redactor rule) would silently leak customer credentials in production
+# support bundles. This test catches it.
 #
 # Strategy:
 #   1. helm template the chart and extract the Redactor CR from the
@@ -162,6 +161,8 @@ cat > "$BUNDLE_ROOT/namespace-test-ns-logs/api-pod/api.log" <<'LOG'
 {"time":"2026-01-01T00:00:00.000Z","data":{"meta.type":"pg","db.query":"UPDATE settings SET value = $1","db.query_args":["{\"custom\":{\"enabled\":true,\"apiKey\":\"gw-secret-0f9e8d7c6b5a4321\",\"baseUrl\":\"https://llm.example.com/api/v1\"}}"]}}
 {"time":"2026-01-01T00:00:01.000Z","provider":{"api_key":"snake-secret-1a2b3c4d5e6f7890"}}
 {"time":"2026-01-01T00:00:02.000Z","message":"keep-this-log-context","provider":{"API-KEY":"hyphen-secret-a1b2c3d4"}}
+{"time":"2026-01-01T00:00:03.000Z","settings":{"openAiApiKey":"prefixed-secret-5e6f7a8b","apiKeyName":"keep-this-key-name"}}
+{"time":"2026-01-01T00:00:04.000Z","headers":{"x-api-key":"header-secret-9c8d7e6f"}}
 LOG
 
 # A pod OUTSIDE the checker redactor's fileSelector scope. Its non-sensitive env
@@ -254,6 +255,8 @@ SENTINELS=(
   'gw-secret-0f9e8d7c6b5a4321'
   'snake-secret-1a2b3c4d5e6f7890'
   'hyphen-secret-a1b2c3d4'
+  'prefixed-secret-5e6f7a8b'
+  'header-secret-9c8d7e6f'
   # Troubleshoot built-ins outside custom file scopes
   'builtin-password-secret'
   'builtin-token-secret'
@@ -300,7 +303,7 @@ for V in 'test-license-id' 'cartoPlatformDefaultSA' 'futureCredential'; do
 done
 
 LOG_FILE="$WORK_DIR/redacted-extracted/fixture/namespace-test-ns-logs/api-pod/api.log"
-for V in 'UPDATE settings SET value = $1' 'https://llm.example.com/api/v1' 'keep-this-log-context'; do
+for V in 'UPDATE settings SET value = $1' 'https://llm.example.com/api/v1' 'keep-this-log-context' 'keep-this-key-name'; do
   if grep -qF -- "$V" "$LOG_FILE" 2>/dev/null; then
     PRESERVED_FOUND=$((PRESERVED_FOUND + 1))
   else
@@ -315,7 +318,7 @@ echo ""
 echo "Summary:"
 echo "  Sentinels scrubbed:        $PASSES / ${#SENTINELS[@]}"
 echo "  Leaks:                     $LEAKS"
-echo "  Non-sensitive preserved:   $PRESERVED_FOUND / 9"
+echo "  Non-sensitive preserved:   $PRESERVED_FOUND / $((PRESERVED_FOUND + PRESERVED_MISSING))"
 echo "  ***HIDDEN*** insertions:   $HIDDEN"
 
 if [ "$LEAKS" -gt 0 ] || [ "$PRESERVED_MISSING" -gt 0 ]; then

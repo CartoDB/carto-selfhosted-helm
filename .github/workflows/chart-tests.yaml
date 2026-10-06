@@ -12,6 +12,7 @@ on:
   pull_request:
     paths:
       - chart/**
+      - manifests/kots-redactor.yaml
       - .github/actions/chart-setup/**
       - .github/workflows/chart-tests.yaml
 

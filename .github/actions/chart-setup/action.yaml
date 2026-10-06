@@ -19,8 +19,8 @@ inputs:
   troubleshoot-version:
     description: |
       Replicated Troubleshoot CLI release tag. Pinned because new minor
-      versions sometimes change `kubectl support-bundle redact` semantics
-      (cf. PR #854 — inline spec.redactors silently no-oped under 0.123.x).
+      versions sometimes change `kubectl support-bundle redact` semantics,
+      and the redactor tests assert exact redaction behavior.
     required: false
     default: v0.123.17
   install-troubleshoot:

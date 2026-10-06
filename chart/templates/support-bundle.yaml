@@ -92,6 +92,8 @@ stringData:
     # CR is NOT applied by the in-cluster `kubectl support-bundle secret/…`
     # auto-discovery path (verified empirically against Replicated Troubleshoot
     # 0.123.x — only the standalone Redactor kind fires during bundle capture).
+    # KOTS Admin Console bundles ignore this document entirely; they take
+    # redactors from manifests/kots-redactor.yaml instead.
     apiVersion: troubleshoot.sh/v1beta2
     kind: Redactor
     metadata:

@@ -172,6 +172,9 @@ Gotchas:
   the scoped env-value redactor.
 - Any redactor change must update `chart/tests/test-redactors.sh` and pass the
   render-contract test for both plain Helm and Replicated paths.
+- The KOTS Admin Console ignores the chart's in-cluster Redactor; mirror every
+  rule change in `manifests/kots-redactor.yaml` (the render-contract test
+  fails on drift). Preflights apply no custom redactors at all.
 - Everything runs in `.Release.Namespace` — never hardcode a namespace.
 - `onlyRunRouter` (ingress-only test mode) deploys no backends — account for
   it in checks and validators.

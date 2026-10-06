@@ -730,23 +730,28 @@ Return customer secrets to use in preflights and support-bundle
 
 
 {{/*
-Redactor specs for the preflight and support-bundle collectors. Prefer scoped
+Redactor specs for the support-bundle collectors. Prefer scoped
 structured redaction over credential-shape regexes so new secret formats are
 covered without maintaining a second secret inventory. Replicated's built-ins
 cover common password, token, and AWS credential env names plus connection
 string patterns, but are not exhaustive.
+The KOTS Admin Console merges only collectors and analyzers from in-cluster
+specs and ignores this Redactor, so manifests/kots-redactor.yaml carries a
+copy of these rules for KOTS installs; the render-contract test keeps the two
+in sync.
 Verify changes with chart/tests/test-redactors.sh.
 */}}
 {{- define "carto.replicated.commonChecks.redactors" }}
 # Provider API keys can surface in collected pod logs as a JSON field, both
 # plain ("apiKey":"…") and escaped inside a logged JSON string
-# (\"apiKey\":\"…\"). Custom-provider keys have no fixed value shape a
+# (\"apiKey\":\"…\"), and the name may carry a provider prefix
+# (openAiApiKey, x-api-key). Custom-provider keys have no fixed value shape a
 # value-pattern rule could target, so match the field name; the prefix stays
 # in a capture group so the redacted output keeps the field readable.
 - name: api-key-json-fields
   removals:
     regex:
-      - redactor: '(?i)((?:"|\\")api[_-]?key(?:"|\\")\s*:\s*(?:"|\\"))(?P<mask>[^"\\]+)'
+      - redactor: '(?i)((?:"|\\")[\w-]*api[_-]?key(?:"|\\")\s*:\s*(?:"|\\"))(?P<mask>[^"\\]+)'
 # License values can contain credentials with no stable format. Mask every
 # entitlement value while preserving names and surrounding license metadata.
 - name: replicated-license-entitlement-values
