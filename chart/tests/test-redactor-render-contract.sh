@@ -11,7 +11,8 @@
 #
 # Contract:
 #   1. The support-bundle Secret (label troubleshoot.sh/kind: support-bundle)
-#      embeds a multi-doc spec: kind SupportBundle + standalone kind Redactor.
+#      carries kind SupportBundle alone under `support-bundle-spec` and a
+#      standalone kind Redactor under the documented `redactor-spec` key.
 #   2. That Redactor carries the expected context-first rule list.
 #   3. manifests/kots-redactor.yaml carries exactly the same rules.
 #   4. Every rule has at least one removal (regex, yamlPath or values); every
@@ -50,7 +51,14 @@ failures = []
 # subchart ships its own (Redactor-free) secret under the same discovery
 # label, so label alone is ambiguous. The label is asserted, not selected on:
 # discovery depends on it.
-def redactor_from_secret(docs, name, label, key, expected_kind):
+def kinds_under(name, data, key):
+    text = data.get(key)
+    if text is None:
+        failures.append(f"{name}: stringData key '{key}' missing")
+        return []
+    return [s for s in yaml.safe_load_all(text) if s]
+
+def redactor_from_secret(docs, name, label):
     for d in docs:
         if not d or d.get('kind') != 'Secret':
             continue
@@ -58,24 +66,20 @@ def redactor_from_secret(docs, name, label, key, expected_kind):
             continue
         if d.get('metadata', {}).get('labels', {}).get('troubleshoot.sh/kind') != label:
             failures.append(f"{name}: missing discovery label troubleshoot.sh/kind={label}")
-        spec_text = d.get('stringData', {}).get(key)
-        if spec_text is None:
-            failures.append(f"{name}: stringData key '{key}' missing")
-            return None
-        subs = [s for s in yaml.safe_load_all(spec_text) if s]
-        kinds = [s.get('kind') for s in subs]
-        if expected_kind not in kinds:
-            failures.append(f"{name}: embedded spec lacks kind {expected_kind} (found {kinds})")
-        redactors = [s for s in subs if s.get('kind') == 'Redactor']
+        data = d.get('stringData', {})
+        sb_kinds = [s.get('kind') for s in kinds_under(name, data, 'support-bundle-spec')]
+        if sb_kinds != ['SupportBundle']:
+            failures.append(f"{name}: support-bundle-spec must hold only kind SupportBundle (found {sb_kinds})")
+        redactors = [s for s in kinds_under(name, data, 'redactor-spec') if s.get('kind') == 'Redactor']
         if not redactors:
-            failures.append(f"{name}: no standalone kind: Redactor doc (inline spec.redactors is silently ignored)")
+            failures.append(f"{name}: no kind: Redactor under redactor-spec (inline spec.redactors is silently ignored)")
             return None
         return redactors[0]
     failures.append(f"no Secret named {name} in rendered output")
     return None
 
 docs = list(yaml.safe_load_all(open(path)))
-sb = redactor_from_secret(docs, 'carto-support-bundle', 'support-bundle', 'support-bundle-spec', 'SupportBundle')
+sb = redactor_from_secret(docs, 'carto-support-bundle', 'support-bundle')
 sb_rules = sb['spec']['redactors'] if sb else []
 
 expected_rules = [

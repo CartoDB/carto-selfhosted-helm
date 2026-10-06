@@ -86,14 +86,11 @@ stringData:
                 when: "!= Healthy" # Catch all unhealthy pods. A pod is considered healthy if it has a status of Completed, or Running and all of its containers are ready.
                 # {{ printf "{{ .Status.Reason }}" }} displays the current status of the pod, while {{ printf "{{ .Status.Message }}" }} provides a detailed explanation of why the pod is unhealthy, based on logged events.
                 message: Pod {{ printf "{{ .Namespace }}" }}/{{ printf "{{ .Name }}" }} is unhealthy with a status of {{ printf "{{ .Status.Reason }}" }}. Message is {{ printf "{{ .Status.Message }}" }}
-    ---
-    # Redactors are delivered as a separate troubleshoot.sh/v1beta2 Redactor
-    # document in the same Secret. `spec.redactors:` inside the SupportBundle
-    # CR is NOT applied by the in-cluster `kubectl support-bundle secret/…`
-    # auto-discovery path (verified empirically against Replicated Troubleshoot
-    # 0.123.x — only the standalone Redactor kind fires during bundle capture).
-    # KOTS Admin Console bundles ignore this document entirely; they take
-    # redactors from manifests/kots-redactor.yaml instead.
+  # Troubleshoot's cluster discovery reads Redactors from the documented
+  # `redactor-spec` key of this labelled Secret; `spec.redactors:` inside the
+  # SupportBundle CR is not applied. KOTS Admin Console bundles ignore this key
+  # entirely; they take redactors from manifests/kots-redactor.yaml instead.
+  redactor-spec: |
     apiVersion: troubleshoot.sh/v1beta2
     kind: Redactor
     metadata:

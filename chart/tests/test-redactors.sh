@@ -46,15 +46,14 @@ for d in yaml.safe_load_all(open(in_path)):
     name = d.get('metadata', {}).get('name', '')
     if 'support-bundle' not in name or 'spec' in name:
         continue
-    spec_text = d['stringData']['support-bundle-spec']
-    # multi-doc YAML: SupportBundle + Redactor
+    spec_text = d['stringData'].get('redactor-spec', '')
     for sub in yaml.safe_load_all(spec_text):
         if sub and sub.get('kind') == 'Redactor':
             with open(out_path, 'w') as f:
                 yaml.dump(sub, f)
             print(f"extracted {len(sub['spec']['redactors'])} redactor rule(s) -> {out_path}")
             sys.exit(0)
-print("ERROR: no kind: Redactor document found in support-bundle Secret stringData", file=sys.stderr)
+print("ERROR: no kind: Redactor under the support-bundle Secret's redactor-spec key", file=sys.stderr)
 print("This usually means the chart reverted to embedded spec.redactors, which is silently ignored.", file=sys.stderr)
 sys.exit(1)
 PY
