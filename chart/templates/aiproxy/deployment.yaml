@@ -146,9 +146,6 @@ spec:
             httpGet:
               path: /health/liveliness
               port: http
-              httpHeaders:
-                - name: Authorization
-                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
           {{- else if .Values.aiProxy.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}
@@ -157,9 +154,6 @@ spec:
             httpGet:
               path: /health/readiness
               port: http
-              httpHeaders:
-                - name: Authorization
-                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
           {{- else if .Values.aiProxy.customReadinessProbe }}
           readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.customReadinessProbe "context" $) | nindent 12 }}
           {{- end }}
@@ -168,9 +162,6 @@ spec:
             httpGet:
               path: /health/liveliness
               port: http
-              httpHeaders:
-                - name: Authorization
-                  value: "Bearer {{ .Values.cartoSecrets.litellmMasterKey.value }}"
           {{- else if .Values.aiProxy.customStartupProbe }}
           startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.customStartupProbe "context" $) | nindent 12 }}
           {{- end }}
