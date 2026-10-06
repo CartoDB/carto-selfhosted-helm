@@ -1752,29 +1752,25 @@ CARTO_SMTP_REJECT_UNAUTHORIZED: {{ $smtp.rejectUnauthorized | quote }}
 CARTO_SMTP_USER: {{ $smtp.user | quote }}
 {{- end }}
 {{- if $smtp.ca }}
-CARTO_SMTP_CA: {{ include "carto.smtp.caMountAbsolutePath" . | quote }}
+CARTO_SMTP_CA: {{ include "carto.smtp.configMapMountAbsolutePath" . | quote }}
 {{- end }}
 {{- end -}}
-{{- end -}}
-
-{{- define "carto.smtp.auth.enabled" -}}
-{{- if and (include "carto.smtp.enabled" .) .Values.appConfigValues.disconnected.smtp.user -}}true{{- end -}}
 {{- end -}}
 
 {{- define "carto.smtp.ca.enabled" -}}
 {{- if and (include "carto.smtp.enabled" .) .Values.appConfigValues.disconnected.smtp.ca -}}true{{- end -}}
 {{- end -}}
 
-{{- define "carto.smtp.caConfigMapName" -}}
+{{- define "carto.smtp.configMapName" -}}
 {{- printf "%s-%s" .Release.Name "smtp-ca" -}}
 {{- end -}}
 
-{{- define "carto.smtp.caMountDir" -}}
+{{- define "carto.smtp.configMapMountDir" -}}
 {{- print "/usr/src/certs/smtp-ca" -}}
 {{- end -}}
 
-{{- define "carto.smtp.caMountAbsolutePath" -}}
-{{- printf "%s/ca.crt" (include "carto.smtp.caMountDir" .) -}}
+{{- define "carto.smtp.configMapMountAbsolutePath" -}}
+{{- printf "%s/ca.crt" (include "carto.smtp.configMapMountDir" .) -}}
 {{- end -}}
 
 {{/*
@@ -1807,14 +1803,6 @@ group sync.
 {{- else -}}
 {{- include "carto.accountsApi.fullname" . -}}
 {{- end -}}
-{{- end -}}
-
-{{- define "carto.accountsApi.secretVars" -}}
-- CARTO_INTERNAL_SERVICE_TOKEN
-- ENCRYPTION_SECRET_KEY
-{{- if (include "carto.smtp.auth.enabled" .) }}
-- CARTO_SMTP_PASSWORD
-{{- end }}
 {{- end -}}
 
 {{- define "carto.accountsApi.nodeOptions" -}}

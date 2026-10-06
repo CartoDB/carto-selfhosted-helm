@@ -166,14 +166,22 @@ spec:
                   name: {{ include "carto.accountsApi.secretName" . }}
                   key: ENCRYPTION_SECRET_KEY
                   {{- end }}
-            {{- include "carto._utils.generateSecretDefs" (dict "vars" (include "carto.accountsApi.secretVars" . | fromYamlArray) "context" $ ) | nindent 12 }}
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+              "CARTO_INTERNAL_SERVICE_TOKEN"
+              "ENCRYPTION_SECRET_KEY"
+              "CARTO_SMTP_PASSWORD"
+             ) "context" $ ) | nindent 12 }}
             {{- if .Values.accountsApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ template "carto.accountsApi.configmapName" . }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (include "carto.accountsApi.secretVars" . | fromYamlArray) "context" $ ) -}}
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+              "CARTO_INTERNAL_SERVICE_TOKEN"
+              "ENCRYPTION_SECRET_KEY"
+              "CARTO_SMTP_PASSWORD"
+             ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.accountsApi.secretName" . }}
@@ -235,7 +243,7 @@ spec:
             {{- end }}
             {{- if (include "carto.smtp.ca.enabled" .) }}
             - name: smtp-ca
-              mountPath: {{ include "carto.smtp.caMountDir" . }}
+              mountPath: {{ include "carto.smtp.configMapMountDir" . }}
               readOnly: true
             {{- end }}
             {{- if .Values.accountsApi.extraVolumeMounts }}
@@ -258,7 +266,7 @@ spec:
         {{- if (include "carto.smtp.ca.enabled" .) }}
         - name: smtp-ca
           configMap:
-            name: {{ include "carto.smtp.caConfigMapName" . }}
+            name: {{ include "carto.smtp.configMapName" . }}
         {{- end }}
         {{- if .Values.accountsApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraVolumes "context" $) | nindent 8 }}

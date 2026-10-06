@@ -133,7 +133,7 @@ Return common collectors for preflights and support-bundle
               - name: SMTP_CA__FILE_CONTENT
                 value: {{ .Values.appConfigValues.disconnected.smtp.ca | b64enc | quote }}
               - name: SMTP_CA__FILE_PATH
-                value: {{ include "carto.smtp.caMountAbsolutePath" . }}
+                value: {{ include "carto.smtp.configMapMountAbsolutePath" . }}
               {{- end }}
             volumeMounts:
               - name: gcp-default-service-account-key
@@ -166,7 +166,7 @@ Return common collectors for preflights and support-bundle
               {{- end }}
               {{- if (include "carto.smtp.ca.enabled" .) }}
               - name: smtp-ca
-                mountPath: {{ include "carto.smtp.caMountDir" . }}
+                mountPath: {{ include "carto.smtp.configMapMountDir" . }}
                 readOnly: false
               {{- end }}
         containers:
@@ -231,7 +231,7 @@ Return common collectors for preflights and support-bundle
               {{- end }}
               {{- if (include "carto.smtp.ca.enabled" .) }}
               - name: smtp-ca
-                mountPath: {{ include "carto.smtp.caMountDir" . }}
+                mountPath: {{ include "carto.smtp.configMapMountDir" . }}
                 readOnly: true
               {{- end }}
         volumes:
@@ -698,7 +698,7 @@ Return customer secrets to use in preflights and support-bundle
   {{- else -}}
   {{ include "carto._utils.generateSecretDef" (dict "var" "LAUNCHDARKLY_SDK_KEY" "context" .) | nindent 2 }}
   {{- end -}}
-  {{- if (include "carto.smtp.auth.enabled" .) -}}
+  {{- if (include "carto.smtp.enabled" .) -}}
   {{- if eq .Values.appSecrets.smtpPassword.existingSecret.name "" }}
   - name: CARTO_SMTP_PASSWORD
     value: {{ .Values.appSecrets.smtpPassword.value | quote }}
