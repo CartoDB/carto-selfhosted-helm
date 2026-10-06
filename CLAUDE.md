@@ -33,10 +33,8 @@ Fine, because it is already public here or established practice:
   only, never the full URL.
 - Links to public docs (`docs.carto.com`).
 - The one sanctioned internal link: `gatekeeper-selfhosted-kubernetes` (the
-  admission-ceiling source of truth) in the resource-limit note below and in
-  `.github/scripts/check-resource-limits.sh`. A dev who trips that check must
-  reach it, so the pointer is deliberate — not a precedent for other internal
-  repos/URLs.
+  admission-ceiling source of truth) in the resource-limit check in
+  `lint-codebase.yaml`. Deliberate — not a precedent for other internal repos/URLs.
 
 ## What this repo is
 
@@ -94,27 +92,15 @@ check, `helm template` both paths: plain and `--set replicated.enabled=true`.
 
 ## Resource limits and the admission ceiling
 
-CARTO-managed clusters (and customer installs running Gatekeeper/OPA) enforce a
-single global max on container limits. A `chart/values.yaml` component whose
-`resources.limits` exceed it is **rejected at admission** — the pod never
-schedules and the Deployment silently wedges at 0 replicas. So before raising
-any component's CPU/memory limits, humans and AI agents both need to check the
-ceiling.
+CARTO-managed clusters (and customer installs run## Resource limits and the admission ceiling
 
-The `check-helm-resources-changed` job in `.github/workflows/lint-codebase.yaml`
-fails the PR when a limit goes over it, via
-`.github/scripts/check-resource-limits.sh` (self-tested against
-`.github/scripts/testdata/resource-limits-fixture.yaml`, so the guard can't rot
-into a no-op unnoticed). To actually raise the ceiling, edit the constraint in
-[`gatekeeper-selfhosted-kubernetes`](https://github.com/CartoDB/gatekeeper-selfhosted-kubernetes)
-(`gatekeeper/constraints/psp-container-limits.yaml`), get it applied to the
-clusters, then bump `MAX_CPU_M` / `MAX_MEMORY_MI` in that workflow to match — in
-the same PR that raises the component's limits.
+CARTO-managed clusters reject containers whose `resources.limits` exceed a global
+ceiling (4 CPU / 12Gi) — the Deployment silently wedges at 0 replicas. The
+`check-helm-resources-changed` job in `lint-codebase.yaml` fails the PR on that;
+raising the ceiling means changing the Gatekeeper constraint first, then
+`MAX_CPU_M` / `MAX_MEMORY_MI` in that job.
 
-## Conventions
-
-- **Conventional commits**, scoped to what you touched (common scopes:
-  `chart`, `selfhosted`, `router`, `ci`).
+`, `selfhosted`, `router`, `ci`).
 - Branch off `main`; use `sc-<id>/` in the branch name to auto-link the
   Shortcut story. Open PRs as **draft**.
 - The **`release-changes`** PR label publishes the branch's chart to a
