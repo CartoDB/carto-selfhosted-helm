@@ -80,6 +80,7 @@ sb_rules = sb['spec']['redactors'] if sb else []
 
 expected_rules = [
     'api-key-json-fields',
+    'http-auth-header-values',
     'replicated-license-entitlement-values',
     'tenant-requirements-check-env-values',
 ]

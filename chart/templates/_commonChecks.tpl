@@ -752,6 +752,14 @@ Verify changes with chart/tests/test-redactors.sh.
   removals:
     regex:
       - redactor: '(?i)((?:"|\\")[\w-]*api[_-]?key(?:"|\\")\s*:\s*(?:"|\\"))(?P<mask>[^"\\]+)'
+# HTTP auth credentials surface wherever a request header is printed: proxy
+# and cache debug logs (`Authorization: Basic …`) and pod specs whose probes
+# send an auth header (`"value":"Bearer …"`). Match the auth scheme, not the
+# credential, so any token behind it is masked.
+- name: http-auth-header-values
+  removals:
+    regex:
+      - redactor: '(?i)((?:authorization["'']?\s*[:=]\s*["'']?|["''])(?:basic|bearer)\s+)(?P<mask>[^"''\s\\]+)'
 # License values can contain credentials with no stable format. Mask every
 # entitlement value while preserving names and surrounding license metadata.
 - name: replicated-license-entitlement-values

@@ -14,6 +14,10 @@ spec:
       removals:
         regex:
           - redactor: '(?i)((?:"|\\")[\w-]*api[_-]?key(?:"|\\")\s*:\s*(?:"|\\"))(?P<mask>[^"\\]+)'
+    - name: http-auth-header-values
+      removals:
+        regex:
+          - redactor: '(?i)((?:authorization["'']?\s*[:=]\s*["'']?|["''])(?:basic|bearer)\s+)(?P<mask>[^"''\s\\]+)'
     - name: replicated-license-entitlement-values
       fileSelector:
         files:

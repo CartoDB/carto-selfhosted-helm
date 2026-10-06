@@ -163,6 +163,16 @@ cat > "$BUNDLE_ROOT/namespace-test-ns-logs/api-pod/api.log" <<'LOG'
 {"time":"2026-01-01T00:00:02.000Z","message":"keep-this-log-context","provider":{"API-KEY":"hyphen-secret-a1b2c3d4"}}
 {"time":"2026-01-01T00:00:03.000Z","settings":{"openAiApiKey":"prefixed-secret-5e6f7a8b","apiKeyName":"keep-this-key-name"}}
 {"time":"2026-01-01T00:00:04.000Z","headers":{"x-api-key":"header-secret-9c8d7e6f"}}
+{"time":"2026-01-01T00:00:05.000Z","purge":{"authType":"Basic"}}
+LOG
+
+# Cache debug log in varnishlog format — request headers printed verbatim.
+mkdir -p "$BUNDLE_ROOT/namespace-test-ns-logs/http-cache-pod"
+cat > "$BUNDLE_ROOT/namespace-test-ns-logs/http-cache-pod/http-cache.log" <<'LOG'
+*   << Request  >> 32770
+-   ReqMethod      PURGE
+-   ReqHeader      Authorization: Basic varnish-purge-sentinel-1a2b
+-   ReqHeader      Host: keep-this-cache-host
 LOG
 
 # A pod OUTSIDE the checker redactor's fileSelector scope. Its non-sensitive env
@@ -192,7 +202,13 @@ cat > "$BUNDLE_ROOT/cluster-resources/pods/other-app-pod.json" <<'JSON'
           "name": "AWS_SECRET_ACCESS_KEY",
           "value": "builtin-aws-secret"
         }
-      ]
+      ],
+      "livenessProbe": {
+        "httpGet": {
+          "path": "/health",
+          "httpHeaders": [{"name": "Authorization", "value": "Bearer probe-bearer-sentinel-3c4d"}]
+        }
+      }
     }]
   }
 }
@@ -257,6 +273,9 @@ SENTINELS=(
   'hyphen-secret-a1b2c3d4'
   'prefixed-secret-5e6f7a8b'
   'header-secret-9c8d7e6f'
+  # HTTP auth header values — cache debug log + probe header in a pod spec
+  'varnish-purge-sentinel-1a2b'
+  'probe-bearer-sentinel-3c4d'
   # Troubleshoot built-ins outside custom file scopes
   'builtin-password-secret'
   'builtin-token-secret'
@@ -303,12 +322,22 @@ for V in 'test-license-id' 'cartoPlatformDefaultSA' 'futureCredential'; do
 done
 
 LOG_FILE="$WORK_DIR/redacted-extracted/fixture/namespace-test-ns-logs/api-pod/api.log"
-for V in 'UPDATE settings SET value = $1' 'https://llm.example.com/api/v1' 'keep-this-log-context' 'keep-this-key-name'; do
+for V in 'UPDATE settings SET value = $1' 'https://llm.example.com/api/v1' 'keep-this-log-context' 'keep-this-key-name' '"authType":"Basic"'; do
   if grep -qF -- "$V" "$LOG_FILE" 2>/dev/null; then
     PRESERVED_FOUND=$((PRESERVED_FOUND + 1))
   else
     PRESERVED_MISSING=$((PRESERVED_MISSING + 1))
     echo "OVER-REDACT  log context '$V' was scrubbed"
+  fi
+done
+
+CACHE_LOG="$WORK_DIR/redacted-extracted/fixture/namespace-test-ns-logs/http-cache-pod/http-cache.log"
+for V in 'Authorization: Basic ' 'keep-this-cache-host'; do
+  if grep -qF -- "$V" "$CACHE_LOG" 2>/dev/null; then
+    PRESERVED_FOUND=$((PRESERVED_FOUND + 1))
+  else
+    PRESERVED_MISSING=$((PRESERVED_MISSING + 1))
+    echo "OVER-REDACT  cache log context '$V' was scrubbed"
   fi
 done
 
