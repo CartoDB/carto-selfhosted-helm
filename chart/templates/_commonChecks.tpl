@@ -650,7 +650,7 @@ Return customer secrets to use in preflights and support-bundle
     valueFrom:
       secretKeyRef:
         name: {{ include "carto.postgresql.secretName" . }}
-        key: {{ include "carto.postgresql.secret.key" . }}
+        key: {{ include "carto.postgresql.secret.key" . | quote }}
   {{- end -}}
   {{- if eq .Values.externalRedis.existingSecret "" }}
   - name: REDIS_PASSWORD
@@ -727,3 +727,61 @@ Return customer secrets to use in preflights and support-bundle
     {{ printf "value: %s" ($value | b64enc | quote) | indent 12 }}
   {{- end -}}
 {{ end }}
+
+
+{{/*
+Redactor specs for the support-bundle collectors. Prefer scoped
+structured redaction over credential-shape regexes so new secret formats are
+covered without maintaining a second secret inventory. Replicated's built-ins
+cover common password, token, and AWS credential env names plus connection
+string patterns, but are not exhaustive.
+The KOTS Admin Console merges only collectors and analyzers from in-cluster
+specs and ignores this Redactor, so manifests/kots-redactor.yaml carries a
+copy of these rules for KOTS installs; the render-contract test keeps the two
+in sync.
+Verify changes with chart/tests/test-redactors.sh.
+*/}}
+{{- define "carto.replicated.commonChecks.redactors" }}
+# Provider API keys can surface in collected pod logs as a JSON field, both
+# plain ("apiKey":"…") and escaped inside a logged JSON string
+# (\"apiKey\":\"…\"), and the name may carry a provider prefix
+# (openAiApiKey, x-api-key). Custom-provider keys have no fixed value shape a
+# value-pattern rule could target, so match the field name; the prefix stays
+# in a capture group so the redacted output keeps the field readable.
+- name: api-key-json-fields
+  removals:
+    regex:
+      - redactor: '(?i)((?:["'']|\\")[\w-]*api[_-]?key(?:["'']|\\")\s*:\s*(?:["'']|\\"))(?P<mask>[^"''\\]+)'
+# HTTP auth credentials surface wherever a request header is printed: proxy
+# and cache debug logs (`Authorization: Basic …`) and pod specs whose probes
+# send an auth header (`"value":"Bearer …"`). Match the auth scheme, not the
+# credential, so any token behind it is masked.
+- name: http-auth-header-values
+  removals:
+    regex:
+      - redactor: '(?i)((?:authorization["'']?\s*[:=]\s*["''\[]?|"value"\s*:\s*")(?:basic|bearer|token|digest|apikey)\s+)(?P<mask>[^"''\s\]\\]+)'
+# License values can contain credentials with no stable format. Mask every
+# entitlement value while preserving names and surrounding license metadata.
+- name: replicated-license-entitlement-values
+  fileSelector:
+    files:
+      - "**/replicated-license-info-stdout.txt"
+      - "**/replicated-license-info-stderr.txt"
+  removals:
+    yamlPath:
+      - "entitlements.*.value"
+# The pre-install checker must inline values that would otherwise come from
+# chart-generated Secrets, which do not exist yet. Mask its complete env
+# surface without affecting pod snapshots elsewhere in the bundle.
+- name: tenant-requirements-check-env-values
+  fileSelector:
+    files:
+      # In-cluster captures store this file bundle-root-relative (depth 2),
+      # which a bare `**/` prefix can never match; keep both forms.
+      - "tenant-requirements-check/tenant-requirements-check.json"
+      - "**/tenant-requirements-check/tenant-requirements-check.json"
+  removals:
+    yamlPath:
+      - "spec.containers.*.env.*.value"
+      - "spec.initContainers.*.env.*.value"
+{{- end -}}

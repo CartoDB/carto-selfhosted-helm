@@ -1,0 +1,37 @@
+# Support-bundle redactors for bundles generated from the KOTS Admin Console.
+# The Admin Console merges only collectors and analyzers from the chart's
+# in-cluster support-bundle Secret and takes redactors from release-level
+# Redactor kinds like this one. The rules must match
+# `carto.replicated.commonChecks.redactors` in chart/templates/_commonChecks.tpl
+# exactly; chart/tests/test-redactor-render-contract.sh fails if they diverge.
+apiVersion: troubleshoot.sh/v1beta2
+kind: Redactor
+metadata:
+  name: carto-redactors
+spec:
+  redactors:
+    - name: api-key-json-fields
+      removals:
+        regex:
+          - redactor: '(?i)((?:["'']|\\")[\w-]*api[_-]?key(?:["'']|\\")\s*:\s*(?:["'']|\\"))(?P<mask>[^"''\\]+)'
+    - name: http-auth-header-values
+      removals:
+        regex:
+          - redactor: '(?i)((?:authorization["'']?\s*[:=]\s*["''\[]?|"value"\s*:\s*")(?:basic|bearer|token|digest|apikey)\s+)(?P<mask>[^"''\s\]\\]+)'
+    - name: replicated-license-entitlement-values
+      fileSelector:
+        files:
+          - "**/replicated-license-info-stdout.txt"
+          - "**/replicated-license-info-stderr.txt"
+      removals:
+        yamlPath:
+          - "entitlements.*.value"
+    - name: tenant-requirements-check-env-values
+      fileSelector:
+        files:
+          - "tenant-requirements-check/tenant-requirements-check.json"
+          - "**/tenant-requirements-check/tenant-requirements-check.json"
+      removals:
+        yamlPath:
+          - "spec.containers.*.env.*.value"
+          - "spec.initContainers.*.env.*.value"
