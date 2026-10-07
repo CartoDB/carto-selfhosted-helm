@@ -92,15 +92,16 @@ check, `helm template` both paths: plain and `--set replicated.enabled=true`.
 
 ## Resource limits and the admission ceiling
 
-CARTO-managed clusters (and customer installs run## Resource limits and the admission ceiling
-
 CARTO-managed clusters reject containers whose `resources.limits` exceed a global
 ceiling (4 CPU / 12Gi) — the Deployment silently wedges at 0 replicas. The
 `check-helm-resources-changed` job in `lint-codebase.yaml` fails the PR on that;
 raising the ceiling means changing the Gatekeeper constraint first, then
 `MAX_CPU_M` / `MAX_MEMORY_MI` in that job.
 
-`, `selfhosted`, `router`, `ci`).
+## Conventions
+
+- **Conventional commits**, scoped to what you touched (common scopes:
+  `chart`, `selfhosted`, `router`, `ci`).
 - Branch off `main`; use `sc-<id>/` in the branch name to auto-link the
   Shortcut story. Open PRs as **draft**.
 - The **`release-changes`** PR label publishes the branch's chart to a
