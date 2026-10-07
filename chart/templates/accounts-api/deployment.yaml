@@ -28,6 +28,9 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/accounts-api/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/accounts-api/secret.yaml") . | sha256sum }}
         checksum/postgresql-password: {{ include "carto.postgresql.passwordChecksum" . }}
+        {{- if (include "carto.smtp.ca.enabled" .) }}
+        checksum/smtp-ca: {{ include (print $.Template.BasePath "/smtp-ca-configmap.yaml") . | sha256sum }}
+        {{- end }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.accountsApi.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.podAnnotations "context" $) | nindent 8 }}
@@ -166,6 +169,7 @@ spec:
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "CARTO_INTERNAL_SERVICE_TOKEN"
               "ENCRYPTION_SECRET_KEY"
+              "CARTO_SMTP_PASSWORD"
              ) "context" $ ) | nindent 12 }}
             {{- if .Values.accountsApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraEnvVars "context" $) | nindent 12 }}
@@ -176,6 +180,7 @@ spec:
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "CARTO_INTERNAL_SERVICE_TOKEN"
               "ENCRYPTION_SECRET_KEY"
+              "CARTO_SMTP_PASSWORD"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
@@ -236,6 +241,11 @@ spec:
               mountPath: {{ include "carto.proxy.configMapMountDir" . }}
               readOnly: true
             {{- end }}
+            {{- if (include "carto.smtp.ca.enabled" .) }}
+            - name: smtp-ca
+              mountPath: {{ include "carto.smtp.configMapMountDir" . }}
+              readOnly: true
+            {{- end }}
             {{- if .Values.accountsApi.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
@@ -252,6 +262,11 @@ spec:
         - name: proxy-ssl-ca
           configMap:
             name: {{ include "carto.proxy.configMapName" . }}
+        {{- end }}
+        {{- if (include "carto.smtp.ca.enabled" .) }}
+        - name: smtp-ca
+          configMap:
+            name: {{ include "carto.smtp.configMapName" . }}
         {{- end }}
         {{- if .Values.accountsApi.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraVolumes "context" $) | nindent 8 }}

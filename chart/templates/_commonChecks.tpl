@@ -129,6 +129,12 @@ Return common collectors for preflights and support-bundle
               - name: ROUTER_SSL_CERT_KEY__FILE_PATH
                 value: "/etc/ssl/certs/cert.key"
               {{- end }}
+              {{- if (include "carto.smtp.ca.enabled" .) }}
+              - name: SMTP_CA__FILE_CONTENT
+                value: {{ .Values.appConfigValues.disconnected.smtp.ca | b64enc | quote }}
+              - name: SMTP_CA__FILE_PATH
+                value: {{ include "carto.smtp.configMapMountAbsolutePath" . }}
+              {{- end }}
             volumeMounts:
               - name: gcp-default-service-account-key
                 mountPath: {{ include "carto.google.secretMountDir" . }}
@@ -156,6 +162,11 @@ Return common collectors for preflights and support-bundle
               {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
               - name: router-tls-cert-and-key
                 mountPath: /etc/ssl/certs/
+                readOnly: false
+              {{- end }}
+              {{- if (include "carto.smtp.ca.enabled" .) }}
+              - name: smtp-ca
+                mountPath: {{ include "carto.smtp.configMapMountDir" . }}
                 readOnly: false
               {{- end }}
         containers:
@@ -218,6 +229,11 @@ Return common collectors for preflights and support-bundle
                 mountPath: /etc/ssl/certs/
                 readOnly: true
               {{- end }}
+              {{- if (include "carto.smtp.ca.enabled" .) }}
+              - name: smtp-ca
+                mountPath: {{ include "carto.smtp.configMapMountDir" . }}
+                readOnly: true
+              {{- end }}
         volumes:
           - name: gcp-default-service-account-key
             emptyDir:
@@ -248,6 +264,11 @@ Return common collectors for preflights and support-bundle
           {{- end }}
           {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
           - name: router-tls-cert-and-key
+            emptyDir:
+              sizeLimit: 1Mi
+          {{- end }}
+          {{- if (include "carto.smtp.ca.enabled" .) }}
+          - name: smtp-ca
             emptyDir:
               sizeLimit: 1Mi
           {{- end }}
@@ -366,6 +387,11 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   */}}
   {{- if (include "carto.disconnected.enabled" .) }}
   {{- $_ := set $preflightsDict "AccountsDatabaseValidator" (list "Check_accounts_database_connection") -}}
+  {{/*
+  SMTP is optional: with no relay configured the check passes as "email disabled", so it only
+  blocks when a configured relay is unreachable or misconfigured.
+  */}}
+  {{- $_ := set $preflightsDict "SmtpValidator" (list "Check_SMTP_connection") -}}
   {{- end }}
   {{- range $preflight, $preflightChecks  := $preflightsDict }}
   {{- range $preflightCheckName := $preflightChecks }}
@@ -535,6 +561,10 @@ Return customer values to use in preflights and support-bundle
   - name: ACCOUNTS_POSTGRES_DB
     value: {{ .Values.externalPostgresql.accountsDatabaseName | quote }}
   {{- end }}
+  {{- range $name, $value := (include "carto.smtp.env" . | fromYaml) }}
+  - name: {{ $name }}
+    value: {{ $value | quote }}
+  {{- end }}
   - name: WORKSPACE_TENANT_ID
     value: {{ .Values.cartoConfigValues.selfHostedTenantId | quote }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
@@ -667,6 +697,14 @@ Return customer secrets to use in preflights and support-bundle
     value: {{ .Values.cartoSecrets.launchDarklySdkKey.value | quote }}
   {{- else -}}
   {{ include "carto._utils.generateSecretDef" (dict "var" "LAUNCHDARKLY_SDK_KEY" "context" .) | nindent 2 }}
+  {{- end -}}
+  {{- if (include "carto.smtp.enabled" .) -}}
+  {{- if eq .Values.appSecrets.smtpPassword.existingSecret.name "" }}
+  - name: CARTO_SMTP_PASSWORD
+    value: {{ .Values.appSecrets.smtpPassword.value | quote }}
+  {{- else -}}
+  {{ include "carto._utils.generateSecretDef" (dict "var" "CARTO_SMTP_PASSWORD" "context" .) | nindent 2 }}
+  {{- end -}}
   {{- end -}}
   {{- if eq .Values.appConfigValues.storageProvider "s3" -}}
   {{- if eq .Values.appSecrets.awsAccessKeyId.existingSecret.name "" }}

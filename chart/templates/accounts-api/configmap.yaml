@@ -25,6 +25,9 @@ data:
   {{- with include "carto.disconnected.commonEnv" . }}
   {{- . | nindent 2 }}
   {{- end }}
+  {{- with include "carto.smtp.env" . }}
+  {{- . | nindent 2 }}
+  {{- end }}
   ACCOUNTS_POSTGRES_HOST: {{ include "carto.postgresql.host" . | quote }}
   ACCOUNTS_POSTGRES_PORT: {{ include "carto.postgresql.port" . | quote }}
   ACCOUNTS_POSTGRES_DB: {{ .Values.externalPostgresql.accountsDatabaseName | quote }}

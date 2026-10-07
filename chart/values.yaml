@@ -49,6 +49,21 @@ appConfigValues:
     accessTokenTtlSeconds: ""
     ## @param appConfigValues.disconnected.refreshTokenTtlSeconds Refresh token TTL in seconds. Leave empty for the service default
     refreshTokenTtlSeconds: ""
+    smtp:
+      ## @param appConfigValues.disconnected.smtp.host Hostname of the customer SMTP relay used by accounts-api to send email. Leave empty to disable email
+      host: ""
+      ## @param appConfigValues.disconnected.smtp.port Port of the SMTP relay
+      port: 587
+      ## @param appConfigValues.disconnected.smtp.secure Use implicit TLS (usually port 465). When `false`, STARTTLS is used if the relay offers it
+      secure: false
+      ## @param appConfigValues.disconnected.smtp.user Username to authenticate against the SMTP relay. Leave empty for anonymous relays. The password is set in `appSecrets.smtpPassword`
+      user: ""
+      ## @param appConfigValues.disconnected.smtp.from From header of the outgoing email, e.g. `CARTO <no-reply@example.com>`. Required when `appConfigValues.disconnected.smtp.host` is set
+      from: ""
+      ## @param appConfigValues.disconnected.smtp.rejectUnauthorized Reject SMTP relay TLS certificates not signed by a trusted CA. Prefer `appConfigValues.disconnected.smtp.ca` over disabling it
+      rejectUnauthorized: true
+      ## @param appConfigValues.disconnected.smtp.ca Inline PEM CA bundle used to verify the SMTP relay TLS certificate (internal PKI)
+      ca: ""
   ## @param appConfigValues.httpCacheEnabled Enable the internal httpCache
   httpCacheEnabled: true
   ## @param appConfigValues.importAwsRoleArn ARN Role to be used to import files from the bucket
@@ -212,6 +227,16 @@ appSecrets:
     value: ""
     ## @param appSecrets.authApiOidcClientSecret.existingSecret.name Name of the pre-existent secret containing the `appSecrets.authApiOidcClientSecret.existingSecret.key`. If `appSecrets.authApiOidcClientSecret.value` is defined, this value is going to be ignored and not used.
     ## @param appSecrets.authApiOidcClientSecret.existingSecret.key Key to find in `appSecrets.authApiOidcClientSecret.existingSecret.name` where the value of `appSecrets.authApiOidcClientSecret` is found. If `appSecrets.authApiOidcClientSecret.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra appSecrets.smtpPassword Password of the SMTP relay user (self-hosted disconnected mode, only when `appConfigValues.disconnected.smtp.user` is set).
+  smtpPassword:
+    ## @param appSecrets.smtpPassword.value Value of the SMTP relay password. One of `appSecrets.smtpPassword.value` or `appSecrets.smtpPassword.existingSecret` could be defined.
+    value: ""
+    ## @param appSecrets.smtpPassword.existingSecret.name Name of the pre-existent secret containing the `appSecrets.smtpPassword.existingSecret.key`. If `appSecrets.smtpPassword.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.smtpPassword.existingSecret.key Key to find in `appSecrets.smtpPassword.existingSecret.name` where the value of `appSecrets.smtpPassword` is found. If `appSecrets.smtpPassword.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""
