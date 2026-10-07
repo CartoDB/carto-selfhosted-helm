@@ -118,7 +118,7 @@ Both `helm template` paths render, and:
 - **Version fields** untouched.
 - **No AI residue.** No comments narrating what was generated or why an
   alternative was rejected, no commented-out code, no debug values, no
-  placeholder secrets. Reviewers have caught these and asked for them to go.
+  placeholder secrets.
 - **Terse, public PR body** — what changed, why, how it was validated.
 
 ## Conventions
