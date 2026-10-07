@@ -163,6 +163,9 @@ cat > "$BUNDLE_ROOT/namespace-test-ns-logs/api-pod/api.log" <<'LOG'
 {"time":"2026-01-01T00:00:03.000Z","settings":{"openAiApiKey":"prefixed-secret-5e6f7a8b","apiKeyName":"keep-this-key-name"}}
 {"time":"2026-01-01T00:00:04.000Z","headers":{"x-api-key":"header-secret-9c8d7e6f"}}
 {"time":"2026-01-01T00:00:05.000Z","purge":{"authType":"Basic"}}
+{"time":"2026-01-01T00:00:06.000Z","provider":{'apiKey':'single-quote-secret-dd44'}}
+{"time":"2026-01-01T00:00:07.000Z","message":"basic auth disabled for tenant keep-this-auth-context"}
+{"time":"2026-01-01T00:00:08.000Z","headers":"map[Authorization:[Bearer go-map-sentinel-aa11]]"}
 LOG
 
 # Cache debug log in varnishlog format — request headers printed verbatim.
@@ -171,6 +174,8 @@ cat > "$BUNDLE_ROOT/namespace-test-ns-logs/http-cache-pod/http-cache.log" <<'LOG
 *   << Request  >> 32770
 -   ReqMethod      PURGE
 -   ReqHeader      Authorization: Basic varnish-purge-sentinel-1a2b
+-   ReqHeader      Authorization: Token token-scheme-sentinel-bb22
+-   ReqHeader      Authorization: Digest digest-scheme-sentinel-cc33
 -   ReqHeader      Host: keep-this-cache-host
 LOG
 
@@ -272,9 +277,15 @@ SENTINELS=(
   'hyphen-secret-a1b2c3d4'
   'prefixed-secret-5e6f7a8b'
   'header-secret-9c8d7e6f'
-  # HTTP auth header values — cache debug log + probe header in a pod spec
+  # Single-quoted field form
+  'single-quote-secret-dd44'
+  # HTTP auth header values — cache debug log + probe header in a pod spec,
+  # plus non-Basic/Bearer schemes and the Go map-print bracket form
   'varnish-purge-sentinel-1a2b'
   'probe-bearer-sentinel-3c4d'
+  'token-scheme-sentinel-bb22'
+  'digest-scheme-sentinel-cc33'
+  'go-map-sentinel-aa11'
   # Troubleshoot built-ins outside custom file scopes
   'builtin-password-secret'
   'builtin-token-secret'
@@ -321,7 +332,7 @@ for V in 'test-license-id' 'cartoPlatformDefaultSA' 'futureCredential'; do
 done
 
 LOG_FILE="$WORK_DIR/redacted-extracted/fixture/namespace-test-ns-logs/api-pod/api.log"
-for V in 'UPDATE settings SET value = $1' 'https://llm.example.com/api/v1' 'keep-this-log-context' 'keep-this-key-name' '"authType":"Basic"'; do
+for V in 'UPDATE settings SET value = $1' 'https://llm.example.com/api/v1' 'keep-this-log-context' 'keep-this-key-name' '"authType":"Basic"' 'basic auth disabled for tenant keep-this-auth-context'; do
   if grep -qF -- "$V" "$LOG_FILE" 2>/dev/null; then
     PRESERVED_FOUND=$((PRESERVED_FOUND + 1))
   else
