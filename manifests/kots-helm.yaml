@@ -637,6 +637,20 @@ spec:
       values:
         appConfigValues:
           logLevel: "debug"
+    # OpenTelemetry trace export
+    - when: '{{repl ConfigOptionEquals "openTelemetryEnabled" "1" }}'
+      recursiveMerge: true
+      values:
+        appConfigValues:
+          openTelemetry:
+            enabled: true
+            endpoint: '{{repl ConfigOption "openTelemetryEndpoint" }}'
+    - when: '{{repl and (ConfigOptionEquals "openTelemetryEnabled" "1") (not (empty (ConfigOption "openTelemetryHeaders"))) }}'
+      recursiveMerge: true
+      values:
+        appSecrets:
+          openTelemetryHeaders:
+            value: '{{repl ConfigOption "openTelemetryHeaders" }}'
     ## Openshift
     - when: '{{repl ConfigOptionEquals "platformDistribution" "openShift" }}'
       recursiveMerge: true

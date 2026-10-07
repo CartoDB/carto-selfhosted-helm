@@ -206,6 +206,7 @@ spec:
               "WORKSPACE_IMPORTS_ACCESSKEYID"
               "WORKSPACE_IMPORTS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY"
+              "OTEL_EXPORTER_OTLP_HEADERS"
               ) "context" $ ) | nindent 12 }}
             {{- if .Values.workspaceApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVars "context" $) | nindent 12 }}
@@ -224,6 +225,7 @@ spec:
               "WORKSPACE_IMPORTS_ACCESSKEYID"
               "WORKSPACE_IMPORTS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY"
+              "OTEL_EXPORTER_OTLP_HEADERS"
             ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:

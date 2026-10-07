@@ -1046,6 +1046,27 @@ spec:
           type: bool
           default: "0"
 
+        ## OpenTelemetry trace export
+        - name: openTelemetryEnabled
+          title: OpenTelemetry trace export
+          help_text: |-
+            Send the traces of the CARTO backend services to your OpenTelemetry Collector over OTLP/HTTP. Logs and metrics are not exported.
+          type: bool
+          default: "0"
+        - name: openTelemetryEndpoint
+          title: OpenTelemetry Collector endpoint
+          help_text: |-
+            Base URL of the collector OTLP/HTTP receiver, for example `http://otel-collector.observability:4318`. The services append `/v1/traces`. OTLP over gRPC is not supported.
+          type: text
+          when: '{{repl (ConfigOptionEquals "openTelemetryEnabled" "1") }}'
+          required: true
+        - name: openTelemetryHeaders
+          title: OpenTelemetry Collector headers
+          help_text: |-
+            Optional. Comma-separated `key=value` headers sent with every export, for example the collector authentication.
+          type: password
+          when: '{{repl (ConfigOptionEquals "openTelemetryEnabled" "1") }}'
+
     # Custom configuration
     - name: platformAdvancedTuning
       title: Custom Configuration

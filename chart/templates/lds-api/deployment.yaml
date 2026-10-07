@@ -120,6 +120,7 @@ spec:
              "LDS_PROVIDER_GOOGLE_API_KEY"
              "LDS_PROVIDER_TRAVELTIME_API_KEY"
              "LDS_PROVIDER_TRAVELTIME_APP_ID"
+             "OTEL_EXPORTER_OTLP_HEADERS"
              ) "context" $ ) | nindent 12 }}
             {{- if .Values.ldsApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.extraEnvVars "context" $) | nindent 12 }}
@@ -136,6 +137,7 @@ spec:
              "LDS_PROVIDER_GOOGLE_API_KEY"
              "LDS_PROVIDER_TRAVELTIME_API_KEY"
              "LDS_PROVIDER_TRAVELTIME_APP_ID"
+             "OTEL_EXPORTER_OTLP_HEADERS"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:

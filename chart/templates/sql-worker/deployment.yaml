@@ -121,6 +121,7 @@ spec:
               "EXPORTS_S3_BUCKET_ACCESS_KEY_ID"
               "EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY"
               "MAPS_API_V3_JWT_SECRET"
+              "OTEL_EXPORTER_OTLP_HEADERS"
             ) "context" $ ) | nindent 12 }}
             {{- if .Values.sqlWorker.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.extraEnvVars "context" $) | nindent 12 }}
@@ -134,6 +135,7 @@ spec:
               "EXPORTS_S3_BUCKET_ACCESS_KEY_ID"
               "EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY"
               "MAPS_API_V3_JWT_SECRET"
+              "OTEL_EXPORTER_OTLP_HEADERS"
             ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
