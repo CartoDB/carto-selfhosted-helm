@@ -1,31 +1,24 @@
 <!--
- Before you open the request please review the following guidelines and tips to help it be more easily integrated:
+Everything here is public: no secrets, internal hostnames, project IDs
+or customer data (see CLAUDE.md). Shortcut IDs are fine, full URLs are not.
+-->
 
- - Describe the scope of your change - i.e. what the change does.
- - Describe any known limitations with your change.
- - Please run any tests or examples that can exercise your modified code.
+Story: [sc-XXXXXX]
 
- Thank you for contributing!
- -->
+## Author's note
+<!-- Written by a person, never by the assistant. Delete this section if you have nothing to add. -->
 
-**Description of the change**
+## Why
+<!-- Symptom, root cause, and the shape of the fix in one line. Two or three sentences total.
+     The diff shows every change; this is the map a reviewer needs before reading file one. -->
 
-<!-- Describe the scope of your change - i.e. what the change does. -->
+## Verified
+<!-- What was actually executed, where, and the result. One line each, prefixed [human] or [agent].
+     "Tests pass" is not evidence. Name the suite, the environment, or the steps, and what happened. -->
+- [human]
+- [agent]
 
-**Benefits**
-
-<!-- What benefits will be realized by the code change? -->
-
-**Possible drawbacks**
-
-<!-- Describe any known limitations with your change -->
-
-**Applicable issues**
-
-<!-- Enter any applicable Issues here (You can reference an issue using #) -->
-  - fixes #
-
-**Additional information**
-
-<!-- If there's anything else that's important and relevant to your pull
-request, mention that information here.-->
+## Open question
+<!-- Optional. One decision only a person can make and that no line in the diff can anchor.
+     A question about a specific line goes as an inline PR comment @-mentioning the reviewer.
+     Delete this section if you have nothing to ask. -->

@@ -98,8 +98,8 @@ docker run --rm \
 ### Creating a Pull Request
 
 There are three important parts in a pull request:
-- **Title**. Use a well descriptive but not too long message about what this change is about.
-- **Description**. Do your best to put only relevant information. It is perfectly valid to leave it empty! But please, don't leave all your commit messages there.
+- **Title**. Use a well descriptive but not too long message about what this change is about, following [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) (it becomes the squash commit message). Append the Shortcut story id, e.g. `fix(chart): wire the exports bucket [sc-XXXXXX]`.
+- **Description**. The [pull request template](.github/pull_request_template.md) pre-fills it. Keep only the sections that apply to your change and delete the rest; a short, complete description beats a long, half-filled one. Don't paste your commit messages there. Remember the repository is public: no secrets, internal hostnames or customer data.
 - **Destination branch**. The destination branch is determined by the [Branching Strategy](#branching-strategy) section you can find below.
 
 Additionally, there are other fields that can be useful:
