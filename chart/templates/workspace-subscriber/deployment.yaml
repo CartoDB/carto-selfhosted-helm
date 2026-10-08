@@ -120,6 +120,7 @@ spec:
              "CARTO_SELFHOSTED_INSTANCE_ID"
              "ENCRYPTION_SECRET_KEY"
              "WORKSPACE_JWT_SECRET"
+             "OTEL_EXPORTER_OTLP_HEADERS"
              ) "context" $ ) | nindent 12 }}
             {{- if .Values.workspaceSubscriber.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceSubscriber.extraEnvVars "context" $) | nindent 12 }}
@@ -132,6 +133,7 @@ spec:
              "CARTO_SELFHOSTED_INSTANCE_ID"
              "ENCRYPTION_SECRET_KEY"
              "WORKSPACE_JWT_SECRET"
+             "OTEL_EXPORTER_OTLP_HEADERS"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:

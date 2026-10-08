@@ -19,8 +19,8 @@ data:
   LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   NODE_OPTIONS: {{ template "carto.accountsApi.nodeOptions" . }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
-  {{- if eq .Values.appConfigValues.logLevel "debug" }}
-  CARTO_TRACING_MODE: "local"
+  {{- with include "carto.openTelemetry.env" (dict "context" . "prefix" "ACCOUNTS_") }}
+  {{- . | nindent 2 }}
   {{- end }}
   {{- with include "carto.disconnected.commonEnv" . }}
   {{- . | nindent 2 }}

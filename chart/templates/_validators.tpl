@@ -44,6 +44,18 @@ Validate log level
 {{- end -}}
 
 {{/*
+Validate OpenTelemetry trace export config
+*/}}
+{{- define "carto.validateValues.openTelemetry" -}}
+{{- $otel := .Values.appConfigValues.openTelemetry -}}
+{{- if and $otel.enabled (not (regexMatch "^https?://[^/\\s]+" $otel.endpoint)) -}}
+CARTO: Missing or invalid OpenTelemetry endpoint
+
+If appConfigValues.openTelemetry.enabled=true you need to set appConfigValues.openTelemetry.endpoint to the base URL of the collector OTLP/HTTP receiver, starting with http:// or https:// (e.g. http://otel-collector.observability:4318)
+{{- end -}}
+{{- end -}}
+
+{{/*
 Validate ServiceAccount configuration when Pod Identity features are enabled
 */}}
 {{- define "carto.validateValues.serviceAccount" -}}
@@ -122,6 +134,7 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := append $messages (include "carto.validateValues.serviceAccount" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.s3Compatible" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.authApi" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.openTelemetry" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 

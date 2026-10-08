@@ -126,6 +126,7 @@ spec:
               "IMPORT_SECRETACCESSKEY"
               "IMPORT_STORAGE_ACCESSKEY"
               "LAUNCHDARKLY_SDK_KEY"
+              "OTEL_EXPORTER_OTLP_HEADERS"
             ) "context" $ ) | nindent 12 }}
             {{- if .Values.importWorker.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.importWorker.extraEnvVars "context" $) | nindent 12 }}
@@ -144,6 +145,7 @@ spec:
               "IMPORT_SECRETACCESSKEY"
               "IMPORT_STORAGE_ACCESSKEY"
               "LAUNCHDARKLY_SDK_KEY"
+              "OTEL_EXPORTER_OTLP_HEADERS"
             ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
