@@ -1634,6 +1634,38 @@ Return the aiProxy salt key checksum
 {{- end -}}
 
 {{/*
+Return true when the aiProxy database migrations run in a Job instead of in every pod. Not with the bundled
+PostgreSQL: the Job is a pre-install hook, and the bundled database does not exist yet when it runs
+*/}}
+{{- define "carto.aiProxy.migrationJobEnabled" -}}
+{{- if not .Values.internalPostgresql.enabled -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the aiProxy environment shared by its ConfigMap and its migration Job: the database connection, the settings
+the entrypoint requires in every mode, and the writable paths. Keys used by only one of them stay in that template
+*/}}
+{{- define "carto.aiProxy.commonEnv" -}}
+LITELLM_DATABASE_HOST: {{ include "carto.postgresql.host" . | quote }}
+LITELLM_DATABASE_USERNAME: {{ include "carto.postgresql.user" . | quote }}
+LITELLM_DATABASE_NAME: {{ .Values.externalPostgresql.aiProxyDatabaseName | quote }}
+LITELLM_DATABASE_PORT: {{ include "carto.postgresql.port" . | quote }}
+LITELLM_DATABASE_SSL_MODE: {{ include "carto.aiProxy.databaseSslMode" . | quote }}
+LITELLM_LOG_LEVEL: {{ ternary "DEBUG" "INFO" (eq .Values.appConfigValues.logLevel "debug") | quote }}
+{{- /* Use the model cost map bundled in the image instead of fetching it from GitHub at startup */}}
+LITELLM_LOCAL_MODEL_COST_MAP: "True"
+LITELLM_MIGRATION_DIR: "/app/migrations"
+LITELLM_REDIS_DB: "1"
+LITELLM_REDIS_HOST: {{ include "carto.redis.host" . | quote }}
+LITELLM_REDIS_PORT: {{ include "carto.redis.port" . | quote }}
+LITELLM_NON_ROOT: "true"
+XDG_CACHE_HOME: "/app/cache"
+{{- end -}}
+
+
+{{/*
 HTTP Get health check probe
 */}}
 {{- define "carto.healthCheckProbe" -}}
