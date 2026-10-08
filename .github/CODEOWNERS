@@ -1,0 +1,10 @@
+# Review routing only: branch protection does not require code-owner approval,
+# so these entries auto-request reviewers and nothing more.
+#
+# Guardrail surfaces: agent instructions and CI.
+/AGENTS.md            @CartoDB/core-team @CartoDB/self-hosted-team
+/CLAUDE.md            @CartoDB/core-team @CartoDB/self-hosted-team
+/chart/CLAUDE.md      @CartoDB/core-team @CartoDB/self-hosted-team
+/manifests/CLAUDE.md  @CartoDB/core-team @CartoDB/self-hosted-team
+/.claude/             @CartoDB/core-team @CartoDB/self-hosted-team
+/.github/             @CartoDB/core-team @CartoDB/self-hosted-team

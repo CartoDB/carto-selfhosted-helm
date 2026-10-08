@@ -1,0 +1,10 @@
+# Ignore everything in .claude/ so personal rules and skills stay local.
+*
+
+# Except specific files, plus the dirs whose own .gitignore allowlists the
+# shared entries by name. Never add `!rules/**` here — that un-ignores every
+# developer's personal, uncommitted entries. To share a new rule, allowlist
+# it in rules/.gitignore.
+!.gitignore
+!settings.json
+!rules
