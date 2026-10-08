@@ -1,4 +1,4 @@
-{{- if and .Values.sqlWorker.podDisruptionBudget.enabled}}
+{{- if and (or .Values.sqlWorker.podDisruptionBudget.enabled .Values.highAvailability.enabled)}}
 ---
 apiVersion: {{ .Values.global.kubernetesPolicyVersion }}
 kind: PodDisruptionBudget
@@ -7,11 +7,15 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
   labels:
 spec:
+{{- if .Values.sqlWorker.podDisruptionBudget.enabled }}
 {{- if .Values.sqlWorker.podDisruptionBudget.minAvailable }}
   minAvailable: {{ .Values.sqlWorker.podDisruptionBudget.minAvailable }}
 {{- end }}
 {{- if .Values.sqlWorker.podDisruptionBudget.maxUnavailable }}
   maxUnavailable: {{ .Values.sqlWorker.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+{{- else }}
+  maxUnavailable: 1
 {{- end }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}

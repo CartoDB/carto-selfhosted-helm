@@ -13,7 +13,7 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ .Values.httpCache.replicaCount }}
+  replicas: {{ include "carto.replicas" (dict "replicas" .Values.httpCache.replicaCount "context" $) }}
   {{- if .Values.httpCache.updateStrategy }}
   strategy: {{- toYaml .Values.httpCache.updateStrategy | nindent 4 }}
   {{- end }}
@@ -47,6 +47,11 @@ spec:
         podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.httpCache.podAffinityPreset "component" "http-cache" "context" $) | nindent 10 }}
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.httpCache.podAntiAffinityPreset "component" "http-cache" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.httpCache.nodeAffinityPreset.type "key" .Values.httpCache.nodeAffinityPreset.key "values" .Values.httpCache.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.httpCache.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.httpCache.topologySpreadConstraints "context" $) | nindent 8 }}
+      {{- else if .Values.highAvailability.topologySpread.enabled }}
+      topologySpreadConstraints: {{- include "carto.topologySpreadConstraints" (dict "component" "http-cache" "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.httpCache.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.httpCache.nodeSelector "context" $) | nindent 8 }}

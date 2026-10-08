@@ -570,6 +570,22 @@ commonLabels: {}
 ## @param commonAnnotations Annotations to add to all deployed objects
 ##
 commonAnnotations: {}
+## @param highAvailability.enabled Run every component (except the disconnected-only accountsApi, accountsSubscriber and authApi) with at least `highAvailability.replicas` replicas and a PodDisruptionBudget (`maxUnavailable: 1`, unless the component enables its own `podDisruptionBudget`); components with autoscaling enabled keep their HPA, with `minReplicas` raised to at least `highAvailability.replicas`
+## @param highAvailability.replicas Minimum replicas per component; a component's own higher `replicaCount` is kept
+## @param highAvailability.topologySpread.enabled Spread the replicas of every component (except the disconnected-only ones) across `highAvailability.topologySpread.topologyKey` domains; a component's own `topologySpreadConstraints` value replaces it for that component
+## @param highAvailability.topologySpread.topologyKey Node label that defines the spread domain
+## @param highAvailability.topologySpread.maxSkew Maximum difference in replica count between any two domains
+## @param highAvailability.topologySpread.whenUnsatisfiable `ScheduleAnyway` keeps scheduling when the spread can't be met; `DoNotSchedule` leaves the pod Pending instead
+## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+##
+highAvailability:
+  enabled: false
+  replicas: 2
+  topologySpread:
+    enabled: false
+    topologyKey: topology.kubernetes.io/zone
+    maxSkew: 1
+    whenUnsatisfiable: ScheduleAnyway
 ## @param clusterDomain Kubernetes cluster domain name
 ##
 clusterDomain: cluster.local
@@ -798,6 +814,10 @@ accountsWww:
   ## NOTE: `accountsWww.podAffinityPreset`, `accountsWww.podAntiAffinityPreset`, and `accountsWww.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param accountsWww.topologySpreadConstraints Topology spread constraints for accountsWww pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param accountsWww.nodeSelector Node.js labels for accounts-www pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -1140,6 +1160,10 @@ importApi:
   ## NOTE: `importApi.podAffinityPreset`, `importApi.podAntiAffinityPreset`, and `importApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param importApi.topologySpreadConstraints Topology spread constraints for importApi pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param importApi.nodeSelector Node.js labels for import-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -1163,9 +1187,17 @@ importApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param importApi.lifecycleHooks for the import-api container(s) to automate configuration before or after startup
+  ## @skip importApi.lifecycleHooks [object] for the import-api container(s) to automate configuration before or after startup
+  ## @skip importApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param importApi.extraEnvVars Array with extra environment variables to add to import-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -1457,6 +1489,10 @@ importWorker:
   ## NOTE: `importWorker.podAffinityPreset`, `importWorker.podAntiAffinityPreset`, and `importWorker.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param importWorker.topologySpreadConstraints Topology spread constraints for importWorker pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param importWorker.nodeSelector Node.js labels for import-worker pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -1740,6 +1776,10 @@ ldsApi:
   ## NOTE: `ldsApi.podAffinityPreset`, `ldsApi.podAntiAffinityPreset`, and `ldsApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param ldsApi.topologySpreadConstraints Topology spread constraints for ldsApi pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param ldsApi.nodeSelector Node.js labels for lds-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -1763,9 +1803,17 @@ ldsApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param ldsApi.lifecycleHooks for the lds-api container(s) to automate configuration before or after startup
+  ## @skip ldsApi.lifecycleHooks [object] for the lds-api container(s) to automate configuration before or after startup
+  ## @skip ldsApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param ldsApi.extraEnvVars Array with extra environment variables to add to lds-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -2069,6 +2117,10 @@ publicEventsApi:
   ## NOTE: `publicEventsApi.podAffinityPreset`, `publicEventsApi.podAntiAffinityPreset`, and `publicEventsApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param publicEventsApi.topologySpreadConstraints Topology spread constraints for publicEventsApi pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param publicEventsApi.nodeSelector Node.js labels for public-events-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -2092,9 +2144,17 @@ publicEventsApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param publicEventsApi.lifecycleHooks for the public-events-api container(s) to automate configuration before or after startup
+  ## @skip publicEventsApi.lifecycleHooks [object] for the public-events-api container(s) to automate configuration before or after startup
+  ## @skip publicEventsApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param publicEventsApi.extraEnvVars Array with extra environment variables to add to public-events-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -2398,6 +2458,10 @@ mapsApi:
   ## NOTE: `mapsApi.podAffinityPreset`, `mapsApi.podAntiAffinityPreset`, and `mapsApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param mapsApi.topologySpreadConstraints Topology spread constraints for mapsApi pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param mapsApi.nodeSelector Node.js labels for maps-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -2421,9 +2485,17 @@ mapsApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param mapsApi.lifecycleHooks for the maps-api container(s) to automate configuration before or after startup
+  ## @skip mapsApi.lifecycleHooks [object] for the maps-api container(s) to automate configuration before or after startup
+  ## @skip mapsApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param mapsApi.extraEnvVars Array with extra environment variables to add to maps-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -2706,6 +2778,10 @@ sqlWorker:
   ## NOTE: `sqlWorker.podAffinityPreset`, `sqlWorker.podAntiAffinityPreset`, and `sqlWorker.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param sqlWorker.topologySpreadConstraints Topology spread constraints for sqlWorker pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param sqlWorker.nodeSelector Node.js labels for sql-worker pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -3006,6 +3082,10 @@ router:
   ## NOTE: `router.podAffinityPreset`, `router.podAntiAffinityPreset`, and `router.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param router.topologySpreadConstraints Topology spread constraints for router pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param router.nodeSelector Node.js labels for router pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -3424,6 +3504,10 @@ httpCache:
   ## NOTE: `httpCache.podAffinityPreset`, `httpCache.podAntiAffinityPreset`, and `httpCache.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param httpCache.topologySpreadConstraints Topology spread constraints for httpCache pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param httpCache.nodeSelector Node.js labels for http-cache pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -3753,6 +3837,10 @@ notifier:
   ## NOTE: `notifier.podAffinityPreset`, `notifier.podAntiAffinityPreset`, and `notifier.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param notifier.topologySpreadConstraints Topology spread constraints for notifier pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param notifier.nodeSelector Node labels for notifier pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -4087,6 +4175,10 @@ cdnInvalidatorSub:
   ## NOTE: `cdnInvalidatorSub.podAffinityPreset`, `cdnInvalidatorSub.podAntiAffinityPreset`, and `cdnInvalidatorSub.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param cdnInvalidatorSub.topologySpreadConstraints Topology spread constraints for cdnInvalidatorSub pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param cdnInvalidatorSub.nodeSelector Node.js labels for cdnInvalidatorSub pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -4419,6 +4511,10 @@ workspaceApi:
   ## NOTE: `workspaceApi.podAffinityPreset`, `workspaceApi.podAntiAffinityPreset`, and `workspaceApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param workspaceApi.topologySpreadConstraints Topology spread constraints for workspaceApi pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param workspaceApi.nodeSelector Node.js labels for workspace-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -4442,9 +4538,17 @@ workspaceApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param workspaceApi.lifecycleHooks for the workspace-api container(s) to automate configuration before or after startup
+  ## @skip workspaceApi.lifecycleHooks [object] for the workspace-api container(s) to automate configuration before or after startup
+  ## @skip workspaceApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param workspaceApi.extraEnvVars Array with extra environment variables to add to workspace-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -4736,6 +4840,10 @@ workspaceSubscriber:
   ## NOTE: `workspaceSubscriber.podAffinityPreset`, `workspaceSubscriber.podAntiAffinityPreset`, and `workspaceSubscriber.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param workspaceSubscriber.topologySpreadConstraints Topology spread constraints for workspaceSubscriber pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param workspaceSubscriber.nodeSelector Node.js labels for workspace-subscriber pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -5009,6 +5117,10 @@ workspaceWww:
   ## NOTE: `workspaceWww.podAffinityPreset`, `workspaceWww.podAntiAffinityPreset`, and `workspaceWww.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param workspaceWww.topologySpreadConstraints Topology spread constraints for workspaceWww pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param workspaceWww.nodeSelector Node.js labels for workspace-www pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -6197,6 +6309,10 @@ aiApi:
   ## NOTE: `aiApi.podAffinityPreset`, `aiApi.podAntiAffinityPreset`, and `aiApi.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param aiApi.topologySpreadConstraints Topology spread constraints for aiApi pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param aiApi.nodeSelector Node.js labels for ai-api pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -6220,9 +6336,17 @@ aiApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param aiApi.lifecycleHooks for the ai-api container(s) to automate configuration before or after startup
+  ## @skip aiApi.lifecycleHooks [object] for the ai-api container(s) to automate configuration before or after startup
+  ## @skip aiApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param aiApi.customHeaders Custom HTTP headers to inject into every outgoing LLM request. Rendered as JSON into the AI_CUSTOM_HEADERS env var. Intended for corporate LLM gateways that require authentication or tracking headers. Supports template variables resolved per-request: `{{sso_user_id}}`, `{{client_ip}}`, `{{user_agent}}`, `{{account_id}}`, `{{ai_feature}}`, `{{ai_proxy_ip}}`.
   ## e.g:
   ## customHeaders:
@@ -6528,6 +6652,10 @@ aiProxy:
   ## NOTE: `aiProxy.podAffinityPreset`, `aiProxy.podAntiAffinityPreset`, and `aiProxy.nodeAffinityPreset` will be ignored when it's set
   ##
   affinity: {}
+  ## @param aiProxy.topologySpreadConstraints Topology spread constraints for aiProxy pods assignment, evaluated as a template
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+  ##
+  topologySpreadConstraints: []
   ## @param aiProxy.nodeSelector Node.js labels for aiProxy pods assignment
   ## ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -6892,9 +7020,17 @@ authApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param authApi.lifecycleHooks for the auth-api container(s) to automate configuration before or after startup
+  ## @skip authApi.lifecycleHooks [object] for the auth-api container(s) to automate configuration before or after startup
+  ## @skip authApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param authApi.extraEnvVars Array with extra environment variables to add to auth-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:
@@ -7287,9 +7423,17 @@ accountsApi:
   ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
   ##
   schedulerName: ""
-  ## @param accountsApi.lifecycleHooks for the accounts-api container(s) to automate configuration before or after startup
+  ## @skip accountsApi.lifecycleHooks [object] for the accounts-api container(s) to automate configuration before or after startup
+  ## @skip accountsApi.lifecycleHooks.preStop.exec.command
+  ## The app closes its listener on SIGTERM; the sleep keeps it accepting until the endpoint removal reaches every node.
   ##
-  lifecycleHooks: {}
+  lifecycleHooks:
+    preStop:
+      exec:
+        command:
+          - /bin/sh
+          - "-c"
+          - "sleep 10"
   ## @param accountsApi.extraEnvVars Array with extra environment variables to add to accounts-api nodes ([More info](#additional-environment-variables))
   ## e.g:
   ## extraEnvVars:

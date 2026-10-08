@@ -815,7 +815,7 @@ Derived from the replica count, never set directly: with more than one
 replica, purging through the regular Service clears only one of them.
 */}}
 {{- define "carto.httpCache.fanoutEnabled" -}}
-{{- if and .Values.appConfigValues.httpCacheEnabled (not .Values.cartoConfigValues.onlyRunRouter) (gt (int .Values.httpCache.replicaCount) 1) -}}
+{{- if and .Values.appConfigValues.httpCacheEnabled (not .Values.cartoConfigValues.onlyRunRouter) (gt (int (include "carto.replicas" (dict "replicas" .Values.httpCache.replicaCount "context" .))) 1) -}}
 true
 {{- end -}}
 {{- end -}}
@@ -880,7 +880,7 @@ Derived from the replica count, never set directly: with more than one
 replica, publishing through the regular Service reaches only one of them.
 */}}
 {{- define "carto.notifier.fanoutEnabled" -}}
-{{- if gt (int .Values.notifier.replicaCount) 1 -}}
+{{- if gt (int (include "carto.replicas" (dict "replicas" .Values.notifier.replicaCount "context" .))) 1 -}}
 true
 {{- end -}}
 {{- end -}}
@@ -1860,3 +1860,35 @@ group sync.
 {{- include "carto.images.image" (dict "imageRoot" .Values.accountsMigrations.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
+
+{{/*
+Return a replica count ("replicas"), raised to highAvailability.replicas when highAvailability.enabled.
+Deployments, HPA minReplicas and the fan-out and migration helpers all go through it, so they always
+agree on the number.
+Usage: include "carto.replicas" (dict "replicas" .Values.<component>.replicaCount "context" $)
+*/}}
+{{- define "carto.replicas" -}}
+{{- if .context.Values.highAvailability.enabled -}}
+{{- max (int .replicas) (int .context.Values.highAvailability.replicas) -}}
+{{- else -}}
+{{- .replicas -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the chart-wide topologySpreadConstraints preset (highAvailability.topologySpread) for one
+component. The selector matches only that component's pods; pod-template-hash keeps a rollout's old
+ReplicaSet out of the count.
+Usage: include "carto.topologySpreadConstraints" (dict "component" "<component-label>" "context" $)
+*/}}
+{{- define "carto.topologySpreadConstraints" -}}
+{{- $spread := .context.Values.highAvailability.topologySpread -}}
+- maxSkew: {{ $spread.maxSkew }}
+  topologyKey: {{ $spread.topologyKey }}
+  whenUnsatisfiable: {{ $spread.whenUnsatisfiable }}
+  labelSelector:
+    matchLabels: {{- include "common.labels.matchLabels" .context | nindent 6 }}
+      app.kubernetes.io/component: {{ .component }}
+  matchLabelKeys:
+    - pod-template-hash
+{{- end -}}
