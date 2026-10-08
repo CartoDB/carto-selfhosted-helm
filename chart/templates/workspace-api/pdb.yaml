@@ -14,6 +14,6 @@ spec:
   maxUnavailable: {{ .Values.workspaceApi.podDisruptionBudget.maxUnavailable }}
 {{- end }}
   selector:
-    matchLabels:
-      app.kubernetes.io/name: {{ include "carto.workspaceApi.fullname" . }}
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: workspace-api
 {{- end }}
