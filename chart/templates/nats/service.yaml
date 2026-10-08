@@ -1,0 +1,40 @@
+{{- if and ((include "carto.disconnected.enabled" .)) (not .Values.cartoConfigValues.onlyRunRouter) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "carto.nats.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: nats
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonLabels "context" $) | nindent 4 }}
+    {{- end }}
+  {{- if or .Values.commonAnnotations .Values.nats.service.annotations }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.commonAnnotations "context" $) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.nats.service.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.nats.service.annotations "context" $) | nindent 4 }}
+    {{- end }}
+  {{- end }}
+spec:
+  type: {{ .Values.nats.service.type }}
+  {{- if and .Values.nats.service.clusterIP (eq .Values.nats.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.nats.service.clusterIP }}
+  {{- end }}
+  ports:
+    - name: client
+      port: {{ .Values.nats.service.ports.client }}
+      targetPort: client
+      protocol: TCP
+    - name: monitoring
+      port: {{ .Values.nats.service.ports.monitoring }}
+      targetPort: monitoring
+      protocol: TCP
+    {{- if .Values.nats.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.nats.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  selector: {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: nats
+{{- end }}

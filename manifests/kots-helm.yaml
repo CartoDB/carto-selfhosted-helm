@@ -142,6 +142,10 @@ spec:
     accountsMigrations:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+    ## NATS (self-hosted disconnected event bus)
+    nats:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     ## Redis
     internalRedis:
       enabled: repl{{ if ConfigOptionEquals "externalRedisEnabled" "0"}}truerepl{{ else }}falserepl{{ end }}
