@@ -1,0 +1,32 @@
+{{- if include "carto.notifier.fanoutEnabled" . }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "carto.notifier.controlServiceName" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: notifier
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  # Ready pods only: a not-ready pod would stay a fan-out target, and a pod on a lost node stays listed until that node returns.
+  publishNotReadyAddresses: false
+  ports:
+    - port: {{ .Values.notifier.containerPorts.internal }}
+      targetPort: internal
+      protocol: TCP
+      name: internal
+  selector:
+    {{- if .Values.notifier.service.labelSelectorsOverride }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.notifier.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- else }}
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: notifier
+    {{- end }}
+{{- end }}
