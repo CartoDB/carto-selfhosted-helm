@@ -32,6 +32,9 @@ Fine, because it is already public here or established practice:
 - Short Shortcut refs `[sc-XXXXXX]` in commit messages and PR titles — the ID
   only, never the full URL.
 - Links to public docs (`docs.carto.com`).
+- The one sanctioned internal link: `gatekeeper-selfhosted-kubernetes` (the
+  admission-ceiling source of truth) in the resource-limit check in
+  `lint-codebase.yaml`. Deliberate — not a precedent for other internal repos/URLs.
 
 ## What this repo is
 
@@ -86,6 +89,14 @@ CI is the gate — push and track it. The one thing CI won't fix for you: if you
 change `chart/values.yaml`, regenerate `chart/README.md` (commands in
 `CONTRIBUTING.md`) or the drift check blocks the PR. For a quick local sanity
 check, `helm template` both paths: plain and `--set replicated.enabled=true`.
+
+## Resource limits and the admission ceiling
+
+CARTO-managed clusters reject containers whose `resources.limits` exceed a global
+ceiling (4 CPU / 12Gi) — the Deployment silently wedges at 0 replicas. The
+`check-helm-resources-changed` job in `lint-codebase.yaml` fails the PR on that;
+raising the ceiling means changing the Gatekeeper constraint first, then
+`MAX_CPU_M` / `MAX_MEMORY_MI` in that job.
 
 ## Conventions
 
