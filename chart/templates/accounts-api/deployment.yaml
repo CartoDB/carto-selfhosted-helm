@@ -166,6 +166,7 @@ spec:
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "CARTO_INTERNAL_SERVICE_TOKEN"
               "ENCRYPTION_SECRET_KEY"
+              "OTEL_EXPORTER_OTLP_HEADERS"
              ) "context" $ ) | nindent 12 }}
             {{- if .Values.accountsApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraEnvVars "context" $) | nindent 12 }}
@@ -176,6 +177,7 @@ spec:
             {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
               "CARTO_INTERNAL_SERVICE_TOKEN"
               "ENCRYPTION_SECRET_KEY"
+              "OTEL_EXPORTER_OTLP_HEADERS"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:

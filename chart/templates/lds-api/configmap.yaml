@@ -24,8 +24,8 @@ data:
   {{- if (include "carto.featureFlags.enabled" .) }}
   CARTO_FEATURE_FLAGS_FILE_PATH: {{ include "carto.featureFlags.configMapMountDir" . | quote }}
   {{- end }}
-  {{- if eq .Values.appConfigValues.logLevel "debug" }}
-  CARTO_TRACING_MODE: "local"
+  {{- with include "carto.openTelemetry.env" (dict "context" . "prefix" "LDS_") }}
+  {{- . | nindent 2 }}
   {{- end }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}

@@ -66,6 +66,7 @@ LDS_PROVIDER_TRAVELTIME_API_KEY: appSecrets.ldsTravelTimeApiKey
 LDS_PROVIDER_TRAVELTIME_APP_ID: appSecrets.ldsTravelTimeAppId
 LAUNCHDARKLY_SDK_KEY: cartoSecrets.launchDarklySdkKey
 MAPS_API_V3_JWT_SECRET: cartoSecrets.jwtApiSecret
+OTEL_EXPORTER_OTLP_HEADERS: appSecrets.openTelemetryHeaders
 REACT_APP_VITALLY_TOKEN: cartoSecrets.vitallyToken
 VARNISH_DEBUG_SECRET: cartoSecrets.varnishDebugSecret
 VARNISH_PURGE_SECRET: cartoSecrets.varnishPurgeSecret
@@ -1707,6 +1708,49 @@ CARTO_INTERNAL_ISSUER: {{ include "carto.authApi.issuer" . | quote }}
 CARTO_AUTH_AUDIENCE: "carto-cloud-native-api"
 CARTO_AUTH_NAMESPACE: "http://app.carto.com"
 CARTO_AUTH_API_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+{{- end -}}
+{{- end -}}
+
+{{/*
+Trace settings of a CARTO backend service. Usage:
+  include "carto.openTelemetry.env" (dict "context" $ "prefix" "MAPS_API_V3_")
+"prefix" is the service's own settings prefix ("" for the unprefixed OPEN_TELEMETRY_* variables).
+Omit it for a service that reads only the standard OTEL_* variables.
+With OpenTelemetry disabled, keeps the local trace output of the debug log level.
+*/}}
+{{- define "carto.openTelemetry.env" -}}
+{{- $context := .context -}}
+{{- $otel := $context.Values.appConfigValues.openTelemetry -}}
+{{- if $otel.enabled -}}
+{{- $endpoint := trimSuffix "/" $otel.endpoint -}}
+CARTO_TRACING_MODE: "remote"
+{{- /* "remote" would also turn on the legacy Honeycomb client, which a collector cannot receive */}}
+CARTO_BEELINE_ENABLED: "false"
+{{- if hasKey . "prefix" }}
+{{ .prefix }}OPEN_TELEMETRY_ENABLED: "true"
+{{- /* The service's own endpoint takes precedence over OTEL_EXPORTER_OTLP_ENDPOINT */}}
+{{ .prefix }}OPEN_TELEMETRY_TRACES_ENDPOINT: {{ printf "%s/v1/traces" $endpoint | quote }}
+{{- /* The services start the SDK only with an API key; the collector ignores the header it is sent in */}}
+{{ .prefix }}OPEN_TELEMETRY_API_KEY: "otel-collector"
+{{- end }}
+OTEL_EXPORTER_OTLP_ENDPOINT: {{ $endpoint | quote }}
+{{- /* A started SDK otherwise builds its own OTLP log and metric exporters */}}
+OTEL_LOGS_EXPORTER: "none"
+OTEL_METRICS_EXPORTER: "none"
+{{- with $otel.resourceAttributes }}
+OTEL_RESOURCE_ATTRIBUTES: {{ . | quote }}
+{{- end }}
+{{- with $otel.propagators }}
+OTEL_PROPAGATORS: {{ . | quote }}
+{{- end }}
+{{- with $otel.tracesSampler }}
+OTEL_TRACES_SAMPLER: {{ . | quote }}
+{{- end }}
+{{- with $otel.tracesSamplerArg }}
+OTEL_TRACES_SAMPLER_ARG: {{ . | toString | quote }}
+{{- end }}
+{{- else if eq $context.Values.appConfigValues.logLevel "debug" -}}
+CARTO_TRACING_MODE: "local"
 {{- end -}}
 {{- end -}}
 

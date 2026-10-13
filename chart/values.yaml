@@ -124,6 +124,19 @@ appConfigValues:
   ldsIsolineProvider: ""
   ## @param appConfigValues.logLevel The log level used in CARTO application
   logLevel: "info"
+  openTelemetry:
+    ## @param appConfigValues.openTelemetry.enabled Export the traces of the CARTO backend services over OTLP/HTTP to an OpenTelemetry Collector. Logs and metrics are not exported. Takes precedence over the local trace output of `appConfigValues.logLevel=debug`
+    enabled: false
+    ## @param appConfigValues.openTelemetry.endpoint Base URL of the collector OTLP/HTTP receiver (e.g. `http://otel-collector.observability:4318`), as in `OTEL_EXPORTER_OTLP_ENDPOINT`. The services append `/v1/traces`. Required when `appConfigValues.openTelemetry.enabled` is true. OTLP over gRPC is not supported
+    endpoint: ""
+    ## @param appConfigValues.openTelemetry.resourceAttributes Extra resource attributes added to every span (e.g. deployment.environment=production), as in `OTEL_RESOURCE_ATTRIBUTES`
+    resourceAttributes: ""
+    ## @param appConfigValues.openTelemetry.propagators Context propagators, as in `OTEL_PROPAGATORS` (e.g. tracecontext,baggage). Leave empty to continue and send W3C `traceparent` only
+    propagators: ""
+    ## @param appConfigValues.openTelemetry.tracesSampler Trace sampler, as in `OTEL_TRACES_SAMPLER` (e.g. parentbased_traceidratio). Leave empty for the SDK default (parentbased_always_on)
+    tracesSampler: ""
+    ## @param appConfigValues.openTelemetry.tracesSamplerArg Argument of the trace sampler, as in `OTEL_TRACES_SAMPLER_ARG` (e.g. 0.25)
+    tracesSamplerArg: ""
   ## @param appConfigValues.deploymentType The deployment type used in CARTO application
   deploymentType: "helm"
 
@@ -352,6 +365,16 @@ appSecrets:
     value: ""
     ## @param appSecrets.ldsTravelTimeAppId.existingSecret.name Name of the pre-existent secret containing the `appSecrets.ldsTravelTimeAppId.existingSecret.key`. If `appSecrets.ldsTravelTimeAppId.value` is defined, this value is going to be ignored and not used.
     ## @param appSecrets.ldsTravelTimeAppId.existingSecret.key Key to find in `appSecrets.ldsTravelTimeAppId.existingSecret.name` where the value of `appSecrets.ldsTravelTimeAppId` is found. If `appSecrets.ldsTravelTimeAppId.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra appSecrets.openTelemetryHeaders Headers sent to the OpenTelemetry Collector with every export, as in `OTEL_EXPORTER_OTLP_HEADERS` (comma-separated `key=value` pairs, e.g. for the collector authentication). Only used when `appConfigValues.openTelemetry.enabled` is true.
+  openTelemetryHeaders:
+    ## @param appSecrets.openTelemetryHeaders.value Value of the secret `OTEL_EXPORTER_OTLP_HEADERS`. One of `appSecrets.openTelemetryHeaders.value` or `appSecrets.openTelemetryHeaders.existingSecret` could be defined.
+    value: ""
+    ## @param appSecrets.openTelemetryHeaders.existingSecret.name Name of the pre-existent secret containing the `appSecrets.openTelemetryHeaders.existingSecret.key`. If `appSecrets.openTelemetryHeaders.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.openTelemetryHeaders.existingSecret.key Key to find in `appSecrets.openTelemetryHeaders.existingSecret.name` where the value of `appSecrets.openTelemetryHeaders` is found. If `appSecrets.openTelemetryHeaders.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""
