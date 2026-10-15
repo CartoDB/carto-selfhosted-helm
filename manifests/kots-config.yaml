@@ -361,7 +361,7 @@ spec:
             - name: accessToCartoModeK8sDefault
               title: |-
                 Default Access
-              when: '{{repl not ConfigOptionEquals "platformDistribution" "aks" }}'
+              when: '{{repl not (ConfigOptionEquals "platformDistribution" "aks") }}'
             - name: accessToCartoModeK8sCustom
               title: |-
                 Custom
@@ -612,6 +612,14 @@ spec:
            
           type: text
           when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
+          required: false
+
+        # Exports for Azure
+        - name: storageBucketsExportAzure
+          title: Azure exports container name
+          help_text: Container name to store exported data. Leave it blank to disable exports.
+          type: text
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_azb") }}'
           required: false
 
     # Advanced Config

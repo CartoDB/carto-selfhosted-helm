@@ -170,6 +170,7 @@ spec:
               "CARTO_INTERNAL_SERVICE_TOKEN"
               "ENCRYPTION_SECRET_KEY"
               "CARTO_SMTP_PASSWORD"
+              "OTEL_EXPORTER_OTLP_HEADERS"
              ) "context" $ ) | nindent 12 }}
             {{- if .Values.accountsApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraEnvVars "context" $) | nindent 12 }}
@@ -181,6 +182,7 @@ spec:
               "CARTO_INTERNAL_SERVICE_TOKEN"
               "ENCRYPTION_SECRET_KEY"
               "CARTO_SMTP_PASSWORD"
+              "OTEL_EXPORTER_OTLP_HEADERS"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:

@@ -47,8 +47,8 @@ data:
   {{- with include "carto.disconnected.commonEnv" . }}
   {{- . | nindent 2 }}
   {{- end }}
-  {{- if eq .Values.appConfigValues.logLevel "debug" }}
-  CARTO_TRACING_MODE: "local"
+  {{- with include "carto.openTelemetry.env" (dict "context" . "prefix" "") }}
+  {{- . | nindent 2 }}
   {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
   {{- if (include "carto.featureFlags.enabled" .) }}

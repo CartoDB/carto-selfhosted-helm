@@ -27,8 +27,8 @@ data:
   CARTO_SELFHOSTED_REPLICATED_SDK_DOMAIN: "replicated.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:3000"
   {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
-  {{- if eq .Values.appConfigValues.logLevel "debug" }}
-  CARTO_TRACING_MODE: "local"
+  {{- with include "carto.openTelemetry.env" (dict "context" . "prefix" "IMPORT_") }}
+  {{- . | nindent 2 }}
   {{- end }}
   IMPORT_ERROR_RESPONSE_STACK_TRACE: {{ .Values.cartoConfigValues.enableErrorResponseStackTrace | quote }}
   IMPORT_PORT: {{ .Values.importApi.containerPorts.http | quote }}
@@ -87,6 +87,7 @@ data:
   CARTO_SELFHOSTED_AWS_RDS_METADATA_REGION: {{ .Values.externalPostgresql.awsRdsRegion | quote }}
   CARTO_SELFHOSTED_AWS_EKS_POD_IDENTITY_METADATA_DB_ENABLED: {{ .Values.externalPostgresql.awsEksPodIdentityEnabled | quote }}
   {{- end }}
+  EXPORTS_AZURE_CONTAINER_NAME: {{ .Values.appConfigValues.azureExportContainer | quote }}
   EXPORTS_GCS_BUCKET_NAME: {{ .Values.appConfigValues.workspaceExportsBucket | quote }}
   EXPORTS_S3_BUCKET_NAME: {{ .Values.appConfigValues.awsExportBucket | quote }}
   IMPORT_AWS_CUSTOM_BUCKET_ROLE_ARN: {{ .Values.appConfigValues.importAwsRoleArn | quote }}

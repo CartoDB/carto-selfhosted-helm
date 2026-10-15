@@ -13,5 +13,6 @@ metadata:
   {{- end }}
 data:
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
+  LOG_LEVEL: {{ .Values.appConfigValues.logLevel | quote }}
   WORKSPACE_API_INTERNAL_URL: {{ include "carto.workspaceApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:80
 {{- end }}
