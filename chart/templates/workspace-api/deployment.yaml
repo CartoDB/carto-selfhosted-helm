@@ -14,7 +14,7 @@ metadata:
   {{- end }}
 spec:
   {{- if not .Values.workspaceApi.autoscaling.enabled }}
-  replicas: {{ .Values.workspaceApi.replicaCount }}
+  replicas: {{ include "carto.replicas" (dict "replicas" .Values.workspaceApi.replicaCount "context" $) }}
   {{- end }}
   {{- if .Values.workspaceApi.updateStrategy }}
   strategy: {{- toYaml .Values.workspaceApi.updateStrategy | nindent 4 }}
@@ -52,6 +52,11 @@ spec:
         podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.workspaceApi.podAffinityPreset "component" "workspace-api" "context" $) | nindent 10 }}
         podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.workspaceApi.podAntiAffinityPreset "component" "workspace-api" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.workspaceApi.nodeAffinityPreset.type "key" .Values.workspaceApi.nodeAffinityPreset.key "values" .Values.workspaceApi.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.workspaceApi.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.topologySpreadConstraints "context" $) | nindent 8 }}
+      {{- else if .Values.highAvailability.topologySpread.enabled }}
+      topologySpreadConstraints: {{- include "carto.topologySpreadConstraints" (dict "component" "workspace-api" "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.workspaceApi.nodeSelector }}
       nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceApi.nodeSelector "context" $) | nindent 8 }}

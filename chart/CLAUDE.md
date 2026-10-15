@@ -47,6 +47,15 @@ instance and a customer's own: `internalRedis.enabled`,
 swapping infrastructure backends is that component's own concern, not an
 app-feature decision.
 
+**Disconnected-only components.** `accountsApi`, `accountsSubscriber` and
+`authApi` (plus their `accountsMigrations`/`authMigrations` Jobs) render only
+when `carto.disconnected.enabled` is true. They are outside the chart-wide
+high-availability work: the `highAvailability` presets (replica floor, HPA
+`minReplicas`, PDBs, topology spread) don't apply to them, and their own
+`autoscaling`/`replicaCount` values stay as they were. Don't extend that work to them
+without a decision from the disconnected-mode owners; plain bug fixes (e.g. a
+wrong PDB selector) are fine.
+
 ## Feature flags vs `appConfigValues.*Enabled` toggles
 
 Two different mechanisms gate behavior — pick by axis of control, not by
