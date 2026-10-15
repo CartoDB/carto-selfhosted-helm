@@ -51,8 +51,8 @@ spec:
       affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.cdnInvalidatorSub.affinity "context" $) | nindent 8 }}
       {{- else }}
       affinity:
-        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.cdnInvalidatorSub.podAffinityPreset "component" "cdnInvalidatorSub" "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.cdnInvalidatorSub.podAntiAffinityPreset "component" "cdnInvalidatorSub" "context" $) | nindent 10 }}
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.cdnInvalidatorSub.podAffinityPreset "component" "cdn-invalidator-sub" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.cdnInvalidatorSub.podAntiAffinityPreset "component" "cdn-invalidator-sub" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.cdnInvalidatorSub.nodeAffinityPreset.type "key" .Values.cdnInvalidatorSub.nodeAffinityPreset.key "values" .Values.cdnInvalidatorSub.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
       {{- if .Values.cdnInvalidatorSub.nodeSelector }}

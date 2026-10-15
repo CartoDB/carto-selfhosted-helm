@@ -14,6 +14,6 @@ spec:
   maxUnavailable: {{ .Values.notifier.podDisruptionBudget.maxUnavailable }}
 {{- end }}
   selector:
-    matchLabels:
-      app.kubernetes.io/name: {{ include "carto.notifier.fullname" . }}
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: notifier
 {{- end }}
