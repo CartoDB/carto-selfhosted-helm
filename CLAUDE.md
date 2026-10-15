@@ -111,3 +111,6 @@ raising the ceiling means changing the Gatekeeper constraint first, then
 Every change ships to customers running on their own infrastructure. They
 cannot quickly roll back, and we cannot quickly redeploy. Measure twice, cut
 once.
+<!-- Agent instructions live in AGENTS.md, which every tool reads. This import
+     keeps Claude Code on the same file. -->
+@AGENTS.md

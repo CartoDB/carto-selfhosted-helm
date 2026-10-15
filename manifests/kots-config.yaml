@@ -361,7 +361,7 @@ spec:
             - name: accessToCartoModeK8sDefault
               title: |-
                 Default Access
-              when: '{{repl not ConfigOptionEquals "platformDistribution" "aks" }}'
+              when: '{{repl not (ConfigOptionEquals "platformDistribution" "aks") }}'
             - name: accessToCartoModeK8sCustom
               title: |-
                 Custom
@@ -614,6 +614,14 @@ spec:
           when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_aws_s3") }}'
           required: false
 
+        # Exports for Azure
+        - name: storageBucketsExportAzure
+          title: Azure exports container name
+          help_text: Container name to store exported data. Leave it blank to disable exports.
+          type: text
+          when: '{{repl (ConfigOptionEquals "storageBucketsBehaviour" "custom_azb") }}'
+          required: false
+
     # Advanced Config
     - name: platformAdvancedConfig
       title: Advanced Config
@@ -738,6 +746,13 @@ spec:
           type: text
           value: 'repl{{ PrivateCACert }}'
           readonly: true
+
+        ## Trusted CA certificates
+        - name: trustedCaCertsValue
+          title: Trusted CA certificate(s)
+          type: textarea
+          help_text: |-
+            PEM-encoded CA certificate(s) added to the standard trusted CAs (extends, does not replace them) for outbound TLS — verifying servers CARTO connects to that are signed by a private or self-signed CA (e.g. a private-CA S3-compatible store). Paste multiple concatenated PEM blocks if needed. Leave empty if not needed.
 
         ## SSO
         - name: ssoEnabled
@@ -897,7 +912,7 @@ spec:
           required: true
           type: text
         - name: bigqueryWorkloadIdentityConnectionBillingProject
-          title: Google billing broject
+          title: Google billing project
           when: *when_google_workload_identity_and_connections
           help_text: |-
             GCP project to be charged with the BigQuery costs when using Workload Identity
@@ -1030,7 +1045,6 @@ spec:
             Enable if you want to enable debug mode.
           type: bool
           default: "0"
-
 
     # Custom configuration
     - name: platformAdvancedTuning

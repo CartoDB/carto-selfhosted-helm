@@ -107,6 +107,7 @@ spec:
               "CARTO_SELFHOSTED_INSTANCE_ID"
               "VARNISH_PURGE_SECRET"
               "VARNISH_DEBUG_SECRET"
+              "OTEL_EXPORTER_OTLP_HEADERS"
             ) "context" $ ) | nindent 12 }}
             {{- if .Values.cdnInvalidatorSub.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraEnvVars "context" $) | nindent 12 }}
@@ -118,6 +119,7 @@ spec:
               "CARTO_SELFHOSTED_INSTANCE_ID"
               "VARNISH_PURGE_SECRET" 
               "VARNISH_DEBUG_SECRET"
+              "OTEL_EXPORTER_OTLP_HEADERS"
             ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
@@ -167,9 +169,9 @@ spec:
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
-            {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
-            - name: proxy-ssl-ca
-              mountPath: {{ include "carto.proxy.configMapMountDir" . }}
+            {{- if (include "carto.trustedCACerts.enabled" .) }}
+            - name: trusted-ca-certs
+              mountPath: {{ include "carto.trustedCACerts.configMapMountDir" . }}
               readOnly: true
             {{- end }}
           {{- if .Values.cdnInvalidatorSub.extraVolumeMounts }}
@@ -185,10 +187,10 @@ spec:
             items:
               - key: {{ include "carto.google.secretKey" . }}
                 path: {{ include "carto.google.secretMountFilename" . }}
-        {{- if and .Values.externalProxy.enabled (or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name) }}
-        - name: proxy-ssl-ca
+        {{- if (include "carto.trustedCACerts.enabled" .) }}
+        - name: trusted-ca-certs
           configMap:
-            name: {{ include "carto.proxy.configMapName" . }}
+            name: {{ include "carto.trustedCACerts.configMapName" . }}
         {{- end }}
         {{- if .Values.cdnInvalidatorSub.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraVolumes "context" $) | nindent 8 }}

@@ -1,0 +1,53 @@
+{{- if and ((include "carto.disconnected.enabled" .)) (not .Values.cartoConfigValues.onlyRunRouter) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "carto.authApi.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: auth-api
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.authApi.service.annotations }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.authApi.service.annotations "context" $) | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ .Values.authApi.service.type }}
+  {{- if and .Values.authApi.service.clusterIP (eq .Values.authApi.service.type "ClusterIP") }}
+  clusterIP: {{ .Values.authApi.service.clusterIP }}
+  {{- end }}
+  {{- if and .Values.authApi.service.externalTrafficPolicy (ne .Values.authApi.service.type "ClusterIP") }}
+  externalTrafficPolicy: {{ .Values.authApi.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- if and .Values.authApi.service.loadBalancerIP (eq .Values.authApi.service.type "LoadBalancer") }}
+  loadBalancerIP: {{ .Values.authApi.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and (eq .Values.authApi.service.type "LoadBalancer") .Values.authApi.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges: {{- toYaml .Values.authApi.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.authApi.service.ports.http }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if and (or (eq .Values.authApi.service.type "NodePort") (eq .Values.authApi.service.type "LoadBalancer")) .Values.authApi.service.nodePorts.http }}
+      nodePort: {{ .Values.authApi.service.nodePorts.http }}
+      {{- else if eq .Values.authApi.service.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- if .Values.authApi.service.extraPorts }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.authApi.service.extraPorts "context" $) | nindent 4 }}
+    {{- end }}
+  selector:
+    {{- if .Values.authApi.service.labelSelectorsOverride }}
+    {{- include "common.tplvalues.render" (dict "value" .Values.authApi.service.labelSelectorsOverride "context" $) | nindent 4 }}
+    {{- else }}
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: auth-api
+    {{- end }}
+{{- end }}

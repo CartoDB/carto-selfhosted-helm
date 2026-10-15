@@ -25,6 +25,9 @@ data:
   CDN_INVALIDATOR_VARNISH_PURGE_BASE_URL: "http://{{ include "carto.httpCache.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
   NODE_OPTIONS: {{ template "carto.cdnInvalidatorSub.nodeOptions" . }}
+  {{- if .Values.appConfigValues.openTelemetry.enabled }}
+  {{- include "carto.openTelemetry.env" (dict "context" . "prefix" "CDN_INVALIDATOR_SUBSCRIBER_") | nindent 2 }}
+  {{- end }}
   {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
   GOOGLE_APPLICATION_CREDENTIALS: {{ include "carto.google.secretMountAbsolutePath" . }}
   {{- end }}
@@ -42,8 +45,8 @@ data:
   NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
   {{- end }}
-  {{- if or .Values.externalProxy.sslCA .Values.externalProxy.sslCAConfigmap.name }}
-  NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}
   {{- end }}
+  {{- if (include "carto.trustedCACerts.enabled" .) }}
+  NODE_EXTRA_CA_CERTS: {{ include "carto.trustedCACerts.configMapMountAbsolutePath" . | quote }}
   {{- end }}
 {{- end }}

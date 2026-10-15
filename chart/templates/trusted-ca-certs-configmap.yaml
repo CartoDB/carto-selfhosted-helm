@@ -1,8 +1,8 @@
-{{- if and .Values.externalProxy.enabled .Values.externalProxy.sslCA }}
+{{- if (include "carto.trustedCACerts.hasInline" .) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "carto.proxy.configMapName" . }}
+  name: {{ include "carto.trustedCACerts.configMapName" . }}
   labels: {{- include "common.labels.standard" . | nindent 4 }}
     {{- if .Values.commonLabels }}
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
@@ -12,5 +12,5 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
-  {{ include "carto.proxy.configMapMountFilename" . }}: {{ .Values.externalProxy.sslCA | quote }}
+  {{ include "carto.trustedCACerts.configMapMountFilename" . }}: {{ include "carto.trustedCACerts.bundle" . | quote }}
 {{- end }}

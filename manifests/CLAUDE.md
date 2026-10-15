@@ -17,6 +17,28 @@ yourself encoding behavior here that the chart doesn't have, stop.
 `scripts/test-kots-config.sh` renders the KOTS config for `gke|eks|aks|all` —
 the quick local check after touching these files.
 
+## Does a new `appConfigValues` parameter need a KOTS field?
+
+Not a bright line — most `appConfigValues` parameters get a
+`kots-config.yaml` item plus `kots-helm.yaml` wiring, but several legitimately
+don't (a low-traffic EKS-specific auth toggle, a split-horizon URL override,
+disabling the internal cache, a frontend telemetry switch), simply because no
+one's asked to configure them from the Admin Console yet — that's not a rule
+to reason from. Two cases are checkable, though:
+
+- **The option only makes sense if the customer is already hand-authoring
+  Kubernetes objects** (e.g. pointing at a pre-existing ConfigMap/Secret by
+  name) → Helm-only. `trustedCACerts.existingConfigmap` kept its chart value
+  but was deliberately dropped from the KOTS UI for this reason, while the
+  sibling inline-PEM field stayed exposed.
+- **The value is CARTO-managed engine tuning the customer was never meant to
+  set** → not exposed anywhere, and often not even documented as customer
+  config in the first place.
+
+Outside those two, default to wiring both — the whole point of KOTS parity is
+that a customer shouldn't have to hand-edit Helm values for something every
+install has to decide.
+
 ## Secrets — three origins, wired differently
 
 - **Auto-generated** infra secrets: `type: RandomString`, `hidden`, in
