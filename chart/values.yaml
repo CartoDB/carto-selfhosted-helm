@@ -5598,10 +5598,12 @@ nats:
   ## NATS JetStream persistent storage
   ## @param nats.persistence.size Size of the persistent volume backing the JetStream file store
   ## @param nats.persistence.storageClass StorageClass for the NATS persistent volume. Empty uses `global.storageClass` or the cluster default
+  ## @param nats.persistence.whenDeleted Whether uninstalling keeps (`Retain`) or deletes (`Delete`) the NATS volume. `Retain` keeps queued messages and dead letters; delete the PVC by hand to discard them. Scaling down always keeps the volume
   ##
   persistence:
     size: 10Gi
     storageClass: ""
+    whenDeleted: Retain
 
   ## Configure extra options for NATS containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes

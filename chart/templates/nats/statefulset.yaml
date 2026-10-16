@@ -16,6 +16,10 @@ spec:
   {{/* Single-node JetStream: more replicas need cluster routes, not pod copies */}}
   replicas: 1
   serviceName: {{ template "carto.nats.fullname" . }}
+  {{- /* Explicit, never the cluster default: deleting the volume on scale-down wipes every stream, consumer and dead letter */}}
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: {{ .Values.nats.persistence.whenDeleted }}
+    whenScaled: Retain
   {{- if .Values.nats.updateStrategy }}
   updateStrategy: {{- toYaml .Values.nats.updateStrategy | nindent 4 }}
   {{- end }}
