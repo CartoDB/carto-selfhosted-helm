@@ -122,6 +122,7 @@ spec:
               "EXPORTS_S3_BUCKET_SECRET_ACCESS_KEY"
               "MAPS_API_V3_JWT_SECRET"
             ) "context" $ ) | nindent 12 }}
+            {{- with (include "carto.nats.clientEnv" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             {{- if .Values.sqlWorker.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.sqlWorker.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}

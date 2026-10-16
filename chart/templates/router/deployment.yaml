@@ -180,6 +180,7 @@ spec:
           args: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.args "context" $) | nindent 12 }}
           {{- end }}
           env:
+            {{- with (include "carto.nats.clientEnv" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             {{- if .Values.routerMetrics.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}

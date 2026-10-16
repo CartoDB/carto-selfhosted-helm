@@ -167,6 +167,7 @@ spec:
               "CARTO_INTERNAL_SERVICE_TOKEN"
               "ENCRYPTION_SECRET_KEY"
              ) "context" $ ) | nindent 12 }}
+            {{- with (include "carto.nats.clientEnv" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             {{- if .Values.accountsApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}

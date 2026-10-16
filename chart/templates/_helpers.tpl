@@ -1708,10 +1708,6 @@ CARTO_INTERNAL_ISSUER: {{ include "carto.authApi.issuer" . | quote }}
 CARTO_AUTH_AUDIENCE: "carto-cloud-native-api"
 CARTO_AUTH_NAMESPACE: "http://app.carto.com"
 CARTO_AUTH_API_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
-{{/* Stays "pubsub" until the event-bus transport library ships in the services; the NATS URL is
-     already published so the flip is a single value change */}}
-EVENT_BUS_TRANSPORT: "pubsub"
-EVENT_BUS_NATS_URL: {{ include "carto.nats.url" . | quote }}
 {{- end -}}
 {{- end -}}
 
@@ -1733,6 +1729,36 @@ EVENT_BUS_NATS_URL: {{ include "carto.nats.url" . | quote }}
 
 {{- define "carto.nats.url" -}}
 {{- printf "nats://%s.%s.svc.%s:%v" (include "carto.nats.fullname" .) .Release.Namespace .Values.clusterDomain .Values.nats.service.ports.client -}}
+{{- end -}}
+
+{{/*
+Env entries for every service that publishes or subscribes to the event bus. Self-gated: emits
+nothing unless disconnected mode is enabled, so connected installs keep the services' Pub/Sub
+default. The token is read from the NATS Secret rather than copied into each component's Secret.
+Params: context, and optional (true where the NATS Secret may not exist yet, as in preflights).
+*/}}
+{{- define "carto.nats.clientEnv" -}}
+{{- $context := .context -}}
+{{- if (include "carto.disconnected.enabled" $context) -}}
+{{- $token := $context.Values.cartoSecrets.natsAuthToken.existingSecret -}}
+- name: BACKEND_MESSAGING_TRANSPORT
+  value: "nats"
+- name: BACKEND_MESSAGING_NATS_URL
+  value: {{ include "carto.nats.url" $context | quote }}
+- name: BACKEND_MESSAGING_NATS_TOKEN
+  valueFrom:
+    secretKeyRef:
+      {{- if $token.name }}
+      name: {{ $token.name | quote }}
+      key: {{ $token.key | quote }}
+      {{- else }}
+      name: {{ include "carto.nats.secretName" $context | quote }}
+      key: "NATS_AUTH_TOKEN"
+      {{- end }}
+      {{- if .optional }}
+      optional: true
+      {{- end }}
+{{- end -}}
 {{- end -}}
 
 {{/*

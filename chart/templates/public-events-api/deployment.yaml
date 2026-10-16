@@ -98,6 +98,7 @@ spec:
               exec node dist/public-events-api/index.js
           {{- end }}
           env:
+            {{- with (include "carto.nats.clientEnv" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             {{- if .Values.publicEventsApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.publicEventsApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}

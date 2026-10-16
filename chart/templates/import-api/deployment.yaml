@@ -122,6 +122,7 @@ spec:
               "IMPORT_STORAGE_ACCESSKEY"
               "LAUNCHDARKLY_SDK_KEY"
             ) "context" $ ) | nindent 12 }}
+            {{- with (include "carto.nats.clientEnv" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             {{- if .Values.importApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.importApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
