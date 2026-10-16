@@ -152,7 +152,7 @@ spec:
           {{- if .Values.accountsSubscriber.livenessProbe.enabled }}
           livenessProbe:
             {{- include "common.tplvalues.render" (dict "value" (omit .Values.accountsSubscriber.livenessProbe "enabled") "context" $) | nindent 12 }}
-            {{- include "carto.healthCheckProbe" . | nindent 12 }}
+            {{- include "carto.subscriberLivenessProbe" . | nindent 12 }}
           {{- else if .Values.accountsSubscriber.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.accountsSubscriber.customLivenessProbe "context" $) | nindent 12 }}
           {{- end }}

@@ -1612,6 +1612,19 @@ httpGet:
 {{- end -}}
 
 {{/*
+Liveness for the subscribers: /health answers 503 while a subscriber starts or its database blips,
+which should take it out of rotation, not restart it.
+*/}}
+{{- define "carto.subscriberLivenessProbe" -}}
+httpGet:
+  path: /health/liveness
+  port: http
+  httpHeaders:
+    - name: Carto-Monitoring
+      value: "True"
+{{- end -}}
+
+{{/*
 Whether this deployment runs in self-hosted disconnected mode. Every disconnected gate must read
 this helper instead of the raw value, so the public toggle can evolve without touching templates.
 Returns "true" when enabled, empty string (falsy) otherwise.
