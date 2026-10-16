@@ -121,6 +121,32 @@ If appConfigValues.disconnected.enabled=true you need to set one of cartoSecrets
 {{- end -}}
 
 {{/*
+Validate that a disconnected install keeps every event-bus client on NATS. The chart sets
+BACKEND_MESSAGING_TRANSPORT=nats itself, but a component's extraEnvVars can override it, and any
+other transport falls back to Google Pub/Sub, which a disconnected install cannot reach.
+*/}}
+{{- define "carto.validateValues.messagingTransport" -}}
+{{- if (include "carto.disconnected.enabled" .) -}}
+{{- $overriding := list -}}
+{{- range $component := list "accountsApi" "accountsSubscriber" "aiApi" "cdnInvalidatorSub" "importApi" "importWorker" "ldsApi" "mapsApi" "publicEventsApi" "routerMetrics" "sqlWorker" "workspaceApi" "workspaceSubscriber" -}}
+{{- $extraEnvVars := (get $.Values $component).extraEnvVars -}}
+{{- if kindIs "slice" $extraEnvVars -}}
+{{- range $extraEnvVars -}}
+{{- if and (eq (toString .name) "BACKEND_MESSAGING_TRANSPORT") (ne (toString .value) "nats") -}}
+{{- $overriding = append $overriding $component -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- if $overriding -}}
+CARTO: Invalid event-bus transport
+
+If appConfigValues.disconnected.enabled=true every service must use NATS. Remove BACKEND_MESSAGING_TRANSPORT from the extraEnvVars of: {{ join ", " (uniq $overriding) }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Compile all warnings into a single message, and call fail.
 */}}
 {{- define "carto.validateValues" -}}
@@ -133,6 +159,7 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := append $messages (include "carto.validateValues.s3Compatible" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.authApi" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.nats" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.messagingTransport" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 
