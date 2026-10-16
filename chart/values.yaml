@@ -4361,6 +4361,13 @@ workspaceApi:
   ## @param workspaceApi.terminationGracePeriodSeconds Time to wait before force killing the container
   ##
   terminationGracePeriodSeconds: 300
+  ## Daily job that requests the purge of empty maps (self-hosted disconnected mode only)
+  ## @param workspaceApi.mapsPurge.schedule Cron schedule of the maps-purge job
+  ## @param workspaceApi.mapsPurge.timeZone Time zone the maps-purge schedule is read in
+  ##
+  mapsPurge:
+    schedule: "0 8 * * *"
+    timeZone: "Europe/Madrid"
   ## @param workspaceApi.existingConfigMap The name of an existing ConfigMap with your custom configuration for workspace-api
   ##
   existingConfigMap: ""

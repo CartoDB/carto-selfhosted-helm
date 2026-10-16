@@ -1,0 +1,64 @@
+{{- if and (include "carto.disconnected.enabled" .) (not .Values.cartoConfigValues.onlyRunRouter) }}
+{{- /* Disconnected installs have no external scheduler to request the daily purge of empty maps */}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ printf "%s-maps-purge" (include "carto.workspaceApi.fullname" .) | trunc 52 | trimSuffix "-" }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: workspace-api-maps-purge
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  schedule: {{ .Values.workspaceApi.mapsPurge.schedule | quote }}
+  timeZone: {{ .Values.workspaceApi.mapsPurge.timeZone | quote }}
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      {{- /* The command exits 1 when the request was not published, and a retry is safe */}}
+      backoffLimit: 3
+      template:
+        metadata:
+          {{- /* Not the workspace-api component label: the workspace-api Service must not select this pod */}}
+          labels: {{- include "common.labels.standard" . | nindent 12 }}
+            app.kubernetes.io/component: workspace-api-maps-purge
+            {{- if .Values.workspaceApi.podLabels }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.podLabels "context" $) | nindent 12 }}
+            {{- end }}
+        spec:
+          restartPolicy: Never
+          serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+          {{- include "carto.imagePullSecrets" . | nindent 10 }}
+          {{- if .Values.workspaceApi.hostAliases }}
+          hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.hostAliases "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.workspaceApi.nodeSelector }}
+          nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.workspaceApi.nodeSelector "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.workspaceApi.tolerations }}
+          tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.tolerations "context" .) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.workspaceApi.podSecurityContext.enabled }}
+          securityContext: {{- omit .Values.workspaceApi.podSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          containers:
+            - name: maps-purge
+              image: {{ template "carto.workspaceApi.image" . }}
+              imagePullPolicy: {{ .Values.workspaceApi.image.pullPolicy }}
+              {{- if .Values.workspaceApi.containerSecurityContext.enabled }}
+              securityContext: {{- omit .Values.workspaceApi.containerSecurityContext "enabled" | toYaml | nindent 16 }}
+              {{- end }}
+              command:
+                - node
+                - dist/workspace-api/scripts/publish-maps-purge-requested.js
+              {{- include "carto.workspaceApi.containerEnv" . | trimPrefix "\n" | nindent 4 }}
+              {{- if .Values.workspaceApi.resources }}
+              resources: {{- toYaml .Values.workspaceApi.resources | nindent 16 }}
+              {{- end }}
+              {{- include "carto.workspaceApi.volumeMounts" . | trimPrefix "\n" | nindent 4 }}
+          {{- include "carto.workspaceApi.volumes" . | trimPrefix "\n" | nindent 4 }}
+{{- end }}
