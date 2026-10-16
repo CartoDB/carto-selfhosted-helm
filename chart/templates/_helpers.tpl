@@ -1711,6 +1711,16 @@ CARTO_AUTH_API_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release
 {{- end -}}
 {{- end -}}
 
+{{/*
+Secret env vars workspace-api adds in disconnected mode: the token its internal dead-letter admin
+routes check. A YAML list, for concat with the component's own list.
+*/}}
+{{- define "carto.workspaceApi.disconnectedSecretVars" -}}
+{{- if (include "carto.disconnected.enabled" .) -}}
+- CARTO_INTERNAL_SERVICE_TOKEN
+{{- end -}}
+{{- end -}}
+
 {{- define "carto.nats.fullname" -}}
 {{- printf "%s-nats" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}

@@ -195,7 +195,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "carto.redis.secretName" . }}
                   key: {{ include "carto.redis.existingsecret.key" . | quote }}
-            {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
+            {{- include "carto._utils.generateSecretDefs" (dict "vars" (concat (list
               "BIGQUERY_OAUTH2_CLIENT_SECRET"
               "ENCRYPTION_SECRET_KEY"
               "LAUNCHDARKLY_SDK_KEY"
@@ -206,7 +206,7 @@ spec:
               "WORKSPACE_IMPORTS_ACCESSKEYID"
               "WORKSPACE_IMPORTS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY"
-              ) "context" $ ) | nindent 12 }}
+              ) (include "carto.workspaceApi.disconnectedSecretVars" $ | fromYamlArray)) "context" $ ) | nindent 12 }}
             {{- with (include "carto.nats.clientEnv" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             {{- if .Values.workspaceApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.extraEnvVars "context" $) | nindent 12 }}
@@ -214,7 +214,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "carto.workspaceApi.configmapName" . }}
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
+            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (concat (list
               "BIGQUERY_OAUTH2_CLIENT_SECRET"
               "ENCRYPTION_SECRET_KEY"
               "LAUNCHDARKLY_SDK_KEY"
@@ -225,7 +225,7 @@ spec:
               "WORKSPACE_IMPORTS_ACCESSKEYID"
               "WORKSPACE_IMPORTS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY"
-            ) "context" $ ) -}}
+            ) (include "carto.workspaceApi.disconnectedSecretVars" $ | fromYamlArray)) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:
                 name: {{ include "carto.workspaceApi.secretName" . }}
