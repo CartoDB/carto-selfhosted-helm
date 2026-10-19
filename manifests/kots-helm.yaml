@@ -13,6 +13,27 @@ spec:
       enabled: true
     internalPostgresql:
       enabled: false
+    ## Renders the disconnected-only components (internal auth, event bus) so air-gap bundles carry their
+    ## images. Placeholders, never installed: they only have to pass the chart's disconnected validators.
+    appConfigValues:
+      disconnected:
+        enabled: true
+        protocol: oidc
+        spaClient:
+          clientId: air-gap-builder
+        oidc:
+          issuerUrl: https://air-gap-builder.invalid
+          clientId: air-gap-builder
+    appSecrets:
+      authApiOidcClientSecret:
+        value: air-gap-builder
+    cartoSecrets:
+      authApiInternalServiceToken:
+        value: air-gap-builder
+      encryptionSecretKey:
+        value: air-gap-builder
+      natsAuthToken:
+        value: air-gap-builder
   values:
     global:
       imagePullSecrets:
