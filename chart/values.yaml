@@ -5590,7 +5590,7 @@ nats:
   ##
   maxPayload: "8MB"
 
-  ## @param nats.jetstream.maxFileStore Maximum disk usage of the JetStream file store. Keep it below `nats.persistence.size`
+  ## @param nats.jetstream.maxFileStore Maximum disk usage of the JetStream file store. Keep it below `nats.persistence.size`. On storage that does not enforce volume sizes (such as the embedded cluster's host-path volumes) this is the only limit, so the node needs this much free disk
   ##
   jetstream:
     maxFileStore: "8GiB"
