@@ -5683,10 +5683,12 @@ nats:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
   ## @param nats.podSecurityContext.enabled Enabled NATS pods' Security Context
   ## @param nats.podSecurityContext.fsGroup Set NATS pod's Security Context fsGroup
+  ## @param nats.podSecurityContext.supplementalGroups[0] Set NATS pod's Security Context supplementalGroups
   ##
   podSecurityContext:
     enabled: true
     fsGroup: 101
+    supplementalGroups: [2345]
 
   ## Configure Container Security Context
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
