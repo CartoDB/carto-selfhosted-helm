@@ -25,6 +25,7 @@ spec:
   template:
     metadata:
       annotations:
+        {{- with (include "carto.nats.clientPodAnnotations" (dict "context" $)) }}{{ . | nindent 8 }}{{- end }}
         checksum/config: {{ include (print $.Template.BasePath "/public-events-api/configmap.yaml") . | sha256sum }}
         checksum/feature-flags-config: {{ include (print $.Template.BasePath "/custom-feature-flags-configmap.yaml") . | sha256sum }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"

@@ -1751,6 +1751,17 @@ deployed then).
 {{- end -}}
 
 {{/*
+Pod annotation that restarts an event-bus client when its NATS token changes: the token is read
+through a secretKeyRef, which a running pod never re-reads. Same params as carto.nats.clientEnv.
+*/}}
+{{- define "carto.nats.clientPodAnnotations" -}}
+{{- $context := .context -}}
+{{- if (include "carto.nats.clientsEnabled" $context) -}}
+checksum/nats-token: {{ toYaml $context.Values.cartoSecrets.natsAuthToken | sha256sum }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Env entries for every service that publishes or subscribes to the event bus. Self-gated: emits
 nothing unless disconnected mode is enabled, so connected installs keep the services' Pub/Sub
 default. The token is read from the NATS Secret rather than copied into each component's Secret.

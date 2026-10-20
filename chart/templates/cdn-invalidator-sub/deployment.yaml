@@ -29,6 +29,7 @@ spec:
   template:
     metadata:
       annotations:
+        {{- with (include "carto.nats.clientPodAnnotations" (dict "context" $)) }}{{ . | nindent 8 }}{{- end }}
         checksum/config: {{ include (print $.Template.BasePath "/cdn-invalidator-sub/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/cdn-invalidator-sub/secret.yaml") . | sha256sum }}
         checksum/postgresql-password: {{ include "carto.postgresql.passwordChecksum" . }}
