@@ -1,3 +1,5 @@
+{{/* vim: set filetype=helm: */}}
+
 {{/*
 Validate external Valkey / Redis-compatible cache config
 */}}
@@ -38,6 +40,18 @@ Validate log level
 {{- $validLevels := list "info" "debug" "error" -}}
 {{- if not (has .Values.appConfigValues.logLevel $validLevels) -}}
 {{- printf "Invalid logLevel: %s. Must be one of %v" .Values.appConfigValues.logLevel $validLevels -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Validate OpenTelemetry trace export config
+*/}}
+{{- define "carto.validateValues.openTelemetry" -}}
+{{- $otel := .Values.appConfigValues.openTelemetry -}}
+{{- if and $otel.enabled (not (regexMatch "^https?://[^/\\s]+" $otel.endpoint)) -}}
+CARTO: Missing or invalid OpenTelemetry endpoint
+
+If appConfigValues.openTelemetry.enabled=true you need to set appConfigValues.openTelemetry.endpoint to the base URL of the collector OTLP/HTTP receiver, starting with http:// or https:// (e.g. http://otel-collector.observability:4318)
 {{- end -}}
 {{- end -}}
 
@@ -160,6 +174,7 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := append $messages (include "carto.validateValues.authApi" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.nats" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.messagingTransport" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.openTelemetry" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}
 

@@ -120,6 +120,8 @@ spec:
               containerPort: {{ .Values.router.containerPorts.http }}
             - name: https
               containerPort: {{ .Values.router.containerPorts.https }}
+            - name: internal-http
+              containerPort: {{ .Values.router.containerPorts.internalHttp }}
           {{- if not .Values.diagnosticMode.enabled }}
           {{- if .Values.router.livenessProbe.enabled }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.router.livenessProbe "enabled") "context" $) | nindent 12 }}

@@ -126,6 +126,7 @@ spec:
               "IMPORT_SECRETACCESSKEY"
               "IMPORT_STORAGE_ACCESSKEY"
               "LAUNCHDARKLY_SDK_KEY"
+              "OTEL_EXPORTER_OTLP_HEADERS"
             ) "context" $ ) | nindent 12 }}
             {{- with (include "carto.nats.clientEnv" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             {{- if .Values.importWorker.extraEnvVars }}
@@ -145,6 +146,7 @@ spec:
               "IMPORT_SECRETACCESSKEY"
               "IMPORT_STORAGE_ACCESSKEY"
               "LAUNCHDARKLY_SDK_KEY"
+              "OTEL_EXPORTER_OTLP_HEADERS"
             ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:

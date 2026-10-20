@@ -120,6 +120,7 @@ spec:
              "LDS_PROVIDER_GOOGLE_API_KEY"
              "LDS_PROVIDER_TRAVELTIME_API_KEY"
              "LDS_PROVIDER_TRAVELTIME_APP_ID"
+             "OTEL_EXPORTER_OTLP_HEADERS"
              ) "context" $ ) | nindent 12 }}
             {{- with (include "carto.nats.clientEnv" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             {{- if .Values.ldsApi.extraEnvVars }}
@@ -137,6 +138,7 @@ spec:
              "LDS_PROVIDER_GOOGLE_API_KEY"
              "LDS_PROVIDER_TRAVELTIME_API_KEY"
              "LDS_PROVIDER_TRAVELTIME_APP_ID"
+             "OTEL_EXPORTER_OTLP_HEADERS"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(helm lint *)",
+      "Bash(helm template *)",
+      "Bash(scripts/test-kots-config.sh *)"
+    ]
+  }
+}

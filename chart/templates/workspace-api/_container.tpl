@@ -25,6 +25,7 @@ Rendered at the Deployment's container indentation; other callers re-indent it.
               "WORKSPACE_IMPORTS_ACCESSKEYID"
               "WORKSPACE_IMPORTS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY"
+              "OTEL_EXPORTER_OTLP_HEADERS"
               ) (include "carto.workspaceApi.disconnectedSecretVars" $ | fromYamlArray)) "context" $ ) | nindent 12 }}
             {{- with (include "carto.nats.clientEnv" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             {{- if .Values.workspaceApi.extraEnvVars }}
@@ -44,6 +45,7 @@ Rendered at the Deployment's container indentation; other callers re-indent it.
               "WORKSPACE_IMPORTS_ACCESSKEYID"
               "WORKSPACE_IMPORTS_SECRETACCESSKEY"
               "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY"
+              "OTEL_EXPORTER_OTLP_HEADERS"
             ) (include "carto.workspaceApi.disconnectedSecretVars" $ | fromYamlArray)) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:

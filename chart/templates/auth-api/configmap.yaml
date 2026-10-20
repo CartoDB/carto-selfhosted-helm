@@ -56,8 +56,8 @@ data:
   CARTO_REFRESH_TOKEN_TTL_SECONDS: {{ .Values.appConfigValues.disconnected.refreshTokenTtlSeconds | quote }}
   {{- end }}
   CARTO_SELFHOSTED_VERSION: {{ .Chart.AppVersion | quote }}
-  {{- if eq .Values.appConfigValues.logLevel "debug" }}
-  CARTO_TRACING_MODE: "local"
+  {{- with include "carto.openTelemetry.env" (dict "context" .) }}
+  {{- . | nindent 2 }}
   {{- end }}
   {{- if .Values.externalProxy.enabled }}
   # openid-client discovers over native fetch, which ignores HTTP_PROXY unless opted in — and

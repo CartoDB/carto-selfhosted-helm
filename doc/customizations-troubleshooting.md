@@ -142,46 +142,32 @@ If you need to open a support ticket, please execute our [carto-support-tool](..
   ```
 ### Helm upgrade fails: another operation (install/upgrade/rollback) is in progress
 
-If you face a problem like the one below while you are updating your CARTO selfhosted installation```
+If you face an error like the one below while you are updating your CARTO Self-Hosted installation:
+
 ```bash
-helm upgrade my-release carto/carto --namespace my namespace -f carto-values.yaml -f carto-secrets.yaml -f customizations.yml
+helm upgrade my-release carto/carto --namespace <namespace> -f carto-values.yaml -f carto-secrets.yaml -f customizations.yml
 Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress
 ```
 
-Probably an upgrade operation wasn't killed gracefully. The fix is to rollback to a previous deployment:
+A previous upgrade was not terminated gracefully, so the latest revision is stuck in `pending-upgrade` and Helm refuses any new operation until that state is cleared.
+
+> **Do not run `helm rollback`.** CARTO upgrades apply forward-only database migrations, so reverting the release to an earlier revision leaves older application code running against a newer database schema — a broken, unsupported state. Always recover by rolling *forward*.
+
+Clear the stuck revision and re-run the upgrade. Helm stores each revision as a Secret, so deleting the `pending-upgrade` revision makes the previous `deployed` revision current again, without reverting any running workload (the stuck upgrade never completed):
 
 ```bash
-helm history my-release
+# 1. Find the stuck revision (STATUS pending-upgrade)
+helm history my-release --namespace <namespace>
 
-REVISION	UPDATED                 	STATUS         	CHART             	APP VERSION	DESCRIPTION
-19      	Fri Aug 26 11:10:20 2022	superseded     	carto-1.40.6-beta 	2022.8.19-2	Upgrade complete
-20      	Fri Sep 16 12:00:57 2022	superseded     	carto-1.42.1-beta 	2022.9.16  	Upgrade complete
-21      	Mon Sep 19 16:46:46 2022	superseded     	carto-1.42.3-beta 	2022.9.19  	Upgrade complete
-22      	Wed Sep 21 11:05:32 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
-23      	Wed Sep 21 11:16:34 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
-24      	Wed Sep 21 16:26:33 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
-25      	Wed Sep 28 15:28:53 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
-26      	Fri Sep 30 14:14:29 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
-27      	Fri Sep 30 14:37:41 2022	deployed       	carto-1.42.10-beta	2022.9.28  	Upgrade complete
-28      	Fri Sep 30 15:07:06 2022	pending-upgrade	carto-1.42.10-beta	2022.9.28  	Preparing upgrade
-helm rollback my-release 27
-Rollback was a success! Happy Helming!
+# 2. Delete the release Secret for that revision
+kubectl delete secret --namespace <namespace> -l owner=helm,name=my-release,status=pending-upgrade
 
-helm history my-release
+# 3. Confirm the previous deployed revision is current again
+helm history my-release --namespace <namespace>
 
-REVISION	UPDATED                 	STATUS         	CHART             	APP VERSION	DESCRIPTION
-20      	Fri Sep 16 12:00:57 2022	superseded     	carto-1.42.1-beta 	2022.9.16  	Upgrade complete
-21      	Mon Sep 19 16:46:46 2022	superseded     	carto-1.42.3-beta 	2022.9.19  	Upgrade complete
-22      	Wed Sep 21 11:05:32 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
-23      	Wed Sep 21 11:16:34 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
-24      	Wed Sep 21 16:26:33 2022	superseded     	carto-1.42.5-beta 	2022.9.20  	Upgrade complete
-25      	Wed Sep 28 15:28:53 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
-26      	Fri Sep 30 14:14:29 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
-27      	Fri Sep 30 14:37:41 2022	superseded     	carto-1.42.10-beta	2022.9.28  	Upgrade complete
-28      	Fri Sep 30 15:07:06 2022	pending-upgrade	carto-1.42.10-beta	2022.9.28  	Preparing upgrade
-29      	Tue Oct  4 10:58:22 2022	deployed       	carto-1.42.10-beta	2022.9.28  	Rollback to 27
+# 4. Re-run the upgrade (roll forward)
+helm upgrade my-release carto/carto --namespace <namespace> -f carto-values.yaml -f carto-secrets.yaml -f customizations.yml
 ```
-Now you can run the upgrade operation again
 
 ### 413 Request Entity Too Large
 

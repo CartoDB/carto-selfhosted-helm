@@ -115,6 +115,7 @@ spec:
               "AI_OPENAI_API_KEY"
               "WORKSPACE_JWT_SECRET"
               "WORKSPACE_LITELLM_API_KEY"
+              "OTEL_EXPORTER_OTLP_HEADERS"
              ) "context" $ ) | nindent 12 }}
             {{- with (include "carto.nats.clientEnv" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             {{- if .Values.aiApi.extraEnvVars }}
@@ -127,6 +128,7 @@ spec:
               "AI_OPENAI_API_KEY"
               "WORKSPACE_JWT_SECRET"
               "WORKSPACE_LITELLM_API_KEY"
+              "OTEL_EXPORTER_OTLP_HEADERS"
              ) "context" $ ) -}}
             {{- if $secretContent }}
             - secretRef:

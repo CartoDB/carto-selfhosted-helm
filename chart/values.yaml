@@ -63,6 +63,8 @@ appConfigValues:
   workspaceThumbnailsBucket: ""
   ## @param appConfigValues.azureStorageAccount Azure storage account to be used in the app if Azure Blob is the storage provider
   azureStorageAccount: ""
+  ## @param appConfigValues.azureExportContainer Azure Blob container to be used to store the exports generated in the app
+  azureExportContainer: ""
   ## @param appConfigValues.awsExportBucket Bucket to be used to store the exports generated in the app
   awsExportBucket: ""
   ## @param appConfigValues.awsExportBucketRegion Region of the bucket to be used to store the exports generated in the app
@@ -122,6 +124,19 @@ appConfigValues:
   ldsIsolineProvider: ""
   ## @param appConfigValues.logLevel The log level used in CARTO application
   logLevel: "info"
+  openTelemetry:
+    ## @param appConfigValues.openTelemetry.enabled Export the traces of the CARTO backend services over OTLP/HTTP to an OpenTelemetry Collector. Logs and metrics are not exported. Takes precedence over the local trace output of `appConfigValues.logLevel=debug`
+    enabled: false
+    ## @param appConfigValues.openTelemetry.endpoint Base URL of the collector OTLP/HTTP receiver (e.g. `http://otel-collector.observability:4318`), as in `OTEL_EXPORTER_OTLP_ENDPOINT`. The services append `/v1/traces`. Required when `appConfigValues.openTelemetry.enabled` is true. OTLP over gRPC is not supported
+    endpoint: ""
+    ## @param appConfigValues.openTelemetry.resourceAttributes Extra resource attributes added to every span (e.g. deployment.environment=production), as in `OTEL_RESOURCE_ATTRIBUTES`
+    resourceAttributes: ""
+    ## @param appConfigValues.openTelemetry.propagators Context propagators, as in `OTEL_PROPAGATORS` (e.g. tracecontext,baggage). Leave empty to continue and send W3C `traceparent` only
+    propagators: ""
+    ## @param appConfigValues.openTelemetry.tracesSampler Trace sampler, as in `OTEL_TRACES_SAMPLER` (e.g. parentbased_traceidratio). Leave empty for the SDK default (parentbased_always_on)
+    tracesSampler: ""
+    ## @param appConfigValues.openTelemetry.tracesSamplerArg Argument of the trace sampler, as in `OTEL_TRACES_SAMPLER_ARG` (e.g. 0.25)
+    tracesSamplerArg: ""
   ## @param appConfigValues.deploymentType The deployment type used in CARTO application
   deploymentType: "helm"
 
@@ -350,6 +365,16 @@ appSecrets:
     value: ""
     ## @param appSecrets.ldsTravelTimeAppId.existingSecret.name Name of the pre-existent secret containing the `appSecrets.ldsTravelTimeAppId.existingSecret.key`. If `appSecrets.ldsTravelTimeAppId.value` is defined, this value is going to be ignored and not used.
     ## @param appSecrets.ldsTravelTimeAppId.existingSecret.key Key to find in `appSecrets.ldsTravelTimeAppId.existingSecret.name` where the value of `appSecrets.ldsTravelTimeAppId` is found. If `appSecrets.ldsTravelTimeAppId.value` is defined, this value is going to be ignored and not used.
+    ##
+    existingSecret:
+      name: ""
+      key: ""
+  ## @extra appSecrets.openTelemetryHeaders Headers sent to the OpenTelemetry Collector with every export, as in `OTEL_EXPORTER_OTLP_HEADERS` (comma-separated `key=value` pairs, e.g. for the collector authentication). Only used when `appConfigValues.openTelemetry.enabled` is true.
+  openTelemetryHeaders:
+    ## @param appSecrets.openTelemetryHeaders.value Value of the secret `OTEL_EXPORTER_OTLP_HEADERS`. One of `appSecrets.openTelemetryHeaders.value` or `appSecrets.openTelemetryHeaders.existingSecret` could be defined.
+    value: ""
+    ## @param appSecrets.openTelemetryHeaders.existingSecret.name Name of the pre-existent secret containing the `appSecrets.openTelemetryHeaders.existingSecret.key`. If `appSecrets.openTelemetryHeaders.value` is defined, this value is going to be ignored and not used.
+    ## @param appSecrets.openTelemetryHeaders.existingSecret.key Key to find in `appSecrets.openTelemetryHeaders.existingSecret.name` where the value of `appSecrets.openTelemetryHeaders` is found. If `appSecrets.openTelemetryHeaders.value` is defined, this value is going to be ignored and not used.
     ##
     existingSecret:
       name: ""
@@ -2814,10 +2839,12 @@ router:
   replicaCount: 1
   ## @param router.containerPorts.http router HTTP container port
   ## @param router.containerPorts.https router HTTPS container port
+  ## @param router.containerPorts.internalHttp router plain-HTTP port for in-cluster callers, served by the internal ClusterIP Service only
   ##
   containerPorts:
     http: 8080
     https: 8443
+    internalHttp: 8085
   ## Configure extra options for router containers' liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param router.livenessProbe.enabled Enable livenessProbe on router containers
@@ -3097,12 +3124,14 @@ router:
     ## @param router.service.ports.httpTargetPort router service HTTP Target port
     ## @param router.service.ports.https router service HTTPS port
     ## @param router.service.ports.httpsTargetPort router service HTTPS Target port
+    ## @param router.service.ports.internalHttp router internal ClusterIP service HTTP port
     ##
     ports:
       http: 80
       httpTargetPort: "http"
       https: 443
       httpsTargetPort: "https"
+      internalHttp: 80
 
     ## Node.js ports to expose
     ## @param router.service.nodePorts.http Node.js port for HTTP
