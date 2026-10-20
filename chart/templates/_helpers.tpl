@@ -1743,6 +1743,14 @@ routes check. A YAML list, for concat with the component's own list.
 {{- end -}}
 
 {{/*
+Whether event-bus clients talk to NATS: disconnected mode, unless only the router runs (NATS is not
+deployed then).
+*/}}
+{{- define "carto.nats.clientsEnabled" -}}
+{{- if and (include "carto.disconnected.enabled" .) (not .Values.cartoConfigValues.onlyRunRouter) -}}true{{- end -}}
+{{- end -}}
+
+{{/*
 Env entries for every service that publishes or subscribes to the event bus. Self-gated: emits
 nothing unless disconnected mode is enabled, so connected installs keep the services' Pub/Sub
 default. The token is read from the NATS Secret rather than copied into each component's Secret.
@@ -1750,7 +1758,7 @@ Params: context, and optional (true where the NATS Secret may not exist yet, as 
 */}}
 {{- define "carto.nats.clientEnv" -}}
 {{- $context := .context -}}
-{{- if (include "carto.disconnected.enabled" $context) -}}
+{{- if (include "carto.nats.clientsEnabled" $context) -}}
 {{- $token := $context.Values.cartoSecrets.natsAuthToken.existingSecret -}}
 - name: BACKEND_MESSAGING_TRANSPORT
   value: "nats"
