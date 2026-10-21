@@ -135,6 +135,18 @@ If appConfigValues.disconnected.enabled=true you need to set one of cartoSecrets
 {{- end -}}
 
 {{/*
+Validate nats.maxPayload. The server and every event-bus client read the same byte count, so a value
+the server can't start with must fail the render.
+*/}}
+{{- define "carto.validateValues.natsMaxPayload" -}}
+{{- if and (include "carto.nats.clientsEnabled" .) (not (include "carto.nats.maxPayloadBytes" .)) -}}
+CARTO: Invalid nats.maxPayload
+
+nats.maxPayload must be a size from 1 byte to 64MB: a number of bytes, or a number with K, M or G (powers of 1000) or KB, MB or GB (powers of 1024), such as "8MB". Got {{ .Values.nats.maxPayload | toString | quote }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Validate that a disconnected install keeps every event-bus client on NATS. The chart sets
 BACKEND_MESSAGING_TRANSPORT=nats itself, but a component's extraEnvVars can override it, and any
 other transport falls back to Google Pub/Sub, which a disconnected install cannot reach.
@@ -173,6 +185,7 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := append $messages (include "carto.validateValues.s3Compatible" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.authApi" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.nats" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.natsMaxPayload" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.messagingTransport" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.openTelemetry" .) -}}
 {{- $messages := without $messages "" -}}

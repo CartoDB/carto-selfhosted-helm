@@ -1743,6 +1743,31 @@ routes check. A YAML list, for concat with the component's own list.
 {{- end -}}
 
 {{/*
+nats.maxPayload in bytes, read the way nats-server reads sizes: K, M and G are powers of 1000; KB,
+Ki, KiB (and their M and G forms) are powers of 1024; case-insensitive; a bare integer is bytes.
+Empty when the value doesn't parse or is outside 1 byte to 64MB (the server's max_pending).
+*/}}
+{{- define "carto.nats.maxPayloadBytes" -}}
+{{- $raw := .Values.nats.maxPayload -}}
+{{- $value := lower (toString $raw) -}}
+{{- if kindIs "float64" $raw -}}
+{{- $value = ternary (printf "%d" (int64 $raw)) "invalid" (eq $raw (float64 (int64 $raw))) -}}
+{{- end -}}
+{{- $digits := $value -}}
+{{- $multiplier := 1 -}}
+{{- range list (list "kib" 1024) (list "ki" 1024) (list "kb" 1024) (list "k" 1000) (list "mib" 1048576) (list "mi" 1048576) (list "mb" 1048576) (list "m" 1000000) (list "gib" 1073741824) (list "gi" 1073741824) (list "gb" 1073741824) (list "g" 1000000000) -}}
+{{- if and (eq $multiplier 1) (hasSuffix (first .) $value) -}}
+{{- $digits = trimSuffix (first .) $value -}}
+{{- $multiplier = last . -}}
+{{- end -}}
+{{- end -}}
+{{- if and $digits (eq (trimAll "0123456789" $digits) "") -}}
+{{- $bytes := mul (atoi $digits) $multiplier -}}
+{{- if and (gt $bytes 0) (le $bytes 67108864) -}}{{ $bytes }}{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Whether event-bus clients talk to NATS: disconnected mode, unless only the router runs (NATS is not
 deployed then).
 */}}
@@ -1775,6 +1800,8 @@ Params: context, and optional (true where the NATS Secret may not exist yet, as 
   value: "nats"
 - name: BACKEND_MESSAGING_NATS_URL
   value: {{ include "carto.nats.url" $context | quote }}
+- name: BACKEND_MESSAGING_NATS_MAX_PAYLOAD_BYTES
+  value: {{ include "carto.nats.maxPayloadBytes" $context | quote }}
 - name: BACKEND_MESSAGING_NATS_TOKEN
   valueFrom:
     secretKeyRef:

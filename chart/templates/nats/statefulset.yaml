@@ -87,7 +87,7 @@ spec:
           {{- end }}
           env:
             - name: NATS_MAX_PAYLOAD
-              value: {{ .Values.nats.maxPayload | quote }}
+              value: {{ include "carto.nats.maxPayloadBytes" . | quote }}
             - name: NATS_JETSTREAM_MAX_FILE_STORE
               value: {{ .Values.nats.jetstream.maxFileStore | quote }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
