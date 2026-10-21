@@ -46,31 +46,15 @@ data:
   # falls back to "topic-not-set" and publishes fail silently.
   EVENT_BUS_PROJECT_ID: {{ .Values.cartoConfigValues.cartoAccGcpProjectId | quote }}
   EVENT_BUS_TOPIC: "projects/{{ .Values.cartoConfigValues.cartoAccGcpProjectId }}/topics/{{ .Values.cartoConfigValues.cartoAccGcpProjectRegion }}-event-bus"
-  # Cloud-only integrations unreachable in disconnected internal mode. These settings are mandatory at
-  # boot but back features (billing, email, partner connect, activity exports, backoffice) that are not
-  # exercised in a disconnected deployment; placeholder values until they are gated upstream.
   ACCOUNTS_HONEYCOMB_DATASET: "disabled"
   ACCOUNTS_HONEYCOMB_API_KEY: "disabled"
-  ACCOUNTS_SENDGRID_API_KEY: "disabled"
-  ACCOUNTS_PAYMENTS_RECURLY_API_KEY: "disabled"
-  ACCOUNTS_PAYMENTS_RECURLY_SUBDOMAIN: "disabled"
-  ACCOUNTS_PAYMENTS_RECURLY_WEBHOOKS_AUTH_USER: "disabled"
-  ACCOUNTS_PAYMENTS_RECURLY_WEBHOOKS_AUTH_PASSWORD: "disabled"
-  ACCOUNTS_CARTO_DATAWAREHOUSE_BILLING_ACCOUNT_NAME: "disabled"
-  ACCOUNTS_CARTO_DATAWAREHOUSE_ENVIRONMENT: "disabled"
-  ACCOUNTS_CARTO_DATAWAREHOUSE_FOLDER_ID: "disabled"
-  ACCOUNTS_CARTO_DATAWAREHOUSE_CUSTOMER_DATA: "false"
-  ACCOUNTS_PARTNER_CONNECT_SNOWFLAKE_PARTNER_ID: "disabled"
-  ACCOUNTS_PARTNER_CONNECT_SNOWFLAKE_PARTNER_SECRET: "disabled"
-  BOBSLED_EXPORT_STORAGE_BUCKET: "disabled"
-  BOBSLED_SOURCE_ID: "disabled"
-  BOBSLED_ENVIRONMENT_NAME: "disabled"
-  BOBSLED_CLIENT_ID: "disabled"
-  BOBSLED_ACCOUNT_EMAIL: "disabled"
-  BOBSLED_ACCOUNT_SECRET: "disabled"
-  ACCOUNTS_BACKOFFICE_AUTH_USER: "disabled"
-  ACCOUNTS_BACKOFFICE_AUTH_PASSWORD: "disabled"
-  ACCOUNTS_ACTIVITY_DATA_BUCKET_NAME: "disabled"
+  {{- if not .Values.appConfigValues.openTelemetry.enabled }}
+  # Without a customer collector, traces would go to a cloud endpoint
+  ACCOUNTS_OPEN_TELEMETRY_ENABLED: "false"
+  {{- end }}
+  # Unset falls back to TRIAL, the only plan with an expiry
+  ACCOUNTS_ONPREM_DEFAULT_PLAN_ID: "ELARGE"
+  ACCOUNTS_CARTO_DATAWAREHOUSE_ENABLED: "false"
   # Defaults to true upstream and would attempt outbound Slack notifications
   QUOTA_NOTIFICATIONS_ENABLED: "false"
   # Account provisioning creates the DO BigQuery dataset before reaching the CDW skip, so with no
