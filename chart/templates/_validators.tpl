@@ -108,6 +108,9 @@ Validate auth-api (internal authentication) config
 {{- if and (not .Values.cartoSecrets.authApiInternalServiceToken.value) (not .Values.cartoSecrets.authApiInternalServiceToken.existingSecret.name) -}}
 {{- $messages = append $messages "CARTO: Missing auth-api internal service token\n\nIf appConfigValues.disconnected.enabled=true you need to set one of cartoSecrets.authApiInternalServiceToken.value or cartoSecrets.authApiInternalServiceToken.existingSecret" -}}
 {{- end -}}
+{{- if .Values.cartoConfigValues.cartoDataWarehouseEnabled -}}
+{{- $messages = append $messages "CARTO: CARTO Data Warehouse is not available in disconnected mode\n\nIf appConfigValues.disconnected.enabled=true you need to set cartoConfigValues.cartoDataWarehouseEnabled=false" -}}
+{{- end -}}
 {{- if not .Values.appConfigValues.disconnected.spaClient.clientId -}}
 {{- $messages = append $messages "CARTO: Missing platform SPA client ID\n\nIf appConfigValues.disconnected.enabled=true you need to set appConfigValues.disconnected.spaClient.clientId" -}}
 {{- end -}}
