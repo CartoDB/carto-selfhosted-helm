@@ -304,10 +304,12 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   }}
 
   {{/*
-  Disconnected installs run the event bus in-cluster and cannot reach Google Pub/Sub, so the
-  publish/listen check would always block the install there.
+  Disconnected installs run the event bus in-cluster and reach no internet endpoint, so the Pub/Sub
+  publish/listen check and every egress check would block an air-gapped install.
   */}}
-  {{- if not (include "carto.disconnected.enabled" .) }}
+  {{- if (include "carto.disconnected.enabled" .) }}
+  {{- $_ := unset $preflightsDict "EgressRequirementsValidator" -}}
+  {{- else }}
   {{- $_ := set $preflightsDict "PubSubValidator" (list "Check_publish_and_listen_to_topic") -}}
   {{- end }}
   
