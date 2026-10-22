@@ -45,6 +45,9 @@ spec:
           {{- if .Values.workspaceApi.podSecurityContext.enabled }}
           securityContext: {{- omit .Values.workspaceApi.podSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
+          {{- with (include "carto.nats.tls.clientInitContainers" (dict "context" $ "image" (include "carto.workspaceApi.image" .) "securityContext" .Values.workspaceApi.containerSecurityContext)) }}
+          initContainers: {{- . | nindent 12 }}
+          {{- end }}
           containers:
             - name: maps-purge
               image: {{ template "carto.workspaceApi.image" . }}

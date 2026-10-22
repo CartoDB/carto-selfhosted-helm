@@ -67,6 +67,7 @@ spec:
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
+        {{- with (include "carto.nats.tls.clientInitContainers" (dict "context" $ "image" (include "carto.routerMetrics.image" .) "securityContext" .Values.routerMetrics.containerSecurityContext)) }}{{ . | nindent 8 }}{{- end }}
         {{- if .Values.router.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.router.initContainers "context" $) | nindent 8 }}
         {{- end }}
@@ -231,6 +232,7 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.routerMetrics.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            {{- with (include "carto.nats.tls.clientVolumeMounts" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             - name: tmp
               mountPath: /tmp
               subPath: router-metrics-tmp-dir
@@ -250,6 +252,7 @@ spec:
         {{- end }}
         {{- end }}
       volumes:
+        {{- with (include "carto.nats.tls.clientVolumes" (dict "context" $)) }}{{ . | nindent 8 }}{{- end }}
         - name: nginx
           emptyDir:
             medium: Memory

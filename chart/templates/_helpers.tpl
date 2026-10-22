@@ -1735,7 +1735,99 @@ routes check. A YAML list, for concat with the component's own list.
 {{- end -}}
 
 {{- define "carto.nats.url" -}}
-{{- printf "nats://%s.%s.svc.%s:%v" (include "carto.nats.fullname" .) .Release.Namespace .Values.clusterDomain .Values.nats.service.ports.client -}}
+{{- $scheme := ternary "tls" "nats" (eq (include "carto.nats.tls.enabled" .) "true") -}}
+{{- printf "%s://%s:%v" $scheme (include "carto.nats.host" .) .Values.nats.service.ports.client -}}
+{{- end -}}
+
+{{- define "carto.nats.host" -}}
+{{- printf "%s.%s.svc.%s" (include "carto.nats.fullname" .) .Release.Namespace .Values.clusterDomain -}}
+{{- end -}}
+
+{{/*
+The NATS auth token when cartoSecrets.natsAuthToken.existingSecret is not set: the configured value,
+else the one in the chart's Secret (so upgrades keep it), else a new one. Cached in .Values so every
+template in a render sees the same token.
+*/}}
+{{- define "carto.nats.token" -}}
+{{- if .Values.cartoSecrets.natsAuthToken.value -}}
+{{- .Values.cartoSecrets.natsAuthToken.value | toString -}}
+{{- else -}}
+{{- if not (hasKey .Values.nats "_generatedToken") -}}
+{{- $existing := lookup "v1" "Secret" .Release.Namespace (include "carto.nats.secretName" .) -}}
+{{- $stored := "" -}}
+{{- if and $existing $existing.data (hasKey $existing.data "NATS_AUTH_TOKEN") -}}
+{{- $stored = get $existing.data "NATS_AUTH_TOKEN" | b64dec -}}
+{{- end -}}
+{{- $_ := set .Values.nats "_generatedToken" ($stored | default (randAlphaNum 48)) -}}
+{{- end -}}
+{{- .Values.nats._generatedToken -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Whether NATS serves its clients over TLS: wherever NATS is deployed, unless nats.tls.enabled is false.
+*/}}
+{{- define "carto.nats.tls.enabled" -}}
+{{- if and (include "carto.nats.clientsEnabled" .) .Values.nats.tls.enabled -}}true{{- end -}}
+{{- end -}}
+
+{{- define "carto.nats.tls.secretName" -}}
+{{- .Values.nats.tls.existingSecret | default (printf "%s-tls" (include "carto.nats.fullname" .)) -}}
+{{- end -}}
+
+{{/*
+The chart's NATS certificate and CA, base64-encoded under crt, key and ca, when nats.tls.existingSecret
+is not set: read back from the chart's Secret so upgrades keep them, generated otherwise. Cached in
+.Values so every template in a render sees the same ones.
+*/}}
+{{- define "carto.nats.tls.generated" -}}
+{{- if not (hasKey .Values.nats.tls "_generated") -}}
+{{- $existing := lookup "v1" "Secret" .Release.Namespace (include "carto.nats.tls.secretName" .) -}}
+{{- $data := dict -}}
+{{- if and $existing $existing.data (hasKey $existing.data "tls.crt") (hasKey $existing.data "tls.key") (hasKey $existing.data "ca.crt") -}}
+{{- $data = dict "crt" (get $existing.data "tls.crt") "key" (get $existing.data "tls.key") "ca" (get $existing.data "ca.crt") -}}
+{{- else -}}
+{{- $fullname := include "carto.nats.fullname" . -}}
+{{- $names := list $fullname (printf "%s.%s" $fullname .Release.Namespace) (printf "%s.%s.svc" $fullname .Release.Namespace) (include "carto.nats.host" .) -}}
+{{- $ca := genCA (printf "%s-ca" $fullname) 3650 -}}
+{{- $cert := genSignedCert $fullname nil $names 3650 $ca -}}
+{{- $data = dict "crt" ($cert.Cert | b64enc) "key" ($cert.Key | b64enc) "ca" ($ca.Cert | b64enc) -}}
+{{- end -}}
+{{- $_ := set .Values.nats.tls "_generated" $data -}}
+{{- end -}}
+{{- toYaml .Values.nats.tls._generated -}}
+{{- end -}}
+
+{{/*
+What changes when the NATS CA changes, for a checksum annotation. A customer Secret is only known by
+name, so rotating it in place needs a restart.
+*/}}
+{{- define "carto.nats.tls.caVersion" -}}
+{{- if .Values.nats.tls.existingSecret -}}
+{{- .Values.nats.tls.existingSecret -}}
+{{- else -}}
+{{- (include "carto.nats.tls.generated" . | fromYaml).ca -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.nats.tls.caMountDir" -}}
+{{- print "/usr/src/certs/nats-tls-ca" -}}
+{{- end -}}
+
+{{- define "carto.nats.tls.caBundleDir" -}}
+{{- print "/usr/src/certs/nats-ca-bundle" -}}
+{{- end -}}
+
+{{/*
+The CA file event-bus clients trust. Node reads a single NODE_EXTRA_CA_CERTS file, so with custom
+trusted CAs the NATS CA is appended to them by an init container.
+*/}}
+{{- define "carto.nats.tls.clientCAFile" -}}
+{{- if (include "carto.trustedCACerts.enabled" .) -}}
+{{- printf "%s/ca.crt" (include "carto.nats.tls.caBundleDir" .) -}}
+{{- else -}}
+{{- printf "%s/ca.crt" (include "carto.nats.tls.caMountDir" .) -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -1772,13 +1864,20 @@ deployed then).
 {{- end -}}
 
 {{/*
-Pod annotation that restarts an event-bus client when its NATS token changes: the token is read
-through a secretKeyRef, which a running pod never re-reads. Same params as carto.nats.clientEnv.
+Pod annotations that restart an event-bus client when its NATS token or CA changes: a running pod
+never re-reads either. Same params as carto.nats.clientEnv.
 */}}
 {{- define "carto.nats.clientPodAnnotations" -}}
 {{- $context := .context -}}
 {{- if (include "carto.nats.clientsEnabled" $context) -}}
-checksum/nats-token: {{ toYaml $context.Values.cartoSecrets.natsAuthToken | sha256sum }}
+{{- if $context.Values.cartoSecrets.natsAuthToken.existingSecret.name }}
+checksum/nats-token: {{ toYaml $context.Values.cartoSecrets.natsAuthToken.existingSecret | sha256sum }}
+{{- else }}
+checksum/nats-token: {{ include "carto.nats.token" $context | sha256sum }}
+{{- end }}
+{{- if (include "carto.nats.tls.enabled" $context) }}
+checksum/nats-tls-ca: {{ include "carto.nats.tls.caVersion" $context | sha256sum }}
+{{- end }}
 {{- end -}}
 {{- end -}}
 
@@ -1786,7 +1885,9 @@ checksum/nats-token: {{ toYaml $context.Values.cartoSecrets.natsAuthToken | sha2
 Env entries for every service that publishes or subscribes to the event bus. Self-gated: emits
 nothing unless disconnected mode is enabled, so connected installs keep the services' Pub/Sub
 default. The token is read from the NATS Secret rather than copied into each component's Secret.
-Params: context, and optional (true where the NATS Secret may not exist yet, as in preflights).
+Params: context, and optional (true where the NATS Secret may not exist yet, as in preflights;
+those pods don't connect, so they get no NATS CA either). A pod with this env and TLS on also needs
+carto.nats.tls.clientVolumes, clientVolumeMounts and clientInitContainers.
 */}}
 {{- define "carto.nats.clientEnv" -}}
 {{- $context := .context -}}
@@ -1811,6 +1912,87 @@ Params: context, and optional (true where the NATS Secret may not exist yet, as 
       {{- if .optional }}
       optional: true
       {{- end }}
+{{- if and (include "carto.nats.tls.enabled" $context) (not .optional) }}
+- name: NODE_EXTRA_CA_CERTS
+  value: {{ include "carto.nats.tls.clientCAFile" $context | quote }}
+{{- end }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Pod volumes for an event-bus client that trusts the NATS CA. Params: context.
+*/}}
+{{- define "carto.nats.tls.clientVolumes" -}}
+{{- $context := .context -}}
+{{- if (include "carto.nats.tls.enabled" $context) -}}
+- name: nats-tls-ca
+  secret:
+    secretName: {{ include "carto.nats.tls.secretName" $context }}
+    items:
+      - key: ca.crt
+        path: ca.crt
+{{- if (include "carto.trustedCACerts.enabled" $context) }}
+- name: nats-trusted-ca-certs
+  configMap:
+    name: {{ include "carto.trustedCACerts.configMapName" $context }}
+    items:
+      - key: {{ include "carto.trustedCACerts.configMapMountFilename" $context }}
+        path: ca.crt
+- name: nats-ca-bundle
+  emptyDir: {}
+{{- end }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Mounts for the event-bus client container. Params: context.
+*/}}
+{{- define "carto.nats.tls.clientVolumeMounts" -}}
+{{- $context := .context -}}
+{{- if (include "carto.nats.tls.enabled" $context) -}}
+- name: nats-tls-ca
+  mountPath: {{ include "carto.nats.tls.caMountDir" $context }}
+  readOnly: true
+{{- if (include "carto.trustedCACerts.enabled" $context) }}
+- name: nats-ca-bundle
+  mountPath: {{ include "carto.nats.tls.caBundleDir" $context }}
+  readOnly: true
+{{- end }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+With custom trusted CAs, an init container on the client's own image writes them and the NATS CA
+into one file for NODE_EXTRA_CA_CERTS. Params: context, image, securityContext (the client
+container's, with its "enabled" flag).
+*/}}
+{{- define "carto.nats.tls.clientInitContainers" -}}
+{{- $context := .context -}}
+{{- if and (include "carto.nats.tls.enabled" $context) (include "carto.trustedCACerts.enabled" $context) -}}
+- name: nats-ca-bundle
+  image: {{ .image }}
+  command: ["/bin/sh", "-c"]
+  args:
+    - "{ cat /trusted/ca.crt; echo; cat /nats/ca.crt; } > /bundle/ca.crt"
+  {{- if .securityContext.enabled }}
+  securityContext: {{- omit .securityContext "enabled" | toYaml | nindent 4 }}
+  {{- end }}
+  resources:
+    requests:
+      cpu: 10m
+      memory: 16Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+  volumeMounts:
+    - name: nats-trusted-ca-certs
+      mountPath: /trusted
+      readOnly: true
+    - name: nats-tls-ca
+      mountPath: /nats
+      readOnly: true
+    - name: nats-ca-bundle
+      mountPath: /bundle
 {{- end -}}
 {{- end -}}
 

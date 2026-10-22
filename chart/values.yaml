@@ -522,7 +522,7 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
-  ## @extra cartoSecrets.natsAuthToken Auth token of the internal NATS event bus (self-hosted disconnected mode only). Required when `appConfigValues.disconnected.enabled` is true. It must not contain `"` or `\`.
+  ## @extra cartoSecrets.natsAuthToken Auth token of the internal NATS event bus (self-hosted disconnected mode only). If unset, the chart generates one and keeps it across upgrades, but not in renders without cluster access such as `helm template`. A set value needs 16+ characters, no `"` or `\`.
   natsAuthToken:
     ## @param cartoSecrets.natsAuthToken.value Value of the auth token of the internal NATS event bus. One of `cartoSecrets.natsAuthToken.value` or `cartoSecrets.natsAuthToken.existingSecret` could be defined.
     value: ""
@@ -5611,6 +5611,13 @@ nats:
   ## @param nats.maxPayload Maximum size of a single NATS message, at most 64MB. A number of bytes, or a number with K, M or G (powers of 1000) or KB, MB or GB (powers of 1024)
   ##
   maxPayload: "8MB"
+
+  ## @param nats.tls.enabled Serve NATS clients over TLS. Needs a NATS image that serves TLS when given a certificate
+  ## @param nats.tls.existingSecret Secret with the NATS certificate (`tls.crt`, `tls.key`) and CA (`ca.crt`), valid for `<release>-nats.<namespace>.svc.<clusterDomain>`. If empty, the chart generates one and keeps it across upgrades, but not in `helm template`-style renders
+  ##
+  tls:
+    enabled: true
+    existingSecret: ""
 
   ## @param nats.jetstream.maxFileStore Maximum disk usage of the JetStream file store. Keep it below `nats.persistence.size`. On storage that does not enforce volume sizes (such as the embedded cluster's host-path volumes) this is the only limit, so the node needs this much free disk
   ##

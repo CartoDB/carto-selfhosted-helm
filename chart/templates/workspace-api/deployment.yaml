@@ -71,6 +71,7 @@ spec:
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
+        {{- with (include "carto.nats.tls.clientInitContainers" (dict "context" $ "image" (include "carto.workspaceApi.image" .) "securityContext" .Values.workspaceApi.containerSecurityContext)) }}{{ . | nindent 8 }}{{- end }}
         - name: workspace-migrations
           image: {{ template "carto.workspaceMigrations.image" . }}
           imagePullPolicy: {{ .Values.workspaceMigrations.image.pullPolicy }}

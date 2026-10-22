@@ -66,6 +66,7 @@ The workspace-api container's volumeMounts, shared like carto.workspaceApi.conta
 */}}
 {{- define "carto.workspaceApi.volumeMounts" }}
           volumeMounts:
+            {{- with (include "carto.nats.tls.clientVolumeMounts" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             - name: wif-credentials
               mountPath: /tmp/wif-credentials
             - name: gcp-default-service-account-key
@@ -107,6 +108,7 @@ The workspace-api pod's volumes, shared like carto.workspaceApi.containerEnv.
 */}}
 {{- define "carto.workspaceApi.volumes" }}
       volumes:
+        {{- with (include "carto.nats.tls.clientVolumes" (dict "context" $)) }}{{ . | nindent 8 }}{{- end }}
         - name: wif-credentials
           emptyDir: {}
         - name: gcp-default-service-account-key

@@ -30,6 +30,9 @@ spec:
     metadata:
       annotations:
         checksum/secret: {{ include (print $.Template.BasePath "/nats/secret.yaml") . | sha256sum }}
+        {{- if (include "carto.nats.tls.enabled" .) }}
+        checksum/nats-tls: {{ include (print $.Template.BasePath "/nats/tls-secret.yaml") . | default .Values.nats.tls.existingSecret | sha256sum }}
+        {{- end }}
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
         {{- if .Values.nats.podAnnotations }}
         {{- include "common.tplvalues.render" (dict "value" .Values.nats.podAnnotations "context" $) | nindent 8 }}
@@ -90,6 +93,12 @@ spec:
               value: {{ include "carto.nats.maxPayloadBytes" . | quote }}
             - name: NATS_JETSTREAM_MAX_FILE_STORE
               value: {{ .Values.nats.jetstream.maxFileStore | quote }}
+            {{- if (include "carto.nats.tls.enabled" .) }}
+            - name: NATS_TLS_CERT_FILE
+              value: /etc/nats-tls/tls.crt
+            - name: NATS_TLS_KEY_FILE
+              value: /etc/nats-tls/tls.key
+            {{- end }}
             {{- include "carto._utils.generateSecretDefs" (dict "vars" (list
               "NATS_AUTH_TOKEN"
              ) "context" $ ) | nindent 12 }}
@@ -97,10 +106,7 @@ spec:
             {{- include "common.tplvalues.render" (dict "value" .Values.nats.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- $secretContent := include "carto._utils.generateSecretObjects" (dict "vars" (list
-              "NATS_AUTH_TOKEN"
-             ) "context" $ ) -}}
-            {{- if $secretContent }}
+            {{- if not .Values.cartoSecrets.natsAuthToken.existingSecret.name }}
             - secretRef:
                 name: {{ include "carto.nats.secretName" . }}
             {{- end }}
@@ -150,6 +156,11 @@ spec:
               mountPath: /tmp
             - name: data
               mountPath: /data
+            {{- if (include "carto.nats.tls.enabled" .) }}
+            - name: nats-tls
+              mountPath: /etc/nats-tls
+              readOnly: true
+            {{- end }}
             {{- if .Values.nats.extraVolumeMounts }}
             {{- include "common.tplvalues.render" (dict "value" .Values.nats.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
@@ -160,6 +171,16 @@ spec:
         - name: tmp
           emptyDir:
             medium: Memory
+        {{- if (include "carto.nats.tls.enabled" .) }}
+        - name: nats-tls
+          secret:
+            secretName: {{ include "carto.nats.tls.secretName" . }}
+            items:
+              - key: tls.crt
+                path: tls.crt
+              - key: tls.key
+                path: tls.key
+        {{- end }}
         {{- if .Values.nats.extraVolumes }}
         {{- include "common.tplvalues.render" (dict "value" .Values.nats.extraVolumes "context" $) | nindent 8 }}
         {{- end }}

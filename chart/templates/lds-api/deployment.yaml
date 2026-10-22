@@ -71,6 +71,7 @@ spec:
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
+        {{- with (include "carto.nats.tls.clientInitContainers" (dict "context" $ "image" (include "carto.ldsApi.image" .) "securityContext" .Values.ldsApi.containerSecurityContext)) }}{{ . | nindent 8 }}{{- end }}
         {{- if .Values.ldsApi.initContainers }}
         {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.initContainers "context" $) | nindent 8 }}
         {{- end }}
@@ -186,6 +187,7 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            {{- with (include "carto.nats.tls.clientVolumeMounts" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             - name: gcp-default-service-account-key
               mountPath: {{ include "carto.google.secretMountDir" . }}
               readOnly: true
@@ -217,6 +219,7 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.ldsApi.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
+        {{- with (include "carto.nats.tls.clientVolumes" (dict "context" $)) }}{{ . | nindent 8 }}{{- end }}
         - name: gcp-default-service-account-key
           secret:
             secretName: {{ include "carto.google.secretName" . }}

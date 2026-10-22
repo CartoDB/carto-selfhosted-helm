@@ -69,6 +69,7 @@ spec:
       {{- end }}
       {{- if not .Values.diagnosticMode.enabled }}
       initContainers:
+        {{- with (include "carto.nats.tls.clientInitContainers" (dict "context" $ "image" (include "carto.accountsApi.image" .) "securityContext" .Values.accountsApi.containerSecurityContext)) }}{{ . | nindent 8 }}{{- end }}
         - name: accounts-migrations
           image: {{ template "carto.accountsMigrations.image" . }}
           imagePullPolicy: {{ .Values.accountsMigrations.image.pullPolicy }}
@@ -230,6 +231,7 @@ spec:
           lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           volumeMounts:
+            {{- with (include "carto.nats.tls.clientVolumeMounts" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
             - name: postgresql-ssl-ca
               mountPath: {{ include "carto.postgresql.configMapMountDir" . }}
@@ -247,6 +249,7 @@ spec:
         {{- include "common.tplvalues.render" ( dict "value" .Values.accountsApi.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
+        {{- with (include "carto.nats.tls.clientVolumes" (dict "context" $)) }}{{ . | nindent 8 }}{{- end }}
         {{- if and .Values.externalPostgresql.sslEnabled .Values.externalPostgresql.sslCA }}
         - name: postgresql-ssl-ca
           configMap:
