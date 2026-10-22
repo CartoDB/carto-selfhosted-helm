@@ -1731,11 +1731,7 @@ routes check. A YAML list, for concat with the component's own list.
 {{- end -}}
 
 {{- define "carto.nats.secretName" -}}
-{{- if .Values.nats.existingSecret -}}
-{{- .Values.nats.existingSecret -}}
-{{- else -}}
 {{- include "carto.nats.fullname" . -}}
-{{- end -}}
 {{- end -}}
 
 {{- define "carto.nats.url" -}}

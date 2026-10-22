@@ -38,7 +38,7 @@ stringData:
               - app.kubernetes.io/component=nats
             containerName: nats
             command: ["wget"]
-            args: ["-qO-", "http://127.0.0.1:{{ .Values.nats.containerPorts.monitoring }}/jsz?streams=true&consumers=true&config=true"]
+            args: ["-qO-", "http://127.0.0.1:8222/jsz?streams=true&consumers=true&config=true"]
             timeout: 30s
         {{- end }}
         - data:

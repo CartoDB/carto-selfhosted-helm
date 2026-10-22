@@ -113,10 +113,11 @@ spec:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.nats.extraEnvVarsSecret "context" $) }}
             {{- end }}
           ports:
+            {{- /* Fixed by the image's server config, so not configurable here */}}
             - name: client
-              containerPort: {{ .Values.nats.containerPorts.client }}
+              containerPort: 4222
             - name: monitoring
-              containerPort: {{ .Values.nats.containerPorts.monitoring }}
+              containerPort: 8222
           {{- if .Values.nats.customLivenessProbe }}
           livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.nats.customLivenessProbe "context" $) | nindent 12 }}
           {{- else if .Values.nats.livenessProbe.enabled }}

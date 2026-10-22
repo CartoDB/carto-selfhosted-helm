@@ -130,10 +130,17 @@ Validate NATS config (self-hosted disconnected mode). The NATS server refuses to
 token: it never falls back to an open listener.
 */}}
 {{- define "carto.validateValues.nats" -}}
-{{- if and (include "carto.disconnected.enabled" .) (not .Values.cartoSecrets.natsAuthToken.value) (not .Values.cartoSecrets.natsAuthToken.existingSecret.name) -}}
+{{- if (include "carto.disconnected.enabled" .) -}}
+{{- $token := .Values.cartoSecrets.natsAuthToken.value | default "" | toString -}}
+{{- if and (not $token) (not .Values.cartoSecrets.natsAuthToken.existingSecret.name) -}}
 CARTO: Missing NATS auth token
 
 If appConfigValues.disconnected.enabled=true you need to set one of cartoSecrets.natsAuthToken.value or cartoSecrets.natsAuthToken.existingSecret
+{{- else if or (contains "\"" $token) (contains "\\" $token) -}}
+CARTO: Invalid NATS auth token
+
+cartoSecrets.natsAuthToken.value must not contain " or \. The NATS server reads the token as a quoted string: " stops it from starting, and \ starts an escape that changes the token, so every client is refused
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
