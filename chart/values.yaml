@@ -5612,11 +5612,11 @@ nats:
   ##
   maxPayload: "8MB"
 
-  ## @param nats.tls.enabled Serve NATS clients over TLS. Needs a NATS image that serves TLS when given a certificate
+  ## @param nats.tls.enabled Serve NATS clients over TLS instead of plaintext inside the namespace. Needs a NATS image that serves TLS when given a certificate
   ## @param nats.tls.existingSecret Secret with the NATS certificate (`tls.crt`, `tls.key`) and CA (`ca.crt`), valid for `<release>-nats.<namespace>.svc.<clusterDomain>`. If empty, the chart generates one and keeps it across upgrades, but not in `helm template`-style renders
   ##
   tls:
-    enabled: true
+    enabled: false
     existingSecret: ""
 
   ## @param nats.jetstream.maxFileStore Maximum disk usage of the JetStream file store. Keep it below `nats.persistence.size`. On storage that does not enforce volume sizes (such as the embedded cluster's host-path volumes) this is the only limit, so the node needs this much free disk

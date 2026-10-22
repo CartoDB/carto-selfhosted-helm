@@ -1765,7 +1765,7 @@ template in a render sees the same token.
 {{- end -}}
 
 {{/*
-Whether NATS serves its clients over TLS: wherever NATS is deployed, unless nats.tls.enabled is false.
+Whether NATS serves its clients over TLS: wherever NATS is deployed, once nats.tls.enabled is set.
 */}}
 {{- define "carto.nats.tls.enabled" -}}
 {{- if and (include "carto.nats.clientsEnabled" .) .Values.nats.tls.enabled -}}true{{- end -}}
