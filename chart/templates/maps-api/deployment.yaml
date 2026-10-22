@@ -25,6 +25,7 @@ spec:
   template:
     metadata:
       annotations:
+        {{- with (include "carto.nats.clientPodAnnotations" (dict "context" $)) }}{{ . | nindent 8 }}{{- end }}
         checksum/config: {{ include (print $.Template.BasePath "/maps-api/configmap.yaml") . | sha256sum }}
         checksum/feature-flags-config: {{ include (print $.Template.BasePath "/custom-feature-flags-configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/maps-api/secret.yaml") . | sha256sum }}
@@ -121,6 +122,7 @@ spec:
              "LAUNCHDARKLY_SDK_KEY"
              "OTEL_EXPORTER_OTLP_HEADERS"
              ) "context" $ ) | nindent 12 }}
+            {{- with (include "carto.nats.clientEnv" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             {{- if .Values.mapsApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.mapsApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}

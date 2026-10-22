@@ -25,6 +25,7 @@ spec:
   template:
     metadata:
       annotations:
+        {{- with (include "carto.nats.clientPodAnnotations" (dict "context" $)) }}{{ . | nindent 8 }}{{- end }}
         checksum/config: {{ include (print $.Template.BasePath "/accounts-api/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/accounts-api/secret.yaml") . | sha256sum }}
         checksum/postgresql-password: {{ include "carto.postgresql.passwordChecksum" . }}
@@ -168,6 +169,7 @@ spec:
               "ENCRYPTION_SECRET_KEY"
               "OTEL_EXPORTER_OTLP_HEADERS"
              ) "context" $ ) | nindent 12 }}
+            {{- with (include "carto.nats.clientEnv" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             {{- if .Values.accountsApi.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.accountsApi.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
