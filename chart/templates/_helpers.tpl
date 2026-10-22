@@ -1739,6 +1739,27 @@ routes check. A YAML list, for concat with the component's own list.
 {{- end -}}
 
 {{/*
+The NATS auth token when cartoSecrets.natsAuthToken.existingSecret is not set: the configured value,
+else the one in the chart's Secret (so upgrades keep it), else a new one. Cached in .Values so every
+template in a render sees the same token.
+*/}}
+{{- define "carto.nats.token" -}}
+{{- if .Values.cartoSecrets.natsAuthToken.value -}}
+{{- .Values.cartoSecrets.natsAuthToken.value | toString -}}
+{{- else -}}
+{{- if not (hasKey .Values.nats "_generatedToken") -}}
+{{- $existing := lookup "v1" "Secret" .Release.Namespace (include "carto.nats.secretName" .) -}}
+{{- $stored := "" -}}
+{{- if and $existing $existing.data (hasKey $existing.data "NATS_AUTH_TOKEN") -}}
+{{- $stored = get $existing.data "NATS_AUTH_TOKEN" | b64dec -}}
+{{- end -}}
+{{- $_ := set .Values.nats "_generatedToken" ($stored | default (randAlphaNum 48)) -}}
+{{- end -}}
+{{- .Values.nats._generatedToken -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 nats.maxPayload in bytes, read the way nats-server reads sizes: K, M and G are powers of 1000; KB,
 Ki, KiB (and their M and G forms) are powers of 1024; case-insensitive; a bare integer is bytes.
 Empty when the value doesn't parse or is outside 1 byte to 64MB (the server's max_pending).
@@ -1778,7 +1799,11 @@ through a secretKeyRef, which a running pod never re-reads. Same params as carto
 {{- define "carto.nats.clientPodAnnotations" -}}
 {{- $context := .context -}}
 {{- if (include "carto.nats.clientsEnabled" $context) -}}
-checksum/nats-token: {{ toYaml $context.Values.cartoSecrets.natsAuthToken | sha256sum }}
+{{- if $context.Values.cartoSecrets.natsAuthToken.existingSecret.name }}
+checksum/nats-token: {{ toYaml $context.Values.cartoSecrets.natsAuthToken.existingSecret | sha256sum }}
+{{- else }}
+checksum/nats-token: {{ include "carto.nats.token" $context | sha256sum }}
+{{- end }}
 {{- end -}}
 {{- end -}}
 

@@ -522,7 +522,7 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
-  ## @extra cartoSecrets.natsAuthToken Auth token of the internal NATS event bus (self-hosted disconnected mode only). Required when `appConfigValues.disconnected.enabled` is true. It must not contain `"` or `\`.
+  ## @extra cartoSecrets.natsAuthToken Auth token of the internal NATS event bus (self-hosted disconnected mode only). If unset, the chart generates one and keeps it across upgrades, but not in renders without cluster access such as `helm template`. A set value needs 16+ characters, no `"` or `\`.
   natsAuthToken:
     ## @param cartoSecrets.natsAuthToken.value Value of the auth token of the internal NATS event bus. One of `cartoSecrets.natsAuthToken.value` or `cartoSecrets.natsAuthToken.existingSecret` could be defined.
     value: ""
