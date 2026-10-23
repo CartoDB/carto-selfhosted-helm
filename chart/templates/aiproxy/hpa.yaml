@@ -13,7 +13,7 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  minReplicas: {{ .Values.aiProxy.autoscaling.minReplicas }}
+  minReplicas: {{ include "carto.replicas" (dict "replicas" .Values.aiProxy.autoscaling.minReplicas "context" $) }}
   maxReplicas: {{ .Values.aiProxy.autoscaling.maxReplicas }}
   scaleTargetRef:
     apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}

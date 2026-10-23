@@ -1,4 +1,4 @@
-{{- if and .Values.notifier.podDisruptionBudget.enabled}}
+{{- if and (or .Values.notifier.podDisruptionBudget.enabled .Values.highAvailability.enabled)}}
 ---
 apiVersion: {{ .Values.global.kubernetesPolicyVersion }}
 kind: PodDisruptionBudget
@@ -7,11 +7,15 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
   labels:
 spec:
+{{- if .Values.notifier.podDisruptionBudget.enabled }}
 {{- if .Values.notifier.podDisruptionBudget.minAvailable }}
   minAvailable: {{ .Values.notifier.podDisruptionBudget.minAvailable }}
 {{- end }}
 {{- if .Values.notifier.podDisruptionBudget.maxUnavailable }}
   maxUnavailable: {{ .Values.notifier.podDisruptionBudget.maxUnavailable }}
+{{- end }}
+{{- else }}
+  maxUnavailable: 1
 {{- end }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
