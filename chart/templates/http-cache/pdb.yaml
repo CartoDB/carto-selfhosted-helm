@@ -14,6 +14,6 @@ spec:
   maxUnavailable: {{ .Values.httpCache.podDisruptionBudget.maxUnavailable }}
 {{- end }}
   selector:
-    matchLabels:
-      app.kubernetes.io/name: {{ include "carto.httpCache.fullname" . }}
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: http-cache
 {{- end }}
