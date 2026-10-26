@@ -1,0 +1,16 @@
+{{- if (include "carto.smtp.ca.enabled" .) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "carto.smtp.configMapName" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  namespace: {{ .Release.Namespace | quote }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+data:
+  ca.crt: {{ .Values.appConfigValues.disconnected.smtp.ca | quote }}
+{{- end }}
