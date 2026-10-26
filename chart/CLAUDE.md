@@ -50,9 +50,8 @@ app-feature decision.
 **Disconnected-only components.** `accountsApi`, `accountsSubscriber` and
 `authApi` (plus their `accountsMigrations`/`authMigrations` Jobs) render only
 when `carto.disconnected.enabled` is true. They are outside the chart-wide
-high-availability work: the `highAvailability` presets (replica floor, HPA
-`minReplicas`, PDBs, topology spread) don't apply to them, and their own
-`autoscaling`/`replicaCount` values stay as they were. Don't extend that work to them
+high-availability work: the `topologySpread` preset doesn't apply to them, and
+they have no `topologySpreadConstraints` value. Don't extend that work to them
 without a decision from the disconnected-mode owners; plain bug fixes (e.g. a
 wrong PDB selector) are fine.
 

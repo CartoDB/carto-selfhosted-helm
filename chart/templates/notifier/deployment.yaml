@@ -13,7 +13,7 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ include "carto.replicas" (dict "replicas" .Values.notifier.replicaCount "context" $) }}
+  replicas: {{ .Values.notifier.replicaCount }}
   {{- if .Values.notifier.updateStrategy }}
   strategy: {{- toYaml .Values.notifier.updateStrategy | nindent 4 }}
   {{- end }}
@@ -49,7 +49,7 @@ spec:
       {{- end }}
       {{- if .Values.notifier.topologySpreadConstraints }}
       topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.notifier.topologySpreadConstraints "context" $) | nindent 8 }}
-      {{- else if .Values.highAvailability.topologySpread.enabled }}
+      {{- else if .Values.topologySpread.enabled }}
       topologySpreadConstraints: {{- include "carto.topologySpreadConstraints" (dict "component" "notifier" "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.notifier.nodeSelector }}

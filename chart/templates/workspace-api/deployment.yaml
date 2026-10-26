@@ -14,7 +14,7 @@ metadata:
   {{- end }}
 spec:
   {{- if not .Values.workspaceApi.autoscaling.enabled }}
-  replicas: {{ include "carto.replicas" (dict "replicas" .Values.workspaceApi.replicaCount "context" $) }}
+  replicas: {{ .Values.workspaceApi.replicaCount }}
   {{- end }}
   {{- if .Values.workspaceApi.updateStrategy }}
   strategy: {{- toYaml .Values.workspaceApi.updateStrategy | nindent 4 }}
@@ -56,7 +56,7 @@ spec:
       {{- end }}
       {{- if .Values.workspaceApi.topologySpreadConstraints }}
       topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.workspaceApi.topologySpreadConstraints "context" $) | nindent 8 }}
-      {{- else if .Values.highAvailability.topologySpread.enabled }}
+      {{- else if .Values.topologySpread.enabled }}
       topologySpreadConstraints: {{- include "carto.topologySpreadConstraints" (dict "component" "workspace-api" "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.workspaceApi.nodeSelector }}

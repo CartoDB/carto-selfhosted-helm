@@ -14,7 +14,7 @@ metadata:
   {{- end }}
 spec:
   {{- if not .Values.aiApi.autoscaling.enabled }}
-  replicas: {{ include "carto.replicas" (dict "replicas" .Values.aiApi.replicaCount "context" $) }}
+  replicas: {{ .Values.aiApi.replicaCount }}
   {{- end }}
   {{- if .Values.aiApi.updateStrategy }}
   strategy: {{- toYaml .Values.aiApi.updateStrategy | nindent 4 }}
@@ -56,7 +56,7 @@ spec:
       {{- end }}
       {{- if .Values.aiApi.topologySpreadConstraints }}
       topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.aiApi.topologySpreadConstraints "context" $) | nindent 8 }}
-      {{- else if .Values.highAvailability.topologySpread.enabled }}
+      {{- else if .Values.topologySpread.enabled }}
       topologySpreadConstraints: {{- include "carto.topologySpreadConstraints" (dict "component" "ai-api" "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.aiApi.nodeSelector }}

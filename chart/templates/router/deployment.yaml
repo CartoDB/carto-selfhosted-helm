@@ -14,7 +14,7 @@ metadata:
   {{- end }}
 spec:
   {{- if not .Values.router.autoscaling.enabled }}
-  replicas: {{ include "carto.replicas" (dict "replicas" .Values.router.replicaCount "context" $) }}
+  replicas: {{ .Values.router.replicaCount }}
   {{- end }}
   {{- if .Values.router.updateStrategy }}
   strategy: {{- toYaml .Values.router.updateStrategy | nindent 4 }}
@@ -52,7 +52,7 @@ spec:
       {{- end }}
       {{- if .Values.router.topologySpreadConstraints }}
       topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.router.topologySpreadConstraints "context" $) | nindent 8 }}
-      {{- else if .Values.highAvailability.topologySpread.enabled }}
+      {{- else if .Values.topologySpread.enabled }}
       topologySpreadConstraints: {{- include "carto.topologySpreadConstraints" (dict "component" "router" "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.router.nodeSelector }}

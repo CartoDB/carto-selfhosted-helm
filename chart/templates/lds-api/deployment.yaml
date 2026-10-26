@@ -14,7 +14,7 @@ metadata:
   {{- end }}
 spec:
   {{- if not .Values.ldsApi.autoscaling.enabled }}
-  replicas: {{ include "carto.replicas" (dict "replicas" .Values.ldsApi.replicaCount "context" $) }}
+  replicas: {{ .Values.ldsApi.replicaCount }}
   {{- end }}
   {{- if .Values.ldsApi.updateStrategy }}
   strategy: {{- toYaml .Values.ldsApi.updateStrategy | nindent 4 }}
@@ -56,7 +56,7 @@ spec:
       {{- end }}
       {{- if .Values.ldsApi.topologySpreadConstraints }}
       topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.ldsApi.topologySpreadConstraints "context" $) | nindent 8 }}
-      {{- else if .Values.highAvailability.topologySpread.enabled }}
+      {{- else if .Values.topologySpread.enabled }}
       topologySpreadConstraints: {{- include "carto.topologySpreadConstraints" (dict "component" "lds-api" "context" $) | nindent 8 }}
       {{- end }}
       {{- if .Values.ldsApi.nodeSelector }}
