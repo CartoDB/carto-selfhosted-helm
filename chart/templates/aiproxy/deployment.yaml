@@ -113,6 +113,11 @@ spec:
             {{- if .Values.aiProxy.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
+            {{- /* Last in the list so extraEnvVars cannot re-enable migrations in the pods */}}
+            {{- if (include "carto.aiProxy.migrationJobEnabled" .) }}
+            - name: DISABLE_SCHEMA_UPDATE
+              value: "true"
+            {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ template "carto.aiProxy.configmapName" . }}
