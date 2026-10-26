@@ -108,6 +108,9 @@ Validate auth-api (internal authentication) config
 {{- if and (not .Values.cartoSecrets.authApiInternalServiceToken.value) (not .Values.cartoSecrets.authApiInternalServiceToken.existingSecret.name) -}}
 {{- $messages = append $messages "CARTO: Missing auth-api internal service token\n\nIf appConfigValues.disconnected.enabled=true you need to set one of cartoSecrets.authApiInternalServiceToken.value or cartoSecrets.authApiInternalServiceToken.existingSecret" -}}
 {{- end -}}
+{{- if eq (toString .Values.cartoConfigValues.cartoDataWarehouseEnabled) "true" -}}
+{{- $messages = append $messages "CARTO: CARTO Data Warehouse is not available in disconnected mode\n\nIf appConfigValues.disconnected.enabled=true you need to set cartoConfigValues.cartoDataWarehouseEnabled=false" -}}
+{{- end -}}
 {{- if not .Values.appConfigValues.disconnected.spaClient.clientId -}}
 {{- $messages = append $messages "CARTO: Missing platform SPA client ID\n\nIf appConfigValues.disconnected.enabled=true you need to set appConfigValues.disconnected.spaClient.clientId" -}}
 {{- end -}}
@@ -139,6 +142,68 @@ Validate SMTP relay config (disconnected mode)
 {{- end -}}
 
 {{/*
+Validate the NATS token (self-hosted disconnected mode). The chart generates one when none is set,
+since the NATS server refuses to start without a token.
+*/}}
+{{- define "carto.validateValues.nats" -}}
+{{- if (include "carto.disconnected.enabled" .) -}}
+{{- $token := .Values.cartoSecrets.natsAuthToken.value | default "" | toString -}}
+{{- $existing := .Values.cartoSecrets.natsAuthToken.existingSecret -}}
+{{- if and $existing.name (not $existing.key) -}}
+CARTO: Missing NATS auth token
+
+cartoSecrets.natsAuthToken.existingSecret.name is set, so cartoSecrets.natsAuthToken.existingSecret.key must name the key that holds the token
+{{- else if or (contains "\"" $token) (contains "\\" $token) -}}
+CARTO: Invalid NATS auth token
+
+cartoSecrets.natsAuthToken.value must not contain " or \. The NATS server reads the token as a quoted string: " stops it from starting, and \ starts an escape that changes the token, so every client is refused
+{{- else if and $token (lt (len $token) 16) -}}
+CARTO: Invalid NATS auth token
+
+cartoSecrets.natsAuthToken.value must be at least 16 characters long. Leave it and cartoSecrets.natsAuthToken.existingSecret unset to let the chart generate one
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Validate nats.maxPayload. The server and every event-bus client read the same byte count, so a value
+the server can't start with must fail the render.
+*/}}
+{{- define "carto.validateValues.natsMaxPayload" -}}
+{{- if and (include "carto.nats.clientsEnabled" .) (not (include "carto.nats.maxPayloadBytes" .)) -}}
+CARTO: Invalid nats.maxPayload
+
+nats.maxPayload must be a size from 1 byte to 64MB: a number of bytes, or a number with K, M or G (powers of 1000) or KB, MB or GB (powers of 1024), such as "8MB". Got {{ .Values.nats.maxPayload | toString | quote }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Validate that a disconnected install keeps every event-bus client on NATS. The chart sets
+BACKEND_MESSAGING_TRANSPORT=nats itself, but a component's extraEnvVars can override it, and any
+other transport falls back to Google Pub/Sub, which a disconnected install cannot reach.
+*/}}
+{{- define "carto.validateValues.messagingTransport" -}}
+{{- if (include "carto.disconnected.enabled" .) -}}
+{{- $overriding := list -}}
+{{- range $component := list "accountsApi" "accountsSubscriber" "aiApi" "cdnInvalidatorSub" "importApi" "importWorker" "ldsApi" "mapsApi" "publicEventsApi" "routerMetrics" "sqlWorker" "workspaceApi" "workspaceSubscriber" -}}
+{{- $extraEnvVars := (get $.Values $component).extraEnvVars -}}
+{{- if kindIs "slice" $extraEnvVars -}}
+{{- range $extraEnvVars -}}
+{{- if and (eq (toString .name) "BACKEND_MESSAGING_TRANSPORT") (ne (toString .value) "nats") -}}
+{{- $overriding = append $overriding $component -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- if $overriding -}}
+CARTO: Invalid event-bus transport
+
+If appConfigValues.disconnected.enabled=true every service must use NATS. Remove BACKEND_MESSAGING_TRANSPORT from the extraEnvVars of: {{ join ", " (uniq $overriding) }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Compile all warnings into a single message, and call fail.
 */}}
 {{- define "carto.validateValues" -}}
@@ -151,6 +216,9 @@ Compile all warnings into a single message, and call fail.
 {{- $messages := append $messages (include "carto.validateValues.s3Compatible" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.authApi" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.smtp" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.nats" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.natsMaxPayload" .) -}}
+{{- $messages := append $messages (include "carto.validateValues.messagingTransport" .) -}}
 {{- $messages := append $messages (include "carto.validateValues.openTelemetry" .) -}}
 {{- $messages := without $messages "" -}}
 {{- $message := join "\n" $messages -}}

@@ -85,6 +85,7 @@ AI_OPENAI_API_KEY: cartoSecrets.litellmMasterKey
 GEMINI_API_KEY: cartoSecrets.geminiApiKey
 CARTO_INTERNAL_SERVICE_TOKEN: cartoSecrets.authApiInternalServiceToken
 CARTO_SMTP_PASSWORD: appSecrets.smtpPassword
+NATS_AUTH_TOKEN: cartoSecrets.natsAuthToken
 {{- end -}}
 
 {{/*
@@ -852,6 +853,24 @@ Return the proper Carto notifier full name
 {{- end -}}
 
 {{/*
+Return the name of the headless notifier control Service
+*/}}
+{{- define "carto.notifier.controlServiceName" -}}
+{{- printf "%s-notifier-control" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return true when events must be published to every notifier replica.
+Derived from the replica count, never set directly: with more than one
+replica, publishing through the regular Service reaches only one of them.
+*/}}
+{{- define "carto.notifier.fanoutEnabled" -}}
+{{- if gt (int .Values.notifier.replicaCount) 1 -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
 Return the proper Carto notifier image name
 */}}
 {{- define "carto.notifier.image" -}}
@@ -945,7 +964,7 @@ Return the proper Carto tenant-requirements-checker image name
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authMigrations.image .Values.accountsApi.image .Values.accountsSubscriber.image .Values.accountsMigrations.image) "context" $) -}}
+{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.nats.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authMigrations.image .Values.accountsApi.image .Values.accountsSubscriber.image .Values.accountsMigrations.image) "context" $) -}}
 {{- end -}}
 
 {{/*
@@ -1709,6 +1728,133 @@ CARTO_INTERNAL_ISSUER: {{ include "carto.authApi.issuer" . | quote }}
 CARTO_AUTH_AUDIENCE: "carto-cloud-native-api"
 CARTO_AUTH_NAMESPACE: "http://app.carto.com"
 CARTO_AUTH_API_URL: "http://{{ include "carto.authApi.fullname" . }}.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}"
+{{- end -}}
+{{- end -}}
+
+{{/*
+Secret env vars workspace-api adds in disconnected mode: the token its internal dead-letter admin
+routes check. A YAML list, for concat with the component's own list.
+*/}}
+{{- define "carto.workspaceApi.disconnectedSecretVars" -}}
+{{- if (include "carto.disconnected.enabled" .) -}}
+- CARTO_INTERNAL_SERVICE_TOKEN
+{{- end -}}
+{{- end -}}
+
+{{- define "carto.nats.fullname" -}}
+{{- printf "%s-nats" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "carto.nats.image" -}}
+{{- include "carto.images.image" (dict "imageRoot" .Values.nats.image "global" .Values.global "Chart" .Chart) -}}
+{{- end -}}
+
+{{- define "carto.nats.secretName" -}}
+{{- include "carto.nats.fullname" . -}}
+{{- end -}}
+
+{{- define "carto.nats.url" -}}
+{{- printf "nats://%s.%s.svc.%s:%v" (include "carto.nats.fullname" .) .Release.Namespace .Values.clusterDomain .Values.nats.service.ports.client -}}
+{{- end -}}
+
+{{/*
+The NATS auth token when cartoSecrets.natsAuthToken.existingSecret is not set: the configured value,
+else the one in the chart's Secret (so upgrades keep it), else a new one. Cached in .Values so every
+template in a render sees the same token.
+*/}}
+{{- define "carto.nats.token" -}}
+{{- if .Values.cartoSecrets.natsAuthToken.value -}}
+{{- .Values.cartoSecrets.natsAuthToken.value | toString -}}
+{{- else -}}
+{{- if not (hasKey .Values.nats "_generatedToken") -}}
+{{- $existing := lookup "v1" "Secret" .Release.Namespace (include "carto.nats.secretName" .) -}}
+{{- $stored := "" -}}
+{{- if and $existing $existing.data (hasKey $existing.data "NATS_AUTH_TOKEN") -}}
+{{- $stored = get $existing.data "NATS_AUTH_TOKEN" | b64dec -}}
+{{- end -}}
+{{- $_ := set .Values.nats "_generatedToken" ($stored | default (randAlphaNum 48)) -}}
+{{- end -}}
+{{- .Values.nats._generatedToken -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+nats.maxPayload in bytes, read the way nats-server reads sizes: K, M and G are powers of 1000; KB,
+Ki, KiB (and their M and G forms) are powers of 1024; case-insensitive; a bare integer is bytes.
+Empty when the value doesn't parse or is outside 1 byte to 64MB (the server's max_pending).
+*/}}
+{{- define "carto.nats.maxPayloadBytes" -}}
+{{- $raw := .Values.nats.maxPayload -}}
+{{- $value := lower (toString $raw) -}}
+{{- if kindIs "float64" $raw -}}
+{{- $value = ternary (printf "%d" (int64 $raw)) "invalid" (eq $raw (float64 (int64 $raw))) -}}
+{{- end -}}
+{{- $digits := $value -}}
+{{- $multiplier := 1 -}}
+{{- range list (list "kib" 1024) (list "ki" 1024) (list "kb" 1024) (list "k" 1000) (list "mib" 1048576) (list "mi" 1048576) (list "mb" 1048576) (list "m" 1000000) (list "gib" 1073741824) (list "gi" 1073741824) (list "gb" 1073741824) (list "g" 1000000000) -}}
+{{- if and (eq $multiplier 1) (hasSuffix (first .) $value) -}}
+{{- $digits = trimSuffix (first .) $value -}}
+{{- $multiplier = last . -}}
+{{- end -}}
+{{- end -}}
+{{- if and $digits (eq (trimAll "0123456789" $digits) "") -}}
+{{- $bytes := mul (atoi $digits) $multiplier -}}
+{{- if and (gt $bytes 0) (le $bytes 67108864) -}}{{ $bytes }}{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Whether event-bus clients talk to NATS: disconnected mode, unless only the router runs (NATS is not
+deployed then).
+*/}}
+{{- define "carto.nats.clientsEnabled" -}}
+{{- if and (include "carto.disconnected.enabled" .) (not .Values.cartoConfigValues.onlyRunRouter) -}}true{{- end -}}
+{{- end -}}
+
+{{/*
+Pod annotation that restarts an event-bus client when its NATS token changes: the token is read
+through a secretKeyRef, which a running pod never re-reads. Same params as carto.nats.clientEnv.
+*/}}
+{{- define "carto.nats.clientPodAnnotations" -}}
+{{- $context := .context -}}
+{{- if (include "carto.nats.clientsEnabled" $context) -}}
+{{- if $context.Values.cartoSecrets.natsAuthToken.existingSecret.name }}
+checksum/nats-token: {{ toYaml $context.Values.cartoSecrets.natsAuthToken.existingSecret | sha256sum }}
+{{- else }}
+checksum/nats-token: {{ include "carto.nats.token" $context | sha256sum }}
+{{- end }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Env entries for every service that publishes or subscribes to the event bus. Self-gated: emits
+nothing unless disconnected mode is enabled, so connected installs keep the services' Pub/Sub
+default. The token is read from the NATS Secret rather than copied into each component's Secret.
+Params: context, and optional (true where the NATS Secret may not exist yet, as in preflights).
+*/}}
+{{- define "carto.nats.clientEnv" -}}
+{{- $context := .context -}}
+{{- if (include "carto.nats.clientsEnabled" $context) -}}
+{{- $token := $context.Values.cartoSecrets.natsAuthToken.existingSecret -}}
+- name: BACKEND_MESSAGING_TRANSPORT
+  value: "nats"
+- name: BACKEND_MESSAGING_NATS_URL
+  value: {{ include "carto.nats.url" $context | quote }}
+- name: BACKEND_MESSAGING_NATS_MAX_PAYLOAD_BYTES
+  value: {{ include "carto.nats.maxPayloadBytes" $context | quote }}
+- name: BACKEND_MESSAGING_NATS_TOKEN
+  valueFrom:
+    secretKeyRef:
+      {{- if $token.name }}
+      name: {{ $token.name | quote }}
+      key: {{ $token.key | quote }}
+      {{- else }}
+      name: {{ include "carto.nats.secretName" $context | quote }}
+      key: "NATS_AUTH_TOKEN"
+      {{- end }}
+      {{- if .optional }}
+      optional: true
+      {{- end }}
 {{- end -}}
 {{- end -}}
 

@@ -190,6 +190,12 @@ Return common collectors for preflights and support-bundle
               - name: OVERRIDDEN_FEATURE_FLAGS
                 value: {{ include "carto.featureFlags.overriddenFeatureFlags" . | quote }}
               {{- end }}
+              {{- if (include "carto.disconnected.enabled" .) }}
+              {{- /* The checker reports its Pub/Sub check as skipped, which is why the analyzers leave PubSubValidator out */}}
+              - name: CARTO_SELFHOSTED_DISCONNECTED_ENABLED
+                value: "true"
+              {{- end }}
+              {{- with (include "carto.nats.clientEnv" (dict "context" $ "optional" true)) }}{{ . | nindent 14 }}{{- end }}
               - name: PUBSUB_PROJECT_ID
                 value: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
               - name: PUBSUB_CUSTOM_DOMAIN
@@ -302,6 +308,7 @@ Return common collectors for preflights and support-bundle
         - {{ template "carto.accountsApi.image" . }}
         - {{ template "carto.accountsSubscriber.image" . }}
         - {{ template "carto.accountsMigrations.image" . }}
+        - {{ template "carto.nats.image" . }}
         {{- end }}
 {{- end -}}
 
@@ -311,12 +318,21 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
 */}}
 {{- define "carto.replicated.commonChecks.analyzers" }}
   {{- $preflightsDict := dict
-      "WorkspaceDatabaseValidator" (list "Check_database_connection" "Check_database_encoding" "Check_user_has_right_permissions" "Check_database_version") 
+      "WorkspaceDatabaseValidator" (list "Check_database_connection" "Check_database_encoding" "Check_user_has_right_permissions" "Check_database_version")
       "ServiceAccountValidator" (list "Check_valid_service_account")
       "BucketsValidator" (list "Check_assets_bucket" "Check_temp_bucket")
       "EgressRequirementsValidator" (list "Check_CARTO_Auth_connectivity" "Check_PubSub_connectivity" "Check_Google_Storage_connectivity" "Check_release_channels_connectivity" "Check_Google_Storage_connectivity" "Check_CARTO_images_registry_connectivity" "Check_TomTom_connectivity" "Check_TravelTime_connectivity")
-      "PubSubValidator" (list "Check_publish_and_listen_to_topic")
   }}
+
+  {{/*
+  Disconnected installs run the event bus in-cluster and reach no internet endpoint, so the Pub/Sub
+  publish/listen check and every egress check would block an air-gapped install.
+  */}}
+  {{- if (include "carto.disconnected.enabled" .) }}
+  {{- $_ := unset $preflightsDict "EgressRequirementsValidator" -}}
+  {{- else }}
+  {{- $_ := set $preflightsDict "PubSubValidator" (list "Check_publish_and_listen_to_topic") -}}
+  {{- end }}
   
   {{/* Add optional analyzers to the preflightsDict */}}
 

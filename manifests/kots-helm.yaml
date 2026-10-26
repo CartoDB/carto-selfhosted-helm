@@ -7,7 +7,7 @@ metadata:
 spec:
   chart:
     name: carto
-    chartVersion: 1.296.11
+    chartVersion: 1.303.1
   builder:
     replicated:
       enabled: true
@@ -140,6 +140,10 @@ spec:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     accountsMigrations:
+      image:
+        registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+    ## NATS (self-hosted disconnected event bus)
+    nats:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     ## Redis

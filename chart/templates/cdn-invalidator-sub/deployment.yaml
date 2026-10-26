@@ -29,6 +29,7 @@ spec:
   template:
     metadata:
       annotations:
+        {{- with (include "carto.nats.clientPodAnnotations" (dict "context" $)) }}{{ . | nindent 8 }}{{- end }}
         checksum/config: {{ include (print $.Template.BasePath "/cdn-invalidator-sub/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/cdn-invalidator-sub/secret.yaml") . | sha256sum }}
         checksum/postgresql-password: {{ include "carto.postgresql.passwordChecksum" . }}
@@ -51,8 +52,8 @@ spec:
       affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.cdnInvalidatorSub.affinity "context" $) | nindent 8 }}
       {{- else }}
       affinity:
-        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.cdnInvalidatorSub.podAffinityPreset "component" "cdnInvalidatorSub" "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.cdnInvalidatorSub.podAntiAffinityPreset "component" "cdnInvalidatorSub" "context" $) | nindent 10 }}
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.cdnInvalidatorSub.podAffinityPreset "component" "cdn-invalidator-sub" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.cdnInvalidatorSub.podAntiAffinityPreset "component" "cdn-invalidator-sub" "context" $) | nindent 10 }}
         nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.cdnInvalidatorSub.nodeAffinityPreset.type "key" .Values.cdnInvalidatorSub.nodeAffinityPreset.key "values" .Values.cdnInvalidatorSub.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
       {{- if .Values.cdnInvalidatorSub.nodeSelector }}
@@ -109,6 +110,7 @@ spec:
               "VARNISH_DEBUG_SECRET"
               "OTEL_EXPORTER_OTLP_HEADERS"
             ) "context" $ ) | nindent 12 }}
+            {{- with (include "carto.nats.clientEnv" (dict "context" $)) }}{{ . | nindent 12 }}{{- end }}
             {{- if .Values.cdnInvalidatorSub.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.cdnInvalidatorSub.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
