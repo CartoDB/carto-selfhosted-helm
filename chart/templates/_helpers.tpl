@@ -2073,3 +2073,21 @@ group sync.
 {{- include "carto.images.image" (dict "imageRoot" .Values.accountsMigrations.image "global" .Values.global "Chart" .Chart) -}}
 {{- end -}}
 
+
+{{/*
+Return the chart-wide topologySpreadConstraints preset (topologySpread) for one component. The
+selector matches only that component's pods; pod-template-hash keeps a rollout's old ReplicaSet out
+of the count.
+Usage: include "carto.topologySpreadConstraints" (dict "component" "<component-label>" "context" $)
+*/}}
+{{- define "carto.topologySpreadConstraints" -}}
+{{- $spread := .context.Values.topologySpread -}}
+- maxSkew: {{ $spread.maxSkew }}
+  topologyKey: {{ $spread.topologyKey }}
+  whenUnsatisfiable: {{ $spread.whenUnsatisfiable }}
+  labelSelector:
+    matchLabels: {{- include "common.labels.matchLabels" .context | nindent 6 }}
+      app.kubernetes.io/component: {{ .component }}
+  matchLabelKeys:
+    - pod-template-hash
+{{- end -}}
