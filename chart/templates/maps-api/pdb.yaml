@@ -14,6 +14,6 @@ spec:
   maxUnavailable: {{ .Values.mapsApi.podDisruptionBudget.maxUnavailable }}
 {{- end }}
   selector:
-    matchLabels:
-      app.kubernetes.io/name: {{ include "carto.mapsApi.fullname" . }}
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: maps-api
 {{- end }}
