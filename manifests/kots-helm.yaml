@@ -186,18 +186,22 @@ spec:
     importApi:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+        tag: "2026.10.13-patch1"
     importWorker:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+        tag: "2026.10.13-patch1"
     ldsApi:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
     mapsApi:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+        tag: "2026.10.13-patch1"
     sqlWorker:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+        tag: "2026.10.13-patch1"
     router:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
@@ -213,9 +217,11 @@ spec:
     workspaceApi:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+        tag: "2026.10.13-patch1"
     workspaceSubscriber:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
+        tag: "2026.10.13-patch1"
     workspaceWww:
       image:
         registry: '{{repl HasLocalRegistry | ternary LocalRegistryHost "registry.self-hosted.carto.com/proxy/carto/gcr.io/carto-onprem-artifacts" }}'
