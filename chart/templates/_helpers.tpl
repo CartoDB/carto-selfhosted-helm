@@ -169,6 +169,10 @@ As a replacement for "common.images.image" that forces you to set image.tag valu
 {{- $registryName := .imageRoot.registry -}}
 {{- $repositoryName := .imageRoot.repository -}}
 {{- $tag := (coalesce .imageRoot.tag .Chart.AppVersion) | toString -}}
+{{- /* Release candidate images are published as rc-<appVersion>. An explicit tag is used as given. */ -}}
+{{- if and (not .imageRoot.tag) (regexMatch "-rc\\.[0-9]+$" $tag) -}}
+{{- $tag = printf "rc-%s" $tag -}}
+{{- end -}}
 {{- if .global }}
     {{- if .global.imageRegistry }}
      {{- $registryName = .global.imageRegistry -}}
