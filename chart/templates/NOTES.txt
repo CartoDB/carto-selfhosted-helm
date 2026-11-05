@@ -4,6 +4,18 @@ CHART VERSION: {{ .Chart.Version }}
 CHART URL: https://github.com/CartoDB/carto-selfhosted-helm/
 APP VERSION: {{ .Chart.AppVersion }}
 
+{{- with (include "carto.imagePullCredential.missingWarning" .) }}
+
++-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
+|      CARTO IMAGE PULL CREDENTIAL MISSING         |
++-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
+
+WARNING: pulling CARTO images will require authentication.
+{{ . }}
+See https://docs.carto.com/carto-self-hosted/configuration/security/authenticated-image-pulls
+
+{{- end }}
+
 {{- if .Values.internalPostgresql.enabled }}
 
 +-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+

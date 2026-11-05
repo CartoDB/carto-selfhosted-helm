@@ -1,13 +1,24 @@
 {{/* vim: set filetype=helm: */}}
 
 {{/*
-Return common collectors for preflights and support-bundle
+Return common collectors for preflights and support-bundle.
+Pass the root context, or (dict "context" $ "inlinePullSecret" true) from the preflight to carry the image pull credential inline.
 */}}
 {{- define "carto.replicated.commonChecks.collectors" }}
+{{- $ctx := . }}
+{{- $inlinePullSecret := false }}
+{{- if .inlinePullSecret }}
+{{- $ctx = .context }}
+{{- $inlinePullSecret = true }}
+{{- end }}
+{{- with $ctx }}
   - runPod:
       collectorName: tenant-requirements-check
       name: tenant-requirements-check
       namespace: {{ .Release.Namespace | quote }}
+      {{- if (include "carto.imagePullCredential.enabled" .) }}
+      imagePullSecret: {{- include "carto.imagePullCredential.collectorSecret" (dict "context" . "inline" $inlinePullSecret) | nindent 8 }}
+      {{- end }}
       {{/*
       The pod runs every validator sequentially and only emits results once the whole pass
       finishes, so this budget must cover image pull plus the slowest full run. Keep headroom:
@@ -195,7 +206,7 @@ Return common collectors for preflights and support-bundle
               - name: CARTO_SELFHOSTED_DISCONNECTED_ENABLED
                 value: "true"
               {{- end }}
-              {{- with (include "carto.nats.clientEnv" (dict "context" $ "optional" true)) }}{{ . | nindent 14 }}{{- end }}
+              {{- with (include "carto.nats.clientEnv" (dict "context" $ctx "optional" true)) }}{{ . | nindent 14 }}{{- end }}
               - name: PUBSUB_PROJECT_ID
                 value: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
               - name: PUBSUB_CUSTOM_DOMAIN
@@ -281,11 +292,15 @@ Return common collectors for preflights and support-bundle
   - registryImages:
       namespace: {{ .Release.Namespace | quote }}
       {{/*
-        We cannot use the imagePullSecrets template that we have because the registryImages collector needs a single imagePullSecret.
-        As we just include the preflights if using Replicated the carto-registry secret should be present always!
+        The registryImages collector takes a single imagePullSecret: the chart's credential on Helm installs,
+        and the carto-registry secret that KOTS creates otherwise.
       */}}
+      {{- if (include "carto.imagePullCredential.enabled" .) }}
+      imagePullSecret: {{- include "carto.imagePullCredential.collectorSecret" (dict "context" . "inline" $inlinePullSecret) | nindent 8 }}
+      {{- else }}
       imagePullSecret:
         name: carto-registry
+      {{- end }}
       images:
         - {{ template "carto.accountsWww.image" . }}
         - {{ template "carto.cdnInvalidatorSub.image" . }}
@@ -310,6 +325,7 @@ Return common collectors for preflights and support-bundle
         - {{ template "carto.accountsMigrations.image" . }}
         - {{ template "carto.nats.image" . }}
         {{- end }}
+{{- end }}
 {{- end -}}
 
 {{/*
