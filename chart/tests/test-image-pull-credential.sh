@@ -24,12 +24,6 @@ cartoSecrets:
     value: |
       {"type": "service_account", "private_key_id": "chart-test-default"}
 YAML
-cat > "$WORK_DIR/pull-key.yaml" <<'YAML'
-cartoSecrets:
-  imagePullServiceAccount:
-    value: |
-      {"type": "service_account", "private_key_id": "chart-test-pull"}
-YAML
 cat > "$WORK_DIR/existing-secret.yaml" <<'YAML'
 cartoSecrets:
   defaultGoogleServiceAccount:
@@ -51,17 +45,14 @@ notes() { # notes <case> <helm args...>: writes the rendered NOTES to $WORK_DIR/
 }
 
 render default-key -f "$WORK_DIR/default-key.yaml"
-render pull-key -f "$WORK_DIR/default-key.yaml" -f "$WORK_DIR/pull-key.yaml"
-render kots -f "$WORK_DIR/pull-key.yaml" --set replicated.enabled=true
+render kots -f "$WORK_DIR/default-key.yaml" --set replicated.enabled=true
 render existing-secret -f "$WORK_DIR/existing-secret.yaml"
-render manual-secret -f "$WORK_DIR/pull-key.yaml" --set 'global.imagePullSecrets[0]=carto-registry'
-render mirror -f "$WORK_DIR/pull-key.yaml" --set global.imageRegistry=registry.example.com/carto
-# Values from an older chart (helm upgrade --reuse-values) lack the new key.
-render pull-value-removed -f "$WORK_DIR/default-key.yaml" --set cartoSecrets.imagePullServiceAccount=null
+render manual-secret -f "$WORK_DIR/default-key.yaml" --set 'global.imagePullSecrets[0]=carto-registry'
+render mirror -f "$WORK_DIR/default-key.yaml" --set global.imageRegistry=registry.example.com/carto
 notes no-key
 notes existing-secret-notes -f "$WORK_DIR/existing-secret.yaml"
 notes manual-secret-notes --set 'global.imagePullSecrets[0]=carto-registry'
-notes pull-key-notes -f "$WORK_DIR/pull-key.yaml"
+notes default-key-notes -f "$WORK_DIR/default-key.yaml"
 
 python3 - "$WORK_DIR" <<'PY'
 import base64, json, sys, yaml
@@ -177,8 +168,6 @@ def expect_no_credential(case, probe):
     check_collectors(case, documents, credential=False, probe=probe)
 
 expect_credential("default-key", "chart-test-default")
-expect_credential("pull-key", "chart-test-pull")
-expect_credential("pull-value-removed", "chart-test-default")
 expect_no_credential("kots", probe=False)
 expect_no_credential("existing-secret", probe=True)
 
@@ -200,7 +189,7 @@ check(warning in read_notes("no-key") and "customer package" in read_notes("no-k
 existing = read_notes("existing-secret-notes")
 check(warning in existing and "global.imagePullSecrets" in existing, "existing-secret: NOTES does not ask for global.imagePullSecrets")
 check(warning not in read_notes("manual-secret-notes"), "manual-secret: NOTES warns")
-check(warning not in read_notes("pull-key-notes"), "pull-key: NOTES warns")
+check(warning not in read_notes("default-key-notes"), "default-key: NOTES warns")
 
 if failures:
     print("\n".join("FAIL " + f for f in failures))

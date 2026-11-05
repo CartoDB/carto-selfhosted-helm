@@ -478,10 +478,6 @@ cartoSecrets:
     existingSecret:
       name: ""
       key: ""
-  ## @extra cartoSecrets.imagePullServiceAccount The CARTO service account the chart uses to pull CARTO images, shipped in your customer package.
-  imagePullServiceAccount:
-    ## @param cartoSecrets.imagePullServiceAccount.value Value of the service account used to pull CARTO images. If empty, `cartoSecrets.defaultGoogleServiceAccount.value` is used.
-    value: ""
   ## @extra cartoSecrets.gitbookApiToken GitBook API Token provided by CARTO
   gitbookApiToken:
     ## @param cartoSecrets.gitbookApiToken.value Value of the secret used by the app to connect to Gitbook. This couldn't be changed. One of `cartoSecrets.gitbookApiToken.value` or `cartoSecrets.gitbookApiToken.existingSecret` could be defined.

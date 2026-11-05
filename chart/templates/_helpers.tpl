@@ -994,10 +994,10 @@ Return the proper Docker Image Registry Secret Names
 {{- end -}}
 
 {{/*
-Return the CARTO service account key that pulls CARTO images: the dedicated pull value, else the default service account value
+Return the CARTO service account key that pulls CARTO images
 */}}
 {{- define "carto.imagePullCredential.key" -}}
-{{- coalesce (dig "imagePullServiceAccount" "value" "" .Values.cartoSecrets) .Values.cartoSecrets.defaultGoogleServiceAccount.value | default "" | trim -}}
+{{- .Values.cartoSecrets.defaultGoogleServiceAccount.value | default "" | trim -}}
 {{- end -}}
 
 {{/*
