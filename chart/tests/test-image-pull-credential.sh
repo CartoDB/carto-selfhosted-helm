@@ -38,10 +38,28 @@ render() { # render <case> <helm args...>: writes $WORK_DIR/<case>.rendered
   helm template carto . -n test "$@" > "$WORK_DIR/$name.rendered"
 }
 
-notes() { # notes <case> <helm args...>: writes the rendered NOTES to $WORK_DIR/<case>.notes
+# helm template skips NOTES.txt and helm install --dry-run needs a cluster, so a copy of
+# the chart renders NOTES.txt into a ConfigMap.
+NOTES_CHART="$WORK_DIR/notes-chart"
+cp -R "$CHART_DIR" "$NOTES_CHART"
+{
+  echo '{{- define "test.notes" -}}'
+  cat "$CHART_DIR/templates/NOTES.txt"
+  echo '{{- end -}}'
+  cat <<'YAML'
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: notes-under-test
+data:
+  notes: {{ include "test.notes" . | toJson }}
+YAML
+} > "$NOTES_CHART/templates/zz-notes-under-test.yaml"
+
+notes() { # notes <case> <helm args...>: writes the rendered NOTES ConfigMap to $WORK_DIR/<case>.notes
   local name="$1"
   shift
-  helm install carto . -n test --dry-run=client "$@" > "$WORK_DIR/$name.notes"
+  helm template carto "$NOTES_CHART" -n test --show-only templates/zz-notes-under-test.yaml "$@" > "$WORK_DIR/$name.notes"
 }
 
 render default-key -f "$WORK_DIR/default-key.yaml"
@@ -182,7 +200,7 @@ for d, pod in pod_specs(manual):
     check("carto-registry" in names and secret_name in names, f"manual-secret: {d['kind']}/{d['metadata']['name']} has {names}")
 
 def read_notes(case):
-    return open(f"{work}/{case}.notes").read()
+    return yaml.safe_load(open(f"{work}/{case}.notes"))["data"]["notes"]
 
 warning = "CARTO IMAGE PULL CREDENTIAL MISSING"
 check(warning in read_notes("no-key") and "customer package" in read_notes("no-key"), "no-key: NOTES does not ask for the customer package")
