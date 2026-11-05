@@ -55,6 +55,7 @@ render pull-key -f "$WORK_DIR/default-key.yaml" -f "$WORK_DIR/pull-key.yaml"
 render kots -f "$WORK_DIR/pull-key.yaml" --set replicated.enabled=true
 render existing-secret -f "$WORK_DIR/existing-secret.yaml"
 render manual-secret -f "$WORK_DIR/pull-key.yaml" --set 'global.imagePullSecrets[0]=carto-registry'
+render mirror -f "$WORK_DIR/pull-key.yaml" --set global.imageRegistry=registry.example.com/carto
 # Values from an older chart (helm upgrade --reuse-values) lack the new key.
 render pull-value-removed -f "$WORK_DIR/default-key.yaml" --set cartoSecrets.imagePullServiceAccount=null
 notes no-key
@@ -106,29 +107,42 @@ def troubleshoot_spec(documents, label_kind, key):
             return yaml.safe_load(d["stringData"][key])
     raise SystemExit(f"no {name} Secret rendered")
 
+PROBE = "registry-auth-check"
+PODS = ("tenant-requirements-check", PROBE)
+
 def collectors(spec):
-    out = {}
+    """Map each runPod by its collectorName, plus the registryImages collector and the analyzer check names."""
+    out = {"analyzers": [a.get(k, {}).get("checkName") for a in spec["spec"].get("analyzers", []) for k in a]}
     for c in spec["spec"]["collectors"]:
-        for kind in ("runPod", "registryImages"):
-            if kind in c:
-                out[kind] = c[kind]
+        if "runPod" in c:
+            out[c["runPod"]["collectorName"]] = c["runPod"]
+        if "registryImages" in c:
+            out["registryImages"] = c["registryImages"]
     return out
 
-def check_collectors(case, documents, credential):
+def check_collectors(case, documents, credential, probe=True):
     preflight = collectors(troubleshoot_spec(documents, "preflight", "preflight.yaml"))
     bundle = collectors(troubleshoot_spec(documents, "support-bundle", "support-bundle-spec"))
     for name, spec in (("preflight", preflight), ("support bundle", bundle)):
         check(spec["registryImages"].get("imagePullSecret") == {"name": "carto-registry"}, f"{case}: {name} registryImages imagePullSecret changed")
-    inline = preflight["runPod"].get("imagePullSecret")
-    bundle_pod_secrets = pull_secret_names(bundle["runPod"]["podSpec"])
-    if credential:
-        check(inline and "data" in inline and "name" not in inline, f"{case}: preflight runPod does not carry an unnamed inline credential: {inline}")
-        check(bundle["runPod"].get("imagePullSecret") is None, f"{case}: support bundle runPod has a collector imagePullSecret")
-        check(secret_name in bundle_pod_secrets, f"{case}: support bundle runPod pod does not list {secret_name}")
-        check(secret_name not in pull_secret_names(preflight["runPod"]["podSpec"]), f"{case}: preflight runPod pod lists {secret_name}")
-    else:
-        check(inline is None, f"{case}: preflight runPod has an imagePullSecret")
-        check(secret_name not in bundle_pod_secrets, f"{case}: support bundle runPod pod lists {secret_name}")
+        has_probe = PROBE in spec and "CARTO images registry authentication" in spec["analyzers"]
+        check(has_probe == probe, f"{case}: {name} registry authentication check present={has_probe}, want {probe}")
+    for pod in PODS:
+        if pod not in preflight:
+            continue
+        inline = preflight[pod].get("imagePullSecret")
+        bundle_pod_secrets = pull_secret_names(bundle[pod]["podSpec"])
+        if credential:
+            check(inline and "data" in inline and "name" not in inline, f"{case}: preflight {pod} does not carry an unnamed inline credential: {inline}")
+            check(bundle[pod].get("imagePullSecret") is None, f"{case}: support bundle {pod} has a collector imagePullSecret")
+            check(secret_name in bundle_pod_secrets, f"{case}: support bundle {pod} pod does not list {secret_name}")
+            check(secret_name not in pull_secret_names(preflight[pod]["podSpec"]), f"{case}: preflight {pod} pod lists {secret_name}")
+        else:
+            check(inline is None, f"{case}: preflight {pod} has an imagePullSecret")
+            check(secret_name not in bundle_pod_secrets, f"{case}: support bundle {pod} pod lists {secret_name}")
+    if probe:
+        image = preflight[PROBE]["podSpec"]["containers"][0]
+        check(image["image"].startswith("us-docker.pkg.dev/carto-onprem-artifacts/auth-check/") and image["imagePullPolicy"] == "Always", f"{case}: probe image is {image['image']} {image['imagePullPolicy']}")
 
 def expect_credential(case, key_id):
     documents = docs(case)
@@ -153,20 +167,25 @@ def expect_credential(case, key_id):
         check(secret_name in pull_secret_names(pod), f"{case}: {d['kind']}/{d['metadata']['name']} lacks {secret_name}")
     check_collectors(case, documents, credential=True)
 
-def expect_no_credential(case):
+def expect_no_credential(case, probe):
     documents = docs(case)
     check(chart_secret(documents) is None, f"{case}: {secret_name} Secret rendered")
     pods = list(pod_specs(documents))
     check(len(pods) >= 10, f"{case}: only {len(pods)} pods run a CARTO image; the selection is broken")
     for d, pod in pods:
         check(secret_name not in pull_secret_names(pod), f"{case}: {d['kind']}/{d['metadata']['name']} lists {secret_name}")
-    check_collectors(case, documents, credential=False)
+    check_collectors(case, documents, credential=False, probe=probe)
 
 expect_credential("default-key", "chart-test-default")
 expect_credential("pull-key", "chart-test-pull")
 expect_credential("pull-value-removed", "chart-test-default")
-expect_no_credential("kots")
-expect_no_credential("existing-secret")
+expect_no_credential("kots", probe=False)
+expect_no_credential("existing-secret", probe=True)
+
+# A mirror keeps the chart's Secret (it only covers the CARTO hosts) but skips the probe.
+mirror = docs("mirror")
+check(chart_secret(mirror) is not None, "mirror: no Secret rendered")
+check_collectors("mirror", mirror, credential=True, probe=False)
 
 manual = docs("manual-secret")
 for d, pod in pod_specs(manual):

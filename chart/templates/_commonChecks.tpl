@@ -18,11 +18,7 @@ Inside the define, use $ctx for the root context: $ is the dict on the preflight
       name: tenant-requirements-check
       namespace: {{ .Release.Namespace | quote }}
       {{- if and $inlinePullSecret (include "carto.imagePullCredential.enabled" .) }}
-      {{- /* Inline: the preflight runs before the chart's Secret exists. No name, so troubleshoot generates one per run. */}}
-      imagePullSecret:
-        type: kubernetes.io/dockerconfigjson
-        data:
-          .dockerconfigjson: {{ include "carto.imagePullCredential.dockerConfigJson" . | b64enc | quote }}
+      imagePullSecret: {{- include "carto.imagePullCredential.inlineCollectorSecret" . | nindent 8 }}
       {{- end }}
       {{/*
       The pod runs every validator sequentially and only emits results once the whole pass
@@ -298,6 +294,38 @@ Inside the define, use $ctx for the root context: $ is the dict on the preflight
             emptyDir:
               sizeLimit: 1Mi
           {{- end }}
+  {{- if (include "carto.registryAuthCheck.enabled" .) }}
+  {{- /* Always pulls, through the kubelet and the same credentials as the workloads, from a repository that already requires authentication. */}}
+  - runPod:
+      collectorName: registry-auth-check
+      name: registry-auth-check
+      namespace: {{ .Release.Namespace | quote }}
+      timeout: 120s
+      {{- if and $inlinePullSecret (include "carto.imagePullCredential.enabled" .) }}
+      imagePullSecret: {{- include "carto.imagePullCredential.inlineCollectorSecret" . | nindent 8 }}
+      {{- end }}
+      podSpec:
+        restartPolicy: Never
+        securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
+        {{- if $inlinePullSecret }}
+        {{- include "common.images.renderPullSecrets" (dict "images" (list) "context" .) | nindent 8 }}
+        {{- else }}
+        {{- include "carto.imagePullSecrets" . | nindent 8 }}
+        {{- end }}
+        containers:
+          - name: registry-auth-check
+            image: {{ include "carto.registryAuthCheck.image" . }}
+            imagePullPolicy: Always
+            securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
+            resources:
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                cpu: 100m
+                memory: 32Mi
+            command: ["echo", "registry-auth-ok"]
+  {{- end }}
   - registryImages:
       namespace: {{ .Release.Namespace | quote }}
       {{/*
@@ -452,6 +480,19 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
             message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
       {{- end }}  
   {{- end }}
+  {{- end }}
+  {{- if (include "carto.registryAuthCheck.enabled" .) }}
+  - textAnalyze:
+      checkName: CARTO images registry authentication
+      fileName: registry-auth-check/registry-auth-check.log
+      regex: registry-auth-ok
+      outcomes:
+        - pass:
+            when: "true"
+            message: This cluster pulls CARTO images with authentication.
+        - warn:
+            when: "false"
+            message: This cluster could not pull a CARTO image with authentication, which CARTO images will require. Check the image pull secret and the network access to us-docker.pkg.dev. See https://docs.carto.com/carto-self-hosted/configuration/security/authenticated-image-pulls
   {{- end }}
   {{/*
   Commented until replicated fixes this: https://github.com/replicated-collab/carto-replicated/issues/30
