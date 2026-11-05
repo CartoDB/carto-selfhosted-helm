@@ -1001,19 +1001,10 @@ Return the CARTO service account key that pulls CARTO images: the dedicated pull
 {{- end -}}
 
 {{/*
-Return "true" when the customer turned the chart's image pull Secret on. Read with dig: `helm upgrade --reuse-values` keeps the previous chart's defaults, which lack the key.
-*/}}
-{{- define "carto.imagePullCredential.wanted" -}}
-{{- if dig "imagePullCredentialEnabled" false .Values.appConfigValues -}}
-true
-{{- end -}}
-{{- end -}}
-
-{{/*
 Return "true" when the chart renders its own image pull Secret for the CARTO registry. KOTS installs pull through the Replicated proxy instead.
 */}}
 {{- define "carto.imagePullCredential.enabled" -}}
-{{- if and (not .Values.replicated.enabled) (include "carto.imagePullCredential.wanted" .) (include "carto.imagePullCredential.key" .) -}}
+{{- if and (not .Values.replicated.enabled) (include "carto.imagePullCredential.key" .) -}}
 true
 {{- end -}}
 {{- end -}}
@@ -1046,10 +1037,7 @@ Return a warning when a Helm install has no credential to pull the CARTO images,
 {{- end -}}
 {{- end -}}
 {{- if not (or .Values.replicated.enabled .Values.global.imageRegistry .Values.global.imagePullSecrets $perImagePullSecrets (include "carto.imagePullCredential.enabled" .)) -}}
-{{- if not (include "carto.imagePullCredential.wanted" .) -}}
-Set `appConfigValues.imagePullCredentialEnabled: true` to create the image pull secret from the CARTO service account
-in your customer package, or list your own image pull secrets in `global.imagePullSecrets`.
-{{- else if .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name -}}
+{{- if .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name -}}
 The CARTO service account is read from an existing Secret, which the chart cannot use to pull images.
 Create an image pull secret from it and list it in `global.imagePullSecrets`.
 {{- else -}}

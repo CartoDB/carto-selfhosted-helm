@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# Verify the chart's opt-in image pull credential across install shapes: the
-# hook Secret for both registry hostnames, its name on every pod, the
-# preflight's inline credential, the support bundle pod's pull secret, the
-# default and KOTS paths that render nothing, and the NOTES warnings.
+# Verify the chart's image pull credential across install shapes: the hook
+# Secret for both registry hostnames, its name on every pod, the preflight's
+# inline credential, the support bundle pod's pull secret, the KOTS and
+# existingSecret paths that render nothing, and the NOTES warnings.
 #
 # Prerequisites: helm, python3 with PyYAML. Run `helm dependency update chart`
 # first when charts/ is stale (CI does it once upfront).
@@ -50,21 +50,17 @@ notes() { # notes <case> <helm args...>: writes the rendered NOTES to $WORK_DIR/
   helm install carto . -n test --dry-run=client "$@" > "$WORK_DIR/$name.notes"
 }
 
-ON=(--set appConfigValues.imagePullCredentialEnabled=true)
-
-render default-key -f "$WORK_DIR/default-key.yaml" "${ON[@]}"
-render pull-key -f "$WORK_DIR/default-key.yaml" -f "$WORK_DIR/pull-key.yaml" "${ON[@]}"
-render kots -f "$WORK_DIR/pull-key.yaml" --set replicated.enabled=true "${ON[@]}"
-render not-enabled -f "$WORK_DIR/pull-key.yaml"
-render manual-secret -f "$WORK_DIR/pull-key.yaml" --set 'global.imagePullSecrets[0]=carto-registry' "${ON[@]}"
-# Values from an older chart (helm upgrade --reuse-values) lack the new keys.
-render pull-value-removed -f "$WORK_DIR/default-key.yaml" --set cartoSecrets.imagePullServiceAccount=null "${ON[@]}"
-render flag-removed -f "$WORK_DIR/pull-key.yaml" --set appConfigValues.imagePullCredentialEnabled=null
-notes no-key "${ON[@]}"
-notes existing-secret -f "$WORK_DIR/existing-secret.yaml" "${ON[@]}"
-notes not-enabled-notes -f "$WORK_DIR/pull-key.yaml"
-notes manual-secret-notes -f "$WORK_DIR/pull-key.yaml" --set 'global.imagePullSecrets[0]=carto-registry'
-notes pull-key-notes -f "$WORK_DIR/pull-key.yaml" "${ON[@]}"
+render default-key -f "$WORK_DIR/default-key.yaml"
+render pull-key -f "$WORK_DIR/default-key.yaml" -f "$WORK_DIR/pull-key.yaml"
+render kots -f "$WORK_DIR/pull-key.yaml" --set replicated.enabled=true
+render existing-secret -f "$WORK_DIR/existing-secret.yaml"
+render manual-secret -f "$WORK_DIR/pull-key.yaml" --set 'global.imagePullSecrets[0]=carto-registry'
+# Values from an older chart (helm upgrade --reuse-values) lack the new key.
+render pull-value-removed -f "$WORK_DIR/default-key.yaml" --set cartoSecrets.imagePullServiceAccount=null
+notes no-key
+notes existing-secret-notes -f "$WORK_DIR/existing-secret.yaml"
+notes manual-secret-notes --set 'global.imagePullSecrets[0]=carto-registry'
+notes pull-key-notes -f "$WORK_DIR/pull-key.yaml"
 
 python3 - "$WORK_DIR" <<'PY'
 import base64, json, sys, yaml
@@ -170,8 +166,7 @@ expect_credential("default-key", "chart-test-default")
 expect_credential("pull-key", "chart-test-pull")
 expect_credential("pull-value-removed", "chart-test-default")
 expect_no_credential("kots")
-expect_no_credential("not-enabled")
-expect_no_credential("flag-removed")
+expect_no_credential("existing-secret")
 
 manual = docs("manual-secret")
 for d, pod in pod_specs(manual):
@@ -181,12 +176,10 @@ for d, pod in pod_specs(manual):
 def read_notes(case):
     return open(f"{work}/{case}.notes").read()
 
-warning = "CARTO IMAGE PULL CREDENTIAL NOT SET"
+warning = "CARTO IMAGE PULL CREDENTIAL MISSING"
 check(warning in read_notes("no-key") and "customer package" in read_notes("no-key"), "no-key: NOTES does not ask for the customer package")
-existing = read_notes("existing-secret")
+existing = read_notes("existing-secret-notes")
 check(warning in existing and "global.imagePullSecrets" in existing, "existing-secret: NOTES does not ask for global.imagePullSecrets")
-not_enabled = read_notes("not-enabled-notes")
-check(warning in not_enabled and "imagePullCredentialEnabled: true" in not_enabled, "not-enabled: NOTES does not ask to turn the flag on")
 check(warning not in read_notes("manual-secret-notes"), "manual-secret: NOTES warns")
 check(warning not in read_notes("pull-key-notes"), "pull-key: NOTES warns")
 

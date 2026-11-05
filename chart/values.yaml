@@ -15,8 +15,6 @@ appConfigValues:
   aiFeaturesEnabled: false
   ## @param appConfigValues.publicEventsApiEnabled Enable the public events API
   publicEventsApiEnabled: false
-  ## @param appConfigValues.imagePullCredentialEnabled Create the image pull secret for the CARTO registry from the CARTO service account in your customer package. Set it to true before pulling CARTO images requires authentication.
-  imagePullCredentialEnabled: false
   disconnected:
     ## @param appConfigValues.disconnected.enabled Enable the self-hosted disconnected mode: deploys the internal authentication service (auth-api) and the in-cluster accounts stack, and switches every backend service to internal authentication
     enabled: false

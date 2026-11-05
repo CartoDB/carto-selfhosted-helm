@@ -7,7 +7,7 @@ APP VERSION: {{ .Chart.AppVersion }}
 {{- with (include "carto.imagePullCredential.missingWarning" .) }}
 
 +-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
-|      CARTO IMAGE PULL CREDENTIAL NOT SET         |
+|      CARTO IMAGE PULL CREDENTIAL MISSING         |
 +-++-++-+ +-++-++-+ +-++-++-++-++-++-++-++-++-++-+
 
 WARNING: pulling CARTO images will require authentication.
