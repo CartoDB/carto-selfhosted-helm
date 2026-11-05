@@ -1017,13 +1017,13 @@ Return the name of the chart's image pull Secret
 {{- end -}}
 
 {{/*
-Return the dockerconfigjson that authenticates both CARTO registry hostnames with the CARTO service account key.
-The hosts are fixed on purpose: a mirror set in global.imageRegistry must not receive the CARTO key, and uses its own pull secrets.
+Return the dockerconfigjson that authenticates the CARTO repositories on both registry hosts with the CARTO service account key.
+The keys carry the repository path: the kubelet matches images by prefix, so a mirror on the same host (global.imageRegistry) never gets this key.
 */}}
 {{- define "carto.imagePullCredential.dockerConfigJson" -}}
 {{- $key := include "carto.imagePullCredential.key" . -}}
 {{- $auth := dict "username" "_json_key" "password" $key "auth" (printf "_json_key:%s" $key | b64enc) -}}
-{{- dict "auths" (dict "us-docker.pkg.dev" $auth "gcr.io" $auth) | toJson -}}
+{{- dict "auths" (dict "us-docker.pkg.dev/carto-onprem-artifacts" $auth "gcr.io/carto-onprem-artifacts" $auth) | toJson -}}
 {{- end -}}
 
 {{/*

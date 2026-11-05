@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
 # Verify the chart's image pull credential across install shapes: the hook
-# Secret for both registry hostnames, its name on every pod, the preflight's
-# inline credential, the support bundle pod's pull secret, the KOTS and
-# existingSecret paths that render nothing, and the NOTES warnings.
+# Secret for the CARTO repositories on both registry hosts, its name on every
+# pod, the preflight's inline credential, the support bundle pod's pull secret,
+# the KOTS and existingSecret paths that render nothing, and the NOTES warnings.
 #
 # Prerequisites: helm, python3 with PyYAML. Run `helm dependency update chart`
 # first when charts/ is stale (CI does it once upfront).
@@ -66,7 +66,7 @@ render default-key -f "$WORK_DIR/default-key.yaml"
 render kots -f "$WORK_DIR/default-key.yaml" --set replicated.enabled=true
 render existing-secret -f "$WORK_DIR/existing-secret.yaml"
 render manual-secret -f "$WORK_DIR/default-key.yaml" --set 'global.imagePullSecrets[0]=carto-registry'
-render mirror -f "$WORK_DIR/default-key.yaml" --set global.imageRegistry=registry.example.com/carto
+render mirror -f "$WORK_DIR/default-key.yaml" --set global.imageRegistry=us-docker.pkg.dev/mirror-example
 notes no-key
 notes existing-secret-notes -f "$WORK_DIR/existing-secret.yaml"
 notes manual-secret-notes --set 'global.imagePullSecrets[0]=carto-registry'
@@ -86,19 +86,22 @@ def check(cond, msg):
 def docs(case):
     return [d for d in yaml.safe_load_all(open(f"{work}/{case}.rendered")) if d]
 
-def pod_specs(documents):
-    """Yield the pods that run a CARTO image (the bundled PostgreSQL pulls from Docker Hub)."""
+def all_pods(documents):
     for d in documents:
         kind = d.get("kind")
         spec = d.get("spec") or {}
         if kind in ("Deployment", "StatefulSet", "Job"):
-            pod = spec["template"]["spec"]
+            yield d, spec["template"]["spec"]
         elif kind == "CronJob":
-            pod = spec["jobTemplate"]["spec"]["template"]["spec"]
-        else:
-            continue
-        containers = (pod.get("containers") or []) + (pod.get("initContainers") or [])
-        if any("carto-onprem-artifacts" in c.get("image", "") for c in containers):
+            yield d, spec["jobTemplate"]["spec"]["template"]["spec"]
+
+def images(pod_spec):
+    return [c.get("image", "") for c in (pod_spec.get("containers") or []) + (pod_spec.get("initContainers") or [])]
+
+def pod_specs(documents):
+    """Yield the pods that run a CARTO image (the bundled PostgreSQL pulls from Docker Hub)."""
+    for d, pod in all_pods(documents):
+        if any("carto-onprem-artifacts" in image for image in images(pod)):
             yield d, pod
 
 def pull_secret_names(pod_spec):
@@ -107,6 +110,9 @@ def pull_secret_names(pod_spec):
 def chart_secret(documents):
     found = [d for d in documents if d.get("kind") == "Secret" and d["metadata"]["name"] == secret_name]
     return found[0] if found else None
+
+def auths(secret):
+    return json.loads(base64.b64decode(secret["data"][".dockerconfigjson"]))["auths"]
 
 def troubleshoot_spec(documents, label_kind, key):
     # By name: on KOTS the Replicated subchart renders its own Secret with the same label.
@@ -164,12 +170,12 @@ def expect_credential(case, key_id):
     check(int(ann.get("helm.sh/hook-weight", "0")) < -10, f"{case}: Secret hook weight does not run before the other hooks")
     check(ann.get("helm.sh/hook-delete-policy") == "before-hook-creation", f"{case}: wrong hook delete policy")
     check(secret["type"] == "kubernetes.io/dockerconfigjson", f"{case}: wrong Secret type")
-    config = json.loads(base64.b64decode(secret["data"][".dockerconfigjson"]))
-    check(sorted(config["auths"]) == ["gcr.io", "us-docker.pkg.dev"], f"{case}: auths hosts are {sorted(config['auths'])}")
-    for host, entry in config["auths"].items():
-        check(entry["username"] == "_json_key", f"{case}: {host} username")
-        check(json.loads(entry["password"])["private_key_id"] == key_id, f"{case}: {host} uses the wrong key")
-        check(base64.b64decode(entry["auth"]).decode() == "_json_key:" + entry["password"], f"{case}: {host} auth does not match")
+    config = auths(secret)
+    check(sorted(config) == ["gcr.io/carto-onprem-artifacts", "us-docker.pkg.dev/carto-onprem-artifacts"], f"{case}: auths keys are {sorted(config)}")
+    for key, entry in config.items():
+        check(entry["username"] == "_json_key", f"{case}: {key} username")
+        check(json.loads(entry["password"])["private_key_id"] == key_id, f"{case}: {key} uses the wrong key")
+        check(base64.b64decode(entry["auth"]).decode() == "_json_key:" + entry["password"], f"{case}: {key} auth does not match")
     pods = list(pod_specs(documents))
     check(len(pods) >= 10, f"{case}: only {len(pods)} pods run a CARTO image; the selection is broken")
     for d, pod in pods:
@@ -189,9 +195,14 @@ expect_credential("default-key", "chart-test-default")
 expect_no_credential("kots", probe=False)
 expect_no_credential("existing-secret", probe=True)
 
-# A mirror keeps the chart's Secret (it only covers the CARTO hosts) but skips the probe.
+# A mirror keeps the chart's Secret, whose keys match no mirror image even on a CARTO host, but skips the probe.
 mirror = docs("mirror")
-check(chart_secret(mirror) is not None, "mirror: no Secret rendered")
+mirror_secret = chart_secret(mirror)
+check(mirror_secret is not None, "mirror: no Secret rendered")
+mirror_images = [i for _, pod in all_pods(mirror) for i in images(pod) if i.startswith("us-docker.pkg.dev/mirror-example/")]
+check(len(mirror_images) >= 10, f"mirror: only {len(mirror_images)} images use the mirror; the selection is broken")
+if mirror_secret is not None:
+    check(not any(i.startswith(key + "/") for i in mirror_images for key in auths(mirror_secret)), "mirror: a credential key matches a mirror image")
 check_collectors("mirror", mirror, credential=True, probe=False)
 
 manual = docs("manual-secret")
