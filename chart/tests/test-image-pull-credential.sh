@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# Verify the chart's image pull credential across install shapes: the hook
-# Secret for both registry hostnames, its name on every pod, the preflight's
-# inline credential, the support bundle's reference by name, the KOTS and
-# opt-out paths that render nothing, and the NOTES warning when no key is set.
+# Verify the chart's opt-in image pull credential across install shapes: the
+# hook Secret for both registry hostnames, its name on every pod, the
+# preflight's inline credential, the support bundle pod's pull secret, the
+# default and KOTS paths that render nothing, and the NOTES warnings.
 #
 # Prerequisites: helm, python3 with PyYAML. Run `helm dependency update chart`
 # first when charts/ is stale (CI does it once upfront).
@@ -50,17 +50,21 @@ notes() { # notes <case> <helm args...>: writes the rendered NOTES to $WORK_DIR/
   helm install carto . -n test --dry-run=client "$@" > "$WORK_DIR/$name.notes"
 }
 
-render default-key -f "$WORK_DIR/default-key.yaml"
-render pull-key -f "$WORK_DIR/default-key.yaml" -f "$WORK_DIR/pull-key.yaml"
-render kots -f "$WORK_DIR/pull-key.yaml" --set replicated.enabled=true
-render opt-out -f "$WORK_DIR/pull-key.yaml" --set appConfigValues.imagePullCredentialEnabled=false
-render manual-secret -f "$WORK_DIR/pull-key.yaml" --set 'global.imagePullSecrets[0]=carto-registry'
+ON=(--set appConfigValues.imagePullCredentialEnabled=true)
+
+render default-key -f "$WORK_DIR/default-key.yaml" "${ON[@]}"
+render pull-key -f "$WORK_DIR/default-key.yaml" -f "$WORK_DIR/pull-key.yaml" "${ON[@]}"
+render kots -f "$WORK_DIR/pull-key.yaml" --set replicated.enabled=true "${ON[@]}"
+render not-enabled -f "$WORK_DIR/pull-key.yaml"
+render manual-secret -f "$WORK_DIR/pull-key.yaml" --set 'global.imagePullSecrets[0]=carto-registry' "${ON[@]}"
 # Values from an older chart (helm upgrade --reuse-values) lack the new keys.
-render pull-value-removed -f "$WORK_DIR/default-key.yaml" --set cartoSecrets.imagePullServiceAccount=null --set appConfigValues.imagePullCredentialEnabled=null
-notes no-key
-notes existing-secret -f "$WORK_DIR/existing-secret.yaml"
-notes opt-out-notes --set appConfigValues.imagePullCredentialEnabled=false
-notes pull-key-notes -f "$WORK_DIR/pull-key.yaml"
+render pull-value-removed -f "$WORK_DIR/default-key.yaml" --set cartoSecrets.imagePullServiceAccount=null "${ON[@]}"
+render flag-removed -f "$WORK_DIR/pull-key.yaml" --set appConfigValues.imagePullCredentialEnabled=null
+notes no-key "${ON[@]}"
+notes existing-secret -f "$WORK_DIR/existing-secret.yaml" "${ON[@]}"
+notes not-enabled-notes -f "$WORK_DIR/pull-key.yaml"
+notes manual-secret-notes -f "$WORK_DIR/pull-key.yaml" --set 'global.imagePullSecrets[0]=carto-registry'
+notes pull-key-notes -f "$WORK_DIR/pull-key.yaml" "${ON[@]}"
 
 python3 - "$WORK_DIR" <<'PY'
 import base64, json, sys, yaml
@@ -166,19 +170,25 @@ expect_credential("default-key", "chart-test-default")
 expect_credential("pull-key", "chart-test-pull")
 expect_credential("pull-value-removed", "chart-test-default")
 expect_no_credential("kots")
-expect_no_credential("opt-out")
+expect_no_credential("not-enabled")
+expect_no_credential("flag-removed")
 
 manual = docs("manual-secret")
 for d, pod in pod_specs(manual):
     names = pull_secret_names(pod)
     check("carto-registry" in names and secret_name in names, f"manual-secret: {d['kind']}/{d['metadata']['name']} has {names}")
 
-warning = "CARTO IMAGE PULL CREDENTIAL MISSING"
-check(warning in open(f"{work}/no-key.notes").read(), "no-key: NOTES has no warning")
-existing = open(f"{work}/existing-secret.notes").read()
+def read_notes(case):
+    return open(f"{work}/{case}.notes").read()
+
+warning = "CARTO IMAGE PULL CREDENTIAL NOT SET"
+check(warning in read_notes("no-key") and "customer package" in read_notes("no-key"), "no-key: NOTES does not ask for the customer package")
+existing = read_notes("existing-secret")
 check(warning in existing and "global.imagePullSecrets" in existing, "existing-secret: NOTES does not ask for global.imagePullSecrets")
-check(warning not in open(f"{work}/opt-out-notes.notes").read(), "opt-out: NOTES warns")
-check(warning not in open(f"{work}/pull-key-notes.notes").read(), "pull-key: NOTES warns")
+not_enabled = read_notes("not-enabled-notes")
+check(warning in not_enabled and "imagePullCredentialEnabled: true" in not_enabled, "not-enabled: NOTES does not ask to turn the flag on")
+check(warning not in read_notes("manual-secret-notes"), "manual-secret: NOTES warns")
+check(warning not in read_notes("pull-key-notes"), "pull-key: NOTES warns")
 
 if failures:
     print("\n".join("FAIL " + f for f in failures))
