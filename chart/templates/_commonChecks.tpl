@@ -18,7 +18,11 @@ Inside the define, use $ctx for the root context: $ is the dict on the preflight
       name: tenant-requirements-check
       namespace: {{ .Release.Namespace | quote }}
       {{- if and $inlinePullSecret (include "carto.imagePullCredential.enabled" .) }}
-      imagePullSecret: {{- include "carto.imagePullCredential.collectorSecret" . | nindent 8 }}
+      {{- /* Inline: the preflight runs before the chart's Secret exists. No name, so troubleshoot generates one per run. */}}
+      imagePullSecret:
+        type: kubernetes.io/dockerconfigjson
+        data:
+          .dockerconfigjson: {{ include "carto.imagePullCredential.dockerConfigJson" . | b64enc | quote }}
       {{- end }}
       {{/*
       The pod runs every validator sequentially and only emits results once the whole pass

@@ -1036,16 +1036,6 @@ The hosts are fixed on purpose: a mirror set in global.imageRegistry must not re
 {{- end -}}
 
 {{/*
-Return the inline imagePullSecret of a troubleshoot runPod collector, for the preflight, which runs before the chart's Secret exists.
-No name: troubleshoot then generates one, so a Secret left by an interrupted run never blocks the next.
-*/}}
-{{- define "carto.imagePullCredential.collectorSecret" -}}
-type: kubernetes.io/dockerconfigjson
-data:
-  .dockerconfigjson: {{ include "carto.imagePullCredential.dockerConfigJson" . | b64enc | quote }}
-{{- end -}}
-
-{{/*
 Return a warning when a Helm install has no credential to pull the CARTO images, or nothing when it has one or pulls another way
 */}}
 {{- define "carto.imagePullCredential.missingWarning" -}}
