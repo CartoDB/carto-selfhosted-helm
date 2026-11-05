@@ -3,6 +3,7 @@
 {{/*
 Return common collectors for preflights and support-bundle.
 Pass the root context, or (dict "context" $ "inlinePullSecret" true) from the preflight to carry the image pull credential inline.
+Inside the define, use $ctx for the root context: $ is the dict on the preflight path.
 */}}
 {{- define "carto.replicated.commonChecks.collectors" }}
 {{- $ctx := . }}
@@ -16,8 +17,8 @@ Pass the root context, or (dict "context" $ "inlinePullSecret" true) from the pr
       collectorName: tenant-requirements-check
       name: tenant-requirements-check
       namespace: {{ .Release.Namespace | quote }}
-      {{- if (include "carto.imagePullCredential.enabled" .) }}
-      imagePullSecret: {{- include "carto.imagePullCredential.collectorSecret" (dict "context" . "inline" $inlinePullSecret) | nindent 8 }}
+      {{- if and $inlinePullSecret (include "carto.imagePullCredential.enabled" .) }}
+      imagePullSecret: {{- include "carto.imagePullCredential.collectorSecret" . | nindent 8 }}
       {{- end }}
       {{/*
       The pod runs every validator sequentially and only emits results once the whole pass
@@ -28,6 +29,10 @@ Pass the root context, or (dict "context" $ "inlinePullSecret" true) from the pr
       podSpec:
         {{- if include "carto.podIdentity.enabled" . }}
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
+        {{- end }}
+        {{- /* troubleshoot ignores a runPod imagePullSecret without data, so the installed Secret goes on the pod. */}}
+        {{- if and (not $inlinePullSecret) (include "carto.imagePullCredential.enabled" .) }}
+        {{- include "carto.imagePullSecrets" . | nindent 8 }}
         {{- end }}
         restartPolicy: Never
         securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
@@ -292,15 +297,11 @@ Pass the root context, or (dict "context" $ "inlinePullSecret" true) from the pr
   - registryImages:
       namespace: {{ .Release.Namespace | quote }}
       {{/*
-        The registryImages collector takes a single imagePullSecret: the chart's credential when it renders one,
-        otherwise carto-registry, the name KOTS and the manual pull secret steps use.
+        We cannot use the imagePullSecrets template that we have because the registryImages collector needs a single imagePullSecret.
+        As we just include the preflights if using Replicated the carto-registry secret should be present always!
       */}}
-      {{- if (include "carto.imagePullCredential.enabled" .) }}
-      imagePullSecret: {{- include "carto.imagePullCredential.collectorSecret" (dict "context" . "inline" $inlinePullSecret) | nindent 8 }}
-      {{- else }}
       imagePullSecret:
         name: carto-registry
-      {{- end }}
       images:
         - {{ template "carto.accountsWww.image" . }}
         - {{ template "carto.cdnInvalidatorSub.image" . }}

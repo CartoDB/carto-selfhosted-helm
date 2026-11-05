@@ -55,6 +55,8 @@ render pull-key -f "$WORK_DIR/default-key.yaml" -f "$WORK_DIR/pull-key.yaml"
 render kots -f "$WORK_DIR/pull-key.yaml" --set replicated.enabled=true
 render opt-out -f "$WORK_DIR/pull-key.yaml" --set appConfigValues.imagePullCredentialEnabled=false
 render manual-secret -f "$WORK_DIR/pull-key.yaml" --set 'global.imagePullSecrets[0]=carto-registry'
+# Values from an older chart (helm upgrade --reuse-values) lack the new keys.
+render pull-value-removed -f "$WORK_DIR/default-key.yaml" --set cartoSecrets.imagePullServiceAccount=null --set appConfigValues.imagePullCredentialEnabled=null
 notes no-key
 notes existing-secret -f "$WORK_DIR/existing-secret.yaml"
 notes opt-out-notes --set appConfigValues.imagePullCredentialEnabled=false
@@ -97,18 +99,36 @@ def chart_secret(documents):
     return found[0] if found else None
 
 def troubleshoot_spec(documents, label_kind, key):
+    # By name: on KOTS the Replicated subchart renders its own Secret with the same label.
+    name = {"preflight": "carto-preflight-config", "support-bundle": "carto-support-bundle"}[label_kind]
     for d in documents:
-        if d.get("kind") == "Secret" and d["metadata"].get("labels", {}).get("troubleshoot.sh/kind") == label_kind:
+        if d.get("kind") == "Secret" and d["metadata"]["name"] == name:
             return yaml.safe_load(d["stringData"][key])
-    raise SystemExit(f"no troubleshoot {label_kind} Secret rendered")
+    raise SystemExit(f"no {name} Secret rendered")
 
-def collector_secrets(spec):
+def collectors(spec):
     out = {}
     for c in spec["spec"]["collectors"]:
         for kind in ("runPod", "registryImages"):
             if kind in c:
-                out[kind] = c[kind].get("imagePullSecret")
+                out[kind] = c[kind]
     return out
+
+def check_collectors(case, documents, credential):
+    preflight = collectors(troubleshoot_spec(documents, "preflight", "preflight.yaml"))
+    bundle = collectors(troubleshoot_spec(documents, "support-bundle", "support-bundle-spec"))
+    for name, spec in (("preflight", preflight), ("support bundle", bundle)):
+        check(spec["registryImages"].get("imagePullSecret") == {"name": "carto-registry"}, f"{case}: {name} registryImages imagePullSecret changed")
+    inline = preflight["runPod"].get("imagePullSecret")
+    bundle_pod_secrets = pull_secret_names(bundle["runPod"]["podSpec"])
+    if credential:
+        check(inline and "data" in inline and "name" not in inline, f"{case}: preflight runPod does not carry an unnamed inline credential: {inline}")
+        check(bundle["runPod"].get("imagePullSecret") is None, f"{case}: support bundle runPod has a collector imagePullSecret")
+        check(secret_name in bundle_pod_secrets, f"{case}: support bundle runPod pod does not list {secret_name}")
+        check(secret_name not in pull_secret_names(preflight["runPod"]["podSpec"]), f"{case}: preflight runPod pod lists {secret_name}")
+    else:
+        check(inline is None, f"{case}: preflight runPod has an imagePullSecret")
+        check(secret_name not in bundle_pod_secrets, f"{case}: support bundle runPod pod lists {secret_name}")
 
 def expect_credential(case, key_id):
     documents = docs(case)
@@ -127,28 +147,26 @@ def expect_credential(case, key_id):
         check(entry["username"] == "_json_key", f"{case}: {host} username")
         check(json.loads(entry["password"])["private_key_id"] == key_id, f"{case}: {host} uses the wrong key")
         check(base64.b64decode(entry["auth"]).decode() == "_json_key:" + entry["password"], f"{case}: {host} auth does not match")
-    for d, pod in pod_specs(documents):
+    pods = list(pod_specs(documents))
+    check(len(pods) >= 10, f"{case}: only {len(pods)} pods run a CARTO image; the selection is broken")
+    for d, pod in pods:
         check(secret_name in pull_secret_names(pod), f"{case}: {d['kind']}/{d['metadata']['name']} lacks {secret_name}")
-    preflight = collector_secrets(troubleshoot_spec(documents, "preflight", "preflight.yaml"))
-    for kind, ips in preflight.items():
-        check(ips and "data" in ips and ips["name"] != secret_name, f"{case}: preflight {kind} does not carry the credential inline")
-    bundle = collector_secrets(troubleshoot_spec(documents, "support-bundle", "support-bundle-spec"))
-    for kind, ips in bundle.items():
-        check(ips == {"name": secret_name}, f"{case}: support bundle {kind} imagePullSecret is {ips}")
+    check_collectors(case, documents, credential=True)
 
-def expect_no_credential(case, registry_secret):
+def expect_no_credential(case):
     documents = docs(case)
     check(chart_secret(documents) is None, f"{case}: {secret_name} Secret rendered")
-    for d, pod in pod_specs(documents):
+    pods = list(pod_specs(documents))
+    check(len(pods) >= 10, f"{case}: only {len(pods)} pods run a CARTO image; the selection is broken")
+    for d, pod in pods:
         check(secret_name not in pull_secret_names(pod), f"{case}: {d['kind']}/{d['metadata']['name']} lists {secret_name}")
-    preflight = collector_secrets(troubleshoot_spec(documents, "preflight", "preflight.yaml"))
-    check(preflight.get("registryImages") == {"name": registry_secret}, f"{case}: preflight registryImages is {preflight.get('registryImages')}")
-    check(preflight.get("runPod") is None, f"{case}: preflight runPod has an imagePullSecret")
+    check_collectors(case, documents, credential=False)
 
 expect_credential("default-key", "chart-test-default")
 expect_credential("pull-key", "chart-test-pull")
-expect_no_credential("kots", "carto-registry")
-expect_no_credential("opt-out", "carto-registry")
+expect_credential("pull-value-removed", "chart-test-default")
+expect_no_credential("kots")
+expect_no_credential("opt-out")
 
 manual = docs("manual-secret")
 for d, pod in pod_specs(manual):

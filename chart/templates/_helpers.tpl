@@ -997,14 +997,23 @@ Return the proper Docker Image Registry Secret Names
 Return the CARTO service account key that pulls CARTO images: the dedicated pull value, else the default service account value
 */}}
 {{- define "carto.imagePullCredential.key" -}}
-{{- coalesce .Values.cartoSecrets.imagePullServiceAccount.value .Values.cartoSecrets.defaultGoogleServiceAccount.value | default "" | trim -}}
+{{- coalesce (dig "imagePullServiceAccount" "value" "" .Values.cartoSecrets) .Values.cartoSecrets.defaultGoogleServiceAccount.value | default "" | trim -}}
+{{- end -}}
+
+{{/*
+Return "true" unless the customer turned the chart's image pull Secret off. Read with dig: `helm upgrade --reuse-values` keeps the previous chart's defaults, which lack the key.
+*/}}
+{{- define "carto.imagePullCredential.wanted" -}}
+{{- if dig "imagePullCredentialEnabled" true .Values.appConfigValues -}}
+true
+{{- end -}}
 {{- end -}}
 
 {{/*
 Return "true" when the chart renders its own image pull Secret for the CARTO registry. KOTS installs pull through the Replicated proxy instead.
 */}}
 {{- define "carto.imagePullCredential.enabled" -}}
-{{- if and (not .Values.replicated.enabled) .Values.appConfigValues.imagePullCredentialEnabled (include "carto.imagePullCredential.key" .) -}}
+{{- if and (not .Values.replicated.enabled) (include "carto.imagePullCredential.wanted" .) (include "carto.imagePullCredential.key" .) -}}
 true
 {{- end -}}
 {{- end -}}
@@ -1027,18 +1036,13 @@ The hosts are fixed on purpose: a mirror set in global.imageRegistry must not re
 {{- end -}}
 
 {{/*
-Return the imagePullSecret fields of a troubleshoot collector: the credential inline for the preflight, which runs before the chart's Secret exists, or the installed Secret by name.
-Usage: {{ include "carto.imagePullCredential.collectorSecret" (dict "context" $ "inline" true) }}
+Return the inline imagePullSecret of a troubleshoot runPod collector, for the preflight, which runs before the chart's Secret exists.
+No name: troubleshoot then generates one, so a Secret left by an interrupted run never blocks the next.
 */}}
 {{- define "carto.imagePullCredential.collectorSecret" -}}
-{{- if .inline -}}
-name: {{ include "carto.imagePullCredential.secretName" .context }}-preflight
 type: kubernetes.io/dockerconfigjson
 data:
-  .dockerconfigjson: {{ include "carto.imagePullCredential.dockerConfigJson" .context | b64enc | quote }}
-{{- else -}}
-name: {{ include "carto.imagePullCredential.secretName" .context }}
-{{- end -}}
+  .dockerconfigjson: {{ include "carto.imagePullCredential.dockerConfigJson" . | b64enc | quote }}
 {{- end -}}
 
 {{/*
@@ -1051,7 +1055,7 @@ Return a warning when a Helm install has no credential to pull the CARTO images,
 {{- $perImagePullSecrets = true -}}
 {{- end -}}
 {{- end -}}
-{{- if not (or .Values.replicated.enabled (not .Values.appConfigValues.imagePullCredentialEnabled) .Values.global.imageRegistry .Values.global.imagePullSecrets $perImagePullSecrets (include "carto.imagePullCredential.enabled" .)) -}}
+{{- if not (or .Values.replicated.enabled (not (include "carto.imagePullCredential.wanted" .)) .Values.global.imageRegistry .Values.global.imagePullSecrets $perImagePullSecrets (include "carto.imagePullCredential.enabled" .)) -}}
 {{- if .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name -}}
 The CARTO service account is read from an existing Secret, which the chart cannot use to pull images.
 Create an image pull secret from it and list it in `global.imagePullSecrets`.
