@@ -2,22 +2,14 @@
 
 {{/*
 Return common collectors for preflights and support-bundle.
-Pass the root context, or (dict "context" $ "inlinePullSecret" true) from the preflight to carry the image pull credential inline.
-Inside the define, use $ctx for the root context: $ is the dict on the preflight path.
+Pass the root context, or (merge (dict "inlinePullSecret" true) .) from the preflight to carry the image pull credential inline.
 */}}
 {{- define "carto.replicated.commonChecks.collectors" }}
-{{- $ctx := . }}
-{{- $inlinePullSecret := false }}
-{{- if .inlinePullSecret }}
-{{- $ctx = .context }}
-{{- $inlinePullSecret = true }}
-{{- end }}
-{{- with $ctx }}
   - runPod:
       collectorName: tenant-requirements-check
       name: tenant-requirements-check
       namespace: {{ .Release.Namespace | quote }}
-      {{- if and $inlinePullSecret (include "carto.imagePullCredential.enabled" .) }}
+      {{- if and .inlinePullSecret (include "carto.imagePullCredential.enabled" .) }}
       imagePullSecret: {{- include "carto.imagePullCredential.inlineCollectorSecret" . | nindent 8 }}
       {{- end }}
       {{/*
@@ -30,10 +22,12 @@ Inside the define, use $ctx for the root context: $ is the dict on the preflight
         {{- if include "carto.podIdentity.enabled" . }}
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
         {{- end }}
+        {{- $pullSecretImages := list .Values.tenantRequirementsChecker.image }}
         {{- /* troubleshoot ignores a runPod imagePullSecret without data, so the installed Secret goes on the pod. */}}
-        {{- if and (not $inlinePullSecret) (include "carto.imagePullCredential.enabled" .) }}
-        {{- include "carto.imagePullSecrets" . | nindent 8 }}
+        {{- if and (not .inlinePullSecret) (include "carto.imagePullCredential.enabled" .) }}
+        {{- $pullSecretImages = append $pullSecretImages (dict "pullSecrets" (list (include "carto.imagePullCredential.secretName" .))) }}
         {{- end }}
+        {{- with (include "common.images.renderPullSecrets" (dict "images" $pullSecretImages "context" $)) }}{{ . | nindent 8 }}{{- end }}
         restartPolicy: Never
         securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
         initContainers:
@@ -211,7 +205,7 @@ Inside the define, use $ctx for the root context: $ is the dict on the preflight
               - name: CARTO_SELFHOSTED_DISCONNECTED_ENABLED
                 value: "true"
               {{- end }}
-              {{- with (include "carto.nats.clientEnv" (dict "context" $ctx "optional" true)) }}{{ . | nindent 14 }}{{- end }}
+              {{- with (include "carto.nats.clientEnv" (dict "context" $ "optional" true)) }}{{ . | nindent 14 }}{{- end }}
               - name: PUBSUB_PROJECT_ID
                 value: {{ .Values.cartoConfigValues.selfHostedGcpProjectId | quote }}
               - name: PUBSUB_CUSTOM_DOMAIN
@@ -294,38 +288,6 @@ Inside the define, use $ctx for the root context: $ is the dict on the preflight
             emptyDir:
               sizeLimit: 1Mi
           {{- end }}
-  {{- if (include "carto.registryAuthCheck.enabled" .) }}
-  {{- /* Always pulls, through the kubelet and the same credentials as the workloads, from a repository that already requires authentication. */}}
-  - runPod:
-      collectorName: registry-auth-check
-      name: registry-auth-check
-      namespace: {{ .Release.Namespace | quote }}
-      timeout: 120s
-      {{- if and $inlinePullSecret (include "carto.imagePullCredential.enabled" .) }}
-      imagePullSecret: {{- include "carto.imagePullCredential.inlineCollectorSecret" . | nindent 8 }}
-      {{- end }}
-      podSpec:
-        restartPolicy: Never
-        securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
-        {{- if $inlinePullSecret }}
-        {{- include "common.images.renderPullSecrets" (dict "images" (list) "context" .) | nindent 8 }}
-        {{- else }}
-        {{- include "carto.imagePullSecrets" . | nindent 8 }}
-        {{- end }}
-        containers:
-          - name: registry-auth-check
-            image: {{ include "carto.registryAuthCheck.image" . }}
-            imagePullPolicy: Always
-            securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
-            resources:
-              requests:
-                cpu: 10m
-                memory: 16Mi
-              limits:
-                cpu: 100m
-                memory: 32Mi
-            command: ["echo", "registry-auth-ok"]
-  {{- end }}
   - registryImages:
       namespace: {{ .Release.Namespace | quote }}
       {{/*
@@ -358,7 +320,6 @@ Inside the define, use $ctx for the root context: $ is the dict on the preflight
         - {{ template "carto.accountsMigrations.image" . }}
         - {{ template "carto.nats.image" . }}
         {{- end }}
-{{- end }}
 {{- end -}}
 
 {{/*
@@ -480,19 +441,6 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
             message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
       {{- end }}  
   {{- end }}
-  {{- end }}
-  {{- if (include "carto.registryAuthCheck.enabled" .) }}
-  - textAnalyze:
-      checkName: CARTO images registry authentication
-      fileName: registry-auth-check/registry-auth-check.log
-      regex: registry-auth-ok
-      outcomes:
-        - pass:
-            when: "true"
-            message: This cluster pulls CARTO images with authentication.
-        - warn:
-            when: "false"
-            message: This cluster could not pull a CARTO image with authentication, which CARTO images will require. Check the image pull secret and the network access to us-docker.pkg.dev. See https://docs.carto.com/carto-self-hosted/configuration/security/authenticated-image-pulls
   {{- end }}
   {{/*
   Commented until replicated fixes this: https://github.com/replicated-collab/carto-replicated/issues/30

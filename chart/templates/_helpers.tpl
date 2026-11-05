@@ -1053,24 +1053,6 @@ data:
 {{- end -}}
 
 {{/*
-Return "true" when the preflight checks that the cluster pulls CARTO images with authentication.
-Skipped on KOTS (Replicated proxy), with a mirror (global.imageRegistry) and on disconnected installs, which reach no internet endpoint.
-*/}}
-{{- define "carto.registryAuthCheck.enabled" -}}
-{{- if not (or .Values.replicated.enabled .Values.global.imageRegistry (include "carto.disconnected.enabled" .)) -}}
-true
-{{- end -}}
-{{- end -}}
-
-{{/*
-Return the probe image of the registry authentication check. It lives in a CARTO repository that already requires
-authentication, so pulling it shows whether the cluster can pull CARTO images once they require it.
-*/}}
-{{- define "carto.registryAuthCheck.image" -}}
-us-docker.pkg.dev/carto-onprem-artifacts/auth-check/pull-probe:1
-{{- end -}}
-
-{{/*
 Return a warning when a Helm install has no credential to pull the CARTO images, or nothing when it has one or pulls another way
 */}}
 {{- define "carto.imagePullCredential.missingWarning" -}}
