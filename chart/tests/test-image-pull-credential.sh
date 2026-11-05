@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 #
-# Verify the chart's image pull credential across install shapes: the hook
-# Secret for the CARTO repositories on both registry hosts, its name on every
-# pod, the preflight's inline credential, the support bundle pod's pull secret,
-# the KOTS and existingSecret paths that render nothing, and the NOTES warnings.
+# Verify the chart's image pull credential across install shapes: the Secret
+# for the CARTO repositories on both registry hosts and its hook copy, their
+# names on every pod, the preflight's inline credential, the support bundle
+# pod's pull secret, the KOTS and existingSecret paths that render nothing,
+# and the NOTES warnings.
 #
 # Prerequisites: helm, python3 with PyYAML. Run `helm dependency update chart`
 # first when charts/ is stale (CI does it once upfront).
@@ -63,6 +64,8 @@ notes() { # notes <case> <helm args...>: writes the rendered NOTES ConfigMap to 
 }
 
 render default-key -f "$WORK_DIR/default-key.yaml"
+# The aiProxy migration Job is the other hook that pulls a CARTO image; it needs an external database.
+render ai-hook -f "$WORK_DIR/default-key.yaml" --set appConfigValues.aiFeaturesEnabled=true --set internalPostgresql.enabled=false --set externalPostgresql.host=db.example.com --set externalPostgresql.password=x
 render kots -f "$WORK_DIR/default-key.yaml" --set replicated.enabled=true
 render existing-secret -f "$WORK_DIR/existing-secret.yaml"
 render manual-secret -f "$WORK_DIR/default-key.yaml" --set 'global.imagePullSecrets[0]=carto-registry'
@@ -77,6 +80,7 @@ import base64, json, sys, yaml
 
 work = sys.argv[1]
 secret_name = "carto-image-pull"
+hook_secret_name = "carto-image-pull-hook"
 failures = []
 
 def check(cond, msg):
@@ -107,8 +111,15 @@ def pod_specs(documents):
 def pull_secret_names(pod_spec):
     return [s["name"] for s in pod_spec.get("imagePullSecrets") or []]
 
-def chart_secret(documents):
-    found = [d for d in documents if d.get("kind") == "Secret" and d["metadata"]["name"] == secret_name]
+def hook_annotations(d):
+    return {k: v for k, v in (d["metadata"].get("annotations") or {}).items() if k.startswith("helm.sh/hook")}
+
+def credential_name(d):
+    """The chart Secret a pod pulls with: hooks run before the release Secret exists."""
+    return hook_secret_name if hook_annotations(d) else secret_name
+
+def chart_secret(documents, name=secret_name):
+    found = [d for d in documents if d.get("kind") == "Secret" and d["metadata"]["name"] == name]
     return found[0] if found else None
 
 def auths(secret):
@@ -150,11 +161,11 @@ def check_collectors(case, documents, credential, probe=True):
         if credential:
             check(inline and "data" in inline and "name" not in inline, f"{case}: preflight {pod} does not carry an unnamed inline credential: {inline}")
             check(bundle[pod].get("imagePullSecret") is None, f"{case}: support bundle {pod} has a collector imagePullSecret")
-            check(secret_name in bundle_pod_secrets, f"{case}: support bundle {pod} pod does not list {secret_name}")
-            check(secret_name not in pull_secret_names(preflight[pod]["podSpec"]), f"{case}: preflight {pod} pod lists {secret_name}")
+            check(secret_name in bundle_pod_secrets and hook_secret_name not in bundle_pod_secrets, f"{case}: support bundle {pod} pod lists {bundle_pod_secrets}")
+            check(not set(pull_secret_names(preflight[pod]["podSpec"])) & {secret_name, hook_secret_name}, f"{case}: preflight {pod} pod lists a chart Secret")
         else:
             check(inline is None, f"{case}: preflight {pod} has an imagePullSecret")
-            check(secret_name not in bundle_pod_secrets, f"{case}: support bundle {pod} pod lists {secret_name}")
+            check(not set(bundle_pod_secrets) & {secret_name, hook_secret_name}, f"{case}: support bundle {pod} pod lists {bundle_pod_secrets}")
     if probe:
         image = preflight[PROBE]["podSpec"]["containers"][0]
         check(image["image"].startswith("us-docker.pkg.dev/carto-onprem-artifacts/auth-check/") and image["imagePullPolicy"] == "Always", f"{case}: probe image is {image['image']} {image['imagePullPolicy']}")
@@ -162,14 +173,17 @@ def check_collectors(case, documents, credential, probe=True):
 def expect_credential(case, key_id):
     documents = docs(case)
     secret = chart_secret(documents)
+    hook_secret = chart_secret(documents, hook_secret_name)
     check(secret is not None, f"{case}: no {secret_name} Secret")
-    if secret is None:
+    check(hook_secret is not None, f"{case}: no {hook_secret_name} Secret")
+    if secret is None or hook_secret is None:
         return
-    ann = secret["metadata"].get("annotations", {})
-    check(ann.get("helm.sh/hook") == "pre-install,pre-upgrade", f"{case}: Secret is not a pre-install/pre-upgrade hook")
-    check(int(ann.get("helm.sh/hook-weight", "0")) < -10, f"{case}: Secret hook weight does not run before the other hooks")
-    check(ann.get("helm.sh/hook-delete-policy") == "before-hook-creation", f"{case}: wrong hook delete policy")
+    check(not hook_annotations(secret), f"{case}: {secret_name} is a hook: {hook_annotations(secret)}")
     check(secret["type"] == "kubernetes.io/dockerconfigjson", f"{case}: wrong Secret type")
+    check(hook_secret["type"] == secret["type"] and hook_secret["data"] == secret["data"], f"{case}: {hook_secret_name} differs from {secret_name}")
+    ann = hook_annotations(hook_secret)
+    check(ann.get("helm.sh/hook") == "pre-install,pre-upgrade", f"{case}: {hook_secret_name} is not a pre-install/pre-upgrade hook")
+    check(ann.get("helm.sh/hook-delete-policy") == "hook-succeeded,before-hook-creation,hook-failed", f"{case}: {hook_secret_name} delete policy is {ann.get('helm.sh/hook-delete-policy')}")
     config = auths(secret)
     check(sorted(config) == ["gcr.io/carto-onprem-artifacts", "us-docker.pkg.dev/carto-onprem-artifacts"], f"{case}: auths keys are {sorted(config)}")
     for key, entry in config.items():
@@ -177,21 +191,27 @@ def expect_credential(case, key_id):
         check(json.loads(entry["password"])["private_key_id"] == key_id, f"{case}: {key} uses the wrong key")
         check(base64.b64decode(entry["auth"]).decode() == "_json_key:" + entry["password"], f"{case}: {key} auth does not match")
     pods = list(pod_specs(documents))
-    check(len(pods) >= 10, f"{case}: only {len(pods)} pods run a CARTO image; the selection is broken")
+    hook_pods = [d for d, _ in pods if hook_annotations(d)]
+    check(len(pods) >= 10 and hook_pods, f"{case}: {len(pods)} pods run a CARTO image, {len(hook_pods)} of them hooks; the selection is broken")
+    for d in hook_pods:
+        check(int(ann["helm.sh/hook-weight"]) < int(hook_annotations(d)["helm.sh/hook-weight"]), f"{case}: {hook_secret_name} does not run before {d['kind']}/{d['metadata']['name']}")
     for d, pod in pods:
-        check(secret_name in pull_secret_names(pod), f"{case}: {d['kind']}/{d['metadata']['name']} lacks {secret_name}")
+        names = pull_secret_names(pod)
+        check(credential_name(d) in names and len(set(names) & {secret_name, hook_secret_name}) == 1, f"{case}: {d['kind']}/{d['metadata']['name']} has {names}")
     check_collectors(case, documents, credential=True)
 
 def expect_no_credential(case, probe):
     documents = docs(case)
-    check(chart_secret(documents) is None, f"{case}: {secret_name} Secret rendered")
+    for name in (secret_name, hook_secret_name):
+        check(chart_secret(documents, name) is None, f"{case}: {name} Secret rendered")
     pods = list(pod_specs(documents))
     check(len(pods) >= 10, f"{case}: only {len(pods)} pods run a CARTO image; the selection is broken")
     for d, pod in pods:
-        check(secret_name not in pull_secret_names(pod), f"{case}: {d['kind']}/{d['metadata']['name']} lists {secret_name}")
+        check(not set(pull_secret_names(pod)) & {secret_name, hook_secret_name}, f"{case}: {d['kind']}/{d['metadata']['name']} lists a chart Secret")
     check_collectors(case, documents, credential=False, probe=probe)
 
 expect_credential("default-key", "chart-test-default")
+expect_credential("ai-hook", "chart-test-default")
 expect_no_credential("kots", probe=False)
 expect_no_credential("existing-secret", probe=True)
 
@@ -208,7 +228,7 @@ check_collectors("mirror", mirror, credential=True, probe=False)
 manual = docs("manual-secret")
 for d, pod in pod_specs(manual):
     names = pull_secret_names(pod)
-    check("carto-registry" in names and secret_name in names, f"manual-secret: {d['kind']}/{d['metadata']['name']} has {names}")
+    check("carto-registry" in names and credential_name(d) in names, f"manual-secret: {d['kind']}/{d['metadata']['name']} has {names}")
 
 def read_notes(case):
     return yaml.safe_load(open(f"{work}/{case}.notes"))["data"]["notes"]

@@ -983,14 +983,23 @@ Return the proper Carto tenant-requirements-checker image name
 {{- end -}}
 
 {{/*
-Return the proper Docker Image Registry Secret Names
+Return the proper Docker Image Registry Secret Names.
+Pass the root context, or (dict "context" $ "hook" true) from a pre-install or pre-upgrade hook, which runs before the chart's image pull Secret exists.
 */}}
 {{- define "carto.imagePullSecrets" -}}
+{{- $ctx := . -}}
+{{- $credential := "carto.imagePullCredential.secretName" -}}
+{{- if .hook -}}
+{{- $ctx = .context -}}
+{{- $credential = "carto.imagePullCredential.hookSecretName" -}}
+{{- end -}}
+{{- with $ctx -}}
 {{- $images := list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.nats.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authMigrations.image .Values.accountsApi.image .Values.accountsSubscriber.image .Values.accountsMigrations.image -}}
 {{- if (include "carto.imagePullCredential.enabled" .) -}}
-{{- $images = append $images (dict "pullSecrets" (list (include "carto.imagePullCredential.secretName" .))) -}}
+{{- $images = append $images (dict "pullSecrets" (list (include $credential .))) -}}
 {{- end -}}
-{{- include "common.images.renderPullSecrets" (dict "images" $images "context" $) -}}
+{{- include "common.images.renderPullSecrets" (dict "images" $images "context" .) -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -1014,6 +1023,13 @@ Return the name of the chart's image pull Secret
 */}}
 {{- define "carto.imagePullCredential.secretName" -}}
 {{- printf "%s-image-pull" (include "common.names.fullname" .) -}}
+{{- end -}}
+
+{{/*
+Return the name of the copy of the image pull Secret that the pre-install and pre-upgrade hooks pull with
+*/}}
+{{- define "carto.imagePullCredential.hookSecretName" -}}
+{{- printf "%s-image-pull-hook" (include "common.names.fullname" .) -}}
 {{- end -}}
 
 {{/*
