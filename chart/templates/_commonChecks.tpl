@@ -292,8 +292,8 @@ Pass the root context, or (dict "context" $ "inlinePullSecret" true) from the pr
   - registryImages:
       namespace: {{ .Release.Namespace | quote }}
       {{/*
-        The registryImages collector takes a single imagePullSecret: the chart's credential on Helm installs,
-        and the carto-registry secret that KOTS creates otherwise.
+        The registryImages collector takes a single imagePullSecret: the chart's credential when it renders one,
+        otherwise carto-registry, the name KOTS and the manual pull secret steps use.
       */}}
       {{- if (include "carto.imagePullCredential.enabled" .) }}
       imagePullSecret: {{- include "carto.imagePullCredential.collectorSecret" (dict "context" . "inline" $inlinePullSecret) | nindent 8 }}

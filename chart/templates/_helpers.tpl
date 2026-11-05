@@ -1017,7 +1017,8 @@ Return the name of the chart's image pull Secret
 {{- end -}}
 
 {{/*
-Return the dockerconfigjson that authenticates both CARTO registry hostnames with the CARTO service account key
+Return the dockerconfigjson that authenticates both CARTO registry hostnames with the CARTO service account key.
+The hosts are fixed on purpose: a mirror set in global.imageRegistry must not receive the CARTO key, and uses its own pull secrets.
 */}}
 {{- define "carto.imagePullCredential.dockerConfigJson" -}}
 {{- $key := include "carto.imagePullCredential.key" . -}}
@@ -1034,7 +1035,7 @@ Usage: {{ include "carto.imagePullCredential.collectorSecret" (dict "context" $ 
 name: {{ include "carto.imagePullCredential.secretName" .context }}-preflight
 type: kubernetes.io/dockerconfigjson
 data:
-  .dockerconfigjson: {{ include "carto.imagePullCredential.dockerConfigJson" .context | b64enc }}
+  .dockerconfigjson: {{ include "carto.imagePullCredential.dockerConfigJson" .context | b64enc | quote }}
 {{- else -}}
 name: {{ include "carto.imagePullCredential.secretName" .context }}
 {{- end -}}
