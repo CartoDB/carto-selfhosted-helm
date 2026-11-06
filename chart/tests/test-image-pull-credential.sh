@@ -191,14 +191,13 @@ def check_collectors(case, documents, credential, pull_secrets=()):
 
 PULL_CHECK_PATH = "ImageRegistryValidator.Check_CARTO_images_registry_authentication.status"
 PULL_CHECK_KEY_FILE = "/usr/src/certs/gcp-default-service-account/image-pull-check-key.json"
-PULL_PROBE = "us-docker.pkg.dev/carto-onprem-artifacts/private-registry-canary/pull-probe:1"
 CHECKER_LOG = "tenant-requirements-check/tenant-requirements-check.log"
 
 def env(container):
     return {e["name"]: e.get("value") for e in container.get("env") or []}
 
 def check_pull_key_check(case, documents, key_id=None):
-    """The checker gets the chart key and the probe only when its own image comes from a CARTO repository; both analyzers warn."""
+    """The checker gets the chart key and checks its own image only when that image comes from a CARTO repository; both analyzers warn."""
     for kind, key in (("preflight", "preflight.yaml"), ("support-bundle", "support-bundle-spec")):
         spec = troubleshoot_spec(documents, kind, key)
         pod = collectors(spec)[CHECKER]["podSpec"]
@@ -214,8 +213,7 @@ def check_pull_key_check(case, documents, key_id=None):
         content = init_env.get("IMAGE_PULL_CHECK_KEY__FILE_CONTENT")
         check(content and json.loads(base64.b64decode(content))["private_key_id"] == key_id, f"{case}: {kind} image pull key check does not get the chart key")
         check(init_env.get("IMAGE_PULL_CHECK_KEY__FILE_PATH") == PULL_CHECK_KEY_FILE == main_env.get("IMAGE_PULL_CHECK_KEY_FILE"), f"{case}: {kind} image pull key check paths differ")
-        check(main_env.get("IMAGE_PULL_CHECK_IMAGE") == PULL_PROBE, f"{case}: {kind} image pull key check probes {main_env.get('IMAGE_PULL_CHECK_IMAGE')}")
-        check(PULL_PROBE not in [pod["containers"][0]["image"]] + [i for _, p in all_pods(documents) for i in images(p)], f"{case}: a pod pulls the probe image")
+        check(main_env.get("IMAGE_PULL_CHECK_IMAGE") == pod["containers"][0]["image"], f"{case}: {kind} image pull key check targets {main_env.get('IMAGE_PULL_CHECK_IMAGE')}, not the checker image")
         check(not any(s in (v or "") for s in (content, key_id) if s for v in main_env.values()), f"{case}: {kind} checker container env carries the key")
         check(len(analyzers) == 1 and [next(iter(o)) for o in analyzers[0]["outcomes"]] == ["pass", "warn"], f"{case}: {kind} image pull key check analyzers are {analyzers}")
 
