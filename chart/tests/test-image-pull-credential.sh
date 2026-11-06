@@ -74,6 +74,7 @@ render checker-pull-secret -f "$WORK_DIR/default-key.yaml" --set 'tenantRequirem
 render mirror -f "$WORK_DIR/default-key.yaml" --set global.imageRegistry=us-docker.pkg.dev/mirror-example
 render workload-identity -f "$WORK_DIR/default-key.yaml" --set commonBackendServiceAccount.enableGCPWorkloadIdentity=true
 render carto-registry-override -f "$WORK_DIR/default-key.yaml" --set global.imageRegistry=us-docker.pkg.dev/carto-onprem-artifacts/example
+render checker-other-registry -f "$WORK_DIR/default-key.yaml" --set tenantRequirementsChecker.image.registry=registry.example.com
 cat > "$WORK_DIR/disconnected.yaml" <<'YAML'
 appConfigValues:
   disconnected:
@@ -275,7 +276,7 @@ check_collectors("manual-secret", manual, credential=True, pull_secrets=("carto-
 
 for case in ("default-key", "manual-secret", "workload-identity", "carto-registry-override"):
     check_pull_key_check(case, docs(case), key_id="chart-test-default")
-for case in ("kots", "existing-secret", "manual-secret-no-key", "mirror", "disconnected"):
+for case in ("kots", "existing-secret", "manual-secret-no-key", "mirror", "disconnected", "checker-other-registry"):
     check_pull_key_check(case, docs(case))
 # Under Workload Identity the checker gets the key only for the image pull check.
 wi_init = env(collectors(troubleshoot_spec(docs("workload-identity"), "preflight", "preflight.yaml"))[CHECKER]["podSpec"]["initContainers"][0])
