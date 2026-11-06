@@ -72,6 +72,28 @@ render manual-secret -f "$WORK_DIR/default-key.yaml" --set 'global.imagePullSecr
 render manual-secret-no-key --set 'global.imagePullSecrets[0]=carto-registry'
 render checker-pull-secret -f "$WORK_DIR/default-key.yaml" --set 'tenantRequirementsChecker.image.pullSecrets[0]=checker-pull'
 render mirror -f "$WORK_DIR/default-key.yaml" --set global.imageRegistry=us-docker.pkg.dev/mirror-example
+render workload-identity -f "$WORK_DIR/default-key.yaml" --set commonBackendServiceAccount.enableGCPWorkloadIdentity=true
+render carto-registry-override -f "$WORK_DIR/default-key.yaml" --set global.imageRegistry=us-docker.pkg.dev/carto-onprem-artifacts/example
+cat > "$WORK_DIR/disconnected.yaml" <<'YAML'
+appConfigValues:
+  disconnected:
+    enabled: true
+    protocol: oidc
+    spaClient:
+      clientId: x
+    oidc:
+      issuerUrl: https://idp.example.com
+      clientId: x
+appSecrets:
+  authApiOidcClientSecret:
+    value: x
+cartoSecrets:
+  authApiInternalServiceToken:
+    value: x
+  encryptionSecretKey:
+    value: x
+YAML
+render disconnected -f "$WORK_DIR/default-key.yaml" -f "$WORK_DIR/disconnected.yaml"
 notes no-key
 notes existing-secret-notes -f "$WORK_DIR/existing-secret.yaml"
 notes manual-secret-notes --set 'global.imagePullSecrets[0]=carto-registry'
@@ -166,6 +188,28 @@ def check_collectors(case, documents, credential, pull_secrets=()):
         check(inline is None, f"{case}: preflight {CHECKER} has an imagePullSecret")
         check(bundle_pod_secrets == list(pull_secrets), f"{case}: support bundle {CHECKER} pod lists {bundle_pod_secrets}, want {list(pull_secrets)}")
 
+PULL_CHECK_PATH = "ImageRegistryValidator.Check_CARTO_images_registry_authentication.status"
+PULL_CHECK_KEY_FILE = "/usr/src/certs/gcp-default-service-account/image-pull-check-key.json"
+
+def env(container):
+    return {e["name"]: e.get("value") for e in container.get("env") or []}
+
+def check_pull_key_check(case, documents, key_id=None):
+    """The checker gets the chart key and its own image only when it can probe a CARTO repository; the analyzer warns."""
+    for kind, key in (("preflight", "preflight.yaml"), ("support-bundle", "support-bundle-spec")):
+        spec = troubleshoot_spec(documents, kind, key)
+        pod = collectors(spec)[CHECKER]["podSpec"]
+        init_env, main_env = env(pod["initContainers"][0]), env(pod["containers"][0])
+        analyzers = [a["jsonCompare"] for a in spec["spec"]["analyzers"] if a.get("jsonCompare", {}).get("path") == PULL_CHECK_PATH]
+        if key_id is None:
+            check("IMAGE_PULL_CHECK_KEY__FILE_CONTENT" not in init_env and "IMAGE_PULL_CHECK_IMAGE" not in main_env and not analyzers, f"{case}: {kind} wires the image pull key check")
+            continue
+        content = init_env.get("IMAGE_PULL_CHECK_KEY__FILE_CONTENT")
+        check(content and json.loads(base64.b64decode(content))["private_key_id"] == key_id, f"{case}: {kind} image pull key check does not get the chart key")
+        check(init_env.get("IMAGE_PULL_CHECK_KEY__FILE_PATH") == PULL_CHECK_KEY_FILE == main_env.get("IMAGE_PULL_CHECK_KEY_FILE"), f"{case}: {kind} image pull key check paths differ")
+        check(main_env.get("IMAGE_PULL_CHECK_IMAGE") == pod["containers"][0]["image"], f"{case}: {kind} image pull key check probes {main_env.get('IMAGE_PULL_CHECK_IMAGE')}")
+        check(len(analyzers) == 1 and [next(iter(o)) for o in analyzers[0]["outcomes"]] == ["pass", "warn"], f"{case}: {kind} image pull key check analyzers are {analyzers}")
+
 def expect_credential(case, key_id):
     documents = docs(case)
     secret = chart_secret(documents)
@@ -228,6 +272,14 @@ for d, pod in pod_specs(manual):
     names = pull_secret_names(pod)
     check("carto-registry" in names and credential_name(d) in names, f"manual-secret: {d['kind']}/{d['metadata']['name']} has {names}")
 check_collectors("manual-secret", manual, credential=True, pull_secrets=("carto-registry",))
+
+for case in ("default-key", "manual-secret", "workload-identity", "carto-registry-override"):
+    check_pull_key_check(case, docs(case), key_id="chart-test-default")
+for case in ("kots", "existing-secret", "manual-secret-no-key", "mirror", "disconnected"):
+    check_pull_key_check(case, docs(case))
+# Under Workload Identity the checker gets the key only for the image pull check.
+wi_init = env(collectors(troubleshoot_spec(docs("workload-identity"), "preflight", "preflight.yaml"))[CHECKER]["podSpec"]["initContainers"][0])
+check("DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT" not in wi_init, "workload-identity: the checker gets the default service account key")
 
 def read_notes(case):
     return yaml.safe_load(open(f"{work}/{case}.notes"))["data"]["notes"]

@@ -1053,6 +1053,24 @@ data:
 {{- end -}}
 
 {{/*
+Return "true" when the preflight checks that the chart's pull key can read CARTO images. The checker sends that key only
+to the CARTO repositories, so it skips a mirror (global.imageRegistry), and disconnected installs reach no registry.
+*/}}
+{{- define "carto.imagePullCheck.enabled" -}}
+{{- $image := include "carto.tenantRequirementsChecker.image" . -}}
+{{- if and (include "carto.imagePullCredential.enabled" .) (not (include "carto.disconnected.enabled" .)) (or (hasPrefix "us-docker.pkg.dev/carto-onprem-artifacts/" $image) (hasPrefix "gcr.io/carto-onprem-artifacts/" $image)) -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the path of the image pull key file that the preflight checker reads
+*/}}
+{{- define "carto.imagePullCheck.keyPath" -}}
+{{- printf "%s/image-pull-check-key.json" (include "carto.google.secretMountDir" .) -}}
+{{- end -}}
+
+{{/*
 Return a warning when a Helm install has no credential to pull the CARTO images, or nothing when it has one or pulls another way
 */}}
 {{- define "carto.imagePullCredential.missingWarning" -}}

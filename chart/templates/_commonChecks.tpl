@@ -83,6 +83,12 @@ Pass the root context, or (merge (dict "inlinePullSecret" true) .) from the pref
                   fi
                 done
             env:
+              {{- if (include "carto.imagePullCheck.enabled" .) }}
+              - name: IMAGE_PULL_CHECK_KEY__FILE_CONTENT
+                value: {{ include "carto.imagePullCredential.key" . | b64enc | quote }}
+              - name: IMAGE_PULL_CHECK_KEY__FILE_PATH
+                value: {{ include "carto.imagePullCheck.keyPath" . }}
+              {{- end }}
               {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
               {{- if eq .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name "" }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
@@ -204,6 +210,12 @@ Pass the root context, or (merge (dict "inlinePullSecret" true) .) from the pref
               {{- /* The checker reports its Pub/Sub check as skipped, which is why the analyzers leave PubSubValidator out */}}
               - name: CARTO_SELFHOSTED_DISCONNECTED_ENABLED
                 value: "true"
+              {{- end }}
+              {{- if (include "carto.imagePullCheck.enabled" .) }}
+              - name: IMAGE_PULL_CHECK_IMAGE
+                value: {{ include "carto.tenantRequirementsChecker.image" . | quote }}
+              - name: IMAGE_PULL_CHECK_KEY_FILE
+                value: {{ include "carto.imagePullCheck.keyPath" . }}
               {{- end }}
               {{- with (include "carto.nats.clientEnv" (dict "context" $ "optional" true)) }}{{ . | nindent 14 }}{{- end }}
               - name: PUBSUB_PROJECT_ID
@@ -406,6 +418,13 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   */}}
   {{- if .Values.appConfigValues.aiFeaturesEnabled }}
   {{- $_ := set $preflightsDict "AiDatabaseValidator" (list "Check_AI_proxy_database_connection") -}}
+  {{- end }}
+  {{/*
+  The image pull key check warns until CARTO images require authentication.
+  */}}
+  {{- if (include "carto.imagePullCheck.enabled" .) }}
+  {{- $_ := set $preflightsDict "ImageRegistryValidator" (list "Check_CARTO_images_registry_authentication") -}}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_CARTO_images_registry_authentication" -}}
   {{- end }}
   {{/*
   Disconnected mode requires the pre-created accounts database (same PostgreSQL and credentials
