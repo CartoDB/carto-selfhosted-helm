@@ -421,7 +421,7 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   {{- $_ := set $preflightsDict "AiDatabaseValidator" (list "Check_AI_proxy_database_connection") -}}
   {{- end }}
   {{/*
-  The image pull key check warns until CARTO images require authentication.
+  A rejected image pull key warns instead of blocking the install.
   */}}
   {{- if (include "carto.imagePullCheck.enabled" .) }}
   {{- $_ := set $preflightsDict "ImageRegistryValidator" (list "Check_CARTO_images_registry_authentication") -}}
