@@ -1064,13 +1064,6 @@ true
 {{- end -}}
 
 {{/*
-Return the image whose manifest the preflight checker reads with the pull key: the checker's own image, from the same registry as every CARTO image
-*/}}
-{{- define "carto.imagePullCheck.image" -}}
-{{- include "carto.tenantRequirementsChecker.image" . -}}
-{{- end -}}
-
-{{/*
 Return the path of the image pull key file that the preflight checker reads
 */}}
 {{- define "carto.imagePullCheck.keyPath" -}}

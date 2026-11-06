@@ -214,7 +214,7 @@ Pass the root context, or (merge (dict "inlinePullSecret" true) .) from the pref
               {{- end }}
               {{- if (include "carto.imagePullCheck.enabled" .) }}
               - name: IMAGE_PULL_CHECK_IMAGE
-                value: {{ include "carto.imagePullCheck.image" . | quote }}
+                value: {{ include "carto.tenantRequirementsChecker.image" . | quote }}
               - name: IMAGE_PULL_CHECK_KEY_FILE
                 value: {{ include "carto.imagePullCheck.keyPath" . }}
               {{- end }}
