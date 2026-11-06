@@ -41,7 +41,8 @@ Pass the root context, or (merge (dict "inlinePullSecret" true) .) from the pref
               - |
                 #!/bin/bash
 
-                set -ex
+                # No xtrace, so the file contents stay out of the log.
+                set -e
 
                 # This script is used to transform environment variables in files
                 # How to use it?
