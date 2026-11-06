@@ -14,6 +14,6 @@ stringData:
       namespace: {{ .Release.Namespace | quote }}
     spec:
       collectors:
-    {{- include "carto.replicated.commonChecks.collectors" (merge (dict "inlinePullSecret" true) .) | indent 6 }}
+    {{- include "carto.replicated.commonChecks.collectors" . | indent 6 }}
       analyzers:
     {{- include "carto.replicated.commonChecks.analyzers" . | indent 6 }}
