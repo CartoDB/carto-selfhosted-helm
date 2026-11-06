@@ -301,11 +301,12 @@ Pass the root context, or (merge (dict "inlinePullSecret" true) .) from the pref
             emptyDir:
               sizeLimit: 1Mi
           {{- end }}
+{{- /* KOTS only: on Helm the carto-registry Secret may hold the customer's key and this collector does not verify TLS. */}}
+{{- if .Values.replicated.enabled }}
   - registryImages:
       namespace: {{ .Release.Namespace | quote }}
       {{/*
         We cannot use the imagePullSecrets template that we have because the registryImages collector needs a single imagePullSecret.
-        As we just include the preflights if using Replicated the carto-registry secret should be present always!
       */}}
       imagePullSecret:
         name: carto-registry
@@ -333,6 +334,7 @@ Pass the root context, or (merge (dict "inlinePullSecret" true) .) from the pref
         - {{ template "carto.accountsMigrations.image" . }}
         - {{ template "carto.nats.image" . }}
         {{- end }}
+{{- end }}
 {{- end -}}
 
 {{/*

@@ -175,7 +175,10 @@ def check_collectors(case, documents, credential, pull_secrets=()):
     preflight = collectors(troubleshoot_spec(documents, "preflight", "preflight.yaml"))
     bundle = collectors(troubleshoot_spec(documents, "support-bundle", "support-bundle-spec"))
     for name, spec in (("preflight", preflight), ("support bundle", bundle)):
-        check(spec["registryImages"].get("imagePullSecret") == {"name": "carto-registry"}, f"{case}: {name} registryImages imagePullSecret changed")
+        if case == "kots":
+            check(spec.get("registryImages", {}).get("imagePullSecret") == {"name": "carto-registry"}, f"{case}: {name} registryImages imagePullSecret changed")
+        else:
+            check("registryImages" not in spec, f"{case}: {name} renders the registryImages collector outside KOTS")
         check([k for k in spec if k != "registryImages"] == [CHECKER], f"{case}: {name} runPods are {[k for k in spec if k != 'registryImages']}")
     inline = preflight[CHECKER].get("imagePullSecret")
     preflight_pod_secrets = pull_secret_names(preflight[CHECKER]["podSpec"])
