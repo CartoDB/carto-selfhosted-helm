@@ -209,6 +209,7 @@ def check_pull_key_check(case, documents, key_id=None):
         check(content and json.loads(base64.b64decode(content))["private_key_id"] == key_id, f"{case}: {kind} image pull key check does not get the chart key")
         check(init_env.get("IMAGE_PULL_CHECK_KEY__FILE_PATH") == PULL_CHECK_KEY_FILE == main_env.get("IMAGE_PULL_CHECK_KEY_FILE"), f"{case}: {kind} image pull key check paths differ")
         check(main_env.get("IMAGE_PULL_CHECK_IMAGE") == pod["containers"][0]["image"], f"{case}: {kind} image pull key check probes {main_env.get('IMAGE_PULL_CHECK_IMAGE')}")
+        check(not any(s in (v or "") for s in (content, key_id) if s for v in main_env.values()), f"{case}: {kind} checker container env carries the key")
         check(len(analyzers) == 1 and [next(iter(o)) for o in analyzers[0]["outcomes"]] == ["pass", "warn"], f"{case}: {kind} image pull key check analyzers are {analyzers}")
 
 def expect_credential(case, key_id):
