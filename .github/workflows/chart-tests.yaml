@@ -40,3 +40,6 @@ jobs:
 
       - name: Verify support-bundle redactors
         run: bash chart/tests/test-redactors.sh
+
+      - name: Verify image pull credential
+        run: bash chart/tests/test-image-pull-credential.sh
