@@ -191,7 +191,7 @@ def check_collectors(case, documents, credential, pull_secrets=()):
 
 PULL_CHECK_PATH = "ImageRegistryValidator.Check_CARTO_images_registry_authentication.status"
 PULL_CHECK_KEY_FILE = "/usr/src/certs/gcp-default-service-account/image-pull-check-key.json"
-PULL_PROBE = "us-docker.pkg.dev/carto-onprem-artifacts/auth-check/pull-probe:1"
+PULL_PROBE = "us-docker.pkg.dev/carto-onprem-artifacts/private-registry-canary/pull-probe:1"
 CHECKER_LOG = "tenant-requirements-check/tenant-requirements-check.log"
 
 def env(container):

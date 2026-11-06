@@ -1068,7 +1068,7 @@ Return the image whose manifest the preflight checker reads with the pull key. I
 and always requires authentication. The probe is never pulled, so global.imageRegistry does not apply.
 */}}
 {{- define "carto.imagePullCheck.image" -}}
-us-docker.pkg.dev/carto-onprem-artifacts/auth-check/pull-probe:1
+us-docker.pkg.dev/carto-onprem-artifacts/private-registry-canary/pull-probe:1
 {{- end -}}
 
 {{/*
