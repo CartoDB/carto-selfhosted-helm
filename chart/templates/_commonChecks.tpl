@@ -301,7 +301,7 @@ Pass the root context, or (merge (dict "inlinePullSecret" true) .) from the pref
             emptyDir:
               sizeLimit: 1Mi
           {{- end }}
-{{- /* KOTS only: on Helm the carto-registry Secret may hold the customer's key and this collector does not verify TLS. */}}
+{{- /* KOTS only: on Helm the carto-registry Secret may hold the customer's service account key. */}}
 {{- if .Values.replicated.enabled }}
   - registryImages:
       namespace: {{ .Release.Namespace | quote }}
