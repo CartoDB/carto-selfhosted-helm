@@ -1043,6 +1043,41 @@ The keys carry the repository path: the kubelet matches images by prefix, so a m
 {{- end -}}
 
 {{/*
+Return the inline imagePullSecret of a troubleshoot runPod collector, for the preflight, which runs before the chart's Secret exists.
+No name: troubleshoot then generates one, so a Secret left by an interrupted run never blocks the next.
+*/}}
+{{- define "carto.imagePullCredential.inlineCollectorSecret" -}}
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: {{ include "carto.imagePullCredential.dockerConfigJson" . | b64enc | quote }}
+{{- end -}}
+
+{{/*
+Return "true" when the preflight checks that the chart's pull key can read CARTO images. The checker sends that key only
+to the CARTO repositories, so it skips a mirror (global.imageRegistry), and disconnected installs reach no registry.
+*/}}
+{{- define "carto.imagePullCheck.enabled" -}}
+{{- $image := include "carto.tenantRequirementsChecker.image" . -}}
+{{- if and (include "carto.imagePullCredential.enabled" .) (not (include "carto.disconnected.enabled" .)) (or (hasPrefix "us-docker.pkg.dev/carto-onprem-artifacts/" $image) (hasPrefix "gcr.io/carto-onprem-artifacts/" $image)) -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the image whose manifest the preflight checker reads with the pull key: the checker's own image, from the same registry as every CARTO image
+*/}}
+{{- define "carto.imagePullCheck.image" -}}
+{{- include "carto.tenantRequirementsChecker.image" . -}}
+{{- end -}}
+
+{{/*
+Return the path of the image pull key file that the preflight checker reads
+*/}}
+{{- define "carto.imagePullCheck.keyPath" -}}
+{{- printf "%s/image-pull-check-key.json" (include "carto.google.secretMountDir" .) -}}
+{{- end -}}
+
+{{/*
 Return a warning when a Helm install has no credential to pull the CARTO images, or nothing when it has one or pulls another way
 */}}
 {{- define "carto.imagePullCredential.missingWarning" -}}
