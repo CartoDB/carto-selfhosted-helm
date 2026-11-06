@@ -191,24 +191,31 @@ def check_collectors(case, documents, credential, pull_secrets=()):
 
 PULL_CHECK_PATH = "ImageRegistryValidator.Check_CARTO_images_registry_authentication.status"
 PULL_CHECK_KEY_FILE = "/usr/src/certs/gcp-default-service-account/image-pull-check-key.json"
+PULL_PROBE = "us-docker.pkg.dev/carto-onprem-artifacts/auth-check/pull-probe:1"
+CHECKER_LOG = "tenant-requirements-check/tenant-requirements-check.log"
 
 def env(container):
     return {e["name"]: e.get("value") for e in container.get("env") or []}
 
 def check_pull_key_check(case, documents, key_id=None):
-    """The checker gets the chart key and its own image only when it can probe a CARTO repository; the analyzer warns."""
+    """The checker gets the chart key and the probe only when its own image comes from a CARTO repository; both analyzers warn."""
     for kind, key in (("preflight", "preflight.yaml"), ("support-bundle", "support-bundle-spec")):
         spec = troubleshoot_spec(documents, kind, key)
         pod = collectors(spec)[CHECKER]["podSpec"]
         init_env, main_env = env(pod["initContainers"][0]), env(pod["containers"][0])
         analyzers = [a["jsonCompare"] for a in spec["spec"]["analyzers"] if a.get("jsonCompare", {}).get("path") == PULL_CHECK_PATH]
+        fallbacks = [a["textAnalyze"] for a in spec["spec"]["analyzers"] if a.get("textAnalyze", {}).get("fileName") == CHECKER_LOG]
         if key_id is None:
-            check("IMAGE_PULL_CHECK_KEY__FILE_CONTENT" not in init_env and "IMAGE_PULL_CHECK_IMAGE" not in main_env and not analyzers, f"{case}: {kind} wires the image pull key check")
+            check("IMAGE_PULL_CHECK_KEY__FILE_CONTENT" not in init_env and "IMAGE_PULL_CHECK_IMAGE" not in main_env and not analyzers and not fallbacks, f"{case}: {kind} wires the image pull key check")
             continue
+        # A missing checker log drops every jsonCompare result; this analyzer then warns "No matching files" under its title.
+        outcomes = [(k, o[k]["when"]) for o in fallbacks[0]["outcomes"] for k in o] if len(fallbacks) == 1 else None
+        check(outcomes == [("pass", "true"), ("warn", "false")] and fallbacks[0]["regex"] == "Check_" and "cartoSecrets.defaultGoogleServiceAccount" in fallbacks[0]["checkName"], f"{case}: {kind} checker log analyzers are {fallbacks}")
         content = init_env.get("IMAGE_PULL_CHECK_KEY__FILE_CONTENT")
         check(content and json.loads(base64.b64decode(content))["private_key_id"] == key_id, f"{case}: {kind} image pull key check does not get the chart key")
         check(init_env.get("IMAGE_PULL_CHECK_KEY__FILE_PATH") == PULL_CHECK_KEY_FILE == main_env.get("IMAGE_PULL_CHECK_KEY_FILE"), f"{case}: {kind} image pull key check paths differ")
-        check(main_env.get("IMAGE_PULL_CHECK_IMAGE") == pod["containers"][0]["image"], f"{case}: {kind} image pull key check probes {main_env.get('IMAGE_PULL_CHECK_IMAGE')}")
+        check(main_env.get("IMAGE_PULL_CHECK_IMAGE") == PULL_PROBE, f"{case}: {kind} image pull key check probes {main_env.get('IMAGE_PULL_CHECK_IMAGE')}")
+        check(PULL_PROBE not in [pod["containers"][0]["image"]] + [i for _, p in all_pods(documents) for i in images(p)], f"{case}: a pod pulls the probe image")
         check(not any(s in (v or "") for s in (content, key_id) if s for v in main_env.values()), f"{case}: {kind} checker container env carries the key")
         check(len(analyzers) == 1 and [next(iter(o)) for o in analyzers[0]["outcomes"]] == ["pass", "warn"], f"{case}: {kind} image pull key check analyzers are {analyzers}")
 

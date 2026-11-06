@@ -214,7 +214,7 @@ Pass the root context, or (merge (dict "inlinePullSecret" true) .) from the pref
               {{- end }}
               {{- if (include "carto.imagePullCheck.enabled" .) }}
               - name: IMAGE_PULL_CHECK_IMAGE
-                value: {{ include "carto.tenantRequirementsChecker.image" . | quote }}
+                value: {{ include "carto.imagePullCheck.image" . | quote }}
               - name: IMAGE_PULL_CHECK_KEY_FILE
                 value: {{ include "carto.imagePullCheck.keyPath" . }}
               {{- end }}
@@ -461,6 +461,23 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
             message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
       {{- end }}  
   {{- end }}
+  {{- end }}
+  {{/*
+  The checker pod pulls its image from a CARTO repository with the chart's pull key. Without a log the analyzers above
+  return nothing, and troubleshoot reports this check as a warning with the message "No matching files".
+  */}}
+  {{- if (include "carto.imagePullCheck.enabled" .) }}
+  - textAnalyze:
+      checkName: "CARTO preflight checker ran (if not, check that the key in cartoSecrets.defaultGoogleServiceAccount can pull CARTO images)"
+      fileName: tenant-requirements-check/tenant-requirements-check.log
+      regex: Check_
+      outcomes:
+        - pass:
+            when: "true"
+            message: The checker reported its results.
+        - warn:
+            when: "false"
+            message: The checker reported no results.
   {{- end }}
   {{/*
   Commented until replicated fixes this: https://github.com/replicated-collab/carto-replicated/issues/30
