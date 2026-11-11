@@ -1384,14 +1384,20 @@ clients call it by hostname and Node clients by IP, so both are added.
 {{- define "carto.proxy.excludedDomains" -}}
 {{- $domains := list -}}
 {{- $configured := .Values.externalProxy.excludedDomains -}}
+{{- $entries := list -}}
 {{- if kindIs "string" $configured -}}
-{{- range (splitList "," $configured) -}}
-{{- if trim . -}}
-{{- $domains = append $domains (trim .) -}}
-{{- end -}}
-{{- end -}}
+{{- $entries = list $configured -}}
 {{- else if $configured -}}
-{{- $domains = concat $domains $configured -}}
+{{- $entries = $configured -}}
+{{- end -}}
+{{- range $entries -}}
+{{- if . -}}
+{{- range (splitList "," (toString .)) -}}
+{{- with trim . -}}
+{{- $domains = append $domains . -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
 {{- end -}}
 {{- if .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity -}}
 {{- $domains = concat $domains (list "metadata.google.internal" "169.254.169.254") -}}
