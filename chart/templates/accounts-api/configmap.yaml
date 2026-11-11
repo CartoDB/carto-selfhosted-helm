@@ -68,9 +68,9 @@ data:
   http_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
   HTTPS_PROXY: {{ include "carto.proxy.computedConnectionString" . | quote }}
   https_proxy: {{ include "carto.proxy.computedConnectionString" . | quote }}
-  {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
-  NO_PROXY: {{ join "," .Values.externalProxy.excludedDomains | quote }}
-  no_proxy: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+  {{- with (include "carto.proxy.excludedDomains" .) }}
+  NO_PROXY: {{ . | quote }}
+  no_proxy: {{ . | quote }}
   {{- end }}
   {{- if .Values.externalProxy.sslCA }}
   NODE_EXTRA_CA_CERTS: {{ include "carto.proxy.configMapMountAbsolutePath" . | quote }}

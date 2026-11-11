@@ -669,11 +669,11 @@ Return customer values to use in preflights and support-bundle
     value: {{ include "carto.proxy.computedConnectionString" . | quote }}
   - name: NODE_TLS_REJECT_UNAUTHORIZED
     value: {{ ternary "1" "0" .Values.externalProxy.sslRejectUnauthorized | quote }}
-  {{- if gt (len .Values.externalProxy.excludedDomains) 0 }}
+  {{- with (include "carto.proxy.excludedDomains" .) }}
   - name: NO_PROXY
-    value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+    value: {{ . | quote }}
   - name: no_proxy
-    value: {{ join "," .Values.externalProxy.excludedDomains | quote }}
+    value: {{ . | quote }}
   {{- end }}
   {{- end }}
   {{- if and .Values.router.tlsCertificates.certificateValueBase64 .Values.router.tlsCertificates.privateKeyValueBase64 }}
