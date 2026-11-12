@@ -983,10 +983,84 @@ Return the proper Carto tenant-requirements-checker image name
 {{- end -}}
 
 {{/*
-Return the proper Docker Image Registry Secret Names
+Return the proper Docker Image Registry Secret Names.
+Pass the root context, or (dict "context" $ "hook" true) from a pre-install or pre-upgrade hook, which runs before the chart's image pull Secret exists.
 */}}
 {{- define "carto.imagePullSecrets" -}}
-{{- include "common.images.renderPullSecrets" (dict "images" (list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.nats.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authMigrations.image .Values.accountsApi.image .Values.accountsSubscriber.image .Values.accountsMigrations.image) "context" $) -}}
+{{- $ctx := . -}}
+{{- $credential := "carto.imagePullCredential.secretName" -}}
+{{- if .hook -}}
+{{- $ctx = .context -}}
+{{- $credential = "carto.imagePullCredential.hookSecretName" -}}
+{{- end -}}
+{{- with $ctx -}}
+{{- $images := list .Values.accountsWww.image .Values.importApi.image .Values.importWorker.image .Values.ldsApi.image .Values.mapsApi.image .Values.router.image .Values.httpCache.image .Values.cdnInvalidatorSub.image  .Values.workspaceApi.image .Values.workspaceSubscriber.image .Values.workspaceWww.image .Values.workspaceMigrations.image .Values.internalRedis.image .Values.nats.image .Values.aiApi.image .Values.aiProxy.image .Values.authApi.image .Values.authMigrations.image .Values.accountsApi.image .Values.accountsSubscriber.image .Values.accountsMigrations.image -}}
+{{- if (include "carto.imagePullCredential.enabled" .) -}}
+{{- $images = append $images (dict "pullSecrets" (list (include $credential .))) -}}
+{{- end -}}
+{{- include "common.images.renderPullSecrets" (dict "images" $images "context" .) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the CARTO service account key that pulls CARTO images
+*/}}
+{{- define "carto.imagePullCredential.key" -}}
+{{- .Values.cartoSecrets.defaultGoogleServiceAccount.value | default "" | trim -}}
+{{- end -}}
+
+{{/*
+Return "true" when the chart renders its own image pull Secret for the CARTO registry. KOTS installs pull through the Replicated proxy instead.
+*/}}
+{{- define "carto.imagePullCredential.enabled" -}}
+{{- if and (not .Values.replicated.enabled) (include "carto.imagePullCredential.key" .) -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the name of the chart's image pull Secret
+*/}}
+{{- define "carto.imagePullCredential.secretName" -}}
+{{- printf "%s-image-pull" (include "common.names.fullname" .) -}}
+{{- end -}}
+
+{{/*
+Return the name of the copy of the image pull Secret that the pre-install and pre-upgrade hooks pull with
+*/}}
+{{- define "carto.imagePullCredential.hookSecretName" -}}
+{{- printf "%s-image-pull-hook" (include "common.names.fullname" .) -}}
+{{- end -}}
+
+{{/*
+Return the dockerconfigjson that authenticates the CARTO repositories on both registry hosts with the CARTO service account key.
+The keys carry the repository path: the kubelet matches images by prefix, so a mirror on the same host (global.imageRegistry) never gets this key.
+*/}}
+{{- define "carto.imagePullCredential.dockerConfigJson" -}}
+{{- $key := include "carto.imagePullCredential.key" . -}}
+{{- $auth := dict "username" "_json_key" "password" $key "auth" (printf "_json_key:%s" $key | b64enc) -}}
+{{- dict "auths" (dict "us-docker.pkg.dev/carto-onprem-artifacts" $auth "gcr.io/carto-onprem-artifacts" $auth) | toJson -}}
+{{- end -}}
+
+{{/*
+Return a warning when a Helm install has no credential to pull the CARTO images, or nothing when it has one or pulls another way
+*/}}
+{{- define "carto.imagePullCredential.missingWarning" -}}
+{{- $perImagePullSecrets := false -}}
+{{- range $name, $component := .Values -}}
+{{- if and (kindIs "map" $component) (kindIs "map" $component.image) $component.image.pullSecrets -}}
+{{- $perImagePullSecrets = true -}}
+{{- end -}}
+{{- end -}}
+{{- if not (or .Values.replicated.enabled .Values.global.imageRegistry .Values.global.imagePullSecrets $perImagePullSecrets (include "carto.imagePullCredential.enabled" .)) -}}
+{{- if .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name -}}
+The CARTO service account is read from an existing Secret, which the chart cannot use to pull images.
+Create an image pull secret from it and list it in `global.imagePullSecrets`.
+{{- else -}}
+No CARTO service account is set, so the chart cannot create the image pull secret.
+Use the `carto-secrets.yaml` file from your customer package.
+{{- end -}}
+{{- end -}}
 {{- end -}}
 
 {{/*

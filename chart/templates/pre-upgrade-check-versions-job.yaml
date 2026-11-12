@@ -25,7 +25,7 @@ spec:
         helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     spec:
       restartPolicy: Never
-      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- include "carto.imagePullSecrets" (dict "context" . "hook" true) | nindent 6 }}
       volumes:
         - name: scripts
           configMap:

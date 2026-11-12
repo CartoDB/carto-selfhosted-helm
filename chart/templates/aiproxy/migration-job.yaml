@@ -55,7 +55,7 @@ spec:
       restartPolicy: Never
       {{- /* The release ServiceAccount does not exist yet on install; the migrations only talk to PostgreSQL */}}
       automountServiceAccountToken: false
-      {{- include "carto.imagePullSecrets" . | nindent 6 }}
+      {{- include "carto.imagePullSecrets" (dict "context" . "hook" true) | nindent 6 }}
       {{- if .Values.aiProxy.hostAliases }}
       hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.aiProxy.hostAliases "context" $) | nindent 8 }}
       {{- end }}
