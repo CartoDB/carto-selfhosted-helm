@@ -1043,22 +1043,32 @@ The keys carry the repository path: the kubelet matches images by prefix, so a m
 {{- end -}}
 
 {{/*
-Return the inline imagePullSecret of a troubleshoot runPod collector, for the preflight, which runs before the chart's Secret exists.
-No name: troubleshoot then generates one, so a Secret left by an interrupted run never blocks the next.
+Return "true" when a connected Helm install takes the checker image from the CARTO registry, not from a mirror (global.imageRegistry)
 */}}
-{{- define "carto.imagePullCredential.inlineCollectorSecret" -}}
-type: kubernetes.io/dockerconfigjson
-data:
-  .dockerconfigjson: {{ include "carto.imagePullCredential.dockerConfigJson" . | b64enc | quote }}
+{{- define "carto.tenantRequirementsChecker.usesCartoRegistry" -}}
+{{- $image := include "carto.tenantRequirementsChecker.image" . -}}
+{{- if and (not .Values.replicated.enabled) (not (include "carto.disconnected.enabled" .)) (or (hasPrefix "us-docker.pkg.dev/carto-onprem-artifacts/" $image) (hasPrefix "gcr.io/carto-onprem-artifacts/" $image)) -}}
+true
+{{- end -}}
 {{- end -}}
 
 {{/*
-Return "true" when the preflight checks that the chart's pull key can read CARTO images. The checker sends that key only
-to the CARTO repositories, so it skips a mirror (global.imageRegistry), and disconnected installs reach no registry.
+Return the image that the preflight and support bundle checker pod runs: the public copy on the CARTO registry, so the pod
+starts without a pull credential, or the configured image on KOTS, a mirror, a disconnected install or a custom repository.
+*/}}
+{{- define "carto.tenantRequirementsChecker.collectorImage" -}}
+{{- if and (include "carto.tenantRequirementsChecker.usesCartoRegistry" .) (eq .Values.tenantRequirementsChecker.image.repository "tenant-requirements-checker") -}}
+{{- include "carto.images.image" (dict "imageRoot" (dict "registry" "us-docker.pkg.dev/carto-onprem-artifacts/public" "repository" "tenant-requirements-checker" "tag" .Values.tenantRequirementsChecker.image.tag) "Chart" .Chart) -}}
+{{- else -}}
+{{- include "carto.tenantRequirementsChecker.image" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return "true" when the checker verifies that the CARTO service account key set in the values authenticates against the CARTO registry
 */}}
 {{- define "carto.imagePullCheck.enabled" -}}
-{{- $image := include "carto.tenantRequirementsChecker.image" . -}}
-{{- if and (include "carto.imagePullCredential.enabled" .) (not (include "carto.disconnected.enabled" .)) (or (hasPrefix "us-docker.pkg.dev/carto-onprem-artifacts/" $image) (hasPrefix "gcr.io/carto-onprem-artifacts/" $image)) -}}
+{{- if and (include "carto.imagePullCredential.enabled" .) (not .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name) (include "carto.tenantRequirementsChecker.usesCartoRegistry" .) -}}
 true
 {{- end -}}
 {{- end -}}

@@ -2,16 +2,13 @@
 
 {{/*
 Return common collectors for preflights and support-bundle.
-Pass the root context, or (merge (dict "inlinePullSecret" true) .) from the preflight to carry the image pull credential inline.
+Pass the root context, or (merge (dict "preInstall" true) .) from the preflight, which runs before the release's Secrets exist.
 */}}
 {{- define "carto.replicated.commonChecks.collectors" }}
   - runPod:
       collectorName: tenant-requirements-check
       name: tenant-requirements-check
       namespace: {{ .Release.Namespace | quote }}
-      {{- if and .inlinePullSecret (include "carto.imagePullCredential.enabled" .) }}
-      imagePullSecret: {{- include "carto.imagePullCredential.inlineCollectorSecret" . | nindent 8 }}
-      {{- end }}
       {{/*
       The pod runs every validator sequentially and only emits results once the whole pass
       finishes, so this budget must cover image pull plus the slowest full run. Keep headroom:
@@ -22,17 +19,12 @@ Pass the root context, or (merge (dict "inlinePullSecret" true) .) from the pref
         {{- if include "carto.podIdentity.enabled" . }}
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
         {{- end }}
-        {{- $pullSecretImages := list .Values.tenantRequirementsChecker.image }}
-        {{- /* troubleshoot ignores a runPod imagePullSecret without data, so the installed Secret goes on the pod. */}}
-        {{- if and (not .inlinePullSecret) (include "carto.imagePullCredential.enabled" .) }}
-        {{- $pullSecretImages = append $pullSecretImages (dict "pullSecrets" (list (include "carto.imagePullCredential.secretName" .))) }}
-        {{- end }}
-        {{- with (include "common.images.renderPullSecrets" (dict "images" $pullSecretImages "context" $)) }}{{ . | nindent 8 }}{{- end }}
+        {{- with (include "common.images.renderPullSecrets" (dict "images" (list .Values.tenantRequirementsChecker.image) "context" $)) }}{{ . | nindent 8 }}{{- end }}
         restartPolicy: Never
         securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
         initContainers:
           - name: init-tenant-requirements-check
-            image: {{ template "carto.tenantRequirementsChecker.image" . }}
+            image: {{ template "carto.tenantRequirementsChecker.collectorImage" . }}
             imagePullPolicy: {{ .Values.tenantRequirementsChecker.image.pullPolicy }}
             securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
             resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
@@ -41,7 +33,6 @@ Pass the root context, or (merge (dict "inlinePullSecret" true) .) from the pref
               - |
                 #!/bin/bash
 
-                # No xtrace, so the file contents stay out of the log.
                 set -e
 
                 # This script is used to transform environment variables in files
@@ -86,7 +77,14 @@ Pass the root context, or (merge (dict "inlinePullSecret" true) .) from the pref
             env:
               {{- if (include "carto.imagePullCheck.enabled" .) }}
               - name: IMAGE_PULL_CHECK_KEY__FILE_CONTENT
+                {{- if .preInstall }}
                 value: {{ include "carto.imagePullCredential.key" . | b64enc | quote }}
+                {{- else }}
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ include "carto.google.secretName" . | quote }}
+                    key: {{ include "carto.google.secretKey" . | quote }}
+                {{- end }}
               - name: IMAGE_PULL_CHECK_KEY__FILE_PATH
                 value: {{ include "carto.imagePullCheck.keyPath" . }}
               {{- end }}
@@ -188,7 +186,7 @@ Pass the root context, or (merge (dict "inlinePullSecret" true) .) from the pref
               {{- end }}
         containers:
           - name: run-tenants-requirements-check
-            image: {{ template "carto.tenantRequirementsChecker.image" . }}
+            image: {{ template "carto.tenantRequirementsChecker.collectorImage" . }}
             imagePullPolicy: {{ .Values.tenantRequirementsChecker.image.pullPolicy }}
             securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
             resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
@@ -301,7 +299,7 @@ Pass the root context, or (merge (dict "inlinePullSecret" true) .) from the pref
             emptyDir:
               sizeLimit: 1Mi
           {{- end }}
-{{- /* KOTS only: on Helm the carto-registry Secret may hold the customer's service account key. */}}
+{{- /* KOTS only. */}}
 {{- if .Values.replicated.enabled }}
   - registryImages:
       namespace: {{ .Release.Namespace | quote }}
@@ -465,21 +463,20 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   {{- end }}
   {{- end }}
   {{/*
-  The checker pod pulls its image from a CARTO repository with the chart's pull key. Without a log the analyzers above
-  return nothing, and troubleshoot reports this check as a warning with the message "No matching files".
+  Warns when the checker log has no registry authentication result.
   */}}
   {{- if (include "carto.imagePullCheck.enabled" .) }}
   - textAnalyze:
-      checkName: "CARTO preflight checker ran (if not, check that the key in cartoSecrets.defaultGoogleServiceAccount can pull CARTO images)"
+      checkName: "CARTO images registry authentication was checked (if not, the checker did not run or does not include this check)"
       fileName: tenant-requirements-check/tenant-requirements-check.log
-      regex: Check_
+      regex: Check_CARTO_images_registry_authentication
       outcomes:
         - pass:
             when: "true"
-            message: The checker reported its results.
+            message: The checker ran the registry authentication check.
         - warn:
             when: "false"
-            message: The checker reported no results.
+            message: The registry authentication was not checked. The checker did not run or does not include this check.
   {{- end }}
   {{/*
   Commented until replicated fixes this: https://github.com/replicated-collab/carto-replicated/issues/30
