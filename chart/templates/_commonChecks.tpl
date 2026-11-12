@@ -31,7 +31,7 @@ Return common collectors for preflights and support-bundle
               - |
                 #!/bin/bash
 
-                set -ex
+                set -e
 
                 # This script is used to transform environment variables in files
                 # How to use it?
