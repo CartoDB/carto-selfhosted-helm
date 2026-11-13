@@ -1449,6 +1449,37 @@ Return the proxy connection string if the config does not include the complete U
 {{- end -}}
 
 {{/*
+Return the comma-separated NO_PROXY value, or "" when there is nothing to exclude.
+`externalProxy.excludedDomains` is a list in Helm values and a comma-separated
+string from KOTS. With GCP Workload Identity, workloads get their Google tokens
+from the GKE metadata server, which must never go through the proxy; Python
+clients call it by hostname and Node clients by IP, so both are added.
+*/}}
+{{- define "carto.proxy.excludedDomains" -}}
+{{- $domains := list -}}
+{{- $configured := .Values.externalProxy.excludedDomains -}}
+{{- $entries := list -}}
+{{- if kindIs "string" $configured -}}
+{{- $entries = list $configured -}}
+{{- else if $configured -}}
+{{- $entries = $configured -}}
+{{- end -}}
+{{- range $entries -}}
+{{- if . -}}
+{{- range (splitList "," (toString .)) -}}
+{{- with trim . -}}
+{{- $domains = append $domains . -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- if .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity -}}
+{{- $domains = concat $domains (list "metadata.google.internal" "169.254.169.254") -}}
+{{- end -}}
+{{- join "," (uniq $domains) -}}
+{{- end -}}
+
+{{/*
 Return "true" when there is inline CA content the chart must write into its own
 generated ConfigMap: the new `trustedCACerts.value`, or the deprecated
 `externalProxy.sslCA` (the latter only while an external proxy is configured).
