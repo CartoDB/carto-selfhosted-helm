@@ -529,6 +529,21 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
         - pass:
             message: Gateway API is enabled for your cluster.
   {{- end }}
+  {{/*
+  The checker pod name is fixed, so a pod left by an interrupted or concurrent run blocks the next one.
+  */}}
+  - textAnalyze:
+      checkName: No checker pod left from an earlier run
+      fileName: cluster-resources/pods/{{ .Release.Namespace }}.json
+      regex: '"name":\s*"tenant-requirements-check"'
+      ignoreIfNoFiles: true
+      outcomes:
+        - warn:
+            when: "true"
+            message: "A tenant-requirements-check pod from an earlier or concurrent run exists in namespace {{ .Release.Namespace }}, so the checks did not run. Delete it with `kubectl delete pod tenant-requirements-check -n {{ .Release.Namespace }}` and run them again."
+        - pass:
+            when: "false"
+            message: No checker pod was left from an earlier run.
 {{- end -}}
 
 {{/*
