@@ -1043,6 +1043,44 @@ The keys carry the repository path: the kubelet matches images by prefix, so a m
 {{- end -}}
 
 {{/*
+Return "true" when a connected Helm install takes the checker image from the CARTO registry, not from a mirror (global.imageRegistry)
+*/}}
+{{- define "carto.tenantRequirementsChecker.usesCartoRegistry" -}}
+{{- $image := include "carto.tenantRequirementsChecker.image" . -}}
+{{- if and (not .Values.replicated.enabled) (not (include "carto.disconnected.enabled" .)) (or (hasPrefix "us-docker.pkg.dev/carto-onprem-artifacts/" $image) (hasPrefix "gcr.io/carto-onprem-artifacts/" $image)) -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the image that the preflight and support bundle checker pod runs: the public copy on the CARTO registry, so the pod
+starts without a pull credential, or the configured image on KOTS, a mirror, a disconnected install or a custom repository.
+*/}}
+{{- define "carto.tenantRequirementsChecker.collectorImage" -}}
+{{- if and (include "carto.tenantRequirementsChecker.usesCartoRegistry" .) (eq .Values.tenantRequirementsChecker.image.repository "tenant-requirements-checker") -}}
+{{- include "carto.images.image" (dict "imageRoot" (dict "registry" "us-docker.pkg.dev/carto-onprem-artifacts/public" "repository" "tenant-requirements-checker" "tag" .Values.tenantRequirementsChecker.image.tag) "Chart" .Chart) -}}
+{{- else -}}
+{{- include "carto.tenantRequirementsChecker.image" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return "true" when the checker verifies that the CARTO service account key set in the values authenticates against the CARTO registry
+*/}}
+{{- define "carto.imagePullCheck.enabled" -}}
+{{- if and (include "carto.imagePullCredential.enabled" .) (not .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name) (include "carto.tenantRequirementsChecker.usesCartoRegistry" .) -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the path of the image pull key file that the preflight checker reads
+*/}}
+{{- define "carto.imagePullCheck.keyPath" -}}
+{{- printf "%s/image-pull-check-key.json" (include "carto.google.secretMountDir" .) -}}
+{{- end -}}
+
+{{/*
 Return a warning when a Helm install has no credential to pull the CARTO images, or nothing when it has one or pulls another way
 */}}
 {{- define "carto.imagePullCredential.missingWarning" -}}

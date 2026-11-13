@@ -1,7 +1,8 @@
 {{/* vim: set filetype=helm: */}}
 
 {{/*
-Return common collectors for preflights and support-bundle
+Return common collectors for preflights and support-bundle.
+Pass the root context, or (merge (dict "preInstall" true) .) from the preflight, which runs before the release's Secrets exist.
 */}}
 {{- define "carto.replicated.commonChecks.collectors" }}
   - runPod:
@@ -18,11 +19,12 @@ Return common collectors for preflights and support-bundle
         {{- if include "carto.podIdentity.enabled" . }}
         serviceAccountName: {{ template "carto.commonSA.serviceAccountName" . }}
         {{- end }}
+        {{- with (include "common.images.renderPullSecrets" (dict "images" (list .Values.tenantRequirementsChecker.image) "context" $)) }}{{ . | nindent 8 }}{{- end }}
         restartPolicy: Never
         securityContext: {{- toYaml .Values.tenantRequirementsChecker.podSecurityContext | nindent 10 }}
         initContainers:
           - name: init-tenant-requirements-check
-            image: {{ template "carto.tenantRequirementsChecker.image" . }}
+            image: {{ template "carto.tenantRequirementsChecker.collectorImage" . }}
             imagePullPolicy: {{ .Values.tenantRequirementsChecker.image.pullPolicy }}
             securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
             resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
@@ -73,6 +75,19 @@ Return common collectors for preflights and support-bundle
                   fi
                 done
             env:
+              {{- if (include "carto.imagePullCheck.enabled" .) }}
+              - name: IMAGE_PULL_CHECK_KEY__FILE_CONTENT
+                {{- if .preInstall }}
+                value: {{ include "carto.imagePullCredential.key" . | b64enc | quote }}
+                {{- else }}
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ include "carto.google.secretName" . | quote }}
+                    key: {{ include "carto.google.secretKey" . | quote }}
+                {{- end }}
+              - name: IMAGE_PULL_CHECK_KEY__FILE_PATH
+                value: {{ include "carto.imagePullCheck.keyPath" . }}
+              {{- end }}
               {{- if not .Values.commonBackendServiceAccount.enableGCPWorkloadIdentity }}
               {{- if eq .Values.cartoSecrets.defaultGoogleServiceAccount.existingSecret.name "" }}
               - name: DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT
@@ -171,7 +186,7 @@ Return common collectors for preflights and support-bundle
               {{- end }}
         containers:
           - name: run-tenants-requirements-check
-            image: {{ template "carto.tenantRequirementsChecker.image" . }}
+            image: {{ template "carto.tenantRequirementsChecker.collectorImage" . }}
             imagePullPolicy: {{ .Values.tenantRequirementsChecker.image.pullPolicy }}
             securityContext: {{- toYaml .Values.tenantRequirementsChecker.containerSecurityContext | nindent 14 }}
             resources: {{- toYaml .Values.tenantRequirementsChecker.resources | nindent 14 }}
@@ -194,6 +209,12 @@ Return common collectors for preflights and support-bundle
               {{- /* The checker reports its Pub/Sub check as skipped, which is why the analyzers leave PubSubValidator out */}}
               - name: CARTO_SELFHOSTED_DISCONNECTED_ENABLED
                 value: "true"
+              {{- end }}
+              {{- if (include "carto.imagePullCheck.enabled" .) }}
+              - name: IMAGE_PULL_CHECK_IMAGE
+                value: {{ include "carto.tenantRequirementsChecker.image" . | quote }}
+              - name: IMAGE_PULL_CHECK_KEY_FILE
+                value: {{ include "carto.imagePullCheck.keyPath" . }}
               {{- end }}
               {{- with (include "carto.nats.clientEnv" (dict "context" $ "optional" true)) }}{{ . | nindent 14 }}{{- end }}
               - name: PUBSUB_PROJECT_ID
@@ -278,11 +299,12 @@ Return common collectors for preflights and support-bundle
             emptyDir:
               sizeLimit: 1Mi
           {{- end }}
+{{- /* KOTS only. */}}
+{{- if .Values.replicated.enabled }}
   - registryImages:
       namespace: {{ .Release.Namespace | quote }}
       {{/*
         We cannot use the imagePullSecrets template that we have because the registryImages collector needs a single imagePullSecret.
-        As we just include the preflights if using Replicated the carto-registry secret should be present always!
       */}}
       imagePullSecret:
         name: carto-registry
@@ -310,6 +332,7 @@ Return common collectors for preflights and support-bundle
         - {{ template "carto.accountsMigrations.image" . }}
         - {{ template "carto.nats.image" . }}
         {{- end }}
+{{- end }}
 {{- end -}}
 
 {{/*
@@ -398,6 +421,13 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
   {{- $_ := set $preflightsDict "AiDatabaseValidator" (list "Check_AI_proxy_database_connection") -}}
   {{- end }}
   {{/*
+  A rejected image pull key warns instead of blocking the install.
+  */}}
+  {{- if (include "carto.imagePullCheck.enabled" .) }}
+  {{- $_ := set $preflightsDict "ImageRegistryValidator" (list "Check_CARTO_images_registry_authentication") -}}
+  {{- $preflightOptionalList = append $preflightOptionalList "Check_CARTO_images_registry_authentication" -}}
+  {{- end }}
+  {{/*
   Disconnected mode requires the pre-created accounts database (same PostgreSQL and credentials
   as the workspace one, separate database); fail early if it is missing or unreachable.
   */}}
@@ -431,6 +461,22 @@ NOTE: Remember that with the ingress testing mode the components are not deploye
             message: "{{ printf "{{ .%s.%s.info }}" $preflight $preflightCheckName }}"
       {{- end }}  
   {{- end }}
+  {{- end }}
+  {{/*
+  Warns when the checker log has no registry authentication result.
+  */}}
+  {{- if (include "carto.imagePullCheck.enabled" .) }}
+  - textAnalyze:
+      checkName: "CARTO images registry authentication was checked (if not, the checker did not run or does not include this check)"
+      fileName: tenant-requirements-check/tenant-requirements-check.log
+      regex: Check_CARTO_images_registry_authentication
+      outcomes:
+        - pass:
+            when: "true"
+            message: The checker ran the registry authentication check.
+        - warn:
+            when: "false"
+            message: The registry authentication was not checked. The checker did not run or does not include this check.
   {{- end }}
   {{/*
   Commented until replicated fixes this: https://github.com/replicated-collab/carto-replicated/issues/30
