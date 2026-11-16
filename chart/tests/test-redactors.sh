@@ -99,7 +99,7 @@ cat > "$BUNDLE_ROOT/tenant-requirements-check/tenant-requirements-check.json" <<
         {"name": "WORKSPACE_THUMBNAILS_ACCESSKEYID", "value": "AKIAIOSFODNN7EXAMPLE"},
         {"name": "WORKSPACE_IMPORTS_STORAGE_ACCESSKEY", "value": "vA8/K5m+1i/1K3RwAGaUVump8VMzZMzaX1CquW6gw5iS0DGqFSSyUkG7G+cGB/LFIwjVLEEWLerf+ASt"},
         {"name": "OPENAI_KEY", "value": "sk-svcacct-CHQ3YL4ftN2UH0W8xW9R5Ud4tfJrj4bry1RN7P"},
-        {"name": "GEMINI_API_KEY", "value": "AIzaSyDNkcmZZ0ASCW162cXU0bCgf74vZi68opE"},
+        {"name": "GEMINI_API_KEY", "value": "AIzaFakeRedactorTestSentinel00000000000"},
         {"name": "VITALLY_TOKEN", "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"},
         {"name": "VITALLY_TOKEN_B64", "value": "ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmhkV1FpT2lJeE9EWXpaamc0WmkwM09EYzFMVFExTldVdFlXUTJPUzA0WkdZNU4yUXlNRGN6WlRnaSJ9"},
         {"name": "WORKSPACE_POSTGRES_PORT", "value": "5432"},
@@ -133,7 +133,7 @@ cat > "$BUNDLE_ROOT/replicated-sdk/test-ns/replicated-test/replicated-license-in
   "entitlements": {
     "cartoPlatformDefaultSA": {"title": "x", "value": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7VJTUt9Us\n-----END PRIVATE KEY-----", "valueType": "String"},
     "openAiApiKey": {"title": "x", "value": "sk-svcacct-CHQ3YL4ftN2UH0W8xW9R5Ud4tfJrj4bry1RN7P", "valueType": "String"},
-    "geminiApiKey": {"title": "x", "value": "AIzaSyDNkcmZZ0ASCW162cXU0bCgf74vZi68opE", "valueType": "String"},
+    "geminiApiKey": {"title": "x", "value": "AIzaFakeRedactorTestSentinel00000000000", "valueType": "String"},
     "vitallyToken": {"title": "x", "value": "ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmhkV1FpT2lJeE9EWXpaamc0WmkwM09EYzFMVFExTldVdFlXUTJPUzA0WkdZNU4yUXlNRGN6WlRnaSJ9", "valueType": "String"},
     "cartoFeaturesFlagSdkKey": {"title": "x", "value": "sdk-deadbeef-aaaa-bbbb-cccc-dddddddddddd", "valueType": "String"},
     "databaseEncryptionKey": {"title": "x", "value": "mcaI8oSWt9CBZEarrPJXLgKs4D1h7UY1", "valueType": "String"},
@@ -248,7 +248,7 @@ SENTINELS=(
   # OpenAI
   'sk-svcacct-CHQ3YL4ftN2UH0W8xW9R5Ud4tfJrj4bry1RN7P'
   # Google API
-  'AIzaSyDNkcmZZ0ASCW162cXU0bCgf74vZi68opE'
+  'AIzaFakeRedactorTestSentinel00000000000'
   # JWT (raw + b64-wrapped)
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
   'ZXlKaGJHY2lPaUpJVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5'
