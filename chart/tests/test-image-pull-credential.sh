@@ -2,8 +2,9 @@
 #
 # Verify the chart's image pull credential across install shapes: the Secret
 # for the CARTO repositories on both registry hosts and its hook copy, their
-# names on every pod, the KOTS and existingSecret paths that render nothing,
-# and the NOTES warnings.
+# names on every pod, the checker pod's image and pull secrets in the preflight
+# and the support bundle, the registry authentication check, the KOTS and
+# existingSecret paths that render nothing, and the NOTES warnings.
 #
 # Prerequisites: helm, python3 with PyYAML. Run `helm dependency update chart`
 # first when charts/ is stale (CI does it once upfront).
@@ -67,9 +68,35 @@ render default-key -f "$WORK_DIR/default-key.yaml"
 render ai-hook -f "$WORK_DIR/default-key.yaml" --set appConfigValues.aiFeaturesEnabled=true --set internalPostgresql.enabled=false --set externalPostgresql.host=db.example.com --set externalPostgresql.password=x
 render kots -f "$WORK_DIR/default-key.yaml" --set replicated.enabled=true
 render existing-secret -f "$WORK_DIR/existing-secret.yaml"
+render existing-secret-and-key -f "$WORK_DIR/default-key.yaml" -f "$WORK_DIR/existing-secret.yaml"
 render manual-secret -f "$WORK_DIR/default-key.yaml" --set 'global.imagePullSecrets[0]=carto-registry'
 render manual-secret-no-key --set 'global.imagePullSecrets[0]=carto-registry'
+render checker-pull-secret -f "$WORK_DIR/default-key.yaml" --set 'tenantRequirementsChecker.image.pullSecrets[0]=checker-pull'
 render mirror -f "$WORK_DIR/default-key.yaml" --set global.imageRegistry=us-docker.pkg.dev/mirror-example
+render workload-identity -f "$WORK_DIR/default-key.yaml" --set commonBackendServiceAccount.enableGCPWorkloadIdentity=true
+render carto-registry-override -f "$WORK_DIR/default-key.yaml" --set global.imageRegistry=us-docker.pkg.dev/carto-onprem-artifacts/example
+render checker-other-registry -f "$WORK_DIR/default-key.yaml" --set tenantRequirementsChecker.image.registry=registry.example.com
+render checker-other-repository -f "$WORK_DIR/default-key.yaml" --set tenantRequirementsChecker.image.repository=example/tenant-requirements-checker
+cat > "$WORK_DIR/disconnected.yaml" <<'YAML'
+appConfigValues:
+  disconnected:
+    enabled: true
+    protocol: oidc
+    spaClient:
+      clientId: x
+    oidc:
+      issuerUrl: https://idp.example.com
+      clientId: x
+appSecrets:
+  authApiOidcClientSecret:
+    value: x
+cartoSecrets:
+  authApiInternalServiceToken:
+    value: x
+  encryptionSecretKey:
+    value: x
+YAML
+render disconnected -f "$WORK_DIR/default-key.yaml" -f "$WORK_DIR/disconnected.yaml"
 notes no-key
 notes existing-secret-notes -f "$WORK_DIR/existing-secret.yaml"
 notes manual-secret-notes --set 'global.imagePullSecrets[0]=carto-registry'
@@ -125,6 +152,90 @@ def chart_secret(documents, name=secret_name):
 def auths(secret):
     return json.loads(base64.b64decode(secret["data"][".dockerconfigjson"]))["auths"]
 
+def troubleshoot_spec(documents, label_kind, key):
+    # By name: on KOTS the Replicated subchart renders its own Secret with the same label.
+    name = {"preflight": "carto-preflight-config", "support-bundle": "carto-support-bundle"}[label_kind]
+    for d in documents:
+        if d.get("kind") == "Secret" and d["metadata"]["name"] == name:
+            return yaml.safe_load(d["stringData"][key])
+    raise SystemExit(f"no {name} Secret rendered")
+
+CHECKER = "tenant-requirements-check"
+
+def collectors(spec):
+    """Map each runPod by its collectorName, plus the registryImages collector."""
+    out = {}
+    for c in spec["spec"]["collectors"]:
+        if "runPod" in c:
+            out[c["runPod"]["collectorName"]] = c["runPod"]
+        if "registryImages" in c:
+            out["registryImages"] = c["registryImages"]
+    return out
+
+TROUBLESHOOT_SPECS = (("preflight", "preflight.yaml"), ("support-bundle", "support-bundle-spec"))
+
+def check_collectors(case, documents, pull_secrets=()):
+    """The checker pod lists only the global and checker pull secrets, never a chart Secret or an inline one."""
+    for kind, key in TROUBLESHOOT_SPECS:
+        spec = collectors(troubleshoot_spec(documents, kind, key))
+        if case == "kots":
+            check(spec.get("registryImages", {}).get("imagePullSecret") == {"name": "carto-registry"}, f"{case}: {kind} registryImages imagePullSecret changed")
+        else:
+            check("registryImages" not in spec, f"{case}: {kind} renders the registryImages collector outside KOTS")
+        check([k for k in spec if k != "registryImages"] == [CHECKER], f"{case}: {kind} runPods are {[k for k in spec if k != 'registryImages']}")
+        check(spec[CHECKER].get("imagePullSecret") is None, f"{case}: {kind} {CHECKER} has a collector imagePullSecret")
+        pod_secrets = pull_secret_names(spec[CHECKER]["podSpec"])
+        check(pod_secrets == list(pull_secrets), f"{case}: {kind} {CHECKER} pod lists {pod_secrets}, want {list(pull_secrets)}")
+
+def checker_images(documents, kind, key):
+    pod = collectors(troubleshoot_spec(documents, kind, key))[CHECKER]["podSpec"]
+    return images(pod)
+
+# KOTS always runs the configured image, so its tag is the one every other case must keep.
+CHECKER_TAG = checker_images(docs("kots"), "preflight", "preflight.yaml")[0].rsplit(":", 1)[1]
+PRIVATE_CHECKER = f"us-docker.pkg.dev/carto-onprem-artifacts/gcr.io/tenant-requirements-checker:{CHECKER_TAG}"
+PUBLIC_CHECKER = f"us-docker.pkg.dev/carto-onprem-artifacts/public/tenant-requirements-checker:{CHECKER_TAG}"
+
+def check_checker_image(case, documents, image):
+    for kind, key in TROUBLESHOOT_SPECS:
+        found = checker_images(documents, kind, key)
+        check(found == [image, image], f"{case}: {kind} {CHECKER} runs {found}, want {image}")
+
+PULL_CHECK = "Check_CARTO_images_registry_authentication"
+PULL_CHECK_PATH = f"ImageRegistryValidator.{PULL_CHECK}.status"
+PULL_CHECK_KEY_FILE = "/usr/src/certs/gcp-default-service-account/image-pull-check-key.json"
+CHECKER_LOG = "tenant-requirements-check/tenant-requirements-check.log"
+KEY_SECRET = {"name": "carto-gcp-default-service-account", "key": "key.json"}
+
+def env(container):
+    return {e["name"]: e for e in container.get("env") or []}
+
+def check_pull_key_check(case, documents, key_id=None, image=PRIVATE_CHECKER):
+    """The registry authentication check is wired with key_id and targets the configured image, or is not wired without key_id."""
+    for kind, key in TROUBLESHOOT_SPECS:
+        spec = troubleshoot_spec(documents, kind, key)
+        pod = collectors(spec)[CHECKER]["podSpec"]
+        init_env, main_env = env(pod["initContainers"][0]), env(pod["containers"][0])
+        analyzers = [a["jsonCompare"] for a in spec["spec"]["analyzers"] if a.get("jsonCompare", {}).get("path") == PULL_CHECK_PATH]
+        fallbacks = [a["textAnalyze"] for a in spec["spec"]["analyzers"] if a.get("textAnalyze", {}).get("fileName") == CHECKER_LOG]
+        if key_id is None:
+            check("IMAGE_PULL_CHECK_KEY__FILE_CONTENT" not in init_env and "IMAGE_PULL_CHECK_IMAGE" not in main_env and not analyzers and not fallbacks, f"{case}: {kind} wires the registry authentication check")
+            continue
+        outcomes = [(k, o[k]["when"]) for o in fallbacks[0]["outcomes"] for k in o] if len(fallbacks) == 1 else None
+        check(outcomes == [("pass", "true"), ("warn", "false")] and fallbacks[0]["regex"] == PULL_CHECK, f"{case}: {kind} checker log analyzers are {fallbacks}")
+        content = init_env.get("IMAGE_PULL_CHECK_KEY__FILE_CONTENT", {})
+        if kind == "preflight":
+            value = content.get("value")
+            check(value and json.loads(base64.b64decode(value))["private_key_id"] == key_id, f"{case}: {kind} IMAGE_PULL_CHECK_KEY__FILE_CONTENT is not the expected value")
+        else:
+            check(content.get("valueFrom") == {"secretKeyRef": KEY_SECRET} and "value" not in content, f"{case}: {kind} IMAGE_PULL_CHECK_KEY__FILE_CONTENT is not the expected reference")
+            check(chart_secret(documents, KEY_SECRET["name"]) is not None, f"{case}: no {KEY_SECRET['name']} Secret for the {kind}")
+        check(init_env.get("IMAGE_PULL_CHECK_KEY__FILE_PATH", {}).get("value") == PULL_CHECK_KEY_FILE == main_env.get("IMAGE_PULL_CHECK_KEY_FILE", {}).get("value"), f"{case}: {kind} registry authentication check paths differ")
+        target = main_env.get("IMAGE_PULL_CHECK_IMAGE", {}).get("value")
+        check(target == image, f"{case}: {kind} registry authentication check targets {target}, want {image}")
+        check(not any(key_id in json.dumps(e) for e in main_env.values()), f"{case}: {kind} checker container env carries the key")
+        check(len(analyzers) == 1 and [next(iter(o)) for o in analyzers[0]["outcomes"]] == ["pass", "warn"], f"{case}: {kind} registry authentication check analyzers are {analyzers}")
+
 def expect_credential(case, key_id):
     documents = docs(case)
     secret = chart_secret(documents)
@@ -153,8 +264,9 @@ def expect_credential(case, key_id):
     for d, pod in pods:
         names = pull_secret_names(pod)
         check(credential_name(d) in names and len(set(names) & {secret_name, hook_secret_name}) == 1, f"{case}: {d['kind']}/{d['metadata']['name']} has {names}")
+    check_collectors(case, documents)
 
-def expect_no_credential(case):
+def expect_no_credential(case, pull_secrets=()):
     documents = docs(case)
     for name in (secret_name, hook_secret_name):
         check(chart_secret(documents, name) is None, f"{case}: {name} Secret rendered")
@@ -162,12 +274,14 @@ def expect_no_credential(case):
     check(len(pods) >= 10, f"{case}: only {len(pods)} pods run a CARTO image; the selection is broken")
     for d, pod in pods:
         check(not set(pull_secret_names(pod)) & {secret_name, hook_secret_name}, f"{case}: {d['kind']}/{d['metadata']['name']} lists a chart Secret")
+    check_collectors(case, documents, pull_secrets=pull_secrets)
 
 expect_credential("default-key", "chart-test-default")
 expect_credential("ai-hook", "chart-test-default")
 expect_no_credential("kots")
 expect_no_credential("existing-secret")
-expect_no_credential("manual-secret-no-key")
+expect_no_credential("manual-secret-no-key", pull_secrets=("carto-registry",))
+check_collectors("checker-pull-secret", docs("checker-pull-secret"), pull_secrets=("checker-pull",))
 
 # A mirror keeps the chart's Secret, whose keys match no mirror image even on a CARTO host.
 mirror = docs("mirror")
@@ -177,11 +291,32 @@ mirror_images = [i for _, pod in all_pods(mirror) for i in images(pod) if i.star
 check(len(mirror_images) >= 10, f"mirror: only {len(mirror_images)} images use the mirror; the selection is broken")
 if mirror_secret is not None:
     check(not any(i.startswith(key + "/") for i in mirror_images for key in auths(mirror_secret)), "mirror: a credential key matches a mirror image")
+check_collectors("mirror", mirror)
 
 manual = docs("manual-secret")
 for d, pod in pod_specs(manual):
     names = pull_secret_names(pod)
     check("carto-registry" in names and credential_name(d) in names, f"manual-secret: {d['kind']}/{d['metadata']['name']} has {names}")
+check_collectors("manual-secret", manual, pull_secrets=("carto-registry",))
+
+# The checker pod runs the public image wherever the configured one comes from the CARTO registry, with or without a key.
+for case in ("default-key", "ai-hook", "existing-secret", "existing-secret-and-key", "manual-secret", "manual-secret-no-key", "checker-pull-secret", "workload-identity", "carto-registry-override"):
+    check_checker_image(case, docs(case), PUBLIC_CHECKER)
+for case in ("kots", "disconnected"):
+    check_checker_image(case, docs(case), PRIVATE_CHECKER)
+check_checker_image("mirror", mirror, f"us-docker.pkg.dev/mirror-example/tenant-requirements-checker:{CHECKER_TAG}")
+check_checker_image("checker-other-registry", docs("checker-other-registry"), f"registry.example.com/tenant-requirements-checker:{CHECKER_TAG}")
+OTHER_REPOSITORY_CHECKER = f"us-docker.pkg.dev/carto-onprem-artifacts/gcr.io/example/tenant-requirements-checker:{CHECKER_TAG}"
+check_checker_image("checker-other-repository", docs("checker-other-repository"), OTHER_REPOSITORY_CHECKER)
+check_pull_key_check("checker-other-repository", docs("checker-other-repository"), key_id="chart-test-default", image=OTHER_REPOSITORY_CHECKER)
+
+for case in ("default-key", "manual-secret", "workload-identity"):
+    check_pull_key_check(case, docs(case), key_id="chart-test-default")
+check_pull_key_check("carto-registry-override", docs("carto-registry-override"), key_id="chart-test-default", image=f"us-docker.pkg.dev/carto-onprem-artifacts/example/tenant-requirements-checker:{CHECKER_TAG}")
+for case in ("kots", "existing-secret", "existing-secret-and-key", "manual-secret-no-key", "mirror", "disconnected", "checker-other-registry"):
+    check_pull_key_check(case, docs(case))
+wi_init = env(collectors(troubleshoot_spec(docs("workload-identity"), "preflight", "preflight.yaml"))[CHECKER]["podSpec"]["initContainers"][0])
+check("DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT" not in wi_init, "workload-identity: the checker gets the default service account key")
 
 def read_notes(case):
     return yaml.safe_load(open(f"{work}/{case}.notes"))["data"]["notes"]
