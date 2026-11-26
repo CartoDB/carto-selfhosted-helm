@@ -43,3 +43,6 @@ jobs:
 
       - name: Verify image pull credential
         run: bash chart/tests/test-image-pull-credential.sh
+
+      - name: Verify checker leftover pod analyzer
+        run: bash chart/tests/test-checker-leftover-pod.sh
