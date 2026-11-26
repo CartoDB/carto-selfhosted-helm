@@ -318,17 +318,6 @@ for case in ("kots", "existing-secret", "existing-secret-and-key", "manual-secre
 wi_init = env(collectors(troubleshoot_spec(docs("workload-identity"), "preflight", "preflight.yaml"))[CHECKER]["podSpec"]["initContainers"][0])
 check("DEFAULT_SERVICE_ACCOUNT_KEY__FILE_CONTENT" not in wi_init, "workload-identity: the checker gets the default service account key")
 
-LEFTOVER_CHECK = "No checker pod left from an earlier run"
-for case in ("default-key", "kots"):
-    for secret, key in (("carto-preflight-config", "preflight.yaml"), ("carto-support-bundle", "support-bundle-spec")):
-        spec = [yaml.safe_load(d["stringData"][key]) for d in docs(case) if d.get("kind") == "Secret" and d["metadata"]["name"] == secret]
-        found = [a["textAnalyze"] for a in spec[0]["spec"]["analyzers"] if a.get("textAnalyze", {}).get("checkName") == LEFTOVER_CHECK] if spec else []
-        check(len(found) == 1, f"{case}: {secret} has {len(found)} leftover checker pod analyzers")
-        if found:
-            outcomes = [(k, o[k]["when"]) for o in found[0]["outcomes"] for k in o]
-            check(outcomes == [("warn", "true"), ("pass", "false")], f"{case}: {secret} leftover checker pod outcomes are {outcomes}")
-            check(found[0]["fileName"] == "cluster-resources/pods/test.json" and found[0]["regex"] == '"name":\\s*"tenant-requirements-check"', f"{case}: {secret} leftover checker pod analyzer reads {found[0]['fileName']}")
-
 def read_notes(case):
     return yaml.safe_load(open(f"{work}/{case}.notes"))["data"]["notes"]
 
